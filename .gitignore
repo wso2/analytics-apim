@@ -1,12 +1,31 @@
 *.class
-
+target/
+test-output/
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
-
+# Eclipse project files
+.classpath
+.project
+.settings
+# Idea project files
+.idea
+*.iml
 # Package Files #
 *.jar
 *.war
 *.ear
-
+*.car
+# OSX files
+.DS_Store
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+*.iml
+.classpath
+.project
+.prefs
+sonar-pom.xml
+._*
+*.mar
+*~
+*.em
+*.log*
