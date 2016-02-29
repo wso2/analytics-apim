@@ -1,0 +1,22 @@
+{
+  "name": "apim-flow-entry-stream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "metaData": [
+    {
+      "name": "host",
+      "type": "STRING"
+    }
+  ],
+  "payloadData": [
+    {
+      "name": "messageId",
+      "type": "STRING"
+    },
+    {
+      "name": "flowData",
+      "type": "STRING"
+    }
+  ]
+}

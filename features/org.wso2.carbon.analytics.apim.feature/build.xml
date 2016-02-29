@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="analytics-apim-capps" default="zip" basedir=".">
+
+    <property name="project-name" value="${ant.project.name}"/>
+    <property name="res-dir" value="src/main/resources"/>
+    <property name="target-dir" value="target"/>
+
+    <property name="ANALYTICS_APIM_dir" value="src/main/capp"/>
+    <property name="ANALYTICS_APIM_capp" value="org_wso2_carbon_analytics_apim-1.0.0"/>
+
+    <target name="clean">
+        <delete dir="${target-dir}"/>
+    </target>
+
+    <target name="pre-configure">
+        <mkdir dir="${target-dir}"/>
+    </target>
+
+    <target name="zip" depends="clean,pre-configure">
+        <zip destfile="${res-dir}/${ANALYTICS_APIM_capp}.car">
+          <zipfileset dir="${ANALYTICS_APIM_dir}"/>
+        </zip>
+    </target>
+
+</project>
+
