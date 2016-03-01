@@ -1,0 +1,16 @@
+{
+  "name": "all_apim_alerts_stream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "type",
+      "type": "STRING"
+    },
+    {
+      "name": "msg",
+      "type": "STRING"
+    }
+  ]
+}

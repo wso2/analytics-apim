@@ -1,0 +1,20 @@
+{
+  "name": "RequestPatternChangedStream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "userid",
+      "type": "STRING"
+    },
+    {
+      "name": "consumerKey",
+      "type": "STRING"
+    },
+    {
+      "name": "message",
+      "type": "STRING"
+    }
+  ]
+}
