@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact name="executionplan" version="1.0.0" type="event/execution-plan" serverRole="DataAnalyticsServer">
+    <file>APIResponseAnomalyAnalysis-AbnormalResponseAndBackendTImeDetection.siddhiql</file>
+</artifact>

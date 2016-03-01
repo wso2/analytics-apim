@@ -1,0 +1,24 @@
+{
+  "name": "abnormalBackendTimeAlertStream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "api",
+      "type": "STRING"
+    },
+    {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
+      "name": "backendTime",
+      "type": "LONG"
+    },
+    {
+      "name": "backendPercentile",
+      "type": "DOUBLE"
+    }
+  ]
+}
