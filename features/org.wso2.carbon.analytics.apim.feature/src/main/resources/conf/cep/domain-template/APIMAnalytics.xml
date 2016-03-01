@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templateDomain name="APIMAnalytics">
+    <description>Alerting anomalies</description>
+    <templates>
+        <template name="Response Anomaly Detector">
+            <description>Abnormal response time and backend time alerting</description>
+            <executionPlan><![CDATA[
+                                /* Enter a unique ExecutionPlan */
+                                @Plan:name('APIResponseExecutionPlan')
+
+                                /* Enter a unique description for ExecutionPlan */
+                                -- @Plan:description('ExecutionPlan')
+
+                                /* define streams/tables and write queries here ... */
+
+
+                                @Import('org.wso2.apimgt.statistics.response:1.0.0')
+                                define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string);
+
+                                @Import('responseStatStream:1.0.0')
+                                define stream responseStatStream (api_version string, tenantDomain string, avgResponseTime double, sdResponseTime double, avgBackendTime double, sdBackendTime double);
+
+
+                                @Export('abnormalBackendTimeAlertStream:1.0.0')
+                                define stream abnormalBackendTimeAlertStream (api string, tenantDomain string, backendTime long, backendPercentile double);
+
+                                @Export('abnormalResponseTimeAlertStream:1.0.0')
+                                define stream abnormalResponseTimeAlertStream (api string, tenantDomain string, responseTime long, responsePercentile double);
+
+
+                                @from(eventtable = 'analytics.table' , table.name = 'RESPONSE_PERCENTILE_TABLE',  primary.keys = 'api_version,tenantDomain')
+                                define table percentileTable (api_version string, tenantDomain string, responsePercentile double, backendPercentile double );
+
+
+                                @info(name = 'query1') 
+                                from responseStream
+                                select api_version, tenantDomain, responseTime, backendTime 
+                                insert into responseSummaryStream; 
+
+                                @info(name = 'query2') 
+                                from responseStatStream 
+                                select api_version , tenantDomain,  analytics:percentile(avgResponseTime, sdResponseTime, $responseTimePercentile) as responsePercentile , analytics:percentile(avgBackendTime, sdBackendTime, $backendTimePercentile) as backendPercentile  
+                                insert into percentileTable  ;
+
+                                @info(name = 'query3') 
+                                from responseSummaryStream join percentileTable 
+                                on (responseSummaryStream.api_version==percentileTable.api_version and responseSummaryStream.tenantDomain==percentileTable.tenantDomain )
+                                select responseSummaryStream.api_version, responseSummaryStream.tenantDomain, responseSummaryStream.responseTime, percentileTable.responsePercentile , responseSummaryStream.backendTime,  percentileTable.backendPercentile                  
+                                insert into responseInfoStream;
+
+                                @info(name = 'query4')
+                                from responseInfoStream[responseTime > responsePercentile] 
+                                select api_version as api, tenantDomain, responseTime, responsePercentile 
+                                insert into abnormalResponseTimeAlertStream;
+
+                                @info(name = 'query5') 
+                                from responseInfoStream[backendTime > backendPercentile]
+                                select api_version as api, tenantDomain, backendTime, backendPercentile  
+                                insert into abnormalBackendTimeAlertStream;                    
+                                 ]]></executionPlan>
+            <parameters>
+                <parameter name="responseTimePercentile" type="int">
+                    <displayName>Response Time Percentile</displayName>
+                    <description>Alert if the responseTime lies outside the given percentile value</description>
+                    <defaultValue>95</defaultValue>
+                </parameter>
+                <parameter name="backendTimePercentile" type="int">
+                    <displayName>Backend Time Percentile</displayName>
+                    <description>Alert if the backendTime lies outside the given percentile value</description>
+                    <defaultValue>95</defaultValue>
+                </parameter>
+            </parameters>
+        </template>
+    </templates>
+    <streams>
+        <stream>
+            {
+            "streamId": "org.wso2.apimgt.statistics.response:1.0.0",
+            "name": "org.wso2.apimgt.statistics.response",
+            "version": "1.0.0",
+            "nickName": "API Manager Response Data",
+            "description": "Response Data",
+            "metaData": [
+            {
+            "name": "clientType",
+            "type": "STRING"
+            }
+            ],
+            "payloadData": [
+            {
+            "name": "consumerKey",
+            "type": "STRING"
+            },
+            {
+            "name": "context",
+            "type": "STRING"
+            },
+            {
+            "name": "api_version",
+            "type": "STRING"
+            },
+            {
+            "name": "api",
+            "type": "STRING"
+            },
+            {
+            "name": "resourcePath",
+            "type": "STRING"
+            },
+            {
+            "name": "method",
+            "type": "STRING"
+            },
+            {
+            "name": "version",
+            "type": "STRING"
+            },
+            {
+            "name": "response",
+            "type": "INT"
+            },
+            {
+            "name": "responseTime",
+            "type": "LONG"
+            },
+            {
+            "name": "serviceTime",
+            "type": "LONG"
+            },
+            {
+            "name": "backendTime",
+            "type": "LONG"
+            },
+            {
+            "name": "username",
+            "type": "STRING"
+            },
+            {
+            "name": "eventTime",
+            "type": "LONG"
+            },
+            {
+            "name": "tenantDomain",
+            "type": "STRING"
+            },
+            {
+            "name": "hostName",
+            "type": "STRING"
+            },
+            {
+            "name": "apiPublisher",
+            "type": "STRING"
+            },
+            {
+            "name": "applicationName",
+            "type": "STRING"
+            },
+            {
+            "name": "applicationId",
+            "type": "STRING"
+            },
+            {
+            "name": "cacheHit",
+            "type": "BOOL"
+            },
+            {
+            "name": "responseSize",
+            "type": "LONG"
+            },
+            {
+            "name": "protocol",
+            "type": "STRING"
+            }
+            ]
+            }
+
+        </stream>
+        <stream>
+            {
+            "streamId": "responseStatStream:1.0.0",
+            "name": "responseStatStream",
+            "version": "1.0.0",
+            "nickName": "",
+            "description": "",
+            "payloadData": [
+            {
+            "name": "api_version",
+            "type": "STRING"
+            },
+            {
+            "name": "tenantDomain",
+            "type": "STRING"
+            },
+            {
+            "name": "avgResponseTime",
+            "type": "DOUBLE"
+            },
+            {
+            "name": "sdResponseTime",
+            "type": "DOUBLE"
+            },
+            {
+            "name": "avgBackendTime",
+            "type": "DOUBLE"
+            },
+            {
+            "name": "sdBackendTime",
+            "type": "DOUBLE"
+            }
+            ]
+            }
+
+        </stream>
+        <stream>
+            {
+            "streamId": "abnormalBackendTimeAlertStream:1.0.0",
+            "name": "abnormalBackendTimeAlertStream",
+            "version": "1.0.0",
+            "nickName": "",
+            "description": "",
+            "payloadData": [
+            {
+            "name": "api",
+            "type": "STRING"
+            },
+            {
+            "name": "tenantDomain",
+            "type": "STRING"
+            },
+            {
+            "name": "backendTime",
+            "type": "LONG"
+            },
+            {
+            "name": "backendPercentile",
+            "type": "DOUBLE"
+            }
+            ]
+            }
+
+        </stream>
+        <stream>
+            {
+            "streamId": "abnormalResponseTimeAlertStream:1.0.0",
+            "name": "abnormalResponseTimeAlertStream",
+            "version": "1.0.0",
+            "nickName": "",
+            "description": "",
+            "payloadData": [
+            {
+            "name": "api",
+            "type": "STRING"
+            },
+            {
+            "name": "tenantDomain",
+            "type": "STRING"
+            },
+            {
+            "name": "responseTime",
+            "type": "LONG"
+            },
+            {
+            "name": "responsePercentile",
+            "type": "DOUBLE"
+            }
+            ]
+            }
+        </stream>
+    </streams>
+</templateDomain>

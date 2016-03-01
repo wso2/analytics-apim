@@ -1,5 +1,5 @@
 /* Enter a unique ExecutionPlan */
-@Plan:name('APIResponseAnomalyAnalysis-AbnormalResponseAndBackendTImeDetection')
+@Plan:name('APIResponseAnomalyAnalysis-AbnormalResponseAndBackendTimeDetection')
 
 /* Enter a unique description for ExecutionPlan */
 -- @Plan:description('ExecutionPlan')
