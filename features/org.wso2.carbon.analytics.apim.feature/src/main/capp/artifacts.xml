@@ -3,5 +3,6 @@
     <artifact name="org.wso2.carbon.analytics.apim" version="1.0.0" type="carbon/application">
 	<!-- Add apim analytics related artifacts here. refer to: https://goo.gl/nryl2n -->
 	<!--dependency artifact="Eventstream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/-->
+        <dependency artifact="AbnormalResponseAndBackendTimeDetection_xml" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
     </artifact>
 </artifacts>
