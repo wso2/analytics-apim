@@ -1,0 +1,24 @@
+{
+  "name": "abnormalResponseTimeAlertStream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "api",
+      "type": "STRING"
+    },
+    {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
+      "name": "responseTime",
+      "type": "LONG"
+    },
+    {
+      "name": "responsePercentile",
+      "type": "DOUBLE"
+    }
+  ]
+}
