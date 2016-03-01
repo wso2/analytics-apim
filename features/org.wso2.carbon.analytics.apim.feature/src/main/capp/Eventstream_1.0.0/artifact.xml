@@ -4,4 +4,8 @@
     <file>abnormalBackendTimeAlertStream_1.0.0.json</file>
     <file>abnormalResponseTimeAlertStream_1.0.0.json</file>
     <file>responseStatStream_1.0.0.json</file>
+    <file>StateStream_1.0.0.json</file>
+    <file>all_apim_alerts_stream_1.0.0.json</file>
+    <file>RequestPatternChangedStream_1.0.0.json</file>
+    <file>org.wso2.apimgt.statistics.request_1.1.0.json</file>
 </artifact>
