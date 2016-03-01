@@ -1,0 +1,32 @@
+{
+  "name": "responseStatStream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "api_version",
+      "type": "STRING"
+    },
+    {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
+      "name": "avgResponseTime",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "sdResponseTime",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "avgBackendTime",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "sdBackendTime",
+      "type": "DOUBLE"
+    }
+  ]
+}
