@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <CronExpression>0 0 12 * * ?</CronExpression>
+    <Editable>true</Editable>
+    <Name>org_wso2_analytics_apim_response_stat_generator</Name>
+    <Script>CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName
+        "ORG_WSO2_APIMGT_STATISTICS_RESPONSE",schema "_timestamp LONG ");
+
+        CREATE TEMPORARY TABLE RESPONSE_STAT_INFO
+        USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
+        OPTIONS (receiverURL "tcp://localhost:7612",
+        username "admin",
+        password "admin",
+        streamName "org.wso2.analytics.apim.responseStatStream",
+        version "1.0.0",
+        description "",
+        nickName "",
+        payload "api_version STRING, tenantDomain STRING, avgResponseTime DOUBLE, sdResponseTime DOUBLE, avgBackendTime DOUBLE, sdBackendTime DOUBLE "
+        );
+
+
+        INSERT OVERWRITE TABLE RESPONSE_STAT_INFO
+        select api_version, tenantDomain, avg(responseTime) as avgResponseTime, sqrt(avg(cast(responseTime as
+        double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) as sdResponseTime ,
+        avg(backendTime) as avgBackendTime,sqrt(avg(cast(backendTime as double)*cast(backendTime as
+        double))-avg(backendTime)*avg(backendTime)) as sdBackendTime
+        from RESPONSE_INFO where _timestamp>(now('')-86400000) group by api_version, tenantDomain;
+
+
+    </Script>
+</Analytics>
