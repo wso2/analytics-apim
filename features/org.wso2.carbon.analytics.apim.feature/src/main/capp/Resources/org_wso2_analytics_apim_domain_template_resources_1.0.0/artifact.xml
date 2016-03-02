@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?><artifact name="org_wso2_analytics_apim_domain_template_resources" version="1.0.0" type="registry/resource" serverRole="DataAnalyticsServer">
+    <file>registry-info.xml</file>
+</artifact>
