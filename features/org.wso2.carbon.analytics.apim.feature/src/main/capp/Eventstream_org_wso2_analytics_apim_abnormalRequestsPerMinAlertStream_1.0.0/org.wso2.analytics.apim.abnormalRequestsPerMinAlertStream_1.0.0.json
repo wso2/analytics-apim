@@ -1,0 +1,32 @@
+{
+  "name": "org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "api",
+      "type": "STRING"
+    },
+    {
+      "name": "userId",
+      "type": "STRING"
+    },
+    {
+      "name": "consumerKey",
+      "type": "STRING"
+    },
+    {
+      "name": "requestsPerMin",
+      "type": "LONG"
+    },
+    {
+      "name": "requestsPerMinUpperPercentile",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "requestsPerMinLowerPercentile",
+      "type": "DOUBLE"
+    }
+  ]
+}

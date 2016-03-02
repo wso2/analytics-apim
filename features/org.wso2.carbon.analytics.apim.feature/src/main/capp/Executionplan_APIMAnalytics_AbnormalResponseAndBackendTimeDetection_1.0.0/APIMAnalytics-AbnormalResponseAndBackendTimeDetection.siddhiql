@@ -1,5 +1,5 @@
 /* Enter a unique ExecutionPlan */
-@Plan:name('APIResponseAnomalyAnalysis-AbnormalResponseAndBackendTimeDetection')
+@Plan:name('APIMAnalytics-AbnormalResponseAndBackendTimeDetection')
 
 /* Enter a unique description for ExecutionPlan */
 -- @Plan:description('ExecutionPlan')
@@ -10,14 +10,14 @@
 @Import('org.wso2.apimgt.statistics.response:1.0.0')
 define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string);
 
-@Import('responseStatStream:1.0.0')
+@Import('org.wso2.analytics.apim.responseStatStream:1.0.0')
 define stream responseStatStream (api_version string, tenantDomain string, avgResponseTime double, sdResponseTime double, avgBackendTime double, sdBackendTime double);
 
 
-@Export('abnormalBackendTimeAlertStream:1.0.0')
+@Export('org.wso2.analytics.apim.abnormalBackendTimeAlertStream:1.0.0')
 define stream abnormalBackendTimeAlertStream (api string, tenantDomain string, backendTime long, backendPercentile double);
 
-@Export('abnormalResponseTimeAlertStream:1.0.0')
+@Export('org.wso2.analytics.apim.abnormalResponseTimeAlertStream:1.0.0')
 define stream abnormalResponseTimeAlertStream (api string, tenantDomain string, responseTime long, responsePercentile double);
 
 

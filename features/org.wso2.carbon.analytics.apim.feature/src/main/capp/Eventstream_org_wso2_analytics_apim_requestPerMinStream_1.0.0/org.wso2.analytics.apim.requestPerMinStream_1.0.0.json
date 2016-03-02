@@ -1,0 +1,24 @@
+{
+  "name": "org.wso2.analytics.apim.requestPerMinStream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "api_version",
+      "type": "STRING"
+    },
+    {
+      "name": "userId",
+      "type": "STRING"
+    },
+    {
+      "name": "consumerKey",
+      "type": "STRING"
+    },
+    {
+      "name": "requestsPerMin",
+      "type": "LONG"
+    }
+  ]
+}

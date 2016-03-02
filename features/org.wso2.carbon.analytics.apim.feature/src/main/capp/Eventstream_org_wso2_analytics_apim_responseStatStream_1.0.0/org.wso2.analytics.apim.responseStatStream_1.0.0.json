@@ -1,5 +1,5 @@
 {
-  "name": "responseStatStream",
+  "name": "org.wso2.analytics.apim.responseStatStream",
   "version": "1.0.0",
   "nickName": "",
   "description": "",
