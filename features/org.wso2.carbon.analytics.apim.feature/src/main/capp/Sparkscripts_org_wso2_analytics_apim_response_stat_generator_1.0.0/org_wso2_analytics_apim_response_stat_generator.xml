@@ -2,7 +2,7 @@
 <Analytics>
     <CronExpression>0 0 12 * * ?</CronExpression>
     <Editable>true</Editable>
-    <Name>RESPONSE_STAT_GENERATOR</Name>
+    <Name>org_wso2_analytics_apim_response_stat_generator</Name>
     <Script>CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName
         "ORG_WSO2_APIMGT_STATISTICS_RESPONSE");
 
@@ -11,12 +11,11 @@
         OPTIONS (receiverURL "tcp://localhost:7612",
         username "admin",
         password "admin",
-        streamName "responseStatStream",
+        streamName "org.wso2.analytics.apim.responseStatStream",
         version "1.0.0",
         description "",
         nickName "",
-        payload "api_version STRING, tenantDomain STRING, avgResponseTime DOUBLE, sdResponseTime DOUBLE, avgBackendTime
-        DOUBLE, sdBackendTime DOUBLE "
+        payload "api_version STRING, tenantDomain STRING, avgResponseTime DOUBLE, sdResponseTime DOUBLE, avgBackendTime DOUBLE, sdBackendTime DOUBLE "
         );
 
 

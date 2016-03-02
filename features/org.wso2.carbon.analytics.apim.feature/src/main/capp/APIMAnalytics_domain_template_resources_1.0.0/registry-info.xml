@@ -4,4 +4,9 @@
         <path>/_system/config/repository/components/org.wso2.carbon.event.execution.manager.core/template-config/APIMAnalytics</path>
         <mediaType>application/xml</mediaType>
     </item>
+    <item>
+        <file>AbnormalRequestCountDetection.xml</file>
+        <path>/_system/config/repository/components/org.wso2.carbon.event.execution.manager.core/template-config/APIMAnalytics</path>
+        <mediaType>application/xml</mediaType>
+    </item>
 </resources>

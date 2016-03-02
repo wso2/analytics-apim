@@ -1,0 +1,58 @@
+
+                                /* Enter a unique ExecutionPlan */
+                                @Plan:name('APIMAnalytics-AbnormalRequestCountDetection')
+
+                                /* Enter a unique description for ExecutionPlan */
+                                -- @Plan:description('ExecutionPlan')
+
+                                /* define streams/tables and write queries here ... */
+
+
+                                @Import('org.wso2.apimgt.statistics.request:1.0.0')
+                                define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool);
+
+
+                                @Import('org.wso2.analytics.apim.requestStatStream:1.0.0')
+                                define stream requestStatStream (api_version string, userId string, consumerKey string, avgRequestsPerMin double, sdRequestsPerMin double);
+
+                                @Export('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
+                                define stream abnormalRequestsPerMinAlertStream (api string, userId string, consumerKey string,  requestsPerMin long, requestsPerMinUpperPercentile double ,requestsPerMinLowerPercentile double);
+
+                                @Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
+                                define stream requestPerMinStream (api_version string, userId string, consumerKey string, requestsPerMin long);
+
+                                @from(eventtable = 'analytics.table' , table.name = 'REQUEST_PERCENTILE_TABLE',  primary.keys = 'api_version,userId,consumerKey')
+                                define table requestPercentileTable (api_version string, userId string, consumerKey string,  requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double);
+
+                                @info(name = 'query1')
+                                from requestStream
+                                select api_version, userId, consumerKey
+                                insert into requestSummaryStream ;
+
+
+                                @info(name = 'query2')
+                                from requestSummaryStream#window.timeBatch(1 minute)
+                                select api_version, userId , consumerKey,  count() as requestsPerMin
+                                group by api_version, userId , consumerKey
+                                insert into requestPerMinStream ;
+
+                                @info(name = 'query3')
+                                from requestStatStream
+                                select api_version, userId , consumerKey, analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 98) as requestsPerMinUpperPercentile,  analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 1) as requestsPerMinLowerPercentile
+                                insert into requestPercentileTable;
+
+
+                                @info(name = 'query4')
+                                from requestSummaryStream#window.time(1 min)
+                                select  api_version, userId ,consumerKey,   count() as  requestsPerMin
+                                group by api_version, userId ,consumerKey
+                                insert into requestCountStream;
+
+                                @info(name = 'query5')
+                                from requestCountStream join requestPercentileTable
+                                on (requestCountStream.api_version ==requestPercentileTable.api_version and  requestCountStream.userId ==requestPercentileTable.userId  and
+                                  requestCountStream.consumerKey ==requestPercentileTable.consumerKey)
+                                select requestCountStream.api_version as api , requestCountStream.userId , requestCountStream.consumerKey,requestCountStream.requestsPerMin,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile
+                                having (requestsPerMin > requestsPerMinUpperPercentile or requestsPerMin < requestsPerMinLowerPercentile)
+                                insert into abnormalRequestsPerMinAlertStream;
+                                 

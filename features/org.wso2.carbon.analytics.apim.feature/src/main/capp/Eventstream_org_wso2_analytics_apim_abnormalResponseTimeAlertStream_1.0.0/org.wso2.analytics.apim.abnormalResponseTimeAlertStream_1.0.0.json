@@ -1,5 +1,5 @@
 {
-  "name": "abnormalBackendTimeAlertStream",
+  "name": "org.wso2.analytics.apim.abnormalResponseTimeAlertStream",
   "version": "1.0.0",
   "nickName": "",
   "description": "",
@@ -13,11 +13,11 @@
       "type": "STRING"
     },
     {
-      "name": "backendTime",
+      "name": "responseTime",
       "type": "LONG"
     },
     {
-      "name": "backendPercentile",
+      "name": "responsePercentile",
       "type": "DOUBLE"
     }
   ]

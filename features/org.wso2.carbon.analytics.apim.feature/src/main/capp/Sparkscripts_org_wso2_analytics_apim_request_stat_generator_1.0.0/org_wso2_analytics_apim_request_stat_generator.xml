@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <CronExpression>0 0 12 * * ?</CronExpression>
+    <Editable>true</Editable>
+    <Name>org_wso2_analytics_apim_request_stat_generator</Name>
+    <Script>CREATE TEMPORARY TABLE REQUEST_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinStream");
+
+        CREATE TEMPORARY TABLE REQUEST_STAT_INFO
+        USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
+        OPTIONS (receiverURL "tcp://localhost:7612",
+        username "admin",
+        password "admin",
+        streamName "org.wso2.analytics.apim.requestStatStream",
+        version "1.0.0",
+        description "",
+        nickName "",
+        payload "api_version STRING, userId STRING, consumerKey STRING, avgRequestsPerMin DOUBLE, sdRequestsPerMin DOUBLE "
+        );
+
+
+        INSERT OVERWRITE TABLE REQUEST_STAT_INFO
+        select api_version, userId, consumerKey, avg(requestsPerMin) as avgRequestsPerMin, sqrt(avg(cast(requestsPerMin
+        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) as sdRequestsPerMin
+        from REQUEST_INFO group by api_version, userId, consumerKey;
+
+
+    </Script>
+</Analytics>
