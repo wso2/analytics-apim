@@ -1,0 +1,16 @@
+{
+  "name": "org.wso2.analytics.apim.allApimAlertsStream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "type",
+      "type": "STRING"
+    },
+    {
+      "name": "msg",
+      "type": "STRING"
+    }
+  ]
+}

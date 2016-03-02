@@ -1,0 +1,21 @@
+/* Enter a unique ExecutionPlan */
+@Plan:name('APIMAnalytics-MarkovStateClassifier')
+
+/* Enter a unique description for ExecutionPlan */
+-- @Plan:description('ExecutionPlan')
+
+/* define streams/tables and write queries here ... */
+
+
+
+
+@Import('org.wso2.apimgt.statistics.request:1.1.0')
+define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool);
+
+
+@Export('org.wso2.analytics.apim.stateStream:1.0.0')
+define stream stateStream (context string, method string, resourceTemplate string, state string, userid string, timestamp string, consumerKey string);
+
+from request
+select context,method,resourceTemplate, str:concat(context, '_',method,'_',resourceTemplate ) as state, userId as userid, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as timestamp, consumerKey
+insert into stateStream;
