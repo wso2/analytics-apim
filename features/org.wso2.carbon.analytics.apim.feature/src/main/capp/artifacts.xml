@@ -11,9 +11,9 @@
         <dependency artifact="org_wso2_analytics_apim_requestPerMinStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_responsestatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestStatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="APIMAnalytics_domain_template_resources" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="APIMAnalytics_AbnormalRequestCountDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="APIMAnalytics_AbnormalResponseAndBackendTimeDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_domain_template_resources" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_AbnormalRequestCountDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_AbnormalResponseAndBackendTimeDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_request_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_response_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
     </artifact>
