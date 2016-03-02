@@ -32,7 +32,7 @@ insert into responseSummaryStream;
 
 @info(name = 'query2')
 from responseStatStream
-select api_version , tenantDomain,  analytics:percentile(avgResponseTime, sdResponseTime, 98) as responsePercentile , analytics:percentile(avgBackendTime, sdBackendTime, 98) as backendPercentile
+select api_version , tenantDomain,  analytics:percentile(avgResponseTime, sdResponseTime, 95) as responsePercentile , analytics:percentile(avgBackendTime, sdBackendTime, 95) as backendPercentile
 insert into percentileTable  ;
 
 @info(name = 'query3')

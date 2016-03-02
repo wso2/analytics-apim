@@ -136,12 +136,12 @@
                 <parameter name="requestsPerMinuteUpperPercentile" type="int">
                     <displayName>percentile upper bound</displayName>
                     <description>Alert if the request count per minute lies outside the given percentile value</description>
-                    <defaultValue>95</defaultValue>
+                    <defaultValue>99</defaultValue>
                 </parameter>
                 <parameter name="requestsPerMinuteLowerPercentile" type="int">
                     <displayName>percentile lower bound</displayName>
                     <description>Alert if the request count per minute lies within the given percentile value</description>
-                    <defaultValue>5</defaultValue>
+                    <defaultValue>1</defaultValue>
                 </parameter>
             </parameters>
         </template>
