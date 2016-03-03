@@ -1,0 +1,65 @@
+/* Enter a unique ExecutionPlan */
+@Plan:name('APIMAnalytics-UnusualIPAccessAlert')
+
+/* Enter a unique description for ExecutionPlan */
+@Plan:description('Alerts if an access from a strange ip is detected')
+
+@Import('org.wso2.apimgt.statistics.request:1.0.0')
+define stream APIMRequest (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string);
+
+@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+define stream all_apim_alerts_stream (type string, msg string);
+
+@Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
+define stream alertIpAccessAbnormality (type string, msg string, ip string, consumerKey string);
+
+@from(eventtable = 'analytics.table', table.name = 'IPAccessSummary', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
+define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
+
+-- Consumer key is already in the table
+from APIMRequest[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
+on api.consumerKey == ais.consumerKey and api.hostName == ais.ip
+select api.consumerKey as consumerKey, api.userId as userId, api.hostName as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate
+insert into ExistingUserStream;
+
+-- New consumer key
+from APIMRequest[not (consumerKey == IPAccessSummary.consumerKey in IPAccessSummary)]
+select userId, consumerKey, hostName as ip, requestTime as lastAccessedDate
+insert into IPAccessSummary;
+
+-- A new request source IP
+-- generate alert and add it to the table
+from ExistingUserStream[ip is null]
+select *
+insert into NewIPDetectedStream;
+
+from NewIPDetectedStream
+select "[UnusualIPAccessAlert]" as type, str:concat("A request from a new IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey
+insert into alertIpAccessAbnormality;
+
+from NewIPDetectedStream
+select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
+insert into IPAccessSummary;
+
+-- Check if the request for the IP is received after the threshold time gap
+from ExistingUserStream[not (ip is null)]
+select requestHostName, consumerKey, time:dateDiff(requestTime, lastAccessedDate) as daysBetweenAccess, requestTime, userId, lastAccessedDate
+insert into CheckAbnormalTimeBetweenAccessStream;
+
+from CheckAbnormalTimeBetweenAccessStream[daysBetweenAccess > 1]
+select *
+insert into AbnormalTimeBetweenAccessStream;
+
+from AbnormalTimeBetweenAccessStream
+select "[UnusualIPAccessAlert]" as type, str:concat("A request from an Old IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey
+insert into alertIpAccessAbnormality;
+
+-- Send all the alerts to the Global Alert Stream
+from alertIpAccessAbnormality
+select type, str:concat('ConsumerKey: ',consumerKey, ' ', msg) as msg
+insert into all_apim_alerts_stream;
+
+-- Update the request time for the lastAccessDate
+from CheckAbnormalTimeBetweenAccessStream[daysBetweenAccess > 0]
+select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
+insert into IPAccessSummary;
