@@ -14,6 +14,7 @@
     <property name="EXECUTION_PLAN_dir" value="ExecutionPlans" />
     <property name="RESOURCE_dir" value="Resources" />
     <property name="SPARK_SCRIPT_dir" value="Sparkscripts" />
+    <property name="DATA_PURGING_dir" value="Datapurging" />
 
     <property name="ANALYTICS_APIM_RDBMS_capp_suffix" value="RDMBS"/>
     <property name="ANALYTICS_APIM_RDBMS_directory" value="rdbms"/>
@@ -41,6 +42,7 @@
             <zipfileset dir="${ANALYTICS_APIM_dir}/${SPARK_SCRIPT_dir}"
                         excludes="**/${ANALYTICS_APIM_RDBMS_directory}/**, **/${ANALYTICS_APIM_REST_directory}/**"/>
             <zipfileset dir="${ANALYTICS_APIM_dir}/${SPARK_SCRIPT_dir}/${ANALYTICS_APIM_REST_directory}"/>
+            <zipfileset dir="${ANALYTICS_APIM_dir}/${DATA_PURGING_dir}" />
             <zipfileset file="${ANALYTICS_APIM_dir}/artifacts.xml"/>
         </zip>
         <zip destfile="${res-dir}/${ANALYTICS_APIM_capp_name}_${ANALYTICS_APIM_RDBMS_capp_suffix}-${ANALYTICS_APIM_capp_version}.car">
@@ -52,6 +54,7 @@
             <zipfileset dir="${ANALYTICS_APIM_dir}/${SPARK_SCRIPT_dir}"
                         excludes="**/${ANALYTICS_APIM_RDBMS_directory}/**, **/${ANALYTICS_APIM_REST_directory}/**"/>
             <zipfileset dir="${ANALYTICS_APIM_dir}/${SPARK_SCRIPT_dir}/${ANALYTICS_APIM_RDBMS_directory}"/>
+            <zipfileset dir="${ANALYTICS_APIM_dir}/${DATA_PURGING_dir}" />
             <zipfileset file="${ANALYTICS_APIM_dir}/artifacts.xml"/>
         </zip>
     </target>
