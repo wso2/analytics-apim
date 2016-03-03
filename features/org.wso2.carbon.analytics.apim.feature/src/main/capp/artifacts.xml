@@ -19,10 +19,11 @@
         <dependency artifact="org_wso2_analytics_apim_request_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_response_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_stateStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org_wso2_analytics_apim_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org_wso2_analytics_apim_allApimAlertsStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_allApimAlertsStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_APIRequestPatternChangeAnalysisMatrixBuilder" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
- 	<dependency artifact="org_wso2_analytics_apim_APIRequestPatternChangeAnalysisMetric" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org_wso2_analytics_apim_MarkovStateClassifier" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_APIRequestPatternChangeAnalysisMetric" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_MarkovStateClassifier" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_oneDayDataRetention" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
     </artifact>
 </artifacts>

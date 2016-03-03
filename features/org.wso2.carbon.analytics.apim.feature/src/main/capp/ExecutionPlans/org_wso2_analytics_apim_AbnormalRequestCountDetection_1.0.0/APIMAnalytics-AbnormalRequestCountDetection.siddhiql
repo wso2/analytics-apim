@@ -1,4 +1,3 @@
-
                                 /* Enter a unique ExecutionPlan */
                                 @Plan:name('APIMAnalytics-AbnormalRequestCountDetection')
 
@@ -16,10 +15,13 @@
                                 define stream requestStatStream (api_version string, userId string, consumerKey string, avgRequestsPerMin double, sdRequestsPerMin double);
 
                                 @Export('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
-                                define stream abnormalRequestsPerMinAlertStream (api string, userId string, consumerKey string,  requestsPerMin long, requestsPerMinUpperPercentile double ,requestsPerMinLowerPercentile double);
+                                define stream abnormalRequestsPerMinAlertStream (api string, userId string, consumerKey string,  requestsPerMin long, requestsPerMinUpperPercentile double ,requestsPerMinLowerPercentile double , reason string , msg string);
 
                                 @Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
                                 define stream requestPerMinStream (api_version string, userId string, consumerKey string, requestsPerMin long);
+
+                                @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+                                define stream allApimAlertStream (type string, msg string);
 
                                 @from(eventtable = 'analytics.table' , table.name = 'REQUEST_PERCENTILE_TABLE',  primary.keys = 'api_version,userId,consumerKey')
                                 define table requestPercentileTable (api_version string, userId string, consumerKey string,  requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double);
@@ -36,6 +38,8 @@
                                 group by api_version, userId , consumerKey
                                 insert into requestPerMinStream ;
 
+                                /* events of the stream requestPerMinStream are persisted. Spark script uses these persisted data to calculate average and standard deviation. Results of the spark script is sent back to the stream requestStatStream*/
+
                                 @info(name = 'query3')
                                 from requestStatStream
                                 select api_version, userId , consumerKey, analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 99) as requestsPerMinUpperPercentile,  analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 1) as requestsPerMinLowerPercentile
@@ -48,11 +52,18 @@
                                 group by api_version, userId ,consumerKey
                                 insert into requestCountStream;
 
+                                /* retrieving corresponding percentile values from table and filtering abnormal counts*/
                                 @info(name = 'query5')
                                 from requestCountStream join requestPercentileTable
                                 on (requestCountStream.api_version ==requestPercentileTable.api_version and  requestCountStream.userId ==requestPercentileTable.userId  and
                                   requestCountStream.consumerKey ==requestPercentileTable.consumerKey)
-                                select requestCountStream.api_version as api , requestCountStream.userId , requestCountStream.consumerKey,requestCountStream.requestsPerMin,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile
+                                select requestCountStream.api_version as api , requestCountStream.userId , requestCountStream.consumerKey,requestCountStream.requestsPerMin,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile, ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') as reason,
+                                str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') , ' detected in last minute. api_version :',requestCountStream.api_version,' userId :',requestCountStream.userId, ' consumerKey :', requestCountStream.consumerKey , ' abnormal request count: ',requestCountStream.requestsPerMin , ' request count 99 percentile  :' , requestPercentileTable.requestsPerMinUpperPercentile , ' request count 1 percentile :' , requestPercentileTable.requestsPerMinLowerPercentile ) as msg
                                 having (requestsPerMin > requestsPerMinUpperPercentile or requestsPerMin < requestsPerMinLowerPercentile)
                                 insert into abnormalRequestsPerMinAlertStream;
-                                 
+
+
+                                 @info(name = 'query6')
+                                 from abnormalRequestsPerMinAlertStream
+                                 select 'abnormalRequestsPerMin' as type, msg
+                                 insert into allApimAlertStream;

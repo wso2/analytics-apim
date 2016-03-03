@@ -19,6 +19,10 @@
     {
       "name": "backendPercentile",
       "type": "DOUBLE"
+    },
+    {
+      "name": "msg",
+      "type": "STRING"
     }
   ]
 }

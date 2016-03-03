@@ -27,6 +27,14 @@
     {
       "name": "requestsPerMinLowerPercentile",
       "type": "DOUBLE"
+    },
+    {
+       "name": "reason",
+       "type": "STRING"
+    },
+    {
+       "name": "msg",
+       "type": "STRING"
     }
   ]
 }
