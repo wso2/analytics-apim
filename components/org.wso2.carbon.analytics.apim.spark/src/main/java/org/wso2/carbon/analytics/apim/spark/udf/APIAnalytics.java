@@ -24,10 +24,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import org.wso2.carbon.analytics.spark.core.udf.CarbonUDF;
-
 import org.apache.commons.math3.distribution.NormalDistribution;
 
-public class APIAnalytics implements CarbonUDF{
+public class APIAnalytics implements CarbonUDF {
 
     /**
      * @param numOfDays
@@ -63,9 +62,7 @@ public class APIAnalytics implements CarbonUDF{
         return reportDate;
     }
 
-
     /**
-     *
      * @param dateString
      * @return
      * @throws APIAnalyticsException
