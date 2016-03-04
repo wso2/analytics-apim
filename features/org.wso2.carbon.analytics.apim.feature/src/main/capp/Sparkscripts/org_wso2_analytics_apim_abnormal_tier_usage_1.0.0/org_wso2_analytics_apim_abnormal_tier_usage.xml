@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <CronExpression>0 0 23 * * ?</CronExpression>
+    <Editable>true</Editable>
+    <Name>org_wso2_analytics_apim_abnormal_tier_usage</Name>
+    <Script>CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_REQ
+      USING CarbonAnalytics
+      OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
+
+      CREATE TEMPORARY TABLE ORG_WSO2_API_AVG_REQ_X_DAYS
+      USING CarbonAnalytics
+      OPTIONS (tableName "ORG_WSO2_API_AVG_REQ_X_DAYS_TBL",
+         schema "userId STRING, api STRING, request_count INT"
+      );
+
+      CREATE TEMPORARY TABLE ORG_WSO2_API_PERCENTILE
+      USING CarbonAnalytics
+      OPTIONS (tableName "ORG_WSO2_API_PERCENTILE_TBL",
+         schema "userId STRING, api STRING, requestsPerDayPercentile FLOAT"
+      );
+
+      CREATE TEMPORARY TABLE ORG_WSO2_API_ABN_REQ_ALERT
+      USING CarbonAnalytics
+      OPTIONS (tableName "ORG_WSO2_API__ABN_REQ_ALERT_TBL",
+         schema "userId STRING, api STRING"
+      );
+
+      INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
+      SELECT userId, api, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), 0.95) as percentile
+      FROM
+         (SELECT userId, api, COUNT(api) as request_count
+          FROM ORG_WSO2_API_ABNORMAL_REQ
+          WHERE context is not NULL  AND now('') > convertToTimestamp('12/2/2016') AND requestTime >= offsetInDays(-30)
+          GROUP BY convertToDate(requestTime), api, userId) ORG_WSO2_API_ABNORMAL_REQ
+      GROUP BY api, userId;
+
+     INSERT OVERWRITE TABLE ORG_WSO2_API_AVG_REQ_X_DAYS
+     SELECT userId, api, COUNT(api) as request_count
+     FROM ORG_WSO2_API_ABNORMAL_REQ
+     WHERE context is not NULL  AND requestTime >= offsetInDays(-5)
+     GROUP BY convertToDate(requestTime), api, userId;
+
+     INSERT OVERWRITE TABLE ORG_WSO2_API_ABN_REQ_ALERT
+     SELECT S.userId, S.api
+     FROM ORG_WSO2_API_AVG_REQ_X_DAYS S, ORG_WSO2_API_PERCENTILE D
+     WHERE S.userId = D.userId AND S.api = D.api AND S.request_count >=  D.requestsPerDayPercentile
+     GROUP BY S.userId, S.api
+     HAVING COUNT(S.api) >= 5;
+    </Script>
+</Analytics>

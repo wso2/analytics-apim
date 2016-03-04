@@ -28,6 +28,8 @@
         <dependency artifact="org_wso2_analytics_apim_APIRequestPatternChangeAnalysisMetric" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_MarkovStateClassifier" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_oneDayDataRetention" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_abnormal_tier_usage" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
 
         <!-- API Manager related artifacts -->
         <dependency artifact="Eventstream_destination" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -58,6 +60,6 @@
         <dependency artifact="APIM_STAT_SCRIPT" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="APIM_STAT_SCRIPT_THROTTLE" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="APIM_LATENCY_BREAKDOWN_STATS" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-
+        
     </artifact>
 </artifacts>

@@ -27,7 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>wso2analytics-apim-release-profile-gen</artifactId>
     <packaging>pom</packaging>
-   
+
     <build>
         <plugins>
             <plugin>
@@ -112,7 +112,11 @@
                                 <featureArtifactDef>
                                     org.wso2.analytics.apim:org.wso2.carbon.analytics.apim.feature:${analytics.apim.version}
                                 </featureArtifactDef>
-                                
+
+                                <featureArtifactDef>
+                                    org.wso2.analytics.apim:org.wso2.carbon.analytics.apim.spark.feature:${analytics.apim.version}
+                                </featureArtifactDef>
+
 				<featureArtifactDef>
                                     org.wso2.carbon.analytics:org.wso2.carbon.analytics.dashboard.feature:${carbon.analytics.version}
                                 </featureArtifactDef>
@@ -402,6 +406,11 @@
                                      <id>org.wso2.carbon.analytics.apim.feature.group</id>
                                      <version>${analytics.apim.version}</version>
                                  </feature>
+
+                                 <feature>
+                                                              <id>org.wso2.carbon.analytics.apim.spark.feature.group</id>
+                                                              <version>${analytics.apim.version}</version>
+                                                          </feature>
                                 <!-- START - Log analyzer dashboard -->
                                 <!--<feature>-->
                                     <!--<id>org.wso2.carbon.analytics.dashboard.logmonitor.ui.feature.group</id>-->
