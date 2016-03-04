@@ -1,0 +1,24 @@
+{
+  "name": "org.wso2.analytics.apim.responsePercentile",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "api_version",
+      "type": "STRING"
+    },
+    {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
+      "name": "responsePercentile",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "backendPercentile",
+      "type": "DOUBLE"
+    }
+  ]
+}
