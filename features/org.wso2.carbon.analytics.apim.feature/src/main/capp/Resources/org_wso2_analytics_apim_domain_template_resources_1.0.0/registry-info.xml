@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><resources>
     <item>
-        <file>AbnormalResponseAndBackendTimeDetection.xml</file>
-        <path>/_system/config/repository/components/org.wso2.carbon.event.execution.manager.core/template-config/APIMAnalytics</path>
-        <mediaType>application/xml</mediaType>
-    </item>
-    <item>
-        <file>AbnormalRequestCountDetection.xml</file>
-        <path>/_system/config/repository/components/org.wso2.carbon.event.execution.manager.core/template-config/APIMAnalytics</path>
-        <mediaType>application/xml</mediaType>
-    </item>
-    <item>
         <file>APIRequestPatternChangeAnalysisMatrixBuilder.xml</file>
         <path>/_system/config/repository/components/org.wso2.carbon.event.execution.manager.core/template-config/APIMAnalytics</path>
         <mediaType>application/xml</mediaType>
