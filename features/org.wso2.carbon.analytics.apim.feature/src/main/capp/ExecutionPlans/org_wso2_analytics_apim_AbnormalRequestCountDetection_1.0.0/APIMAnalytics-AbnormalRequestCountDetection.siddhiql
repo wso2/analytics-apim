@@ -7,8 +7,8 @@
                                 /* define streams/tables and write queries here ... */
 
 
-                                @Import('org.wso2.apimgt.statistics.request:1.0.0')
-                                define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool);
+                                @Import('org.wso2.apimgt.statistics.request:1.1.0')
+                                define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string);
 
 
                                 @Import('org.wso2.analytics.apim.requestStatStream:1.0.0')
@@ -40,11 +40,12 @@
 
                                 /* events of the stream requestPerMinStream are persisted. Spark script uses these persisted data to calculate average and standard deviation. Results of the spark script is sent back to the stream requestStatStream*/
 
-                                @info(name = 'query3')
+                                /* @info(name = 'query3')
                                 from requestStatStream
                                 select api_version, userId , consumerKey, analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 95) as requestsPerMinUpperPercentile,  analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 5) as requestsPerMinLowerPercentile
                                 insert into requestPercentileTable;
 
+*/
 
                                 @info(name = 'query4')
                                 from requestSummaryStream#window.time(1 min)
