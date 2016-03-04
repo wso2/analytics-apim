@@ -42,7 +42,7 @@
 
                                 @info(name = 'query3')
                                 from requestStatStream
-                                select api_version, userId , consumerKey, analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 99) as requestsPerMinUpperPercentile,  analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 1) as requestsPerMinLowerPercentile
+                                select api_version, userId , consumerKey, analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 95) as requestsPerMinUpperPercentile,  analytics:percentile(avgRequestsPerMin, sdRequestsPerMin, 5) as requestsPerMinLowerPercentile
                                 insert into requestPercentileTable;
 
 
