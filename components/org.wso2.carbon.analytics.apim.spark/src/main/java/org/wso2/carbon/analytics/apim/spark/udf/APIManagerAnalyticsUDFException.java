@@ -17,11 +17,11 @@
  */
 package org.wso2.carbon.analytics.apim.spark.udf;
 
-public class APIAnalyticsException extends Exception {
+public class APIManagerAnalyticsUDFException extends Exception {
 
     private static final long serialVersionUID = 1024L;
 
-    public APIAnalyticsException(String message) {
+    public APIManagerAnalyticsUDFException(String message) {
         super(message);
     }
 

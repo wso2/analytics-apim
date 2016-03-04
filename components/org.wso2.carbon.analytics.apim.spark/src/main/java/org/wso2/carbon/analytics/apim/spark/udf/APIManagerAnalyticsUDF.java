@@ -26,16 +26,16 @@ import java.util.Date;
 import org.wso2.carbon.analytics.spark.core.udf.CarbonUDF;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
-public class APIAnalytics implements CarbonUDF {
+public class APIManagerAnalyticsUDF implements CarbonUDF {
 
     /**
      * @param numOfDays
      * @return
-     * @throws APIAnalyticsException
+     * @throws APIManagerAnalyticsUDFException
      */
-    public Long offsetInDays(Integer numOfDays) throws APIAnalyticsException {
+    public Long offsetInDays(Integer numOfDays) throws APIManagerAnalyticsUDFException {
         if (numOfDays == null) {
-            throw new APIAnalyticsException("Offset days can't be null");
+            throw new APIManagerAnalyticsUDFException("Offset days can't be null");
         }
 
         Calendar calender = Calendar.getInstance();
@@ -48,11 +48,11 @@ public class APIAnalytics implements CarbonUDF {
      *
      * @param timeStamp
      * @return Date in MM/dd//yyyy format as a String
-     * @throws APIAnalyticsException
+     * @throws APIManagerAnalyticsUDFException
      */
-    public String convertToDate(Long timeStamp) throws APIAnalyticsException {
+    public String convertToDate(Long timeStamp) throws APIManagerAnalyticsUDFException {
         if (timeStamp == null) {
-            throw new APIAnalyticsException("timeStamp can't be null");
+            throw new APIManagerAnalyticsUDFException("timeStamp can't be null");
         }
         Calendar calender = Calendar.getInstance();
         calender.setTimeInMillis(timeStamp);
@@ -65,11 +65,11 @@ public class APIAnalytics implements CarbonUDF {
     /**
      * @param dateString
      * @return
-     * @throws APIAnalyticsException
+     * @throws APIManagerAnalyticsUDFException
      */
-    public Long convertToTimestamp(String dateString) throws APIAnalyticsException {
+    public Long convertToTimestamp(String dateString) throws APIManagerAnalyticsUDFException {
         if (dateString == null) {
-            throw new APIAnalyticsException("dateString can't be null");
+            throw new APIManagerAnalyticsUDFException("dateString can't be null");
         }
 
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
@@ -77,7 +77,7 @@ public class APIAnalytics implements CarbonUDF {
         try {
             date = format.parse(dateString);
         } catch (ParseException e) {
-            throw new APIAnalyticsException("An error occurred while parsing string: " + dateString);
+            throw new APIManagerAnalyticsUDFException("An error occurred while parsing string: " + dateString);
         }
         return date.getTime();
     }
@@ -89,15 +89,15 @@ public class APIAnalytics implements CarbonUDF {
      * @param stdDeviation
      * @param percentile
      * @return
-     * @throws APIAnalyticsException
+     * @throws APIManagerAnalyticsUDFException
      */
-    public Double getpercentileValue(Double mean, Double stdDeviation, Double percentile) throws APIAnalyticsException {
+    public Double getpercentileValue(Double mean, Double stdDeviation, Double percentile) throws APIManagerAnalyticsUDFException {
         if (mean == null || stdDeviation == null || percentile == null) {
-            throw new APIAnalyticsException("One or more arguments provided for the method is/are null");
+            throw new APIManagerAnalyticsUDFException("One or more arguments provided for the method is/are null");
         }
 
         if (percentile < 0 || percentile > 1) {
-            throw new APIAnalyticsException("percentile should in 0 < percentile < 1 range");
+            throw new APIManagerAnalyticsUDFException("percentile should in 0 < percentile < 1 range");
         }
         double zValue = new NormalDistribution().inverseCumulativeProbability(percentile);
         return mean + zValue * stdDeviation;
