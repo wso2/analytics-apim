@@ -23,7 +23,7 @@ define stream abnormalResponseTimeAlertStream (api string, tenantDomain string, 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream allApimAlertStream (type string, msg string);
 
-@from(eventtable = 'analytics.table' , table.name = 'RESPONSE_PERCENTILE_TABLE',  primary.keys = 'api_version,tenantDomain')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain')
 define table percentileTable (api_version string, tenantDomain string, responsePercentile double, backendPercentile double );
 
 
@@ -32,36 +32,30 @@ from responseStream
 select api_version, tenantDomain, responseTime, backendTime
 insert into responseSummaryStream;
 
-/*spark script calculates the average and standard deviation of responseTime and backendTime daily and sends its output to responseStatStream*/
-/*@info(name = 'query2')
-from responseStatStream
-select api_version , tenantDomain,  analytics:percentile(avgResponseTime, sdResponseTime, 95) as responsePercentile , analytics:percentile(avgBackendTime, sdBackendTime, 95) as backendPercentile
-insert into percentileTable  ;
-*/
+/*spark script calculates percentile of responseTime and backendTime  and stores in percentileTable */
 
-/* retrieving corresponding percentile value from table */
-@info(name = 'query3')
+@info(name = 'query2')
 from responseSummaryStream join percentileTable
 on (responseSummaryStream.api_version==percentileTable.api_version and responseSummaryStream.tenantDomain==percentileTable.tenantDomain )
 select responseSummaryStream.api_version, responseSummaryStream.tenantDomain, responseSummaryStream.responseTime, percentileTable.responsePercentile , responseSummaryStream.backendTime,  percentileTable.backendPercentile
 insert into responseInfoStream;
 
-@info(name = 'query4')
+@info(name = 'query3')
 from responseInfoStream[responseTime > responsePercentile]
-select api_version as api, tenantDomain, responseTime, responsePercentile , str:concat('Abnormal response time detected. api_version :',api_version,' tenantDomain :',tenantDomain,' abnormal response time: ',responseTime , ' response time 95 percentile ' , responsePercentile) as msg
+select api_version as api, tenantDomain, responseTime, responsePercentile , str:concat('Abnormal response time detected. api_version :',api_version,' tenantDomain :',tenantDomain,' abnormal response time: ',responseTime , ' response time percentile ' , responsePercentile) as msg
 insert into abnormalResponseTimeAlertStream;
 
-@info(name = 'query5')
+@info(name = 'query4')
 from responseInfoStream[backendTime > backendPercentile]
-select api_version as api, tenantDomain, backendTime, backendPercentile, str:concat('Abnormal backend time detected. api_version :',api_version,' tenantDomain :',tenantDomain,' abnormal backend time: ',backendTime , ' backend time 95 percentile ' , backendPercentile) as msg
+select api_version as api, tenantDomain, backendTime, backendPercentile, str:concat('Abnormal backend time detected. api_version :',api_version,' tenantDomain :',tenantDomain,' abnormal backend time: ',backendTime , ' backend time percentile ' , backendPercentile) as msg
 insert into abnormalBackendTimeAlertStream;
 
-@info(name = 'query6')
+@info(name = 'query5')
 from abnormalResponseTimeAlertStream
 select 'abnormalResponseTime' as type, msg
 insert into allApimAlertStream;
 
-@info(name = 'query7')
+@info(name = 'query6')
 from abnormalBackendTimeAlertStream
 select 'abnormalBackendTime' as type, msg
 insert into allApimAlertStream;

@@ -5,22 +5,18 @@
     <Name>org_wso2_analytics_apim_request_stat_generator</Name>
     <Script>CREATE TEMPORARY TABLE REQUEST_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinStream");
 
-        CREATE TEMPORARY TABLE REQUEST_STAT_INFO
-        USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
-        OPTIONS (receiverURL "tcp://localhost:7612",
-        username "admin",
-        password "admin",
-        streamName "org.wso2.analytics.apim.requestStatStream",
-        version "1.0.0",
-        description "",
-        nickName "",
-        payload "api_version STRING, userId STRING, consumerKey STRING, avgRequestsPerMin DOUBLE, sdRequestsPerMin DOUBLE "
+        CREATE TEMPORARY TABLE REQUEST_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE",
+        schema "api_version string, userId string, consumerKey string,  requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double ",
+        primaryKeys "api_version,userId,consumerKey"
         );
 
+        INSERT OVERWRITE TABLE REQUEST_PERCENTILE_GEN
+        select api_version, userId, consumerKey,
+        getpercentileValue(avg(requestsPerMin), sqrt(avg(cast(requestsPerMin
+        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , 0.95 ) as requestsPerMinUpperPercentile,
+        getpercentileValue(avg(requestsPerMin), sqrt(avg(cast(requestsPerMin
+        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , 0.01 ) as requestsPerMinLowerPercentile
 
-        INSERT OVERWRITE TABLE REQUEST_STAT_INFO
-        select api_version, userId, consumerKey, avg(requestsPerMin) as avgRequestsPerMin, sqrt(avg(cast(requestsPerMin
-        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) as sdRequestsPerMin
         from REQUEST_INFO group by api_version, userId, consumerKey;
 
 
