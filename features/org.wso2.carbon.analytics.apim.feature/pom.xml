@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.analytics.apim</groupId>
@@ -50,7 +51,7 @@
                         <phase>process-resources</phase>
                         <configuration>
                             <target>
-                                <ant antfile="build.xml" target="zip" />
+                                <ant antfile="build.xml" target="zip"/>
                             </target>
                         </configuration>
                         <goals>
@@ -60,54 +61,57 @@
                 </executions>
             </plugin>
             <plugin>
-            <artifactId>maven-resources-plugin</artifactId>
-               <executions>
-                 <execution>
-                     <id>copy-resources</id>
-                         <phase>generate-resources</phase>
-                                   <goals>
-                                       <goal>copy-resources</goal>
-                                   </goals>
-                                   <configuration>
-                                        <outputDirectory>src/main/resources</outputDirectory>
-                                      <resources>
-                                                                <resource>
-                                                                        <directory>resources</directory>
-                                                                        <includes>
-                                                                                <include>org_wso2_carbon_analytics_apim-1.0.0.car</include>
-                                                                                <include>p2.inf</include>
-                                                                                <include>build.properties</include>
-                                                                        </includes>
-                                                                </resource>
-                                                        </resources>
-                                                </configuration>
-                                        </execution>
-                                </executions>
-                        </plugin>
-                        <plugin>
-                                <groupId>org.wso2.maven</groupId>
-                                <artifactId>carbon-p2-plugin</artifactId>
-                                <version>1.5.3</version>
-                                <executions>
-                                        <execution>
-                                                <id>p2-feature-generation</id>
-                                                <phase>package</phase>
-                                                <goals>
-                                                        <goal>p2-feature-gen</goal>
-                                                </goals>
-                                                <configuration>
-                                                        <id>org.wso2.carbon.analytics.apim</id>
-                                                        <propertiesFile>../feature.properties</propertiesFile>
-                                                        <adviceFile>
-                                                                <properties>
-                                                                        <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
-									<propertyDef>org.eclipse.equinox.p2.type.group:true</propertyDef>
-                                                                </properties>
-                                                        </adviceFile>
-                                                </configuration>
-                                        </execution>
-                                </executions>
-                      </plugin>
-      </plugins>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src/main/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>resources</directory>
+                                    <includes>
+                                        <include>org_wso2_carbon_analytics_apim-1.0.0.car</include>
+                                        <include>
+                                            org_wso2_carbon_analytics_apim_RDBMS-1.0.0.car
+                                        </include>
+                                        <include>p2.inf</include>
+                                        <include>build.properties</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.wso2.maven</groupId>
+                <artifactId>carbon-p2-plugin</artifactId>
+                <version>1.5.3</version>
+                <executions>
+                    <execution>
+                        <id>p2-feature-generation</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>p2-feature-gen</goal>
+                        </goals>
+                        <configuration>
+                            <id>org.wso2.carbon.analytics.apim</id>
+                            <propertiesFile>../feature.properties</propertiesFile>
+                            <adviceFile>
+                                <properties>
+                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
+                                    <propertyDef>org.eclipse.equinox.p2.type.group:true</propertyDef>
+                                </properties>
+                            </adviceFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>

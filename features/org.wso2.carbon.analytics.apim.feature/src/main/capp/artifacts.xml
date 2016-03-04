@@ -6,6 +6,9 @@
         <dependency artifact="org_wso2_analytics_apim_abnormalRequestsPerMinAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalResponseTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_requestPerMinStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_abnormalBackendTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_abnormalRequestsPerMinAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_abnormalResponseTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestStatStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_responseStatStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestPerMinStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -26,5 +29,37 @@
         <dependency artifact="org_wso2_analytics_apim_MarkovStateClassifier" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_oneDayDataRetention" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormal_tier_usage" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
+
+        <!-- API Manager related artifacts -->
+        <dependency artifact="Eventstream_destination" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstream_fault" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstream_request" version="1.1.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstream_response" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstream_workflow" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstream_throttle" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstream_executionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
+
+        <dependency artifact="Eventstore_Destination" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstore_fault" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstore_request" version="1.1.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstore_response" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstore_workflow" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstore_throttle" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstore_ExecutionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
+        <dependency artifact="Eventreceiver_destination" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_fault" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_request" version="1.1.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_response" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_workflow" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_throttle" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_executionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
+        <dependency artifact="APIM_STAT_SCRIPT" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="APIM_STAT_SCRIPT_THROTTLE" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="APIM_LATENCY_BREAKDOWN_STATS" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        
     </artifact>
 </artifacts>
