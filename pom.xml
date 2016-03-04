@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+	<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
@@ -467,6 +467,27 @@
                 <artifactId>geoip-api</artifactId>
                 <version>${geoip.api.version}</version>
             </dependency>
+						<dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-math3</artifactId>
+								<version>${apache.commons.math.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.eclipse.osgi</groupId>
+							<artifactId>org.eclipse.osgi</artifactId>
+							<version>${org.eclipse.osgi.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.eclipse.osgi</groupId>
+							<artifactId>org.eclipse.osgi.services</artifactId>
+							<version>${version.equinox.osgi.services}</version>
+						</dependency>
+						<dependency>
+							 <groupId>org.wso2.carbon.analytics</groupId>
+							 <artifactId>org.wso2.carbon.analytics.spark.core</artifactId>
+							 <version>${carbon.analytics.version}</version>
+					 </dependency>
             <!--END - Samples Dependencies-->
 		</dependencies>
 	</dependencyManagement>
@@ -561,7 +582,7 @@
         <carbon.identity.version>5.0.7</carbon.identity.version>
         <carbon.commons.version>4.4.8</carbon.commons.version>
         <carbon.data.version>4.3.4</carbon.data.version>
-        <carbon.event-processing.version>2.0.11</carbon.event-processing.version>
+        <carbon.event-processing.version>2.0.12</carbon.event-processing.version>
         <carbon.dashboard.version>1.0.13</carbon.dashboard.version>
         <carbon.metrics.version>1.2.0</carbon.metrics.version>
 
@@ -599,8 +620,11 @@
         <slf4j.api.version>1.6.1</slf4j.api.version>
         <cipher.tool.version>1.0.0-wso2v3</cipher.tool.version>
         <geoip.api.version>1.2.15</geoip.api.version>
-
         <project.scm.id>my-scm-server</project.scm.id>
+				<apache.commons.math.version>3.2</apache.commons.math.version>
+
+				<org.eclipse.osgi.version>3.7.0.v20110613</org.eclipse.osgi.version>
+				<version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
 	</properties>
 
 	<organization>

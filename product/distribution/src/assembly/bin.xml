@@ -194,7 +194,7 @@
                 <include>org.wso2.cep.storm.dependencies.jar</include>
             </includes>
         </fileSet>
-        
+
         <!-- Some war files related to CEP websockets -->
         <fileSet>
             <directory>
@@ -252,7 +252,7 @@
             </excludes>
         </fileSet>
 
-        <!-- Temporay bundling these files for the fix of DAS-332 --> 
+        <!-- Temporay bundling these files for the fix of DAS-332 -->
         <!-- analytics.jag with new OSGi based implementation and rt.jag -->
         <fileSet>
             <directory>
@@ -716,7 +716,7 @@
         <!--spark udf conf file-->
         <file>
             <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/analytics/spark/spark-udf-config.xml
+              ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/analytics/spark/spark-udf-config.xml
             </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/analytics/spark/
             </outputDirectory>
