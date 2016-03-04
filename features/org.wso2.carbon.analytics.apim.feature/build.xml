@@ -16,7 +16,7 @@
     <property name="SPARK_SCRIPT_dir" value="Sparkscripts" />
     <property name="DATA_PURGING_dir" value="Datapurging" />
 
-    <property name="ANALYTICS_APIM_RDBMS_capp_suffix" value="RDMBS"/>
+    <property name="ANALYTICS_APIM_RDBMS_capp_suffix" value="RDBMS"/>
     <property name="ANALYTICS_APIM_RDBMS_directory" value="rdbms"/>
     <property name="ANALYTICS_APIM_REST_directory" value="rest"/>
 
