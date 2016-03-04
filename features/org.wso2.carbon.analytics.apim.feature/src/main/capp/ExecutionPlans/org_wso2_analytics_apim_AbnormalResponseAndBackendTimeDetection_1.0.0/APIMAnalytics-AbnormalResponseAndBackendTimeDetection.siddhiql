@@ -33,10 +33,11 @@ select api_version, tenantDomain, responseTime, backendTime
 insert into responseSummaryStream;
 
 /*spark script calculates the average and standard deviation of responseTime and backendTime daily and sends its output to responseStatStream*/
-@info(name = 'query2')
+/*@info(name = 'query2')
 from responseStatStream
 select api_version , tenantDomain,  analytics:percentile(avgResponseTime, sdResponseTime, 95) as responsePercentile , analytics:percentile(avgBackendTime, sdBackendTime, 95) as backendPercentile
 insert into percentileTable  ;
+*/
 
 /* retrieving corresponding percentile value from table */
 @info(name = 'query3')

@@ -7,11 +7,8 @@
 /* define streams/tables and write queries here ... */
 
 
-
-
 @Import('org.wso2.apimgt.statistics.request:1.1.0')
-define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool);
-
+define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string);
 
 @Export('org.wso2.analytics.apim.stateStream:1.0.0')
 define stream stateStream (context string, method string, resourceTemplate string, state string, userid string, timestamp string, consumerKey string);
