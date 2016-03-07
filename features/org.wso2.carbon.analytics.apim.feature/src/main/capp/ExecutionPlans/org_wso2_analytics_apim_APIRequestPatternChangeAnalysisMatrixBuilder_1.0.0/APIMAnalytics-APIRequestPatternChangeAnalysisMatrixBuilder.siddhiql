@@ -1,11 +1,12 @@
-
-                
-              /* Enter a unique ExecutionPlan */
+/* Enter a unique ExecutionPlan */
 @Plan:name('APIMAnalytics-APIRequestPatternChangeAnalysisMatrixBuilder')
 
 
-@Import('org.wso2.analytics.apim.stateStream:1.0.0')
-define stream stateStream (context string, method string, resourceTemplate string, state string, userid string, timestamp string, consumerKey string);
+@Plan:trace('false')
+
+@Import('org.wso2.analytics.apim.transitionStream:1.0.0')
+define stream transitionStream (firstState string, nextState string, consumerKey string, userid string, timestamp string);
+
 
 @from(eventtable = 'analytics.table' , table.name = 'FIRSTCOUNTTABLE',  primary.keys = 'firstState,consumerKey', indices = 'firstState, count, consumerKey')
 define table firstCountTable (firstState string, consumerKey string, count double);
@@ -15,42 +16,50 @@ define table MarkovModelTable (consumerKey string, firstState string, nextState 
 
 
 
-from every a = stateStream -> b = stateStream[(userid == a.userid) and (consumerKey == a.consumerKey)] within 60 min
-select a.state as firstState, b.state as nextState, a.consumerKey as consumerKey
-insert into transitionStream;
-
-
 /* ====== update count in firstcount table ======= */
-from transitionStream[not((firstState==firstCountTable.firstState and consumerKey == firstCountTable.consumerKey) in firstCountTable)]
-select firstState as firstState, consumerKey, 0.0 as count
+
+from transitionStream as t left outer join firstCountTable
+on (firstState == firstCountTable.firstState and consumerKey == firstCountTable.consumerKey)
+select t.firstState, t.consumerKey, ifThenElse(firstCountTable.count is null,1.0,firstCountTable.count+1) as count
+insert into firstCountTableStream;
+
+
+from firstCountTableStream [count != 1.0]
+update firstCountTable
+on  (firstState == firstCountTable.firstState and consumerKey == firstCountTable.consumerKey);
+
+from firstCountTableStream [count == 1.0]
+select *
 insert into firstCountTable;
 
-from transitionStream as t join firstCountTable
-on (firstState == firstCountTable.firstState and consumerKey == firstCountTable.consumerKey)
-select t.firstState, t.consumerKey, (firstCountTable.count+1) as count
-insert into FirstCountUpdateStream;
-
-from FirstCountUpdateStream
-update firstCountTable
-on (firstState==firstCountTable.firstState and consumerKey == firstCountTable.consumerKey);
 
 
-/* ====== update count in markovmodel table ========= */
-from transitionStream[not((firstState==MarkovModelTable.firstState and nextState == MarkovModelTable.nextState and consumerKey == MarkovModelTable.consumerKey) in MarkovModelTable)]
-select consumerKey, firstState, nextState, 0.0 as count, 0.0 as probability
+/* ====== update count in markovmodel table ========= */ 
+
+from transitionStream as t left outer join MarkovModelTable
+on (firstState==MarkovModelTable.firstState and nextState == MarkovModelTable.nextState and consumerKey == MarkovModelTable.consumerKey)
+select  t.consumerKey,t.firstState, t.nextState, ifThenElse(MarkovModelTable.count is null,1.0,MarkovModelTable.count+1) as count, 
+ifThenElse(MarkovModelTable.probability is null,0.0,MarkovModelTable.probability) as probability
+insert into MarkovModelTableStream;
+
+from MarkovModelTableStream [count != 1.0]
+update MarkovModelTable
+on (firstState==MarkovModelTable.firstState and nextState == MarkovModelTable.nextState and consumerKey == MarkovModelTable.consumerKey);
+
+
+from MarkovModelTableStream [count == 1.0]
+select *
 insert into MarkovModelTable;
 
-from transitionStream as t join MarkovModelTable
-on (t.firstState == MarkovModelTable.firstState and t.nextState == MarkovModelTable.nextState and t.consumerKey == MarkovModelTable.consumerKey)
-select t.firstState,t.nextState, t.consumerKey, (count+1) as count
-insert into mUpdateStream;
-
-from mUpdateStream
-update MarkovModelTable
-on (firstState == MarkovModelTable.firstState and nextState == MarkovModelTable.nextState and consumerKey == MarkovModelTable.consumerKey);
 
 /* == correlate firstcount table and markovmodel table == */
-from transitionStream as t join firstCountTable
+
+-- delay event to make sure "FirstCountTable & MarkovModeltable are updated
+from transitionStream#window.time(5 sec)
+select * 
+insert expired events into transitionStreamAddedDelay;
+
+from transitionStreamAddedDelay as t join firstCountTable
 on (t.firstState == firstCountTable.firstState and t.consumerKey == firstCountTable.consumerKey)
 select t.firstState, t.nextState, t.consumerKey, firstCountTable.count
 insert into temp;
@@ -64,9 +73,7 @@ from tempStream
 select nextState, consumerKey, firstState, count, probability
 insert into MarkovUpdateStream;
 
-/* ==== update all rows with same transistion ====*/
+-- ==== update all rows with same transistions ====
 from MarkovUpdateStream
 update MarkovModelTable
 on (firstState == MarkovModelTable.firstState and nextState == MarkovModelTable.nextState and consumerKey == MarkovModelTable.consumerKey);
-                 
-            
