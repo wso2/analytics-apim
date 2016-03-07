@@ -1,12 +1,8 @@
-
-                
-     
 @Plan:name('APIMAnalytics-APIRequestPatternChangeAnalysisMetric')
 
 
-
-@Import('org.wso2.analytics.apim.stateStream:1.0.0')
-define stream metStream (context string, method string, resourceTemplate string, state string, userid string, timestamp string, consumerKey string);
+@Import('org.wso2.analytics.apim.transitionStream:1.0.0')
+define stream metricStream (firstState string, nextState string, consumerKey string, userid string, timestamp string);
 
 @Export('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
 define stream requestPatternChangedStream (userid string, consumerKey string, message string);
@@ -19,10 +15,7 @@ define stream all_apim_alerts_stream (type string, msg string);
 @from(eventtable = 'analytics.table' , table.name = 'MARKOVMODELTABLE', primary.keys='firstState,nextState, consumerKey', indices = 'firstState,nextState, count, probability, consumerKey')
 define table MarkovModelTable (consumerKey string, firstState string, nextState string, count double, probability double);
 
-from every ta = metStream ->
-tb = metStream[(userid == ta.userid) and (consumerKey == ta.consumerKey)] within 60 min
-select tb.userid, tb.timestamp, ta.state as firstState, tb.state as nextState, ta.consumerKey
-insert into metricStream;
+
 
 /****************************************************** Calculate Miss Probability *******************************************************************************/
 from metricStream[not((firstState == MarkovModelTable.firstState and nextState == MarkovModelTable.nextState and consumerKey == MarkovModelTable.consumerKey) in MarkovModelTable)]
@@ -46,11 +39,9 @@ select userid, timestamp, str:concat(firstState,' to ',nextState) as transition,
 insert into IntermediateFraudStream;
 
 from IntermediateFraudStream 
-select userid, consumerKey, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition) as message 
+select userid, consumerKey, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' timestamp :',timestamp) as message 
 insert into requestPatternChangedStream;
 
 from IntermediateFraudStream
-select 'RequestPatternChanged' as type, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition) as msg
+select 'RequestPatternChanged' as type, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' timestamp :',timestamp) as msg
 insert into all_apim_alerts_stream;
-                 
-            

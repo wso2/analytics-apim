@@ -1,23 +1,19 @@
 {
-  "name": "org.wso2.analytics.apim.stateStream",
+  "name": "org.wso2.analytics.apim.transitionStream",
   "version": "1.0.0",
   "nickName": "",
   "description": "",
   "payloadData": [
     {
-      "name": "context",
+      "name": "firstState",
       "type": "STRING"
     },
     {
-      "name": "method",
+      "name": "nextState",
       "type": "STRING"
     },
     {
-      "name": "resourceTemplate",
-      "type": "STRING"
-    },
-    {
-      "name": "state",
+      "name": "consumerKey",
       "type": "STRING"
     },
     {
@@ -26,10 +22,6 @@
     },
     {
       "name": "timestamp",
-      "type": "STRING"
-    },
-    {
-      "name": "consumerKey",
       "type": "STRING"
     }
   ]
