@@ -3,7 +3,9 @@
     <CronExpression>0 0 23 * * ?</CronExpression>
     <Editable>true</Editable>
     <Name>org_wso2_analytics_apim_abnormal_tier_usage</Name>
-    <Script>CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_REQ
+      <Script>
+
+      CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_REQ
       USING CarbonAnalytics
       OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
 
@@ -19,10 +21,36 @@
          schema "userId STRING, api STRING, requestsPerDayPercentile FLOAT"
       );
 
-      CREATE TEMPORARY TABLE ORG_WSO2_API_ABN_REQ_ALERT
+      CREATE TEMPORARY TABLE ORG_WSO2_API_ALERT_STORE
       USING CarbonAnalytics
-      OPTIONS (tableName "ORG_WSO2_API__ABN_REQ_ALERT_TBL",
+      OPTIONS (tableName "ORG_WSO2_API_ALERT_STORE_TBL",
          schema "userId STRING, api STRING"
+      );
+
+      CREATE TEMPORARY TABLE ORG_WSO2_API_ABN_REQ_ALERT
+      USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
+      OPTIONS (receiverURL "tcp://10.100.5.119:7612",
+               authURL "ssl://10.100.5.119:7712",
+               username "admin",
+               password "admin",
+               streamName "org.wso2.analytics.apim.alert.abnormalTierUsageAlert",
+               version "1.0.0",
+               description "This is the CEP stream for Abnormal Tier Usage",
+               nickName "abnormalTierUsageAlert",
+               payload "userId STRING, api STRING"
+      );
+
+      CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT
+      USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
+      OPTIONS (receiverURL "tcp://10.100.5.119:7612",
+               authURL "ssl://10.100.5.119:7712",
+               username "admin",
+               password "admin",
+               streamName "org.wso2.analytics.apim.allApimAlertsStream",
+               version "1.0.0",
+               description "This is the table represents all alert stream",
+               nickName "allApimAlertsStream",
+               payload "type STRING, msg STRING"
       );
 
       INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
@@ -40,11 +68,19 @@
      WHERE context is not NULL  AND requestTime >= offsetInDays(-5)
      GROUP BY convertToDate(requestTime), api, userId;
 
-     INSERT OVERWRITE TABLE ORG_WSO2_API_ABN_REQ_ALERT
+     INSERT OVERWRITE TABLE ORG_WSO2_API_ALERT_STORE
      SELECT S.userId, S.api
      FROM ORG_WSO2_API_AVG_REQ_X_DAYS S, ORG_WSO2_API_PERCENTILE D
      WHERE S.userId = D.userId AND S.api = D.api AND S.request_count >=  D.requestsPerDayPercentile
      GROUP BY S.userId, S.api
      HAVING COUNT(S.api) >= 5;
+
+     INSERT OVERWRITE TABLE ORG_WSO2_API_ABN_REQ_ALERT
+     SELECT userId, api
+     FROM ORG_WSO2_API_ALERT_STORE;
+
+     INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT
+     SELECT "Abnormal Tier Usage", concat(concat(userId, ':'), api)
+     FROM ORG_WSO2_API_ALERT_STORE;
     </Script>
 </Analytics>

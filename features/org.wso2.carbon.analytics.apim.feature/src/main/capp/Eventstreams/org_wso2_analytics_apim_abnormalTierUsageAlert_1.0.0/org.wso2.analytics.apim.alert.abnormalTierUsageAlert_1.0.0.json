@@ -1,0 +1,19 @@
+{
+  "streamId": "org.wso2.analytics.apim.alert.abnormalTierUsageAlert:1.0.0",
+  "name": "org.wso2.analytics.apim.alert.abnormalTierUsageAlert",
+  "version": "1.0.0",
+  "nickName": "abnormalTierUsageAlert",
+  "description": "abnormalTierUsageAlert stream",
+  "metaData": [],
+  "correlationData": [],
+  "payloadData": [
+    {
+      "name": "userId",
+      "type": "STRING"
+    },
+    {
+      "name": "api",
+      "type": "STRING"
+    }
+  ]
+}

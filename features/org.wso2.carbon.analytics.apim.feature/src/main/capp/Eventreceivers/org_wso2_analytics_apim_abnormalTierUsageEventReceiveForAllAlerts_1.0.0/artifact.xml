@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact name="org_wso2_analytics_apim_abnormalTierUsageEventReceiveForAllAlerts" version="1.0.0" type="event/receiver" serverRole="DataAnalyticsServer">
+    <file>org_wso2_analytics_apim_abnormalTierUsageEventReceiverForAllAlerts_1.0.0.xml</file>
+</artifact>
