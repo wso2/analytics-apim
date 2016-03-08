@@ -21,7 +21,7 @@
       "type": "STRING"
     },
     {
-      "name": "timestamp",
+      "name": "requestTimestamp",
       "type": "STRING"
     }
   ]
