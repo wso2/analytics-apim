@@ -467,27 +467,27 @@
                 <artifactId>geoip-api</artifactId>
                 <version>${geoip.api.version}</version>
             </dependency>
-						<dependency>
-								<groupId>org.apache.commons</groupId>
-								<artifactId>commons-math3</artifactId>
-								<version>${apache.commons.math.version}</version>
-						</dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>${apache.commons.math.version}</version>
+            </dependency>
 
-						<dependency>
-							<groupId>org.eclipse.osgi</groupId>
-							<artifactId>org.eclipse.osgi</artifactId>
-							<version>${org.eclipse.osgi.version}</version>
-						</dependency>
-						<dependency>
-							<groupId>org.eclipse.osgi</groupId>
-							<artifactId>org.eclipse.osgi.services</artifactId>
-							<version>${version.equinox.osgi.services}</version>
-						</dependency>
-						<dependency>
-							 <groupId>org.wso2.carbon.analytics</groupId>
-							 <artifactId>org.wso2.carbon.analytics.spark.core</artifactId>
-							 <version>${carbon.analytics.version}</version>
-					 </dependency>
+            <dependency>
+                <groupId>org.eclipse.osgi</groupId>
+                <artifactId>org.eclipse.osgi</artifactId>
+                <version>${org.eclipse.osgi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.osgi</groupId>
+                <artifactId>org.eclipse.osgi.services</artifactId>
+                <version>${version.equinox.osgi.services}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.spark.core</artifactId>
+                <version>${carbon.analytics.version}</version>
+            </dependency>
             <!--END - Samples Dependencies-->
 		</dependencies>
 	</dependencyManagement>
@@ -621,10 +621,10 @@
         <cipher.tool.version>1.0.0-wso2v3</cipher.tool.version>
         <geoip.api.version>1.2.15</geoip.api.version>
         <project.scm.id>my-scm-server</project.scm.id>
-				<apache.commons.math.version>3.2</apache.commons.math.version>
+        <apache.commons.math.version>3.2</apache.commons.math.version>
 
-				<org.eclipse.osgi.version>3.7.0.v20110613</org.eclipse.osgi.version>
-				<version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
+        <org.eclipse.osgi.version>3.7.0.v20110613</org.eclipse.osgi.version>
+        <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
 	</properties>
 
 	<organization>
