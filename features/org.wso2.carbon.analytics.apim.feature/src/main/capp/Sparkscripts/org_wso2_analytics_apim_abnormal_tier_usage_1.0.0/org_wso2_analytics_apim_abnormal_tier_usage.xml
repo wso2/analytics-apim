@@ -29,21 +29,21 @@
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ABN_REQ_ALERT
       USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
-      OPTIONS (receiverURL "tcp://10.100.5.119:7612",
-               authURL "ssl://10.100.5.119:7712",
+      OPTIONS (receiverURL "tcp://127.0.0.1:7612",
+               authURL "ssl://127.0.0.1:7712",
                username "admin",
                password "admin",
                streamName "org.wso2.analytics.apim.alert.abnormalTierUsageAlert",
                version "1.0.0",
                description "This is the CEP stream for Abnormal Tier Usage",
                nickName "abnormalTierUsageAlert",
-               payload "userId STRING, api STRING"
+               payload "userId STRING, api STRING, message STRING"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT
       USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
-      OPTIONS (receiverURL "tcp://10.100.5.119:7612",
-               authURL "ssl://10.100.5.119:7712",
+      OPTIONS (receiverURL "tcp://127.0.0.1:7612",
+               authURL "ssl://127.0.0.1:7712",
                username "admin",
                password "admin",
                streamName "org.wso2.analytics.apim.allApimAlertsStream",
@@ -76,11 +76,11 @@
      HAVING COUNT(S.api) >= 5;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ABN_REQ_ALERT
-     SELECT userId, api
+     SELECT userId, api, concat(concat(concat('Abnormal tier usage  userId: ', userId), ' api: '), api)
      FROM ORG_WSO2_API_ALERT_STORE;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT
-     SELECT "Abnormal Tier Usage", concat(concat(userId, ':'), api)
+     SELECT "AbnormalTierUsage", concat(concat(concat('Abnormal tier usage  userId: ', userId), ' api: '), api)
      FROM ORG_WSO2_API_ALERT_STORE;
     </Script>
 </Analytics>
