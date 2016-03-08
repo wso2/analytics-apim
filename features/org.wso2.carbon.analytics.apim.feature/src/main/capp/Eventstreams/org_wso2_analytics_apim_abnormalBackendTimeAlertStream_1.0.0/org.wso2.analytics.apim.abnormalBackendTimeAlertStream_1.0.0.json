@@ -23,6 +23,10 @@
     {
       "name": "msg",
       "type": "STRING"
+    },
+    {
+      "name": "alertTimestamp",
+      "type": "STRING"
     }
   ]
 }
