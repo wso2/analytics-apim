@@ -4,12 +4,11 @@
 @Import('org.wso2.analytics.apim.transitionStream:1.0.0')
 define stream metricStream (firstState string, nextState string, consumerKey string, userid string, timestamp string);
 
-@Export('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
-define stream requestPatternChangedStream (userid string, consumerKey string, message string);
-
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream all_apim_alerts_stream (type string, msg string);
+define stream all_apim_alerts_stream (type string, msg string, alertTimestamp string);
 
+@Export('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
+define stream requestPatternChangedStream (userid string, consumerKey string, message string, alertTimestamp string);
 
 
 @from(eventtable = 'analytics.table' , table.name = 'MARKOVMODELTABLE', primary.keys='firstState,nextState, consumerKey', indices = 'firstState,nextState, count, probability, consumerKey')
@@ -39,9 +38,9 @@ select userid, timestamp, str:concat(firstState,' to ',nextState) as transition,
 insert into IntermediateFraudStream;
 
 from IntermediateFraudStream 
-select userid, consumerKey, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' timestamp :',timestamp) as message 
+select userid, consumerKey, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' timestamp :',timestamp) as message,(time:currentTimestamp()) as alertTimestamp  
 insert into requestPatternChangedStream;
 
 from IntermediateFraudStream
-select 'RequestPatternChanged' as type, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' timestamp :',timestamp) as msg
+select 'RequestPatternChanged' as type, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' timestamp :',timestamp) as msg, (time:currentTimestamp()) as alertTimestamp 
 insert into all_apim_alerts_stream;
