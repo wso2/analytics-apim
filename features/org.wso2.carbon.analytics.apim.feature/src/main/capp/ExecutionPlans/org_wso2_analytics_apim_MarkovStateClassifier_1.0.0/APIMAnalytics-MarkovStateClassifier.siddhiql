@@ -12,19 +12,37 @@
 @Plan:trace('false')
 
 
+
 @Import('org.wso2.apimgt.statistics.request:1.1.0')
-define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool,clientIp string);
+define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string);
 
 
 @Export('org.wso2.analytics.apim.transitionStream:1.0.0')
-define stream transitionStream (firstState string, nextState string, consumerKey string, userid string, timestamp string);
+define stream transitionStream (firstState string, nextState string, consumerKey string, userid string, requestTimestamp string);
+
+@from(eventtable = 'analytics.table' , table.name = 'REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
+define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
 
 
 from request
-select context,method,resourceTemplate, str:concat(context, '_',method,'_',resourceTemplate ) as state, userId as userid, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as timestamp, consumerKey
+select context,method,resourceTemplate, str:concat(context, '_',method,'_',resourceTemplate ) as state, userId as userid, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey
 insert into stateStream;
 
 
+from request as r left outer join RequestCountPerConsumerKeyTable
+on (r.consumerKey == RequestCountPerConsumerKeyTable.consumerKey)
+select r.consumerKey , ifThenElse(count is null,1,count+1) as count
+insert into requestCountPerConsumerKeyTableStream;
+
+from requestCountPerConsumerKeyTableStream [count == 1]
+select consumerKey,count
+insert into RequestCountPerConsumerKeyTable;
+
+from requestCountPerConsumerKeyTableStream [count != 1]
+select consumerKey, count
+update RequestCountPerConsumerKeyTable
+on (consumerKey == RequestCountPerConsumerKeyTable.consumerKey);
+
 from every a = stateStream -> b = stateStream[(userid == a.userid) and (consumerKey == a.consumerKey)] within 60 min
-select a.state as firstState, b.state as nextState, a.consumerKey as consumerKey, b.userid, b.timestamp 
+select a.state as firstState, b.state as nextState, a.consumerKey as consumerKey, b.userid, b.requestTimestamp 
 insert into transitionStream;
