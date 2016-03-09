@@ -29,12 +29,16 @@
       "type": "DOUBLE"
     },
     {
-       "name": "reason",
-       "type": "STRING"
+      "name": "reason",
+      "type": "STRING"
     },
     {
-       "name": "msg",
-       "type": "STRING"
+      "name": "msg",
+      "type": "STRING"
+    },
+    {
+      "name": "alertTimestamp",
+      "type": "STRING"
     }
   ]
 }
