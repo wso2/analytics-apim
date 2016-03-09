@@ -30,7 +30,7 @@
     {
       "name": "requestTime",
       "type": "LONG"
-    }
+    },
     {
       "name": "alertTimestamp",
       "type": "STRING"
