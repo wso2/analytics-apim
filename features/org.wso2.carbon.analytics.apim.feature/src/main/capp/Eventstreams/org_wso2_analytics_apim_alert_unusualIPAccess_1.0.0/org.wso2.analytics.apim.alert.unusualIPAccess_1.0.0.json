@@ -19,6 +19,10 @@
     {
       "name": "consumerKey",
       "type": "STRING"
+    },
+    {
+      "name": "alertTimestamp",
+      "type": "STRING"
     }
   ]
 }

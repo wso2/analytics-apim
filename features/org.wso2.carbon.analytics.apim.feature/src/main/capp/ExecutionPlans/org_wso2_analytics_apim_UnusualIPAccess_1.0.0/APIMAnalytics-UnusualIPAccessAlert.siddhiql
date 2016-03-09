@@ -7,11 +7,17 @@
 @Import('org.wso2.apimgt.statistics.request:1.1.0')
 define stream APIMRequest (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string);
 
-@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream all_apim_alerts_stream (type string, msg string);
+
+
+
 
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
-define stream alertIpAccessAbnormality (type string, msg string, ip string, consumerKey string);
+define stream alertIpAccessAbnormality (type string, msg string, ip string, consumerKey string, alertTimestamp string);
+
+@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+define stream all_apim_alerts_stream (type string, msg string, alertTimestamp string);
+
+
 
 @from(eventtable = 'analytics.table', table.name = 'IPAccessSummary', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
@@ -34,7 +40,7 @@ select *
 insert into NewIPDetectedStream;
 
 from NewIPDetectedStream
-select "[UnusualIPAccessAlert]" as type, str:concat("A request from a new IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey
+select "[UnusualIPAccessAlert]" as type, str:concat("A request from a new IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey,(time:currentTimestamp()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 from NewIPDetectedStream
@@ -51,12 +57,12 @@ select *
 insert into AbnormalTimeBetweenAccessStream;
 
 from AbnormalTimeBetweenAccessStream
-select "[UnusualIPAccessAlert]" as type, str:concat("A request from an Old IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey
+select "[UnusualIPAccessAlert]" as type, str:concat("A request from an Old IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey,(time:currentDate()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream
 from alertIpAccessAbnormality
-select type, str:concat('ConsumerKey: ',consumerKey, ' ', msg) as msg
+select type, str:concat('ConsumerKey: ',consumerKey, ' ', msg) as msg,(time:currentDate()) as alertTimestamp
 insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate
