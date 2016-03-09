@@ -1,8 +1,11 @@
 {
+  "streamId": "org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0",
   "name": "org.wso2.analytics.apim.alert.unusualIPAccess",
   "version": "1.0.0",
   "nickName": "",
   "description": "",
+  "metaData": [],
+  "correlationData": [],
   "payloadData": [
     {
       "name": "type",
@@ -21,8 +24,12 @@
       "type": "STRING"
     },
     {
-      "name": "alertTimestamp",
+      "name": "userId",
       "type": "STRING"
+    },
+    {
+      "name": "requestTime",
+      "type": "LONG"
     }
   ]
 }
