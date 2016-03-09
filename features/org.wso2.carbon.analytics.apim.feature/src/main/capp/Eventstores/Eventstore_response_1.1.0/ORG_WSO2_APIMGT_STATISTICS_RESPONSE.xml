@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <EventStoreConfiguration>
 <Source>
-       <StreamId>org.wso2.apimgt.statistics.response:1.0.0</StreamId>
+       <StreamId>org.wso2.apimgt.statistics.response:1.1.0</StreamId>
    </Source>
    <TableSchema>
 
@@ -46,6 +46,13 @@
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
+</ColumnDefinition>
+<ColumnDefinition>
+        <Name>resourceTemplate</Name>
+        <EnableIndexing>true</EnableIndexing>
+        <IsPrimaryKey>false</IsPrimaryKey>
+        <EnableScoreParam>false</EnableScoreParam>
+        <Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>method</Name>

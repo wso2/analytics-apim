@@ -1,6 +1,6 @@
 {
   "name": "org.wso2.apimgt.statistics.response",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "nickName": "API Manager Response Data",
   "description": "Response Data",
   "metaData": [
@@ -28,6 +28,10 @@
     },
     {
       "name": "resourcePath",
+      "type": "STRING"
+    },
+    {
+      "name": "resourceTemplate",
       "type": "STRING"
     },
     {
