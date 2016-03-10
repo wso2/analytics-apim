@@ -33,6 +33,10 @@
         <dependency artifact="org_wso2_analytics_apim_MarkovStateClassifier" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_oneDayDataRetention" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormal_tier_usage" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+ 	<dependency artifact="org_wso2_analytics_apim_abnormal_accessToken_refresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_AbnormalAccessTokenRefresh_executionPlan" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_identity_oauth_token_issuanceStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_alert_abnormal_token_refresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
 
         <!-- API Manager related artifacts -->
