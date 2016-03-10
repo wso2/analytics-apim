@@ -15,7 +15,7 @@
         getpercentileValue(avg(requestsPerMin), sqrt(avg(cast(requestsPerMin
         as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , 0.95 ) as requestsPerMinUpperPercentile,
         getpercentileValue(avg(requestsPerMin), sqrt(avg(cast(requestsPerMin
-        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , 0.01 ) as requestsPerMinLowerPercentile
+        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , 0.05 ) as requestsPerMinLowerPercentile
 
         from REQUEST_INFO group by api_version, userId, consumerKey, resourceTemplate, method;
 
