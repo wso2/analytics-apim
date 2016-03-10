@@ -17,48 +17,48 @@
 
 
                                 @Import('org.wso2.analytics.apim.requestStatStream:1.0.0')
-                                define stream requestStatStream (api_version string, userId string, consumerKey string, avgRequestsPerMin double, sdRequestsPerMin double);
+                                define stream requestStatStream (api_version string, userId string, consumerKey string, resourceTemplate string, method string, avgRequestsPerMin double, sdRequestsPerMin double);
 
-                              	 @Export('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
-								define stream abnormalRequestsPerMinAlertStream (api string, userId string, consumerKey string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double, reason string, msg string, alertTimestamp string);
+                              	@Export('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
+								define stream abnormalRequestsPerMinAlertStream (api string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double, reason string, msg string, alertTimestamp string);
 
-							  	 @Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
-								define stream requestPerMinStream (api_version string, userId string, consumerKey string, requestsPerMin long, alertTimestamp string);
+							  	@Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
+								define stream requestPerMinStream (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long, alertTimestamp string);
 							  
 								@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 								define stream allApimAlertStream (type string, msg string, alertTimestamp string);
 
                                 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE',  primary.keys = 'api_version,userId,consumerKey')
-                                define table requestPercentileTable (api_version string, userId string, consumerKey string,  requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double);
+                                define table requestPercentileTable (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double);
 								
 								
 
                                 @info(name = 'query1')
                                 from requestStream
-                                select api_version, userId, consumerKey
+                                select api_version, userId, consumerKey, resourceTemplate, method
                                 insert into requestSummaryStream ;
 
                                 @info(name = 'query2')
                                 from requestSummaryStream#window.timeBatch(1 minute)
-                                select api_version, userId , consumerKey,  count() as requestsPerMin,(time:currentTimestamp()) as alertTimestamp  
-                                group by api_version, userId , consumerKey
+                                select api_version, userId , consumerKey, resourceTemplate, method, count() as requestsPerMin,(time:currentTimestamp()) as alertTimestamp  
+                                group by api_version, userId , consumerKey, resourceTemplate, method
                                 insert into requestPerMinStream ;
 
                                 /* events of the stream requestPerMinStream are persisted. Spark script uses these persisted data to calculate percentiles*/
 
                                 @info(name = 'query3')
                                 from requestSummaryStream#window.time(1 min)
-                                select  api_version, userId ,consumerKey,   count() as  requestsPerMin
-                                group by api_version, userId ,consumerKey
+                                select  api_version, userId ,consumerKey, resourceTemplate, method, count() as  requestsPerMin
+                                group by api_version, userId ,consumerKey, resourceTemplate, method
                                 insert into requestCountStream;
 
                                 /* retrieving corresponding percentile values from table and filtering abnormal counts*/
                                 @info(name = 'query4')
                                 from requestCountStream join requestPercentileTable
                                 on (requestCountStream.api_version ==requestPercentileTable.api_version and  requestCountStream.userId ==requestPercentileTable.userId  and
-                                  requestCountStream.consumerKey ==requestPercentileTable.consumerKey)
-                                select requestCountStream.api_version as api , requestCountStream.userId , requestCountStream.consumerKey,requestCountStream.requestsPerMin,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile, ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') as reason,
-                                str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') , ' detected in last minute. api_version :',requestCountStream.api_version,' userId :',requestCountStream.userId, ' consumerKey :', requestCountStream.consumerKey , ' abnormal request count: ',requestCountStream.requestsPerMin , ' request count upper bound percentile  :' , requestPercentileTable.requestsPerMinUpperPercentile , ' request count lower bound percentile :' , requestPercentileTable.requestsPerMinLowerPercentile ) as msg,(time:currentTimestamp()) as alertTimestamp    
+                                  requestCountStream.consumerKey ==requestPercentileTable.consumerKey and requestCountStream.resourceTemplate ==requestPercentileTable.resourceTemplate and requestCountStream.method ==requestPercentileTable.method)
+                                select requestCountStream.api_version as api , requestCountStream.userId , requestCountStream.consumerKey, requestCountStream.resourceTemplate, requestCountStream.method, requestCountStream.requestsPerMin,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile, ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') as reason,
+                                str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') , ' detected in last minute. api_version :',requestCountStream.api_version,' userId :',requestCountStream.userId, ' consumerKey :', requestCountStream.consumerKey , ' resource template :', requestCountStream.resourceTemplate , ' Http method :', requestCountStream.method , ' abnormal request count: ',requestCountStream.requestsPerMin , ' request count upper bound percentile  :' , requestPercentileTable.requestsPerMinUpperPercentile , ' request count lower bound percentile :' , requestPercentileTable.requestsPerMinLowerPercentile ) as msg,(time:currentTimestamp()) as alertTimestamp    
                                 having (requestsPerMin > requestsPerMinUpperPercentile or requestsPerMin < requestsPerMinLowerPercentile)
                                 insert into abnormalRequestsPerMinAlertStream;
 
