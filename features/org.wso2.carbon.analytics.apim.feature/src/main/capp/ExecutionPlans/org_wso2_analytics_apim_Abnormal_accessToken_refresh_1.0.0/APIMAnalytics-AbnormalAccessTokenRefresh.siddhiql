@@ -1,0 +1,60 @@
+/* Enter a unique ExecutionPlan */
+@Plan:name('APIMAnalytics-AbnormalAccessTokenRefreshAlert')
+
+/* Enter a unique description for ExecutionPlan */
+@Plan:description('Detects abnormal access token refreshes and alerts the user')
+
+/* define streams/tables and write queries here ... */
+
+@Import('org.wso2.carbon.identity.oauth.token.issuance:1.0.0')
+define stream OAuthStream (user string, tenantDomain string, userstoreDomain string, clientId string, grantType string, tokenId string, authzScopes string, unAuthzScopes string, isSuccess bool, errorCode string, errorMsg string, accessTokenValidityMillis long, refreshTokenValidityMillis long, issuedTime long);
+
+@from(eventtable = 'analytics.table', table.name = 'LastAccessTokenRefreshEventTable', primary.keys = 'userId, clientId, scopes', indices = 'userId, clientId, scopes, timestamp')
+define table LastAccessTokenRefreshTable (userId string, clientId string, scopes string, timestamp long);
+
+@from(eventtable = 'analytics.table', table.name = 'AccessTokenRefreshTimeDifferenceTable', indices = 'userId, clientId, scopes, timeDifference, timestamp')
+define table AccessTokenRefreshTable (userId string, clientId string, scopes string, timeDifference long, timestamp long);
+
+@from(eventtable = 'analytics.table', table.name = 'AccessTokenRefreshSummaryTable', indices = 'userId, clientId, scopes, minTimeDifference, maxTimeDifference')
+define table AccessTokenRefreshSummaryTable (userId string, clientId string, scopes string, minTimeDifference double, maxTimeDifference double);
+
+@Export('org.wso2.analytics.apim.alert.abnormalTokenRefresh:1.0.0')
+define stream alert_abnormalTokenRefreshStream (user string, clientId string, scope string, timestamp long);
+
+@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+define stream alert_allAPIMAlertsStream (type string, msg string, alertTimestamp string);
+
+--- Filter out the successfull token refresh events
+from OAuthStream[grantType == 'refreshToken' and isSuccess == true]
+select str:concat(tenantDomain, '-', userstoreDomain , '-' , user) as userId, clientId, authzScopes as scopes, issuedTime as timestamp
+insert into RefreshTokenStream;
+
+--- Persist the time difference between consequent access token refreshes
+from RefreshTokenStream as rts join LastAccessTokenRefreshTable as lrt
+on rts.userId == lrt.userId and rts.clientId == lrt.clientId and rts.scopes == lrt.scopes
+select rts.userId as userId, rts.clientId as clientId, rts.scopes as scopes, (rts.timestamp - lrt.timestamp) as timeDifference, rts.timestamp as timestamp
+insert into AccessTokenRefreshTimeStream;
+
+from AccessTokenRefreshTimeStream
+select *
+insert into AccessTokenRefreshTable;
+
+-- Persist the latest refresh token event
+from RefreshTokenStream
+select *
+insert into LastAccessTokenRefreshTable;
+
+--- Test the events from abnormal refreshes
+from AccessTokenRefreshTimeStream as trs join AccessTokenRefreshSummaryTable as atst
+on trs.userId == atst.userId and trs.clientId == atst.clientId and trs.scopes == atst.scopes
+select trs.userId as userId, trs.clientId as clientId, trs.scopes as scopes, atst.minTimeDifference as minTimeDifference, atst.maxTimeDifference as maxTimeDifference, trs.timeDifference as timeDifference, trs.timestamp as timestamp
+insert into AbnormalityTesterStream;
+
+from AbnormalityTesterStream[ timeDifference < minTimeDifference or timeDifference > maxTimeDifference]
+select userId as user, clientId, scopes as scope, timestamp
+insert into alert_abnormalTokenRefreshStream;
+
+from alert_abnormalTokenRefreshStream
+select "[AbnormalRefreshAlert]" as type, str:concat(' User: ', user, ' ClientID: ', clientId, ' Scopes: ', scope, ' Time: ', timestamp) as msg,  (time:currentDate()) as alertTimestamp
+insert into alert_allAPIMAlertsStream;
+
