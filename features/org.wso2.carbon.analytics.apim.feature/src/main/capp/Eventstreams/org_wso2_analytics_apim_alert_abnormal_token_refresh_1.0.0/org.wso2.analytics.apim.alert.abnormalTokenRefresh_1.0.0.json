@@ -1,0 +1,24 @@
+{
+  "name": "org.wso2.analytics.apim.alert.abnormalTokenRefresh",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "user",
+      "type": "STRING"
+    },
+    {
+      "name": "clientId",
+      "type": "STRING"
+    },
+    {
+      "name": "scope",
+      "type": "STRING"
+    },
+    {
+      "name": "timestamp",
+      "type": "LONG"
+    }
+  ]
+}
