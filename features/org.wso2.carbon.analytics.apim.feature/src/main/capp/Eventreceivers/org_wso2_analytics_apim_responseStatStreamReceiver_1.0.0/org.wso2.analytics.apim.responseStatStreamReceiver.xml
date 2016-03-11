@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<eventReceiver name="org.wso2.analytics.apim.responsestatStreamReceiver" statistics="disable"
+<eventReceiver name="org.wso2.analytics.apim.responseStatStreamReceiver" statistics="disable"
     trace="disable" xmlns="http://wso2.org/carbon/eventreceiver">
     <from eventAdapterType="wso2event">
         <property name="events.duplicated.in.cluster">false</property>

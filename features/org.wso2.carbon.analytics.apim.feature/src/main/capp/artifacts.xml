@@ -17,7 +17,7 @@
         <dependency artifact="org_wso2_analytics_apim_responsePercentile" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestPercentile" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_alert_unusualIPAccessStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_responsestatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_responseStatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestStatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_domain_template_resources" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_AbnormalRequestCountDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
