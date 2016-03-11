@@ -6,10 +6,10 @@ define stream throttleStream (meta_clientType string, accessToken string, userId
 
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream allAlertsStream (type string, msg string, alertTimestamp string);
+define stream allAlertsStream (type string, msg string, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
-define stream tierLimitHittingAlertStream (userId string, api string, applicationId string, applicationName string, message string, alertTimestamp string);
+define stream tierLimitHittingAlertStream (userId string, api string, applicationId string, applicationName string, message string, alertTimestamp long);
 
 /* read data to a temporary stream*/
 @info(name = 'query1')
@@ -22,11 +22,11 @@ insert into temporaryStream;
 /* send to the alert stream specific to this scenario */
 @info(name = 'query2')
 from temporaryStream
-select userId, api, applicationId, applicationName, str:concat("userId: ", userId, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as message, (time:currentDate()) as alertTimestamp
+select userId, api, applicationId, applicationName, str:concat("userId: ", userId, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as message, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 /* send to general alert stream */
 @info(name = 'query3')
 from temporaryStream
-select "FrequentTierHittingAlert" as type, str:concat("userId: ", userId, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg, (time:currentDate()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, str:concat("userId: ", userId, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
