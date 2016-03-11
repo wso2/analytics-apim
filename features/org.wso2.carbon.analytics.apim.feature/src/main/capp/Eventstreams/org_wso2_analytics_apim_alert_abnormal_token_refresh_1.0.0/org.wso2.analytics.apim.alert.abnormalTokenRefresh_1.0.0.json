@@ -19,6 +19,10 @@
     {
       "name": "timestamp",
       "type": "LONG"
+    },
+    {
+      "name": "alertTimestamp",
+      "type": "LONG"
     }
   ]
 }

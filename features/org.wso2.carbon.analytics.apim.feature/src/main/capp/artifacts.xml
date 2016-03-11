@@ -17,7 +17,7 @@
         <dependency artifact="org_wso2_analytics_apim_responsePercentile" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestPercentile" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_alert_unusualIPAccessStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_responsestatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_responseStatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestStatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_domain_template_resources" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_AbnormalRequestCountDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -33,11 +33,15 @@
         <dependency artifact="org_wso2_analytics_apim_MarkovStateClassifier" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_oneDayDataRetention" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormal_tier_usage" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
- 	<!--dependency artifact="org_wso2_analytics_apim_abnormal_accessToken_refresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <!--dependency artifact="org_wso2_analytics_apim_abnormal_accessToken_refresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_AbnormalAccessTokenRefresh_executionPlan" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_carbon_identity_oauth_token_issuance" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_alert_abnormal_token_refresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	-->
+        <dependency artifact="org_wso2_analytics_apim_alert_abnormal_token_refresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/-->
+        <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageEventReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageEventReceiveForAllAlerts" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_tierLimitHittingAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_FrequentTierLimitHitting" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
         <!-- API Manager related artifacts -->
         <dependency artifact="Eventstream_destination" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -68,6 +72,6 @@
         <dependency artifact="APIM_STAT_SCRIPT" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="APIM_STAT_SCRIPT_THROTTLE" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="APIM_LATENCY_BREAKDOWN_STATS" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        
+
     </artifact>
 </artifacts>

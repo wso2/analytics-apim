@@ -8,12 +8,10 @@ define stream metricStream (firstState string, nextState string, consumerKey str
 
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream all_apim_alerts_stream (type string, msg string, alertTimestamp string);
+define stream all_apim_alerts_stream (type string, msg string, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
-define stream requestPatternChangedStream (userid string, consumerKey string, message string, alertTimestamp string);
-
-
+define stream requestPatternChangedStream (userid string, consumerKey string, message string, alertTimestamp long);
 
 @from(eventtable = 'analytics.table' , table.name = 'MARKOVMODELTABLE', primary.keys='firstState,nextState, consumerKey', indices = 'firstState,nextState, count, probability, consumerKey')
 define table MarkovModelTable (consumerKey string, firstState string, nextState string, count double, probability double);
@@ -49,9 +47,9 @@ select userid, requestTimestamp, str:concat(firstState,' to ',nextState) as tran
 insert into IntermediateFraudStream;
 
 from IntermediateFraudStream 
-select userid, consumerKey, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' transitionTimestamp :',requestTimestamp) as message,(time:currentTimestamp()) as alertTimestamp  
+select userid, consumerKey, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' transitionTimestamp :',requestTimestamp) as message,(time:timestampInMilliseconds()) as alertTimestamp 
 insert into requestPatternChangedStream;
 
 from IntermediateFraudStream
-select 'RequestPatternChanged' as type, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' transitionTimestamp :',requestTimestamp) as msg,(time:currentTimestamp()) as alertTimestamp 
+select 'RequestPatternChanged' as type, str:concat('Abnormal request pattern detected. userId :',userid,' consumerKey :',consumerKey,' suscpicious API transition: ',transition,' transitionTimestamp :',requestTimestamp) as msg,(time:timestampInMilliseconds()) as alertTimestamp 
 insert into all_apim_alerts_stream;
