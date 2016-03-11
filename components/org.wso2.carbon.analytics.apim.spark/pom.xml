@@ -24,15 +24,19 @@
 			<groupId>org.eclipse.osgi</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.eclipse.osgi</groupId>
 			<artifactId>org.eclipse.osgi.services</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>org.wso2.carbon.analytics</groupId>
-            <artifactId>org.wso2.carbon.analytics.spark.core</artifactId>
-        </dependency>
+			<groupId>org.wso2.carbon.analytics</groupId>
+			<artifactId>org.wso2.carbon.analytics.spark.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -50,8 +54,8 @@
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
 						<Private-Package>org.wso2.carbon.analytics.apim.spark.internal.*</Private-Package>
 						<Export-Package>
-						    !org.wso2.carbon.analytics.apim.spark.internal.*,
-							org.wso2.carbon.analytics.apim.spark.udf.*							
+							!org.wso2.carbon.analytics.apim.spark.internal.*,
+							org.wso2.carbon.analytics.apim.spark.udf.*
 						</Export-Package>
 						<Import-Package>
 							org.apache.commons.math3.*,

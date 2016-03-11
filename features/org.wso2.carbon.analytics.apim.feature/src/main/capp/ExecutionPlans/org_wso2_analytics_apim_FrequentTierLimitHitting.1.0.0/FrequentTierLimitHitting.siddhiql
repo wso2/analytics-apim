@@ -1,0 +1,32 @@
+/* Enter a unique ExecutionPlan */
+@Plan:name('FrequentTierLimitHitting')
+
+@Import('org.wso2.apimgt.statistics.throttle:1.0.0')
+define stream throttleStream (meta_clientType string, accessToken string, userId string, tenantDomain string, api string, api_version string, context string, apiPublisher string, throttledTime long, applicationName string, applicationId string, throttledOutReason string);
+
+
+@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+define stream allAlertsStream (type string, msg string);
+
+@Export('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
+define stream tierLimitHittingAlertStream (userId string, api string, applicationId string, applicationName string, message string);
+
+/* read data to a temporary stream*/
+@info(name = 'query1')
+from throttleStream[throttledOutReason == 'max throttling reached']#window.time( 1 day ) 
+select userId, api, applicationId, applicationName, count(userId) as numHits
+group by userId, api, applicationId
+having numHits > 10
+insert into temporaryStream;
+
+/* send to the alert stream specific to this scenario */
+@info(name = 'query2')
+from temporaryStream
+select userId, api, applicationId, applicationName, str:concat("userId: ", userId, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as message
+insert into tierLimitHittingAlertStream;
+
+/* send to general alert stream */
+@info(name = 'query3')
+from temporaryStream
+select "FrequentTierHittingAlert" as type, str:concat("userId: ", userId, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg
+insert into allAlertsStream;

@@ -1,0 +1,28 @@
+{
+  "name": "org.wso2.analytics.apim.tierLimitHittingAlert",
+  "version": "1.0.0",
+  "nickName": "tierLimitHittingAlert",
+  "description": "This stream is for alerting frequent tier limit hitting",
+  "payloadData": [
+    {
+      "name": "userId",
+      "type": "STRING"
+    },
+    {
+      "name": "api",
+      "type": "STRING"
+    },
+    {
+      "name": "applicationId",
+      "type": "STRING"
+    },
+    {
+      "name": "applicationName",
+      "type": "STRING"
+    },
+    {
+      "name": "message",
+      "type": "STRING"
+    }
+  ]
+}

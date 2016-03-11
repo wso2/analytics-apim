@@ -31,8 +31,6 @@
       USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
       OPTIONS (receiverURL "tcp://127.0.0.1:7612",
                authURL "ssl://127.0.0.1:7712",
-               username "admin",
-               password "admin",
                streamName "org.wso2.analytics.apim.alert.abnormalTierUsageAlert",
                version "1.0.0",
                description "This is the CEP stream for Abnormal Tier Usage",
@@ -44,8 +42,6 @@
       USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
       OPTIONS (receiverURL "tcp://127.0.0.1:7612",
                authURL "ssl://127.0.0.1:7712",
-               username "admin",
-               password "admin",
                streamName "org.wso2.analytics.apim.allApimAlertsStream",
                version "1.0.0",
                description "This is the table represents all alert stream",
