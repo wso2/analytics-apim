@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<artifact name="org_wso2_identity_oauth_token_issuanceStream" version="1.0.0" type="event/stream" serverRole="DataAnalyticsServer">
+<artifact name="org_wso2_identity_oauth_token_issuance" version="1.0.0" type="event/stream" serverRole="DataAnalyticsServer">
     <file>org.wso2.carbon.identity.oauth.token.issuance_1.0.0.json</file>
 </artifact>
