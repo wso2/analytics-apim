@@ -30,7 +30,7 @@
     },
     {
       "name": "alertTimestamp",
-      "type": "STRING"
+      "type": "LONG"
     }
   ]
 }
