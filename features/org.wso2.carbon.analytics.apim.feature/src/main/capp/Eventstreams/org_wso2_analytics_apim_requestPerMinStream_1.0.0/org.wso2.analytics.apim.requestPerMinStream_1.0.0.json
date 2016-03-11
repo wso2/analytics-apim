@@ -17,8 +17,20 @@
       "type": "STRING"
     },
     {
+      "name": "resourceTemplate",
+      "type": "STRING"
+    },
+    {
+      "name": "method",
+      "type": "STRING"
+    },
+    {
       "name": "requestsPerMin",
       "type": "LONG"
+    },
+    {
+      "name": "alertTimestamp",
+      "type": "STRING"
     }
   ]
 }

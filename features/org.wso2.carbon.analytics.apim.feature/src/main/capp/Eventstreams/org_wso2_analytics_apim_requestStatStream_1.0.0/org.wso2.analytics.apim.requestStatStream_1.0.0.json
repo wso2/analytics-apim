@@ -17,6 +17,14 @@
       "type": "STRING"
     },
     {
+      "name": "resourceTemplate",
+      "type": "STRING"
+    },
+    {
+      "name": "method",
+      "type": "STRING"
+    },
+    {
       "name": "avgRequestsPerMin",
       "type": "DOUBLE"
     },

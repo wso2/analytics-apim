@@ -13,6 +13,14 @@
       "type": "STRING"
     },
     {
+      "name": "resourceTemplate",
+      "type": "STRING"
+    },
+    {
+      "name": "method",
+      "type": "STRING"
+    },
+    {
       "name": "backendTime",
       "type": "LONG"
     },
@@ -22,6 +30,10 @@
     },
     {
       "name": "msg",
+      "type": "STRING"
+    },
+    {
+      "name": "alertTimestamp",
       "type": "STRING"
     }
   ]

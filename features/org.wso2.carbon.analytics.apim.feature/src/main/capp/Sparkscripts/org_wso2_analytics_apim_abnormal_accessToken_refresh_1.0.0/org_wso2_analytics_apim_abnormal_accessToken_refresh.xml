@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <CronExpression> 0 0 12 1/7 * ? * </CronExpression>
+    <Editable>true</Editable>
+    <Name>org_wso2_analytics_apim_abnormal_accessToken_refresh</Name>
+    <Script>create temporary table accessTokenRefreshTime using CarbonAnalytics options (tableName "ACCESSTOKENREFRESHTIMEDIFFERENCETABLE", schema "userId STRING, clientId STRING, scopes STRING, timeDifference LONG, timestamp LONG");
+
+create temporary table accessTokenRefreshAvrgTime using CarbonAnalytics options (tableName "AccessTokenRefreshSummaryTable", schema "userId STRING -i, clientId STRING -i, scopes STRING -i, minTimeDifference DOUBLE -i, maxTimeDifference DOUBLE -i", primaryKeys "userId, clientId, scopes");
+      
+INSERT INTO TABLE accessTokenRefreshAvrgTime
+      SELECT temp.userId, temp.clientId, temp.scopes, getpercentileValue(AVG(timeDifference), SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)), 0.10) as minTimeDifference, getpercentileValue(AVG(timeDifference), SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)), 0.95) as maxTimeDifference
+      FROM
+         (SELECT userId, clientId,scopes, timeDifference
+          FROM accessTokenRefreshTime
+            WHERE timestamp >= offsetInDays(-7)) temp
+      GROUP BY userId, clientId, scopes;  
+    </Script>
+</Analytics>
