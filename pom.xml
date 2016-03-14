@@ -57,6 +57,7 @@
         <module>product/features</module>
         <module>product/p2-profile-gen</module>
         <module>product/distribution</module>
+        <module>product/integration</module>
 	</modules>
 
 	<repositories>
@@ -212,13 +213,13 @@
 
             <!-- START - Integration test dependencies -->
             <dependency>
-                <groupId>org.wso2.das</groupId>
-                <artifactId>org.wso2.das.integration.common.utils</artifactId>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.integration.common.utils</artifactId>
                 <version>${das.release.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.das</groupId>
-                <artifactId>org.wso2.das.integration.common.clients</artifactId>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.integration.common.clients</artifactId>
                 <version>${das.release.version}</version>
             </dependency>
             <dependency>
