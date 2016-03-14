@@ -43,6 +43,17 @@
         <dependency artifact="org_wso2_analytics_apim_tierLimitHittingAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_FrequentTierLimitHitting" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
+        <dependency artifact="org_wso2_analytics_apim_apiHealthMonitorAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_requestPerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_responsePerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_request_per_api_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_response_per_api_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_response_per_time_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_HealthAvailability_executionPlan" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
+        <dependency artifact="org_wso2_analytics_apim_store_apiHealthMonitorAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_responsePerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_requestPerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <!-- API Manager related artifacts -->
         <dependency artifact="Eventstream_destination" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstream_fault" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>

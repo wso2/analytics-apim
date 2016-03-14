@@ -135,5 +135,5 @@
 
 								@info(name='query14')
 								from apiHealthMonitorAlertStream
-								select 'healthAvailabilityPerMin' as type, reason as msg , (time:currentTimestamp()) as alertTimestamp
+								select 'healthAvailabilityPerMin' as type, reason as msg , (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;

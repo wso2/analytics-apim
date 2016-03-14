@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact name="org_wso2_analytics_apim_store_requestPerMinPerApiStream" version="1.0.0" type="analytics/eventstore" serverRole="DataAnalyticsServer">
+    <file>org_wso2_analytics_apim_requestPerMinPerApiStream.xml</file>
+</artifact>
