@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <CronExpression>0 0 12 * * ?</CronExpression>
+    <Editable>true</Editable>
+    <Name>org_wso2_analytics_apim_response_per_api_stat_generator</Name>
+    <Script>CREATE TEMPORARY TABLE RESPONSE_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_responsePerMinPerApiStream");
+
+        CREATE TEMPORARY TABLE RESPONSE_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE",
+        schema "api_version string, responsesPerMinPerApiLowerPercentile double",
+        primaryKeys "api_version"
+        );
+
+        INSERT INTO TABLE RESPONSE_PER_API_PERCENTILE_GEN
+        select api_version,
+        getpercentileValue(avg(responsesPerMinPerApi), sqrt(avg(cast(responsesPerMinPerApi
+        as double)*cast(responsesPerMinPerApi as double))-avg(responsesPerMinPerApi)*avg(responsesPerMinPerApi)) , 0.05 ) as responsesPerMinPerApiLowerPercentile
+        from RESPONSE_PER_API_INFO group by api_version;
+
+    </Script>
+</Analytics>
+
+
