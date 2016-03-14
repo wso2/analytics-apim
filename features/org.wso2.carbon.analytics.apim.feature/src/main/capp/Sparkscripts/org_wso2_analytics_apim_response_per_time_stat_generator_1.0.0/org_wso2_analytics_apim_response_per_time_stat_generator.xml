@@ -2,7 +2,7 @@
 <Analytics>
     <CronExpression>0 0 12 * * ?</CronExpression>
     <Editable>true</Editable>
-    <Name>org_wso2_analytics_apim_response_per_api_stat_upper</Name>
+    <Name>org_wso2_analytics_apim_response_per_time_api_stat_generator</Name>
     <Script>CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_RESPONSE",schema "_timestamp LONG ");
 
         CREATE TEMPORARY TABLE RESPONSE_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE",
