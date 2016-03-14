@@ -5,11 +5,11 @@
   "description": "",
   "payloadData": [
     {
-      "name": "firstState",
+      "name": "startState",
       "type": "STRING"
     },
     {
-      "name": "nextState",
+      "name": "endState",
       "type": "STRING"
     },
     {

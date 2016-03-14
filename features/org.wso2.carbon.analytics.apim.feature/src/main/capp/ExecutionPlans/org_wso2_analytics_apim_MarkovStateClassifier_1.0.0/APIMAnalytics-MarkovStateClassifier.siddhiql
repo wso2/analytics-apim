@@ -18,14 +18,14 @@ define stream request (meta_clientType string, consumerKey string, context strin
 
 
 @Export('org.wso2.analytics.apim.transitionStream:1.0.0')
-define stream transitionStream (firstState string, nextState string, consumerKey string, userid string, requestTimestamp string);
+define stream transitionStream (startState string, endState string, consumerKey string, userid string, requestTimestamp string);
 
-@from(eventtable = 'analytics.table' , table.name = 'REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
 
 
 from request
-select context,method,resourceTemplate, str:concat(context, '_',method,'_',resourceTemplate ) as state, userId as userid, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey
+select context,method,resourceTemplate, str:concat(method,' ',context,'_',resourceTemplate) as state, userId as userid, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey
 insert into stateStream;
 
 
@@ -44,5 +44,5 @@ update RequestCountPerConsumerKeyTable
 on (consumerKey == RequestCountPerConsumerKeyTable.consumerKey);
 
 from every a = stateStream -> b = stateStream[(userid == a.userid) and (consumerKey == a.consumerKey)] within 60 min
-select a.state as firstState, b.state as nextState, a.consumerKey as consumerKey, b.userid, b.requestTimestamp 
+select a.state as startState, b.state as endState, a.consumerKey as consumerKey, b.userid, b.requestTimestamp 
 insert into transitionStream;
