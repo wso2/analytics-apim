@@ -1,5 +1,4 @@
 {
-  "streamId": "org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0",
   "name": "org.wso2.analytics.apim.apiHealthMonitorAlertStream",
   "version": "1.0.0",
   "nickName": "",
