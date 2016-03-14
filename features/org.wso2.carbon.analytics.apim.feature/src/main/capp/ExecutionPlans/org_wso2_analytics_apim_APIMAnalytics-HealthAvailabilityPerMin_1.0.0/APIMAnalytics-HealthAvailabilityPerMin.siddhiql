@@ -1,7 +1,7 @@
 /* Enter a unique ExecutionPlan */
 
 
-                                @Plan:name('APIMAnalytics-HealthAvailability-PerMin')
+                                @Plan:name('APIMAnalytics-HealthAvailabilityPerMin')
 
                                 /* Enter a unique description for ExecutionPlan */
                                 -- @Plan:description('ExecutionPlan')
