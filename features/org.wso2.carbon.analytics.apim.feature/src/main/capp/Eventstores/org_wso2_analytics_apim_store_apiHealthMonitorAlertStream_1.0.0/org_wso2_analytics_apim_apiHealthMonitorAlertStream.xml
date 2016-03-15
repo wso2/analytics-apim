@@ -9,11 +9,18 @@
             <Type>STRING</Type>
         </ColumnDefinition>
         <ColumnDefinition>
-            <Name>reason</Name>
+            <Name>msg</Name>
             <EnableIndexing>false</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
+            <Name>alertTimestamp</Name>
+            <EnableIndexing>false</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>LONG</Type>
         </ColumnDefinition>
     </TableSchema>
     <Source>

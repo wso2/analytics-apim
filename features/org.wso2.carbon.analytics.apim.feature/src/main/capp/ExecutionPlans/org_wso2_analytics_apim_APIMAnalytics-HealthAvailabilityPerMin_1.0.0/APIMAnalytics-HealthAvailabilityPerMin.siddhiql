@@ -34,7 +34,7 @@
 								define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
 
 								@Export('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
-								define stream apiHealthMonitorAlertStream (api_version string, reason string);
+								define stream apiHealthMonitorAlertStream (api_version string, msg string,alertTimestamp long);
 
 								/*  -- Event tables -- */
 
@@ -109,8 +109,8 @@
                                 insert into requestResponseSummaryStream;
 
 								@info(name = 'query10')
-								from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <5>
-								select api_version as api_version , 'Response count is too low' as reason
+								from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <1:>
+								select api_version as api_version , 'Response count is too low' as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
 								/* Now start response time queries */
@@ -129,11 +129,11 @@
 								insert into responseInfoStream;
 
 								@info(name = 'query13')
-								from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <5>
-								select api_version, 'Response time is too high' as reason
+								from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <5:>
+								select api_version, 'Response time is too high' as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
 								@info(name='query14')
 								from apiHealthMonitorAlertStream
-								select 'healthAvailabilityPerMin' as type, reason as msg , (time:timestampInMilliseconds()) as alertTimestamp
+								select 'healthAvailabilityPerMin' as type, msg as msg , (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
