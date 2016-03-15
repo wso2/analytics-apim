@@ -57,6 +57,8 @@
         <dependency artifact="org_wso2_analytics_apim_store_responsePerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_requestPerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
+	<dependency artifact="org_wso2_analytics_apim_allApimAlertsStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+		
         <!-- Identity Server related artifacts -->
         <dependency artifact="org_wso2_identity_oauth_token_issuance" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
