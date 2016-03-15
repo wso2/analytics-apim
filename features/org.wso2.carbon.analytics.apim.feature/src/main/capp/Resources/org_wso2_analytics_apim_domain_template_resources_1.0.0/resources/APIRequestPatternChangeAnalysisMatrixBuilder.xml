@@ -1,1 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><templateConfiguration from="APIMAnalytics" name="APIRequestPatternChangeAnalysisMatrixBuilder" type="APIMAnalytics-APIRequestPatternChangeAnalysisMatrixBuilder"><description></description><parameters><parameter name="transition_time"><value>60 min</value></parameter></parameters></templateConfiguration>
