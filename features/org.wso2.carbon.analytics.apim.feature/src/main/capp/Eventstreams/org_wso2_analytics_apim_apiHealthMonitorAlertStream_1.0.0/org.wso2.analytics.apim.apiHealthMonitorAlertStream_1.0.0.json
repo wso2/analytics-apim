@@ -11,8 +11,12 @@
       "type": "STRING"
     },
     {
-      "name": "reason",
+      "name": "msg",
       "type": "STRING"
+    },
+    {
+      "name": "alertTimestamp",
+      "type": "LONG"
     }
   ]
 }
