@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.analytics.apim.spark.geolocation.impl.APIManagerAnalyticsGeoLocationResolverUDF;
 import org.wso2.carbon.analytics.apim.spark.udf.APIManagerAnalyticsUDF;
 import org.wso2.carbon.analytics.spark.core.udf.CarbonUDF;
 
@@ -40,6 +41,7 @@ public class APIManagerSparkComponent {
         BundleContext bundleContext = ctx.getBundleContext();
         try {
             bundleContext.registerService(CarbonUDF.class, new APIManagerAnalyticsUDF(), null);
+            bundleContext.registerService(CarbonUDF.class, new APIManagerAnalyticsGeoLocationResolverUDF(), null);
         } catch (Throwable e) {
             log.error("Error in activating APIManagerSparkComponent: " + e.getMessage(), e);
         }
