@@ -54,13 +54,15 @@ insert into MarkovModelTable;
 
 
 /* == correlate firstcount table and markovmodel table == */
-
+/*
 -- delay event to make sure "FirstCountTable & MarkovModeltable are updated
 from transitionStream#window.time(3 sec)
 select * 
 insert expired events into transitionStreamAddedDelay;
+*/
 
-from transitionStreamAddedDelay as t join firstCountTable
+
+from transitionStream as t join firstCountTable
 on (t.startState == firstCountTable.startState and t.consumerKey == firstCountTable.consumerKey)
 select t.startState, t.endState, t.consumerKey, firstCountTable.count
 insert into temp;
