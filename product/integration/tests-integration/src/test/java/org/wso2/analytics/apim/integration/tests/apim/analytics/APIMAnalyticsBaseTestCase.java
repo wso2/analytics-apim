@@ -23,9 +23,11 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
+import org.testng.Assert;
 import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
 import org.wso2.analytics.apim.integration.common.clients.EventPublisherAdminServiceClient;
 import org.wso2.analytics.apim.integration.common.clients.EventSimulatorAdminServiceClient;
+import org.wso2.analytics.apim.integration.common.utils.CSVSimulatorUtil;
 import org.wso2.analytics.apim.integration.common.utils.DASIntegrationTest;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
@@ -34,6 +36,8 @@ import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
+import org.wso2.carbon.logging.view.stub.LogViewerLogViewerException;
+import org.wso2.carbon.logging.view.stub.types.carbon.LogEvent;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -42,6 +46,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -103,6 +108,62 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
             eventSimulatorAdminServiceClient.sendEvent(events.get(i));
             Thread.sleep(timeGapBetweenEvents);
         }
+    }
+
+    /**
+     * Publishes events from a given csv file.
+     * @param testResourcePath test resources folder.
+     * @param resourceName name of the file.
+     * @param streamId stream ID
+     * @param timeGapBetweenEvents Time difference between sending of two events.
+     * @throws Exception
+     */
+    protected void pubishEventsFromCSV(String testResourcePath, String resourceName, String streamId,
+                                       long timeGapBetweenEvents) throws Exception {
+        List<EventDto> eventListFromCSV = CSVSimulatorUtil.getEventListFromCSV(getFilePath(testResourcePath, resourceName), streamId);
+        pubishEvents(eventListFromCSV, timeGapBetweenEvents);
+    }
+
+    /**
+     * Deploys a given publisher for a stream.
+     * @param testResourcePath test resources folder.
+     * @param publisherFileName publisher file name.
+     * @throws Exception
+     */
+    protected void deployPublisher(String testResourcePath, String publisherFileName) throws Exception {
+        int startEPCount = eventPublisherAdminServiceClient.getActiveEventPublisherCount();
+        String eventPublisherConfig = getXMLArtifactConfiguration(testResourcePath, publisherFileName);
+        eventPublisherAdminServiceClient.addEventPublisherConfiguration(eventPublisherConfig);
+        Assert.assertEquals(eventPublisherAdminServiceClient.getActiveEventPublisherCount(), startEPCount + 1);
+    }
+
+    /**
+     * Undeploys a given publisher of a stream.
+     * @param publisherFileName publisher file name.
+     * @throws RemoteException
+     */
+    protected void undeployPublisher(String publisherFileName) throws RemoteException {
+        eventPublisherAdminServiceClient.removeInactiveEventPublisherConfiguration(publisherFileName);
+    }
+
+    /**
+     * Reads through the logs and determines if the given string is in the logs.
+     * @param beforeCount Log count before.
+     * @param message message to look for in the logs.
+     * @return whether the string exists in the log.
+     * @throws RemoteException
+     * @throws LogViewerLogViewerException
+     */
+    protected boolean isAlertReceived(int beforeCount, String message) throws RemoteException, LogViewerLogViewerException {
+        boolean alertReceived = false;
+        LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
+        for (int i = 0; i < (logs.length - beforeCount); i++) {
+            if (logs[i].getMessage().contains(message)) {
+                alertReceived = true;
+                break;
+            }
+        }
+        return alertReceived;
     }
 
     /**
