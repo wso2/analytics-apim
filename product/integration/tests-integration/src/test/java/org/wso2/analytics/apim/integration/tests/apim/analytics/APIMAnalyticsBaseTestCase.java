@@ -28,6 +28,8 @@ import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
 import org.wso2.analytics.apim.integration.common.clients.EventPublisherAdminServiceClient;
 import org.wso2.analytics.apim.integration.common.utils.DASIntegrationTest;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
+import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
+import org.wso2.carbon.analytics.api.CarbonAnalyticsAPI;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
@@ -44,6 +46,7 @@ import java.util.regex.Matcher;
 
 public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     private DataPublisherClient dataPublisherClient;
+    protected AnalyticsDataAPI analyticsDataAPI;
     protected EventPublisherAdminServiceClient eventPublisherAdminServiceClient;
     protected static LogViewerClient logViewerClient;
 
@@ -53,6 +56,10 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         String session = getSessionCookie();
         eventPublisherAdminServiceClient = getEventPublisherAdminServiceClient(backendURL, session);
         logViewerClient = new LogViewerClient(backendURL, session);
+        String apiConf =
+                new File(this.getClass().getClassLoader().
+                        getResource("dasconfig" + File.separator + "analytics-data-config.xml").toURI()).getAbsolutePath();
+        analyticsDataAPI = new CarbonAnalyticsAPI(apiConf);
     }
 
     protected void publishEvent(String streamName, String streamVersion, Event event) throws Exception {

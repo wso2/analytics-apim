@@ -32,10 +32,13 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
 
     @Test(groups = "wso2.analytics.apim", description = "Test New IP detected Alert")
     public void testNewIPDetectedAlert() throws Exception {
-        int startEPCount = eventPublisherAdminServiceClient.getActiveEventPublisherCount();
         String testResourcePath = "unusualIPAccess";
 
+        //delete the existing data in the streams/tables
+        analyticsDataAPI.deleteTable(-1234, streamName.replace('.', '_'));
+
         // publish the publisher xml file
+        int startEPCount = eventPublisherAdminServiceClient.getActiveEventPublisherCount();
         String eventPublisherConfig = getXMLArtifactConfiguration(testResourcePath, "logger.xml");
         eventPublisherAdminServiceClient.addEventPublisherConfiguration(eventPublisherConfig);
         Assert.assertEquals(eventPublisherAdminServiceClient.getActiveEventPublisherCount(), startEPCount + 1);
