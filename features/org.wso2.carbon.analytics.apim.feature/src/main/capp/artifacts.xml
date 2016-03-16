@@ -58,16 +58,16 @@
         <dependency artifact="org_wso2_analytics_apim_store_requestPerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
 	<dependency artifact="org_wso2_analytics_apim_allApimAlertsStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.abnormalBackendTimeAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.abnormalRequestsPerMinAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.abnormalResponseTimeAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.alert.abnormalTierUsageAlertPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.alert.abnormalTokenRefreshPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.alert.unusualIPAccessPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.apiHealthMonitorAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.requestPatternChangedStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.requestPerMinStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org.wso2.analytics.apim.tierLimitHittingAlertPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_abnormalBackendTimeAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_abnormalRequestsPerMinAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_abnormalResponseTimeAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_alert_abnormalTierUsageAlertPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_alert_abnormalTokenRefreshPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_alert_unusualIPAccessPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_apiHealthMonitorAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_requestPatternChangedStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	
+	<dependency artifact="org_wso2_analytics_apim_tierLimitHittingAlertPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 		
         <!-- Identity Server related artifacts -->
         <dependency artifact="org_wso2_identity_oauth_token_issuance" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
