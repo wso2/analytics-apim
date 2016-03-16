@@ -20,11 +20,14 @@ package org.wso2.analytics.apim.integration.tests.apim.analytics;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.analytics.apim.integration.common.utils.CSVSimulatorUtil;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import org.wso2.carbon.logging.view.stub.types.carbon.LogEvent;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
@@ -32,33 +35,33 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
 
     private String streamName = "org.wso2.apimgt.statistics.request";
     private String streamVersion = "1.1.0";
+    String testResourcePath = "unusualIPAccess";
 
-    @Test(groups = "wso2.analytics.apim", description = "Test New IP detected Alert")
-    public void testNewIPDetectedAlert() throws Exception {
-        String testResourcePath = "unusualIPAccess";
+    @BeforeClass(alwaysRun = true)
+    public void setup() throws Exception {
+        super.init();
 
-        // publish the publisher xml file
+        // deploy the publisher xml file
         int startEPCount = eventPublisherAdminServiceClient.getActiveEventPublisherCount();
         String eventPublisherConfig = getXMLArtifactConfiguration(testResourcePath, "logger.xml");
         eventPublisherAdminServiceClient.addEventPublisherConfiguration(eventPublisherConfig);
         Assert.assertEquals(eventPublisherAdminServiceClient.getActiveEventPublisherCount(), startEPCount + 1);
 
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+        // publish the csv data
         List<EventDto> eventListFromCSV = CSVSimulatorUtil.getEventListFromCSV(getFilePath(testResourcePath, "sim.csv"), getStreamId(streamName, streamVersion));
         pubishEvents(eventListFromCSV, 100);
-       /* Object[] payload1 = new Object[]{"app1", "test", "1.1.0", "calculator", "/add", "1.2", "GET", "1.1.0", 4,
-                1457943159411L, "sachith", "carbon.super", "localhost", "pub", "calculator", "calc1.2", "firefox",
-                "1", false, "10.10.2.2"};
-        Event event1 = new Event(null, System.currentTimeMillis(), new Object[]{"test"}, new Object[0], payload1);
+    }
 
-        Object[] payload2 = new Object[]{"app1", "test", "1.1.0", "calculator", "/add", "1.2", "GET", "1.1.0", 4,
-                1457943159411L, "sachith", "carbon.super", "localhost", "pub", "calculator", "calc1.2", "firefox",
-                "1", false, "10.10.2.3"};
-        Event event2 = new Event(null, System.currentTimeMillis(), new Object[]{"test"}, new Object[0], payload2);
+    @AfterClass(alwaysRun = true)
+    public void cleanup() throws RemoteException {
+        // undeploy the publishers
+        eventPublisherAdminServiceClient.removeInactiveEventPublisherConfiguration("logger.xml");
+    }
 
-        publishEvent(streamName, streamVersion, event1);
-       // publishEvent(streamName, streamVersion, event2);*/
+    @Test(groups = "wso2.analytics.apim", description = "Test New IP detected Alert")
+    public void testNewIPDetectedAlert() throws Exception {
+
+        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
 
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(streamName, streamVersion));
@@ -80,7 +83,30 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
             }
         }
         Assert.assertTrue(newIpDetectedAlertFound, "New IP Detected event not received!");
+    }
 
-        eventPublisherAdminServiceClient.removeInactiveEventPublisherConfiguration("logger.xml");
+    @Test(groups = "wso2.analytics.apim", description = "Test Old IP detected Alert", dependsOnMethods = "testNewIPDetectedAlert")
+    public void testOldIPDetectedAlert() throws Exception {
+        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
+
+        EventDto eventDto = new EventDto();
+        eventDto.setEventStreamId(getStreamId(streamName, streamVersion));
+        eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
+                , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
+                "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1"});
+        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+        Thread.sleep(5000);
+
+        boolean oldIpDetectedAlert = false;
+        LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
+        for (int i = 0; i < (logs.length - beforeCount); i++) {
+            if (logs[i].getMessage().contains("\"msg\":\"A request from an Old IP detected! IP: 192.168.7.1\"," +
+                    "\"ip\":\"192.168.7.1\",\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\"," +
+                    "\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"")) {
+                oldIpDetectedAlert = true;
+                break;
+            }
+        }
+        Assert.assertTrue(oldIpDetectedAlert, "Old IP Detected event not received!");
     }
 }

@@ -23,7 +23,6 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.testng.annotations.BeforeClass;
 import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
 import org.wso2.analytics.apim.integration.common.clients.EventPublisherAdminServiceClient;
 import org.wso2.analytics.apim.integration.common.clients.EventSimulatorAdminServiceClient;
@@ -53,7 +52,6 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     protected LogViewerClient logViewerClient;
     protected EventSimulatorAdminServiceClient eventSimulatorAdminServiceClient;
 
-    @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
         super.init();
         String session = getSessionCookie();
