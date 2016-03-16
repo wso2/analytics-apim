@@ -23,39 +23,32 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.analytics.apim.integration.common.utils.CSVSimulatorUtil;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
-import org.wso2.carbon.logging.view.stub.types.carbon.LogEvent;
 
 import java.rmi.RemoteException;
-import java.util.List;
 
 public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     private static final Log log = LogFactory.getLog(UnusualIPAccessTestCase.class);
 
     private String streamName = "org.wso2.apimgt.statistics.request";
     private String streamVersion = "1.1.0";
-    String testResourcePath = "unusualIPAccess";
+    private String testResourcePath = "unusualIPAccess";
+    private String publisherFileName = "logger.xml";
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
         super.init();
 
         // deploy the publisher xml file
-        int startEPCount = eventPublisherAdminServiceClient.getActiveEventPublisherCount();
-        String eventPublisherConfig = getXMLArtifactConfiguration(testResourcePath, "logger.xml");
-        eventPublisherAdminServiceClient.addEventPublisherConfiguration(eventPublisherConfig);
-        Assert.assertEquals(eventPublisherAdminServiceClient.getActiveEventPublisherCount(), startEPCount + 1);
-
+        deployPublisher(testResourcePath, publisherFileName);
         // publish the csv data
-        List<EventDto> eventListFromCSV = CSVSimulatorUtil.getEventListFromCSV(getFilePath(testResourcePath, "sim.csv"), getStreamId(streamName, streamVersion));
-        pubishEvents(eventListFromCSV, 100);
+        pubishEventsFromCSV(testResourcePath, "sim.csv", getStreamId(streamName, streamVersion), 100);
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws RemoteException {
         // undeploy the publishers
-        eventPublisherAdminServiceClient.removeInactiveEventPublisherConfiguration("logger.xml");
+        undeployPublisher(publisherFileName);
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test New IP detected Alert")
@@ -71,17 +64,10 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         eventSimulatorAdminServiceClient.sendEvent(eventDto);
         Thread.sleep(5000);
 
-        boolean newIpDetectedAlertFound = false;
-        LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
-        for (int i = 0; i < (logs.length - beforeCount); i++) {
-            if (logs[i].getMessage().contains("\"payloadData\":{\"type\":\"[UnusualIPAccessAlert]\"," +
-                    "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
-                    "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
-                    "\"requestTime\":1455785133344,")) {
-                newIpDetectedAlertFound = true;
-                break;
-            }
-        }
+        boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"[UnusualIPAccessAlert]\"," +
+                "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
+                "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
+                "\"requestTime\":1455785133344,");
         Assert.assertTrue(newIpDetectedAlertFound, "New IP Detected event not received!");
     }
 
@@ -97,16 +83,9 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         eventSimulatorAdminServiceClient.sendEvent(eventDto);
         Thread.sleep(5000);
 
-        boolean oldIpDetectedAlert = false;
-        LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
-        for (int i = 0; i < (logs.length - beforeCount); i++) {
-            if (logs[i].getMessage().contains("\"msg\":\"A request from an Old IP detected! IP: 192.168.7.1\"," +
-                    "\"ip\":\"192.168.7.1\",\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\"," +
-                    "\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"")) {
-                oldIpDetectedAlert = true;
-                break;
-            }
-        }
+        boolean oldIpDetectedAlert = isAlertReceived(beforeCount, "\"msg\":\"A request from an Old IP detected! IP: 192.168.7.1\"," +
+                "\"ip\":\"192.168.7.1\",\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\"," +
+                "\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"");
         Assert.assertTrue(oldIpDetectedAlert, "Old IP Detected event not received!");
     }
 }
