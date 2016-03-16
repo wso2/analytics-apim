@@ -23,5 +23,6 @@
       "name": "timestamp",
       "type": "LONG"
     }
+   
   ]
 }
