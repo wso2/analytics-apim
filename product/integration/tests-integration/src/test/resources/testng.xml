@@ -10,7 +10,8 @@
             <!--<package name="org.wso2.analytics.apim.integration.tests.restservice.analytics"/>-->
             <!--<package name="org.wso2.analytics.apim.integration.tests.analytics.execution"/>-->
             <!--<package name="org.wso2.analytics.apim.integration.tests.analyticsapi"/>-->
-            <package name="org.wso2.analytics.apim.integration.tests.eventstreampersist"/>
+            <!--<package name="org.wso2.analytics.apim.integration.tests.eventstreampersist"/>-->
+            <package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>
             <!--<package name="org.wso2.analytics.apim.integration.tests.messageconsole"/>-->
             <!--<package name="org.wso2.analytics.apim.integration.tests.analytics.webservice"/>-->
             <!--<package name="org.wso2.analytics.apim.integration.tests.jsapi.analytics"/>-->
