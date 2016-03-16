@@ -57,6 +57,7 @@
         <module>product/features</module>
         <module>product/p2-profile-gen</module>
         <module>product/distribution</module>
+        <module>product/integration</module>
 	</modules>
 
 	<repositories>
@@ -212,13 +213,13 @@
 
             <!-- START - Integration test dependencies -->
             <dependency>
-                <groupId>org.wso2.das</groupId>
-                <artifactId>org.wso2.das.integration.common.utils</artifactId>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.integration.common.utils</artifactId>
                 <version>${das.release.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.das</groupId>
-                <artifactId>org.wso2.das.integration.common.clients</artifactId>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.integration.common.clients</artifactId>
                 <version>${das.release.version}</version>
             </dependency>
             <dependency>
@@ -351,6 +352,16 @@
                 <version>${carbon.analytics.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.event.publisher.stub</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.event-processing</groupId>
+                <artifactId>org.wso2.carbon.event.simulator.stub</artifactId>
+                <version>${carbon.event-processing.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jacoco</groupId>
                 <artifactId>org.jacoco.agent</artifactId>
                 <version>${jacoco.agent.version}</version>
@@ -455,6 +466,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
                 <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.core</artifactId>
                 <version>${carbon.analytics.common.version}</version>
             </dependency>
             <dependency>
