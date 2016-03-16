@@ -46,7 +46,7 @@ from ExistingUserStream[not (ip is null)]
 select requestHostName, consumerKey, (requestTime - lastAccessedDate) as timeBetweenAccess, requestTime, userId, lastAccessedDate
 insert into CheckAbnormalTimeBetweenAccessStream;
 
-from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > (1*24*60*60)]
+from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > (30*24*60*60)]
 select *
 insert into AbnormalTimeBetweenAccessStream;
 
