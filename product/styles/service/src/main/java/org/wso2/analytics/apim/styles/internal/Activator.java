@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and         
  * limitations under the License.                                              
  */
-package org.wso2.das.styles.internal;
+package org.wso2.analytics.apim.styles.internal;
 
 import org.eclipse.equinox.http.helper.ContextPathServletAdaptor;
 import org.eclipse.equinox.jsp.jasper.JspServlet;
