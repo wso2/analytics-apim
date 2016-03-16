@@ -26,12 +26,14 @@ import org.apache.axis2.client.ServiceClient;
 import org.testng.annotations.BeforeClass;
 import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
 import org.wso2.analytics.apim.integration.common.clients.EventPublisherAdminServiceClient;
+import org.wso2.analytics.apim.integration.common.clients.EventSimulatorAdminServiceClient;
 import org.wso2.analytics.apim.integration.common.utils.DASIntegrationTest;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.api.CarbonAnalyticsAPI;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
+import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
 
 import javax.xml.stream.XMLInputFactory;
@@ -46,9 +48,10 @@ import java.util.regex.Matcher;
 
 public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     private DataPublisherClient dataPublisherClient;
-    protected AnalyticsDataAPI analyticsDataAPI;
+    private AnalyticsDataAPI analyticsDataAPI;
     protected EventPublisherAdminServiceClient eventPublisherAdminServiceClient;
-    protected static LogViewerClient logViewerClient;
+    protected LogViewerClient logViewerClient;
+    protected EventSimulatorAdminServiceClient eventSimulatorAdminServiceClient;
 
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
@@ -60,8 +63,16 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
                 new File(this.getClass().getClassLoader().
                         getResource("dasconfig" + File.separator + "analytics-data-config.xml").toURI()).getAbsolutePath();
         analyticsDataAPI = new CarbonAnalyticsAPI(apiConf);
+        eventSimulatorAdminServiceClient = getEventSimulatorAdminServiceClient(backendURL, session);
     }
 
+    /**
+     * Publishes a single event.
+     * @param streamName name of the stream.
+     * @param streamVersion version of the stream.
+     * @param event event.
+     * @throws Exception
+     */
     protected void publishEvent(String streamName, String streamVersion, Event event) throws Exception {
         dataPublisherClient = new DataPublisherClient();
         dataPublisherClient.publish(streamName, streamVersion, event);
@@ -69,6 +80,13 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         dataPublisherClient.shutdown();
     }
 
+    /**
+     * Publishes a given set of events.
+     * @param streamName name of the stream.
+     * @param streamVersion version of the stream.
+     * @param events list of events.
+     * @throws Exception
+     */
     protected void pubishEvents(String streamName, String streamVersion, List<Event> events) throws Exception {
         dataPublisherClient = new DataPublisherClient();
         dataPublisherClient.publish(streamName, streamVersion, events);
@@ -76,6 +94,41 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         dataPublisherClient.shutdown();
     }
 
+    /**
+     * Publishes given set of events. Events are in EventDto format.
+     * @param events EventDto list.
+     * @param timeGapBetweenEvents time between two events in milliseconds.
+     * @throws Exception
+     */
+    protected void pubishEvents(List<EventDto> events, long timeGapBetweenEvents) throws Exception {
+        for (int i = 0; i < events.size(); i++) {
+            eventSimulatorAdminServiceClient.sendEvent(events.get(i));
+            Thread.sleep(timeGapBetweenEvents);
+        }
+    }
+
+    /**
+     * Returns the stream id of a stream.
+     * @param streamName name of the stream.
+     * @param streamVersion version of the stream.
+     * @return stream ID.
+     */
+    protected String getStreamId(String streamName, String streamVersion) {
+        return streamName + ":" + streamVersion;
+    }
+
+    /**
+     * Gives the absolute path of the given test resource.
+     * @param testCaseFolderName folder relative to the test resources root.
+     * @param configFileName file name.
+     * @return absolute path of the file.
+     */
+    protected String getFilePath(String testCaseFolderName, String configFileName) {
+        String relativeFilePath = getTestArtifactLocation() +
+                APIMAnalyticsIntegrationTestConstants.RELATIVE_PATH_TO_TEST_ARTIFACTS + testCaseFolderName + "/"
+                + configFileName;
+        return relativeFilePath;
+    }
     /**
      * @param testCaseFolderName Name of the folder created under /artifacts/CEP for the particular test case.
      * @param configFileName     Name of the XML config-file created under above folder.
@@ -146,6 +199,24 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
             throws AxisFault {
         eventPublisherAdminServiceClient = new EventPublisherAdminServiceClient(backendURL, loggedInSessionCookie);
         ServiceClient client = eventPublisherAdminServiceClient._getServiceClient();
+        Options options = client.getOptions();
+        options.setManageSession(true);
+        options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
+    }
+
+    protected EventSimulatorAdminServiceClient getEventSimulatorAdminServiceClient(
+            String backendURL,
+            String loggedInSessionCookie) throws AxisFault {
+        initEventSimulatorAdminServiceClient(backendURL, loggedInSessionCookie);
+        return eventSimulatorAdminServiceClient;
+    }
+
+    private void initEventSimulatorAdminServiceClient(
+            String backendURL,
+            String loggedInSessionCookie)
+            throws AxisFault {
+        eventSimulatorAdminServiceClient = new EventSimulatorAdminServiceClient(backendURL, loggedInSessionCookie);
+        ServiceClient client = eventSimulatorAdminServiceClient._getServiceClient();
         Options options = client.getOptions();
         options.setManageSession(true);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
