@@ -43,10 +43,10 @@ insert into IPAccessSummary;
 
 -- Check if the request for the IP is received after the threshold time gap
 from ExistingUserStream[not (ip is null)]
-select requestHostName, consumerKey, time:dateDiff(requestTime, lastAccessedDate) as daysBetweenAccess, requestTime, userId, lastAccessedDate
+select requestHostName, consumerKey, (requestTime - lastAccessedDate) as timeBetweenAccess, requestTime, userId, lastAccessedDate
 insert into CheckAbnormalTimeBetweenAccessStream;
 
-from CheckAbnormalTimeBetweenAccessStream[daysBetweenAccess > 1]
+from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > (1*24*60*60)]
 select *
 insert into AbnormalTimeBetweenAccessStream;
 
@@ -60,6 +60,6 @@ select type, str:concat('UserId: ',userId, ' ', msg) as msg, (time:timestampInMi
 insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate
-from CheckAbnormalTimeBetweenAccessStream[daysBetweenAccess > 0]
+from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > 24*60*60]
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;
