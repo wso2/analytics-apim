@@ -1,0 +1,14 @@
+{
+  "id": "unusual-ip-access",
+  "title": "Unusual IP Access",
+  "type": "gadget",
+  "category": "Gadget",
+  "thumbnail": "store://gadget/unusual-ip-access/index.png",
+  "data": {
+    "url": "store://gadget/unusual-ip-access/index.xml"
+  },
+  "styles": {
+    "borders": true,
+    "title": true
+  },
+}

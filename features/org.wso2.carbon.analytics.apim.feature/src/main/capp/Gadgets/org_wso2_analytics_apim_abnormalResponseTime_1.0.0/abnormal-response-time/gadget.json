@@ -1,0 +1,14 @@
+{
+  "id": "abnormal-response-time",
+  "title": "Abnormal Response Time",
+  "type": "gadget",
+  "category": "Gadget",
+  "thumbnail": "store://gadget/abnormal-response-time/index.png",
+  "data": {
+    "url": "store://gadget/abnormal-response-time/index.xml"
+  },
+  "styles": {
+    "borders": true,
+    "title": true
+  },
+}
