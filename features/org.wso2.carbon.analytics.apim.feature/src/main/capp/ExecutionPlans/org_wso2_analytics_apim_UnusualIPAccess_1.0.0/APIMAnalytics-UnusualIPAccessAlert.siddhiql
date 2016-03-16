@@ -51,7 +51,7 @@ select *
 insert into AbnormalTimeBetweenAccessStream;
 
 from AbnormalTimeBetweenAccessStream
-select "[UnusualIPAccessAlert]" as type, str:concat("A request from an Old IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, str:concat("A request from an Old IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream
