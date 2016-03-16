@@ -1,7 +1,6 @@
 /* Enter a unique ExecutionPlan */
 
 
-
                       @Plan:name('APIMAnalytics-AbnormalRequestCountDetection')
 
                                 /* Enter a unique description for ExecutionPlan */
@@ -21,13 +20,13 @@
 							  	@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 								define stream allApimAlertStream (type string, msg string, alertTimestamp long);
 
-								@Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
-								define stream requestPerMinStream (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long, alertTimestamp long, msg string);
-
+								
 								@Export('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
 								define stream abnormalRequestsPerMinAlertStream (api string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double, reason string, msg string, alertTimestamp long);
 
- 
+ 								
+								@Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
+								define stream requestPerMinStream (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long);
 
                                 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE',  primary.keys = 'api_version,userId,consumerKey')
                                 define table requestPercentileTable (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double);
@@ -41,7 +40,7 @@
 
                                 @info(name = 'query2')
                                 from requestSummaryStream#window.timeBatch(1 minute)
-                                select api_version, userId , consumerKey, resourceTemplate, method, count() as requestsPerMin,(time:timestampInMilliseconds()) as alertTimestamp, str:concat('APIVersion: ', api_version, ' UserId: ', userId, ' ConsumerKey: ', consumerKey, 'ResourceTemplate:',resourceTemplate,'Method:', method, 'RequestPerMin:', count()) as msg 
+                                select api_version, userId , consumerKey, resourceTemplate, method, count() as requestsPerMin 
                                 group by api_version, userId , consumerKey, resourceTemplate, method
                                 insert into requestPerMinStream ;
 

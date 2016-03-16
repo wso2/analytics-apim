@@ -27,14 +27,6 @@
     {
       "name": "requestsPerMin",
       "type": "LONG"
-    },
-    {
-      "name": "alertTimestamp",
-      "type": "LONG"
-    },
-    {
-      "name": "msg",
-      "type": "STRING"
     }
   ]
 }
