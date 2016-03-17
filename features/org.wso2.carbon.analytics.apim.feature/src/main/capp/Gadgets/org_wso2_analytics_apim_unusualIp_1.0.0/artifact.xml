@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact name="org_wso2_analytics_apim_unusualIp" version="1.0.0" type="dashboards/gadget" serverRole="DataAnalyticsServer">
+    <file>unusual-ip-access</file>
+</artifact>
+
