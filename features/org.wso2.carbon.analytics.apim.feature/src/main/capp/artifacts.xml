@@ -79,7 +79,8 @@
 	<dependency artifact="org_wso2_analytics_apim_apiHealthMonitor" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_requestPatternChanged" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>	
 	<dependency artifact="org_wso2_analytics_apim_tierLimitHitting" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org_wso2_analytics_apim_unusualIpAccess" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_unusualIp" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	
 
 	 <!-- Dashboard artifacts -->
 	<dependency artifact="org_wso2_analytics_apim_analyticsDashboard" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>	
