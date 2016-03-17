@@ -97,6 +97,10 @@
     {
       "name": "protocol",
       "type": "STRING"
+    },
+    {
+      "name":"responseCode",
+      "type":"INT"
     }
   ]
 }
