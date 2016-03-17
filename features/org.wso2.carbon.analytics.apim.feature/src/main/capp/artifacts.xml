@@ -72,13 +72,13 @@
 	 <!-- Gadget artifacts -->	
 	<dependency artifact="org_wso2_analytics_apim_allAlerts" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalBackendTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
- 	<dependency artifact="org_wso2_analytics_apim_abnormalRequestPerMin" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+ 	<dependency artifact="org_wso2_analytics_apim_abnormalRequestCount" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_abnormalResponseTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_abnormalTierUsage" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_abnormalTokenRefresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_apiHealthMonitor" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_requestPatternChanged" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>	
-	<dependency artifact="org_wso2_analytics_apim_tierLimitHitting" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	<dependency artifact="org_wso2_analytics_apim_tierCrossing" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_unusualIp" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	
 
