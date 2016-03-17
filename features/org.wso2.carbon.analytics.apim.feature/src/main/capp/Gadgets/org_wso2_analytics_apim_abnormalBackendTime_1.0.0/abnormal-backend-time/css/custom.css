@@ -11,24 +11,65 @@ ul.alerts-list > li {
     position: relative;
 }
 
-ul.alerts-list > li.message {
+ul.alerts-list > li.api-message {
     background: transparent;
 }
 
-ul.alerts-list > li.message h4 {
+ul.alerts-list > li.api-message h4 {
     font-size: 15px;
     margin-bottom: 0;
 }
 
-ul.alerts-list > li.message .type {
+ul.alerts-list > li.api-message .type {
     font-size: 12px;
     color: #929292;
     margin-bottom: 0;
 }
 
-ul.alerts-list > li.message .time {
+ul.alerts-list > li.api-message .time {
     position: absolute;
     top: 5px;
     right: 5px;
     color: #9E9E9E;
+}
+
+.api-message {
+  padding: 20px;
+  margin: 20px 0;
+  border-left: 5px solid transparent;
+  background: #f9f9f9;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+
+
+.api-message h5 {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.api-message h5 .icon {
+  padding-bottom: 3px;
+  margin-right: 5px;
+}
+
+.api-message p:last-child {
+  margin-bottom: 0;
+}
+
+.api-message code {
+  border-radius: 3px;
+}
+
+.api-message + .api-message {
+  margin-top: -5px;
+}
+
+.api-message-success {
+  border-left-color: #5cb85c;
+}
+
+.api-message-success h5 {
+  color: #5cb85c;
 }

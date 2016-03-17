@@ -83,7 +83,7 @@
                                 var date = new Date(parseFloat(timestamp));
                                 var convertedTimestamp = date.toString("dd/MM/yyyy HH:mm:ss");
 
-                                $('#placeholder').append('<li id="alert'+i+'" class="message message-success"><h4><i class="icon fw fw-warning"></i>'+splittedRecord[1]+'</h4><span class="time">'+convertedTimestamp+'</span><p class="type">'+splittedRecord[0].bold()+'</p></li>');             
+                                $('#placeholder').append('<li id="alert'+i+'" class="api-message api-message-success"><h5><i class="icon fw fw-warning"></i>'+splittedRecord[1]+'</h5><span class="time">'+convertedTimestamp+'</span><p class="type">'+splittedRecord[0].bold()+'</p></li>');             
                             
                                    
                             }
