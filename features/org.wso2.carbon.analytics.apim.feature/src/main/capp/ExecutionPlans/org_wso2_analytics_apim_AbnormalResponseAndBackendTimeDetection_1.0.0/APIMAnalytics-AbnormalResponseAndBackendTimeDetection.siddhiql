@@ -8,7 +8,8 @@
 
 
 @Import('org.wso2.apimgt.statistics.response:1.1.0')
-define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string);
+define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api
+string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int);
 
 @Import('org.wso2.analytics.apim.responseStatStream:1.0.0')
 define stream responseStatStream (api_version string, tenantDomain string, resourceTemplate string, method string, avgResponseTime double, sdResponseTime double, avgBackendTime double, sdBackendTime double);
