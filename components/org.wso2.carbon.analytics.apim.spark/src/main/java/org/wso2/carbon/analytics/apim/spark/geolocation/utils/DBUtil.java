@@ -146,7 +146,7 @@ public class DBUtil {
             statement.setLong(1, getIpV4ToLong(ipAddress));
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                location = new Location(resultSet.getString("country_name"), resultSet.getString("city_name"),
+                location = new Location(resultSet.getString("country_name"), resultSet.getString("subdivision_1_name"),
                         ipAddress);
             }
         } catch (SQLException e) {

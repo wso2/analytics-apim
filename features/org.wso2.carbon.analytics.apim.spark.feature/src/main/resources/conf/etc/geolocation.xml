@@ -4,7 +4,7 @@
 		CUSTOM - Custom implementation
 -->
 	<Type>RDBMS</Type>
-	<ImplClass>org.wso2.carbon.apimgt.analytics.geograph.impl.LocationResolverRdbms</ImplClass>
+	<ImplClass>org.wso2.carbon.analytics.apim.spark.geolocation.impl.LocationResolverRdbms</ImplClass>
 		<!-- this will need to configured if implementation type is RDBMS-->
 	<DataSource>jdbc/wso2ipdata</DataSource>
 	<Cache>

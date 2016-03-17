@@ -96,12 +96,6 @@ public class CacheHolder {
             if (dataSourceElement != null) {
                 dataSourceName = dataSourceElement.getText();
             }
-            OMElement restUrlElement = builder.getDocumentElement().getFirstChildWithName(new QName
-                    (LocationResolverConstants
-                            .REST_URL));
-            if (restUrlElement != null) {
-                restUrl = restUrlElement.getText();
-            }
             if (!StringUtils.isEmpty(clazzName)) {
                 locationResolver = (LocationResolver) Class.forName(clazzName).newInstance();
             }
@@ -164,6 +158,5 @@ public class CacheHolder {
         } catch (InstantiationException e) {
             log.error("Couldn't initialize the Location Implementation from " + clazzName + " class.", e);
         }
-
     }
 }
