@@ -29,7 +29,7 @@
               {
                 "id": "b",
                 "x": 4,
-                "y": 3,
+                "y": 6,
                 "width": 4,
                 "height": 3,
                 "banner": false
@@ -37,31 +37,31 @@
               {
                 "id": "c",
                 "x": 8,
-                "y": 9,
+                "y": 3,
                 "width": 4,
                 "height": 3,
                 "banner": false
               },
               {
                 "id": "e",
-                "x": 4,
-                "y": 6,
+                "x": 8,
+                "y": 9,
                 "width": 4,
                 "height": 3,
                 "banner": false
               },
               {
                 "id": "f",
-                "x": 4,
-                "y": 0,
+                "x": 8,
+                "y": 6,
                 "width": 4,
                 "height": 3,
                 "banner": false
               },
               {
                 "id": "c7be6c6fe8a515f2c52aeee8e1e9b83c",
-                "x": 8,
-                "y": 3,
+                "x": 0,
+                "y": 9,
                 "width": 4,
                 "height": 3,
                 "banner": false
@@ -69,23 +69,23 @@
               {
                 "id": "cb16edf0d4fffdd11b94ae9e9de34262",
                 "x": 4,
-                "y": 9,
+                "y": 0,
                 "width": 4,
                 "height": 3,
                 "banner": false
               },
               {
                 "id": "425009357c363a8ea2674b2cd5911efc",
-                "x": 8,
-                "y": 6,
+                "x": 4,
+                "y": 9,
                 "width": 4,
                 "height": 3,
                 "banner": false
               },
               {
                 "id": "2f13e19afc56fd69aceecd92e781b7fc",
-                "x": 0,
-                "y": 9,
+                "x": 4,
+                "y": 3,
                 "width": 4,
                 "height": 3,
                 "banner": false
@@ -192,19 +192,19 @@
           ],
           "f": [
             {
-              "id": "dyzfb8uao29e8kt9",
+              "id": "dnzepc37xdgc766r",
               "content": {
-                "id": "tier-limit-hitting",
-                "title": "Tier Limit Hitting",
+                "id": "tier-crossing",
+                "title": "Tier Crossing",
                 "type": "gadget",
                 "category": "Gadget",
-                "thumbnail": "store://gadget/tier-limit-hitting/index.png",
+                "thumbnail": "store://gadget/tier-crossing/index.png",
                 "data": {
-                  "url": "store://gadget/tier-limit-hitting/index.xml"
+                  "url": "store://gadget/tier-crossing/index.xml"
                 },
                 "styles": {
                   "borders": true,
-                  "title": "Tier Limit Hitting"
+                  "title": "Tier Crossing"
                 },
                 "options": {},
                 "locale_titles": {}
@@ -298,19 +298,19 @@
           "1965bf1c476d3c3777b1f9711e495530": [],
           "4a29d6220bd13fe46cd8b7ff50517b6c": [
             {
-              "id": "pwk8nhw4gqfr",
+              "id": "jd3302dvzjn8w7b9",
               "content": {
-                "id": "abnormal-request-per-min",
-                "title": "Abnormal Request Per Min",
+                "id": "abnormal-request-count",
+                "title": "Abnormal Request Count",
                 "type": "gadget",
                 "category": "Gadget",
-                "thumbnail": "store://gadget/abnormal-request-per-min/index.png",
+                "thumbnail": "store://gadget/abnormal-request-count/index.png",
                 "data": {
-                  "url": "store://gadget/abnormal-request-per-min/index.xml"
+                  "url": "store://gadget/abnormal-request-count/index.xml"
                 },
                 "styles": {
                   "borders": true,
-                  "title": "Abnormal Request Per Min"
+                  "title": "Abnormal Request Count"
                 },
                 "options": {},
                 "locale_titles": {}
