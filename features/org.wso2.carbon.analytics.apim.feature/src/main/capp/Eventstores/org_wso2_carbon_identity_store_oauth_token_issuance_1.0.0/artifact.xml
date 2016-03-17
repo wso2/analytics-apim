@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact name="org_wso2_carbon_identity_store_oauth_token_issuance" version="1.0.0" type="analytics/eventstore" serverRole="DataAnalyticsServer">
+    <file>org_wso2_carbon_identity_oauth_token_issuance.xml</file>
+</artifact>
