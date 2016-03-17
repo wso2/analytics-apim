@@ -11,6 +11,7 @@
         <dependency artifact="org_wso2_analytics_apim_store_abnormalResponseTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_abnormalAccessTokenRefresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_unusualIPAccess" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_carbon_identity_store_oauth_token_issuance" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestStatStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_requestPercentile" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_responsePercentile" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
