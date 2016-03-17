@@ -34,7 +34,7 @@ select *
 insert into NewIPDetectedStream;
 
 from NewIPDetectedStream
-select "[UnusualIPAccessAlert]" as type, str:concat("A request from a new IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, str:concat("A request from a new IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 from NewIPDetectedStream
@@ -43,15 +43,15 @@ insert into IPAccessSummary;
 
 -- Check if the request for the IP is received after the threshold time gap
 from ExistingUserStream[not (ip is null)]
-select requestHostName, consumerKey, time:dateDiff(requestTime, lastAccessedDate) as daysBetweenAccess, requestTime, userId, lastAccessedDate
+select requestHostName, consumerKey, (requestTime - lastAccessedDate) as timeBetweenAccess, requestTime, userId, lastAccessedDate
 insert into CheckAbnormalTimeBetweenAccessStream;
 
-from CheckAbnormalTimeBetweenAccessStream[daysBetweenAccess > 1]
+from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > (30*24*60*60)]
 select *
 insert into AbnormalTimeBetweenAccessStream;
 
 from AbnormalTimeBetweenAccessStream
-select "[UnusualIPAccessAlert]" as type, str:concat("A request from an Old IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, str:concat("A request from an Old IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream
@@ -60,6 +60,6 @@ select type, str:concat('UserId: ',userId, ' ', msg) as msg, (time:timestampInMi
 insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate
-from CheckAbnormalTimeBetweenAccessStream[daysBetweenAccess > 0]
+from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > 24*60*60]
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;

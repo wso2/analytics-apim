@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact name="org_wso2_carbon_identity_oauth_token_issuance_receiver" version="1.0.0" type="event/receiver" serverRole="DataAnalyticsServer">
+    <file>org_wso2_carbon_identity_oauth_token_issuance_receiver.xml</file>
+</artifact>
