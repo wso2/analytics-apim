@@ -34,7 +34,7 @@ select *
 insert into NewIPDetectedStream;
 
 from NewIPDetectedStream
-select "[UnusualIPAccessAlert]" as type, str:concat("A request from a new IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, str:concat("A request from a new IP detected! IP: ",requestHostName) as msg, requestHostName as ip, consumerKey, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 from NewIPDetectedStream
