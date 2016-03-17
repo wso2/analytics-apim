@@ -9,8 +9,10 @@
 @Import('org.wso2.carbon.identity.oauth.token.issuance:1.0.0')
 define stream OAuthStream (user string, tenantDomain string, userstoreDomain string, clientId string, grantType string, tokenId string, authzScopes string, unAuthzScopes string, isSuccess bool, errorCode string, errorMsg string, accessTokenValidityMillis long, refreshTokenValidityMillis long, issuedTime long);
 
+
+
 @Export('org.wso2.analytics.apim.alert.abnormalTokenRefresh:1.0.0')
-define stream alert_abnormalTokenRefreshStream (user string, clientId string, scope string, timestamp long, alertTimestamp long);
+define stream alert_abnormalTokenRefreshStream (user string, clientId string, scope string, timestamp long, alertTimestamp long, msg string);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream alert_allAPIMAlertsStream (type string, msg string, alertTimestamp long);
@@ -53,9 +55,9 @@ select trs.userId as userId, trs.clientId as clientId, trs.scopes as scopes, ats
 insert into AbnormalityTesterStream;
 
 from AbnormalityTesterStream[ timeDifference < minTimeDifference or timeDifference > maxTimeDifference]
-select userId as user, clientId, scopes as scope, timestamp,(time:timestampInMilliseconds()) as alertTimestamp 
+select userId as user, clientId, scopes as scope, timestamp,(time:timestampInMilliseconds()) as alertTimestamp,str:concat(' User: ', userId, ' ClientID: ', clientId, ' Scopes: ', scopes, ' Time: ', timestamp) as msg 
 insert into alert_abnormalTokenRefreshStream;
 
 from alert_abnormalTokenRefreshStream
-select "[AbnormalRefreshAlert]" as type, str:concat(' User: ', user, ' ClientID: ', clientId, ' Scopes: ', scope, ' Time: ', timestamp) as msg, (time:timestampInMilliseconds()) as alertTimestamp 
+select "AbnormalRefreshAlert" as type,msg, (time:timestampInMilliseconds()) as alertTimestamp 
 insert into alert_allAPIMAlertsStream;

@@ -1,0 +1,14 @@
+{
+  "id": "all-alerts",
+  "title": "All Alerts",
+  "type": "gadget",
+  "category": "Gadget",
+  "thumbnail": "store://gadget/all-alerts/index.png",
+  "data": {
+    "url": "store://gadget/all-alerts/index.xml"
+  },
+  "styles": {
+    "borders": true,
+    "title": true
+  },
+}
