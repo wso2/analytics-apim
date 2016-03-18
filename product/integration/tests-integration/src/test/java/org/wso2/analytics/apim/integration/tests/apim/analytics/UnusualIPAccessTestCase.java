@@ -34,11 +34,11 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     private String streamVersion = "1.1.0";
     private String testResourcePath = "unusualIPAccess";
     private String publisherFileName = "logger.xml";
+    private String alertTableName = "IPACCESSSUMMARY";
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
         super.init();
-
         // deploy the publisher xml file
         deployPublisher(testResourcePath, publisherFileName);
         // publish the csv data
@@ -87,5 +87,24 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "\"ip\":\"192.168.7.1\",\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\"," +
                 "\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"");
         Assert.assertTrue(oldIpDetectedAlert, "Old IP Detected event not received!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test No new IP detected for first event", dependsOnMethods = "testOldIPDetectedAlert")
+    public void testFirstEventAlert() throws Exception {
+        deleteData(-1234, alertTableName.replace('.', '_'));
+        Thread.sleep(5000);
+        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
+        EventDto eventDto = new EventDto();
+        eventDto.setEventStreamId(getStreamId(streamName, streamVersion));
+        eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
+                , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
+                "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.4"});
+        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+        Thread.sleep(5000);
+
+        boolean newIPDetectedAlertFound = isAlertReceived(beforeCount, ":\"UnusualIPAccessAlert\",\"msg\":" +
+                "\"A request from a new IP detected! IP: 192.168.7.4\",\"ip\":\"192.168.7.4\",\"consumerKey\":" +
+                "\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"");
+        Assert.assertFalse(newIPDetectedAlertFound, "New IP Detected alert received for first event!");
     }
 }

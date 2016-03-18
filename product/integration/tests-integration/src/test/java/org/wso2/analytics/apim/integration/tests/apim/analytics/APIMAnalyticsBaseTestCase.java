@@ -32,6 +32,7 @@ import org.wso2.analytics.apim.integration.common.utils.DASIntegrationTest;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.api.CarbonAnalyticsAPI;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
@@ -144,6 +145,16 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      */
     protected void undeployPublisher(String publisherFileName) throws RemoteException {
         eventPublisherAdminServiceClient.removeInactiveEventPublisherConfiguration(publisherFileName);
+    }
+
+    /**
+     * Delete data from a given table.
+     * @param tenantId Tenant ID.
+     * @param tableName Name of the Table.
+     * @throws AnalyticsException
+     */
+    public void deleteData(int tenantId, String tableName) throws AnalyticsException{
+        analyticsDataAPI.delete(tenantId, tableName, Long.MIN_VALUE, Long.MAX_VALUE);
     }
 
     /**
