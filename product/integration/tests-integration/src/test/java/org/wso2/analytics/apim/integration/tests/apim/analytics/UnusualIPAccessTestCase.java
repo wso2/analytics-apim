@@ -64,7 +64,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         eventSimulatorAdminServiceClient.sendEvent(eventDto);
         Thread.sleep(5000);
 
-        boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"[UnusualIPAccessAlert]\"," +
+        boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
                 "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
                 "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
                 "\"requestTime\":1455785133344,");
