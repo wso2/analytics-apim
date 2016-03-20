@@ -30,25 +30,25 @@ import java.rmi.RemoteException;
 public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     private static final Log log = LogFactory.getLog(UnusualIPAccessTestCase.class);
 
-    private String streamName = "org.wso2.apimgt.statistics.request";
-    private String streamVersion = "1.1.0";
-    private String testResourcePath = "unusualIPAccess";
-    private String publisherFileName = "logger.xml";
-    private String alertTableName = "IPACCESSSUMMARY";
+    private final String STREAM_NAME = "org.wso2.apimgt.statistics.request";
+    private final String STREAM_VERSION = "1.1.0";
+    private final String TEST_RESOURCE_PATH = "unusualIPAccess";
+    private final String PUBLISHER_FILE = "logger.xml";
+    private final String ALERT_TABLE_NAME = "IPACCESSSUMMARY";
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
         super.init();
         // deploy the publisher xml file
-        deployPublisher(testResourcePath, publisherFileName);
+        deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
         // publish the csv data
-        pubishEventsFromCSV(testResourcePath, "sim.csv", getStreamId(streamName, streamVersion), 100);
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws RemoteException {
         // undeploy the publishers
-        undeployPublisher(publisherFileName);
+        undeployPublisher(PUBLISHER_FILE);
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test New IP detected Alert")
@@ -57,11 +57,11 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
 
         EventDto eventDto = new EventDto();
-        eventDto.setEventStreamId(getStreamId(streamName, streamVersion));
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1"});
-        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+        publishEvent(eventDto);
         Thread.sleep(5000);
 
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
@@ -76,11 +76,11 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
 
         EventDto eventDto = new EventDto();
-        eventDto.setEventStreamId(getStreamId(streamName, streamVersion));
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1"});
-        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+        publishEvent(eventDto);
         Thread.sleep(5000);
 
         boolean oldIpDetectedAlert = isAlertReceived(beforeCount, "\"msg\":\"A request from an Old IP detected! IP: 192.168.7.1\"," +
@@ -91,15 +91,15 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
 
     @Test(groups = "wso2.analytics.apim", description = "Test No new IP detected for first event", dependsOnMethods = "testOldIPDetectedAlert")
     public void testFirstEventAlert() throws Exception {
-        deleteData(-1234, alertTableName.replace('.', '_'));
+        deleteData(-1234, ALERT_TABLE_NAME.replace('.', '_'));
         Thread.sleep(5000);
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
         EventDto eventDto = new EventDto();
-        eventDto.setEventStreamId(getStreamId(streamName, streamVersion));
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.4"});
-        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+        publishEvent(eventDto);
         Thread.sleep(5000);
 
         boolean newIPDetectedAlertFound = isAlertReceived(beforeCount, ":\"UnusualIPAccessAlert\",\"msg\":" +
