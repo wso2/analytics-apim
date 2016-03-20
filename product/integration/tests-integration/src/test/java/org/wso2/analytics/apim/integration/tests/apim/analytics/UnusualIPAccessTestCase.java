@@ -61,7 +61,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1"});
-        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+        publishEvent(eventDto);
         Thread.sleep(5000);
 
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
@@ -80,7 +80,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1"});
-        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+        publishEvent(eventDto);
         Thread.sleep(5000);
 
         boolean oldIpDetectedAlert = isAlertReceived(beforeCount, "\"msg\":\"A request from an Old IP detected! IP: 192.168.7.1\"," +
@@ -99,7 +99,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.4"});
-        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+        publishEvent(eventDto);
         Thread.sleep(5000);
 
         boolean newIPDetectedAlertFound = isAlertReceived(beforeCount, ":\"UnusualIPAccessAlert\",\"msg\":" +
