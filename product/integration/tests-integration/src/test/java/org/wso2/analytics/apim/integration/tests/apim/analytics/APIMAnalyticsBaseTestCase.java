@@ -157,6 +157,17 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     }
 
     /**
+     * Know if a table exists or not.
+     * @param tenantId Tenant ID of the table.
+     * @param tableName name of the Table.
+     * @return true if a table exists with that name.
+     * @throws AnalyticsException
+     */
+    protected boolean isTableExist(int tenantId, String tableName) throws AnalyticsException {
+        return analyticsDataAPI.tableExists(-1234, tableName);
+    }
+
+    /**
      * Executes a given spark script.
      * @param scriptName name of the Spark Script.
      * @throws Exception
