@@ -37,6 +37,8 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
     private final String TEST_RESOURCE_PATH = "abnormalTokenRefresh";
     private final String PUBLISHER_FILE = "logger_abnormalAccessTokenRefresh.xml";
     private final String SPARK_SCRIPT = "org_wso2_analytics_apim_abnormal_access_token_refresh";
+    private final String SUMMARY_TABLE = "AccessTokenRefreshSummaryTable";
+    private final int MAX_TRIES = 5;
     private long initialTimestamp;
     private String BASE_EVENT_STRING = "apim,carbon.super,home,s8SWbnmzQEgzMIsol7AHt9cjhEsa,refreshToken,id1232,ab,c,true,200," +
             "success,86400,604800,";
@@ -60,18 +62,52 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         Assert.assertTrue(isSparkScriptExists(SPARK_SCRIPT), "Abnormal Token Refresh Alert spark script is not deployed!");
     }
 
-    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Access Token Refresh Alert", dependsOnMethods = "testSparkScriptDeployment")
-    public void testAbnormalTokenRefreshAlert() throws Exception {
-        int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+    @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
+            , dependsOnMethods = "testSparkScriptDeployment")
+    public void testSimulationDataSent() throws Exception {
         //publish training data
         List<EventDto> eventDtoList = publishSimulationData();
         pubishEvents(eventDtoList, 100);
-        Thread.sleep(4000);
 
+        int i = 0;
+        long oAuthEventCount = 0;
+        boolean eventsPublished = false;
+        while (i < MAX_TRIES) {
+            Thread.sleep(2000);
+            oAuthEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
+            eventsPublished = (oAuthEventCount == 6);
+            if (eventsPublished) {
+                break;
+            }
+            i++;
+        }
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Access Token Refresh Alert Spark Script execution"
+            , dependsOnMethods = "testSimulationDataSent")
+    public void testScriptExecution() throws Exception {
         //run the script
         executeSparkScript(SPARK_SCRIPT);
-        Thread.sleep(10000);
+        int i = 0;
+        long summaryTableCount = 0;
+        boolean scriptExecuted = false;
+        while (i < MAX_TRIES) {
+            Thread.sleep(10000);
+            summaryTableCount = getRecordCount(-1234, SUMMARY_TABLE);
+            scriptExecuted = (summaryTableCount == 1);
+            if (scriptExecuted) {
+                break;
+            }
+            i++;
+        }
+        Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Access Token Refresh Alert",
+            dependsOnMethods = "testScriptExecution")
+    public void testAbnormalTokenRefreshAlert() throws Exception {
+        int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
 
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
