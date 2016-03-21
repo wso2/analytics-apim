@@ -100,6 +100,17 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     }
 
     /**
+     * Returns the table count of an INDEXED table.
+     * @param tenantId ID of the tenant.
+     * @param tableName name of the Table.
+     * @return number of records in the table.
+     * @throws AnalyticsException
+     */
+    protected long getRecordCount(int tenantId, String tableName) throws AnalyticsException {
+        return analyticsDataAPI.searchCount(tenantId, tableName, "*:*");
+    }
+
+    /**
      * Publishes events from a given csv file.
      * @param testResourcePath test resources folder.
      * @param resourceName name of the file.
