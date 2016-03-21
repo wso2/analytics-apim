@@ -23,4 +23,10 @@ public class APIMAnalyticsIntegrationTestConstants {
     public static final String RELATIVE_PATH_TO_TEST_ARTIFACTS = "analytics" + File.separator + "apim" +
             File.separator + "artifacts" + File.separator;
     public static final int TCP_PORT = 8461;
+
+    //constants related to RequestPatternChange Tests
+    public static final String REQUEST_COUNT_TABLE = "ORG_WSO2_ANALYTICS_APIM_REQUESTCOUNTTABLE";
+    public static final String FIRST_COUNT_TABLE = "ORG_WSO2_ANALYTICS_APIM_FIRSTCOUNTTABLE";
+    public static final String MARKOV_MODEL_TABLE = "ORG_WSO2_ANALYTICS_APIM_MARKOVMODELTABLE";
+
 }
