@@ -1,0 +1,17 @@
+<GeoLocation>
+	<!-- This will define the Type of Geolocation Implementation
+		RDBMS - Data which we put into the query server
+		CUSTOM - Custom implementation
+-->
+	<Type>RDBMS</Type>
+	<ImplClass>org.wso2.carbon.analytics.apim.spark.geolocation.impl.LocationResolverRdbms</ImplClass>
+		<!-- this will need to configured if implementation type is RDBMS-->
+	<DataSource>jdbc/wso2ipdata</DataSource>
+	<Cache>
+		<enabled>true</enabled>
+		<persist>true</persist>
+		<IpResolveCacheCount>11509</IpResolveCacheCount>
+		<IpToLongCacheCount>11509</IpToLongCacheCount>
+	</Cache>
+</GeoLocation>
+
