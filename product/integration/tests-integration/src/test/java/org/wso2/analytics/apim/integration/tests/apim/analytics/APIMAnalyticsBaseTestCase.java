@@ -29,6 +29,7 @@ import org.testng.Assert;
 import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
 import org.wso2.analytics.apim.integration.common.clients.EventPublisherAdminServiceClient;
 import org.wso2.analytics.apim.integration.common.clients.EventSimulatorAdminServiceClient;
+import org.wso2.analytics.apim.integration.common.clients.ExecutionManagerAdminServiceClient;
 import org.wso2.analytics.apim.integration.common.utils.CSVSimulatorUtil;
 import org.wso2.analytics.apim.integration.common.utils.DASIntegrationTest;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
@@ -39,6 +40,8 @@ import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminService
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
+import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.TemplateConfigurationDTO;
+import org.wso2.carbon.event.execution.manager.admin.dto.domain.xsd.ParameterDTO;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
 import org.wso2.carbon.logging.view.stub.LogViewerLogViewerException;
@@ -61,6 +64,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     private AnalyticsDataAPI analyticsDataAPI;
     private AnalyticsProcessorAdminServiceStub analyticsStub;
     protected EventPublisherAdminServiceClient eventPublisherAdminServiceClient;
+    protected ExecutionManagerAdminServiceClient executionManagerAdminServiceClient;
     protected LogViewerClient logViewerClient;
     protected EventSimulatorAdminServiceClient eventSimulatorAdminServiceClient;
 
@@ -68,6 +72,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         super.init();
         String session = getSessionCookie();
         eventPublisherAdminServiceClient = getEventPublisherAdminServiceClient(backendURL, session);
+        executionManagerAdminServiceClient = getExecutionManagerAdminServiceClient(backendURL, session);
         logViewerClient = new LogViewerClient(backendURL, session);
         String apiConf =
                 new File(this.getClass().getClassLoader().
@@ -288,6 +293,22 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         return configElement.toString();
     }
 
+    protected void saveConfiguration(TemplateConfigurationDTO templateConfigDTO) throws RemoteException {
+        executionManagerAdminServiceClient.saveConfiguration(templateConfigDTO);
+    }
+
+    protected ParameterDTO getParameterDTO(String name, String defaultValue, String type){
+        ParameterDTO parameterDTO = new ParameterDTO();
+        parameterDTO.setName(name);
+        parameterDTO.setDefaultValue(defaultValue);
+        parameterDTO.setType(type);
+        return parameterDTO;
+    }
+
+    protected TemplateConfigurationDTO getConfiguration (String domainName, String configurationName) throws RemoteException {
+        return executionManagerAdminServiceClient.getConfiguration(domainName,configurationName);
+    }
+
     private String getTestArtifactLocation() {
         return FrameworkPathUtil.getSystemResourceLocation();
     }
@@ -337,12 +358,29 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         return eventPublisherAdminServiceClient;
     }
 
+    protected ExecutionManagerAdminServiceClient getExecutionManagerAdminServiceClient(
+            String backendURL, String loggedInSessionCookie) throws AxisFault {
+        initExecutionManagerAdminServiceClient(backendURL, loggedInSessionCookie);
+        return executionManagerAdminServiceClient;
+    }
+
     private void initEventPublisherAdminServiceClient(
             String backendURL,
             String loggedInSessionCookie)
             throws AxisFault {
         eventPublisherAdminServiceClient = new EventPublisherAdminServiceClient(backendURL, loggedInSessionCookie);
         ServiceClient client = eventPublisherAdminServiceClient._getServiceClient();
+        Options options = client.getOptions();
+        options.setManageSession(true);
+        options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
+    }
+
+    private void initExecutionManagerAdminServiceClient(
+            String backendURL,
+            String loggedInSessionCookie)
+            throws AxisFault {
+        executionManagerAdminServiceClient = new ExecutionManagerAdminServiceClient(backendURL, loggedInSessionCookie);
+        ServiceClient client = executionManagerAdminServiceClient._getServiceClient();
         Options options = client.getOptions();
         options.setManageSession(true);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
