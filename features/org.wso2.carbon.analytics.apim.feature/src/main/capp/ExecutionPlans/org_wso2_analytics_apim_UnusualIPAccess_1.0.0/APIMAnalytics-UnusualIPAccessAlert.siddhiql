@@ -16,20 +16,42 @@ define stream alertIpAccessAbnormality (type string, msg string, ip string, cons
 @from(eventtable = 'analytics.table', table.name = 'IPAccessSummary', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
 
+@from(eventtable = 'analytics.table', table.name = 'IPAccessAlertCount', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount')
+define table IPAccessAlertCount (userId string, consumerKey string, requestCount long) ;
+
 -- Consumer key is already in the table
 from APIMRequest[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
 on api.consumerKey == ais.consumerKey and api.clientIp == ais.ip
 select api.consumerKey as consumerKey, api.userId as userId, api.clientIp as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate
-insert into ExistingUserStream;
+insert into TempStream;
 
 -- New consumer key
 from APIMRequest[not (consumerKey == IPAccessSummary.consumerKey in IPAccessSummary)]
 select userId, consumerKey, clientIp as ip, requestTime as lastAccessedDate
+insert into NewConsumerKeyStream;
+
+from NewConsumerKeyStream
+select userId, consumerKey, ip, lastAccessedDate
 insert into IPAccessSummary;
+
+
+-- Adding the alert count
+from NewConsumerKeyStream
+select userId, consumerKey, convert('1','long') as requestCount
+insert into IPAccessAlertCount;
+
+from TempStream as ts join IPAccessAlertCount as iaac
+on ts.consumerKey == iaac.consumerKey and ts.userId == iaac.userId
+select ts.consumerKey as consumerKey, ts.userId as userId, ts.requestHostName as requestHostName, ts.ip as ip, ts.requestTime as requestTime, ts.lastAccessedDate as lastAccessedDate, iaac.requestCount as requestCount
+insert into ExistingUserStream;
+
+from ExistingUserStream
+select userId, consumerKey, (requestCount + 1) as requestCount
+insert into IPAccessAlertCount;
 
 -- A new request source IP
 -- generate alert and add it to the table
-from ExistingUserStream[ip is null]
+from ExistingUserStream[ip is null and requestCount > 500]
 select *
 insert into NewIPDetectedStream;
 
@@ -42,7 +64,7 @@ select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDa
 insert into IPAccessSummary;
 
 -- Check if the request for the IP is received after the threshold time gap
-from ExistingUserStream[not (ip is null)]
+from ExistingUserStream[(not (ip is null)) and requestCount > 500]
 select requestHostName, consumerKey, (requestTime - lastAccessedDate) as timeBetweenAccess, requestTime, userId, lastAccessedDate
 insert into CheckAbnormalTimeBetweenAccessStream;
 
