@@ -37,12 +37,11 @@ public class CSVSimulatorUtil {
         String cvsSplitBy = ",";
 
         List<EventDto> eventDtoList = new ArrayList<>();
-        EventDto tempEvent;
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            tempEvent = new EventDto();
-            tempEvent.setEventStreamId(streamId);
             while ((line = br.readLine()) != null) {
                 // use comma as separator
+                EventDto tempEvent = new EventDto();
+                tempEvent.setEventStreamId(streamId);
                 String[] eventArray = line.split(cvsSplitBy);
                 tempEvent.setAttributeValues(eventArray);
                 eventDtoList.add(tempEvent);
