@@ -9,10 +9,8 @@
 @Import('org.wso2.carbon.identity.oauth.token.issuance:1.0.0')
 define stream OAuthStream (user string, tenantDomain string, userstoreDomain string, clientId string, grantType string, tokenId string, authzScopes string, unAuthzScopes string, isSuccess bool, errorCode string, errorMsg string, accessTokenValidityMillis long, refreshTokenValidityMillis long, issuedTime long);
 
-
-
 @Export('org.wso2.analytics.apim.alert.abnormalTokenRefresh:1.0.0')
-define stream alert_abnormalTokenRefreshStream (user string, clientId string, scope string, timestamp long, alertTimestamp long, msg string);
+define stream alert_abnormalTokenRefreshStream (user string, scope string, timestamp long, alertTimestamp long, msg string, consumerKey string);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream alert_allAPIMAlertsStream (type string, msg string, alertTimestamp long);
@@ -27,37 +25,37 @@ define table AccessTokenRefreshTable (userId string, clientId string, scopes str
 define table AccessTokenRefreshSummaryTable (userId string, clientId string, scopes string, minTimeDifference double, maxTimeDifference double);
 
 
-
---- Filter out the successfull token refresh events
+--- Filter out the successful token refresh events
 from OAuthStream[grantType == 'refreshToken' and isSuccess == true]
 select str:concat(tenantDomain, '-', userstoreDomain , '-' , user) as userId, clientId, authzScopes as scopes, issuedTime as timestamp
 insert into RefreshTokenStream;
 
---- Persist the time difference between consequent access token refreshes
+--- Calculate the time difference between consequent access token refreshes
 from RefreshTokenStream as rts join LastAccessTokenRefreshTable as lrt
 on rts.userId == lrt.userId and rts.clientId == lrt.clientId and rts.scopes == lrt.scopes
 select rts.userId as userId, rts.clientId as clientId, rts.scopes as scopes, (rts.timestamp - lrt.timestamp) as timeDifference, rts.timestamp as timestamp
 insert into AccessTokenRefreshTimeStream;
 
-from AccessTokenRefreshTimeStream
-select *
-insert into AccessTokenRefreshTable;
-
--- Persist the latest refresh token event
-from RefreshTokenStream
-select *
-insert into LastAccessTokenRefreshTable;
-
 --- Test the events from abnormal refreshes
 from AccessTokenRefreshTimeStream as trs join AccessTokenRefreshSummaryTable as atst
 on trs.userId == atst.userId and trs.clientId == atst.clientId and trs.scopes == atst.scopes
-select trs.userId as userId, trs.clientId as clientId, trs.scopes as scopes, atst.minTimeDifference as minTimeDifference, atst.maxTimeDifference as maxTimeDifference, trs.timeDifference as timeDifference, trs.timestamp as timestamp
+select trs.userId as userId, trs.clientId as consumerKey, trs.scopes as scopes, atst.minTimeDifference as minTimeDifference, atst.maxTimeDifference as maxTimeDifference, trs.timeDifference as timeDifference, trs.timestamp as timestamp
 insert into AbnormalityTesterStream;
 
 from AbnormalityTesterStream[ timeDifference < minTimeDifference or timeDifference > maxTimeDifference]
-select userId as user, clientId, scopes as scope, timestamp,(time:timestampInMilliseconds()) as alertTimestamp,str:concat(' User: ', userId, ' ClientID: ', clientId, ' Scopes: ', scopes, ' Time: ', timestamp) as msg 
+select userId as user, scopes as scope, timestamp,(time:timestampInMilliseconds()) as alertTimestamp,str:concat('Abnormal Access Token Refresh Detected from User:',userId,' for Consumer Key: ', consumerKey, ' at: ', timestamp) as msg, consumerKey
 insert into alert_abnormalTokenRefreshStream;
 
 from alert_abnormalTokenRefreshStream
 select "AbnormalRefreshAlert" as type,msg, (time:timestampInMilliseconds()) as alertTimestamp 
 insert into alert_allAPIMAlertsStream;
+
+-- Persist the time difference between consequent access token refreshes
+from AccessTokenRefreshTimeStream
+select *
+insert into AccessTokenRefreshTable;
+
+-- Persist the latest refresh token
+from RefreshTokenStream
+select *
+insert into LastAccessTokenRefreshTable;
