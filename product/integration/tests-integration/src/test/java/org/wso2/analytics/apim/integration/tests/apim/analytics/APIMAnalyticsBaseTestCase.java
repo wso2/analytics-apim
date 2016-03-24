@@ -23,6 +23,8 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
 import org.testng.Assert;
 import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
 import org.wso2.analytics.apim.integration.common.clients.EventPublisherAdminServiceClient;
@@ -32,6 +34,9 @@ import org.wso2.analytics.apim.integration.common.utils.DASIntegrationTest;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.api.CarbonAnalyticsAPI;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
+import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException;
+import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
@@ -51,8 +56,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 
 public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
+    private static final String ANALYTICS_SERVICE_NAME = "AnalyticsProcessorAdminService";
     private DataPublisherClient dataPublisherClient;
     private AnalyticsDataAPI analyticsDataAPI;
+    private AnalyticsProcessorAdminServiceStub analyticsStub;
     protected EventPublisherAdminServiceClient eventPublisherAdminServiceClient;
     protected LogViewerClient logViewerClient;
     protected EventSimulatorAdminServiceClient eventSimulatorAdminServiceClient;
@@ -67,34 +74,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
                         getResource("dasconfig" + File.separator + "analytics-data-config.xml").toURI()).getAbsolutePath();
         analyticsDataAPI = new CarbonAnalyticsAPI(apiConf);
         eventSimulatorAdminServiceClient = getEventSimulatorAdminServiceClient(backendURL, session);
-    }
-
-    /**
-     * Publishes a single event.
-     * @param streamName name of the stream.
-     * @param streamVersion version of the stream.
-     * @param event event.
-     * @throws Exception
-     */
-    protected void publishEvent(String streamName, String streamVersion, Event event) throws Exception {
-        dataPublisherClient = new DataPublisherClient();
-        dataPublisherClient.publish(streamName, streamVersion, event);
-        Thread.sleep(1000);
-        dataPublisherClient.shutdown();
-    }
-
-    /**
-     * Publishes a given set of events.
-     * @param streamName name of the stream.
-     * @param streamVersion version of the stream.
-     * @param events list of events.
-     * @throws Exception
-     */
-    protected void pubishEvents(String streamName, String streamVersion, List<Event> events) throws Exception {
-        dataPublisherClient = new DataPublisherClient();
-        dataPublisherClient.publish(streamName, streamVersion, events);
-        Thread.sleep(5000);
-        dataPublisherClient.shutdown();
+        initializeStub();
     }
 
     /**
@@ -108,6 +88,26 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
             eventSimulatorAdminServiceClient.sendEvent(events.get(i));
             Thread.sleep(timeGapBetweenEvents);
         }
+    }
+
+    /**
+     * Sends a single event.
+     * @param eventDto EventDTO of the event.
+     * @throws RemoteException
+     */
+    protected void publishEvent(EventDto eventDto) throws RemoteException {
+        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+    }
+
+    /**
+     * Returns the table count of an INDEXED table.
+     * @param tenantId ID of the tenant.
+     * @param tableName name of the Table.
+     * @return number of records in the table.
+     * @throws AnalyticsException
+     */
+    protected long getRecordCount(int tenantId, String tableName) throws AnalyticsException {
+        return analyticsDataAPI.searchCount(tenantId, tableName, "*:*");
     }
 
     /**
@@ -144,6 +144,55 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      */
     protected void undeployPublisher(String publisherFileName) throws RemoteException {
         eventPublisherAdminServiceClient.removeInactiveEventPublisherConfiguration(publisherFileName);
+    }
+
+    /**
+     * Delete data from a given table.
+     * @param tenantId Tenant ID.
+     * @param tableName Name of the Table.
+     * @throws AnalyticsException
+     */
+    protected void deleteData(int tenantId, String tableName) throws AnalyticsException{
+        analyticsDataAPI.delete(tenantId, tableName, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    /**
+     * Know if a table exists or not.
+     * @param tenantId Tenant ID of the table.
+     * @param tableName name of the Table.
+     * @return true if a table exists with that name.
+     * @throws AnalyticsException
+     */
+    protected boolean isTableExist(int tenantId, String tableName) throws AnalyticsException {
+        return analyticsDataAPI.tableExists(-1234, tableName);
+    }
+
+    /**
+     * Executes a given spark script.
+     * @param scriptName name of the Spark Script.
+     * @throws Exception
+     */
+    protected void executeSparkScript(String scriptName) throws Exception{
+        analyticsStub.executeScript(scriptName);
+    }
+
+    /**
+     * Returns true if the Spark Script exists in the server.
+     * @param scriptName Name of the spark script.
+     * @return
+     * @throws RemoteException
+     * @throws AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException
+     */
+    protected boolean isSparkScriptExists(String scriptName) throws RemoteException, AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException {
+        AnalyticsProcessorAdminServiceStub.AnalyticsScriptDto[] scriptDtos = analyticsStub.getAllScripts();
+        if (scriptDtos != null){
+            for (AnalyticsProcessorAdminServiceStub.AnalyticsScriptDto scriptDto: scriptDtos){
+                if (scriptDto.getName().equalsIgnoreCase(scriptName)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -187,6 +236,34 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
                 APIMAnalyticsIntegrationTestConstants.RELATIVE_PATH_TO_TEST_ARTIFACTS + testCaseFolderName + "/"
                 + configFileName;
         return relativeFilePath;
+    }
+
+    /**
+     * Publishes a single event.
+     * @param streamName name of the stream.
+     * @param streamVersion version of the stream.
+     * @param event event.
+     * @throws Exception
+     */
+    protected void publishEvent(String streamName, String streamVersion, Event event) throws Exception {
+        dataPublisherClient = new DataPublisherClient();
+        dataPublisherClient.publish(streamName, streamVersion, event);
+        Thread.sleep(1000);
+        dataPublisherClient.shutdown();
+    }
+
+    /**
+     * Publishes a given set of events.
+     * @param streamName name of the stream.
+     * @param streamVersion version of the stream.
+     * @param events list of events.
+     * @throws Exception
+     */
+    protected void pubishEvents(String streamName, String streamVersion, List<Event> events) throws Exception {
+        dataPublisherClient = new DataPublisherClient();
+        dataPublisherClient.publish(streamName, streamVersion, events);
+        Thread.sleep(5000);
+        dataPublisherClient.shutdown();
     }
     /**
      * @param testCaseFolderName Name of the folder created under /artifacts/CEP for the particular test case.
@@ -279,5 +356,18 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         Options options = client.getOptions();
         options.setManageSession(true);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
+    }
+
+    private void initializeStub() throws Exception {
+        ConfigurationContext configContext = ConfigurationContextFactory.
+                createConfigurationContextFromFileSystem(null);
+        String loggedInSessionCookie = getSessionCookie();
+        analyticsStub = new AnalyticsProcessorAdminServiceStub(configContext,
+                backendURL + "/services/" + ANALYTICS_SERVICE_NAME);
+        ServiceClient client = analyticsStub._getServiceClient();
+        Options option = client.getOptions();
+        option.setManageSession(true);
+        option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING,
+                loggedInSessionCookie);
     }
 }

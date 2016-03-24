@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<analytics-data-purging>
+    <cron-expression>0 0 0 * * ?</cron-expression>
+    <purge-include-tables>
+        <table>IPACCESSSUMMARY</table>
+    </purge-include-tables>
+    <data-retention-days>60</data-retention-days>
+</analytics-data-purging>

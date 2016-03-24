@@ -26,6 +26,8 @@
         <dependency artifact="org_wso2_analytics_apim_AbnormalRequestCountDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_AbnormalResponseAndBackendTimeDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_UnusualIPAccessAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_unusualIPAccess_purge" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_accessTokenRefresh_purge" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_request_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_response_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_store_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
