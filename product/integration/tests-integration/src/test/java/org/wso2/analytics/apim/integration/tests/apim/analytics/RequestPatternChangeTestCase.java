@@ -34,6 +34,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_VERSION = "1.1.0";
     private final String TEST_RESOURCE_PATH = "requestPatternChange";
     private final String PUBLISHER_FILE = "logger_requestPatternChange.xml";
+    private final int MAX_TRIES = 5;
 
 
     @BeforeClass(alwaysRun = true)
@@ -62,7 +63,24 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         undeployPublisher(PUBLISHER_FILE);
     }
 
-    @Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert")
+    @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published")
+    public void testSimulationDataSent() throws Exception {
+        int i = 0;
+        long requestEventCount = 0;
+        boolean eventsPublished = false;
+        while (i < MAX_TRIES) {
+            Thread.sleep(2000);
+            requestEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
+            eventsPublished = (requestEventCount == 500);
+            if (eventsPublished) {
+                break;
+            }
+            i++;
+        }
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert", dependsOnMethods = "testSimulationDataSent")
     public void testRequestPatternChangeAlert() throws Exception {
 
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
