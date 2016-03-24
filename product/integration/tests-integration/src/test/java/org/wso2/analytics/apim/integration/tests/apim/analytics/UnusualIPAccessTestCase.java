@@ -84,12 +84,11 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1"});
         publishEvent(eventDto);
-        Thread.sleep(5000);
 
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
                 "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
                 "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
-                "\"requestTime\":1455785133344,");
+                "\"requestTime\":1455785133344,", 5 ,2000);
         Assert.assertFalse(newIpDetectedAlertFound, "Request count alert suppression does not work");
     }
 
@@ -104,12 +103,11 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1"});
         publishEvent(eventDto);
-        Thread.sleep(5000);
 
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
                 "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
                 "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
-                "\"requestTime\":1455785133344,");
+                "\"requestTime\":1455785133344,", 5 ,2000);
         Assert.assertTrue(newIpDetectedAlertFound, "New IP Detected event not received!");
     }
 
@@ -123,11 +121,10 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1"});
         publishEvent(eventDto);
-        Thread.sleep(5000);
 
         boolean oldIpDetectedAlert = isAlertReceived(beforeCount, "\"msg\":\"A request from an Old IP detected! IP: 192.168.7.1\"," +
                 "\"ip\":\"192.168.7.1\",\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\"," +
-                "\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"");
+                "\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"", 5 ,2000);
         Assert.assertTrue(oldIpDetectedAlert, "Old IP Detected event not received!");
     }
 
@@ -142,11 +139,10 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.4"});
         publishEvent(eventDto);
-        Thread.sleep(5000);
 
         boolean newIPDetectedAlertFound = isAlertReceived(beforeCount, ":\"UnusualIPAccessAlert\",\"msg\":" +
                 "\"A request from a new IP detected! IP: 192.168.7.4\",\"ip\":\"192.168.7.4\",\"consumerKey\":" +
-                "\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"");
+                "\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"", 5 ,2000);
         Assert.assertFalse(newIPDetectedAlertFound, "New IP Detected alert received for first event!");
     }
 }

@@ -121,9 +121,8 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
 
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "alertSimulator.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
-        Thread.sleep(1000);
 
-        boolean abnormalRequestCountAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalRequestCount");
+        boolean abnormalRequestCountAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalRequestCount", 5 ,1000);
         Assert.assertTrue(abnormalRequestCountAlertTriggered, "Abnormal Response Count Alert event not received!");
     }
 

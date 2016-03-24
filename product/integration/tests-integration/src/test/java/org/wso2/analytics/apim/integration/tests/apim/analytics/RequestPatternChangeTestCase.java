@@ -75,9 +75,8 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
                         "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29" });
         publishEvent(eventDto);
-        Thread.sleep(5000);
 
-        boolean requestPatternChangeAlert = isAlertReceived(beforeCount, "Unique ID: logger_requestPatternChange");
+        boolean requestPatternChangeAlert = isAlertReceived(beforeCount, "Unique ID: logger_requestPatternChange", 5 ,2000);
         Assert.assertTrue(requestPatternChangeAlert, "Request pattern change alert event not received!");
     }
 
