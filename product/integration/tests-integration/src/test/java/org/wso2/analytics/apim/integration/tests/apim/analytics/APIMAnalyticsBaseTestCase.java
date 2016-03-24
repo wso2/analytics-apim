@@ -203,14 +203,22 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      * @throws RemoteException
      * @throws LogViewerLogViewerException
      */
-    protected boolean isAlertReceived(int beforeCount, String message) throws RemoteException, LogViewerLogViewerException {
+    protected boolean isAlertReceived(int beforeCount, String message, int maxRetries, long sleepTime) throws RemoteException, LogViewerLogViewerException, InterruptedException {
         boolean alertReceived = false;
-        LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
-        for (int i = 0; i < (logs.length - beforeCount); i++) {
-            if (logs[i].getMessage().contains(message)) {
-                alertReceived = true;
+        int j = 0;
+        while (j < maxRetries) {
+            Thread.sleep(sleepTime);
+            LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
+            for (int i = 0; i < (logs.length - beforeCount); i++) {
+                if (logs[i].getMessage().contains(message)) {
+                    alertReceived = true;
+                    break;
+                }
+            }
+            if(alertReceived){
                 break;
             }
+            j++;
         }
         return alertReceived;
     }
