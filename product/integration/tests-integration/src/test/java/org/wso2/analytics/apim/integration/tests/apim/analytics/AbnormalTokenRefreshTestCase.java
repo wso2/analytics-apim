@@ -115,10 +115,8 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         publishEvent(eventDto);
         Thread.sleep(4000);
 
-        boolean abnormalTokenRefreshFound = isAlertReceived(initialCount, "logger_abnormalAccessTokenRefresh,\n" +
-                " Event: user:carbon.super-home-apim,\n" +
-                "clientId:s8SWbnmzQEgzMIsol7AHt9cjhEsa,\n" +
-                "scope:ab,");
+        boolean abnormalTokenRefreshFound = isAlertReceived(initialCount, "msg:Abnormal Access Token Refresh Detected " +
+                "from User:carbon.super-home-apim for Consumer Key: s8SWbnmzQEgzMIsol7AHt9cjhEsa");
         Assert.assertTrue(abnormalTokenRefreshFound, "Abnormal Token Refresh Alert event not received!");
     }
 

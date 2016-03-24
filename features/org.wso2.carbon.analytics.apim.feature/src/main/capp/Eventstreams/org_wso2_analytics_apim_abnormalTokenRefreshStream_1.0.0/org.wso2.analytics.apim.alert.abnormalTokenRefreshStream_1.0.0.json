@@ -9,10 +9,6 @@
       "type": "STRING"
     },
     {
-      "name": "clientId",
-      "type": "STRING"
-    },
-    {
       "name": "scope",
       "type": "STRING"
     },
@@ -26,6 +22,10 @@
     },
     {
       "name": "msg",
+      "type": "STRING"
+    },
+    {
+      "name": "consumerKey",
       "type": "STRING"
     }
   ]
