@@ -19,20 +19,17 @@ package org.wso2.carbon.analytics.apim.spark.geolocation.api;
 
 import org.wso2.carbon.analytics.apim.spark.geolocation.exception.GeoLocationResolverException;
 
-public interface LocationResolver {
-    /**
-     * Extract the Country from IP
-     *
-     * @param ip ip address
-     * @return Country
-     */
-    public abstract String getCountry(String ip) throws GeoLocationResolverException;
+public abstract class LocationResolver {
 
     /**
-     * Extract the City from IP
+     * Extract the Location from IP
      *
      * @param ip ip address
      * @return City
      */
-    public abstract String getCity(String ip) throws GeoLocationResolverException;
+    public abstract Location getLocation(String ip) throws GeoLocationResolverException;
+
+    public void init() throws GeoLocationResolverException {
+
+    }
 }

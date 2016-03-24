@@ -19,8 +19,9 @@ package org.wso2.carbon.analytics.apim.spark.geolocation.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.analytics.apim.spark.geolocation.api.Location;
 import org.wso2.carbon.analytics.apim.spark.geolocation.exception.GeoLocationResolverException;
-import org.wso2.carbon.analytics.apim.spark.geolocation.holders.CacheHolder;
+import org.wso2.carbon.analytics.apim.spark.geolocation.holders.GeoResolverInitializer;
 import org.wso2.carbon.analytics.spark.core.udf.CarbonUDF;
 
 public class APIManagerAnalyticsGeoLocationResolverUDF implements CarbonUDF {
@@ -33,7 +34,18 @@ public class APIManagerAnalyticsGeoLocationResolverUDF implements CarbonUDF {
      * @return Country
      */
     public String getCountry(String ip) throws GeoLocationResolverException {
-        return CacheHolder.getInstance().getLocationResolver().getCountry(ip);
+        Location location = null;
+        LRUCache<String, Location> locationLRUCache = GeoResolverInitializer.getInstance().getIpResolveCache();
+        if (GeoResolverInitializer.getInstance().isCacheEnabled()) {
+            location = locationLRUCache.get(ip);
+        }
+        if (location == null) {
+            location = GeoResolverInitializer.getInstance().getLocationResolver().getLocation(ip);
+            if (location != null) {
+                locationLRUCache.put(ip, location);
+            }
+        }
+        return location != null ? location.getCountry() : "";
     }
 
     /**
@@ -43,7 +55,18 @@ public class APIManagerAnalyticsGeoLocationResolverUDF implements CarbonUDF {
      * @return City
      */
     public String getCity(String ip) throws GeoLocationResolverException {
-        return CacheHolder.getInstance().getLocationResolver().getCity(ip);
+        Location location = null;
+        LRUCache<String, Location> locationLRUCache = GeoResolverInitializer.getInstance().getIpResolveCache();
+        if (GeoResolverInitializer.getInstance().isCacheEnabled()) {
+            location = locationLRUCache.get(ip);
+        }
+        if (location == null) {
+            location = GeoResolverInitializer.getInstance().getLocationResolver().getLocation(ip);
+            if (location != null) {
+                locationLRUCache.put(ip, location);
+            }
+        }
+        return location != null ? location.getCity() : "";
     }
 }
 
