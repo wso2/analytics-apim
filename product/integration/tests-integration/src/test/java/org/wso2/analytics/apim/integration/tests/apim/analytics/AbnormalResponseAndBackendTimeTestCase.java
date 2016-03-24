@@ -125,9 +125,8 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
                         "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200"}
         );
         publishEvent(eventDto);
-        Thread.sleep(4000);
 
-        boolean abnormalResponseTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalResponseTime");
+        boolean abnormalResponseTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalResponseTime", 5 ,1000);
         Assert.assertTrue(abnormalResponseTimeAlertTriggered, "Abnormal ResponseTime Alert event not received!");
     }
 
@@ -144,9 +143,8 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
                         "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200"}
         );
         publishEvent(eventDto);
-        Thread.sleep(4000);
 
-        boolean abnormalBackendTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalBackendTime");
+        boolean abnormalBackendTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalBackendTime", 5 ,1000);
         Assert.assertTrue(abnormalBackendTimeAlertTriggered, "Abnormal BackendTime Alert event not received!");
     }
 
