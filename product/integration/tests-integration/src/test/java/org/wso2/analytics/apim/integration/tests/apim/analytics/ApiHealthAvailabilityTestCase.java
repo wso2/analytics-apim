@@ -82,9 +82,9 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
         List<EventDto> events = getResponseEventList(5);
         pubishEvents(events,1000);
-        Thread.sleep(6000);
+        //Thread.sleep(6000);
         boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"api_version\":\"CalculatorAPI:v1.0\"," +
-                "\"msg\":\"Response time is too high\",");
+                "\"msg\":\"Response time is too high\",",50,6000);
         Assert.assertTrue(responseTimeTooHigh, "Response time too high for continuous 5 events, alert not received!");
     }
 
@@ -173,12 +173,12 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         Thread.sleep(49000);
         pubishEvents(getRequestEventList(10),1000);
         pubishEvents(getResponseEventListNumApi(1),1000);
-        Thread.sleep(5000);
+        //Thread.sleep(5000);
         /*Thread.sleep(49000);
         pubishEvents(getRequestEventList(10),1000);
         pubishEvents(getResponseEventListNumApi(1),1000);*/
         boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"api_version\":\"NumberAPI:v1.0\"," +
-                "\"msg\":\"Response count is too low\",");
+                "\"msg\":\"Response count is too low\",",50,5000);
         Assert.assertTrue(responseTimeTooHigh, "Response count is too low continuously, alert not received!");
     }
 
@@ -188,7 +188,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseCode.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         //Thread.sleep(8000);
         boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"api_version\":\"CalculatorAPI:v2.0\"," +
-                "\"msg\":\"Server error occurred\",");
+                "\"msg\":\"Server error occurred\",",50,5000);
         Assert.assertTrue(responseTimeTooHigh, "Server error for continuous 5 events, alert not received!");
     }
 
