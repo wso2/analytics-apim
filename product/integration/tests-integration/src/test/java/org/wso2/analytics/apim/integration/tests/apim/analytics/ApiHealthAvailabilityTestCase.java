@@ -38,6 +38,10 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     @AfterClass(alwaysRun = true)
     public void cleanup() throws RemoteException {
         // undeploy the publishers
+       /* deleteData(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
+        Thread.sleep(5000);
+        deleteData(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
+        Thread.sleep(5000);*/
         undeployPublisher(PUBLISHER_FILE);
     }
 
