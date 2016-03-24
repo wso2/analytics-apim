@@ -34,7 +34,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_VERSION = "1.1.0";
     private final String TEST_RESOURCE_PATH = "requestPatternChange";
     private final String PUBLISHER_FILE = "logger_requestPatternChange.xml";
-    private final int MAX_TRIES = 5;
+    private final int MAX_TRIES = 25;
 
 
     @BeforeClass(alwaysRun = true)
@@ -49,7 +49,10 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE)) {
             deleteData(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE);
         }
-
+        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        }
+        Thread.sleep(5000);
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
         // publish the csv data
@@ -69,7 +72,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         long requestEventCount = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
-            Thread.sleep(2000);
+            Thread.sleep(5000);
             requestEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
             eventsPublished = (requestEventCount == 500);
             if (eventsPublished) {
@@ -94,7 +97,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29" });
         publishEvent(eventDto);
 
-        boolean requestPatternChangeAlert = isAlertReceived(beforeCount, "Unique ID: logger_requestPatternChange", 5 ,2000);
+        boolean requestPatternChangeAlert = isAlertReceived(beforeCount, "Unique ID: logger_requestPatternChange", 10 ,5000);
         Assert.assertTrue(requestPatternChangeAlert, "Request pattern change alert event not received!");
     }
 

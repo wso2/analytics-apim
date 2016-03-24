@@ -7,5 +7,9 @@
         <packages>
             <package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>
         </packages>
+        <!--<classes>-->
+            <!--<class name="org.wso2.analytics.apim.integration.tests.apim.analytics.RequestPatternChangeTestCase"/>-->
+        <!--</classes>-->
+
     </test>
 </suite>
