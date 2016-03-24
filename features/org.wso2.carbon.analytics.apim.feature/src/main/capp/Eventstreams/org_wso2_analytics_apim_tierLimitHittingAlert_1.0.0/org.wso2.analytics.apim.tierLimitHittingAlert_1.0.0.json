@@ -5,7 +5,7 @@
   "description": "This stream is for alerting frequent tier limit hitting",
   "payloadData": [
     {
-      "name": "userId",
+      "name": "apiPublisher",
       "type": "STRING"
     },
     {
