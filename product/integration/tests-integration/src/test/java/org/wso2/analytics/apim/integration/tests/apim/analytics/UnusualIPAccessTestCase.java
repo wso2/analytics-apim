@@ -88,7 +88,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
                 "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
                 "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
-                "\"requestTime\":1455785133344,", 5 ,2000);
+                "\"requestTime\":1455785133344,", 50 ,5000);
         Assert.assertFalse(newIpDetectedAlertFound, "Request count alert suppression does not work");
     }
 
@@ -107,7 +107,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
                 "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
                 "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
-                "\"requestTime\":1455785133344,", 5 ,2000);
+                "\"requestTime\":1455785133344,", 50 ,5000);
         Assert.assertTrue(newIpDetectedAlertFound, "New IP Detected event not received!");
     }
 
@@ -124,7 +124,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
 
         boolean oldIpDetectedAlert = isAlertReceived(beforeCount, "\"msg\":\"A request from an Old IP detected! IP: 192.168.7.1\"," +
                 "\"ip\":\"192.168.7.1\",\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\"," +
-                "\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"", 5 ,2000);
+                "\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"", 50 ,5000);
         Assert.assertTrue(oldIpDetectedAlert, "Old IP Detected event not received!");
     }
 
@@ -142,7 +142,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
 
         boolean newIPDetectedAlertFound = isAlertReceived(beforeCount, ":\"UnusualIPAccessAlert\",\"msg\":" +
                 "\"A request from a new IP detected! IP: 192.168.7.4\",\"ip\":\"192.168.7.4\",\"consumerKey\":" +
-                "\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"", 5 ,2000);
+                "\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"", 50 ,5000);
         Assert.assertFalse(newIPDetectedAlertFound, "New IP Detected alert received for first event!");
     }
 }

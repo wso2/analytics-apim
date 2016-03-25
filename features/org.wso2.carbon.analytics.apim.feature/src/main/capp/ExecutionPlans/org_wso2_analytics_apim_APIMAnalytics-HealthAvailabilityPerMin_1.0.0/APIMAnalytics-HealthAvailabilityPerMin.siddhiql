@@ -109,7 +109,7 @@
                                 insert into requestResponseSummaryStream;
 
 								@info(name = 'query10')
-								from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <5:>
+								from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <2:>
 								select api_version as api_version , 'Response count is too low' as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
@@ -133,7 +133,17 @@
 								select api_version, 'Response time is too high' as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
-								@info(name='query14')
-								from apiHealthMonitorAlertStream
-								select 'healthAvailabilityPerMin' as type, msg as msg , (time:timestampInMilliseconds()) as alertTimestamp
+								@info(name = 'query14')
+                                from responseStream
+                                select api_version, responseCode
+                                insert into responseCodeSummaryStream;
+
+                                @info(name = 'query15')
+                                from every responseCodeSummaryStream [responseCode > 499 AND responseCode < 600]  <5:>
+                                select api_version, 'Server error occurred' as msg, (time:timestampInMilliseconds()) as alertTimestamp
+                                insert into apiHealthMonitorAlertStream;
+
+                                @info(name='query16')
+                                from apiHealthMonitorAlertStream
+                                select 'healthAvailabilityPerMin' as type, msg as msg , (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
