@@ -35,6 +35,7 @@ import org.wso2.analytics.apim.integration.common.utils.DASIntegrationTest;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.api.CarbonAnalyticsAPI;
+import org.wso2.carbon.analytics.dataservice.commons.SearchResultEntry;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException;
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
@@ -169,7 +170,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      * @throws AnalyticsException
      */
     protected boolean isTableExist(int tenantId, String tableName) throws AnalyticsException {
-        return analyticsDataAPI.tableExists(-1234, tableName);
+        return analyticsDataAPI.tableExists(tenantId, tableName);
     }
 
     /**

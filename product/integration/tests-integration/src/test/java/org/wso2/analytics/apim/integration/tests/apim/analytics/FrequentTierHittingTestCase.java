@@ -54,10 +54,10 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 		Thread.sleep(1000);
 
 		boolean alertSubscriber = isAlertReceived(beforeCount,
-				"message:apiSubscriber: publisher1 has reached throttling limit",5,1000);
+				"message:apiSubscriber: publisher1 has reached throttling limit", 5, 1000);
 		Assert.assertTrue(alertSubscriber, "Tier hitting messages has not received for publisher1");
 
-		boolean alertUser = isAlertReceived(beforeCount, "message:userId: user1 has reached throttling limit",5,1000);
+		boolean alertUser = isAlertReceived(beforeCount, "message:userId: user1 has reached throttling limit", 5, 1000);
 		Assert.assertTrue(alertUser, "Tier hitting messages has not user1");
 
 		Thread.sleep(1000);
@@ -66,7 +66,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 		publishEventForPublisher2();
 
 		boolean alertSubscriber2 = isAlertReceived(beforeCount,
-				"message:apiSubscriber: publisher2 has reached throttling limit",5,1000);
+				"message:apiSubscriber: publisher2 has reached throttling limit", 5, 1000);
 		Assert.assertTrue(alertSubscriber2, "Tier hitting messages has not publisher2");
 
 	}

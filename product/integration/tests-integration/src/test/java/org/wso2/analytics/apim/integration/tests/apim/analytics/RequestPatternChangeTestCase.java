@@ -34,6 +34,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_VERSION = "1.1.0";
     private final String TEST_RESOURCE_PATH = "requestPatternChange";
     private final String PUBLISHER_FILE = "logger_requestPatternChange.xml";
+    private final int MAX_TRIES = 25;
 
 
     @BeforeClass(alwaysRun = true)
@@ -48,7 +49,10 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE)) {
             deleteData(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE);
         }
-
+        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        }
+        Thread.sleep(5000);
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
         // publish the csv data
@@ -62,7 +66,24 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         undeployPublisher(PUBLISHER_FILE);
     }
 
-    @Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert")
+    @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published")
+    public void testSimulationDataSent() throws Exception {
+        int i = 0;
+        long requestEventCount = 0;
+        boolean eventsPublished = false;
+        while (i < MAX_TRIES) {
+            Thread.sleep(5000);
+            requestEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
+            eventsPublished = (requestEventCount == 500);
+            if (eventsPublished) {
+                break;
+            }
+            i++;
+        }
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert", dependsOnMethods = "testSimulationDataSent")
     public void testRequestPatternChangeAlert() throws Exception {
 
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
@@ -75,8 +96,9 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
                         "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29" });
         publishEvent(eventDto);
-
+        
         boolean requestPatternChangeAlert = isAlertReceived(beforeCount, "Unique ID: logger_requestPatternChange", 84 ,5000);
+
         Assert.assertTrue(requestPatternChangeAlert, "Request pattern change alert event not received!");
     }
 
