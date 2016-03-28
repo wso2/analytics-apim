@@ -27,23 +27,21 @@ import java.rmi.RemoteException;
 import java.util.Calendar;
 
 public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
+	// General constants
 	private static final String STREAM_NAME = "org.wso2.apimgt.statistics.request";
 	private static final String STREAM_VERSION = "1.1.0";
 	private static final String TEST_RESOURCE_PATH = "abnormalTierUsage";
 	private static final String PUBLISHER_FILE = "logger_abnormalTierUsage.xml";
 	private static final String SPARK_SCRIPT = "org_wso2_analytics_apim_abnormal_tier_usage";
 
-	// Request related constants
+	// Request related constants these will be used to build API requests
 	private static final String clientType = "external";
 	private static final String consumerKey = "sqbkktg3s00vzz7gg3s198rzb9g3s2me2u2ng3s3";
 	private static final String context = "http://mymlserver/algo";
-	// private static final String api_version = "svm:v1.0.0";
-	// private static final String api = "svm";
 	private static final String resourcePath = "train";
 	private static final String resourceTemplate = "train";
 	private static final String method = "POST";
 	private static final String version = "1.0.0";
-
 	private static final String userId = "1";
 	private static final String tenantDomain = "-1234";
 	private static final String hostName = "127.0.0.1";
@@ -85,7 +83,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 		undeployPublisher(PUBLISHER_FILE);
 	}
 
-	@Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert")
+	@Test(groups = "wso2.analytics.apim", description = "Test Abnormal Tier Usage Alert")
 	public void testRequestPatternChangeAlert() throws Exception {
 
 		int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
@@ -93,19 +91,23 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 		executeSparkScript(SPARK_SCRIPT);
 		Thread.sleep(5000);
 
+		// test case #1
 		boolean testOne = isAlertReceived(beforeCount, "message:Abnormal tier usage  userId: 1 api_version: svm:v1.0.0",
 				3, 1000);
 		Assert.assertTrue(testOne, "Abnormal request alert is not received for userId: 1 for api_version: svm:v1.0.0");
 
+		// test case #2
 		boolean testTwo = isAlertReceived(beforeCount,
 				"message:Abnormal tier usage  userId: 1 api_version: tree:v1.0.0", 3, 1000);
 		Assert.assertFalse(testTwo, "Incorrect user alert is received for userId: 1 for api_version: tree:v1.0.0");
 
+		// test case #3
 		boolean testThree = isAlertReceived(beforeCount,
 				"message:Abnormal tier usage  userId: 2 api_version: svm:v1.0.0", 3, 1000);
 		Assert.assertTrue(testThree,
 				"Abnormal request alert is not received for userId: 2 for api_version: svm:v1.0.0");
 
+		// test case #4
 		boolean testFour = isAlertReceived(beforeCount,
 				"message:Abnormal tier usage  userId: 3 api_version: boost:v1.1.0", 3, 1000);
 		Assert.assertTrue(testFour,
@@ -116,8 +118,8 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 	private void publishDataset() throws Exception {
 
 		// for a given userId, api_version, last five days average daily usage
-		// is less
-		// than 0.05th percentile of its last 30 days average daily usage.
+		// is less than 0.05th percentile of its last 30 days average daily
+		// usage.
 		for (int day = 0; day < 30; day++) {
 			int maxLimit = (day < 5) ? 2 : 10;
 			for (int request = 0; request < maxLimit; request++) {
@@ -212,7 +214,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 
 	private long offsetInDays(Integer numOfDays) {
 		if (numOfDays == null) {
-			throw new RuntimeException("Offset days can't be null");
+			throw new RuntimeException("numOfDays can't be null");
 		}
 
 		Calendar calender = Calendar.getInstance();
