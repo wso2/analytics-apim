@@ -3,7 +3,7 @@
     <TableSchema>
         <ColumnDefinition>
             <Name>api_version</Name>
-            <EnableIndexing>false</EnableIndexing>
+            <EnableIndexing>true</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>

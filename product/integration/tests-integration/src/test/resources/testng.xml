@@ -6,6 +6,10 @@
     <test name="analytics-apim-tests" preserve-order="true" parallel="false">
         <packages>
             <package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>
+
         </packages>
+        <!--<classes>-->
+            <!--<class name="org.wso2.analytics.apim.integration.tests.apim.analytics.RequestPatternChangeTestCase"/>-->
+        <!--</classes>-->
     </test>
 </suite>

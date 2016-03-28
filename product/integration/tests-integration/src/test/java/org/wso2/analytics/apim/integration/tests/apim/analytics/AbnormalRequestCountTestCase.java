@@ -23,6 +23,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.event.simulator.stub.types.EventDto;
 
 public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     private static final Log log = LogFactory.getLog(AbnormalRequestCountTestCase.class);
@@ -34,7 +35,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     private final String SPARK_SCRIPT = "org_wso2_analytics_apim_request_stat_generator";
     private final String REQUEST_PERCENTILE_TABLE = "ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE";
     private final String REQUEST_COUNT_PER_MINUTE_TABLE = "org_wso2_analytics_apim_store_requestPerMinPerApiStream";
-    private final int MAX_TRIES = 5;
+    private final int MAX_TRIES = 20;
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
@@ -120,10 +121,25 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     public void testAbnormalResponseTimeAlert() throws Exception {
         int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
 
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "alertSimulator.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
-        Thread.sleep(1000);
+        EventDto eventDto = new EventDto();
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto.setAttributeValues(
+                new String[]{"external","s8SWbnmzQEgzMIsol7AHt9cjhEsa","/calc/1.0","CalculatorAPI:v1.0","CalculatorAPI",
+                        "/add?x=12&y=3","/add","GET","1.0","1","1456894602313","admin@carbon.super","carbon.super","192.168.66.1",
+                        "admin@carbon.super","DefaultApplication","1","Mozilla/5.0","Unlimited","False","127.0.01"}
+        );
+        publishEvent(eventDto);
 
-        boolean abnormalRequestCountAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalRequestCount");
+        eventDto = new EventDto();
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto.setAttributeValues(
+                new String[]{"external","s8SWbnmzQEgzMIsol7AHt9cjhEsa","/calc/1.0","CalculatorAPI:v1.0","CalculatorAPI",
+                        "/add?x=12&y=3","/add","GET","1.0","1","1456894603940","admin@carbon.super","carbon.super","192.168.66.1",
+                        "admin@carbon.super","DefaultApplication","1","Mozilla/5.0","Unlimited","False","127.0.01"}
+        );
+        publishEvent(eventDto);
+
+        boolean abnormalRequestCountAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalRequestCount", 5 ,5000);
         Assert.assertTrue(abnormalRequestCountAlertTriggered, "Abnormal Response Count Alert event not received!");
     }
 
