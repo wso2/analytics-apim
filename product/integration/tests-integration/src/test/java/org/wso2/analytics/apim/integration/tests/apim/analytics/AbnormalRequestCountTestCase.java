@@ -139,7 +139,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         );
         publishEvent(eventDto);
 
-        boolean abnormalRequestCountAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalRequestCount", 5 ,1000);
+        boolean abnormalRequestCountAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalRequestCount", 5 ,5000);
         Assert.assertTrue(abnormalRequestCountAlertTriggered, "Abnormal Response Count Alert event not received!");
     }
 

@@ -35,7 +35,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
     private final String ABNORMAL_BACKEND_TIME_PUBLISHER_FILE = "logger_abnormalBackendTime.xml";
     private final String SPARK_SCRIPT = "org_wso2_analytics_apim_response_stat_generator";
     private final String RESPONSE_PERCENTILE_TABLE = "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE";
-    private final int MAX_TRIES = 5;
+    private final int MAX_TRIES = 20;
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
@@ -81,7 +81,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         int i = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
-            Thread.sleep(2000);
+            Thread.sleep(5000);
             long currentResponseEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
             eventsPublished = (currentResponseEventCount - initialResponseEventCount == 11);
             if (eventsPublished) {
