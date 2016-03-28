@@ -28,5 +28,16 @@ public class APIMAnalyticsIntegrationTestConstants {
     public static final String REQUEST_COUNT_TABLE = "ORG_WSO2_ANALYTICS_APIM_REQUESTCOUNTTABLE";
     public static final String FIRST_COUNT_TABLE = "ORG_WSO2_ANALYTICS_APIM_FIRSTCOUNTTABLE";
     public static final String MARKOV_MODEL_TABLE = "ORG_WSO2_ANALYTICS_APIM_MARKOVMODELTABLE";
+    
+    // abnormal tier usage tables
+    public static final String REQUEST_TABLE = "ORG_WSO2_API_ABNORMAL_REQ";	
+    public static final String REQUEST_PER_X_DAYS_TABLE = "ORG_WSO2_API_AVG_REQ_X_DAYS";
+    public static final String PERCENTILE_TABEL = "ORG_WSO2_API_PERCENTILE";
+    public static final String ALERT_STORE_TABLE = "ORG_WSO2_API_ALERT_STORE";
+    public static final String ABNORMAL_REQ_ALERT_TABLE = "ORG_WSO2_API_ABN_REQ_ALERT";
+    public static final String ALL_ALERT_TABLE = "ORG_WSO2_API_ALL_ALERT";
+    
+    
+    
 
 }

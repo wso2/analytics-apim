@@ -12,7 +12,7 @@
       "type": "STRING"
     },
     {
-      "name": "api",
+      "name": "api_version",
       "type": "STRING"
     },
     {
@@ -23,6 +23,6 @@
       "name": "timestamp",
       "type": "LONG"
     }
-   
+
   ]
 }
