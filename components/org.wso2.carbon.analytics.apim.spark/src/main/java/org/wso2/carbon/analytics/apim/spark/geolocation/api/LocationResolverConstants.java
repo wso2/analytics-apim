@@ -18,19 +18,9 @@
 package org.wso2.carbon.analytics.apim.spark.geolocation.api;
 
 public class LocationResolverConstants {
-    public static final String TYPE = "Type";
-    public static final String REST_URL = "RestUrl";
-    public static final String IMPL_CLASS = "ImplClass";
-    public static final String DATA_SOURCE = "DataSource";
+    public static final String IMPL_CLASS = "Implementation";
     public static final String CACHE = "Cache";
     public static final String CACHE_ENABLED = "enabled";
     public static final String CACHE_IP_RESOLVE_CACHE_COUNT = "IpResolveCacheCount";
-    public static final String CACHE_IP_TO_LONG_CACHE_COUNT = "IpToLongCacheCount";
-    public static final String CACHE_PERSIST = "persist";
-
-    public static class Types {
-        public static final String Type_RDBMS = "RDBMS";
-    }
-
 }
 

@@ -21,8 +21,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.analytics.apim.spark.geolocation.api.Location;
 import org.wso2.carbon.analytics.apim.spark.geolocation.exception.GeoLocationResolverException;
-import org.wso2.carbon.analytics.apim.spark.geolocation.holders.CacheHolder;
+import org.wso2.carbon.analytics.apim.spark.geolocation.holders.GeoResolverInitializer;
 import org.wso2.carbon.analytics.apim.spark.geolocation.impl.LRUCache;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -134,101 +135,7 @@ public class DBUtil {
 
     }
 
-    private Location getLocation(String ipAddress, Connection connection) throws GeoLocationResolverException {
-        String sql = "SELECT loc.country_name,loc.subdivision_1_name FROM blocks AS block , location AS loc WHERE ? " +
-                "BETWEEN " +
-                "block.network AND block.broadcast AND block.geoname_id=loc.geoname_id";
-        Location location = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setLong(1, getIpV4ToLong(ipAddress));
-            resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                location = new Location(resultSet.getString("country_name"), resultSet.getString("city_name"),
-                        ipAddress);
-            }
-        } catch (SQLException e) {
-            throw new GeoLocationResolverException(e.getMessage(), e);
-        } finally {
-            closeAllConnections(statement, null, resultSet);
-        }
-        return location;
-    }
-
-    public Location getLocation(String ipAddress) throws GeoLocationResolverException {
-        String sql = "SELECT location.country_name,location.city_name FROM IP_LOCATION AS location WHERE location.ip " +
-                "= ?";
-        Location location = null;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            initialize();
-            connection = getConnection();
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, ipAddress);
-            resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                location = new Location(resultSet.getString("country_name"), resultSet.getString("city_name"),
-                        ipAddress);
-            } else {
-                location = getLocation(ipAddress, connection);
-                if (location != null) {
-                    saveLocation(location, connection);
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new GeoLocationResolverException(e.getMessage(), e);
-        } finally {
-            closeAllConnections(statement, connection, resultSet);
-        }
-        return location;
-    }
-
-    private boolean saveLocation(Location location, Connection connection) throws GeoLocationResolverException {
-        String sql = "INSERT INTO IP_LOCATION (ip,country_name,city_name) VALUES (?,?,?)";
-        PreparedStatement statement = null;
-        boolean status;
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, location.getIp());
-            statement.setString(2, location.getCountry());
-            statement.setString(3, location.getCity());
-            status = statement.execute();
-            connection.commit();
-        } catch (SQLException e) {
-            throw new GeoLocationResolverException(e.getMessage(), e);
-        } finally {
-            closeAllConnections(statement, null, null);
-        }
-        return status;
-    }
-
-
     public void setDataSourceName(String dataSourceName) {
         DBUtil.dataSourceName = dataSourceName;
-    }
-
-    private static long getIpV4ToLong(String ipAddress) {
-        LRUCache<String, Long> cache = CacheHolder.getInstance().getIpToLongCache();
-
-        Long ipToLong = cache.get(ipAddress);
-        if (ipToLong == null) {
-            String[] ipAddressInArray = ipAddress.split("\\.");
-            long result = 0;
-            int i = 0;
-            for (String ipChunk : ipAddressInArray) {
-                int power = 3 - i;
-                int ip = Integer.parseInt(ipChunk);
-                result += ip * Math.pow(256, power);
-                i++;
-            }
-            cache.put(ipAddress, result);
-            ipToLong = result;
-        }
-        return ipToLong;
     }
 }

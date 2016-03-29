@@ -22,5 +22,9 @@ public class GeoLocationResolverException extends Exception {
     public GeoLocationResolverException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public GeoLocationResolverException(String message) {
+        super(message);
+    }
 }
 

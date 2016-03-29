@@ -9,24 +9,41 @@ define stream throttleStream (meta_clientType string, accessToken string, userId
 define stream allAlertsStream (type string, msg string, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
-define stream tierLimitHittingAlertStream (userId string, api string, applicationId string, applicationName string, message string, alertTimestamp long);
+define stream tierLimitHittingAlertStream (apiPublisher string, api string, applicationId string, applicationName string, message string, alertTimestamp long);
 
 /* read data to a temporary stream*/
 @info(name = 'query1')
-from throttleStream[throttledOutReason == 'max throttling reached']#window.time( 1 day )
-select userId, api, applicationId, applicationName, count(userId) as numHits
-group by userId, api, applicationId
+from throttleStream[throttledOutReason == 'Application throttling reached']#window.time( 1 day )
+select apiPublisher, api, applicationId, applicationName, count(userId) as numHits
+group by apiPublisher, api_version, applicationId
 having numHits > 10
-insert into temporaryStream;
+insert into temporarySubscriberStream;
+
+@info(name = 'query2')
+from throttleStream[throttledOutReason == 'User throttling reached']#window.time( 1 day )
+select userId, apiPublisher, api, applicationId, applicationName, count(userId) as numHits
+group by userId, api_version, applicationId
+having numHits > 10
+insert into temporaryUserStream;
 
 /* send to the alert stream specific to this scenario */
-@info(name = 'query2')
-from temporaryStream
-select userId, api, applicationId, applicationName, str:concat("userId: ", userId, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as message, (time:timestampInMilliseconds()) as alertTimestamp
+@info(name = 'query3')
+from temporarySubscriberStream
+select apiPublisher, api, applicationId, applicationName, str:concat("apiSubscriber: ", apiPublisher, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as message, (time:timestampInMilliseconds()) as alertTimestamp
+insert into tierLimitHittingAlertStream;
+
+@info(name = 'query4')
+from temporaryUserStream
+select apiPublisher, api, applicationId, applicationName, str:concat("userId: ", userId, " has reached throttling limit for apiSubscriber: " , apiPublisher, " and api: ", api, " and applicationId: ", applicationId, " and application: ", applicationName) as message, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 /* send to general alert stream */
-@info(name = 'query3')
-from temporaryStream
-select "FrequentTierHittingAlert" as type, str:concat("userId: ", userId, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg, (time:timestampInMilliseconds()) as alertTimestamp
+@info(name = 'query5')
+from temporarySubscriberStream
+select "FrequentTierHittingAlert" as type, str:concat("apiSubscriber: ", apiPublisher, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg, (time:timestampInMilliseconds()) as alertTimestamp
+insert into allAlertsStream;
+
+@info(name = 'query6')
+from temporaryUserStream
+select "FrequentTierHittingAlert" as type, str:concat("userId: ", userId, " has reached throttling limit for apiSubscriber: " , apiPublisher, " and api: ", api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;

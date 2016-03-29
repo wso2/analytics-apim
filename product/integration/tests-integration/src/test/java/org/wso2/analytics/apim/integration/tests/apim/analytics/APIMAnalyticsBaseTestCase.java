@@ -23,17 +23,26 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
 import org.testng.Assert;
 import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
 import org.wso2.analytics.apim.integration.common.clients.EventPublisherAdminServiceClient;
 import org.wso2.analytics.apim.integration.common.clients.EventSimulatorAdminServiceClient;
+import org.wso2.analytics.apim.integration.common.clients.ExecutionManagerAdminServiceClient;
 import org.wso2.analytics.apim.integration.common.utils.CSVSimulatorUtil;
 import org.wso2.analytics.apim.integration.common.utils.DASIntegrationTest;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.api.CarbonAnalyticsAPI;
+import org.wso2.carbon.analytics.dataservice.commons.SearchResultEntry;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
+import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException;
+import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
+import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.TemplateConfigurationDTO;
+import org.wso2.carbon.event.execution.manager.admin.dto.domain.xsd.ParameterDTO;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
 import org.wso2.carbon.logging.view.stub.LogViewerLogViewerException;
@@ -51,9 +60,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 
 public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
+    private static final String ANALYTICS_SERVICE_NAME = "AnalyticsProcessorAdminService";
     private DataPublisherClient dataPublisherClient;
     private AnalyticsDataAPI analyticsDataAPI;
+    private AnalyticsProcessorAdminServiceStub analyticsStub;
     protected EventPublisherAdminServiceClient eventPublisherAdminServiceClient;
+    protected ExecutionManagerAdminServiceClient executionManagerAdminServiceClient;
     protected LogViewerClient logViewerClient;
     protected EventSimulatorAdminServiceClient eventSimulatorAdminServiceClient;
 
@@ -61,40 +73,14 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         super.init();
         String session = getSessionCookie();
         eventPublisherAdminServiceClient = getEventPublisherAdminServiceClient(backendURL, session);
+        executionManagerAdminServiceClient = getExecutionManagerAdminServiceClient(backendURL, session);
         logViewerClient = new LogViewerClient(backendURL, session);
         String apiConf =
                 new File(this.getClass().getClassLoader().
                         getResource("dasconfig" + File.separator + "analytics-data-config.xml").toURI()).getAbsolutePath();
         analyticsDataAPI = new CarbonAnalyticsAPI(apiConf);
         eventSimulatorAdminServiceClient = getEventSimulatorAdminServiceClient(backendURL, session);
-    }
-
-    /**
-     * Publishes a single event.
-     * @param streamName name of the stream.
-     * @param streamVersion version of the stream.
-     * @param event event.
-     * @throws Exception
-     */
-    protected void publishEvent(String streamName, String streamVersion, Event event) throws Exception {
-        dataPublisherClient = new DataPublisherClient();
-        dataPublisherClient.publish(streamName, streamVersion, event);
-        Thread.sleep(1000);
-        dataPublisherClient.shutdown();
-    }
-
-    /**
-     * Publishes a given set of events.
-     * @param streamName name of the stream.
-     * @param streamVersion version of the stream.
-     * @param events list of events.
-     * @throws Exception
-     */
-    protected void pubishEvents(String streamName, String streamVersion, List<Event> events) throws Exception {
-        dataPublisherClient = new DataPublisherClient();
-        dataPublisherClient.publish(streamName, streamVersion, events);
-        Thread.sleep(5000);
-        dataPublisherClient.shutdown();
+        initializeStub();
     }
 
     /**
@@ -108,6 +94,26 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
             eventSimulatorAdminServiceClient.sendEvent(events.get(i));
             Thread.sleep(timeGapBetweenEvents);
         }
+    }
+
+    /**
+     * Sends a single event.
+     * @param eventDto EventDTO of the event.
+     * @throws RemoteException
+     */
+    protected void publishEvent(EventDto eventDto) throws RemoteException {
+        eventSimulatorAdminServiceClient.sendEvent(eventDto);
+    }
+
+    /**
+     * Returns the table count of an INDEXED table.
+     * @param tenantId ID of the tenant.
+     * @param tableName name of the Table.
+     * @return number of records in the table.
+     * @throws AnalyticsException
+     */
+    protected long getRecordCount(int tenantId, String tableName) throws AnalyticsException {
+        return analyticsDataAPI.searchCount(tenantId, tableName, "*:*");
     }
 
     /**
@@ -147,6 +153,55 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     }
 
     /**
+     * Delete data from a given table.
+     * @param tenantId Tenant ID.
+     * @param tableName Name of the Table.
+     * @throws AnalyticsException
+     */
+    protected void deleteData(int tenantId, String tableName) throws AnalyticsException{
+        analyticsDataAPI.delete(tenantId, tableName, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    /**
+     * Know if a table exists or not.
+     * @param tenantId Tenant ID of the table.
+     * @param tableName name of the Table.
+     * @return true if a table exists with that name.
+     * @throws AnalyticsException
+     */
+    protected boolean isTableExist(int tenantId, String tableName) throws AnalyticsException {
+        return analyticsDataAPI.tableExists(tenantId, tableName);
+    }
+
+    /**
+     * Executes a given spark script.
+     * @param scriptName name of the Spark Script.
+     * @throws Exception
+     */
+    protected void executeSparkScript(String scriptName) throws Exception{
+        analyticsStub.executeScript(scriptName);
+    }
+
+    /**
+     * Returns true if the Spark Script exists in the server.
+     * @param scriptName Name of the spark script.
+     * @return
+     * @throws RemoteException
+     * @throws AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException
+     */
+    protected boolean isSparkScriptExists(String scriptName) throws RemoteException, AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException {
+        AnalyticsProcessorAdminServiceStub.AnalyticsScriptDto[] scriptDtos = analyticsStub.getAllScripts();
+        if (scriptDtos != null){
+            for (AnalyticsProcessorAdminServiceStub.AnalyticsScriptDto scriptDto: scriptDtos){
+                if (scriptDto.getName().equalsIgnoreCase(scriptName)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Reads through the logs and determines if the given string is in the logs.
      * @param beforeCount Log count before.
      * @param message message to look for in the logs.
@@ -154,14 +209,22 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      * @throws RemoteException
      * @throws LogViewerLogViewerException
      */
-    protected boolean isAlertReceived(int beforeCount, String message) throws RemoteException, LogViewerLogViewerException {
+    protected boolean isAlertReceived(int beforeCount, String message, int maxRetries, long sleepTime) throws RemoteException, LogViewerLogViewerException, InterruptedException {
         boolean alertReceived = false;
-        LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
-        for (int i = 0; i < (logs.length - beforeCount); i++) {
-            if (logs[i].getMessage().contains(message)) {
-                alertReceived = true;
+        int j = 0;
+        while (j < maxRetries) {
+            Thread.sleep(sleepTime);
+            LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
+            for (int i = 0; i < (logs.length - beforeCount); i++) {
+                if (logs[i].getMessage().contains(message)) {
+                    alertReceived = true;
+                    break;
+                }
+            }
+            if(alertReceived){
                 break;
             }
+            j++;
         }
         return alertReceived;
     }
@@ -188,6 +251,34 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
                 + configFileName;
         return relativeFilePath;
     }
+
+    /**
+     * Publishes a single event.
+     * @param streamName name of the stream.
+     * @param streamVersion version of the stream.
+     * @param event event.
+     * @throws Exception
+     */
+    protected void publishEvent(String streamName, String streamVersion, Event event) throws Exception {
+        dataPublisherClient = new DataPublisherClient();
+        dataPublisherClient.publish(streamName, streamVersion, event);
+        Thread.sleep(1000);
+        dataPublisherClient.shutdown();
+    }
+
+    /**
+     * Publishes a given set of events.
+     * @param streamName name of the stream.
+     * @param streamVersion version of the stream.
+     * @param events list of events.
+     * @throws Exception
+     */
+    protected void pubishEvents(String streamName, String streamVersion, List<Event> events) throws Exception {
+        dataPublisherClient = new DataPublisherClient();
+        dataPublisherClient.publish(streamName, streamVersion, events);
+        Thread.sleep(5000);
+        dataPublisherClient.shutdown();
+    }
     /**
      * @param testCaseFolderName Name of the folder created under /artifacts/CEP for the particular test case.
      * @param configFileName     Name of the XML config-file created under above folder.
@@ -201,6 +292,22 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         relativeFilePath = relativeFilePath.replaceAll("[\\\\/]", Matcher.quoteReplacement(File.separator));
         OMElement configElement = loadClasspathResourceXML(relativeFilePath);
         return configElement.toString();
+    }
+
+    protected void saveConfiguration(TemplateConfigurationDTO templateConfigDTO) throws RemoteException {
+        executionManagerAdminServiceClient.saveConfiguration(templateConfigDTO);
+    }
+
+    protected ParameterDTO getParameterDTO(String name, String defaultValue, String type){
+        ParameterDTO parameterDTO = new ParameterDTO();
+        parameterDTO.setName(name);
+        parameterDTO.setDefaultValue(defaultValue);
+        parameterDTO.setType(type);
+        return parameterDTO;
+    }
+
+    protected TemplateConfigurationDTO getConfiguration (String domainName, String configurationName) throws RemoteException {
+        return executionManagerAdminServiceClient.getConfiguration(domainName,configurationName);
     }
 
     private String getTestArtifactLocation() {
@@ -252,12 +359,29 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         return eventPublisherAdminServiceClient;
     }
 
+    protected ExecutionManagerAdminServiceClient getExecutionManagerAdminServiceClient(
+            String backendURL, String loggedInSessionCookie) throws AxisFault {
+        initExecutionManagerAdminServiceClient(backendURL, loggedInSessionCookie);
+        return executionManagerAdminServiceClient;
+    }
+
     private void initEventPublisherAdminServiceClient(
             String backendURL,
             String loggedInSessionCookie)
             throws AxisFault {
         eventPublisherAdminServiceClient = new EventPublisherAdminServiceClient(backendURL, loggedInSessionCookie);
         ServiceClient client = eventPublisherAdminServiceClient._getServiceClient();
+        Options options = client.getOptions();
+        options.setManageSession(true);
+        options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
+    }
+
+    private void initExecutionManagerAdminServiceClient(
+            String backendURL,
+            String loggedInSessionCookie)
+            throws AxisFault {
+        executionManagerAdminServiceClient = new ExecutionManagerAdminServiceClient(backendURL, loggedInSessionCookie);
+        ServiceClient client = executionManagerAdminServiceClient._getServiceClient();
         Options options = client.getOptions();
         options.setManageSession(true);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
@@ -279,5 +403,18 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         Options options = client.getOptions();
         options.setManageSession(true);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
+    }
+
+    private void initializeStub() throws Exception {
+        ConfigurationContext configContext = ConfigurationContextFactory.
+                createConfigurationContextFromFileSystem(null);
+        String loggedInSessionCookie = getSessionCookie();
+        analyticsStub = new AnalyticsProcessorAdminServiceStub(configContext,
+                backendURL + "/services/" + ANALYTICS_SERVICE_NAME);
+        ServiceClient client = analyticsStub._getServiceClient();
+        Options option = client.getOptions();
+        option.setManageSession(true);
+        option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING,
+                loggedInSessionCookie);
     }
 }
