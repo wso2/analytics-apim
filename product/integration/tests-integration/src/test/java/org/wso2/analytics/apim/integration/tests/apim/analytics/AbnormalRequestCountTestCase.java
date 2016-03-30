@@ -118,7 +118,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
 
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal ResponseTime Alert",
             dependsOnMethods = "testRequestStatGeneratorSparkScriptExecution")
-    public void testAbnormalResponseTimeAlert() throws Exception {
+    public void testAbnormalRequestCountAlert() throws Exception {
         int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
 
         EventDto eventDto = new EventDto();
@@ -128,16 +128,10 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
                         "/add?x=12&y=3","/add","GET","1.0","1","1456894602313","admin@carbon.super","carbon.super","192.168.66.1",
                         "admin@carbon.super","DefaultApplication","1","Mozilla/5.0","Unlimited","False","127.0.01"}
         );
-        publishEvent(eventDto);
 
-        eventDto = new EventDto();
-        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto.setAttributeValues(
-                new String[]{"external","s8SWbnmzQEgzMIsol7AHt9cjhEsa","/calc/1.0","CalculatorAPI:v1.0","CalculatorAPI",
-                        "/add?x=12&y=3","/add","GET","1.0","1","1456894603940","admin@carbon.super","carbon.super","192.168.66.1",
-                        "admin@carbon.super","DefaultApplication","1","Mozilla/5.0","Unlimited","False","127.0.01"}
-        );
-        publishEvent(eventDto);
+        for (int i=0;i<15;i++){
+            publishEvent(eventDto);
+        }
 
         boolean abnormalRequestCountAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalRequestCount", 5 ,5000);
         Assert.assertTrue(abnormalRequestCountAlertTriggered, "Abnormal Response Count Alert event not received!");
