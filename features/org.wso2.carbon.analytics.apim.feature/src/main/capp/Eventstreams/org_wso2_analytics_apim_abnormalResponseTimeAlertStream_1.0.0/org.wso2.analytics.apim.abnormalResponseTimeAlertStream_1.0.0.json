@@ -1,40 +1,44 @@
 {
-  "name": "org.wso2.analytics.apim.abnormalResponseTimeAlertStream",
-  "version": "1.0.0",
-  "nickName": "",
-  "description": "",
-  "payloadData": [
-    {
-      "name": "api",
-      "type": "STRING"
-    },
-    {
-      "name": "tenantDomain",
-      "type": "STRING"
-    },
-    {
-      "name": "resourceTemplate",
-      "type": "STRING"
-    },
-    {
-      "name": "method",
-      "type": "STRING"
-    },
-    {
-      "name": "responseTime",
-      "type": "LONG"
-    },
-    {
-      "name": "responsePercentile",
-      "type": "DOUBLE"
-    },
-    {
-      "name": "msg",
-      "type": "STRING"
-    },
-    {
-      "name": "alertTimestamp",
-      "type": "LONG"
-    }
-  ]
+    "name": "org.wso2.analytics.apim.abnormalResponseTimeAlertStream",
+    "version": "1.0.0",
+    "nickName": "",
+    "description": "",
+    "payloadData": [
+        {
+            "name": "api",
+            "type": "STRING"
+        },
+        {
+            "name": "apiPublisher",
+            "type": "STRING"
+        },
+        {
+            "name": "tenantDomain",
+            "type": "STRING"
+        },
+        {
+            "name": "resourceTemplate",
+            "type": "STRING"
+        },
+        {
+            "name": "method",
+            "type": "STRING"
+        },
+        {
+            "name": "responseTime",
+            "type": "LONG"
+        },
+        {
+            "name": "responsePercentile",
+            "type": "DOUBLE"
+        },
+        {
+            "name": "msg",
+            "type": "STRING"
+        },
+        {
+            "name": "alertTimestamp",
+            "type": "LONG"
+        }
+    ]
 }

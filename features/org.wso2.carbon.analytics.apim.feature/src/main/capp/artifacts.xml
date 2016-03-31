@@ -11,8 +11,11 @@
         <dependency artifact="org_wso2_analytics_apim_store_abnormalResponseTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_abnormalAccessTokenRefresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_unusualIPAccess" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_alertStakeholderInfo" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_carbon_identity_store_oauth_token_issuance" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestStatStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_emailAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_alertStakeholderInfo" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_requestPercentile" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_responsePercentile" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_responseStatStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -25,13 +28,14 @@
         <dependency artifact="org_wso2_analytics_apim_domain_template_resources" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_AbnormalRequestCountDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_AbnormalResponseAndBackendTimeDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_EmailNotification" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_UnusualIPAccessAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_unusualIPAccess_purge" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_accessTokenRefresh_purge" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_request_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_response_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org_wso2_analytics_apim_store_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-	<dependency artifact="org_wso2_analytics_apim_store_allApimAlertsStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	    <dependency artifact="org_wso2_analytics_apim_store_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+	    <dependency artifact="org_wso2_analytics_apim_store_allApimAlertsStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_transitionStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_allApimAlertsStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -71,9 +75,10 @@
 	<dependency artifact="org_wso2_analytics_apim_apiHealthMonitorAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_requestPatternChangedStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_tierLimitHittingAlertPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+    <dependency artifact="org_wso2_analytics_apim_emailAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
-	
-	 <!-- Gadget artifacts -->	
+
+        <!-- Gadget artifacts -->
 	<dependency artifact="org_wso2_analytics_apim_allAlerts" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalBackendTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
  	<dependency artifact="org_wso2_analytics_apim_abnormalRequestCount" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
