@@ -48,6 +48,7 @@
         <dependency artifact="org_wso2_analytics_apim_AbnormalAccessTokenRefresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormal_access_token_refresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_abnormalTierUsage" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageEventReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_carbon_identity_oauth_token_issuance_receiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageEventReceiveForAllAlerts" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
