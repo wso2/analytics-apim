@@ -39,7 +39,7 @@ define stream emailAlertStream (type string, msg string, alertTimestamp long, em
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_ALERTSTAKEHOLDERINFO')
 define table stakeholderInfoTable (userId string, alertTypes string, emails	string, isSubscriber bool, isPublisher bool);
 
-/*@info(name = 'query1')
+@info(name = 'query1')
 from abnormalRequestsPerMinAlert join stakeholderInfoTable 
 on (abnormalRequestsPerMinAlert.userId == stakeholderInfoTable.userId )
 select 'abnormalRequestsPerMin' as type , abnormalRequestsPerMinAlert.msg, abnormalRequestsPerMinAlert.alertTimestamp, stakeholderInfoTable.emails
@@ -79,7 +79,7 @@ from tierLimitHittingAlert join stakeholderInfoTable
 on (tierLimitHittingAlert.apiPublisher == stakeholderInfoTable.userId )
 select 'FrequentTierHittingAlert' as type , tierLimitHittingAlert.message as msg, tierLimitHittingAlert.alertTimestamp, stakeholderInfoTable.emails
 having (stakeholderInfoTable.isPublisher and str:contains(stakeholderInfoTable.alertTypes, 'FrequentTierHittingAlert'))
-insert into emailAlertStream;         */
+insert into emailAlertStream;
 
 @info(name = 'query7')
 from abnormalResponseTimeAlertStream join stakeholderInfoTable
@@ -94,11 +94,10 @@ on (abnormalBackendTimeAlertStream.apiPublisher == stakeholderInfoTable.userId )
 select 'abnormalBackendTime' as type , abnormalBackendTimeAlertStream.msg, abnormalBackendTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having (stakeholderInfoTable.isPublisher and str:contains(stakeholderInfoTable.alertTypes, 'abnormalBackendTime'))
 insert into emailAlertStream;
-     /*
+
 @info(name = 'query9')
 from apiHealthMonitorAlertStream join stakeholderInfoTable 
 on (apiHealthMonitorAlertStream.apiPublisher == stakeholderInfoTable.userId )
 select 'healthAvailabilityPerMin' as type , apiHealthMonitorAlertStream.msg, apiHealthMonitorAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having (stakeholderInfoTable.isPublisher and str:contains(stakeholderInfoTable.alertTypes, 'healthAvailabilityPerMin'))
 insert into emailAlertStream;
-                                              */
