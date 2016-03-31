@@ -9,6 +9,10 @@
       "type": "STRING"
     },
     {
+      "name": "apiPublisher",
+      "type": "STRING"
+    },
+    {
       "name": "tenantDomain",
       "type": "STRING"
     },
