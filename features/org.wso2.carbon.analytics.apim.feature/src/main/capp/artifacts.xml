@@ -54,6 +54,7 @@
         <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageEventReceiveForAllAlerts" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_tierLimitHittingAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_FrequentTierLimitHitting" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_tierLimitHitting" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_apiHealthMonitorAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestPerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_responsePerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
