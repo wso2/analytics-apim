@@ -30,7 +30,7 @@
             <Type>STRING</Type>
         </ColumnDefinition>
         <ColumnDefinition>
-            <Name>message</Name>
+            <Name>msg</Name>
             <EnableIndexing>true</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>

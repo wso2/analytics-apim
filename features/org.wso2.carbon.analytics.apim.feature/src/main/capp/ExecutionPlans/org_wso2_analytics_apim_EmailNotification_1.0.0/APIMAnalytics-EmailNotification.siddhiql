@@ -16,10 +16,10 @@ define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, 
 define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
-define stream tierLimitHittingAlert (apiPublisher string, api string, applicationId string, applicationName string, message string, alertTimestamp long);
+define stream tierLimitHittingAlert (apiPublisher string, api string, applicationId string, applicationName string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.alert.abnormalTierUsageAlert:1.0.0')
-define stream abnormalTierUsageAlert (userId string, api_version string, message string, timestamp long);
+define stream abnormalTierUsageAlert (userId string, api_version string, msg string, timestamp long);
 
 @Import('org.wso2.analytics.apim.alert.abnormalTokenRefresh:1.0.0')
 define stream abnormalTokenRefresh (user string, scope string, timestamp long, alertTimestamp long, msg string, consumerKey string);
@@ -28,7 +28,7 @@ define stream abnormalTokenRefresh (user string, scope string, timestamp long, a
 define stream unusualIPAccess (type string, msg string, ip string, consumerKey string, userId string, requestTime long, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
-define stream requestPatternChangedStream (userid string, consumerKey string, message string, alertTimestamp long);
+define stream requestPatternChangedStream (userid string, consumerKey string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
 define stream abnormalRequestsPerMinAlert (api string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double, 
@@ -49,7 +49,7 @@ insert into emailAlertStream;
 @info(name = 'query2')
 from requestPatternChangedStream join stakeholderInfoTable 
 on (requestPatternChangedStream.userid == stakeholderInfoTable.userId )
-select 'RequestPatternChanged' as type , requestPatternChangedStream.message as msg, requestPatternChangedStream.alertTimestamp, stakeholderInfoTable.emails
+select 'RequestPatternChanged' as type , requestPatternChangedStream.msg as msg, requestPatternChangedStream.alertTimestamp, stakeholderInfoTable.emails
 having (stakeholderInfoTable.isSubscriber and str:contains(stakeholderInfoTable.alertTypes, 'RequestPatternChanged'))
 insert into emailAlertStream;
 
@@ -70,14 +70,14 @@ insert into emailAlertStream;
 @info(name = 'query5')
 from abnormalTierUsageAlert join stakeholderInfoTable
 on (abnormalTierUsageAlert.userId == stakeholderInfoTable.userId )
-select  'AbnormalTierUsage' as type , abnormalTierUsageAlert.message as msg, abnormalTierUsageAlert.timestamp as alertTimestamp,stakeholderInfoTable.emails
+select  'AbnormalTierUsage' as type , abnormalTierUsageAlert.msg as msg, abnormalTierUsageAlert.timestamp as alertTimestamp,stakeholderInfoTable.emails
 having (stakeholderInfoTable.isSubscriber and str:contains(stakeholderInfoTable.alertTypes, 'AbnormalTierUsage'))
 insert into emailAlertStream;
 
 @info(name = 'query6')
 from tierLimitHittingAlert join stakeholderInfoTable
 on (tierLimitHittingAlert.apiPublisher == stakeholderInfoTable.userId )
-select 'FrequentTierHittingAlert' as type , tierLimitHittingAlert.message as msg, tierLimitHittingAlert.alertTimestamp, stakeholderInfoTable.emails
+select 'FrequentTierHittingAlert' as type , tierLimitHittingAlert.msg as msg, tierLimitHittingAlert.alertTimestamp, stakeholderInfoTable.emails
 having (stakeholderInfoTable.isPublisher and str:contains(stakeholderInfoTable.alertTypes, 'FrequentTierHittingAlert'))
 insert into emailAlertStream;
 
