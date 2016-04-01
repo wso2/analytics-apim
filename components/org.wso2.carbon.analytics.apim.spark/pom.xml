@@ -37,6 +37,10 @@
 			<artifactId>testng</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>ua.parser.wso2</groupId>
+			<artifactId>ua-parser</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -60,6 +64,7 @@
 						</Export-Package>
 						<Import-Package>
 							org.apache.commons.math3.*,
+							ua_parser.*,
 							*;resolution:=optional
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
