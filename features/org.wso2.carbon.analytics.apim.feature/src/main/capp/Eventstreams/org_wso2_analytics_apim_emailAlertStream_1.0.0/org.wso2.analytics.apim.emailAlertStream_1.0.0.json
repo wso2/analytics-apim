@@ -1,0 +1,24 @@
+{
+    "name": "org.wso2.analytics.apim.emailAlertStream",
+    "version": "1.0.0",
+    "nickName": "",
+    "description": "",
+    "payloadData": [
+        {
+            "name": "type",
+            "type": "STRING"
+        },
+        {
+            "name": "msg",
+            "type": "STRING"
+        },
+        {
+            "name": "alertTimestamp",
+            "type": "LONG"
+        },
+        {
+            "name": "emails",
+            "type": "STRING"
+        }
+    ]
+}

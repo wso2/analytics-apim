@@ -11,6 +11,10 @@
       "type": "STRING"
     },
     {
+      "name": "apiPublisher",
+      "type": "STRING"
+    },
+    {
       "name": "msg",
       "type": "STRING"
     },

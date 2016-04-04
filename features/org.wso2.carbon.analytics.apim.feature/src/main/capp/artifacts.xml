@@ -9,6 +9,7 @@
         <dependency artifact="org_wso2_analytics_apim_store_abnormalBackendTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_abnormalRequestsPerMinAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_abnormalResponseTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_emailAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_abnormalAccessTokenRefresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_unusualIPAccess" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_carbon_identity_store_oauth_token_issuance" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -23,39 +24,26 @@
         <dependency artifact="org_wso2_analytics_apim_responseStatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestStatStreamReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_domain_template_resources" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_AbnormalRequestCountDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_AbnormalResponseAndBackendTimeDetection" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_UnusualIPAccessAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
         <dependency artifact="org_wso2_analytics_apim_unusualIPAccess_purge" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_accessTokenRefresh_purge" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_request_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_response_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_store_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 	<dependency artifact="org_wso2_analytics_apim_store_allApimAlertsStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_transitionStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_allApimAlertsStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_APIRequestPatternChangeAnalysisMatrixBuilder" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_APIRequestPatternChangeAnalysisMetric" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_MarkovStateClassifier" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_oneDayDataRetention" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_abnormal_tier_usage" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_alert_abnormalAccessTokenRefreshStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_AbnormalAccessTokenRefresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_abnormal_access_token_refresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
+        <Ydependency artifact="org_wso2_analytics_apim_abnormal_access_token_refresh" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageEventReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_carbon_identity_oauth_token_issuance_receiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageEventReceiveForAllAlerts" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_tierLimitHittingAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_FrequentTierLimitHitting" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_apiHealthMonitorAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestPerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_responsePerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_request_per_api_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_response_per_api_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_response_per_time_stat_generator" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_APIMAnalytics-HealthAvailabilityPerMin" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
         <dependency artifact="org_wso2_analytics_apim_store_apiHealthMonitorAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_responsePerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>

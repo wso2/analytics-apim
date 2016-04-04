@@ -13,7 +13,7 @@
       "type": "STRING"
     },
     {
-      "name": "message",
+      "name": "msg",
       "type": "STRING"
     },
     {

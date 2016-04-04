@@ -28,6 +28,15 @@
     <artifactId>org.wso2.carbon.analytics.apim.feature</artifactId>
     <packaging>pom</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.carbon.analytics.apim</artifactId>
+            <version>${analytics.apim.version}</version>
+        </dependency>
+    </dependencies>
+
+
     <build>
         <plugins>
             <plugin>
@@ -79,6 +88,8 @@
                                         <include>org_wso2_carbon_analytics_apim_RDBMS-1.0.0.car</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
+                                        <include>/execution-manager</include>
+                                        <!--<include>/deployment</include>-->
                                     </includes>
                                 </resource>
                             </resources>
@@ -106,6 +117,9 @@
                                     <propertyDef>org.eclipse.equinox.p2.type.group:true</propertyDef>
                                 </properties>
                             </adviceFile>
+                            <bundles>
+                                <bundleDef>org.wso2.analytics.apim:org.wso2.carbon.analytics.apim</bundleDef>
+                            </bundles>
                         </configuration>
                     </execution>
                 </executions>
@@ -113,3 +127,6 @@
         </plugins>
     </build>
 </project>
+
+
+
