@@ -43,10 +43,10 @@
 			<artifactId>ua-parser</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.commons-collections</groupId>
+			<groupId>commons-collections.wso2</groupId>
 			<artifactId>commons-collections</artifactId>
 		</dependency>
-  	</dependencies>
+	</dependencies>
 
     <build>
   		<plugins>
@@ -99,7 +99,7 @@
   							</bundles>
 							<importBundles>
 								<importBundleDef>ua.parser.wso2:ua-parser:${orbit.version.ua_parser}</importBundleDef>
-								<importBundleDef>org.wso2.orbit.commons-collections:commons-collections:${apache.common.collection.version}</importBundleDef>
+								<importBundleDef>commons-collections.wso2:commons-collections:${apache.common.collection.version}</importBundleDef>
 							</importBundles>
   						</configuration>
   					</execution>

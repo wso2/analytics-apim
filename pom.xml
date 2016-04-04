@@ -515,7 +515,7 @@
                 <version>${orbit.version.ua_parser}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.orbit.commons-collections</groupId>
+                <groupId>commons-collections.wso2</groupId>
                 <artifactId>commons-collections</artifactId>
                 <version>${apache.common.collection.version}</version>
             </dependency>
@@ -659,7 +659,7 @@
         <geoip.api.version>1.2.15</geoip.api.version>
         <project.scm.id>my-scm-server</project.scm.id>
         <apache.commons.math.version>3.2</apache.commons.math.version>
-        <apache.common.collection.version>3.2.1.wso2v1</apache.common.collection.version>
+        <apache.common.collection.version>3.2.0.wso2v1</apache.common.collection.version>
         <org.eclipse.osgi.version>3.7.0.v20110613</org.eclipse.osgi.version>
         <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
 	</properties>

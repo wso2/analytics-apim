@@ -42,7 +42,7 @@ public class LocationResolverRdbms extends LocationResolver {
     public static final String SQL_INSERT_LOCATION_INTO_TABLE = "INSERT INTO IP_LOCATION (ip,country_name," +
             "city_name) VALUES (?,?,?)";
     public static final String SQL_SELECT_LOCATION_FROM_LONG_VALUE_OF_IP = "SELECT loc.country_name,loc" +
-            ".subdivision_1_name FROM BLOCKS AS block , LOCATION AS loc WHERE ? " + "BETWEEN " + "block.network AND " +
+            ".subdivision_1_name FROM BLOCKS block , LOCATION loc WHERE ? " + "BETWEEN " + "block.network AND " +
             "block.broadcast AND block.geoname_id=loc.geoname_id";
 
     @Override
