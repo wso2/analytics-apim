@@ -37,7 +37,7 @@
                version "1.0.0",
                description "This is the CEP stream for Abnormal Tier Usage",
                nickName "abnormalTierUsageAlert",
-               payload "userId STRING, api_version STRING, message STRING, alertTimestamp LONG"
+               payload "userId STRING, api_version STRING, msg STRING, alertTimestamp LONG"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE

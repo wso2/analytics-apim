@@ -72,9 +72,6 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
             , dependsOnMethods = "testResponseStatGeneratorSparkScriptDeployment")
     public void testResponseSimulationDataSent() throws Exception {
-
-        long initialResponseEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
-
         //publish events
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
 
@@ -83,7 +80,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         while (i < MAX_TRIES) {
             Thread.sleep(5000);
             long currentResponseEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
-            eventsPublished = (currentResponseEventCount - initialResponseEventCount == 11);
+            eventsPublished = currentResponseEventCount >= 11;
             if (eventsPublished) {
                 break;
             }
