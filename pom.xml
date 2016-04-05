@@ -362,9 +362,9 @@
                 <version>${carbon.event-processing.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.event-processing</groupId>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
                 <artifactId>org.wso2.carbon.event.execution.manager.stub</artifactId>
-                <version>${carbon.event-processing.version}</version>
+                <version>${carbon.analytics.common.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jacoco</groupId>
@@ -603,7 +603,7 @@
         <carbon.identity.version>5.0.7</carbon.identity.version>
         <carbon.commons.version>4.4.8</carbon.commons.version>
         <carbon.data.version>4.3.4</carbon.data.version>
-        <carbon.event-processing.version>2.0.12</carbon.event-processing.version>
+        <carbon.event-processing.version>2.0.13-SNAPSHOT</carbon.event-processing.version>
         <carbon.dashboard.version>1.0.14-SNAPSHOT</carbon.dashboard.version>
         <carbon.metrics.version>1.2.0</carbon.metrics.version>
 

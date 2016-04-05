@@ -278,7 +278,28 @@
             </includes>
         </fileSet>
 
+        <fileSet>
+            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/resources/execution-manager/sparktemplates</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/execution-manager/sparktemplates</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/resources/execution-manager/templateconfigs</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/execution-manager/templateconfigs</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/executionplans</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/executionplans</outputDirectory>
+            <includes>
+                <include>**/*.siddhiql</include>
+            </includes>
+        </fileSet>
+
+
     </fileSets>
+
+
 
     <files>
         <!-- *********** Default files copy that comes with Carbon ************* -->
@@ -522,9 +543,9 @@
 
 	<file>
             <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/cep/domain-template/APIMAnalytics.xml
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/execution-manager/domain-template/apim-analytics.xml
             </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/cep/domain-template</outputDirectory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/execution-manager/domain-template</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
@@ -568,6 +589,7 @@
             <!--filtered>true</filtered-->
             <fileMode>644</fileMode>
         </file>
+
         <file>
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/org_wso2_carbon_analytics_apim_RDBMS-1.0.0.car

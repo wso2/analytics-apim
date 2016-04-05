@@ -33,7 +33,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
     private final String TEST_RESOURCE_PATH = "abnormalResponseAndBackendTime";
     private final String ABNORMAL_RESPONSE_TIME_PUBLISHER_FILE = "logger_abnormalResponseTime.xml";
     private final String ABNORMAL_BACKEND_TIME_PUBLISHER_FILE = "logger_abnormalBackendTime.xml";
-    private final String SPARK_SCRIPT = "org_wso2_analytics_apim_response_stat_generator";
+    private final String SPARK_SCRIPT = "APIMAnalytics-ResponseStatGenerator";
     private final String RESPONSE_PERCENTILE_TABLE = "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE";
     private final int MAX_TRIES = 20;
 

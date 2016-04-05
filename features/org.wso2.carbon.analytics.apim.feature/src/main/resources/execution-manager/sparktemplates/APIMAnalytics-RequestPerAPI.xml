@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <CronExpression>0 0 12 * * ?</CronExpression>
+    <Editable>true</Editable>
+    <Name>APIMAnalytics-RequestPerAPI</Name>
+    <Script>CREATE TEMPORARY TABLE REQUEST_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinPerApiStream");
+
+        CREATE TEMPORARY TABLE REQUEST_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE",
+        schema "requestsPerMinPerApiLowerPercentile double,api_version string",
+        primaryKeys "api_version", mergeSchema "false"
+        );
+
+        INSERT INTO TABLE REQUEST_PER_API_PERCENTILE_GEN
+        select getpercentileValue(avg(requestsPerMinPerApi), sqrt(avg(cast(requestsPerMinPerApi
+        as double)*cast(requestsPerMinPerApi as double))-avg(requestsPerMinPerApi)*avg(requestsPerMinPerApi)) , 0.05 ) as requestsPerMinPerApiLowerPercentile,api_version as api_version
+
+        from REQUEST_PER_API_INFO group by api_version;
+
+    </Script>
+</Analytics>
