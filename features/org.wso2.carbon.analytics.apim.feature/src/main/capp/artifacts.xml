@@ -130,5 +130,6 @@
         <dependency artifact="APIM_STAT_SCRIPT_THROTTLE" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="APIM_LATENCY_BREAKDOWN_STATS" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="APIM_GEO_LOCATION_STATS" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="APIM_USER_AGENT_STATS" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
     </artifact>
 </artifacts>
