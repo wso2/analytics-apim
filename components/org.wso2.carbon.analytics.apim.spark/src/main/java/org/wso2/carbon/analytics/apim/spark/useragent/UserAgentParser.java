@@ -16,35 +16,15 @@
 * under the License.
 */
 
-package org.wso2.carbon.analytics.apim.spark.udf.useragent;
+package org.wso2.carbon.analytics.apim.spark.useragent;
 
 import org.wso2.carbon.analytics.spark.core.udf.CarbonUDF;
 import ua_parser.OS;
 import ua_parser.Parser;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import ua_parser.UserAgent;
 
-import java.io.IOException;
-
 public class UserAgentParser implements CarbonUDF {
-    private static final Log log =  LogFactory.getLog(UserAgentParser.class);
-    private static volatile Parser uaParser;
 
-    private Parser getInstance(){
-        if(uaParser == null){
-            synchronized (this){
-                if(uaParser == null){
-                    try {
-                        uaParser = new Parser();
-                    } catch (IOException e) {
-                        log.error("Unable to initialize the user agent parser", e);
-                    }
-                }
-            }
-        }
-        return uaParser;
-    }
     /**
      * This method would extract the Operating system form the given User-Agent String.
      *
@@ -53,7 +33,7 @@ public class UserAgentParser implements CarbonUDF {
      * @return The name of the Operating system extracted from the User-Agent.
      */
     public String getOSFromUserAgent(String userAgent){
-        Parser parser = getInstance();
+        Parser parser = UserAgentInitializer.getInstance().getUaParser();
         if (parser != null) {
             OS operatingSystem = parser.parseOS(userAgent);
             if (operatingSystem != null) {
@@ -71,7 +51,7 @@ public class UserAgentParser implements CarbonUDF {
      * @return The name of the browser extracted from the User-Agent.
      */
     public String getBrowserFromUserAgent(String userAgent){
-        Parser parser = getInstance();
+        Parser parser = UserAgentInitializer.getInstance().getUaParser();
         if (parser != null) {
             UserAgent agent = parser.parseUserAgent(userAgent);
             if (agent != null) {
