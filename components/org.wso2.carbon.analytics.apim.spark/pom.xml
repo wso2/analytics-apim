@@ -60,7 +60,8 @@
 						<Export-Package>
 							!org.wso2.carbon.analytics.apim.spark.internal.*,
 							org.wso2.carbon.analytics.apim.spark.udf.*,
-							org.wso2.carbon.analytics.apim.spark.geolocation.*
+							org.wso2.carbon.analytics.apim.spark.geolocation.*,
+							org.wso2.carbon.analytics.apim.spark.useragent.*
 						</Export-Package>
 						<Import-Package>
 							org.apache.commons.math3.*,
