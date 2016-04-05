@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <CronExpression>0 0 12 * * ?</CronExpression>
+    <Editable>true</Editable>
+    <Name>APIMAnalytics-ResponseTime</Name>
+    <Script>CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_RESPONSE",schema "_timestamp LONG ");
+
+        CREATE TEMPORARY TABLE RESPONSE_PER_TIME_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE",
+        schema "api_version string,  responseTimePerApiUpperPercentile double ",
+        primaryKeys "api_version" , mergeSchema "false"
+        );
+
+        INSERT INTO TABLE RESPONSE_PER_TIME_PERCENTILE_GEN
+        select api_version,
+        getpercentileValue(avg(responseTime), sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) , 0.95 ) as responseTimePerApiUpperPercentile
+
+        from RESPONSE_INFO where _timestamp>(now('')-86400000) group by api_version;
+
+    </Script>
+</Analytics>
+
+

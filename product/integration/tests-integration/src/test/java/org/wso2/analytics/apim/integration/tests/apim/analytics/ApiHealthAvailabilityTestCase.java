@@ -17,9 +17,9 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
 
     private final String REQUEST_STREAM_NAME = "org.wso2.apimgt.statistics.request";
     private final String RESPONSE_STREAM_NAME = "org.wso2.apimgt.statistics.response";
-    private final String RESPONSE_TIME_SPARK_SCRIPT = "org_wso2_analytics_apim_response_per_time_stat_generator";
-    private final String REQUEST_COUNT_SPARK_SCRIPT = "org_wso2_analytics_apim_request_per_api_stat_generator";
-    private final String RESPONSE_COUNT_SPARK_SCRIPT = "org_wso2_analytics_apim_response_per_api_stat_generator";
+    private final String RESPONSE_TIME_SPARK_SCRIPT = "APIMAnalytics-ResponseTime";
+    private final String REQUEST_COUNT_SPARK_SCRIPT = "APIMAnalytics-RequestPerAPI";
+    private final String RESPONSE_COUNT_SPARK_SCRIPT = "APIMAnalytics-ResponsePerAPIStatGenerator";
     private final String RESPONSE_PER_API_STREAM = "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERMINPERAPISTREAM";
     private final String REQUEST_PER_API_STREAM = "ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINPERAPISTREAM";
     private final String REQUEST_STREAM_VERSION = "1.1.0";

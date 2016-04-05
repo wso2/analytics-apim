@@ -36,7 +36,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_VERSION = "1.0.0";
     private final String TEST_RESOURCE_PATH = "abnormalTokenRefresh";
     private final String PUBLISHER_FILE = "logger_abnormalAccessTokenRefresh.xml";
-    private final String SPARK_SCRIPT = "org_wso2_analytics_apim_abnormal_access_token_refresh";
+    private final String SPARK_SCRIPT = "APIMAnalytics-ConfigureAccessToken";
     private final String SUMMARY_TABLE = "AccessTokenRefreshSummaryTable";
     private final int MAX_TRIES = 5;
     private long initialTimestamp;
