@@ -32,7 +32,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 	private static final String STREAM_VERSION = "1.1.0";
 	private static final String TEST_RESOURCE_PATH = "abnormalTierUsage";
 	private static final String PUBLISHER_FILE = "logger_abnormalTierUsage.xml";
-	private static final String SPARK_SCRIPT = "org_wso2_analytics_apim_abnormal_tier_usage";
+	private static final String SPARK_SCRIPT = "APIMAnalytics-AbnormalTierAvailabilityAlert";
 
 	// Request related constants these will be used to build API requests
 	private static final String clientType = "external";

@@ -32,7 +32,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_VERSION = "1.1.0";
     private final String TEST_RESOURCE_PATH = "abnormalRequestCount";
     private final String PUBLISHER_FILE = "logger_abnormalRequestCount.xml";
-    private final String SPARK_SCRIPT = "org_wso2_analytics_apim_request_stat_generator";
+    private final String SPARK_SCRIPT = "APIMAnalytics-RequestStatGenerator";
     private final String REQUEST_PERCENTILE_TABLE = "ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE";
     private final String REQUEST_COUNT_PER_MINUTE_TABLE = "org_wso2_analytics_apim_store_requestPerMinPerApiStream";
     private final int MAX_TRIES = 20;

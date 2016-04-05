@@ -11,7 +11,6 @@
     <property name="EVENT_RECEIVER_dir" value="Eventreceivers" />
     <property name="EVENT_STORE_dir" value="Eventstores" />
     <property name="EVENT_STREAM_dir" value="Eventstreams" />
-    <property name="EXECUTION_PLAN_dir" value="ExecutionPlans" />
     <property name="RESOURCE_dir" value="Resources" />
     <property name="SPARK_SCRIPT_dir" value="Sparkscripts" />
     <property name="DATA_PURGING_dir" value="Datapurging" />
@@ -43,7 +42,6 @@
 	    <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_PUblisher_dir}" />
 	    <zipfileset dir="${ANALYTICS_APIM_dir}/${GADGETS_dir}" />
 	    <zipfileset dir="${ANALYTICS_APIM_dir}/${DASHBOARDS_dir}" />
-            <zipfileset dir="${ANALYTICS_APIM_dir}/${EXECUTION_PLAN_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${RESOURCE_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${SPARK_SCRIPT_dir}"
                         excludes="**/${ANALYTICS_APIM_RDBMS_directory}/**, **/${ANALYTICS_APIM_REST_directory}/**"/>
@@ -58,7 +56,6 @@
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_PUblisher_dir}" />
 	    <zipfileset dir="${ANALYTICS_APIM_dir}/${GADGETS_dir}" />
 	    <zipfileset dir="${ANALYTICS_APIM_dir}/${DASHBOARDS_dir}" />
-            <zipfileset dir="${ANALYTICS_APIM_dir}/${EXECUTION_PLAN_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${RESOURCE_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${SPARK_SCRIPT_dir}"
                         excludes="**/${ANALYTICS_APIM_RDBMS_directory}/**, **/${ANALYTICS_APIM_REST_directory}/**"/>
