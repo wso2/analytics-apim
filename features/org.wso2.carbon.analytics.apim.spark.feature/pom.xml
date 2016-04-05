@@ -38,7 +38,15 @@
   			<groupId>org.apache.commons</groupId>
   			<artifactId>commons-math3</artifactId>
   		</dependency>
-  	</dependencies>
+		<dependency>
+			<groupId>ua.parser.wso2</groupId>
+			<artifactId>ua-parser</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections.wso2</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+	</dependencies>
 
     <build>
   		<plugins>
@@ -89,6 +97,10 @@
   							<bundles>
   								<bundleDef>org.wso2.analytics.apim:org.wso2.carbon.analytics.apim.spark</bundleDef>
   							</bundles>
+							<importBundles>
+								<importBundleDef>ua.parser.wso2:ua-parser:${orbit.version.ua_parser}</importBundleDef>
+								<importBundleDef>commons-collections.wso2:commons-collections:${apache.common.collection.version}</importBundleDef>
+							</importBundles>
   						</configuration>
   					</execution>
   				</executions>
