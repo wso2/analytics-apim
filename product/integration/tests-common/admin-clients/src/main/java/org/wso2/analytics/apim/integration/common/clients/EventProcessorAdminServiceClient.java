@@ -106,6 +106,16 @@ public class EventProcessorAdminServiceClient {
         }
     }
 
+    public String getActiveExecutionPlan(String executionPlanName)
+            throws RemoteException {
+        try {
+            return eventProcessorAdminServiceStub.getActiveExecutionPlan(executionPlanName);
+        } catch (RemoteException e) {
+            log.error("RemoteException", e);
+            throw e;
+        }
+    }
+
     public void addExecutionPlan(String executionPlan)
             throws RemoteException {
         try {

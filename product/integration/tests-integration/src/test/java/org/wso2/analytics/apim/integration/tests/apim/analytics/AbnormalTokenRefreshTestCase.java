@@ -38,6 +38,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
     private final String PUBLISHER_FILE = "logger_abnormalAccessTokenRefresh.xml";
     private final String SPARK_SCRIPT = "APIMAnalytics-ConfigureAccessToken";
     private final String SUMMARY_TABLE = "AccessTokenRefreshSummaryTable";
+    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-AbnormalAccessTokenRefreshAlert";
     private final int MAX_TRIES = 5;
     private long initialTimestamp;
     private String BASE_EVENT_STRING = "apim,carbon.super,home,s8SWbnmzQEgzMIsol7AHt9cjhEsa,refreshToken,id1232,ab,c,true,200," +
@@ -49,6 +50,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         initialTimestamp = System.currentTimeMillis() - 6000;
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
+        editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
     @AfterClass(alwaysRun = true)
@@ -115,7 +117,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         publishEvent(eventDto);
 
         boolean abnormalTokenRefreshFound = isAlertReceived(initialCount, "msg:Abnormal Access Token Refresh Detected " +
-                "from User:carbon.super-home-apim for Consumer Key: s8SWbnmzQEgzMIsol7AHt9cjhEsa", 5 ,2000);
+                "from User:carbon.super-home-apim for Consumer Key: s8SWbnmzQEgzMIsol7AHt9cjhEsa", 50 ,5000);
         Assert.assertTrue(abnormalTokenRefreshFound, "Abnormal Token Refresh Alert event not received!");
     }
 

@@ -33,7 +33,6 @@ import org.wso2.analytics.apim.integration.common.utils.SiddhiSimulatorUtil;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.api.CarbonAnalyticsAPI;
-import org.wso2.carbon.analytics.dataservice.commons.SearchResultEntry;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException;
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
@@ -403,6 +402,13 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         eventProcessorAdminServiceClient.removeActiveExecutionPlan(planName);
     }
 
+    protected String getActiveExecutionPlan(String planName) throws RemoteException {
+        return eventProcessorAdminServiceClient.getActiveExecutionPlan(planName);
+    }
+
+    protected void editActiveExecutionPlan(String executionPlan, String executionPlanName) throws RemoteException {
+        eventProcessorAdminServiceClient.editActiveExecutionPlan(executionPlan, executionPlanName);
+    }
 
     private void initEventPublisherAdminServiceClient(
             String backendURL,
