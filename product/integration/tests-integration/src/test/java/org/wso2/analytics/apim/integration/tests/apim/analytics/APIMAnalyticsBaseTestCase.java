@@ -26,12 +26,10 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.testng.Assert;
-import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
-import org.wso2.analytics.apim.integration.common.clients.EventPublisherAdminServiceClient;
-import org.wso2.analytics.apim.integration.common.clients.EventSimulatorAdminServiceClient;
-import org.wso2.analytics.apim.integration.common.clients.ExecutionManagerAdminServiceClient;
+import org.wso2.analytics.apim.integration.common.clients.*;
 import org.wso2.analytics.apim.integration.common.utils.CSVSimulatorUtil;
 import org.wso2.analytics.apim.integration.common.utils.DASIntegrationTest;
+import org.wso2.analytics.apim.integration.common.utils.SiddhiSimulatorUtil;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.api.CarbonAnalyticsAPI;
@@ -64,16 +62,20 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     private DataPublisherClient dataPublisherClient;
     private AnalyticsDataAPI analyticsDataAPI;
     private AnalyticsProcessorAdminServiceStub analyticsStub;
+    private SiddhiSimulatorUtil siddhiSimulatorUtil;
     protected EventPublisherAdminServiceClient eventPublisherAdminServiceClient;
     protected ExecutionManagerAdminServiceClient executionManagerAdminServiceClient;
     protected LogViewerClient logViewerClient;
     protected EventSimulatorAdminServiceClient eventSimulatorAdminServiceClient;
+    protected EventProcessorAdminServiceClient eventProcessorAdminServiceClient;
 
     public void init() throws Exception {
         super.init();
         String session = getSessionCookie();
+        siddhiSimulatorUtil = new SiddhiSimulatorUtil();
         eventPublisherAdminServiceClient = getEventPublisherAdminServiceClient(backendURL, session);
         executionManagerAdminServiceClient = getExecutionManagerAdminServiceClient(backendURL, session);
+        eventProcessorAdminServiceClient = getEventProcessorAdminServiceClien(backendURL,session);
         logViewerClient = new LogViewerClient(backendURL, session);
         String apiConf =
                 new File(this.getClass().getClassLoader().
@@ -364,6 +366,43 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         initExecutionManagerAdminServiceClient(backendURL, loggedInSessionCookie);
         return executionManagerAdminServiceClient;
     }
+
+    protected EventProcessorAdminServiceClient getEventProcessorAdminServiceClien(
+            String backEndURL, String loggedInSessionCookie) throws AxisFault{
+        initEventProcessorAdminServiceClient(backEndURL,loggedInSessionCookie);
+        return eventProcessorAdminServiceClient;
+    }
+
+    private void initEventProcessorAdminServiceClient(String backEndURL,String loggedInSessionCookie) throws AxisFault {
+        eventProcessorAdminServiceClient = new EventProcessorAdminServiceClient(backEndURL,loggedInSessionCookie);
+        ServiceClient client = eventProcessorAdminServiceClient._getServiceClient();
+        Options options = client.getOptions();
+        options.setManageSession(true);
+        options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
+    }
+
+    protected String getExecutionPlanFromFile(String testCaseFolderName, String executionPlanFileName)
+            throws Exception {
+        String relativeFilePath = getFilePath(testCaseFolderName,executionPlanFileName);
+        //String relativeFilePath = getTestArtifactLocation() + CEPIntegrationTestConstants.RELATIVE_PATH_TO_TEST_ARTIFACTS + testCaseFolderName + "/" + executionPlanFileName;
+        //relativeFilePath = relativeFilePath.replaceAll("[\\\\/]", Matcher.quoteReplacement(File.separator));
+        return siddhiSimulatorUtil.readFile(relativeFilePath);
+    }
+
+    protected void addExecutionPlan(String executionPlan)
+            throws RemoteException, InterruptedException {
+        boolean isExecutionPlanAdded = false;
+        eventProcessorAdminServiceClient.addExecutionPlan(executionPlan);
+    }
+
+    protected int getExecutionPlanCount() throws RemoteException {
+        return eventProcessorAdminServiceClient.getExecutionPlanConfigurationCount();
+    }
+
+    protected void deleteExecutionPlan(String planName) throws RemoteException {
+        eventProcessorAdminServiceClient.removeActiveExecutionPlan(planName);
+    }
+
 
     private void initEventPublisherAdminServiceClient(
             String backendURL,
