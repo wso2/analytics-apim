@@ -27,12 +27,14 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     private final String TEST_RESOURCE_PATH = "healthAvailability";
     private final String PUBLISHER_FILE = "logger.xml";
     private final String RESPONSE_TIME_TABLE = "ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE";
+    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-HealthAvailabilityPerMin";
     private final int MAX_TRIES_RESPONSE = 50;
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
         super.init();
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
+        editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
     @AfterClass(alwaysRun = true)
@@ -83,8 +85,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         List<EventDto> events = getResponseEventList(5);
         pubishEvents(events,1000);
         //Thread.sleep(6000);
-        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"api_version\":\"CalculatorAPI:v1.0\"," +
-                "\"msg\":\"Response time is too high\",",50,6000);
+        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Response time is too high\"",50,6000);
         Assert.assertTrue(responseTimeTooHigh, "Response time too high for continuous 5 events, alert not received!");
     }
 
@@ -177,8 +178,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         /*Thread.sleep(49000);
         pubishEvents(getRequestEventList(10),1000);
         pubishEvents(getResponseEventListNumApi(1),1000);*/
-        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"api_version\":\"NumberAPI:v1.0\"," +
-                "\"msg\":\"Response count is too low\",",50,5000);
+        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Response count is too low\",",50,5000);
         Assert.assertTrue(responseTimeTooHigh, "Response count is too low continuously, alert not received!");
     }
 
@@ -187,8 +187,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseCode.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         //Thread.sleep(8000);
-        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"api_version\":\"CalculatorAPI:v2.0\"," +
-                "\"msg\":\"Server error occurred\",",50,5000);
+        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Server error occurred\"",50,5000);
         Assert.assertTrue(responseTimeTooHigh, "Server error for continuous 5 events, alert not received!");
     }
 
