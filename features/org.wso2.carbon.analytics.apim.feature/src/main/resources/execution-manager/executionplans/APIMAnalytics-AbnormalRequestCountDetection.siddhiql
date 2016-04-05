@@ -39,7 +39,7 @@
                                 insert into requestSummaryStream ;
 
                                 @info(name = 'query2')
-                                from requestSummaryStream#window.timeBatch(1 minute)
+                                from requestSummaryStream#window.timeBatch(1 min)
                                 select api_version, userId , consumerKey, resourceTemplate, method, count() as requestsPerMin 
                                 group by api_version, userId , consumerKey, resourceTemplate, method
                                 insert into requestPerMinStream ;
