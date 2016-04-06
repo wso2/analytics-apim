@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<artifact name="org.wso2.analytics.apim.alert.abnormalTokenRefreshPublisher" version="1.0.0" type="event/publisher" serverRole="DataAnalyticsServer">
-    <file>org.wso2.analytics.apim.alert.abnormalTokenRefreshPublisher.xml</file>
-</artifact>
