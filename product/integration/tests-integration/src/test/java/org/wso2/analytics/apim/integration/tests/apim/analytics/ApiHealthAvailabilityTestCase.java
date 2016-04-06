@@ -227,7 +227,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
             eventDto.setEventStreamId(getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION));
             eventDto.setAttributeValues(new String[]{"external","s8SWbnmzQEgzMIsol7AHt9cjhEsa","/number/1.0","NumberAPI:v1.0",
                     "NumberAPI","/add?x=12&y=3","/add","GET","1","1","1455785133394","admin@carbon.super","carbon.super","192.168.66.1",
-                    "admin@carbon.super","DefaultApplication","1","chrome","Unlimited","FALSE","192.168.66.1"});
+                    "admin@carbon.super","DefaultApplication","1","chrome","Unlimited","FALSE","192.168.66.1","admin"});
             events.add(eventDto);
         }
         return events;
