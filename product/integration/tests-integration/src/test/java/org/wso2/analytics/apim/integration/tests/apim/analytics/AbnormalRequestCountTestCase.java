@@ -34,7 +34,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     private final String PUBLISHER_FILE = "logger_abnormalRequestCount.xml";
     private final String SPARK_SCRIPT = "APIMAnalytics-RequestStatGenerator";
     private final String REQUEST_PERCENTILE_TABLE = "ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE";
-    private final String REQUEST_COUNT_PER_MINUTE_TABLE = "org_wso2_analytics_apim_store_requestPerMinPerApiStream";
+    private final String REQUEST_COUNT_PER_MINUTE_TABLE = "ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINSTREAM";
     private final String EXECUTION_PLAN_NAME = "APIMAnalytics-AbnormalRequestCountDetection";
     private final int MAX_TRIES = 20;
 
@@ -52,7 +52,10 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         }
         // deploy the publisher xml files
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
-        editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
+        deleteExecutionPlan(EXECUTION_PLAN_NAME);
+        Thread.sleep(1000);
+        addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
+
     }
 
     @AfterClass(alwaysRun = true)
@@ -81,13 +84,13 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
 
         //publish events
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
-        Thread.sleep(70000);
+        Thread.sleep(12000);
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
-        Thread.sleep(60000);
+        Thread.sleep(12000);
         int i = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
-            long requestPerMinuteEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
+            long requestPerMinuteEventCount = getRecordCount(-1234, REQUEST_COUNT_PER_MINUTE_TABLE);
             eventsPublished = (requestPerMinuteEventCount >= 4);
             if (eventsPublished) {
                 break;
