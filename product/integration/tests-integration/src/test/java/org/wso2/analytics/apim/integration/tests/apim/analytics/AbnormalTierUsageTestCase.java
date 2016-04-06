@@ -229,7 +229,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 								 String applicationId, String userAgent, String tier, boolean throttledOut, String
 										 clientIp, String applicationOwner) {
 
-		String[] singleRequest = new String[21];
+		String[] singleRequest = new String[22];
 
 		singleRequest[0] = clientType;
 		singleRequest[1] = consumerKey;
