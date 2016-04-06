@@ -60,13 +60,13 @@
                                 insert into responseSummaryStream ;
 
 								@info(name = 'query3')
-                                from requestSummaryStream#window.timeBatch(1 min)
+                                from requestSummaryStream#window.timeBatch(15 sec)
                                 select api_version,  count() as requestsPerMinPerApi
                                 group by api_version
                                 insert into requestPerMinPerApiStream ;
 
 								@info(name = 'query4')
-                                from responseSummaryStream#window.timeBatch(1 min)
+                                from responseSummaryStream#window.timeBatch(15 sec)
                                 select api_version,  count() as responsesPerMinPerApi
                                 group by api_version
                                 insert into responsePerMinPerApiStream ;
@@ -77,13 +77,13 @@
 
 								/* timeBatch used because Minutely updates are needed */
                                 @info(name = 'query5')
-                                from requestSummaryStream#window.time(1 min)
+                                from requestSummaryStream#window.time(15 sec)
                                 select  api_version, apiPublisher,  count() as  requestsPerMinPerApi
                                 group by api_version
                                 insert into requestPerApiCountStream;
 
 								@info(name = 'query6')
-                                from responseSummaryStream#window.time(1 min)
+                                from responseSummaryStream#window.time(15 sec)
                                 select  api_version,   count() as  responsesPerMinPerApi
                                 group by api_version
                                 insert into responsePerApiCountStream;
@@ -103,7 +103,7 @@
 								/* Combine*/
 
 								@info(name = 'query9')
-								from requestsPercentileStream#window.time(1min) as requestsPercentileStreamWindow join responsesPercentileStream#window.time(1min) as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
+								from requestsPercentileStream#window.time(15 sec) as requestsPercentileStreamWindow join responsesPercentileStream#window.time(15 sec) as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
 								select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
 								responsesPercentileStreamWindow.responsesPerMin as responsesPerMin ,responsesPercentileStreamWindow.responsesPerMinLowerPercentile as responsesPerMinLowerPercentile
                                 insert into requestResponseSummaryStream;
