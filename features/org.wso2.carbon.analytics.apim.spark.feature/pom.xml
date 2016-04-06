@@ -51,6 +51,47 @@
     <build>
   		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>clean-geolocation-h2-database</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<delete file="src/main/resources/repository/database/GEOLOCATION_DB.h2.db" />
+							</tasks>
+						</configuration>
+					</execution>
+					<execution>
+						<id>create-geolocation-database</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<path id="h2.classpath">
+									<path refid="maven.compile.classpath" />
+								</path>
+								<echo message="########### Creating Geo Location Database ##############" />
+								<sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/src/main/resources/repository/database/GEOLOCATION_DB;create=true;MV_STORE=FALSE" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
+									<classpath>
+										<path refid="h2.classpath" />
+									</classpath>
+									<fileset file="${basedir}/src/main/resources/dbscripts/h2.sql" />
+								</sql>
+								<echo message="##################### END ########################" />
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>
