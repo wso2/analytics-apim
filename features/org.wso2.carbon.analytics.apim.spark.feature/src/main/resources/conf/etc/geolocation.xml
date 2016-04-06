@@ -1,6 +1,6 @@
 <GeoLocation>
     <Implementation class="org.wso2.carbon.analytics.apim.spark.geolocation.impl.LocationResolverRdbms">
-        <Property name="dataSource">jdbc/wso2ipdata</Property>
+        <Property name="dataSource">jdbc/GEO_LOCATION_DATA</Property>
         <Property name="persistInDataBase">true</Property>
         <Property name="ipToLongCacheCount">10000</Property>
     </Implementation>
