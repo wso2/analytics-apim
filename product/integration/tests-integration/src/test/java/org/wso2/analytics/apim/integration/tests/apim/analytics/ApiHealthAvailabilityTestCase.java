@@ -34,7 +34,11 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         super.init();
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
-        editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
+        deleteExecutionPlan(EXECUTION_PLAN_NAME);
+        Thread.sleep(1000);
+        addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
+        Thread.sleep(1000);
+       // editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
     @AfterClass(alwaysRun = true)
