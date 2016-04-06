@@ -88,6 +88,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 
 		int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
 		publishDataset();
+		Thread.sleep(10000);
 		executeSparkScript(SPARK_SCRIPT);
 		Thread.sleep(5000);
 
@@ -132,7 +133,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 						apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
-				Thread.sleep(250);
+				Thread.sleep(10);
 			}
 		}
 
@@ -152,7 +153,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 						apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
-				Thread.sleep(250);
+				Thread.sleep(10);
 			}
 		}
 
@@ -170,7 +171,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 						apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
-				Thread.sleep(250);
+				Thread.sleep(10);
 			}
 		}
 
@@ -189,7 +190,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 						clientIp);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
-				Thread.sleep(250);
+				Thread.sleep(10);
 			}
 		}
 		// not abnormal
@@ -206,7 +207,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 						clientIp);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
-				Thread.sleep(250);
+				Thread.sleep(10);
 			}
 		}
 
