@@ -97,7 +97,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
                 new String[] { "external", "D4rf6fvCohQ7kbQ970euK0LmjcQa", "/calc/1.0", "CalculatorAPI:v1.0",
                         "CalculatorAPI", "/pay_fraud", "/pay_fraud", "GET", "1", "1", "1455785133372",
                         "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
-                        "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29" });
+                        "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29","admin" });
         publishEvent(eventDto);
 
         boolean requestPatternChangeAlert = isAlertReceived(beforeCount, "Unique ID: logger_requestPatternChange", 84 ,5000);

@@ -52,7 +52,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 	private static final String tier = "Gold";
 	private static final boolean throttledOut = false;
 	private static final String clientIp = "127.0.0.1";
-
+	private static final String applicationOwner = "admin";
 	@BeforeClass(alwaysRun = true)
 	public void setup() throws Exception {
 		super.init();
@@ -130,7 +130,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 				long requestTime = offsetInDays(-day);
 				String[] currentReq = buildRequst(clientType, consumerKey, context, "svm:v1.0.0", "svm", resourcePath,
 						resourceTemplate, method, version, request, requestTime, userId, tenantDomain, hostName,
-						apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp);
+						apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp,applicationOwner);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
 				Thread.sleep(10);
@@ -150,7 +150,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 				long requestTime = offsetInDays(-day);
 				String[] currentReq = buildRequst(clientType, consumerKey, context, "tree:v1.0.0", "tree", resourcePath,
 						resourceTemplate, method, version, request, requestTime, userId, tenantDomain, hostName,
-						apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp);
+						apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp,applicationOwner);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
 				Thread.sleep(10);
@@ -168,7 +168,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 				long requestTime = offsetInDays(-day);
 				String[] currentReq = buildRequst(clientType, consumerKey, context, "svm:v1.0.0", "svm", resourcePath,
 						resourceTemplate, method, version, request, requestTime, "2", tenantDomain, hostName,
-						apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp);
+						apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp,applicationOwner);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
 				Thread.sleep(10);
@@ -187,7 +187,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 				String[] currentReq = buildRequst(clientType, consumerKey, context, "boost:v1.1.0", "boost",
 						resourcePath, resourceTemplate, method, version, request, requestTime, "3", tenantDomain,
 						hostName, apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut,
-						clientIp);
+						clientIp,applicationOwner);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
 				Thread.sleep(10);
@@ -204,7 +204,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 				String[] currentReq = buildRequst(clientType, consumerKey, context, "boost:v1.0.0", "boost",
 						resourcePath, resourceTemplate, method, version, request, requestTime, "3", tenantDomain,
 						hostName, apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut,
-						clientIp);
+						clientIp,applicationOwner);
 				eventDto.setAttributeValues(currentReq);
 				publishEvent(eventDto);
 				Thread.sleep(10);
@@ -226,7 +226,8 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 	private String[] buildRequst(String clientType, String consumerKey, String context, String api_version, String api,
 			String resourcePath, String resourceTemplate, String method, String version, int request, long requestTime,
 			String userId, String tenantDomain, String hostName, String apiPublisher, String applicationName,
-			String applicationId, String userAgent, String tier, boolean throttledOut, String clientIp) {
+								 String applicationId, String userAgent, String tier, boolean throttledOut, String
+										 clientIp, String applicationOwner) {
 
 		String[] singleRequest = new String[21];
 
@@ -251,7 +252,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 		singleRequest[18] = tier;
 		singleRequest[19] = Boolean.toString(throttledOut);
 		singleRequest[20] = clientIp;
-
+		singleRequest[21] = applicationOwner;
 		return singleRequest;
 	}
 

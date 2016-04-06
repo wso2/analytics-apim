@@ -131,7 +131,8 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setAttributeValues(
                 new String[]{"external","s8SWbnmzQEgzMIsol7AHt9cjhEsa","/calc/1.0","CalculatorAPI:v1.0","CalculatorAPI",
                         "/add?x=12&y=3","/add","GET","1.0","1","1456894602313","admin@carbon.super","carbon.super","192.168.66.1",
-                        "admin@carbon.super","DefaultApplication","1","Mozilla/5.0","Unlimited","False","127.0.01"}
+                        "admin@carbon.super","DefaultApplication","1","Mozilla/5.0","Unlimited","False","127.0.01",
+                        "admin"}
         );
 
         for (int i=0;i<15;i++){

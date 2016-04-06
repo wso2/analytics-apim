@@ -181,7 +181,7 @@ insert into all_apim_alerts_stream;
 @Plan:trace('false')
 
 @Import('org.wso2.apimgt.statistics.request:1.1.0')
-define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string);
+define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
 
 @Export('org.wso2.analytics.apim.transitionStream:1.0.0')
@@ -240,7 +240,7 @@ insert into transitionStream;
 @Plan:description('Alerts if an access from a strange ip is detected')
 
 @Import('org.wso2.apimgt.statistics.request:1.1.0')
-define stream APIMRequest (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string);
+define stream APIMRequest (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream all_apim_alerts_stream (type string, msg string, alertTimestamp long);
@@ -331,7 +331,7 @@ insert into IPAccessSummary;
 @Plan:statistics('false')
 
                                 @Import('org.wso2.apimgt.statistics.request:1.1.0')
-                define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string);
+                define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
                 @Import('org.wso2.apimgt.statistics.response:1.1.0')
                 define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string);
