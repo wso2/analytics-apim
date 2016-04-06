@@ -26,9 +26,7 @@ CREATE TABLE `LOCATION` (
   `city_name` varchar(1000) DEFAULT NULL,
   `metro_code` int(11) DEFAULT NULL,
   `time_zone` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`geoname_id`),
-  KEY `city_name` (`city_name`(767))
-);
+  PRIMARY KEY (`geoname_id`));
 CREATE TABLE `IP_LOCATION` (
   `ip` varchar(100) NOT NULL,
   `country_name` varchar(200) DEFAULT NULL,
