@@ -88,6 +88,9 @@
     },   {
       "name": "clientIp",
       "type": "STRING"
+    },   {
+      "name": "applicationOwner",
+      "type": "STRING"
     }
   ]
 }

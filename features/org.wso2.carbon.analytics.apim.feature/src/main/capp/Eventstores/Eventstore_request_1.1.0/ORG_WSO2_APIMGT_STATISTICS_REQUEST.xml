@@ -152,5 +152,12 @@
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
+		<ColumnDefinition>
+			<Name>applicationOwner</Name>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>false</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>STRING</Type>
+		</ColumnDefinition>
 	</TableSchema>
 </EventStoreConfiguration>
