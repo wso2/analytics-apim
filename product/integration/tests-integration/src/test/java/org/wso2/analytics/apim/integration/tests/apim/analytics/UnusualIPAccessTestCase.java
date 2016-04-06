@@ -35,6 +35,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     private final String TEST_RESOURCE_PATH = "unusualIPAccess";
     private final String PUBLISHER_FILE = "logger.xml";
     private final String ALERT_TABLE_NAME = "IPACCESSSUMMARY";
+    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-UnusualIPAccessAlert";
     private final int MAX_TRIES = 5;
 
     @BeforeClass(alwaysRun = true)
@@ -47,6 +48,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         }
         // publish the csv data
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 200);
+        editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
     @AfterClass(alwaysRun = true)
@@ -88,7 +90,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
                 "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
                 "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
-                "\"requestTime\":1455785133344,", 50 ,5000);
+                "\"requestTime\":1455785133344,", 5 ,5000);
         Assert.assertFalse(newIpDetectedAlertFound, "Request count alert suppression does not work");
     }
 
@@ -142,7 +144,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
 
         boolean newIPDetectedAlertFound = isAlertReceived(beforeCount, ":\"UnusualIPAccessAlert\",\"msg\":" +
                 "\"A request from a new IP detected! IP: 192.168.7.4\",\"ip\":\"192.168.7.4\",\"consumerKey\":" +
-                "\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"", 50 ,5000);
+                "\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"", 5 ,5000);
         Assert.assertFalse(newIPDetectedAlertFound, "New IP Detected alert received for first event!");
     }
 }

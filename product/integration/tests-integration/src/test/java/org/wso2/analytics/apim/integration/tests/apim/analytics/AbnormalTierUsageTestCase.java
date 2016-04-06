@@ -75,7 +75,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 			deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ALL_ALERT_TABLE);
 		}
 		deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
-	}
+    }
 
 	@AfterClass(alwaysRun = true)
 	public void cleanup() throws RemoteException {
@@ -92,24 +92,24 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 		Thread.sleep(5000);
 
 		// test case #1
-		boolean testOne = isAlertReceived(beforeCount, "message:Abnormal tier usage  userId: 1 api_version: svm:v1.0.0",
+		boolean testOne = isAlertReceived(beforeCount, "msg:Abnormal tier usage  userId: 1 api_version: svm:v1.0.0",
 				3, 1000);
 		Assert.assertTrue(testOne, "Abnormal request alert is not received for userId: 1 for api_version: svm:v1.0.0");
 
 		// test case #2
 		boolean testTwo = isAlertReceived(beforeCount,
-				"message:Abnormal tier usage  userId: 1 api_version: tree:v1.0.0", 3, 1000);
+				"msg:Abnormal tier usage  userId: 1 api_version: tree:v1.0.0", 3, 1000);
 		Assert.assertFalse(testTwo, "Incorrect user alert is received for userId: 1 for api_version: tree:v1.0.0");
 
 		// test case #3
 		boolean testThree = isAlertReceived(beforeCount,
-				"message:Abnormal tier usage  userId: 2 api_version: svm:v1.0.0", 3, 1000);
+				"msg:Abnormal tier usage  userId: 2 api_version: svm:v1.0.0", 3, 1000);
 		Assert.assertTrue(testThree,
 				"Abnormal request alert is not received for userId: 2 for api_version: svm:v1.0.0");
 
 		// test case #4
 		boolean testFour = isAlertReceived(beforeCount,
-				"message:Abnormal tier usage  userId: 3 api_version: boost:v1.1.0", 3, 1000);
+				"msg:Abnormal tier usage  userId: 3 api_version: boost:v1.1.0", 3, 1000);
 		Assert.assertTrue(testFour,
 				"Abnormal request alert is not received for userId: 3 for api_version: boost:v1.1.0");
 

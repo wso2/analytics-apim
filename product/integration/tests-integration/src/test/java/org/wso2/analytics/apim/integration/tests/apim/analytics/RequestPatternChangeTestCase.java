@@ -34,6 +34,8 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_VERSION = "1.1.0";
     private final String TEST_RESOURCE_PATH = "requestPatternChange";
     private final String PUBLISHER_FILE = "logger_requestPatternChange.xml";
+    private final String METRIC_EXECUTION_PLAN_NAME = "APIMAnalytics-APIRequestPatternChangeAnalysisMetric";
+    private final String METRICBUILDER_EXECUTION_PLAN_NAME = "APIMAnalytics-APIRequestPatternChangeAnalysisMatrixBuilder";
     private final int MAX_TRIES = 25;
 
 
@@ -57,7 +59,8 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
         // publish the csv data
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 200);
-
+        editActiveExecutionPlan(getActiveExecutionPlan(METRIC_EXECUTION_PLAN_NAME),METRIC_EXECUTION_PLAN_NAME);
+        editActiveExecutionPlan(getActiveExecutionPlan(METRICBUILDER_EXECUTION_PLAN_NAME),METRICBUILDER_EXECUTION_PLAN_NAME);
     }
 
     @AfterClass(alwaysRun = true)
@@ -96,7 +99,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
                         "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29" });
         publishEvent(eventDto);
-        
+
         boolean requestPatternChangeAlert = isAlertReceived(beforeCount, "Unique ID: logger_requestPatternChange", 84 ,5000);
 
         Assert.assertTrue(requestPatternChangeAlert, "Request pattern change alert event not received!");

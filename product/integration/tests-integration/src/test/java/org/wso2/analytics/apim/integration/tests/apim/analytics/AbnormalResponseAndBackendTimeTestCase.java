@@ -35,6 +35,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
     private final String ABNORMAL_BACKEND_TIME_PUBLISHER_FILE = "logger_abnormalBackendTime.xml";
     private final String SPARK_SCRIPT = "APIMAnalytics-ResponseStatGenerator";
     private final String RESPONSE_PERCENTILE_TABLE = "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE";
+    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-AbnormalResponseAndBackendTimeDetection";
     private final int MAX_TRIES = 20;
 
     @BeforeClass(alwaysRun = true)
@@ -49,6 +50,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         // deploy the publisher xml files
         deployPublisher(TEST_RESOURCE_PATH, ABNORMAL_BACKEND_TIME_PUBLISHER_FILE);
         deployPublisher(TEST_RESOURCE_PATH, ABNORMAL_RESPONSE_TIME_PUBLISHER_FILE);
+        editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
     @AfterClass(alwaysRun = true)
@@ -123,7 +125,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         );
         publishEvent(eventDto);
 
-        boolean abnormalResponseTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalResponseTime", 5 ,1000);
+        boolean abnormalResponseTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalResponseTime", 5, 1000);
         Assert.assertTrue(abnormalResponseTimeAlertTriggered, "Abnormal ResponseTime Alert event not received!");
     }
 
@@ -141,7 +143,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         );
         publishEvent(eventDto);
 
-        boolean abnormalBackendTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalBackendTime", 5 ,1000);
+        boolean abnormalBackendTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalBackendTime", 5, 1000);
         Assert.assertTrue(abnormalBackendTimeAlertTriggered, "Abnormal BackendTime Alert event not received!");
     }
 
