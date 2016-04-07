@@ -548,8 +548,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ABN_REQ_ALERT
       USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
-      OPTIONS (receiverURL "tcp://127.0.0.1:7612",
-               authURL "ssl://127.0.0.1:7712",
+      OPTIONS (receiverURL "tcp://127.0.0.1:$receiverURLPort",
+               authURL "ssl://127.0.0.1:$authURLPort",
                username "admin",
                password "admin",
                streamName "org.wso2.analytics.apim.alert.abnormalTierUsageAlert",
@@ -561,8 +561,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT
       USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
-      OPTIONS (receiverURL "tcp://127.0.0.1:7612",
-               authURL "ssl://127.0.0.1:7712",
+      OPTIONS (receiverURL "tcp://127.0.0.1:$receiverURLPort",
+               authURL "ssl://127.0.0.1:$authURLPort",
                username "admin",
                password "admin",
                streamName "org.wso2.analytics.apim.allApimAlertsStream",
@@ -604,10 +604,21 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                  ]]>
             </script>
             <parameters>
+
                 <parameter name="upperPercentile" type="double">
                     <displayName>Upper percentile</displayName>
                     <description>Percentile range to calculate the upper percentile value</description>
                     <defaultValue>0.95</defaultValue>
+                </parameter>
+                <parameter name="receiverURLPort" type="int">
+                    <displayName>Receiver port</displayName>
+                    <description>Receiver port</description>
+                    <defaultValue>7612</defaultValue>
+                </parameter>
+                <parameter name="authURLPort" type="int">
+                    <displayName>Auth port</displayName>
+                    <description>Authentication port</description>
+                    <defaultValue>7712</defaultValue>
                 </parameter>
 </parameters>
         </template>
