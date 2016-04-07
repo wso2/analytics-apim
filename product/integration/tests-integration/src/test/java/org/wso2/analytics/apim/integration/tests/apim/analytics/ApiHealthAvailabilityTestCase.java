@@ -34,11 +34,14 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         super.init();
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
+        redeployExecutionPlan();
+    }
+    
+    public void redeployExecutionPlan() throws Exception {
         deleteExecutionPlan(EXECUTION_PLAN_NAME);
         Thread.sleep(1000);
         addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
         Thread.sleep(1000);
-       // editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
     @AfterClass(alwaysRun = true)
@@ -65,7 +68,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         Thread.sleep(2000);
         deleteData(-1234, RESPONSE_PER_API_STREAM.replace('.', '_'));
         Thread.sleep(2000);
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseSim.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseSim.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 10);
         int i = 0;
         long responseEventCount = 0;
         boolean eventsPublished = false;
@@ -87,9 +90,8 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         Thread.sleep(5000);
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
         List<EventDto> events = getResponseEventList(5);
-        pubishEvents(events,1000);
-        //Thread.sleep(6000);
-        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Response time is too high\"",50,2000);
+        pubishEvents(events,100);
+        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Response time is too high\"",50,1000);
         Assert.assertTrue(responseTimeTooHigh, "Response time too high for continuous 5 events, alert not received!");
     }
 
@@ -97,13 +99,14 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
             , dependsOnMethods = "testResponseTimeTooHighAlert")
     public void test1stRequestCountSimulationDataSent() throws Exception {
         deleteData(-1234, REQUEST_PER_API_STREAM.replace('.', '_'));
-        Thread.sleep(2000);
         deleteData(-1234, RESPONSE_PER_API_STREAM.replace('.', '_'));
-        Thread.sleep(2000);
         deleteData(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
-        Thread.sleep(6000);
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "request1.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 500);
-        Thread.sleep(12000);
+        Thread.sleep(3000);
+        
+        redeployExecutionPlan();
+        
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "request1.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 100);
+        Thread.sleep(10000);
         long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished =(requestEventCount==9);
@@ -113,8 +116,8 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
             , dependsOnMethods = "test1stRequestCountSimulationDataSent")
     public void test2ndRequestCountSimulationDataSent() throws Exception {
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "request2.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 500);
-        Thread.sleep(8000);
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "request2.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 100);
+        Thread.sleep(9000);
         long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished =(requestEventCount==22);
@@ -124,8 +127,8 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
             , dependsOnMethods = "test2ndRequestCountSimulationDataSent")
     public void test3rdRequestCountSimulationDataSent() throws Exception {
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "request3.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 500);
-        Thread.sleep(8000);
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "request3.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 100);
+        Thread.sleep(9000);
         long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished =(requestEventCount==37);
@@ -135,9 +138,9 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Tests if the simulation data is published", dependsOnMethods = "test3rdRequestCountSimulationDataSent")
     public void test1stResponseCountSimulationDataSent() throws Exception {
         deleteData(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
-        Thread.sleep(4000);
+        Thread.sleep(2000);
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "response.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
-        Thread.sleep(15000);
+        Thread.sleep(10000);
         long requestEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished =(requestEventCount==9);
@@ -147,7 +150,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Tests if the simulation data is published", dependsOnMethods = "test1stResponseCountSimulationDataSent")
     public void test2ndResponseCountSimulationDataSent() throws Exception {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "response2.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
-        Thread.sleep(8000);
+        Thread.sleep(9000);
         long requestEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished =(requestEventCount==22);
@@ -173,16 +176,19 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         executeSparkScript(RESPONSE_COUNT_SPARK_SCRIPT);
         executeSparkScript(REQUEST_COUNT_SPARK_SCRIPT);
         Thread.sleep(10000);
-        pubishEvents(getRequestEventList(10),1000);
+        
+        redeployExecutionPlan();
+        
+        pubishEvents(getRequestEventList(10),100);
         pubishEvents(getResponseEventListNumApi(1),1000);
-        Thread.sleep(6000);
+        Thread.sleep(8010);
         pubishEvents(getRequestEventList(10),500);
         pubishEvents(getResponseEventListNumApi(1),500);
         //Thread.sleep(5000);
         /*Thread.sleep(49000);
         pubishEvents(getRequestEventList(10),1000);
         pubishEvents(getResponseEventListNumApi(1),1000);*/
-        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Response count is too low\",",50,2000);
+        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Response count is too low\",",50,1000);
         Assert.assertTrue(responseTimeTooHigh, "Response count is too low continuously, alert not received!");
     }
 
@@ -191,7 +197,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseCode.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         //Thread.sleep(8000);
-        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Server error occurred\"",50,2000);
+        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Server error occurred\"",50,1000);
         Assert.assertTrue(responseTimeTooHigh, "Server error for continuous 5 events, alert not received!");
     }
 

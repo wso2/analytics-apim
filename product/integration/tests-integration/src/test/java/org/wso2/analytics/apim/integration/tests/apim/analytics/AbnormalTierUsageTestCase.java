@@ -22,7 +22,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
+
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
@@ -56,31 +58,36 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 	@BeforeClass(alwaysRun = true)
 	public void setup() throws Exception {
 		super.init();
-		if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_TABLE)) {
-			deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_TABLE);
-		}
-		if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_PER_X_DAYS_TABLE)) {
-			deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_PER_X_DAYS_TABLE);
-		}
-		if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.PERCENTILE_TABEL)) {
-			deleteData(-1234, APIMAnalyticsIntegrationTestConstants.PERCENTILE_TABEL);
-		}
-		if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ALERT_STORE_TABLE)) {
-			deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ALERT_STORE_TABLE);
-		}
-		if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ABNORMAL_REQ_ALERT_TABLE)) {
-			deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ABNORMAL_REQ_ALERT_TABLE);
-		}
-		if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ALL_ALERT_TABLE)) {
-			deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ALL_ALERT_TABLE);
-		}
+		cleanDBs();
 		deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
     }
 
 	@AfterClass(alwaysRun = true)
-	public void cleanup() throws RemoteException {
+	public void cleanup() throws Exception {
+	    cleanDBs();
 		// undeploy the publishers
 		undeployPublisher(PUBLISHER_FILE);
+	}
+	
+	public void cleanDBs() throws AnalyticsException {
+	    if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_PER_X_DAYS_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_PER_X_DAYS_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.PERCENTILE_TABEL)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.PERCENTILE_TABEL);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ALERT_STORE_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ALERT_STORE_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ABNORMAL_REQ_ALERT_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ABNORMAL_REQ_ALERT_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ALL_ALERT_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ALL_ALERT_TABLE);
+        }
 	}
 
 	@Test(groups = "wso2.analytics.apim", description = "Test Abnormal Tier Usage Alert")
