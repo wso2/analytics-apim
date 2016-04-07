@@ -225,6 +225,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
             if(alertReceived){
                 break;
             }
+            beforeCount = logs.length;
             j++;
         }
         return alertReceived;

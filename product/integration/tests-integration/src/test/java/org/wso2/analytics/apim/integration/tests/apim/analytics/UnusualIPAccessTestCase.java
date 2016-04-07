@@ -46,8 +46,11 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
             deleteData(-1234, STREAM_NAME.replace('.', '_'));
         }
-        // publish the csv data
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 200);
+        deleteExecutionPlan("APIMAnalytics-AbnormalRequestCountDetection");
+        deleteExecutionPlan("APIMAnalytics-AbnormalResponseAndBackendTimeDetection");
+        deleteExecutionPlan("APIMAnalytics-AbnormalAccessTokenRefreshAlert");
+        deleteExecutionPlan("APIMAnalytics-HealthAvailabilityPerMin");
+        deleteExecutionPlan("APIMAnalytics-FrequentTierLimitHitting");
         editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
@@ -59,6 +62,9 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
 
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published")
     public void testSimulationDataSent() throws Exception {
+        // publish the csv data
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 20);
+        
         int i = 0;
         long requestEventCount = 0;
         boolean eventsPublished = false;
@@ -87,11 +93,11 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192" +
                 ".168.7.1","admin"});
         publishEvent(eventDto);
-
+        Thread.sleep(1000);
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
                 "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
                 "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
-                "\"requestTime\":1455785133344,", 5 ,5000);
+                "\"requestTime\":1455785133344,", 10 ,1000);
         Assert.assertFalse(newIpDetectedAlertFound, "Request count alert suppression does not work");
     }
 

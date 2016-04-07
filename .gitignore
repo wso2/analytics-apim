@@ -29,3 +29,4 @@ sonar-pom.xml
 *~
 *.em
 *.log*
+*.h2.db
