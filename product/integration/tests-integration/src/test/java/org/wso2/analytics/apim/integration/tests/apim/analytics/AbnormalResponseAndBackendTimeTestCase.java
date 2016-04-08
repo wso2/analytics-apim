@@ -76,7 +76,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
     public void testResponseSimulationDataSent() throws Exception {
         //publish events
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
-
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
         int i = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
@@ -102,7 +102,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         while (i < MAX_TRIES) {
             Thread.sleep(10000);
             long percentileTableCount = getRecordCount(-1234, RESPONSE_PERCENTILE_TABLE);
-            scriptExecuted = (percentileTableCount == 5);
+            scriptExecuted = (percentileTableCount >= 5);
             if (scriptExecuted) {
                 break;
             }
@@ -124,6 +124,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
                         "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200"}
         );
         publishEvent(eventDto);
+        publishEvent(eventDto);
 
         boolean abnormalResponseTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalResponseTime", 5, 1000);
         Assert.assertTrue(abnormalResponseTimeAlertTriggered, "Abnormal ResponseTime Alert event not received!");
@@ -141,6 +142,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
                         "/add?x=12&y=3", "/add", "GET", "1.0", "1", "12", "7", "165", "admin@carbon.super", "1456894602386",
                         "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200"}
         );
+        publishEvent(eventDto);
         publishEvent(eventDto);
 
         boolean abnormalBackendTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalBackendTime", 5, 1000);
