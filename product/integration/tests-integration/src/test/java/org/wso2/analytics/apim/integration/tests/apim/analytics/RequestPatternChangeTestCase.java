@@ -78,7 +78,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         while (i < MAX_TRIES) {
             Thread.sleep(2000);
             requestEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
-            eventsPublished = (requestEventCount == 500);
+            eventsPublished = (requestEventCount >= 500);
             if (eventsPublished) {
                 break;
             }
@@ -92,14 +92,32 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
 
         int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
 
-        EventDto eventDto = new EventDto();
-        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto.setAttributeValues(
+        EventDto eventDto1 = new EventDto();
+        eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto1.setAttributeValues(
                 new String[] { "external", "D4rf6fvCohQ7kbQ970euK0LmjcQa", "/calc/1.0", "CalculatorAPI:v1.0",
                         "CalculatorAPI", "/pay_fraud", "/pay_fraud", "GET", "1", "1", "1455785133372",
                         "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29","admin" });
-        publishEvent(eventDto);
+        publishEvent(eventDto1);
+
+        EventDto eventDto2 = new EventDto();
+        eventDto2.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto2.setAttributeValues(
+                new String[] { "external", "D4rf6fvCohQ7kbQ970euK0LmjcQa", "/calc/1.0", "CalculatorAPI:v1.0",
+                        "CalculatorAPI", "/get_fraud", "/get_fraud", "GET", "1", "1", "1455785133372",
+                        "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
+                        "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29","admin" });
+        publishEvent(eventDto2);
+
+        EventDto eventDto3 = new EventDto();
+        eventDto3.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto3.setAttributeValues(
+                new String[] { "external", "D4rf6fvCohQ7kbQ970euK0LmjcQa", "/calc/1.0", "CalculatorAPI:v1.0",
+                        "CalculatorAPI", "/fraud", "/fraud", "GET", "1", "1", "1455785133372",
+                        "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
+                        "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29","admin" });
+        publishEvent(eventDto3);
 
         boolean requestPatternChangeAlert = isAlertReceived(beforeCount, "Unique ID: logger_requestPatternChange", 84 ,2000);
 
