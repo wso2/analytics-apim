@@ -71,7 +71,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         while (i < MAX_TRIES) {
             Thread.sleep(2000);
             requestEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
-            eventsPublished = (requestEventCount == 500);
+            eventsPublished = (requestEventCount >= 500);
             if (eventsPublished) {
                 break;
             }
@@ -93,11 +93,18 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192" +
                 ".168.7.1","admin"});
         publishEvent(eventDto);
+
+        EventDto eventDto2 = new EventDto();
+        eventDto2.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto2.setAttributeValues(new String[]{"external", "sdgdsM3_Dfhy4_o6KLsxa", "/calc/1.0", "CalculatorAPI:v1.0"
+                , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133344", "sachith@carbon.super", "carbon.super",
+                "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192" +
+                ".168.7.1","admin"});
+        publishEvent(eventDto2);
+
         Thread.sleep(1000);
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
-                "\"msg\":\"A request from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\"," +
-                "\"consumerKey\":\"tC3RKfeSoUetfMy4_o6KLAk7fX4a\",\"userId\":\"sachith@carbon.super\"," +
-                "\"requestTime\":1455785133344,", 10 ,1000);
+                "\"msg\":\"A request from a new IP detected!", 10 ,1000);
         Assert.assertFalse(newIpDetectedAlertFound, "Request count alert suppression does not work");
     }
 
@@ -113,9 +120,15 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1", "admin"});
         publishEvent(eventDto);
 
+        EventDto eventDto1 = new EventDto();
+        eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto1.setAttributeValues(new String[]{"external", "sdgdsM3_Dfhy4_o6KLsxa", "/calc/1.0", "CalculatorAPI:v1.0"
+                , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133344", "sachith@carbon.super", "carbon.super",
+                "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1", "admin"});
+        publishEvent(eventDto1);
+
         boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\",\"msg\":\"A request " +
-                "from a new IP detected! IP: 192.168.7.1\",\"ip\":\"192.168.7.1\",\"applicationName\":\"DefaultApplication\"," +
-                "\"applicationOwner\":\"admin\",\"userId\":\"sachith@carbon.super\",\"requestTime\":1455785133344", 50 ,5000);
+                "from a new IP detected!", 50 ,5000);
         Assert.assertTrue(newIpDetectedAlertFound, "New IP Detected event not received!");
     }
 
@@ -130,9 +143,14 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1","admin"});
         publishEvent(eventDto);
 
-        boolean oldIpDetectedAlert = isAlertReceived(beforeCount, "msg\":\"A request from an Old IP detected! IP: 192.168.7.1\"" +
-                ",\"ip\":\"192.168.7.1\",\"applicationName\":\"DefaultApplication\",\"applicationOwner\":\"admin\"," +
-                "\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344", 50 ,5000);
+        EventDto eventDto1 = new EventDto();
+        eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto1.setAttributeValues(new String[]{"external", "sdgdsM3_Dfhy4_o6KLsxa", "/calc/1.0", "CalculatorAPI:v1.0"
+                , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
+                "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1","admin"});
+        publishEvent(eventDto1);
+
+        boolean oldIpDetectedAlert = isAlertReceived(beforeCount, "msg\":\"A request from an Old IP detected!", 50 ,5000);
         Assert.assertTrue(oldIpDetectedAlert, "Old IP Detected event not received!");
     }
 
@@ -148,8 +166,15 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.4", "admin"});
         publishEvent(eventDto);
 
+        EventDto eventDto1 = new EventDto();
+        eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto1.setAttributeValues(new String[]{"external", "sdgdsM3_Dfhy4_o6KLsxa", "/calc/1.0", "CalculatorAPI:v1.0"
+                , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1465785133344", "sachith@carbon.super", "carbon.super",
+                "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.4", "admin"});
+        publishEvent(eventDto1);
+
         boolean newIPDetectedAlertFound = isAlertReceived(beforeCount, ":\"UnusualIPAccessAlert\",\"msg\":" +
-                "\"A request from a new IP detected! IP: 192.168.7.4\",\"ip\":\"192.168.7.4\",\"applicationName\":\"DefaultApplication\",\"applicationOwner\":\"admin\",\"userId\":\"sachith@carbon.super\",\"requestTime\":1465785133344,\"", 5 ,5000);
+                "\"A request from a new IP detected!", 5 ,5000);
         Assert.assertFalse(newIPDetectedAlertFound, "New IP Detected alert received for first event!");
     }
 }
