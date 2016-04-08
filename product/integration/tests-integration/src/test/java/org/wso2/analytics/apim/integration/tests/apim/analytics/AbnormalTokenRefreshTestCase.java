@@ -111,7 +111,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Access Token Refresh Alert",
             dependsOnMethods = "testScriptExecution")
     public void testAbnormalTokenRefreshAlert() throws Exception {
-        int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
+        logViewerClient.clearLogs();
 
         EventDto eventDto1 = new EventDto();
         eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
@@ -123,7 +123,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         eventDto2.setAttributeValues((BASE_EVENT_TWO_STRING + (initialTimestamp + 65550)).split(","));
         publishEvent(eventDto2);
 
-        boolean abnormalTokenRefreshFound = isAlertReceived(initialCount, "msg:Abnormal Access Token Refresh Detected " +
+        boolean abnormalTokenRefreshFound = isAlertReceived(0, "msg:Abnormal Access Token Refresh Detected " +
                 "from User:carbon.super-home-apim", 50 ,5000);
         Assert.assertTrue(abnormalTokenRefreshFound, "Abnormal Token Refresh Alert event not received!");
     }

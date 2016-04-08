@@ -87,11 +87,10 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test if API response time too high", dependsOnMethods = "testResponseSimulationDataSent")
     public void testResponseTimeTooHighAlert() throws Exception {
         executeSparkScript(RESPONSE_TIME_SPARK_SCRIPT);
-        Thread.sleep(5000);
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
+        logViewerClient.clearLogs();
         List<EventDto> events = getResponseEventList(5);
         pubishEvents(events,100);
-        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Response time is too high\"",50,1000);
+        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response time is too high\"",50,1000);
         Assert.assertTrue(responseTimeTooHigh, "Response time too high for continuous 5 events, alert not received!");
     }
 
@@ -173,7 +172,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Tests abnormally low response count alert",
             dependsOnMethods = {"testResponseCountSparkScriptDeployment","testRequestCountSparkScriptDeployment"})
     public void testAbnormalLowResponseCount() throws Exception {
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
+        logViewerClient.clearLogs();
         executeSparkScript(RESPONSE_COUNT_SPARK_SCRIPT);
         executeSparkScript(REQUEST_COUNT_SPARK_SCRIPT);
         Thread.sleep(10000);
@@ -189,16 +188,16 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         /*Thread.sleep(49000);
         pubishEvents(getRequestEventList(10),1000);
         pubishEvents(getResponseEventListNumApi(1),1000);*/
-        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Response count is too low\",",50,1000);
+        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response count is too low\",",50,1000);
         Assert.assertTrue(responseTimeTooHigh, "Response count is too low continuously, alert not received!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if server error occurred", dependsOnMethods = "testAbnormalLowResponseCount")
     public void testResponseCodeAlert() throws Exception {
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
+        logViewerClient.clearLogs();
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseCode.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         //Thread.sleep(8000);
-        boolean responseTimeTooHigh = isAlertReceived(beforeCount, "\"msg\":\"Server error occurred\"",50,1000);
+        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Server error occurred\"",50,1000);
         Assert.assertTrue(responseTimeTooHigh, "Server error for continuous 5 events, alert not received!");
     }
 

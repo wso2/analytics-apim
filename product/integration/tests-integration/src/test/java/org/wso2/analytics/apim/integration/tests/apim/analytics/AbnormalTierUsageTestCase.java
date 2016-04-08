@@ -60,6 +60,8 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     private static final boolean throttledOut = false;
     private static final String clientIp = "127.0.0.1";
 	private static final String applicationOwner = "admin";
+	private final int MAX_TRIES = 20;
+	
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
         super.init();
@@ -112,30 +114,45 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 
         }
 
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
         publishDataset();
+        logViewerClient.clearLogs();
+        
+        int i = 0;
+        boolean eventsPublished = false;
+        while (i < MAX_TRIES) {
+            long requestPerMinuteEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
+            eventsPublished = (requestPerMinuteEventCount >= 1332);
+            if (eventsPublished) {
+                break;
+            }
+            i++;
+            Thread.sleep(10000);
+        }
+
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
+
+        // this is a synchronous call
         executeSparkScript(SPARK_SCRIPT);
-        Thread.sleep(5000);
 
         // test case #1
-        boolean testOne = isAlertReceived(beforeCount, "msg:Abnormal tier usage  userId: 1 api_version: svm:v1.0.0",
-                3, 1000);
+        boolean testOne = isAlertReceived(0, "msg:Abnormal tier usage  userId: 1 api_version: svm:v1.0.0",
+                10, 1000);
         Assert.assertTrue(testOne, "Abnormal request alert is not received for userId: 1 for api_version: svm:v1.0.0");
 
         // test case #2
-        boolean testTwo = isAlertReceived(beforeCount,
-                "msg:Abnormal tier usage  userId: 1 api_version: tree:v1.0.0", 3, 1000);
+        boolean testTwo = isAlertReceived(0,
+                "msg:Abnormal tier usage  userId: 1 api_version: tree:v1.0.0", 10, 1000);
         Assert.assertFalse(testTwo, "Incorrect user alert is received for userId: 1 for api_version: tree:v1.0.0");
 
         // test case #3
-        boolean testThree = isAlertReceived(beforeCount,
-                "msg:Abnormal tier usage  userId: 2 api_version: svm:v1.0.0", 3, 1000);
+        boolean testThree = isAlertReceived(0,
+                "msg:Abnormal tier usage  userId: 2 api_version: svm:v1.0.0", 10, 1000);
         Assert.assertTrue(testThree,
                 "Abnormal request alert is not received for userId: 2 for api_version: svm:v1.0.0");
 
         // test case #4
-        boolean testFour = isAlertReceived(beforeCount,
-                "msg:Abnormal tier usage  userId: 3 api_version: boost:v1.1.0", 3, 1000);
+        boolean testFour = isAlertReceived(0,
+                "msg:Abnormal tier usage  userId: 3 api_version: boost:v1.1.0", 10, 1000);
         Assert.assertTrue(testFour,
                 "Abnormal request alert is not received for userId: 3 for api_version: boost:v1.1.0");
 
@@ -158,7 +175,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                         apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp, applicationOwner);
                 eventDto.setAttributeValues(currentReq);
                 publishEvent(eventDto);
-                Thread.sleep(250);
+                Thread.sleep(10);
             }
         }
 
@@ -178,7 +195,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                         apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp, applicationOwner);
                 eventDto.setAttributeValues(currentReq);
                 publishEvent(eventDto);
-                Thread.sleep(250);
+                Thread.sleep(10);
             }
         }
 
@@ -196,7 +213,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                         apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp, applicationOwner);
                 eventDto.setAttributeValues(currentReq);
                 publishEvent(eventDto);
-                Thread.sleep(250);
+                Thread.sleep(10);
             }
         }
 
@@ -215,7 +232,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                         clientIp, applicationOwner);
                 eventDto.setAttributeValues(currentReq);
                 publishEvent(eventDto);
-                Thread.sleep(250);
+                Thread.sleep(10);
             }
         }
         // not abnormal
@@ -232,7 +249,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                         clientIp, applicationOwner);
                 eventDto.setAttributeValues(currentReq);
                 publishEvent(eventDto);
-                Thread.sleep(250);
+                Thread.sleep(10);
             }
         }
 

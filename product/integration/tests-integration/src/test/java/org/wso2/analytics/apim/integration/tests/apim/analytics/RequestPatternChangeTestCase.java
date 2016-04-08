@@ -90,7 +90,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert", dependsOnMethods = "testSimulationDataSent")
     public void testRequestPatternChangeAlert() throws Exception {
 
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
+        logViewerClient.clearLogs();
 
         EventDto eventDto1 = new EventDto();
         eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
@@ -119,7 +119,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29","admin" });
         publishEvent(eventDto3);
 
-        boolean requestPatternChangeAlert = isAlertReceived(beforeCount, "Unique ID: logger_requestPatternChange", 84 ,2000);
+        boolean requestPatternChangeAlert = isAlertReceived(0, "Unique ID: logger_requestPatternChange", 84 ,2000);
 
         Assert.assertTrue(requestPatternChangeAlert, "Request pattern change alert event not received!");
     }

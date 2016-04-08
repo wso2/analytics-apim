@@ -89,8 +89,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
     @Test(groups = "wso2.analytics.apim", description = "Test abnormalBackendTime email Alert",
             dependsOnMethods = "testStakeholdersInfoSimulationDataSent")
     public void testAbnormalBackendTimeEmailAlert() throws Exception {
-        int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+        logViewerClient.clearLogs();
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(ABNORMAL_BACKEND_TIME_STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
@@ -101,12 +100,10 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
                 }
         );
         publishEvent(eventDto);
-        boolean abnormalBackendTimeEmailAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_emailAlert", 20 ,10000);
+        boolean abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,10000);
         Assert.assertTrue(abnormalBackendTimeEmailAlertTriggered, "Abnormal backend time email alert event not received!");
 
-
-        int currentCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+        logViewerClient.clearLogs();
         eventDto.setEventStreamId(getStreamId(ABNORMAL_BACKEND_TIME_STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"CalculatorAPI:v2.0", "tom@carbon.super", "carbon.super", "/add", "GET", "65", "20.52214676764896",
@@ -116,7 +113,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
                 }
         );
         publishEvent(eventDto);
-        abnormalBackendTimeEmailAlertTriggered = isAlertReceived(currentCount, "Unique ID: logger_emailAlert", 5 ,1000);
+        abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 5 ,1000);
         Assert.assertFalse(abnormalBackendTimeEmailAlertTriggered, "Abnormal backend time email alert event received!");
     }
 
@@ -124,8 +121,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
     @Test(groups = "wso2.analytics.apim", description = "Test RequestPatternChanged email Alert",
             dependsOnMethods = "testStakeholdersInfoSimulationDataSent")
     public void testRequestPatternChangedEmailAlert() throws Exception {
-        int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+        logViewerClient.clearLogs();
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(REQUEST_PATTERN_CHANGED_STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
@@ -134,7 +130,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
                 }
         );
         publishEvent(eventDto);
-        boolean requestPatternChangedEmailAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_emailAlert", 20 ,10000);
+        boolean requestPatternChangedEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,10000);
         Assert.assertTrue(requestPatternChangedEmailAlertTriggered, "RequestPatternChanged email alert event not received!");
     }
 
