@@ -7,7 +7,7 @@
 
 
 @Import('org.wso2.analytics.apim.transitionStream:1.0.0')
-define stream transitionStream (startState string, endState string, consumerKey string, userid string, requestTimestamp string);
+define stream transitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, userid string, requestTimestamp string);
 
 @from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_FIRSTCOUNTTABLE',  primary.keys = 'startState,consumerKey', indices = 'startState, count, consumerKey')
 define table firstCountTable (startState string, consumerKey string, count double);

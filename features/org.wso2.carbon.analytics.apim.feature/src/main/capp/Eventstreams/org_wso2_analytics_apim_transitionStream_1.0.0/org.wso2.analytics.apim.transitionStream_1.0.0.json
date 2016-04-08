@@ -17,6 +17,14 @@
       "type": "STRING"
     },
     {
+      "name": "applicationName",
+      "type": "STRING"
+    },
+    {
+      "name": "applicationOwner",
+      "type": "STRING"
+    },
+    {
       "name": "userid",
       "type": "STRING"
     },

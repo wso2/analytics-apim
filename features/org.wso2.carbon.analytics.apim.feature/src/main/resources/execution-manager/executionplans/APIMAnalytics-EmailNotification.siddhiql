@@ -25,13 +25,13 @@ define stream abnormalTierUsageAlert (userId string, api_version string, msg str
 define stream abnormalTokenRefresh (user string, scope string, timestamp long, alertTimestamp long, msg string, consumerKey string);
 
 @Import('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
-define stream unusualIPAccess (type string, msg string, ip string, consumerKey string, userId string, requestTime long, alertTimestamp long);
+define stream unusualIPAccess (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, requestTime long, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
-define stream requestPatternChangedStream (userid string, consumerKey string, msg string, alertTimestamp long);
+define stream requestPatternChangedStream (userid string, applicationName string, applicationOwner string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
-define stream abnormalRequestsPerMinAlert (api string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double, 
+define stream abnormalRequestsPerMinAlert (api string, userId string, applicationName string, applicationOwner string,resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double,
 										   reason string, msg string, alertTimestamp long);
 @Export('org.wso2.analytics.apim.emailAlertStream:1.0.0')
 define stream emailAlertStream (type string, msg string, alertTimestamp long, emails string);

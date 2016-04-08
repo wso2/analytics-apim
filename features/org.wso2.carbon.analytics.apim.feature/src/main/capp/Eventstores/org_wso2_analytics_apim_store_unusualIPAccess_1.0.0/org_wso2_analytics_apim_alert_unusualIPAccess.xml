@@ -22,13 +22,20 @@
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
-		<ColumnDefinition>
-			<Name>consumerKey</Name>
-			<EnableIndexing>true</EnableIndexing>
-			<IsPrimaryKey>false</IsPrimaryKey>
-			<EnableScoreParam>false</EnableScoreParam>
-			<Type>STRING</Type>
-		</ColumnDefinition>
+        <ColumnDefinition>
+            <Name>applicationName</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
+            <Name>applicationOwner</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
 		<ColumnDefinition>
 			<Name>userId</Name>
 			<EnableIndexing>true</EnableIndexing>

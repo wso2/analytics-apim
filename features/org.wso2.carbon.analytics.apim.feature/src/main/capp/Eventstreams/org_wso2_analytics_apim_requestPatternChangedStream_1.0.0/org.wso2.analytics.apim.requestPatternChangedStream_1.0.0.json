@@ -9,7 +9,11 @@
       "type": "STRING"
     },
     {
-      "name": "consumerKey",
+      "name": "applicationName",
+      "type": "STRING"
+    },
+    {
+      "name": "applicationOwner",
       "type": "STRING"
     },
     {

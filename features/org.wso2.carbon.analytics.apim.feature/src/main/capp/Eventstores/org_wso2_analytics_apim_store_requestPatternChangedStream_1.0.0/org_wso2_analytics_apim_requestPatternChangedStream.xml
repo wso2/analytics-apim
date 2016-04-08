@@ -8,14 +8,21 @@
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
-		<ColumnDefinition>
-			<Name>consumerKey</Name>
-			<EnableIndexing>true</EnableIndexing>
-			<IsPrimaryKey>false</IsPrimaryKey>
-			<EnableScoreParam>false</EnableScoreParam>
-			<Type>STRING</Type>
-		</ColumnDefinition>
-		<ColumnDefinition>
+        <ColumnDefinition>
+            <Name>applicationName</Name>
+            <EnableIndexing>false</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
+            <Name>applicationOwner</Name>
+            <EnableIndexing>false</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
 			<Name>msg</Name>
 			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
