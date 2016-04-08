@@ -87,6 +87,8 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         Thread.sleep(12000);
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
         Thread.sleep(12000);
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
+        Thread.sleep(12000);
         int i = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
@@ -112,7 +114,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         while (i < MAX_TRIES) {
             Thread.sleep(10000);
             long percentileTableCount = getRecordCount(-1234, REQUEST_PERCENTILE_TABLE);
-            scriptExecuted = (percentileTableCount == 2);
+            scriptExecuted = (percentileTableCount >= 1);
             if (scriptExecuted) {
                 break;
             }

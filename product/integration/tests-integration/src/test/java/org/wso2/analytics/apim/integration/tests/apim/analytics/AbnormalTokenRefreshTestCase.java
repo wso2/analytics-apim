@@ -41,7 +41,9 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
     private final String EXECUTION_PLAN_NAME = "APIMAnalytics-AbnormalAccessTokenRefreshAlert";
     private final int MAX_TRIES = 5;
     private long initialTimestamp;
-    private String BASE_EVENT_STRING = "apim,carbon.super,home,s8SWbnmzQEgzMIsol7AHt9cjhEsa,refreshToken,id1232,ab,c,true,200," +
+    private String BASE_EVENT_ONE_STRING = "apim,carbon.super,home,s8SWbnmzQEgzMIsol7AHt9cjhEsa,refreshToken,id1232,ab,c,true,200," +
+            "success,86400,604800,";
+    private String BASE_EVENT_TWO_STRING = "apim,carbon.super,home,h8jfbnghUKepMIulu43Ht9cjaRfh,refreshToken,id1242,ab,c,true,200," +
             "success,86400,604800,";
 
     @BeforeClass(alwaysRun = true)
@@ -77,7 +79,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         while (i < MAX_TRIES) {
             Thread.sleep(2000);
             oAuthEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
-            eventsPublished = (oAuthEventCount == 6);
+            eventsPublished = (oAuthEventCount >= 6);
             if (eventsPublished) {
                 break;
             }
@@ -97,7 +99,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         while (i < MAX_TRIES) {
             Thread.sleep(10000);
             summaryTableCount = getRecordCount(-1234, SUMMARY_TABLE);
-            scriptExecuted = (summaryTableCount == 1);
+            scriptExecuted = (summaryTableCount >= 1);
             if (scriptExecuted) {
                 break;
             }
@@ -111,10 +113,15 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
     public void testAbnormalTokenRefreshAlert() throws Exception {
         int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
 
-        EventDto eventDto = new EventDto();
-        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto.setAttributeValues((BASE_EVENT_STRING + (initialTimestamp + 550)).split(","));
-        publishEvent(eventDto);
+        EventDto eventDto1 = new EventDto();
+        eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto1.setAttributeValues((BASE_EVENT_ONE_STRING + (initialTimestamp + 550)).split(","));
+        publishEvent(eventDto1);
+
+        EventDto eventDto2 = new EventDto();
+        eventDto2.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto2.setAttributeValues((BASE_EVENT_TWO_STRING + (initialTimestamp + 550)).split(","));
+        publishEvent(eventDto2);
 
         boolean abnormalTokenRefreshFound = isAlertReceived(initialCount, "msg:Abnormal Access Token Refresh Detected " +
                 "from User:carbon.super-home-apim for Consumer Key: s8SWbnmzQEgzMIsol7AHt9cjhEsa", 50 ,5000);
@@ -126,27 +133,51 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
 
         EventDto eventDto1 = new EventDto();
         eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto1.setAttributeValues((BASE_EVENT_STRING + (initialTimestamp + 90)).split(","));
+        eventDto1.setAttributeValues((BASE_EVENT_ONE_STRING + (initialTimestamp + 90)).split(","));
 
         EventDto eventDto2 = new EventDto();
         eventDto2.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto2.setAttributeValues((BASE_EVENT_STRING + (initialTimestamp + 190)).split(","));
+        eventDto2.setAttributeValues((BASE_EVENT_ONE_STRING + (initialTimestamp + 190)).split(","));
 
         EventDto eventDto3 = new EventDto();
         eventDto3.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto3.setAttributeValues((BASE_EVENT_STRING + (initialTimestamp + 295)).split(","));
+        eventDto3.setAttributeValues((BASE_EVENT_ONE_STRING + (initialTimestamp + 295)).split(","));
 
         EventDto eventDto4 = new EventDto();
         eventDto4.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto4.setAttributeValues((BASE_EVENT_STRING + (initialTimestamp + 385)).split(","));
+        eventDto4.setAttributeValues((BASE_EVENT_ONE_STRING + (initialTimestamp + 385)).split(","));
 
         EventDto eventDto5 = new EventDto();
         eventDto5.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto5.setAttributeValues((BASE_EVENT_STRING + (initialTimestamp + 400)).split(","));
+        eventDto5.setAttributeValues((BASE_EVENT_ONE_STRING + (initialTimestamp + 400)).split(","));
 
         EventDto eventDto6 = new EventDto();
         eventDto6.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto6.setAttributeValues((BASE_EVENT_STRING + (initialTimestamp + 502)).split(","));
+        eventDto6.setAttributeValues((BASE_EVENT_ONE_STRING + (initialTimestamp + 502)).split(","));
+
+        EventDto eventDto7 = new EventDto();
+        eventDto7.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto7.setAttributeValues((BASE_EVENT_TWO_STRING + (initialTimestamp + 90)).split(","));
+
+        EventDto eventDto8 = new EventDto();
+        eventDto8.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto8.setAttributeValues((BASE_EVENT_TWO_STRING + (initialTimestamp + 190)).split(","));
+
+        EventDto eventDto9 = new EventDto();
+        eventDto9.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto9.setAttributeValues((BASE_EVENT_TWO_STRING + (initialTimestamp + 295)).split(","));
+
+        EventDto eventDto10 = new EventDto();
+        eventDto10.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto10.setAttributeValues((BASE_EVENT_TWO_STRING + (initialTimestamp + 385)).split(","));
+
+        EventDto eventDto11 = new EventDto();
+        eventDto11.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto11.setAttributeValues((BASE_EVENT_TWO_STRING + (initialTimestamp + 400)).split(","));
+
+        EventDto eventDto12 = new EventDto();
+        eventDto12.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto12.setAttributeValues((BASE_EVENT_TWO_STRING + (initialTimestamp + 502)).split(","));
 
         eventsList.add(eventDto1);
         eventsList.add(eventDto2);
@@ -154,6 +185,12 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         eventsList.add(eventDto4);
         eventsList.add(eventDto5);
         eventsList.add(eventDto6);
+        eventsList.add(eventDto7);
+        eventsList.add(eventDto8);
+        eventsList.add(eventDto9);
+        eventsList.add(eventDto10);
+        eventsList.add(eventDto11);
+        eventsList.add(eventDto12);
 
         return eventsList;
     }
