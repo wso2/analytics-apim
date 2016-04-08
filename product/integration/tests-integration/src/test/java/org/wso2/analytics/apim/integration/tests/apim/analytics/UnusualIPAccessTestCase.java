@@ -46,11 +46,11 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
             deleteData(-1234, STREAM_NAME.replace('.', '_'));
         }
-        deleteExecutionPlan("APIMAnalytics-AbnormalRequestCountDetection");
-        deleteExecutionPlan("APIMAnalytics-AbnormalResponseAndBackendTimeDetection");
-        deleteExecutionPlan("APIMAnalytics-AbnormalAccessTokenRefreshAlert");
-        deleteExecutionPlan("APIMAnalytics-HealthAvailabilityPerMin");
-        deleteExecutionPlan("APIMAnalytics-FrequentTierLimitHitting");
+//        deleteExecutionPlan("APIMAnalytics-AbnormalRequestCountDetection");
+//        deleteExecutionPlan("APIMAnalytics-AbnormalResponseAndBackendTimeDetection");
+//        deleteExecutionPlan("APIMAnalytics-AbnormalAccessTokenRefreshAlert");
+//        deleteExecutionPlan("APIMAnalytics-HealthAvailabilityPerMin");
+//        deleteExecutionPlan("APIMAnalytics-FrequentTierLimitHitting");
         editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
