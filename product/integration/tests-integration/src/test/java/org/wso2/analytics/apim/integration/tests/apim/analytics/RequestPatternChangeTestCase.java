@@ -58,9 +58,10 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
         // publish the csv data
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 20);
         editActiveExecutionPlan(getActiveExecutionPlan(METRIC_EXECUTION_PLAN_NAME),METRIC_EXECUTION_PLAN_NAME);
         editActiveExecutionPlan(getActiveExecutionPlan(METRICBUILDER_EXECUTION_PLAN_NAME),METRICBUILDER_EXECUTION_PLAN_NAME);
+        // publish the csv data
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 200);
     }
 
     @AfterClass(alwaysRun = true)
