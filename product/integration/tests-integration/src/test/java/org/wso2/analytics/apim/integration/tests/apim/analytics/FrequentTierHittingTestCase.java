@@ -50,16 +50,16 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 	@Test(groups = "wso2.analytics.apim", description = "Test frequent tier limit hitting")
 	public void testFrequentTierHittingAlert() throws Exception {
 
-		int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
+		logViewerClient.clearLogs();
 		pubishEventsFromCSV(TEST_RESOURCE_PATH, "test_throttling.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 10);
 
 		Thread.sleep(1000);
 
-		boolean alertSubscriber = isAlertReceived(beforeCount,
+		boolean alertSubscriber = isAlertReceived(0,
 				"msg:apiSubscriber: publisher1 has reached throttling limit", 5, 1000);
 		Assert.assertTrue(alertSubscriber, "Tier hitting messages has not received for publisher1");
 
-		boolean alertUser = isAlertReceived(beforeCount, "msg:userId: user1 has reached throttling limit", 5, 1000);
+		boolean alertUser = isAlertReceived(0, "msg:userId: user1 has reached throttling limit", 5, 1000);
 		Assert.assertTrue(alertUser, "Tier hitting messages has not user1");
 
 		Thread.sleep(1000);
@@ -67,7 +67,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 		// add few more events and check whether script fires an alert
 		publishEventForPublisher2();
 
-		boolean alertSubscriber2 = isAlertReceived(beforeCount,
+		boolean alertSubscriber2 = isAlertReceived(0,
 				"msg:apiSubscriber: publisher2 has reached throttling limit", 5, 1000);
 		Assert.assertTrue(alertSubscriber2, "Tier hitting messages has not publisher2");
 

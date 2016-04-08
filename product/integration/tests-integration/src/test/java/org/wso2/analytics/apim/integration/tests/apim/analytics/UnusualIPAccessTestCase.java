@@ -28,8 +28,6 @@ import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import java.rmi.RemoteException;
 
 public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
-    private static final Log log = LogFactory.getLog(UnusualIPAccessTestCase.class);
-
     private final String STREAM_NAME = "org.wso2.apimgt.statistics.request";
     private final String STREAM_VERSION = "1.1.0";
     private final String TEST_RESOURCE_PATH = "unusualIPAccess";
@@ -46,11 +44,6 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
             deleteData(-1234, STREAM_NAME.replace('.', '_'));
         }
-//        deleteExecutionPlan("APIMAnalytics-AbnormalRequestCountDetection");
-//        deleteExecutionPlan("APIMAnalytics-AbnormalResponseAndBackendTimeDetection");
-//        deleteExecutionPlan("APIMAnalytics-AbnormalAccessTokenRefreshAlert");
-//        deleteExecutionPlan("APIMAnalytics-HealthAvailabilityPerMin");
-//        deleteExecutionPlan("APIMAnalytics-FrequentTierLimitHitting");
         editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
@@ -83,9 +76,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Tests if it waits for the provided request count to" +
             " proceed with alerting", dependsOnMethods = "testSimulationDataSent")
     public void testAlertSuppressionCount() throws Exception {
-
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+        logViewerClient.clearLogs();
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
@@ -103,16 +94,14 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         publishEvent(eventDto2);
 
         Thread.sleep(1000);
-        boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\"," +
+        boolean newIpDetectedAlertFound = isAlertReceived(0, "\"type\":\"UnusualIPAccessAlert\"," +
                 "\"msg\":\"A request from a new IP detected!", 10 ,1000);
         Assert.assertFalse(newIpDetectedAlertFound, "Request count alert suppression does not work");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test New IP detected Alert", dependsOnMethods = "testAlertSuppressionCount")
     public void testNewIPDetectedAlert() throws Exception {
-
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+        logViewerClient.clearLogs();
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
@@ -127,15 +116,14 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1", "admin"});
         publishEvent(eventDto1);
 
-        boolean newIpDetectedAlertFound = isAlertReceived(beforeCount, "\"type\":\"UnusualIPAccessAlert\",\"msg\":\"A request " +
+        boolean newIpDetectedAlertFound = isAlertReceived(0, "\"type\":\"UnusualIPAccessAlert\",\"msg\":\"A request " +
                 "from a new IP detected!", 50 ,5000);
         Assert.assertTrue(newIpDetectedAlertFound, "New IP Detected event not received!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test Old IP detected Alert", dependsOnMethods = "testNewIPDetectedAlert")
     public void testOldIPDetectedAlert() throws Exception {
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+        logViewerClient.clearLogs();
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
@@ -150,15 +138,16 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1","admin"});
         publishEvent(eventDto1);
 
-        boolean oldIpDetectedAlert = isAlertReceived(beforeCount, "msg\":\"A request from an Old IP detected!", 50 ,5000);
+        boolean oldIpDetectedAlert = isAlertReceived(0, "msg\":\"A request from an Old IP detected!", 50 ,5000);
         Assert.assertTrue(oldIpDetectedAlert, "Old IP Detected event not received!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test No new IP detected for first event", dependsOnMethods = "testOldIPDetectedAlert")
     public void testFirstEventAlert() throws Exception {
         deleteData(-1234, ALERT_TABLE_NAME.replace('.', '_'));
-        Thread.sleep(5000);
-        int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
+        Thread.sleep(2000);
+        logViewerClient.clearLogs();
+        
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
@@ -173,7 +162,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.4", "admin"});
         publishEvent(eventDto1);
 
-        boolean newIPDetectedAlertFound = isAlertReceived(beforeCount, ":\"UnusualIPAccessAlert\",\"msg\":" +
+        boolean newIPDetectedAlertFound = isAlertReceived(0, ":\"UnusualIPAccessAlert\",\"msg\":" +
                 "\"A request from a new IP detected!", 5 ,5000);
         Assert.assertFalse(newIPDetectedAlertFound, "New IP Detected alert received for first event!");
     }

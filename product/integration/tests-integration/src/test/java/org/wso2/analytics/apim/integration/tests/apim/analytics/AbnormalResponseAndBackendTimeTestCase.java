@@ -114,7 +114,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal ResponseTime Alert",
             dependsOnMethods = "testResponseStatGeneratorSparkScriptExecution")
     public void testAbnormalResponseTimeAlert() throws Exception {
-        int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
+        logViewerClient.clearLogs();
 
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
@@ -126,15 +126,15 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         publishEvent(eventDto);
         publishEvent(eventDto);
 
-        boolean abnormalResponseTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalResponseTime", 5, 1000);
+        boolean abnormalResponseTimeAlertTriggered = isAlertReceived(0, "Unique ID: logger_abnormalResponseTime", 5, 1000);
         Assert.assertTrue(abnormalResponseTimeAlertTriggered, "Abnormal ResponseTime Alert event not received!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal BackendTime Alert",
             dependsOnMethods = "testResponseStatGeneratorSparkScriptExecution")
     public void testAbnormalBackendTimeAlert() throws Exception {
-        int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+        logViewerClient.clearLogs();
+        
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
@@ -145,7 +145,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         publishEvent(eventDto);
         publishEvent(eventDto);
 
-        boolean abnormalBackendTimeAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalBackendTime", 5, 1000);
+        boolean abnormalBackendTimeAlertTriggered = isAlertReceived(0, "Unique ID: logger_abnormalBackendTime", 5, 1000);
         Assert.assertTrue(abnormalBackendTimeAlertTriggered, "Abnormal BackendTime Alert event not received!");
     }
 

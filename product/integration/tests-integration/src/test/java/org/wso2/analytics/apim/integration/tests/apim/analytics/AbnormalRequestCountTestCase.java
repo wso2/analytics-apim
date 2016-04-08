@@ -126,8 +126,8 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal ResponseTime Alert",
             dependsOnMethods = "testRequestStatGeneratorSparkScriptExecution")
     public void testAbnormalRequestCountAlert() throws Exception {
-        int initialCount = logViewerClient.getAllRemoteSystemLogs().length;
-
+        logViewerClient.clearLogs();
+        
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
@@ -137,11 +137,11 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
                         "admin"}
         );
 
-        for (int i=0;i<15;i++){
+        for (int i = 0; i < 15; i++) {
             publishEvent(eventDto);
         }
 
-        boolean abnormalRequestCountAlertTriggered = isAlertReceived(initialCount, "Unique ID: logger_abnormalRequestCount", 5 ,5000);
+        boolean abnormalRequestCountAlertTriggered = isAlertReceived(0, "Unique ID: logger_abnormalRequestCount", 5 ,5000);
         Assert.assertTrue(abnormalRequestCountAlertTriggered, "Abnormal Response Count Alert event not received!");
     }
 

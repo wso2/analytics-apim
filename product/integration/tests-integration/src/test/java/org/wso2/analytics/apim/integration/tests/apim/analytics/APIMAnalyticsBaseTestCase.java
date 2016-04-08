@@ -216,6 +216,10 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         while (j < maxRetries) {
             Thread.sleep(sleepTime);
             LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
+            if (logs == null) {
+                j++;
+                continue;
+            }
             for (int i = 0; i < (logs.length - beforeCount); i++) {
                 if (logs[i].getMessage().contains(message)) {
                     alertReceived = true;
@@ -456,9 +460,10 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
                 createConfigurationContextFromFileSystem(null);
         String loggedInSessionCookie = getSessionCookie();
         analyticsStub = new AnalyticsProcessorAdminServiceStub(configContext,
-                backendURL + "/services/" + ANALYTICS_SERVICE_NAME);
+                backendURL + ANALYTICS_SERVICE_NAME);
         ServiceClient client = analyticsStub._getServiceClient();
         Options option = client.getOptions();
+        option.setTimeOutInMilliSeconds(60000);
         option.setManageSession(true);
         option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING,
                 loggedInSessionCookie);
