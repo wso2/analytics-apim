@@ -48,7 +48,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 	}
 
 	@Test(groups = "wso2.analytics.apim", description = "Test frequent tier limit hitting")
-	public void testRequestPatternChangeAlert() throws Exception {
+	public void testFrequentTierHittingAlert() throws Exception {
 
 		int beforeCount = logViewerClient.getAllRemoteSystemLogs().length;
 		pubishEventsFromCSV(TEST_RESOURCE_PATH, "test_throttling.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 10);
