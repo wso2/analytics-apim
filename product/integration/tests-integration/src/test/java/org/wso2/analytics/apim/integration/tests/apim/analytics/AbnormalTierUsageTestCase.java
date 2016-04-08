@@ -19,20 +19,17 @@ package org.wso2.analytics.apim.integration.tests.apim.analytics;
 
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.context.ConfigurationContextFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.analytics.apim.integration.common.clients.ExecutionManagerAdminServiceClient;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
-import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
 import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ParameterDTOE;
 import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.TemplateConfigurationDTO;
-import org.wso2.carbon.event.execution.manager.admin.dto.domain.xsd.ParameterDTO;
 import org.wso2.carbon.event.execution.manager.admin.dto.domain.xsd.TemplateDomainDTO;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
+
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
@@ -94,7 +91,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Tier Usage Alert")
-    public void testRequestPatternChangeAlert() throws Exception {
+    public void testAbnormalTierUsageAlert() throws Exception {
 
         TemplateDomainDTO[] dom =  executionManagerAdminServiceClient.getAllDomains();
         TemplateConfigurationDTO testDomain = executionManagerAdminServiceClient.getConfiguration("APIMAnalytics",
