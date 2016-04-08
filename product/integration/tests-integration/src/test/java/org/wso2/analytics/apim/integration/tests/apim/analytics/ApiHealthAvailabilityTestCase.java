@@ -139,6 +139,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     public void test1stResponseCountSimulationDataSent() throws Exception {
         deleteData(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
         Thread.sleep(2000);
+        redeployExecutionPlan();
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "response.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         Thread.sleep(10000);
         long requestEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
