@@ -110,7 +110,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
             }
             i++;
         }
-        Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected, expected entry count:5 but found: "+percentileTableCount+ "!");
+        Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected, expected entry count:1 but found: "+percentileTableCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal ResponseTime Alert",
