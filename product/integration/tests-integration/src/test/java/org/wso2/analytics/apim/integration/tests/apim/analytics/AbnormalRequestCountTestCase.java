@@ -91,8 +91,9 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         Thread.sleep(12000);
         int i = 0;
         boolean eventsPublished = false;
+        long requestPerMinuteEventCount = 0;
         while (i < MAX_TRIES) {
-            long requestPerMinuteEventCount = getRecordCount(-1234, REQUEST_COUNT_PER_MINUTE_TABLE);
+            requestPerMinuteEventCount = getRecordCount(-1234, REQUEST_COUNT_PER_MINUTE_TABLE);
             eventsPublished = (requestPerMinuteEventCount >= 4);
             if (eventsPublished) {
                 break;
@@ -101,7 +102,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
             Thread.sleep(10000);
         }
 
-        Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:4 but found: "+requestPerMinuteEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test org_wso2_analytics_apim_request_stat_generator Spark Script execution"
@@ -111,16 +112,17 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         executeSparkScript(SPARK_SCRIPT);
         int i = 0;
         boolean scriptExecuted = false;
+        long percentileTableCount = 0;
         while (i < MAX_TRIES) {
             Thread.sleep(10000);
-            long percentileTableCount = getRecordCount(-1234, REQUEST_PERCENTILE_TABLE);
+            percentileTableCount = getRecordCount(-1234, REQUEST_PERCENTILE_TABLE);
             scriptExecuted = (percentileTableCount >= 1);
             if (scriptExecuted) {
                 break;
             }
             i++;
         }
-        Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected!");
+        Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected, expected entry count:1 but found: "+percentileTableCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal ResponseTime Alert",
