@@ -9,6 +9,7 @@
     <property name="ANALYTICS_APIM_capp_name" value="org_wso2_carbon_analytics_apim"/>
     <property name="ANALYTICS_APIM_capp_version" value="1.0.0"/>
     <property name="EVENT_RECEIVER_dir" value="Eventreceivers" />
+    <property name="EVENT_PUBLISHER_dir" value="Eventpublishers" />
     <property name="EVENT_STORE_dir" value="Eventstores" />
     <property name="EVENT_STREAM_dir" value="Eventstreams" />
     <property name="RESOURCE_dir" value="Resources" />
@@ -36,6 +37,7 @@
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_RECEIVER_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_STORE_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_STREAM_dir}" />
+            <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_PUBLISHER_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${RESOURCE_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${SPARK_SCRIPT_dir}"
                         excludes="**/${ANALYTICS_APIM_RDBMS_directory}/**, **/${ANALYTICS_APIM_REST_directory}/**"/>
@@ -47,6 +49,7 @@
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_RECEIVER_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_STORE_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_STREAM_dir}" />
+            <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_PUBLISHER_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${RESOURCE_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${SPARK_SCRIPT_dir}"
                         excludes="**/${ANALYTICS_APIM_RDBMS_directory}/**, **/${ANALYTICS_APIM_REST_directory}/**"/>

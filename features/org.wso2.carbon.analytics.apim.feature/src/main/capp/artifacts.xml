@@ -46,6 +46,9 @@
         <dependency artifact="org_wso2_analytics_apim_requestPerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_responsePerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
+        <dependency artifact="org_wso2_analytics_apim_emailAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_alertStakeholderInfoEventReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
         <dependency artifact="org_wso2_analytics_apim_store_apiHealthMonitorAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_responsePerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_requestPerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
