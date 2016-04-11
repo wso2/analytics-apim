@@ -73,8 +73,9 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
 
         int i = 0;
         boolean eventsPublished = false;
+        long stakeholderEventCount = 0;
         while (i < MAX_TRIES) {
-            long stakeholderEventCount = getRecordCount(-1234, STAKEHOLDER_INFO_TABLE);
+            stakeholderEventCount = getRecordCount(-1234, STAKEHOLDER_INFO_TABLE);
             eventsPublished = (stakeholderEventCount == 2);
             if (eventsPublished) {
                 break;
@@ -82,7 +83,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
             i++;
             Thread.sleep(10000);
         }
-        Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:2 but found: "+stakeholderEventCount+ "!");
 
     }
 
