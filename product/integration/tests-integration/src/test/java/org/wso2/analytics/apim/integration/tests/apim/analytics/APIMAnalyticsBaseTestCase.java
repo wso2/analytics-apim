@@ -463,7 +463,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
                 backendURL + ANALYTICS_SERVICE_NAME);
         ServiceClient client = analyticsStub._getServiceClient();
         Options option = client.getOptions();
-        option.setTimeOutInMilliSeconds(60000);
+        option.setTimeOutInMilliSeconds(300000);
         option.setManageSession(true);
         option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING,
                 loggedInSessionCookie);
