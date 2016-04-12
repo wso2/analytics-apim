@@ -357,6 +357,9 @@
                                     org.wso2.ciphertool:org.wso2.ciphertool.feature:${cipher.tool.version}
                                 </featureArtifactDef>
                                 <!-- END - Tools -->
+                                <featureArtifactDef>
+                                    org.wso2.analytics.common:org.wso2.carbon.analytics.util.spark.feature:${analytics.common.version}
+                                </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -705,6 +708,10 @@
                                     <version>${cipher.tool.version}</version>
                                 </feature>
                                 <!--END - Tools-->
+                                <feature>
+                                    <id>org.wso2.carbon.analytics.util.spark.feature.group</id>
+                                    <version>${analytics.common.version}</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>
