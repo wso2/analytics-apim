@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact name="org_wso2_loganalyzer_apim_logEventStream" version="1.0.0" type="event/stream"
+          serverRole="DataAnalyticsServer">
+    <file>loganalyzer_1.0.0.json</file>
+</artifact>
+
