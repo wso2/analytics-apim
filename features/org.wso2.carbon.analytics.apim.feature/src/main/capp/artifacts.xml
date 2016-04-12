@@ -92,6 +92,7 @@
         <dependency artifact="org_wso2_loganalyzer_apim_logEventReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_loganalyzer_apim_logEventStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="APIM_LOGANALYZER_SCRIPT" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_loganalyzer_apim_store_logEventStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
     </artifact>
 </artifacts>
