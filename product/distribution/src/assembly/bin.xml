@@ -703,7 +703,7 @@
         <!--spark classpath config file-->
         <file>
             <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/analytics/spark/external-spark-classpath.conf
+		src/repository/conf/analytics/spark/external-spark-classpath.conf 
             </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/analytics/spark/
             </outputDirectory>
