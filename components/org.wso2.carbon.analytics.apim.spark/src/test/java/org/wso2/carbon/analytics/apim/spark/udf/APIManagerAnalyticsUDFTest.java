@@ -45,7 +45,7 @@ public class APIManagerAnalyticsUDFTest {
 	@Test
 	public void testConvertToTimestamp() {
 		String date = "12/12/2010";
-		long actualTimeStamp = 1292092200000L;
+		long actualTimeStamp = 1292112000000L;
 		APIManagerAnalyticsUDF apimUDF = new APIManagerAnalyticsUDF();
 		try {
 			long calculatedTimestamp = apimUDF.convertToTimestamp(date);
