@@ -57,7 +57,7 @@
         <module>product/features</module>
         <module>product/p2-profile-gen</module>
         <module>product/distribution</module>
-        <module>product/integration</module>
+        <!--module>product/integration</module-->
 	</modules>
 
 	<repositories>
