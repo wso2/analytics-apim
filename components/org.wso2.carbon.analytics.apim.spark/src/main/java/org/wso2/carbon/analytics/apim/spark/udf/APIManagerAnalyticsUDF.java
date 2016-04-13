@@ -23,6 +23,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
+
 import org.wso2.carbon.analytics.spark.core.udf.CarbonUDF;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
@@ -73,6 +75,7 @@ public class APIManagerAnalyticsUDF implements CarbonUDF {
         }
 
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = null;
         try {
             date = format.parse(dateString);
