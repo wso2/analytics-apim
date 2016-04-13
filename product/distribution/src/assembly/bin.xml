@@ -707,6 +707,7 @@
             </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/analytics/spark/
             </outputDirectory>
+            <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 
