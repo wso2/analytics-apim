@@ -2,7 +2,11 @@
 <eventPublisher name="org.wso2.analytics.apim.emailAlertStreamPublisher"
                 statistics="disable" trace="disable" xmlns="http://wso2.org/carbon/eventpublisher">
     <from streamName="org.wso2.analytics.apim.emailAlertStream" version="1.0.0"/>
-    <mapping customMapping="disable" type="text"/>
+    <mapping customMapping="enable" type="text">
+        <inline>msg:{{msg}},
+type:{{type}},
+alertTimestamp:{{alertTimestamp}}</inline>
+    </mapping>
     <to eventAdapterType="email">
         <property name="email.address">{{emails}}</property>
         <property name="email.type">text/plain</property>
