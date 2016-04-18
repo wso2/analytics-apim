@@ -6,6 +6,9 @@
 
 /* define streams/tables and write queries here ... */
 
+@Import('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+define stream allAlertStream (type string, msg string, alertTimestamp long);
+
 @Import('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
 define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, msg string, alertTimestamp long);
 
@@ -40,64 +43,71 @@ define stream emailAlertStream (type string, msg string, alertTimestamp long, em
 define table stakeholderInfoTable (userId string, alertTypes string, emails	string, isSubscriber bool, isPublisher bool);
 
 @info(name = 'query1')
-from abnormalRequestsPerMinAlert join stakeholderInfoTable 
+from abnormalRequestsPerMinAlert["admin@carbon.super" != userId]#window.length(1) join stakeholderInfoTable
 on (abnormalRequestsPerMinAlert.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
 select 'abnormalRequestsPerMin' as type , abnormalRequestsPerMinAlert.msg, abnormalRequestsPerMinAlert.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'abnormalRequestsPerMin')
 insert into emailAlertStream;
 
 @info(name = 'query2')
-from requestPatternChangedStream join stakeholderInfoTable 
+from requestPatternChangedStream["admin@carbon.super" != userid]#window.length(1) join stakeholderInfoTable
 on (requestPatternChangedStream.userid == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
 select 'RequestPatternChanged' as type , requestPatternChangedStream.msg, requestPatternChangedStream.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'RequestPatternChanged')
 insert into emailAlertStream;
 
 @info(name = 'query3')
-from unusualIPAccess join stakeholderInfoTable 
+from unusualIPAccess["admin@carbon.super" != userId]#window.length(1) join stakeholderInfoTable
 on (unusualIPAccess.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
 select 'UnusualIPAccessAlert' as type , unusualIPAccess.msg, unusualIPAccess.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'UnusualIPAccessAlert')
 insert into emailAlertStream;
 
 @info(name = 'query4')
-from abnormalTokenRefresh join stakeholderInfoTable 
+from abnormalTokenRefresh["admin@carbon.super" != user]#window.length(1) join stakeholderInfoTable
 on (abnormalTokenRefresh.user == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
 select 'AbnormalRefreshAlert' as type , abnormalTokenRefresh.msg, abnormalTokenRefresh.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'AbnormalRefreshAlert')
 insert into emailAlertStream;
 
 @info(name = 'query5')
-from abnormalTierUsageAlert join stakeholderInfoTable
+from abnormalTierUsageAlert["admin@carbon.super" != userId]#window.length(1) join stakeholderInfoTable
 on (abnormalTierUsageAlert.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
 select  'AbnormalTierUsage' as type , abnormalTierUsageAlert.msg, abnormalTierUsageAlert.timestamp as alertTimestamp,stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'AbnormalTierUsage')
 insert into emailAlertStream;
 
 @info(name = 'query6')
-from tierLimitHittingAlert join stakeholderInfoTable
+from tierLimitHittingAlert["admin@carbon.super" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (tierLimitHittingAlert.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
 select 'FrequentTierHittingAlert' as type , tierLimitHittingAlert.msg, tierLimitHittingAlert.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'FrequentTierHittingAlert')
 insert into emailAlertStream;
 
 @info(name = 'query7')
-from abnormalResponseTimeAlertStream join stakeholderInfoTable
+from abnormalResponseTimeAlertStream["admin@carbon.super" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (abnormalResponseTimeAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
 select 'abnormalResponseTime' as type , abnormalResponseTimeAlertStream.msg, abnormalResponseTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'abnormalResponseTime')
 insert into emailAlertStream;
 
 @info(name = 'query8')
-from abnormalBackendTimeAlertStream join stakeholderInfoTable
+from abnormalBackendTimeAlertStream["admin@carbon.super" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (abnormalBackendTimeAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
 select 'abnormalBackendTime' as type , abnormalBackendTimeAlertStream.msg, abnormalBackendTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'abnormalBackendTime')
 insert into emailAlertStream;
 
 @info(name = 'query9')
-from apiHealthMonitorAlertStream join stakeholderInfoTable 
+from apiHealthMonitorAlertStream["admin@carbon.super" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (apiHealthMonitorAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
 select 'healthAvailabilityPerMin' as type , apiHealthMonitorAlertStream.msg, apiHealthMonitorAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'healthAvailabilityPerMin')
+insert into emailAlertStream;
+
+@info(name = 'query10')
+from allAlertStream join stakeholderInfoTable
+on ("admin@carbon.super" == stakeholderInfoTable.userId)
+select allAlertStream.type , allAlertStream.msg, allAlertStream.alertTimestamp, stakeholderInfoTable.emails
+having str:contains(stakeholderInfoTable.alertTypes, allAlertStream.type)
 insert into emailAlertStream;
