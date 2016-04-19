@@ -24,7 +24,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.analytics.apim</artifactId>
+    <artifactId>org.wso2.analytics.apim</artifactId>
     <packaging>bundle</packaging>
     <description>Analytics APIM component</description>
 

@@ -25,13 +25,13 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.analytics.apim.feature</artifactId>
+    <artifactId>org.wso2.analytics.apim.feature</artifactId>
     <packaging>pom</packaging>
 
     <dependencies>
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
-            <artifactId>org.wso2.carbon.analytics.apim</artifactId>
+            <artifactId>org.wso2.analytics.apim</artifactId>
             <version>${analytics.apim.version}</version>
         </dependency>
     </dependencies>
@@ -109,7 +109,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.analytics.apim</id>
+                            <id>org.wso2.analytics.apim</id>
                             <propertiesFile>../feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -118,7 +118,7 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.analytics.apim:org.wso2.carbon.analytics.apim</bundleDef>
+                                <bundleDef>org.wso2.analytics.apim:org.wso2.analytics.apim</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>

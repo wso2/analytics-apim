@@ -28,7 +28,7 @@
     <artifactId>analytics-apim-features</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>org.wso2.carbon.analytics.apim.feature</module>
-        <module>org.wso2.carbon.analytics.apim.spark.feature</module>
+        <module>org.wso2.analytics.apim.feature</module>
+        <module>org.wso2.analytics.apim.spark.feature</module>
     </modules>
 </project>

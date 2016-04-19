@@ -25,13 +25,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>WSO2 - APIM Analytics Server UDF Feature</name>
-    <artifactId>org.wso2.carbon.analytics.apim.spark.feature</artifactId>
+    <artifactId>org.wso2.analytics.apim.spark.feature</artifactId>
     <packaging>pom</packaging>
 
     <dependencies>
   		<dependency>
   			<groupId>org.wso2.analytics.apim</groupId>
-  			<artifactId>org.wso2.carbon.analytics.apim.spark</artifactId>
+  			<artifactId>org.wso2.analytics.apim.spark</artifactId>
         <version>${analytics.apim.version}</version>
   		</dependency>
       <dependency>
@@ -127,7 +127,7 @@
   							<goal>p2-feature-gen</goal>
   						</goals>
   						<configuration>
-  							<id>org.wso2.carbon.analytics.apim.spark</id>
+  							<id>org.wso2.analytics.apim.spark</id>
   							<propertiesFile>../feature.properties</propertiesFile>
   							<adviceFile>
   								<properties>
@@ -136,7 +136,7 @@
   								</properties>
   							</adviceFile>
   							<bundles>
-  								<bundleDef>org.wso2.analytics.apim:org.wso2.carbon.analytics.apim.spark</bundleDef>
+  								<bundleDef>org.wso2.analytics.apim:org.wso2.analytics.apim.spark</bundleDef>
   							</bundles>
 							<importBundles>
 								<importBundleDef>ua.parser.wso2:ua-parser:${orbit.version.ua_parser}</importBundleDef>
