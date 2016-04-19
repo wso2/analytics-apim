@@ -110,11 +110,11 @@
                                 <!-- END - Analytics features -->
 
                                 <featureArtifactDef>
-                                    org.wso2.analytics.apim:org.wso2.carbon.analytics.apim.feature:${analytics.apim.version}
+                                    org.wso2.analytics.apim:org.wso2.analytics.apim.feature:${analytics.apim.version}
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.wso2.analytics.apim:org.wso2.carbon.analytics.apim.spark.feature:${analytics.apim.version}
+                                    org.wso2.analytics.apim:org.wso2.analytics.apim.spark.feature:${analytics.apim.version}
                                 </featureArtifactDef>
 
 				<featureArtifactDef>
@@ -410,12 +410,12 @@
                                  </feature>
 
 				 <feature>
-                                     <id>org.wso2.carbon.analytics.apim.feature.group</id>
+                                     <id>org.wso2.analytics.apim.feature.group</id>
                                      <version>${analytics.apim.version}</version>
                                  </feature>
 
                                  <feature>
-                                                              <id>org.wso2.carbon.analytics.apim.spark.feature.group</id>
+                                                              <id>org.wso2.analytics.apim.spark.feature.group</id>
                                                               <version>${analytics.apim.version}</version>
                                                           </feature>
                                 <!-- START - Log analyzer dashboard -->
