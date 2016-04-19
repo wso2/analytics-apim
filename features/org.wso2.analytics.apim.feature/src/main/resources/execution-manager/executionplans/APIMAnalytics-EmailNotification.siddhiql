@@ -106,8 +106,8 @@ having str:contains(stakeholderInfoTable.alertTypes, 'healthAvailabilityPerMin')
 insert into emailAlertStream;
 
 @info(name = 'query10')
-from allAlertStream join stakeholderInfoTable
+from allAlertStream#window.length(1) join stakeholderInfoTable
 on ("admin@carbon.super" == stakeholderInfoTable.userId)
 select allAlertStream.type , allAlertStream.msg, allAlertStream.alertTimestamp, stakeholderInfoTable.emails
-having str:contains(stakeholderInfoTable.alertTypes, allAlertStream.type)
+having str:contains(stakeholderInfoTable.alertTypes, allAlertStream.type) and ((type == "FrequentTierHittingAlert" or type == "abnormalResponseTime" or type == "abnormalBackendTime" or type == "healthAvailabilityPerMin") and stakeholderInfoTable.isPublisher  or (type == "abnormalRequestsPerMin" or type == "RequestPatternChanged" or type == "UnusualIPAccessAlert" or type == "AbnormalRefreshAlert" or type == "AbnormalTierUsage") and stakeholderInfoTable.isSubscriber)
 insert into emailAlertStream;
