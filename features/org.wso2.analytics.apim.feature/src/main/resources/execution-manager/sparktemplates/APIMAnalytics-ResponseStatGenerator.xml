@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Analytics>
-    <CronExpression>0 0 12 * * ?</CronExpression>
+    <CronExpression>0 0 23 * * ?</CronExpression>
     <Editable>true</Editable>
     <Name>APIMAnalytics-ResponseStatGenerator</Name>
     <Script>CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName
