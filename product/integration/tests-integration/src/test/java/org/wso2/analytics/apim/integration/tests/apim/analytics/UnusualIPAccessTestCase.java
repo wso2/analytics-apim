@@ -17,8 +17,6 @@
 */
 package org.wso2.analytics.apim.integration.tests.apim.analytics;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -107,14 +105,10 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setAttributeValues(new String[]{"external", "tC3RKfeSoUetfMy4_o6KLAk7fX4a", "/calc/1.0", "CalculatorAPI:v1.0"
                 , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133344", "sachith@carbon.super", "carbon.super",
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1", "admin"});
-        publishEvent(eventDto);
 
-        EventDto eventDto1 = new EventDto();
-        eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto1.setAttributeValues(new String[]{"external", "sdgdsM3_Dfhy4_o6KLsxa", "/calc/1.0", "CalculatorAPI:v1.0"
-                , "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133344", "sachith@carbon.super", "carbon.super",
-                "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1", "admin"});
-        publishEvent(eventDto1);
+        for (int i = 0; i < 10; i++) {
+            publishEvent(eventDto);
+        }
 
         boolean newIpDetectedAlertFound = isAlertReceived(0, "\"type\":\"UnusualIPAccessAlert\",\"msg\":\"A request " +
                 "from a new IP detected!", 50 ,5000);
