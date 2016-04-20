@@ -175,7 +175,7 @@ insert into all_apim_alerts_stream;
 
                  <parameter name="probabilityThreshold" type="float">
                     <displayName>Probability Threshold</displayName>
-                    <description></description>
+                    <description>Probability threshold of a normal API transition</description>
                     <defaultValue>0.95</defaultValue>
                 </parameter>
             </parameters>
