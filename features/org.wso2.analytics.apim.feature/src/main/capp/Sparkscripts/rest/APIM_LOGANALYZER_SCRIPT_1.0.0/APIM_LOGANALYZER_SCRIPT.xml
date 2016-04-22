@@ -154,5 +154,5 @@
         _eventTimeStamp)temp GROUP BY temp.agent, temp.byYear, temp.byMonth, temp.byDay ORDER BY temp.byYear,
         temp.byMonth, temp.byDay;
     </Script>
-    <CronExpression>0 * * * * ?</CronExpression>
+    <CronExpression>0 10 0 1/1 * ? *</CronExpression>
 </Analytics>
