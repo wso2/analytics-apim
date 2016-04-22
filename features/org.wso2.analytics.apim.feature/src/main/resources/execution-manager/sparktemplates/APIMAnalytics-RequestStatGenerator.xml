@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <CronExpression>0 0 23 * * ?</CronExpression>
+    <Editable>true</Editable>
+    <Name>APIMAnalytics-RequestStatGenerator</Name>
+    <Script>CREATE TEMPORARY TABLE REQUEST_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinStream");
+
+        CREATE TEMPORARY TABLE REQUEST_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE",
+        schema "api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double ",
+        primaryKeys "api_version,userId,consumerKey,resourceTemplate,method"
+        );
+
+        INSERT OVERWRITE TABLE REQUEST_PERCENTILE_GEN
+        select api_version, userId, consumerKey, resourceTemplate, method,
+        getpercentileValue(avg(requestsPerMin), sqrt(avg(cast(requestsPerMin
+        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , 0.95 ) as requestsPerMinUpperPercentile,
+        getpercentileValue(avg(requestsPerMin), sqrt(avg(cast(requestsPerMin
+        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , 0.05 ) as requestsPerMinLowerPercentile
+
+        from REQUEST_INFO group by api_version, userId, consumerKey, resourceTemplate, method;
+
+
+    </Script>
+</Analytics>

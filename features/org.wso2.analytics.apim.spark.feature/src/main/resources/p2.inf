@@ -1,0 +1,11 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/etc);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim.spark_${feature.version}/conf/etc/geolocation.xml,target:${installFolder}/../../conf/etc/geolocation.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim.spark_${feature.version}/conf/datasources/geolocation-datasources.xml,target:${installFolder}/../../conf/datasources/geolocation-datasources.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../../dbscripts/geolocation); \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim.spark_${feature.version}/repository/database/GEOLOCATION_DB.h2.db/,target:${installFolder}/../../database/GEOLOCATION_DB.h2.db,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim.spark_${feature.version}/dbscripts/,target:${installFolder}/../../../dbscripts/geolocation/,overwrite:true);\
+
+instructions.uninstall = \
+org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../conf/etc/geolocation.xml,overwrite:true);\

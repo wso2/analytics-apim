@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <Name>APIM_LOGANALYZER_SCRIPT</Name>
+    <Script>
+        CREATE TEMPORARY TABLE CopyOfLoganalyzer USING CarbonAnalytics OPTIONS (tableName "LOGANALYZER", schema "_class
+        string -i, _content string -i, logstream string -i, _level string -i, _trace string -i, _eventTimeStamp long
+        -i",primaryKeys "_class, _content, _level, _eventTimeStamp");
+
+        CREATE TEMPORARY TABLE loganalyzer_message_level_error_daily USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY",
+        schema "message string -i, messageCount int -i, _timestamp long -i");
+        INSERT OVERWRITE table loganalyzer_message_level_error_daily SELECT temp.message AS myMessage,
+        SUM(temp.messageCount) AS totalMessageCount,
+        getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (SELECT _content AS message,
+        getYear(_eventTimeStamp) AS byYear, getMonth(_eventTimeStamp) AS byMonth,
+        getDay(_eventTimeStamp) AS byDay, count(*) as messageCount FROM CopyOfLoganalyzer
+        WHERE _level LIKE 'ERROR'
+        GROUP BY _content, _eventTimeStamp ORDER BY _eventTimeStamp)temp GROUP BY temp.message, temp.byYear,
+        temp.byMonth, temp.byDay ORDER BY temp.byYear, temp.byMonth, temp.byDay;
+
+        CREATE TEMPORARY TABLE loganalyzer_class_level_error_daily USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_CLASS_LEVEL_ERROR_DAILY",
+        schema "class string -i, classCount int -i, _timestamp long -i");
+        INSERT OVERWRITE table loganalyzer_class_level_error_daily SELECT temp.class AS myClass, SUM(temp.classCount) AS
+        totalClassCount,
+        getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (SELECT _class AS class,
+        getYear(_eventTimeStamp) AS byYear, getMonth(_eventTimeStamp) AS byMonth,
+        getDay(_eventTimeStamp) AS byDay, count(*) as classCount FROM CopyOfLoganalyzer WHERE
+        _level LIKE 'ERROR'
+        GROUP BY _class, _eventTimeStamp ORDER BY _eventTimeStamp)temp GROUP BY temp.class, temp.byYear, temp.byMonth,
+        temp.byDay ORDER BY temp.byYear, temp.byMonth, temp.byDay;
+
+        CREATE TEMPORARY TABLE loganalyzer_class_level_error_monthly USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_CLASS_LEVEL_ERROR_MONTHLY",
+        schema "class string -i, classCount int -i, _timestamp long -i");
+        INSERT OVERWRITE table loganalyzer_class_level_error_monthly SELECT temp.class AS myClass, SUM(temp.classCount)
+        AS totalClassCount,
+        getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT class AS class, getYear(_timestamp)
+        AS byYear, getMonth(_timestamp) AS byMonth, first(classCount) as classCount FROM
+        loganalyzer_class_level_error_daily GROUP BY class,
+        _timestamp ORDER BY _timestamp)temp GROUP BY temp.class, temp.byYear, temp.byMonth ORDER BY temp.byYear,
+        temp.byMonth;
+
+        CREATE TEMPORARY TABLE loganalyzer_message_level_error_monthly USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_MESSAGE_LEVEL_ERROR_MONTHLY",
+        schema "message string -i, messageCount int -i, _timestamp long -i");
+        INSERT OVERWRITE table loganalyzer_message_level_error_monthly SELECT temp.message AS myMessage,
+        SUM(temp.messageCount) AS totalMessageCount,
+        getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT message AS message,
+        getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, first(messageCount) as messageCount FROM
+        loganalyzer_message_level_error_daily
+        GROUP BY message, _timestamp ORDER BY _timestamp)temp GROUP BY temp.message, temp.byYear, temp.byMonth ORDER BY
+        temp.byYear, temp.byMonth;
+
+        CREATE TEMPORARY TABLE loganalyzer_class_level_error_weekly USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_CLASS_LEVEL_ERROR_WEEKLY",
+        schema "class string -i, classCount int -i, _timestamp long -i, week long -i");
+        INSERT OVERWRITE table loganalyzer_class_level_error_weekly SELECT temp.class AS myClass, SUM(temp.classCount)
+        AS totalClassCount, temp.byWeek
+        AS week,getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT class AS class,
+        getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, getWeek(_timestamp) AS byWeek, first(classCount)
+        as classCount FROM loganalyzer_class_level_error_daily GROUP BY class, _timestamp ORDER BY _timestamp)temp GROUP
+        BY temp.class, temp.byYear,
+        temp.byMonth, temp.byWeek ORDER BY temp.byYear, temp.byMonth, temp.byWeek;
+
+        CREATE TEMPORARY TABLE loganalyzer_message_level_error_weekly USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_MESSAGE_LEVEL_ERROR_WEEKLY",
+        schema "message string -i, messageCount int -i, _timestamp long -i , week long -i");
+        INSERT OVERWRITE table loganalyzer_message_level_error_weekly SELECT temp.message AS myMessage,
+        SUM(temp.messageCount) AS totalMessageCount,
+        temp.byWeek AS week, getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT message AS
+        message, getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, getWeek(_timestamp) AS byWeek,
+        first(messageCount) as messageCount FROM loganalyzer_message_level_error_daily GROUP BY message, _timestamp
+        ORDER BY _timestamp)temp GROUP BY
+        temp.message, temp.byYear, temp.byMonth, temp.byWeek ORDER BY temp.byYear, temp.byMonth, temp.byWeek;
+
+        CREATE TEMPORARY TABLE loganalyzer_apim_artifact_deployed_daily USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY", schema "artifact string -i, artifactCount int -i, _timestamp long
+        -i");
+        INSERT OVERWRITE table loganalyzer_apim_artifact_deployed_daily SELECT temp.artifact AS myArtifact,
+        SUM(temp.artifactCount) AS totalArtifactCount,
+        getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (select
+        SUBSTRING(_content,18,100) as artifact, getYear(_eventTimeStamp) AS byYear,
+        getMonth(_eventTimeStamp) AS byMonth, getDay(_eventTimeStamp) AS byDay, count(*)
+        as artifactCount from CopyOfLoganalyzer where _content LIKE "%Initializing API:%" group by
+        _content, _eventTimeStamp
+        Order by _eventTimeStamp)temp GROUP BY temp.artifact, temp.byYear, temp.byMonth, temp.byDay ORDER BY
+        temp.byYear, temp.byMonth, temp.byDay;
+
+        CREATE TEMPORARY TABLE loganalyzer_apim_artifact_deleted_daily USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY",
+        schema "artifact string -i, artifactCount int -i, _timestamp long -i");
+        INSERT OVERWRITE table loganalyzer_apim_artifact_deleted_daily SELECT temp.artifact AS myArtifact,
+        SUM(temp.artifactCount) AS totalArtifactCount,
+        getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (select
+        SUBSTRING(_content,17,100) as artifact, getYear(_eventTimeStamp) AS byYear,
+        getMonth(_eventTimeStamp) AS byMonth, getDay(_eventTimeStamp) AS byDay, count(*)
+        as artifactCount from CopyOfLoganalyzer where _content LIKE "%Destroying API:%" group by _content,
+        _eventTimeStamp Order
+        by _eventTimeStamp)temp GROUP BY temp.artifact, temp.byYear, temp.byMonth, temp.byDay ORDER BY temp.byYear,
+        temp.byMonth, temp.byDay;
+
+        CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_daily USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY", schema "apiName string -i, apiCount int -i, _timestamp long -i");
+        INSERT OVERWRITE table loganalyzer_apim_message_processing_daily SELECT temp.apiName AS myApiName,
+        SUM(temp.apiCount) AS totalAPICount,
+        getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (select getRegexMatch(_content, "(?&lt;=--)(.*)(?=\\sError)")
+        as apiName, getYear(_eventTimeStamp) AS byYear, getMonth(_eventTimeStamp) AS
+        byMonth, getDay(_eventTimeStamp) AS byDay, count(*) as apiCount from CopyOfLoganalyzer
+        where _content LIKE
+        "%Error while building message%" group by _content, _eventTimeStamp Order by _eventTimeStamp)temp GROUP BY
+        temp.apiName, temp.byYear, temp.byMonth, temp.byDay ORDER BY temp.byYear, temp.byMonth, temp.byDay;
+
+        CREATE TEMPORARY TABLE loganalyzer_apikey_status USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_APIKEY_STATUS",
+        schema "status string -i, content string -i, byYear int -i, byMonth int -i, byDay int -i, _timestamp long -i");
+
+        INSERT OVERWRITE table loganalyzer_apikey_status
+        SELECT "AUTH_FAIL_MISSING_INFO" AS status, _content AS message, getYear(_eventTimeStamp) AS
+        byYear,
+        getMonth(_eventTimeStamp) AS byMonth, getDay(_eventTimeStamp) AS byDay,
+        _eventTimeStamp as eventTimeStamp
+        FROM CopyOfLoganalyzer
+        WHERE _content LIKE '%API authentication failure due to Missing Credentials%' ;
+
+        INSERT INTO TABLE loganalyzer_apikey_status
+        SELECT "INVALID_KEY" AS status, _content AS message, getYear(_eventTimeStamp) AS byYear,
+        getMonth(_eventTimeStamp) AS byMonth, getDay(_eventTimeStamp) AS byDay,
+        _eventTimeStamp as eventTimeStamp
+        FROM CopyOfLoganalyzer
+        WHERE _content LIKE '%API authentication failure due to Invalid Credentials%';
+
+        INSERT INTO TABLE loganalyzer_apikey_status
+        SELECT "REVOKED_KEY" AS status, _content AS message, getYear(_eventTimeStamp) AS byYear,
+        getMonth(_eventTimeStamp) AS byMonth, getDay(_eventTimeStamp) AS byDay,
+        _eventTimeStamp as eventTimeStamp
+        FROM CopyOfLoganalyzer
+        WHERE _content LIKE '%API authentication failure due to Invalid Credentials%';
+
+        CREATE TEMPORARY TABLE invalidLoginAttemptDaily USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY", schema "AgentId string -i, InvalidLoginCount int -i, _timestamp long
+        -i");
+        CREATE TEMPORARY TABLE invalidLoginAttemptWeekly USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY", schema "AgentId string -i, InvalidLoginCount int -i, _timestamp long
+        -i, week long -i");
+        CREATE TEMPORARY TABLE invalidLoginAttemptMonthly USING CarbonAnalytics OPTIONS (tableName
+        "LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY", schema "AgentId string -i, InvalidLoginCount int -i, _timestamp
+        long -i");
+        INSERT OVERWRITE table invalidLoginAttemptDaily SELECT temp.agent AS agent, SUM(temp.agentCount) AS
+        totalAgentCount, getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (SELECT
+        logstream AS agent, getYear(_eventTimeStamp) AS byYear, getMonth(CAST(_eventTimeStamp AS
+        BIGINT)) AS byMonth, getDay(_eventTimeStamp) AS byDay, count(*) as agentCount FROM
+        CopyOfLoganalyzer WHERE _content LIKE '%login attempt%' GROUP BY logstream, _eventTimeStamp ORDER BY
+        _eventTimeStamp)temp GROUP BY temp.agent, temp.byYear, temp.byMonth, temp.byDay ORDER BY temp.byYear,
+        temp.byMonth, temp.byDay;
+    </Script>
+    <CronExpression>0 10 0 1/1 * ? *</CronExpression>
+</Analytics>
