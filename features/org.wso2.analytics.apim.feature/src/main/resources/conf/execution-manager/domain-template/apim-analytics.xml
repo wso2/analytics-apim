@@ -560,9 +560,9 @@ insert into IPAccessSummary;
                 </parameter>
 
                 <parameter name="statusChangeTimeInterval" type="int">
-                    <displayName>Time interval for API availability status change</displayName>
+                    <displayName>Time interval(in milliseconds) for API availability status change</displayName>
                     <description>Time duration taken to recheck and change the availability of an API</description>
-                    <defaultValue>5</defaultValue>
+                    <defaultValue>300000</defaultValue>
                 </parameter>
             </parameters>
         </template>
