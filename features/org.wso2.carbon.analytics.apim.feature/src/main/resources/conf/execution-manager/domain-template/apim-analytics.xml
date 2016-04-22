@@ -410,6 +410,14 @@ insert into IPAccessSummary;
 								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version')
 								define table responseTimePerApiPercentileTable (api_version string, responseTimePerApiUpperPercentile double);
 
+								/* API status availability table */
+								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version', indices='api_version,status')
+								define table apiAvailabilityTable (api_version string, status string);
+
+								/* APIHEALTHMONITORALERTSTREAM TABLE */
+								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM')
+								define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, msg string, alertTimestamp long);
+
                                 @info(name = 'query1')
                                 from requestStream
                                 select api_version, apiPublisher
@@ -509,6 +517,32 @@ insert into IPAccessSummary;
                                 select 'healthAvailabilityPerMin' as type, msg as msg , (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
 
+                                /* update apiAvailability Table */
+
+
+								from apiHealthMonitorAlertStream[(api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
+								select api_version, msg as status
+								update apiAvailabilityTable
+								on (api_version == apiAvailabilityTable.api_version);
+
+								from apiHealthMonitorAlertStream[ not (api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
+								select api_version, msg as status
+								insert into apiAvailabilityTable;
+
+								from requestStream[(not (api_version == apiHealthMonitorAlertStreamTable.api_version in apiHealthMonitorAlertStreamTable)) and (not (api_version == apiAvailabilityTable.api_version in apiAvailabilityTable))]
+								select api_version , 'Available' as status
+								insert into apiAvailabilityTable;
+
+								from requestStream as r join apiHealthMonitorAlertStreamTable
+								on (r.api_version == apiHealthMonitorAlertStreamTable.api_version )
+								select r.api_version, alertTimestamp
+								insert into tempStream;
+
+								from tempStream[(time:timestampInMilliseconds() - alertTimestamp) >  $statusChangeTimeInterval]
+								select api_version , 'Available' as status
+								update apiAvailabilityTable
+								on (api_version == apiAvailabilityTable.api_version);
+
                  ]]>
             </script>
             <parameters>
@@ -522,6 +556,12 @@ insert into IPAccessSummary;
                 <parameter name="responseTimePattern" type="int">
                     <displayName>Number of continues response time fail</displayName>
                     <description>number of minutes that responses should fail to pass the lower percentile</description>
+                    <defaultValue>5</defaultValue>
+                </parameter>
+
+                <parameter name="statusChangeTimeInterval" type="int">
+                    <displayName>Time interval for API availability status change</displayName>
+                    <description>Time duration taken to recheck and change the availability of an API</description>
                     <defaultValue>5</defaultValue>
                 </parameter>
             </parameters>
