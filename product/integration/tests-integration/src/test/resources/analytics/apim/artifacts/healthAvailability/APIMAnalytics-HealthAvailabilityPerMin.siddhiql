@@ -49,18 +49,17 @@
 								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version')
 								define table responseTimePerApiPercentileTable (api_version string, responseTimePerApiUpperPercentile double);
 
-								/* API status availability table */
-								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version', indices='api_version,status')
-								define table apiAvailabilityTable (api_version string, status string);
+                                /* API status availability table */
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version', indices='api_version,status')
+                                define table apiAvailabilityTable (api_version string, status string);
 
-								/* APIHEALTHMONITORALERTSTREAM TABLE */
-								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM')
-								define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, msg string, alertTimestamp long);
-
+                                /* APIHEALTHMONITORALERTSTREAM TABLE */
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM')
+                                define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, msg string, alertTimestamp long);
 
                                 @info(name = 'query1')
                                 from requestStream
-                                select api_version, apiPublisher
+                                select api_version, apiPublisher 
                                 insert into requestSummaryStream ;
 
 								@info(name = 'query2')
@@ -69,13 +68,13 @@
                                 insert into responseSummaryStream ;
 
 								@info(name = 'query3')
-                                from requestSummaryStream#window.timeBatch(1 min)
+                                from requestSummaryStream#window.timeBatch(10 sec)
                                 select api_version,  count() as requestsPerMinPerApi
                                 group by api_version
                                 insert into requestPerMinPerApiStream ;
 
 								@info(name = 'query4')
-                                from responseSummaryStream#window.timeBatch(1 min)
+                                from responseSummaryStream#window.timeBatch(10 sec)
                                 select api_version,  count() as responsesPerMinPerApi
                                 group by api_version
                                 insert into responsePerMinPerApiStream ;
@@ -86,13 +85,13 @@
 
 								/* timeBatch used because Minutely updates are needed */
                                 @info(name = 'query5')
-                                from requestSummaryStream#window.time(1 min)
+                                from requestSummaryStream#window.time(10 sec)
                                 select  api_version, apiPublisher,  count() as  requestsPerMinPerApi
                                 group by api_version
                                 insert into requestPerApiCountStream;
 
 								@info(name = 'query6')
-                                from responseSummaryStream#window.time(1 min)
+                                from responseSummaryStream#window.time(10 sec)
                                 select  api_version,   count() as  responsesPerMinPerApi
                                 group by api_version
                                 insert into responsePerApiCountStream;
@@ -112,17 +111,15 @@
 								/* Combine*/
 
 								@info(name = 'query9')
-								from requestsPercentileStream#window.time(1min) as requestsPercentileStreamWindow join responsesPercentileStream#window.time(1min) as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
+								from requestsPercentileStream#window.time(10 sec) as requestsPercentileStreamWindow join responsesPercentileStream#window.time(10 sec) as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
 								select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
 								responsesPercentileStreamWindow.responsesPerMin as responsesPerMin ,responsesPercentileStreamWindow.responsesPerMinLowerPercentile as responsesPerMinLowerPercentile
                                 insert into requestResponseSummaryStream;
 
 								@info(name = 'query10')
-								from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <5:>
+								from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <2:>
 								select api_version as api_version , apiPublisher, 'Response count is too low' as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
-
-
 
 								/* Now start response time queries */
 
@@ -144,8 +141,6 @@
 								select api_version, apiPublisher, 'Response time is too high' as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
-
-
 								@info(name = 'query14')
                                 from responseStream
                                 select api_version, apiPublisher,  responseCode
@@ -156,37 +151,34 @@
                                 select api_version, apiPublisher, 'Server error occurred' as msg, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into apiHealthMonitorAlertStream;
 
-
-
                                 @info(name='query16')
                                 from apiHealthMonitorAlertStream
                                 select 'healthAvailabilityPerMin' as type, msg as msg , (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
 
-								/* update apiAvailability Table */
+                                /* update apiAvailability Table */
 
 
-								from apiHealthMonitorAlertStream[(api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
-								select api_version, msg as status
-								update apiAvailabilityTable
-								on (api_version == apiAvailabilityTable.api_version);
+                                from apiHealthMonitorAlertStream[(api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
+                                select api_version, msg as status
+                                update apiAvailabilityTable
+                                on (api_version == apiAvailabilityTable.api_version);
 
-								from apiHealthMonitorAlertStream[ not (api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
-								select api_version, msg as status
-								insert into apiAvailabilityTable;
+                                from apiHealthMonitorAlertStream[ not (api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
+                                select api_version, msg as status
+                                insert into apiAvailabilityTable;
 
-								from requestStream[(not (api_version == apiHealthMonitorAlertStreamTable.api_version in apiHealthMonitorAlertStreamTable)) and (not (api_version == apiAvailabilityTable.api_version in apiAvailabilityTable))]
+                                from requestStream[(not (api_version == apiHealthMonitorAlertStreamTable.api_version in apiHealthMonitorAlertStreamTable)) and (not (api_version == apiAvailabilityTable.api_version in apiAvailabilityTable))]
                                 select api_version , 'Available' as status
-                            	insert into apiAvailabilityTable;
+                                insert into apiAvailabilityTable;
 
-								from requestStream as r join apiHealthMonitorAlertStreamTable
-								on (r.api_version == apiHealthMonitorAlertStreamTable.api_version )
-								select r.api_version, alertTimestamp
-								insert into tempStream;
+                                from requestStream as r join apiHealthMonitorAlertStreamTable
+                                on (r.api_version == apiHealthMonitorAlertStreamTable.api_version )
+                                select r.api_version, alertTimestamp
+                                insert into tempStream;
 
 
-								from tempStream[(time:timestampInMilliseconds() - alertTimestamp) > 300000]
-								select api_version , 'Available' as status
-								update apiAvailabilityTable
-								on (api_version == apiAvailabilityTable.api_version);
-
+                                from tempStream[(time:timestampInMilliseconds() - alertTimestamp) > 300000]
+                                select api_version , 'Available' as status
+                                update apiAvailabilityTable
+                                on (api_version == apiAvailabilityTable.api_version);
