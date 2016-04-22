@@ -56,7 +56,7 @@ insert into temporaryUserStream;
 /* send to the alert stream specific to this scenario */
 @info(name = 'query3')
 from temporarySubscriberStream
-select apiPublisher, api, applicationId, applicationName, str:concat("The application { ", applicationName, "} owned by {", apiPublisher, "} frequently goes beyond the allocated quota when accessing the {", api, "} API version {", api_version, "} " as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select apiPublisher, api, applicationId, applicationName, str:concat("The application {", applicationName, "} owned by {", apiPublisher, "} frequently goes beyond the allocated quota when accessing the {", api, "} API version {", api_version, "} " as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 @info(name = 'query4')
@@ -67,7 +67,7 @@ insert into tierLimitHittingAlertStream;
 /* send to general alert stream */
 @info(name = 'query5')
 from temporarySubscriberStream
-select "FrequentTierHittingAlert" as type, str:concat("The application { ", applicationName, "} owned by {", apiPublisher, "} frequently goes beyond the allocated quota when accessing the {", api, "} API version {", api_version, "} " as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, str:concat("The application {", applicationName, "} owned by {", apiPublisher, "} frequently goes beyond the allocated quota when accessing the {", api, "} API version {", api_version, "} " as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
 @info(name = 'query6')
