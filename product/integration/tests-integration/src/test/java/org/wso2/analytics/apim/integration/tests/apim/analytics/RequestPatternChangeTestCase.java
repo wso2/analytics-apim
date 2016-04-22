@@ -45,10 +45,10 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE)) {
             deleteData(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE);
         }
-        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE)) {
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_COUNT_TABLE)) {
             deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_COUNT_TABLE);
         }
-        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE)) {
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE)) {
             deleteData(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE);
         }
         if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
