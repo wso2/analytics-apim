@@ -647,7 +647,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
                 USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
                 OPTIONS (receiverURL "tcp://127.0.0.1:$receiverURLPort",
-                         authURL "ssl://127.0.0.1:authURLPort",
+                         authURL "ssl://127.0.0.1:$authURLPort",
                          username "admin",
                          password "admin",
                          streamName "org.wso2.analytics.apim.alert.abnormalTierUsageAlert",
@@ -660,7 +660,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
                 USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
                 OPTIONS (receiverURL "tcp://127.0.0.1:$receiverURLPort",
-                         authURL "ssl://127.0.0.1:authURLPort",
+                         authURL "ssl://127.0.0.1:$authURLPort",
                          username "admin",
                          password "admin",
                          streamName "org.wso2.analytics.apim.allApimAlertsStream",
