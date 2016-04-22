@@ -48,8 +48,8 @@
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
       USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
-      OPTIONS (receiverURL "tcp://127.0.0.1:8311",
-               authURL "ssl://127.0.0.1:8411",
+      OPTIONS (receiverURL "tcp://127.0.0.1:7612",
+               authURL "ssl://127.0.0.1:7712",
                username "admin",
                password "admin",
                streamName "org.wso2.analytics.apim.allApimAlertsStream",
