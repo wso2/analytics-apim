@@ -8,7 +8,7 @@
   "correlationData": [],
   "payloadData": [
     {
-      "name": "userId",
+      "name": "applicationId",
       "type": "STRING"
     },
     {
