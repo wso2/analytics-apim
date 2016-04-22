@@ -122,8 +122,6 @@
 								select api_version as api_version , apiPublisher, 'Response count is too low' as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
-
-
 								/* Now start response time queries */
 
 								@info(name = 'query11')
@@ -144,8 +142,6 @@
 								select api_version, apiPublisher, 'Response time is too high' as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
-
-
 								@info(name = 'query14')
                                 from responseStream
                                 select api_version, apiPublisher,  responseCode
@@ -156,8 +152,6 @@
                                 select api_version, apiPublisher, 'Server error occurred' as msg, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into apiHealthMonitorAlertStream;
 
-
-
                                 @info(name='query16')
                                 from apiHealthMonitorAlertStream
                                 select 'healthAvailabilityPerMin' as type, msg as msg , (time:timestampInMilliseconds()) as alertTimestamp
@@ -165,8 +159,7 @@
 
 								/* update apiAvailability Table */
 
-
-								from apiHealthMonitorAlertStream[(api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
+                                from apiHealthMonitorAlertStream[(api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
 								select api_version, msg as status
 								update apiAvailabilityTable
 								on (api_version == apiAvailabilityTable.api_version);
