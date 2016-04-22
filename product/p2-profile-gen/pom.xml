@@ -358,7 +358,7 @@
                                 </featureArtifactDef>
                                 <!-- END - Tools -->
                                 <featureArtifactDef>
-                                    org.wso2.analytics.common:org.wso2.carbon.analytics.util.spark.feature:${analytics.common.version}
+                                    org.wso2.analytics.common:org.wso2.analytics.common.spark.util.feature:${analytics.common.version}
                                 </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
@@ -709,7 +709,7 @@
                                 </feature>
                                 <!--END - Tools-->
                                 <feature>
-                                    <id>org.wso2.carbon.analytics.util.spark.feature.group</id>
+                                    <id>org.wso2.analytics.common.spark.util.feature.group</id>
                                     <version>${analytics.common.version}</version>
                                 </feature>
                             </features>
