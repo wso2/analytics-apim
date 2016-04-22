@@ -28,7 +28,7 @@
 								@Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
 								define stream requestPerMinStream (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long);
 
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE',  primary.keys = 'api_version,userId,consumerKey')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE',  primary.keys = 'api_version,userId,consumerKey,resourceTemplate,method')
                                 define table requestPercentileTable (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double);
 								
 								
