@@ -22,7 +22,7 @@
           <template name="FrequentTierLimitHitting">
             <description>Detects frequent hitting of the tier limit</description>
              <executionType>realtime</executionType>
-          
+
             <script>
                 <![CDATA[
                 /* Enter a unique ExecutionPlan */
@@ -56,26 +56,25 @@ insert into temporaryUserStream;
 /* send to the alert stream specific to this scenario */
 @info(name = 'query3')
 from temporarySubscriberStream
-select apiPublisher, api, applicationId, applicationName, str:concat("apiSubscriber: ", apiPublisher, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select apiPublisher, api, applicationId, applicationName, str:concat("The application { ", applicationName, "} owned by {", apiPublisher, "} frequently goes beyond the allocated quota when accessing the {", api, "} API version {", api_version, "} " as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 @info(name = 'query4')
 from temporaryUserStream
-select apiPublisher, api, applicationId, applicationName, str:concat("userId: ", userId, " has reached throttling limit for apiSubscriber: " , apiPublisher, " and api: ", api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select apiPublisher, api, applicationId, applicationName, str:concat("User {", userId, "} using the {", applicationName, "} application owned by {", applicationName"} own by {", apiPublisher, "} frequently crosses the limit set for the user.", as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 /* send to general alert stream */
 @info(name = 'query5')
 from temporarySubscriberStream
-select "FrequentTierHittingAlert" as type, str:concat("apiSubscriber: ", apiPublisher, " has reached throttling limit for api: " , api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, str:concat("The application { ", applicationName, "} owned by {", apiPublisher, "} frequently goes beyond the allocated quota when accessing the {", api, "} API version {", api_version, "} " as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
 @info(name = 'query6')
 from temporaryUserStream
-select "FrequentTierHittingAlert" as type, str:concat("userId: ", userId, " has reached throttling limit for apiSubscriber: " , apiPublisher, " and api: ", api, " and applicationId: ", applicationId, " and application: ", applicationName) as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, str:concat("User {", userId, "} using the {", applicationName, "} application owned by {", applicationName"} own by {", apiPublisher, "} frequently crosses the limit set for the user.", as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
-                    
                  ]]>
             </script>
             <parameters>
@@ -93,14 +92,14 @@ insert into allAlertsStream;
                 </parameter>
             </parameters>
         </template>
-   
+
 
 
 
  <template name="RequestPatternChangeDetection">
             <description>Change the configuration of request pattern detection</description>
              <executionType>realtime</executionType>
-          
+
             <script>
                 <![CDATA[
               @Plan:name('APIMAnalytics-APIRequestPatternChangeAnalysisMetric')
@@ -182,7 +181,7 @@ insert into all_apim_alerts_stream;
         </template>
 
 
-  
+
         <template name="Request Pattern Classifier">
             <description>Clasiffier configurations for Request Patterns</description>
             <executionType>realtime</executionType>
@@ -356,7 +355,7 @@ insert into IPAccessSummary;
  <template name="HealthAvailabilityPerMinAlert">
             <description>To monitor the API health</description>
              <executionType>realtime</executionType>
-          
+
             <script>
                 <![CDATA[
 /* Enter a unique ExecutionPlan */
@@ -534,21 +533,21 @@ insert into IPAccessSummary;
           <template name="Configure access token">
             <description>Configure access token to analyse data</description>
              <executionType>batch</executionType>
-          
+
             <script>
                 <![CDATA[
                   create temporary table accessTokenRefreshTime using CarbonAnalytics options (tableName "ACCESSTOKENREFRESHTIMEDIFFERENCETABLE", schema "userId STRING, clientId STRING, scopes STRING, timeDifference LONG, timestamp LONG");
 
 create temporary table accessTokenRefreshAvrgTime using CarbonAnalytics options (tableName "AccessTokenRefreshSummaryTable", schema "userId STRING -i, clientId STRING -i, scopes STRING -i, minTimeDifference DOUBLE -i, maxTimeDifference DOUBLE -i", primaryKeys "userId, clientId, scopes");
-      
+
 INSERT INTO TABLE accessTokenRefreshAvrgTime
       SELECT temp.userId, temp.clientId, temp.scopes, getpercentileValue(AVG(timeDifference), SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)), $lowerPercentile) as minTimeDifference, getpercentileValue(AVG(timeDifference), SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)), $upperPercentile) as maxTimeDifference
       FROM
          (SELECT userId, clientId,scopes, timeDifference
           FROM accessTokenRefreshTime
             WHERE timestamp >= offsetInDays(-7)) temp
-      GROUP BY userId, clientId, scopes;  
-                         
+      GROUP BY userId, clientId, scopes;
+
                  ]]>
             </script>
             <parameters>
@@ -573,87 +572,99 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         <template name="AbnormalTierUsageAlert">
             <description>This is the CEP stream for Abnormal Tier Usage</description>
              <executionType>batch</executionType>
-          
+
             <script>
                 <![CDATA[
-                
-      CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_REQ
-      USING CarbonAnalytics
-      OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
 
-      CREATE TEMPORARY TABLE ORG_WSO2_API_AVG_REQ_X_DAYS
-      USING CarbonAnalytics
-      OPTIONS (tableName "ORG_WSO2_API_AVG_REQ_X_DAYS_TBL",
-         schema "userId STRING, api STRING, request_count INT"
-      );
+                CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_REQUESTS
+                USING CarbonAnalytics
+                OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
 
-      CREATE TEMPORARY TABLE ORG_WSO2_API_PERCENTILE
-      USING CarbonAnalytics
-      OPTIONS (tableName "ORG_WSO2_API_PERCENTILE_TBL",
-         schema "userId STRING, api STRING, requestsPerDayPercentile FLOAT"
-      );
+                CREATE TEMPORARY TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
+                USING CarbonAnalytics
+                OPTIONS (tableName "ORG_WSO2_API_AVG_REQ_FOR_X_DAYS_TBL",
+                   schema "applicationId STRING, api_version STRING, request_count INT"
+                );
 
-      CREATE TEMPORARY TABLE ORG_WSO2_API_ALERT_STORE
-      USING CarbonAnalytics
-      OPTIONS (tableName "ORG_WSO2_API_ALERT_STORE_TBL",
-         schema "userId STRING, api STRING"
-      );
+                CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA
+                USING CarbonAnalytics
+                OPTIONS (tableName "ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA_TBL",
+                   schema "applicationId STRING, api_version STRING, applicationName STRING, applicationOwner STRING, api STRING, tier STRING"
+                );
 
-      CREATE TEMPORARY TABLE ORG_WSO2_API_ABN_REQ_ALERT
-      USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
-      OPTIONS (receiverURL "tcp://127.0.0.1:$receiverURLPort",
-               authURL "ssl://127.0.0.1:$authURLPort",
-               username "admin",
-               password "admin",
-               streamName "org.wso2.analytics.apim.alert.abnormalTierUsageAlert",
-               version "1.0.0",
-               description "This is the CEP stream for Abnormal Tier Usage",
-               nickName "abnormalTierUsageAlert",
-               payload "userId STRING, api STRING, message STRING, alertTimestamp LONG"
-      );
+                CREATE TEMPORARY TABLE ORG_WSO2_API_PERCENTILE
+                USING CarbonAnalytics
+                OPTIONS (tableName "ORG_WSO2_API_PERCENTILE_TBL",
+                   schema "applicationId STRING, api_version STRING, requestsPerDayPercentile FLOAT"
+                );
 
-      CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT
-      USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
-      OPTIONS (receiverURL "tcp://127.0.0.1:$receiverURLPort",
-               authURL "ssl://127.0.0.1:$authURLPort",
-               username "admin",
-               password "admin",
-               streamName "org.wso2.analytics.apim.allApimAlertsStream",
-               version "1.0.0",
-               description "This is the table represents all alert stream",
-               nickName "allApimAlertsStream",
-               payload "type STRING, msg STRING, alertTimestamp LONG"
-      );
+                CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_USAGE_ALERT
+                USING CarbonAnalytics
+                OPTIONS (tableName "ORG_WSO2_API_ABNORMAL_USAGE_ALERT_TBL",
+                   schema "applicationId STRING, api_version STRING"
+                );
 
-      INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
-      SELECT userId, api, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), $upperPercentile) as percentile
-      FROM
-         (SELECT userId, api, COUNT(api) as request_count
-          FROM ORG_WSO2_API_ABNORMAL_REQ
-          WHERE context is not NULL  AND now('') > convertToTimestamp('12/2/2016') AND requestTime >= offsetInDays(-30)
-          GROUP BY convertToDate(requestTime), api, userId) ORG_WSO2_API_ABNORMAL_REQ
-      GROUP BY api, userId;
+                CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
+                USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
+                OPTIONS (receiverURL "tcp://127.0.0.1:8311",
+                         authURL "ssl://127.0.0.1:8411",
+                         username "admin",
+                         password "admin",
+                         streamName "org.wso2.analytics.apim.alert.abnormalTierUsageAlert",
+                         version "1.0.0",
+                         description "This is the CEP stream for Abnormal Tier Usage",
+                         nickName "abnormalTierUsageAlert",
+                         payload "applicationId STRING, api_version STRING, msg STRING, alertTimestamp LONG"
+                );
 
-     INSERT OVERWRITE TABLE ORG_WSO2_API_AVG_REQ_X_DAYS
-     SELECT userId, api, COUNT(api) as request_count
-     FROM ORG_WSO2_API_ABNORMAL_REQ
-     WHERE context is not NULL  AND requestTime >= offsetInDays(-5)
-     GROUP BY convertToDate(requestTime), api, userId;
+                CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
+                USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
+                OPTIONS (receiverURL "tcp://127.0.0.1:8311",
+                         authURL "ssl://127.0.0.1:8411",
+                         username "admin",
+                         password "admin",
+                         streamName "org.wso2.analytics.apim.allApimAlertsStream",
+                         version "1.0.0",
+                         description "This is the table represents all alert stream",
+                         nickName "allApimAlertsStream",
+                         payload "type STRING, msg STRING, alertTimestamp LONG"
+                );
 
-     INSERT OVERWRITE TABLE ORG_WSO2_API_ALERT_STORE
-     SELECT S.userId, S.api
-     FROM ORG_WSO2_API_AVG_REQ_X_DAYS S, ORG_WSO2_API_PERCENTILE D
-     WHERE S.userId = D.userId AND S.api = D.api AND D.requestsPerDayPercentile  >= S.request_count
-     GROUP BY S.userId, S.api
-     HAVING COUNT(S.api) >= 5;
+                INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
+                SELECT applicationId, api_version, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), 0.05) as percentile
+                FROM
+                   (SELECT applicationId, api_version, COUNT(api_version) as request_count
+                    FROM ORG_WSO2_API_ABNORMAL_REQUESTS
+                    WHERE context is not NULL  AND now('') > convertToTimestamp('12/2/2016') AND requestTime >= offsetInDays(-30)
+                    GROUP BY convertToDate(requestTime), applicationId, api_version) ORG_WSO2_API_ABNORMAL_REQUESTS
+                GROUP BY applicationId, api_version;
 
-     INSERT OVERWRITE TABLE ORG_WSO2_API_ABN_REQ_ALERT
-     SELECT userId, api, concat(concat(concat('Abnormal tier usage  userId: ', userId), ' api: '), api), now('')
-     FROM ORG_WSO2_API_ALERT_STORE;
+               INSERT OVERWRITE TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
+               SELECT applicationId, api_version, COUNT(api_version) as request_count
+               FROM ORG_WSO2_API_ABNORMAL_REQUESTS
+               WHERE context is not NULL  AND requestTime >= offsetInDays(-5)
+               GROUP BY convertToDate(requestTime), applicationId, api_version;
 
-     INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT
-     SELECT "AbnormalTierUsage", concat(concat(concat('Abnormal tier usage  userId: ', userId), ' api: '), api), now('')
-     FROM ORG_WSO2_API_ALERT_STORE;
+               INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_USAGE_ALERT
+               SELECT S.applicationId, S.api_version
+               FROM ORG_WSO2_API_AVG_REQ_FOR_X_DAYS S, ORG_WSO2_API_PERCENTILE D
+               WHERE S.applicationId = D.applicationId AND S.api_version = D.api_version  AND D.requestsPerDayPercentile  > S.request_count
+               GROUP BY S.applicationId, S.api_version
+               HAVING COUNT(S.api_version) >= 5;
+
+               INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA
+               SELECT DISTINCT applicationId, api_version, applicationName, applicationOwner, api, tier
+               FROM ORG_WSO2_API_ABNORMAL_REQUESTS;
+
+               INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
+               SELECT R.applicationId, R.api_version, concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The {', R.applicationName), '} Application owned by {'), R.applicationOwner), '} is consuming too less of the allowed quota when accessing the {'), R.api), '} API version {'), R.api_version), '}. It currently uses a {'), R.tier), '} subscription.'), now('')
+               FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
+               WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
+
+               INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
+               SELECT "AbnormalTierUsage", concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The {', R.applicationName), '} Application owned by {'), R.applicationOwner), '} is consuming too less of the allowed quota when accessing the {'), R.api), '} API version {'), R.api_version), '}. It currently uses a {'), R.tier), '} subscription.'), now('')
+               FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
+               WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
                  ]]>
             </script>
             <parameters>
@@ -682,7 +693,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
            <template name="RequestPerApi">
             <description>To create RequestPerApi percentile values</description>
              <executionType>batch</executionType>
-          
+
             <script>
                 <![CDATA[
                 CREATE TEMPORARY TABLE REQUEST_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinPerApiStream");
@@ -715,7 +726,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
           <template name="RequestStatGenerator">
             <description>To generate request stats</description>
              <executionType>batch</executionType>
-          
+
             <script>
                 <![CDATA[
                 CREATE TEMPORARY TABLE REQUEST_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinStream");
@@ -733,7 +744,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , $lowerPercentile ) as requestsPerMinLowerPercentile
 
         from REQUEST_INFO group by api_version, userId, consumerKey, resourceTemplate, method;
-                            
+
                  ]]>
             </script>
             <parameters>
@@ -756,7 +767,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
  <template name="ResponsePerApiStatGenerator">
             <description>To create Response per api percentile values</description>
              <executionType>batch</executionType>
-          
+
             <script>
                 <![CDATA[
                 CREATE TEMPORARY TABLE RESPONSE_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_responsePerMinPerApiStream");
@@ -789,7 +800,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
           <template name="Response time">
             <description>To create response time percentile values</description>
              <executionType>batch</executionType>
-          
+
             <script>
                 <![CDATA[
                 CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_RESPONSE",schema "_timestamp LONG ");
@@ -820,7 +831,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
          <template name="Response stat generator">
             <description>To create response percentile values</description>
              <executionType>batch</executionType>
-          
+
             <script>
                 <![CDATA[
                 CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName
@@ -913,9 +924,9 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
           </template>
 
-    
+
     </templates>
-    
+
 
     <streams>
 

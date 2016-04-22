@@ -56,10 +56,11 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 		Thread.sleep(1000);
 
 		boolean alertSubscriber = isAlertReceived(0,
-				"msg:apiSubscriber: publisher1 has reached throttling limit", 5, 1000);
-		Assert.assertTrue(alertSubscriber, "Tier hitting messages has not received for publisher1");
+				"msg:The application {application1} owned by {publisher1} frequently goes beyond the allocated quota when accessing the {deeplearning} API version {Deeplearning:1}", 5, 1000);		
+		
+		Assert.assertTrue(alertSubscriber, "Tier hitting messages has not received for application1");
 
-		boolean alertUser = isAlertReceived(0, "msg:userId: user1 has reached throttling limit", 5, 1000);
+		boolean alertUser = isAlertReceived(0, "msg:User {user1} using the {application1} application owned by {publisher1} frequently crosses the limit set for the user", 5, 1000);
 		Assert.assertTrue(alertUser, "Tier hitting messages has not user1");
 
 		Thread.sleep(1000);
@@ -68,8 +69,8 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 		publishEventForPublisher2();
 
 		boolean alertSubscriber2 = isAlertReceived(0,
-				"msg:apiSubscriber: publisher2 has reached throttling limit", 5, 1000);
-		Assert.assertTrue(alertSubscriber2, "Tier hitting messages has not publisher2");
+				"msg:The application {application1} owned by {publisher2} frequently goes beyond the allocated quota when accessing the {deeplearning} API version {Deeplearning:1}", 5, 1000);
+		Assert.assertTrue(alertSubscriber2, "Tier hitting messages has not application2");
 
 	}
 

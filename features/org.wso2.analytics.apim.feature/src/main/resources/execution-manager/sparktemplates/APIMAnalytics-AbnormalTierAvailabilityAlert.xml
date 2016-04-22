@@ -12,19 +12,25 @@
       CREATE TEMPORARY TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
       USING CarbonAnalytics
       OPTIONS (tableName "ORG_WSO2_API_AVG_REQ_FOR_X_DAYS_TBL",
-         schema "userId STRING, api_version STRING, request_count INT"
+         schema "applicationId STRING, api_version STRING, request_count INT"
+      );
+
+      CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA
+      USING CarbonAnalytics
+      OPTIONS (tableName "ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA_TBL",
+         schema "applicationId STRING, api_version STRING, applicationName STRING, applicationOwner STRING, api STRING, tier STRING"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_PERCENTILE
       USING CarbonAnalytics
       OPTIONS (tableName "ORG_WSO2_API_PERCENTILE_TBL",
-         schema "userId STRING, api_version STRING, requestsPerDayPercentile FLOAT"
+         schema "applicationId STRING, api_version STRING, requestsPerDayPercentile FLOAT"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_USAGE_ALERT
       USING CarbonAnalytics
       OPTIONS (tableName "ORG_WSO2_API_ABNORMAL_USAGE_ALERT_TBL",
-         schema "userId STRING, api_version STRING"
+         schema "applicationId STRING, api_version STRING"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
@@ -37,7 +43,7 @@
                version "1.0.0",
                description "This is the CEP stream for Abnormal Tier Usage",
                nickName "abnormalTierUsageAlert",
-               payload "userId STRING, api_version STRING, msg STRING, alertTimestamp LONG"
+               payload "applicationId STRING, api_version STRING, msg STRING, alertTimestamp LONG"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
@@ -54,33 +60,39 @@
       );
 
       INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
-      SELECT userId, api_version, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), 0.05) as percentile
+      SELECT applicationId, api_version, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), 0.05) as percentile
       FROM
-         (SELECT userId, api_version, COUNT(api_version) as request_count
+         (SELECT applicationId, api_version, COUNT(api_version) as request_count
           FROM ORG_WSO2_API_ABNORMAL_REQUESTS
           WHERE context is not NULL  AND now('') > convertToTimestamp('12/2/2016') AND requestTime >= offsetInDays(-30)
-          GROUP BY convertToDate(requestTime), api_version, userId) ORG_WSO2_API_ABNORMAL_REQUESTS
-      GROUP BY api_version, userId;
+          GROUP BY convertToDate(requestTime), applicationId, api_version) ORG_WSO2_API_ABNORMAL_REQUESTS
+      GROUP BY applicationId, api_version;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
-     SELECT userId, api_version, COUNT(api_version) as request_count
+     SELECT applicationId, api_version, COUNT(api_version) as request_count
      FROM ORG_WSO2_API_ABNORMAL_REQUESTS
      WHERE context is not NULL  AND requestTime >= offsetInDays(-5)
-     GROUP BY convertToDate(requestTime), api_version, userId;
+     GROUP BY convertToDate(requestTime), applicationId, api_version;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_USAGE_ALERT
-     SELECT S.userId, S.api_version
+     SELECT S.applicationId, S.api_version
      FROM ORG_WSO2_API_AVG_REQ_FOR_X_DAYS S, ORG_WSO2_API_PERCENTILE D
-     WHERE S.userId = D.userId AND S.api_version = D.api_version AND D.requestsPerDayPercentile  >= S.request_count
-     GROUP BY S.userId, S.api_version
+     WHERE S.applicationId = D.applicationId AND S.api_version = D.api_version  AND D.requestsPerDayPercentile  > S.request_count
+     GROUP BY S.applicationId, S.api_version
      HAVING COUNT(S.api_version) >= 5;
 
+     INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA
+     SELECT DISTINCT applicationId, api_version, applicationName, applicationOwner, api, tier
+     FROM ORG_WSO2_API_ABNORMAL_REQUESTS;
+
      INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
-     SELECT userId, api_version, concat(concat(concat('Abnormal tier usage  userId: ', userId), ' api_version: '), api_version), now('')
-     FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT;
+     SELECT R.applicationId, R.api_version, concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The {', R.applicationName), '} Application owned by {'), R.applicationOwner), '} is consuming too less of the allowed quota when accessing the {'), R.api), '} API version {'), R.api_version), '}. It currently uses a {'), R.tier), '} subscription.'), now('')
+     FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
+     WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
-     SELECT "AbnormalTierUsage", concat(concat(concat('Abnormal tier usage  userId: ', userId), ' api_version: '), api_version), now('')
-     FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT;
+     SELECT "AbnormalTierUsage", concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The {', R.applicationName), '} Application owned by {'), R.applicationOwner), '} is consuming too less of the allowed quota when accessing the {'), R.api), '} API version {'), R.api_version), '}. It currently uses a {'), R.tier), '} subscription.'), now('')
+     FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
+     WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
     </Script>
 </Analytics>

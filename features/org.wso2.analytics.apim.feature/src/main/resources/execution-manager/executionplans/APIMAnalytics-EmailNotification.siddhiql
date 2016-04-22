@@ -22,7 +22,7 @@ define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, t
 define stream tierLimitHittingAlert (apiPublisher string, api string, applicationId string, applicationName string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.alert.abnormalTierUsageAlert:1.0.0')
-define stream abnormalTierUsageAlert (userId string, api_version string, msg string, timestamp long);
+define stream abnormalTierUsageAlert (applicationId string, api_version string, msg string, timestamp long);
 
 @Import('org.wso2.analytics.apim.alert.abnormalTokenRefresh:1.0.0')
 define stream abnormalTokenRefresh (user string, scope string, timestamp long, alertTimestamp long, msg string, consumerKey string);
@@ -71,8 +71,8 @@ having  str:contains(stakeholderInfoTable.alertTypes, 'AbnormalRefreshAlert')
 insert into emailAlertStream;
 
 @info(name = 'query5')
-from abnormalTierUsageAlert["admin@carbon.super" != userId]#window.length(1) join stakeholderInfoTable
-on (abnormalTierUsageAlert.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
+from abnormalTierUsageAlert["admin@carbon.super" != applicationId]#window.length(1) join stakeholderInfoTable
+on (abnormalTierUsageAlert.applicationId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
 select  'AbnormalTierUsage' as type , abnormalTierUsageAlert.msg, abnormalTierUsageAlert.timestamp as alertTimestamp,stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'AbnormalTierUsage')
 insert into emailAlertStream;
