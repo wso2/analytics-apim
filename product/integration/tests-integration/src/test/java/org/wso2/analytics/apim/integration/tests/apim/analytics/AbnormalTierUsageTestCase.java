@@ -107,15 +107,15 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         } else {
             ParameterDTOE[] parameters = testDomain.getParameterDTOs();
             for (ParameterDTOE parameter : parameters) {
-                if (parameter.getName().toLowerCase().equals("receiverURLPort")) {
+                if (parameter.getName().equalsIgnoreCase("receiverURLPort")) {
                     parameter.setValue("8311");
-                }
-                if (parameter.getName().toLowerCase().equals("authURLPort")) {
+                } else if (parameter.getName().equalsIgnoreCase("authURLPort")) {
                     parameter.setValue("8411");
                 }
             }
 
         }
+        executionManagerAdminServiceClient.saveConfiguration(testDomain);
 
         publishDataset();
         logViewerClient.clearLogs();
