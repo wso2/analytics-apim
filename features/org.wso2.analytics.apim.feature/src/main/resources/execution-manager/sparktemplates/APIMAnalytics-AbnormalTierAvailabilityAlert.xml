@@ -86,12 +86,12 @@
      FROM ORG_WSO2_API_ABNORMAL_REQUESTS;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
-     SELECT R.applicationId, R.api_version, concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The {', R.applicationName), '} Application owned by {'), R.applicationOwner), '} is consuming too less of the allowed quota when accessing the {'), R.api), '} API version {'), R.api_version), '}. It currently uses a {'), R.tier), '} subscription.'), now('')
+     SELECT R.applicationId, R.api_version, concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming too less of the allowed quota when accessing the '), R.api), ' API version '), R.api_version), '. It currently uses a '), R.tier), ' subscription.'), now('')
      FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
      WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
-     SELECT "AbnormalTierUsage", concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The {', R.applicationName), '} Application owned by {'), R.applicationOwner), '} is consuming too less of the allowed quota when accessing the {'), R.api), '} API version {'), R.api_version), '}. It currently uses a {'), R.tier), '} subscription.'), now('')
+     SELECT "AbnormalTierUsage", concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming too less of the allowed quota when accessing the '), R.api), ' API version '), R.api_version), '. It currently uses a '), R.tier), ' subscription.'), now('')
      FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
      WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
     </Script>

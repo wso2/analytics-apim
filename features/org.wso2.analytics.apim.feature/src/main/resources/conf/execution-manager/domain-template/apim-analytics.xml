@@ -56,23 +56,23 @@ insert into temporaryUserStream;
 /* send to the alert stream specific to this scenario */
 @info(name = 'query3')
 from temporarySubscriberStream
-select apiPublisher, api, applicationId, applicationName, str:concat("The application {", applicationName, "} owned by {", apiPublisher, "} frequently goes beyond the allocated quota when accessing the {", api, "} API version {", api_version, "} " as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select apiPublisher, api, applicationId, applicationName, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api, " API version ", api_version, " " as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 @info(name = 'query4')
 from temporaryUserStream
-select apiPublisher, api, applicationId, applicationName, str:concat("User {", userId, "} using the {", applicationName, "} application owned by {", applicationName"} own by {", apiPublisher, "} frequently crosses the limit set for the user.", as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select apiPublisher, api, applicationId, applicationName, str:concat("User ", userId, " using the ", applicationName, " application owned by ", applicationName" own by ", apiPublisher, " frequently crosses the limit set for the user.", as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 /* send to general alert stream */
 @info(name = 'query5')
 from temporarySubscriberStream
-select "FrequentTierHittingAlert" as type, str:concat("The application {", applicationName, "} owned by {", apiPublisher, "} frequently goes beyond the allocated quota when accessing the {", api, "} API version {", api_version, "} " as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api, " API version ", api_version, " " as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
 @info(name = 'query6')
 from temporaryUserStream
-select "FrequentTierHittingAlert" as type, str:concat("User {", userId, "} using the {", applicationName, "} application owned by {", applicationName"} own by {", apiPublisher, "} frequently crosses the limit set for the user.", as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, str:concat("User ", userId, " using the ", applicationName, " application owned by ", applicationName" own by ", apiPublisher, " frequently crosses the limit set for the user.", as msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
                  ]]>
@@ -697,12 +697,12 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                FROM ORG_WSO2_API_ABNORMAL_REQUESTS;
 
                INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
-               SELECT R.applicationId, R.api_version, concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The {', R.applicationName), '} Application owned by {'), R.applicationOwner), '} is consuming too less of the allowed quota when accessing the {'), R.api), '} API version {'), R.api_version), '}. It currently uses a {'), R.tier), '} subscription.'), now('')
+               SELECT R.applicationId, R.api_version, concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming too less of the allowed quota when accessing the '), R.api), ' API version '), R.api_version), '. It currently uses a '), R.tier), ' subscription.'), now('')
                FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
                WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
 
                INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
-               SELECT "AbnormalTierUsage", concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The {', R.applicationName), '} Application owned by {'), R.applicationOwner), '} is consuming too less of the allowed quota when accessing the {'), R.api), '} API version {'), R.api_version), '}. It currently uses a {'), R.tier), '} subscription.'), now('')
+               SELECT "AbnormalTierUsage", concat(concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming too less of the allowed quota when accessing the '), R.api), ' API version '), R.api_version), '. It currently uses a '), R.tier), ' subscription.'), now('')
                FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
                WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
                  ]]>
