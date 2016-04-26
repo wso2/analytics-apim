@@ -104,7 +104,7 @@
         "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY", schema "apiName string -i, apiCount int -i, _timestamp long -i");
         INSERT OVERWRITE table loganalyzer_apim_message_processing_daily SELECT temp.apiName AS myApiName,
         SUM(temp.apiCount) AS totalAPICount,
-        getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (select getRegexMatch(_content, "(?&lt;=--)(.*)(?=\\sError)")
+        getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (select getRegexMatch(_content, "(?&lt;=--)(.*)(?=\sError)")
         as apiName, getYear(_eventTimeStamp) AS byYear, getMonth(_eventTimeStamp) AS
         byMonth, getDay(_eventTimeStamp) AS byDay, count(*) as apiCount from CopyOfLoganalyzer
         where _content LIKE
