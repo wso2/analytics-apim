@@ -1,0 +1,16 @@
+{
+  "name": "org.wso2.analytics.apim.apiAvailability",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "api_version",
+      "type": "STRING"
+    },
+    {
+      "name": "status",
+      "type": "STRING"
+    }
+  ]
+}
