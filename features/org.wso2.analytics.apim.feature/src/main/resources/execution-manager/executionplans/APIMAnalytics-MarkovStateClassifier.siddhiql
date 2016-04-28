@@ -25,7 +25,7 @@ define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
 
 
 from request
-select context,method,resourceTemplate, str:concat(method,' ',context,'_',resourceTemplate) as state, userId as userid, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner
+select context,method,resourceTemplate, str:concat(method,' ',context,' ',resourceTemplate) as state, userId as userid, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner
 insert into stateStream;
 
 
