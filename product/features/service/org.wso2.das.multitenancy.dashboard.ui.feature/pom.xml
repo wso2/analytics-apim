@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
             <artifactId>org.wso2.das.multitenancy.dashboard.ui</artifactId>
-	    <version>${das.release.version}</version>
+	    <version>${analytics.apim.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
