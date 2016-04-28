@@ -98,7 +98,6 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Tier Usage Alert")
     public void testAbnormalTierUsageAlert() throws Exception {
 
-        TemplateDomainDTO[] dom = executionManagerAdminServiceClient.getAllDomains();
         TemplateConfigurationDTO testDomain = executionManagerAdminServiceClient.getConfiguration("APIMAnalytics",
                 "AbnormalTierAvailabilityAlert");
 
