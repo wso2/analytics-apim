@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
             <artifactId>org.wso2.das.multitenancy.styles</artifactId>
-	    <version>${das.release.version}</version>
+	    <version>${analytics.apim.version}</version>
         </dependency>
     </dependencies>
 
