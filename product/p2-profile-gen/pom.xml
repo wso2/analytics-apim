@@ -455,7 +455,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.das.styles.feature.group</id>
-                                    <version>${das.release.version}</version>
+                                    <version>${analytics.apim.version}</version>
                                 </feature>
 
                                 <!-- ********* START - Registry related  *********** -->
@@ -575,7 +575,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.das.multitenancy.dashboard.ui.feature.group</id>
-                                    <version>${das.release.version}</version>
+                                    <version>${analytics.apim.version}</version>
                                 </feature>
                                 <!-- END - Multitenancy related -->
 
