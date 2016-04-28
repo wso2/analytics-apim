@@ -907,7 +907,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         </template>
 
    <template name="APIM_GEO_LOCATION_STATS">
-              <description>To create Geo locations-based statistics</description>
+              <description>To generate Geo locations-based statistics</description>
               <executionType>batch</executionType>
 
               <script>
