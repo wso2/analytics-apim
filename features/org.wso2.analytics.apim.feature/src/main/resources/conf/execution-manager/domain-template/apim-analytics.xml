@@ -149,7 +149,7 @@ select userid, requestTimestamp, str:concat(startState,' to ',endState) as trans
 insert into IntermediateFraudStream;
 
 from IntermediateFraudStream
-select userid, applicationName, applicationOwner, str:concat('Abnormal request pattern detected by user :',userid,' using application : ',applicationName, ' owned by Owner: ',applicationOwner, ' suscpicious API transition is: ',transition) as msg , (time:timestampInMilliseconds()) as alertTimestamp
+select userid, applicationName, applicationOwner, str:concat('Abnormal request pattern detected by user :',userid,' using application : ',applicationName, ' owned by Owner: ',applicationOwner, ' suspicious API transition is: ',transition) as msg , (time:timestampInMilliseconds()) as alertTimestamp
 insert into requestPatternChangedStream;
 
 from IntermediateFraudStream
