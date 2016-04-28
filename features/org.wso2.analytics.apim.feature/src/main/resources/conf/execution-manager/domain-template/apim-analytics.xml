@@ -121,6 +121,9 @@ define table MarkovModelTable (consumerKey string, startState string, endState s
 @from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
 
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPATTERNALERTSUMMARYTABLE', primary.keys='applicationName, applicationOwner, userid, msg' , indices = 'applicationName, applicationOwner, userid, msg, lastlastAlertedTimestamp')
+define table RequestPatternAlertSummaryTable(applicationName string, applicationOwner string, userid string, msg string, lastAlertedTimestamp long);
+
 /****************************************************** Calculate Miss Probability *******************************************************************************/
 from metricStream[not((startState == MarkovModelTable.startState and endState == MarkovModelTable.endState and consumerKey == MarkovModelTable.consumerKey) in MarkovModelTable)]
 select userid, requestTimestamp, startState , endState, 1.0 as MissProbability, MarkovModelTable.consumerKey, applicationName, applicationOwner
@@ -148,12 +151,34 @@ from NormalizeMissProbabilityStream [ NormalizeMissProbability > $probabilityThr
 select userid, requestTimestamp, str:concat(startState,' to ',endState) as transition, NormalizeMissProbability as miss_probability, consumerKey, applicationName, applicationOwner
 insert into IntermediateFraudStream;
 
-from IntermediateFraudStream
-select userid, applicationName, applicationOwner, str:concat('Abnormal request pattern detected by user :',userid,' using application : ',applicationName, ' owned by Owner: ',applicationOwner, ' suscpicious API transition is: ',transition) as msg , (time:timestampInMilliseconds()) as alertTimestamp
-insert into requestPatternChangedStream;
+
 
 from IntermediateFraudStream
-select 'RequestPatternChanged' as type, str:concat('Abnormal request pattern detected by user :',userid,' using application :',applicationName,' owned by Owner :',applicationOwner, ' suscpicious API transition is: ',transition) as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select userid, applicationName, applicationOwner, str:concat('Abnormal request pattern detected by user :',userid,' using application : ',applicationName, ' owned by Owner: ',applicationOwner, ' suscpicious API transition is: ',transition) as msg , (time:timestampInMilliseconds()) as alertTimestamp
+insert into requestPatternChangedStreamTemp;
+
+
+from requestPatternChangedStreamTemp as r left outer join RequestPatternAlertSummaryTable
+on (applicationName == RequestPatternAlertSummaryTable.applicationName   and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userid == RequestPatternAlertSummaryTable.userid and msg == RequestPatternAlertSummaryTable.msg)
+select r.applicationName, r.applicationOwner, r.userid, r.msg, r.alertTimestamp , ifThenElse(lastAlertedTimestamp is null, 0l , lastAlertedTimestamp) as lastAlertedTimestamp
+insert into requestPatternChangedStreamModified;
+
+from requestPatternChangedStreamModified [(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionPeriod]
+select userid, applicationName, applicationOwner, msg, alertTimestamp
+insert into requestPatternChangedStream;
+
+from requestPatternChangedStream[(applicationName == RequestPatternAlertSummaryTable.applicationName   and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userid == RequestPatternAlertSummaryTable.userid and msg == RequestPatternAlertSummaryTable.msg ) in RequestPatternAlertSummaryTable]
+select  applicationName, applicationOwner,userid, msg, alertTimestamp as lastAlertedTimestamp
+update RequestPatternAlertSummaryTable
+on (applicationName == RequestPatternAlertSummaryTable.applicationName and  applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userid == RequestPatternAlertSummaryTable.userid and msg == RequestPatternAlertSummaryTable.msg);
+
+from requestPatternChangedStream[not ((applicationName == RequestPatternAlertSummaryTable.applicationName and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userid == RequestPatternAlertSummaryTable.userid and msg == RequestPatternAlertSummaryTable.msg) in RequestPatternAlertSummaryTable)]
+select  applicationName, applicationOwner,userid, msg,  alertTimestamp as lastAlertedTimestamp
+insert into RequestPatternAlertSummaryTable;
+
+
+from requestPatternChangedStreamModified[(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionPeriod]
+select 'RequestPatternChanged' as type, msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
 
                  ]]>
@@ -176,6 +201,12 @@ insert into all_apim_alerts_stream;
                     <displayName>Probability Threshold</displayName>
                     <description>Probability threshold of a normal API transition</description>
                     <defaultValue>0.95</defaultValue>
+                </parameter>
+
+                <parameter name="alertSuppressionPeriod" type="long">
+                    <displayName>Alert Suppression Period</displayName>
+                    <description>Time period to wait before resending the same alert</description>
+                    <defaultValue>30*60*1000</defaultValue>
                 </parameter>
             </parameters>
         </template>
@@ -214,7 +245,7 @@ define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
 
 
 from request
-select context,method,resourceTemplate, str:concat(method,' ',context,'_',resourceTemplate) as state, userId as userid, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner
+select context,method,resourceTemplate, str:concat(method,' ',context,' ',resourceTemplate) as state, userId as userid, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner
 insert into stateStream;
 
 
