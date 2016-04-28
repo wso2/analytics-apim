@@ -644,6 +644,14 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
+	<file>
+              <source>
+                  ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/analytics/spark/carbon-spark-classpath.conf
+              </source>
+              <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/analytics/spark/
+              </outputDirectory>
+              <fileMode>755</fileMode>
+          </file>
         <file>
             <!--../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/bin/load-spark-env-vars.bat-->
             <!-- this file is moved to product-das from carbon-analytics DAS-110 -->

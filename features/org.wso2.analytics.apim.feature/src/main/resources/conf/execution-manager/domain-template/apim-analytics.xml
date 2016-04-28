@@ -154,7 +154,7 @@ insert into IntermediateFraudStream;
 
 
 from IntermediateFraudStream
-select userid, applicationName, applicationOwner, str:concat('Abnormal request pattern detected by user :',userid,' using application : ',applicationName, ' owned by Owner: ',applicationOwner, ' suscpicious API transition is: ',transition) as msg , (time:timestampInMilliseconds()) as alertTimestamp
+select userid, applicationName, applicationOwner, str:concat('Abnormal request pattern detected by user :',userid,' using application : ',applicationName, ' owned by Owner: ',applicationOwner, ' suspicious API transition is: ',transition) as msg , (time:timestampInMilliseconds()) as alertTimestamp
 insert into requestPatternChangedStreamTemp;
 
 
@@ -938,7 +938,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         </template>
 
    <template name="APIM_GEO_LOCATION_STATS">
-              <description>To create response percentile values</description>
+              <description>To generate Geo locations-based statistics</description>
               <executionType>batch</executionType>
 
               <script>
