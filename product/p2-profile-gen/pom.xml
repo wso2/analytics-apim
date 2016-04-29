@@ -219,7 +219,7 @@
                                     org.wso2.carbon.deployment:org.wso2.carbon.as.runtimes.cxf.feature:${carbon.deployment.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon.commons:org.wso2.carbon.logging.mgt.feature:${carbon.commons.logging.version}
+                                    org.wso2.carbon.commons:org.wso2.carbon.logging.mgt.feature:${carbon.commons.version}
                                 </featureArtifactDef>
                                 <!-- ************** END - WebApp Deployment ************ -->
 
@@ -544,7 +544,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.logging.mgt.feature.group</id>
-                                    <version>${carbon.commons.logging.version}</version>
+                                    <version>${carbon.commons.version}</version>
                                 </feature>
                                 <!-- ************** END - WebApp Deployment ************* -->
 
