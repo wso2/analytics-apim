@@ -702,18 +702,18 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 );
 
                 INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
-                SELECT applicationId, api_version, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), 0.05) as percentile
+                SELECT applicationId, api_version, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), $percentile) as percentile
                 FROM
                    (SELECT applicationId, api_version, COUNT(api_version) as request_count
                     FROM ORG_WSO2_API_ABNORMAL_REQUESTS
-                    WHERE context is not NULL  AND now('') > convertToTimestamp($alertStartDate) AND requestTime >= offsetInDays($daysConsiderForPercentilesCalculation)
+                    WHERE context is not NULL  AND now('') > convertToTimestamp('$alertStartDate') AND requestTime >= offsetInDays(-$daysConsiderForPercentilesCalculation)
                     GROUP BY convertToDate(requestTime), applicationId, api_version) ORG_WSO2_API_ABNORMAL_REQUESTS
                 GROUP BY applicationId, api_version;
 
                INSERT OVERWRITE TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
                SELECT applicationId, api_version, COUNT(api_version) as request_count
                FROM ORG_WSO2_API_ABNORMAL_REQUESTS
-               WHERE context is not NULL  AND requestTime >= offsetInDays($daysConsiderForAbnormalTierAvailability)
+               WHERE context is not NULL  AND requestTime >= offsetInDays(-$daysConsiderForAbnormalTierAvailability)
                GROUP BY convertToDate(requestTime), applicationId, api_version;
 
                INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_USAGE_ALERT
@@ -740,10 +740,10 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
             </script>
             <parameters>
 
-                <parameter name="upperPercentile" type="double">
-                    <displayName>Upper percentile</displayName>
-                    <description>Percentile range to calculate the upper percentile value</description>
-                    <defaultValue>0.95</defaultValue>
+                <parameter name="percentile" type="double">
+                    <displayName>Percentile</displayName>
+                    <description>Percentile value uses to calculate the threshold</description>
+                    <defaultValue>0.05</defaultValue>
                 </parameter>
                 <parameter name="receiverURLPort" type="int">
                     <displayName>Receiver port</displayName>
@@ -757,18 +757,18 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 </parameter>
                 <parameter name="alertStartDate" type="string">
                     <displayName>Alert Start  Date</displayName>
-                    <description>Alerting will be activated from this date onwards. (format dd/mm/yyyy)</description>
+                    <description>Alerting will be activated from this date onwards. format: dd/mm/yyyy</description>
                     <defaultValue>12/2/2016</defaultValue>
                 </parameter>
                 <parameter name="daysConsiderForPercentilesCalculation" type="int">
                     <displayName>Days Consider for Percentile Calculation</displayName>
-                    <description>Number of previous days consider for percentile calculation (Number of days should be entered with minus sign).</description>
-                    <defaultValue>-30</defaultValue>
+                    <description>Number of previous days consider for percentile calculation.</description>
+                    <defaultValue>30</defaultValue>
                 </parameter>
                 <parameter name="daysConsiderForAbnormalTierAvailability" type="int">
                     <displayName>Days Consider for Abnormal Tier Availability Calculation</displayName>
-                    <description>Number of previous days consider for abnormal tier availability calculation (Number of days should be entered with minus sign).</description>
-                    <defaultValue>-5</defaultValue>
+                    <description>Number of previous days consider for abnormal tier availability calculation.</description>
+                    <defaultValue>5</defaultValue>
                 </parameter>
                 
 </parameters>
