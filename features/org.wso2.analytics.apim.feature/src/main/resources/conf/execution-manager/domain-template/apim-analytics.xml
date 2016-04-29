@@ -724,7 +724,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <description>Authentication port</description>
                     <defaultValue>7712</defaultValue>
                 </parameter>
-                <parameter name="alertStartDate" type="String">
+                <parameter name="alertStartDate" type="string">
                     <displayName>Alert Start  Date</displayName>
                     <description>Alerting will be activated from this date onwards. (format dd/mm/yyyy)</description>
                     <defaultValue>12/2/2016</defaultValue>
