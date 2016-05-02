@@ -23,7 +23,7 @@
 	<groupId>org.wso2.analytics.apim</groupId>
 	<artifactId>analytics-apim</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.0-alpha1</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>WSO2 Analytics for API Manager - Aggregator Module</name>
 	<url>http://wso2.com/products/api-manager</url>
 	<description>WSO2 Analytics for API Manager</description>
@@ -590,7 +590,7 @@
 	</build>
 
 	<properties>
-        <analytics.apim.version>1.0.0-alpha1</analytics.apim.version>
+        <analytics.apim.version>1.0.0-SNAPSHOT</analytics.apim.version>
         <analytics.common.version>1.0.0-alpha1</analytics.common.version>
         <carbon.kernel.version>4.4.3</carbon.kernel.version>
         <carbon.analytics.version>1.0.6-alpha2</carbon.analytics.version>
