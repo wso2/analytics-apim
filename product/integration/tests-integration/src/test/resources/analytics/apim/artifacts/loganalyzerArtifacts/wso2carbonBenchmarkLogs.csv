@@ -1,0 +1,6 @@
+-1234,,,1461339705590,org.wso2.carbon.core.bootup.validator.util.ValidationResultPrinter,WARN,Carbon is configured to use the default keystore (wso2carbon.jks). To maximize security when deployi...,,,,
+-1234,,,1461340025187,org.wso2.carbon.apimgt.hostobjects.APIProviderHostObject,ERROR,Login failed.Please recheck the username and password and try again..,,,,
+-1234,,,1461331302321,org.apache.synapse.rest.API,INFO,Initializing API: _WSO2AMUserInfoAPI_,,,,
+-1234,,,1461339912826,org.apache.synapse.rest.API,INFO,Destroying API: admin--PizzaShackAPI:v1.0.0,,,,
+-1234,,,1458726947000,org.apache.axiom.om.OMException,ERROR,admin--api1 Error while building message,,,,
+-1234,,,1459145372000,org.wso2.carbon.core.services.util.CarbonAuthenticationUtil,WARN,Failed Administrator login attempt 'adminsada[-1234]' at [2016-03-27 11:39:32,855+0525] {org.wso2.carbon.core.services.util.CarbonAuthenticationUtil},,,,
