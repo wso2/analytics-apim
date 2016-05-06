@@ -27,10 +27,8 @@ import org.wso2.analytics.apim.integration.common.clients.ExecutionManagerAdminS
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ParameterDTOE;
 import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.TemplateConfigurationDTO;
-import org.wso2.carbon.event.execution.manager.admin.dto.domain.xsd.TemplateDomainDTO;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 
-import java.rmi.RemoteException;
 import java.util.Calendar;
 
 public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
@@ -90,8 +88,29 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     }
 
     @AfterClass(alwaysRun = true)
-    public void cleanup() throws RemoteException {
+    public void cleanup() throws Exception {
         // undeploy the publishers
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_PER_X_DAYS_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_PER_X_DAYS_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.PERCENTILE_TABEL)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.PERCENTILE_TABEL);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ALERT_STORE_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ALERT_STORE_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ABNORMAL_REQ_ALERT_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ABNORMAL_REQ_ALERT_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ALL_ALERT_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ALL_ALERT_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.ADITIONAL_DATA)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.ADITIONAL_DATA);
+        }
         undeployPublisher(PUBLISHER_FILE);
     }
 

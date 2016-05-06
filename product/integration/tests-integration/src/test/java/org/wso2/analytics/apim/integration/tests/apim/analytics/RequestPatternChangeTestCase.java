@@ -24,8 +24,6 @@ import org.testng.annotations.Test;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 
-import java.rmi.RemoteException;
-
 public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
 
     private static final Log log = LogFactory.getLog(RequestPatternChangeTestCase.class);
@@ -65,8 +63,20 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
     }
 
     @AfterClass(alwaysRun = true)
-    public void cleanup() throws RemoteException {
+    public void cleanup() throws Exception {
         // undeploy the publishers
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_COUNT_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_COUNT_TABLE);
+        }
+        if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE)) {
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE);
+        }
+        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        }
         undeployPublisher(PUBLISHER_FILE);
     }
 

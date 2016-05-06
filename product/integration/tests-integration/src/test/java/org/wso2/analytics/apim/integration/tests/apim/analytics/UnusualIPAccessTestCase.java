@@ -23,8 +23,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 
-import java.rmi.RemoteException;
-
 public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_NAME = "org.wso2.apimgt.statistics.request";
     private final String STREAM_VERSION = "1.1.0";
@@ -46,8 +44,11 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     }
 
     @AfterClass(alwaysRun = true)
-    public void cleanup() throws RemoteException {
+    public void cleanup() throws Exception {
         // undeploy the publishers
+        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        }
         undeployPublisher(PUBLISHER_FILE);
     }
 
