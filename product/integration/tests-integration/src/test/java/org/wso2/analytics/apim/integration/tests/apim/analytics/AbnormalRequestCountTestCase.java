@@ -37,6 +37,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     private final String REQUEST_COUNT_PER_MINUTE_TABLE = "ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINSTREAM";
     private final String EXECUTION_PLAN_NAME = "APIMAnalytics-AbnormalRequestCountDetection";
     private final int MAX_TRIES = 20;
+    private String originalExecutionPlan;
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
@@ -52,6 +53,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         }
         // deploy the publisher xml files
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
+        originalExecutionPlan = eventProcessorAdminServiceClient.getActiveExecutionPlan(EXECUTION_PLAN_NAME);
         deleteExecutionPlan(EXECUTION_PLAN_NAME);
         Thread.sleep(1000);
         addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
@@ -71,6 +73,8 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         }
         // undeploy the publishers
         undeployPublisher(PUBLISHER_FILE);
+        deleteExecutionPlan(EXECUTION_PLAN_NAME);
+        addExecutionPlan(originalExecutionPlan);
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the Spark script is deployed")
