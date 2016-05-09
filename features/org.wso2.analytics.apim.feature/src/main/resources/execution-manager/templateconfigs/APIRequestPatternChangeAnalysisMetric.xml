@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templateConfiguration from="APIMAnalytics" name="RequestPatternChangeDetection" type="RequestPatternChangeDetection">
+<templateConfiguration from="APIMAnalytics" name="APIRequestPatternChangeAnalysisMetric" type="RequestPatternChangeDetection">
 	<description>Detection of request pattern changes</description>
 	<parameters>
 		<parameter name="regularAPITransitions">

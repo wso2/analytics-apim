@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templateConfiguration from="APIMAnalytics" name="RequestPatternClassifier" type="Request Pattern Classifier">
-	<description>Classifier for request patterns</description>
-	<parameters>
-		<parameter name="transitionPeriod">
-			<value>60 min</value>
-		</parameter>
-	</parameters>
-</templateConfiguration>
