@@ -69,7 +69,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
             }
             i++;
         }
-        Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:500 but found: " +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if it waits for the provided request count to" +
