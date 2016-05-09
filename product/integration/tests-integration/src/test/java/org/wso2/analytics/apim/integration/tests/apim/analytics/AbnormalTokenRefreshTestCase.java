@@ -85,7 +85,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
             }
             i++;
         }
-        Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published , expected entry count:6 but found: " +oAuthEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Access Token Refresh Alert Spark Script execution"
@@ -105,7 +105,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
             }
             i++;
         }
-        Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected!");
+        Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected, expected entry count:1 but found: "+summaryTableCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Access Token Refresh Alert",

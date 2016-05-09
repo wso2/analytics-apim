@@ -85,7 +85,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
             }
             i++;
         }
-        Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:50 but found: " +responseEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if API response time too high", dependsOnMethods = "testResponseSimulationDataSent")
@@ -113,7 +113,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished = (requestEventCount == 9);
-        Assert.assertTrue(eventsPublished, "Simulation request events set one did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation request events set one did not get published, expected entry count:9 but found: " +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
@@ -124,7 +124,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished = (requestEventCount == 22);
-        Assert.assertTrue(eventsPublished, "Simulation request events set two did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation request events set two did not get published, expected entry count:22 but found: " +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
@@ -135,7 +135,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished = (requestEventCount == 37);
-        Assert.assertTrue(eventsPublished, "Simulation request events set three did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation request events set three did not get published, expected entry count:37 but found: " +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the simulation data is published", dependsOnMethods = "test3rdRequestCountSimulationDataSent")
@@ -148,7 +148,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         long requestEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished = (requestEventCount == 9);
-        Assert.assertTrue(eventsPublished, "Simulation response events set one did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation response events set one did not get published, expected entry count:9 but found: " +requestEventCount+ "!");;
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the simulation data is published", dependsOnMethods = "test1stResponseCountSimulationDataSent")
@@ -158,7 +158,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         long requestEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
         boolean eventsPublished = false;
         eventsPublished = (requestEventCount == 22);
-        Assert.assertTrue(eventsPublished, "Simulation response events set two did not get published!");
+        Assert.assertTrue(eventsPublished, "Simulation response events set two did not get published, expected entry count:22 but found: " +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the Spark script is deployed", dependsOnMethods = "test2ndResponseCountSimulationDataSent")

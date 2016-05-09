@@ -156,14 +156,6 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 
         executeSparkScript(SPARK_SCRIPT);
 
-        // test case #1
-        boolean testOne = isAlertReceived(
-                0,
-                "sampleApplication Application owned by admin is consuming too less of the allowed quota when accessing the svm API version svm:v1.0.0. It currently uses a Gold subscription.",
-                10, 1000);
-        Assert.assertTrue(testOne,
-                "Abnormal request alert is not received for application: sampleApplication for api_version: svm:v1.0.0");
-
         // test case #2
         boolean testTwo = isAlertReceived(
                 0,
@@ -171,6 +163,14 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                 10, 1000);
         Assert.assertFalse(testTwo,
                 "Incorrect user alert is received for application: sampleApplication for api_version: tree:v1.0.0");
+
+        // test case #1
+        boolean testOne = isAlertReceived(
+                0,
+                "sampleApplication Application owned by admin is consuming too less of the allowed quota when accessing the svm API version svm:v1.0.0. It currently uses a Gold subscription.",
+                10, 1000);
+        Assert.assertTrue(testOne,
+                "Abnormal request alert is not received for application: sampleApplication for api_version: svm:v1.0.0");
 
         // test case #3
         boolean testThree = isAlertReceived(
