@@ -593,7 +593,7 @@
         <analytics.apim.version>1.0.0-SNAPSHOT</analytics.apim.version>
         <analytics.common.version>1.0.0-alpha1</analytics.common.version>
         <carbon.kernel.version>4.4.3</carbon.kernel.version>
-        <carbon.analytics.version>1.0.6-alpha2</carbon.analytics.version>
+        <carbon.analytics.version>1.0.6-alpha3</carbon.analytics.version>
         <carbon.analytics.common.version>5.0.12-alpha2</carbon.analytics.common.version>
         <carbon.automationutils.version>4.4.1</carbon.automationutils.version>
         <carbon.automation.version>4.4.2</carbon.automation.version>
