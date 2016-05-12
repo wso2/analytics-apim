@@ -1,0 +1,28 @@
+{
+  "name": "org.wso2.analytics.apim.accessTokenRefreshTimeDifference",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "userId",
+      "type": "STRING"
+    },
+    {
+      "name": "clientId",
+      "type": "STRING"
+    },
+    {
+      "name": "scopes",
+      "type": "STRING"
+    },
+    {
+      "name": "timeDifference",
+      "type": "LONG"
+    },
+    {
+      "name": "timestamp",
+      "type": "LONG"
+    }
+  ]
+}
