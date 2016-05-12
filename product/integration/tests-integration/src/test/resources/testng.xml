@@ -4,12 +4,12 @@
     <parameter name="useDefaultListeners" value="false"/>
 
     <test name="analytics-apim-tests" preserve-order="true" parallel="false">
-        <!--<packages>-->
-            <!--<package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>-->
+        <packages>
+            <package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>
 
-        <!--</packages>-->
+        </packages>
        <classes>
-            <class name="org.wso2.analytics.apim.integration.tests.apim.analytics.RequestPatternChangeTestCase"/>
+            <!--<class name="org.wso2.analytics.apim.integration.tests.apim.analytics.AbnormalTierUsageTestCase"/>-->
         </classes>
     </test>
 </suite>

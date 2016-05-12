@@ -66,16 +66,16 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
     public void cleanup() throws Exception {
         // undeploy the publishers
         if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE)) {
-           // deleteData(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE);
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.FIRST_COUNT_TABLE);
         }
         if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_COUNT_TABLE)) {
-            //deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_COUNT_TABLE);
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_COUNT_TABLE);
         }
         if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE)) {
-            //deleteData(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE);
+            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE);
         }
         if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
-           // deleteData(-1234, STREAM_NAME.replace('.', '_'));
+            deleteData(-1234, STREAM_NAME.replace('.', '_'));
         }
         undeployPublisher(PUBLISHER_FILE);
     }
@@ -129,7 +129,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29","admin" });
         publishEvent(eventDto3);
 
-        boolean requestPatternChangeAlert = isAlertReceived(0, "Abnormal request pattern detected by user", 84 ,2000);
+        boolean requestPatternChangeAlert = isAlertReceived(0, "Unique ID: logger_requestPatternChange", 84 ,2000);
 
         Assert.assertTrue(requestPatternChangeAlert, "Request pattern change alert event not received!");
     }
