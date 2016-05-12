@@ -129,7 +129,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected, expected entry count:1 but found: "+percentileTableCount+ "!");
     }
 
-    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal ResponseTime Alert",
+    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Request Count Alert",
             dependsOnMethods = "testRequestStatGeneratorSparkScriptExecution")
     public void testAbnormalRequestCountAlert() throws Exception {
         logViewerClient.clearLogs();

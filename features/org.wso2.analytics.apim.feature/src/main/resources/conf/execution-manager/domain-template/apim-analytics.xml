@@ -300,7 +300,7 @@ define stream all_apim_alerts_stream (type string, msg string, alertTimestamp lo
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
 define stream alertIpAccessAbnormality (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, requestTime long, alertTimestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'IPAccessSummary', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
 
 @from(eventtable = 'analytics.table', table.name = 'IPAccessAlertCount', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount')
@@ -607,7 +607,7 @@ insert into IPAccessSummary;
 
             <script>
                 <![CDATA[
-                  create temporary table accessTokenRefreshTime using CarbonAnalytics options (tableName "ACCESSTOKENREFRESHTIMEDIFFERENCETABLE", schema "userId STRING, clientId STRING, scopes STRING, timeDifference LONG, timestamp LONG");
+                  create temporary table accessTokenRefreshTime using CarbonAnalytics options (tableName "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE", schema "userId STRING, clientId STRING, scopes STRING, timeDifference LONG, timestamp LONG");
 
 create temporary table accessTokenRefreshAvrgTime using CarbonAnalytics options (tableName "AccessTokenRefreshSummaryTable", schema "userId STRING -i, clientId STRING -i, scopes STRING -i, minTimeDifference DOUBLE -i, maxTimeDifference DOUBLE -i", primaryKeys "userId, clientId, scopes");
 
