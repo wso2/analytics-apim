@@ -18,7 +18,7 @@ define stream alert_allAPIMAlertsStream (type string, msg string, alertTimestamp
 @from(eventtable = 'analytics.table', table.name = 'LastAccessTokenRefreshEventTable', primary.keys = 'userId, clientId, scopes', indices = 'userId, clientId, scopes, timestamp')
 define table LastAccessTokenRefreshTable (userId string, clientId string, scopes string, timestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'AccessTokenRefreshTimeDifferenceTable', indices = 'userId, clientId, scopes, timeDifference, timestamp')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE', indices = 'userId, clientId, scopes, timeDifference, timestamp')
 define table AccessTokenRefreshTable (userId string, clientId string, scopes string, timeDifference long, timestamp long);
 
 @from(eventtable = 'analytics.table', table.name = 'AccessTokenRefreshSummaryTable', indices = 'userId, clientId, scopes, minTimeDifference, maxTimeDifference')

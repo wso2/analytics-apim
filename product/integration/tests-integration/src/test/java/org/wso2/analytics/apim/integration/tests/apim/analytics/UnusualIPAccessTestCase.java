@@ -28,7 +28,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_VERSION = "1.1.0";
     private final String TEST_RESOURCE_PATH = "unusualIPAccess";
     private final String PUBLISHER_FILE = "logger.xml";
-    private final String ALERT_TABLE_NAME = "IPACCESSSUMMARY";
+    private final String ALERT_TABLE_NAME = "ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY";
     private final String EXECUTION_PLAN_NAME = "APIMAnalytics-UnusualIPAccessAlert";
     private final int MAX_TRIES = 5;
 

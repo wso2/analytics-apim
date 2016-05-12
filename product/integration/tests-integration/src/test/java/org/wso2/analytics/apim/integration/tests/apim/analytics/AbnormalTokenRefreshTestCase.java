@@ -38,6 +38,8 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
     private final String PUBLISHER_FILE = "logger_abnormalAccessTokenRefresh.xml";
     private final String SPARK_SCRIPT = "APIMAnalytics-ConfigureAccessToken";
     private final String SUMMARY_TABLE = "AccessTokenRefreshSummaryTable";
+    private final String REFRESH_TIME_DIFFERENCE_TABLE = "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE";
+    private final String LAST_ACCESS_TOKEN_REFRESH_TABLE = "LASTACCESSTOKENREFRESHEVENTTABLE";
     private final String EXECUTION_PLAN_NAME = "APIMAnalytics-AbnormalAccessTokenRefreshAlert";
     private final int MAX_TRIES = 5;
     private long initialTimestamp;
@@ -52,11 +54,41 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         initialTimestamp = System.currentTimeMillis() - 6000;
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
+        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        }
+        if (isTableExist(-1234, SUMMARY_TABLE)) {
+            deleteData(-1234, SUMMARY_TABLE);
+
+        }
+        if (isTableExist(-1234, REFRESH_TIME_DIFFERENCE_TABLE)) {
+            deleteData(-1234, REFRESH_TIME_DIFFERENCE_TABLE);
+
+        }
+        if (isTableExist(-1234, LAST_ACCESS_TOKEN_REFRESH_TABLE)) {
+            deleteData(-1234, LAST_ACCESS_TOKEN_REFRESH_TABLE);
+
+        }
         editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
     }
 
     @AfterClass(alwaysRun = true)
-    public void cleanup() throws RemoteException {
+    public void cleanup() throws Exception {
+        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        }
+        if (isTableExist(-1234, SUMMARY_TABLE)) {
+            deleteData(-1234, SUMMARY_TABLE);
+
+        }
+        if (isTableExist(-1234, REFRESH_TIME_DIFFERENCE_TABLE)) {
+            deleteData(-1234, REFRESH_TIME_DIFFERENCE_TABLE);
+
+        }
+        if (isTableExist(-1234, LAST_ACCESS_TOKEN_REFRESH_TABLE)) {
+            deleteData(-1234, LAST_ACCESS_TOKEN_REFRESH_TABLE);
+
+        }
         // undeploy the publishers
         undeployPublisher(PUBLISHER_FILE);
     }
@@ -108,8 +140,23 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected, expected entry count:1 but found: "+summaryTableCount+ "!");
     }
 
-    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Access Token Refresh Alert",
+    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Access Token Refresh Alert is not generated for normal scenarios",
             dependsOnMethods = "testScriptExecution")
+    public void testNormalTokenRefreshAlert() throws Exception {
+        logViewerClient.clearLogs();
+
+        EventDto eventDto1 = new EventDto();
+        eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto1.setAttributeValues((BASE_EVENT_ONE_STRING + (initialTimestamp + 652)).split(","));
+        publishEvent(eventDto1);
+
+        boolean abnormalTokenRefreshFound = isAlertReceived(0, "msg:Abnormal Access Token Refresh Detected " +
+                "from User:carbon.super-home-apim", 5 ,2000);
+        Assert.assertFalse(abnormalTokenRefreshFound, "Abnormal Token Refresh Alert is received!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Access Token Refresh Alert",
+            dependsOnMethods = "testNormalTokenRefreshAlert")
     public void testAbnormalTokenRefreshAlert() throws Exception {
         logViewerClient.clearLogs();
 

@@ -13,7 +13,7 @@ define stream all_apim_alerts_stream (type string, msg string, alertTimestamp lo
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
 define stream alertIpAccessAbnormality (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, requestTime long, alertTimestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'IPAccessSummary', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
 
 @from(eventtable = 'analytics.table', table.name = 'IPAccessAlertCount', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount')
