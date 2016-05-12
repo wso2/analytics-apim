@@ -1,0 +1,24 @@
+{
+  "name": "org.wso2.analytics.apim.ipAccessSummary",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "userId",
+      "type": "STRING"
+    },
+    {
+      "name": "consumerKey",
+      "type": "STRING"
+    },
+    {
+      "name": "ip",
+      "type": "STRING"
+    },
+    {
+      "name": "lastAccessedDate",
+      "type": "LONG"
+    }
+  ]
+}

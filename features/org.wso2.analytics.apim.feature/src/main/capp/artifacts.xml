@@ -48,6 +48,12 @@
         <dependency artifact="org_wso2_analytics_apim_apiAvailability" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_apiAvailability" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
+        <dependency artifact="org_wso2_analytics_apim_accessTokenRefreshTimeDifference" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_accessTokenRefreshTimeDifference" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
+        <dependency artifact="org_wso2_analytics_apim_ipAccessSummary" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_ipAccessSummary" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
         <dependency artifact="org_wso2_analytics_apim_emailAlertStreamPublisher" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_alertStakeholderInfoEventReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
