@@ -304,6 +304,15 @@
             </includes>
         </fileSet>
 
+        <fileSet>
+            <directory>
+                ./resources/dbscript/statistics/
+            </directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/statistics</outputDirectory>
+            <includes>
+                <include>**/**.sql</include>
+            </includes>
+        </fileSet>
 
     </fileSets>
 

@@ -2,7 +2,7 @@
 <Analytics>
     <Name>APIM_GEO_LOCATION_STATS</Name>
 <Script>
-    CREATE TEMPORARY TABLE APIGeoLocationData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQUEST_GEO_LOCATION_SUMMARY");
+    CREATE TEMPORARY TABLE APIGeoLocationData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQ_GEO_LOC_SUMMARY");
     create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
     CREATE TEMPORARY TABLE API_REQUEST_GEOIP_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_GEOIP_SUMMARY",
     schema "api string -i,
@@ -29,7 +29,7 @@
     substring(cast(requestTime/1000 as timestamp),6,2),
     substring(cast(requestTime/1000 as timestamp),9,2);
 
-    CREATE TEMPORARY TABLE API_REQUEST_GEO_LOCATION_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_GEO_LOCATION_SUMMARY",
+    CREATE TEMPORARY TABLE API_REQUEST_GEO_LOCATION_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQ_GEO_LOC_SUMMARY",
     schema "api string -i,
     version string -i,
     apiPublisher string -i,
