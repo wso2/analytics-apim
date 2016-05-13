@@ -985,7 +985,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
     substring(cast(requestTime/1000 as timestamp),6,2),
     substring(cast(requestTime/1000 as timestamp),9,2);
 
-    CREATE TEMPORARY TABLE API_REQUEST_GEO_LOCATION_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_GEO_LOCATION_SUMMARY",
+    CREATE TEMPORARY TABLE API_REQUEST_GEO_LOCATION_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQ_GEO_LOC_SUMMARY",
     schema "api string -i,
     version string -i,
     apiPublisher string -i,

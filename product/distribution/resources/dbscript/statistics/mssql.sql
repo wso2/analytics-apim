@@ -209,6 +209,6 @@ CREATE TABLE API_REQ_GEO_LOC_SUMMARY (
   day INTEGER DEFAULT NULL,
   requestTime INTEGER,
   country varchar(200) NOT NULL,
-  city varchar(200) NOT NULL
+  city varchar(200) NOT NULL,
   PRIMARY KEY (api,version,apiPublisher,year,month,day,tenantDomain,country,city)
 );

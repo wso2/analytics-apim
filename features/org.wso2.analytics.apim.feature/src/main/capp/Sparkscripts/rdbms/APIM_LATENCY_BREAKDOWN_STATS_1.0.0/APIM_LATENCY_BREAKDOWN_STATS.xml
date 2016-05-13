@@ -2,9 +2,9 @@
 <Analytics>
     <Name>APIM_LATENCY_BREAKDOWN_STATS</Name>
 <Script>
-    CREATE TEMPORARY TABLE APIExecutionTimeDaySummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXECUTION_TME_DAY_SUMMARY");
+    CREATE TEMPORARY TABLE APIExecutionTimeDaySummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXE_TME_DAY_SUMMARY");
     CREATE TEMPORARY TABLE APIExecutionTimeData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_EXECUTION_TIME");
-    CREATE TEMPORARY TABLE API_EXECUTION_TME_DAY_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_EXECUTION_TME_DAY_SUMMARY",
+    CREATE TEMPORARY TABLE API_EXECUTION_TME_DAY_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_EXE_TME_DAY_SUMMARY",
     schema "api string -i,
     version string -i,
     apiPublisher string -i,
@@ -30,8 +30,8 @@
     substring(cast((eventTime)/1000 as timestamp),9,2);
     INSERT OVERWRITE TABLE APIExecutionTimeDaySummaryData SELECT api,version,apiPublisher,context,mediationName,executionTime,tenantDomain,year,month,day,time FROM API_EXECUTION_TME_DAY_SUMMARY_FINAL;
 
-    CREATE TEMPORARY TABLE APIExecutionTimeHourSummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXECUTION_TIME_HOUR_SUMMARY");
-    CREATE TEMPORARY TABLE API_EXECUTION_TIME_HOUR_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_EXECUTION_TIME_HOUR_SUMMARY",
+    CREATE TEMPORARY TABLE APIExecutionTimeHourSummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXE_TIME_HOUR_SUMMARY");
+    CREATE TEMPORARY TABLE API_EXECUTION_TIME_HOUR_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_EXE_TIME_HOUR_SUMMARY",
     schema "api string -i,
     version string -i,
     apiPublisher string -i,
@@ -60,8 +60,8 @@
     substring(cast((eventTime)/1000 as timestamp),12,2);
     INSERT OVERWRITE TABLE APIExecutionTimeHourSummaryData SELECT api,version,apiPublisher,context,mediationName,executionTime,tenantDomain,year,month,day,hour,time FROM API_EXECUTION_TIME_HOUR_SUMMARY_FINAL;
 
-    CREATE TEMPORARY TABLE APIExecutionTimeMinuteSummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXECUTION_TIME_MINUTE_SUMMARY");
-    CREATE TEMPORARY TABLE API_EXECUTION_TIME_MINUTE_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_EXECUTION_TIME_MINUTE_SUMMARY",
+    CREATE TEMPORARY TABLE APIExecutionTimeMinuteSummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXE_TIME_MIN_SUMMARY");
+    CREATE TEMPORARY TABLE API_EXECUTION_TIME_MINUTE_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_EXE_TIME_MIN_SUMMARY",
     schema "api string -i,
     version string -i,
     apiPublisher string -i,
@@ -93,8 +93,8 @@
     substring(cast((eventTime)/1000 as timestamp),15,2);
     INSERT OVERWRITE TABLE APIExecutionTimeMinuteSummaryData SELECT api,version,apiPublisher,context,mediationName,executionTime,tenantDomain,year,month,day,hour,minutes,time FROM API_EXECUTION_TIME_MINUTE_SUMMARY_FINAL;
 
-    CREATE TEMPORARY TABLE APIExecutionTimeSecondsSummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXECUTION_TIME_SECONDS_SUMMARY");
-    CREATE TEMPORARY TABLE API_EXECUTION_TIME_SECONDS_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_EXECUTION_TIME_SECONDS_SUMMARY",
+    CREATE TEMPORARY TABLE APIExecutionTimeSecondsSummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXE_TIME_SEC_SUMMARY");
+    CREATE TEMPORARY TABLE API_EXECUTION_TIME_SECONDS_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_EXE_TIME_SEC_SUMMARY",
     schema "api string -i,
     version string -i,
     apiPublisher string -i,
