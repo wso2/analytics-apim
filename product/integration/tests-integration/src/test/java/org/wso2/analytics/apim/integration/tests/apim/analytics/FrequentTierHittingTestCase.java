@@ -15,14 +15,13 @@
  */
 package org.wso2.analytics.apim.integration.tests.apim.analytics;
 
-import java.rmi.RemoteException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
+
+import java.rmi.RemoteException;
 
 public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
@@ -54,6 +53,12 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "test_throttling.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 10);
 
         Thread.sleep(1000);
+
+        boolean noUserAlert = isAlertReceived(
+                0,
+                "msg:User user1 using the application2 application owned by publisher1 frequently crosses the limit set for the user",
+                5, 1000);
+        Assert.assertFalse(noUserAlert, "Tier hitting messages received for user1");
 
         boolean alertSubscriber = isAlertReceived(
                 0,

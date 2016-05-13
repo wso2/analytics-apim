@@ -94,7 +94,8 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
             }
             i++;
         }
-        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:500 but found: " +requestEventCount+ "!");
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:500 but found: " +
+                +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert", dependsOnMethods = "testSimulationDataSent")
@@ -132,6 +133,26 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         boolean requestPatternChangeAlert = isAlertReceived(0, "Unique ID: logger_requestPatternChange", 84 ,2000);
 
         Assert.assertTrue(requestPatternChangeAlert, "Request pattern change alert event not received!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert is not generated for normal pattern",
+            dependsOnMethods = "testSimulationDataSent")
+    public void testNoRequestPatternChangeAlert() throws Exception {
+
+        logViewerClient.clearLogs();
+
+        EventDto eventDto = new EventDto();
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto.setAttributeValues(
+                new String[] { "external", "D4rf6fvCohQ7kbQ970euK0LmjcQa", "/calc/1.0", "CalculatorAPI:v1.0",
+                        "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133372",
+                        "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
+                        "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.27","admin" });
+        publishEvent(eventDto);
+
+        boolean requestPatternChangeAlert = isAlertReceived(0, "Unique ID: logger_requestPatternChange", 5 ,2000);
+
+        Assert.assertFalse(requestPatternChangeAlert, "Request pattern change alert event not received!");
     }
 
 }

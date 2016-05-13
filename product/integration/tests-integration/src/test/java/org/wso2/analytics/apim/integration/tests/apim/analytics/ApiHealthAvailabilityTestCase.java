@@ -35,6 +35,22 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         super.init();
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
+        if (isTableExist(-1234, REQUEST_STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
+        }
+        if (isTableExist(-1234, RESPONSE_STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
+        }
+        if (isTableExist(-1234, RESPONSE_TIME_TABLE)) {
+            deleteData(-1234, RESPONSE_TIME_TABLE);
+        }
+        if (isTableExist(-1234, RESPONSE_PER_API_STREAM)) {
+            deleteData(-1234, RESPONSE_PER_API_STREAM);
+        }
+        if (isTableExist(-1234, REQUEST_PER_API_STREAM)) {
+            deleteData(-1234, REQUEST_PER_API_STREAM);
+        }
+
         originalExecutionPlan = eventProcessorAdminServiceClient.getActiveExecutionPlan(EXECUTION_PLAN_NAME);
         redeployExecutionPlan();
     }
@@ -48,11 +64,22 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
+        if (isTableExist(-1234, REQUEST_STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
+        }
+        if (isTableExist(-1234, RESPONSE_STREAM_NAME.replace('.', '_'))) {
+            deleteData(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
+        }
+        if (isTableExist(-1234, RESPONSE_TIME_TABLE)) {
+            deleteData(-1234, RESPONSE_TIME_TABLE);
+        }
+        if (isTableExist(-1234, RESPONSE_PER_API_STREAM)) {
+            deleteData(-1234, RESPONSE_PER_API_STREAM);
+        }
+        if (isTableExist(-1234, REQUEST_PER_API_STREAM)) {
+            deleteData(-1234, REQUEST_PER_API_STREAM);
+        }
         // undeploy the publishers
-       /* deleteData(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
-        Thread.sleep(5000);
-        deleteData(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
-        Thread.sleep(5000);*/
         undeployPublisher(PUBLISHER_FILE);
         deleteExecutionPlan(EXECUTION_PLAN_NAME);
         addExecutionPlan(originalExecutionPlan);
@@ -88,9 +115,24 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:50 but found: " +responseEventCount+ "!");
     }
 
-    @Test(groups = "wso2.analytics.apim", description = "Test if API response time too high", dependsOnMethods = "testResponseSimulationDataSent")
-    public void testResponseTimeTooHighAlert() throws Exception {
+    @Test(groups = "wso2.analytics.apim", description = "Test if API response time too high alert is not generated for normal scenarios", dependsOnMethods = "testResponseSimulationDataSent")
+    public void testResponseTimeNormalAlert() throws Exception {
         executeSparkScript(RESPONSE_TIME_SPARK_SCRIPT);
+        logViewerClient.clearLogs();
+        List<EventDto> events = getResponseEventList(2);
+        pubishEvents(events, 100);
+        EventDto eventDto = new EventDto();
+        eventDto.setEventStreamId(getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION));
+        eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0",
+                "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "20", "7", "19", "admin@carbon.super", "1456894602386",
+                "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200"});
+        events.add(eventDto);
+        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response time is too high\"", 5, 2000);
+        Assert.assertFalse(responseTimeTooHigh, "Response time too high for continuous 5 events, alert is received!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test if API response time too high", dependsOnMethods = "testResponseTimeNormalAlert")
+    public void testResponseTimeTooHighAlert() throws Exception {
         logViewerClient.clearLogs();
         List<EventDto> events = getResponseEventList(5);
         pubishEvents(events, 100);
@@ -122,8 +164,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "request2.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 100);
         Thread.sleep(9000);
         long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
-        boolean eventsPublished = false;
-        eventsPublished = (requestEventCount == 22);
+        boolean eventsPublished = (requestEventCount == 22);
         Assert.assertTrue(eventsPublished, "Simulation request events set two did not get published, expected entry count:22 but found: " +requestEventCount+ "!");
     }
 
@@ -133,8 +174,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "request3.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 100);
         Thread.sleep(9000);
         long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
-        boolean eventsPublished = false;
-        eventsPublished = (requestEventCount == 37);
+        boolean eventsPublished = (requestEventCount == 37);
         Assert.assertTrue(eventsPublished, "Simulation request events set three did not get published, expected entry count:37 but found: " +requestEventCount+ "!");
     }
 
@@ -146,8 +186,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "response.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         Thread.sleep(10000);
         long requestEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
-        boolean eventsPublished = false;
-        eventsPublished = (requestEventCount == 9);
+        boolean eventsPublished = (requestEventCount == 9);
         Assert.assertTrue(eventsPublished, "Simulation response events set one did not get published, expected entry count:9 but found: " +requestEventCount+ "!");;
     }
 
@@ -156,8 +195,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "response2.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         Thread.sleep(9000);
         long requestEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
-        boolean eventsPublished = false;
-        eventsPublished = (requestEventCount == 22);
+        boolean eventsPublished = (requestEventCount == 22);
         Assert.assertTrue(eventsPublished, "Simulation response events set two did not get published, expected entry count:22 but found: " +requestEventCount+ "!");
     }
 
@@ -204,6 +242,23 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Server error occurred\"", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Server error for continuous 5 events, alert not received!");
     }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test if server error occurred alert is not generated for normal cases", dependsOnMethods = "testResponseCodeAlert")
+    public void testNoResponseCodeAlert() throws Exception {
+        logViewerClient.clearLogs();
+        EventDto eventDto = new EventDto();
+        eventDto.setEventStreamId(getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION));
+        eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0",
+                "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "40", "7", "19", "admin@carbon.super", "1456894602386",
+                "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "550"});
+        for(int i=0; i<3; i++){
+            publishEvent(eventDto);
+        }
+
+        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Server error occurred\"", 5, 2000);
+        Assert.assertFalse(responseTimeTooHigh, "Server error for continuous 5 events, alert is received!");
+    }
+
 
     private List<EventDto> getResponseEventList(int count) {
         List<EventDto> events = new ArrayList<>();

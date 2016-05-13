@@ -151,4 +151,41 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         Assert.assertTrue(abnormalBackendTimeAlertTriggered, "Abnormal BackendTime Alert event not received!");
     }
 
+
+    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal BackendTime Alert is not generated for normal scenarios",
+            dependsOnMethods = "testResponseStatGeneratorSparkScriptExecution")
+    public void testNormalBackendTime() throws Exception {
+        logViewerClient.clearLogs();
+
+        EventDto eventDto = new EventDto();
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto.setAttributeValues(
+                new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
+                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "12", "7", "15", "admin@carbon.super", "1456894602386",
+                        "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200"}
+        );
+        publishEvent(eventDto);
+
+        boolean abnormalBackendTimeAlertTriggered = isAlertReceived(0, "Unique ID: logger_abnormalBackendTime", 5, 500);
+        Assert.assertFalse(abnormalBackendTimeAlertTriggered, "Abnormal BackendTime Alert is received!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal ResponseTime Alert is not generated for normal scenarios",
+            dependsOnMethods = "testResponseStatGeneratorSparkScriptExecution")
+    public void testNormalResponseTime() throws Exception {
+        logViewerClient.clearLogs();
+
+        EventDto eventDto = new EventDto();
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto.setAttributeValues(
+                new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
+                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "15", "7", "5", "admin@carbon.super", "1456894602386", "carbon.super",
+                        "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200"}
+        );
+        publishEvent(eventDto);
+
+        boolean abnormalResponseTimeAlertTriggered = isAlertReceived(0, "Unique ID: logger_abnormalResponseTime", 5, 500);
+        Assert.assertFalse(abnormalResponseTimeAlertTriggered, "Abnormal ResponseTime Alert is received!");
+    }
+
 }
