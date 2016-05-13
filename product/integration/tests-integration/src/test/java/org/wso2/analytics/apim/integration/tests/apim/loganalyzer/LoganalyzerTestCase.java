@@ -43,7 +43,6 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     private DataPublisherClient dataPublisherClient;
     private final String STREAM_NAME = "loganalyzer";
     private final String STREAM_VERSION = "1.0.0";
-    private final String PUBLISHER_FILE = "logger_loganalyzerCount.xml";
     private final String TEST_RESOURCE_PATH = "logAnalyzerArtifacts";
     private final String SPARK_SCRIPT = "APIM_LOGANALYZER_SCRIPT";
     private final String LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY = "LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY";
@@ -67,16 +66,12 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     public void setup() throws Exception {
         super.init();
         dataPurging();
-        // deploy the publisher xml files
-        deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
         Thread.sleep(1000);
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
         dataPurging();
-        // undeploy the publishers
-        undeployPublisher(PUBLISHER_FILE);
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the Spark script is deployed")
