@@ -54,6 +54,8 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     private final String LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY = "LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY";
     private final String LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY = "LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY";
     private final String LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY = "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY";
+    private final String LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY = "LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY";
+    private final String LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY = "LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY";
     private final String LOGANALYZER_APIKEY_STATUS = "LOGANALYZER_APIKEY_STATUS";
     private final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY";
     private final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY";
@@ -126,6 +128,10 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
                 "Spark script did not execute as expected, No entries found for table " + LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY + "!");
         Assert.assertTrue(isRecordExists(-1234, LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY),
                 "Spark script did not execute as expected, No entries found for table " + LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY + "!");
+        Assert.assertTrue(isRecordExists(-1234, LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY),
+                "Spark script did not execute as expected, No entries found for table " + LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY + "!");
+        Assert.assertTrue(isRecordExists(-1234, LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY),
+                "Spark script did not execute as expected, No entries found for table " + LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY + "!");
         Assert.assertTrue(isRecordExists(-1234, LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY),
                 "Spark script did not execute as expected, No entries found for table " + LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY + "!");
         Assert.assertTrue(isRecordExists(-1234, LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY),
@@ -164,6 +170,12 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         }
         if (isTableExist(-1234, LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY)) {
             deleteData(-1234, LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY);
+        }
+        if (isTableExist(-1234, LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY)) {
+            deleteData(-1234, LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY);
+        }
+        if (isTableExist(-1234, LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY)) {
+            deleteData(-1234, LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY);
         }
         if (isTableExist(-1234, LOGANALYZER_APIKEY_STATUS)) {
             deleteData(-1234, LOGANALYZER_APIKEY_STATUS);
