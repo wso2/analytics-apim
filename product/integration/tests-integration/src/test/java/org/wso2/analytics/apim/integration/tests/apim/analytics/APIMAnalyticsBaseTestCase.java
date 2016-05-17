@@ -468,4 +468,26 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING,
                 loggedInSessionCookie);
     }
+
+    /**
+     * Know if record exists or not.
+     *
+     * @param tenantId  Tenant ID of the table.
+     * @param tableName name of the Table.
+     * @param max_tries no of attempts to get record count.
+     * @return true if record exists in the given table.
+     * @throws InterruptedException
+     * @throws AnalyticsException
+     */
+    protected boolean isRecordExists(int tenantId, String tableName, int max_tries) throws InterruptedException, AnalyticsException {
+        int i = 0;
+        while (i < max_tries) {
+            if (getRecordCount(tenantId, tableName) >= 1) {
+                return true;
+            }
+            i++;
+            Thread.sleep(10000);
+        }
+        return false;
+    }
 }
