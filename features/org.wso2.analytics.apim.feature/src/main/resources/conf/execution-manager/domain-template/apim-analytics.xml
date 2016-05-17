@@ -303,7 +303,7 @@ define stream alertIpAccessAbnormality (type string, msg string, ip string, appl
 @from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
 
-@from(eventtable = 'analytics.table', table.name = 'IPAccessAlertCount', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSALERTCOUNT', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount')
 define table IPAccessAlertCount (userId string, consumerKey string, requestCount long) ;
 
 -- Consumer key is already in the table
@@ -609,7 +609,7 @@ insert into IPAccessSummary;
                 <![CDATA[
                   create temporary table accessTokenRefreshTime using CarbonAnalytics options (tableName "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE", schema "userId STRING, clientId STRING, scopes STRING, timeDifference LONG, timestamp LONG");
 
-create temporary table accessTokenRefreshAvrgTime using CarbonAnalytics options (tableName "AccessTokenRefreshSummaryTable", schema "userId STRING -i, clientId STRING -i, scopes STRING -i, minTimeDifference DOUBLE -i, maxTimeDifference DOUBLE -i", primaryKeys "userId, clientId, scopes");
+create temporary table accessTokenRefreshAvrgTime using CarbonAnalytics options (tableName "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHSUMMARYTABLE", schema "userId STRING -i, clientId STRING -i, scopes STRING -i, minTimeDifference DOUBLE -i, maxTimeDifference DOUBLE -i", primaryKeys "userId, clientId, scopes");
 
 INSERT INTO TABLE accessTokenRefreshAvrgTime
       SELECT temp.userId, temp.clientId, temp.scopes, getpercentileValue(AVG(timeDifference), SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)), $lowerPercentile) as minTimeDifference, getpercentileValue(AVG(timeDifference), SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)), $upperPercentile) as maxTimeDifference
@@ -653,25 +653,25 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
                 CREATE TEMPORARY TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
                 USING CarbonAnalytics
-                OPTIONS (tableName "ORG_WSO2_API_AVG_REQ_FOR_X_DAYS_TBL",
+                OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_AVG_REQ_FOR_X_DAYS_TBL",
                    schema "applicationId STRING, api_version STRING, request_count INT"
                 );
 
                 CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA
                 USING CarbonAnalytics
-                OPTIONS (tableName "ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA_TBL",
+                OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_ABNORMAL_ADITIONAL_DATA_TBL",
                    schema "applicationId STRING, api_version STRING, applicationName STRING, applicationOwner STRING, api STRING, tier STRING"
                 );
 
                 CREATE TEMPORARY TABLE ORG_WSO2_API_PERCENTILE
                 USING CarbonAnalytics
-                OPTIONS (tableName "ORG_WSO2_API_PERCENTILE_TBL",
+                OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_PERCENTILE_TBL",
                    schema "applicationId STRING, api_version STRING, requestsPerDayPercentile FLOAT"
                 );
 
                 CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_USAGE_ALERT
                 USING CarbonAnalytics
-                OPTIONS (tableName "ORG_WSO2_API_ABNORMAL_USAGE_ALERT_TBL",
+                OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_ABNORMAL_USAGE_ALERT_TBL",
                    schema "applicationId STRING, api_version STRING"
                 );
 

@@ -11,25 +11,25 @@
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
       USING CarbonAnalytics
-      OPTIONS (tableName "ORG_WSO2_API_AVG_REQ_FOR_X_DAYS_TBL",
+      OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_AVG_REQ_FOR_X_DAYS_TBL",
          schema "applicationId STRING, api_version STRING, request_count INT"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA
       USING CarbonAnalytics
-      OPTIONS (tableName "ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA_TBL",
+      OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_ABNORMAL_ADITIONAL_DATA_TBL",
          schema "applicationId STRING, api_version STRING, applicationName STRING, applicationOwner STRING, api STRING, tier STRING"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_PERCENTILE
       USING CarbonAnalytics
-      OPTIONS (tableName "ORG_WSO2_API_PERCENTILE_TBL",
+      OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_PERCENTILE_TBL",
          schema "applicationId STRING, api_version STRING, requestsPerDayPercentile FLOAT"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_USAGE_ALERT
       USING CarbonAnalytics
-      OPTIONS (tableName "ORG_WSO2_API_ABNORMAL_USAGE_ALERT_TBL",
+      OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_ABNORMAL_USAGE_ALERT_TBL",
          schema "applicationId STRING, api_version STRING"
       );
 
