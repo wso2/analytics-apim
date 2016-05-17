@@ -37,9 +37,9 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
     private final String TEST_RESOURCE_PATH = "abnormalTokenRefresh";
     private final String PUBLISHER_FILE = "logger_abnormalAccessTokenRefresh.xml";
     private final String SPARK_SCRIPT = "APIMAnalytics-ConfigureAccessToken";
-    private final String SUMMARY_TABLE = "AccessTokenRefreshSummaryTable";
+    private final String SUMMARY_TABLE = "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHSUMMARYTABLE";
     private final String REFRESH_TIME_DIFFERENCE_TABLE = "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE";
-    private final String LAST_ACCESS_TOKEN_REFRESH_TABLE = "LASTACCESSTOKENREFRESHEVENTTABLE";
+    private final String LAST_ACCESS_TOKEN_REFRESH_TABLE = "ORG_WSO2_ANALYTICS_APIM_LASTACCESSTOKENREFRESHEVENTTABLE";
     private final String EXECUTION_PLAN_NAME = "APIMAnalytics-AbnormalAccessTokenRefreshAlert";
     private final int MAX_TRIES = 5;
     private long initialTimestamp;

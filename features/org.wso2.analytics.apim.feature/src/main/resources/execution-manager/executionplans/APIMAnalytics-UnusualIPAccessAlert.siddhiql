@@ -16,7 +16,7 @@ define stream alertIpAccessAbnormality (type string, msg string, ip string, appl
 @from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
 
-@from(eventtable = 'analytics.table', table.name = 'IPAccessAlertCount', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSALERTCOUNT', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount')
 define table IPAccessAlertCount (userId string, consumerKey string, requestCount long) ;
 
 -- Consumer key is already in the table
