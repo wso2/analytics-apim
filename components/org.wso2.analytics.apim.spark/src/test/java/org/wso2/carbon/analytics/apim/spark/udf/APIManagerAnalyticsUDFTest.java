@@ -39,6 +39,12 @@ public class APIManagerAnalyticsUDFTest {
 		}
 	}
 
+    @Test(expectedExceptions = APIManagerAnalyticsUDFException.class)
+    public void testConvertToDateException() throws APIManagerAnalyticsUDFException {
+        APIManagerAnalyticsUDF apimUDF = new APIManagerAnalyticsUDF();
+        String calculatedDateStr = apimUDF.convertToDate(null);
+    }
+
 	/**
 	 * This method tests data to time-stamp conversion
 	 */
@@ -56,6 +62,13 @@ public class APIManagerAnalyticsUDFTest {
 		}
 
 	}
+
+    @Test(expectedExceptions = APIManagerAnalyticsUDFException.class)
+    public void testConvertToTimestampException() throws  APIManagerAnalyticsUDFException{
+        APIManagerAnalyticsUDF apimUDF = new APIManagerAnalyticsUDF();
+        long calculatedTimestamp = apimUDF.convertToTimestamp(null);
+
+    }
 
 	/**
 	 * This method tests percentile values
@@ -75,6 +88,23 @@ public class APIManagerAnalyticsUDFTest {
 		}
 
 	}
+
+    @Test(expectedExceptions = APIManagerAnalyticsUDFException.class)
+    public void testGetpercentileValueException() throws APIManagerAnalyticsUDFException {
+        APIManagerAnalyticsUDF apimUDF = new APIManagerAnalyticsUDF();
+        Double mean = 5.0;
+        Double stdDev = 0.0;
+        double percentileValue = apimUDF.getpercentileValue(mean, stdDev, null);
+    }
+
+    @Test(expectedExceptions = APIManagerAnalyticsUDFException.class)
+    public void testGetpercentileValueInvalidPercentile() throws APIManagerAnalyticsUDFException {
+        APIManagerAnalyticsUDF apimUDF = new APIManagerAnalyticsUDF();
+        Double mean = 5.0;
+        Double stdDev = 0.0;
+        Double percentile = 2.5;
+        double percentileValue = apimUDF.getpercentileValue(mean, stdDev, percentile);
+    }
 
 	/**
 	 * This method tests number of offset in days (fast and future offsets)
@@ -98,4 +128,10 @@ public class APIManagerAnalyticsUDFTest {
 		}
 
 	}
+
+    @Test(expectedExceptions = APIManagerAnalyticsUDFException.class)
+    public void testOffsetInDaysException() throws APIManagerAnalyticsUDFException {
+        APIManagerAnalyticsUDF apimUDF = new APIManagerAnalyticsUDF();
+        long onePlusOffset = apimUDF.offsetInDays(null);
+    }
 }
