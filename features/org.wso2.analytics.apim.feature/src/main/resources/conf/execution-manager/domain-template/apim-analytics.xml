@@ -95,6 +95,139 @@ insert into allAlertsStream;
 
 
 
+          <template name="EmailNotification">
+              <description>Send email alerts to subscribers</description>
+              <executionType>realtime</executionType>
+
+              <script>
+                  <![CDATA[
+/* Enter a unique ExecutionPlan */
+@Plan:name('APIMAnalytics-EmailNotification')
+
+/* Enter a unique description for ExecutionPlan */
+-- @Plan:description('ExecutionPlan')
+
+/* define streams/tables and write queries here ... */
+
+@Import('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+define stream allAlertStream (type string, msg string, alertTimestamp long);
+
+@Import('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
+define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, msg string, alertTimestamp long);
+
+@Import('org.wso2.analytics.apim.abnormalResponseTimeAlertStream:1.0.0')
+define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, responseTime long, responsePercentile double, msg string, alertTimestamp long);
+
+@Import('org.wso2.analytics.apim.abnormalBackendTimeAlertStream:1.0.0')
+define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, alertTimestamp long);
+
+@Import('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
+define stream tierLimitHittingAlert (apiPublisher string, api string, applicationId string, applicationName string, msg string, alertTimestamp long);
+
+@Import('org.wso2.analytics.apim.alert.abnormalTierUsageAlert:1.0.0')
+define stream abnormalTierUsageAlert (applicationId string, api_version string, msg string, alertTimestamp long);
+
+@Import('org.wso2.analytics.apim.alert.abnormalTokenRefresh:1.0.0')
+define stream abnormalTokenRefresh (user string, scope string, timestamp long, alertTimestamp long, msg string, consumerKey string);
+
+@Import('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
+define stream unusualIPAccess (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, requestTime long, alertTimestamp long);
+
+@Import('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
+define stream requestPatternChangedStream (userid string, applicationName string, applicationOwner string, msg string, alertTimestamp long);
+
+@Import('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
+define stream abnormalRequestsPerMinAlert (api string, userId string, applicationName string, applicationOwner string,resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double,
+										   reason string, msg string, alertTimestamp long);
+@Export('org.wso2.analytics.apim.emailAlertStream:1.0.0')
+define stream emailAlertStream (type string, msg string, alertTimestamp long, emails string);
+
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_ALERTSTAKEHOLDERINFO' , primary.keys = 'userId,tenantDomain,isSubscriber,isPublisher')
+define table stakeholderInfoTable (userId string, alertTypes string, emails	string, isSubscriber bool, isPublisher bool);
+
+@info(name = 'query1')
+from abnormalRequestsPerMinAlert["$adminUserId" != userId]#window.length(1) join stakeholderInfoTable
+on (abnormalRequestsPerMinAlert.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
+select 'abnormalRequestsPerMin' as type , abnormalRequestsPerMinAlert.msg, abnormalRequestsPerMinAlert.alertTimestamp, stakeholderInfoTable.emails
+having str:contains(stakeholderInfoTable.alertTypes, 'abnormalRequestsPerMin')
+insert into emailAlertStream;
+
+@info(name = 'query2')
+from requestPatternChangedStream["$adminUserId" != userid]#window.length(1) join stakeholderInfoTable
+on (requestPatternChangedStream.userid == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
+select 'RequestPatternChanged' as type , requestPatternChangedStream.msg, requestPatternChangedStream.alertTimestamp, stakeholderInfoTable.emails
+having str:contains(stakeholderInfoTable.alertTypes, 'RequestPatternChanged')
+insert into emailAlertStream;
+
+@info(name = 'query3')
+from unusualIPAccess["$adminUserId" != userId]#window.length(1) join stakeholderInfoTable
+on (unusualIPAccess.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
+select 'UnusualIPAccessAlert' as type , unusualIPAccess.msg, unusualIPAccess.alertTimestamp, stakeholderInfoTable.emails
+having  str:contains(stakeholderInfoTable.alertTypes, 'UnusualIPAccessAlert')
+insert into emailAlertStream;
+
+@info(name = 'query4')
+from abnormalTokenRefresh["$adminUserId" != user]#window.length(1) join stakeholderInfoTable
+on (abnormalTokenRefresh.user == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
+select 'AbnormalRefreshAlert' as type , abnormalTokenRefresh.msg, abnormalTokenRefresh.alertTimestamp, stakeholderInfoTable.emails
+having  str:contains(stakeholderInfoTable.alertTypes, 'AbnormalRefreshAlert')
+insert into emailAlertStream;
+
+@info(name = 'query5')
+from abnormalTierUsageAlert["$adminUserId" != applicationId]#window.length(1) join stakeholderInfoTable
+on (abnormalTierUsageAlert.applicationId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
+select  'AbnormalTierUsage' as type , abnormalTierUsageAlert.msg, abnormalTierUsageAlert.alertTimestamp ,stakeholderInfoTable.emails
+having str:contains(stakeholderInfoTable.alertTypes, 'AbnormalTierUsage')
+insert into emailAlertStream;
+
+@info(name = 'query6')
+from tierLimitHittingAlert["$adminUserId" != apiPublisher]#window.length(1) join stakeholderInfoTable
+on (tierLimitHittingAlert.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
+select 'FrequentTierHittingAlert' as type , tierLimitHittingAlert.msg, tierLimitHittingAlert.alertTimestamp, stakeholderInfoTable.emails
+having  str:contains(stakeholderInfoTable.alertTypes, 'FrequentTierHittingAlert')
+insert into emailAlertStream;
+
+@info(name = 'query7')
+from abnormalResponseTimeAlertStream["$adminUserId" != apiPublisher]#window.length(1) join stakeholderInfoTable
+on (abnormalResponseTimeAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
+select 'abnormalResponseTime' as type , abnormalResponseTimeAlertStream.msg, abnormalResponseTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
+having str:contains(stakeholderInfoTable.alertTypes, 'abnormalResponseTime')
+insert into emailAlertStream;
+
+@info(name = 'query8')
+from abnormalBackendTimeAlertStream["$adminUserId" != apiPublisher]#window.length(1) join stakeholderInfoTable
+on (abnormalBackendTimeAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
+select 'abnormalBackendTime' as type , abnormalBackendTimeAlertStream.msg, abnormalBackendTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
+having  str:contains(stakeholderInfoTable.alertTypes, 'abnormalBackendTime')
+insert into emailAlertStream;
+
+@info(name = 'query9')
+from apiHealthMonitorAlertStream["$adminUserId" != apiPublisher]#window.length(1) join stakeholderInfoTable
+on (apiHealthMonitorAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
+select 'healthAvailabilityPerMin' as type , apiHealthMonitorAlertStream.msg, apiHealthMonitorAlertStream.alertTimestamp, stakeholderInfoTable.emails
+having str:contains(stakeholderInfoTable.alertTypes, 'healthAvailabilityPerMin')
+insert into emailAlertStream;
+
+@info(name = 'query10')
+from allAlertStream#window.length(1) join stakeholderInfoTable
+on ("$adminUserId" == stakeholderInfoTable.userId)
+select allAlertStream.type , allAlertStream.msg, allAlertStream.alertTimestamp, stakeholderInfoTable.emails
+having str:contains(stakeholderInfoTable.alertTypes, allAlertStream.type) and ((type == "FrequentTierHittingAlert" or type == "abnormalResponseTime" or type == "abnormalBackendTime" or type == "healthAvailabilityPerMin") and stakeholderInfoTable.isPublisher  or (type == "abnormalRequestsPerMin" or type == "RequestPatternChanged" or type == "UnusualIPAccessAlert" or type == "AbnormalRefreshAlert" or type == "AbnormalTierUsage") and stakeholderInfoTable.isSubscriber)
+insert into emailAlertStream;
+
+
+                 ]]>
+              </script>
+              <parameters>
+                  <parameter name="adminUserId" type="string">
+                      <displayName>Admin user ID</displayName>
+                      <description>Admin user ID</description>
+                      <defaultValue>admin@carbon.super</defaultValue>
+                  </parameter>
+
+              </parameters>
+          </template>
+
 
  <template name="RequestPatternChangeDetection">
             <description>Change the configuration of request pattern detection</description>
