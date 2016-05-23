@@ -94,7 +94,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
 
         Thread.sleep(1000);
         boolean newIpDetectedAlertFound = isAlertReceived(0, "\"type\":\"UnusualIPAccessAlert\"," +
-                "\"msg\":\"A request from a new IP detected!", 10 ,1000);
+                "\"msg\":\"A request from a new IP", 10 ,1000);
         Assert.assertFalse(newIpDetectedAlertFound, "Request count alert suppression does not work");
     }
 
@@ -111,8 +111,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
             publishEvent(eventDto);
         }
 
-        boolean newIpDetectedAlertFound = isAlertReceived(0, "\"type\":\"UnusualIPAccessAlert\",\"msg\":\"A request " +
-                "from a new IP detected!", 50 ,5000);
+        boolean newIpDetectedAlertFound = isAlertReceived(0, "\"type\":\"UnusualIPAccessAlert\",\"msg\":\"A request from a new IP", 50 ,5000);
         Assert.assertTrue(newIpDetectedAlertFound, "New IP Detected event not received!");
     }
 
@@ -133,7 +132,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
                 "10.100.7.100", "apim@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.7.1","admin"});
         publishEvent(eventDto1);
 
-        boolean oldIpDetectedAlert = isAlertReceived(0, "msg\":\"A request from an Old IP detected!", 50 ,5000);
+        boolean oldIpDetectedAlert = isAlertReceived(0, "msg\":\"A request from an old IP", 50 ,5000);
         Assert.assertTrue(oldIpDetectedAlert, "Old IP Detected event not received!");
     }
 
@@ -158,7 +157,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         publishEvent(eventDto1);
 
         boolean newIPDetectedAlertFound = isAlertReceived(0, ":\"UnusualIPAccessAlert\",\"msg\":" +
-                "\"A request from a new IP detected!", 5 ,5000);
+                "\"A request from a new IP", 5 ,5000);
         Assert.assertFalse(newIPDetectedAlertFound, "New IP Detected alert received for first event!");
     }
 }

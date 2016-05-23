@@ -62,7 +62,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         boolean alertSubscriber = isAlertReceived(
                 0,
-                "msg:The application application1 owned by publisher1 frequently goes beyond the allocated quota when accessing the deeplearning API version Deeplearning:1",
+                "msg:The application application1 owned by publisher1 frequently goes beyond the allocated quota when accessing the Deeplearning:1 API",
                 5, 1000);
 
         Assert.assertTrue(alertSubscriber, "Tier hitting messages has not received for application1");
@@ -80,7 +80,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         boolean alertSubscriber2 = isAlertReceived(
                 0,
-                "msg:The application application1 owned by publisher2 frequently goes beyond the allocated quota when accessing the deeplearning API version Deeplearning:1",
+                "msg:The application application1 owned by publisher2 frequently goes beyond the allocated quota when accessing the Deeplearning:1 API",
                 5, 1000);
         Assert.assertTrue(alertSubscriber2, "Tier hitting messages has not application2");
 

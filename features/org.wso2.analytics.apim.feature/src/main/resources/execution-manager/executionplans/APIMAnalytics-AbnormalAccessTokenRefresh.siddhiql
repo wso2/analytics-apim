@@ -43,7 +43,7 @@ select trs.userId as userId, trs.clientId as consumerKey, trs.scopes as scopes, 
 insert into AbnormalityTesterStream;
 
 from AbnormalityTesterStream[ timeDifference < minTimeDifference or timeDifference > maxTimeDifference]
-select userId as user, scopes as scope, timestamp,(time:timestampInMilliseconds()) as alertTimestamp,str:concat('Abnormal Access Token Refresh Detected from User:',userId,' for Consumer Key: ', consumerKey, ' at: ', timestamp) as msg, consumerKey
+select userId as user, scopes as scope, timestamp,(time:timestampInMilliseconds()) as alertTimestamp,str:concat('Abnormal access token refresh detected by user:',userId,' using consumer key: ', consumerKey, ' at: ', time:dateFormat(timestamp,'yyyy-MM-dd HH:mm:ss'), '.') as msg, consumerKey
 insert into alert_abnormalTokenRefreshStream;
 
 from alert_abnormalTokenRefreshStream

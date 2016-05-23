@@ -136,7 +136,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         logViewerClient.clearLogs();
         List<EventDto> events = getResponseEventList(5);
         pubishEvents(events, 100);
-        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response time is too high\"", 50, 1000);
+        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response time of API CalculatorAPI:v1.0 is higher", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Response time too high for continuous 5 events, alert not received!");
     }
 
@@ -230,7 +230,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         /*Thread.sleep(49000);
         pubishEvents(getRequestEventList(10),1000);
         pubishEvents(getResponseEventListNumApi(1),1000);*/
-        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response count is too low\",", 50, 1000);
+        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response count of API NumberAPI:v1.0 is lower", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Response count is too low continuously, alert not received!");
     }
 
@@ -239,7 +239,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         logViewerClient.clearLogs();
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseCode.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         //Thread.sleep(8000);
-        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Server error occurred\"", 50, 1000);
+        boolean responseTimeTooHigh = isAlertReceived(0, "Server error occurred for API CalculatorAPI:v2.0", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Server error for continuous 5 events, alert not received!");
     }
 
@@ -255,7 +255,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
             publishEvent(eventDto);
         }
 
-        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Server error occurred\"", 5, 2000);
+        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Server error occurred", 5, 2000);
         Assert.assertFalse(responseTimeTooHigh, "Server error for continuous 5 events, alert is received!");
     }
 
