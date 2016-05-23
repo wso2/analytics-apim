@@ -159,7 +159,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         // test case #2
         boolean testTwo = isAlertReceived(
                 0,
-                "sampleApplication Application owned by admin is consuming too less of the allowed quota when accessing the tree API version tree:v1.0.0. It currently uses a Gold subscription.",
+                "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the tree:v1.0.0 API. It currently uses a Gold subscription.",
                 10, 1000);
         Assert.assertFalse(testTwo,
                 "Incorrect user alert is received for application: sampleApplication for api_version: tree:v1.0.0");
@@ -167,7 +167,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         // test case #1
         boolean testOne = isAlertReceived(
                 0,
-                "sampleApplication Application owned by admin is consuming too less of the allowed quota when accessing the svm API version svm:v1.0.0. It currently uses a Gold subscription.",
+                "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the svm:v1.0.0 API. It currently uses a Gold subscription.",
                 10, 1000);
         Assert.assertTrue(testOne,
                 "Abnormal request alert is not received for application: sampleApplication for api_version: svm:v1.0.0");
@@ -175,7 +175,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         // test case #3
         boolean testThree = isAlertReceived(
                 0,
-                "sampleApplication2 Application owned by admin is consuming too less of the allowed quota when accessing the svm API version svm:v1.0.0. It currently uses a Gold subscription.",
+                "sampleApplication2 Application owned by admin is consuming less than the allowed quota when accessing the svm:v1.0.0 API. It currently uses a Gold subscription.",
                 10, 1000);
         Assert.assertTrue(testThree,
                 "Abnormal request alert is not received for application: sampleApplication2 for api_version: svm:v1.0.0");
@@ -183,7 +183,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         // test case #4
         boolean testFour = isAlertReceived(
                 0,
-                "sampleApplication Application owned by admin is consuming too less of the allowed quota when accessing the boost API version boost:v1.1.0. It currently uses a Gold subscription.",
+                "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the boost:v1.1.0 API. It currently uses a Gold subscription.",
                 10, 1000);
         Assert.assertTrue(testFour,
                 "Abnormal request alert is not received for application: sampleApplication for api_version: boost:v1.1.0");
