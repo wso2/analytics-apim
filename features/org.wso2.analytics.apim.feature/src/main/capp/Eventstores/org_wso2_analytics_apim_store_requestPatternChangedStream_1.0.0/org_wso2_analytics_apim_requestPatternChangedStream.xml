@@ -2,7 +2,7 @@
 <EventStoreConfiguration>
 	<TableSchema>
 		<ColumnDefinition>
-			<Name>userid</Name>
+			<Name>userId</Name>
 			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
