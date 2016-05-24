@@ -5,7 +5,11 @@
   "description": "",
   "payloadData": [
     {
-      "name": "user",
+      "name": "userId",
+      "type": "STRING"
+    },
+    {
+      "name": "tenantDomain",
       "type": "STRING"
     },
     {

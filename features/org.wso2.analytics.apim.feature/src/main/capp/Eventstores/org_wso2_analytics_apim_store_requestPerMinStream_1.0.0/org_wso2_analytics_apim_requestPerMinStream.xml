@@ -17,28 +17,28 @@
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>consumerKey</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>resourceTemplate</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>method</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>requestsPerMin</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>LONG</Type>

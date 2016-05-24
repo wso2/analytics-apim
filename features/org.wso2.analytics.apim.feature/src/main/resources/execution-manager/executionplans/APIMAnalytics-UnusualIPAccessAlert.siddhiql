@@ -11,7 +11,7 @@ define stream APIMRequest (meta_clientType string, consumerKey string, context s
 define stream all_apim_alerts_stream (type string, msg string, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
-define stream alertIpAccessAbnormality (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, requestTime long, alertTimestamp long);
+define stream alertIpAccessAbnormality (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
 
 @from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
@@ -22,7 +22,7 @@ define table IPAccessAlertCount (userId string, consumerKey string, requestCount
 -- Consumer key is already in the table
 from APIMRequest[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
 on api.consumerKey == ais.consumerKey and api.clientIp == ais.ip
-select api.consumerKey as consumerKey, api.applicationName,  api.applicationOwner ,  api.userId as userId, api.clientIp as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate
+select api.consumerKey as consumerKey, api.tenantDomain, api.applicationName,  api.applicationOwner ,  api.userId as userId, api.clientIp as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate
 insert into TempStream;
 
 -- New consumer key
@@ -42,7 +42,7 @@ insert into IPAccessAlertCount;
 
 from TempStream as ts join IPAccessAlertCount as iaac
 on ts.consumerKey == iaac.consumerKey and ts.userId == iaac.userId
-select ts.consumerKey as consumerKey, ts.applicationName , ts.applicationOwner , ts.userId as userId, ts.requestHostName as requestHostName, ts.ip as ip, ts.requestTime as requestTime, ts.lastAccessedDate as lastAccessedDate, iaac.requestCount as requestCount
+select ts.consumerKey as consumerKey, ts.tenantDomain, ts.applicationName , ts.applicationOwner , ts.userId as userId, ts.requestHostName as requestHostName, ts.ip as ip, ts.requestTime as requestTime, ts.lastAccessedDate as lastAccessedDate, iaac.requestCount as requestCount
 insert into ExistingUserStream;
 
 from ExistingUserStream
@@ -56,7 +56,7 @@ select *
 insert into NewIPDetectedStream;
 
 from NewIPDetectedStream
-select "UnusualIPAccessAlert" as type, str:concat("A request from a new IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, requestHostName as ip, applicationName, applicationOwner, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, str:concat("A request from a new IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 from NewIPDetectedStream
@@ -65,7 +65,7 @@ insert into IPAccessSummary;
 
 -- Check if the request for the IP is received after the threshold time gap
 from ExistingUserStream[(not (ip is null)) and requestCount > 500]
-select requestHostName, consumerKey, applicationName, applicationOwner, (requestTime - lastAccessedDate) as timeBetweenAccess, requestTime, userId, lastAccessedDate
+select requestHostName, consumerKey, applicationName, applicationOwner, (requestTime - lastAccessedDate) as timeBetweenAccess, requestTime, userId, tenantDomain, lastAccessedDate
 insert into CheckAbnormalTimeBetweenAccessStream;
 
 from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > (30*24*60*60)]
@@ -73,7 +73,7 @@ select *
 insert into AbnormalTimeBetweenAccessStream;
 
 from AbnormalTimeBetweenAccessStream
-select "UnusualIPAccessAlert" as type, str:concat("A request from an old IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, requestHostName as ip, applicationName, applicationOwner, userId, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, str:concat("A request from an old IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream

@@ -38,14 +38,14 @@
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>requestsPerMinUpperPercentile</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>DOUBLE</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>requestsPerMinLowerPercentile</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>DOUBLE</Type>

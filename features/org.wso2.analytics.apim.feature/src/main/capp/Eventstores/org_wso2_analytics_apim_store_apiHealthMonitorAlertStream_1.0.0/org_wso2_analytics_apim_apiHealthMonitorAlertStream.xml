@@ -9,12 +9,19 @@
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>apiPublisher</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
-		<ColumnDefinition>
+        <ColumnDefinition>
+            <Name>tenantDomain</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
 			<Name>msg</Name>
 			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>

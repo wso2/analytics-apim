@@ -31,14 +31,14 @@
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>responsePercentile</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>DOUBLE</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>backendPercentile</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>DOUBLE</Type>

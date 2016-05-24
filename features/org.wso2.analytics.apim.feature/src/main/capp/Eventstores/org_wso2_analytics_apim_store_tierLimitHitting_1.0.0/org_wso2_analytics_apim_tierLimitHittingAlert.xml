@@ -30,6 +30,13 @@
             <Type>STRING</Type>
         </ColumnDefinition>
         <ColumnDefinition>
+            <Name>tenantDomain</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
             <Name>msg</Name>
             <EnableIndexing>true</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>

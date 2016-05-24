@@ -126,7 +126,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(REQUEST_PATTERN_CHANGED_STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
-                new String[]{"tom@carbon.super", "DefaultApplication", "admin", "suscpicious API transition: GET " +
+                new String[]{"tom@carbon.super", "DefaultApplication", "admin", "carbon.super", "suscpicious API transition: GET " +
                         "/calc/1.0_/search to GET /calc/1.0_/pay_fraud transitionTimestamp :2016-02-18 14:15:33", "1459411825099"
                 }
         );

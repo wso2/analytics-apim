@@ -29,6 +29,10 @@
       "type": "STRING"
     },
     {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
       "name": "requestTime",
       "type": "LONG"
     },
