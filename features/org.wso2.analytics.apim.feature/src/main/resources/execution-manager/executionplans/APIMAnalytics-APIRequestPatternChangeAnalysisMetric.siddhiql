@@ -8,7 +8,7 @@ define stream metricStream (startState string, endState string, consumerKey stri
 define stream requestPatternChangedStream (userId string, applicationName string, applicationOwner string, tenantDomain string, msg string, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream all_apim_alerts_stream (type string, msg string, alertTimestamp long);
+define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, alertTimestamp long);
 
 
 @from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_MARKOVMODELTABLE', primary.keys='startState,endState, consumerKey', indices = 'startState,endState, count, probability, consumerKey')
@@ -73,5 +73,5 @@ insert into RequestPatternAlertSummaryTable;
 
 
 from requestPatternChangedStreamModified[(alertTimestamp - lastAlertedTimestamp) > 30*60*1000]
-select 'RequestPatternChanged' as type, msg, (time:timestampInMilliseconds()) as alertTimestamp
+select 'RequestPatternChanged' as type, tenantDomain, msg, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;

@@ -7,7 +7,7 @@
 /* define streams/tables and write queries here ... */
 
 @Import('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream allAlertStream (type string, msg string, alertTimestamp long);
+define stream allAlertStream (type string, tenantDomain string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
 define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
