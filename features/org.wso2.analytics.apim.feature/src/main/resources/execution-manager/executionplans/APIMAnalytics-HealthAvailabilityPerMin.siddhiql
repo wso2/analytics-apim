@@ -34,7 +34,7 @@
 								define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
 
 								@Export('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
-								define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, msg string,alertTimestamp long);
+								define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string,alertTimestamp long);
 
 								/*  -- Event tables -- */
 
@@ -55,12 +55,12 @@
 
 								/* APIHEALTHMONITORALERTSTREAM TABLE */
 								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM')
-								define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, msg string, alertTimestamp long);
+								define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
 
                                 @info(name = 'query1')
                                 from requestStream
-                                select api_version, apiPublisher
+                                select api_version, apiPublisher, tenantDomain
                                 insert into requestSummaryStream ;
 
 								@info(name = 'query2')
@@ -70,7 +70,7 @@
 
 								@info(name = 'query3')
                                 from requestSummaryStream#window.timeBatch(1 min)
-                                select api_version,  count() as requestsPerMinPerApi
+                                select api_version, count() as requestsPerMinPerApi
                                 group by api_version
                                 insert into requestPerMinPerApiStream ;
 
@@ -87,7 +87,7 @@
 								/* timeBatch used because Minutely updates are needed */
                                 @info(name = 'query5')
                                 from requestSummaryStream#window.time(1 min)
-                                select  api_version, apiPublisher,  count() as  requestsPerMinPerApi
+                                select  api_version, apiPublisher, tenantDomain, count() as  requestsPerMinPerApi
                                 group by api_version
                                 insert into requestPerApiCountStream;
 
@@ -100,7 +100,7 @@
 								/* Creating requests stream with percentiles*/
                                 @info(name = 'query7')
                                 from requestPerApiCountStream join requestPerApiPercentileTable on (requestPerApiCountStream.api_version == requestPerApiPercentileTable.api_version)
-								select requestPerApiCountStream.api_version as api_version, requestPerApiCountStream.apiPublisher as apiPublisher, requestsPerMinPerApi as requestsPerMin, requestsPerMinPerApiLowerPercentile as requestsPerMinLowerPercentile
+								select requestPerApiCountStream.api_version as api_version, requestPerApiCountStream.tenantDomain, requestPerApiCountStream.apiPublisher as apiPublisher, requestsPerMinPerApi as requestsPerMin, requestsPerMinPerApiLowerPercentile as requestsPerMinLowerPercentile
                                 insert into requestsPercentileStream;
 
 								/* Creating responses stream with percentiles  */
@@ -114,19 +114,19 @@
 								@info(name = 'query9')
 								from requestsPercentileStream#window.time(1min) as requestsPercentileStreamWindow join responsesPercentileStream#window.time(1min) as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
 								select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
-								responsesPercentileStreamWindow.responsesPerMin as responsesPerMin ,responsesPercentileStreamWindow.responsesPerMinLowerPercentile as responsesPerMinLowerPercentile
+								responsesPercentileStreamWindow.responsesPerMin as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,responsesPercentileStreamWindow.responsesPerMinLowerPercentile as responsesPerMinLowerPercentile
                                 insert into requestResponseSummaryStream;
 
 								@info(name = 'query10')
 								from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <5:>
-								select api_version as api_version , apiPublisher, str:concat('Response count of API ', api_version , ' is lower than ' , responsesPerMinLowerPercentile, ' continuously for 5 or more minutes.')  as msg, (time:timestampInMilliseconds()) as alertTimestamp
+								select api_version as api_version , apiPublisher, tenantDomain, str:concat('Response count of API ', api_version , ' is lower than ' , responsesPerMinLowerPercentile, ' continuously for 5 or more minutes.')  as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
 								/* Now start response time queries */
 
 								@info(name = 'query11')
 								from responseStream
-								select api_version, apiPublisher, responseTime
+								select api_version, apiPublisher, responseTime, tenantDomain
 								insert into responseTimeSummaryStream;
 
 								/*spark script calculates percentile of responseTime and stores in percentileTable */
@@ -134,22 +134,22 @@
 								@info(name = 'query12')
 								from responseTimeSummaryStream join responseTimePerApiPercentileTable
 								on (responseTimeSummaryStream.api_version==responseTimePerApiPercentileTable.api_version)
-								select responseTimeSummaryStream.api_version, responseTimeSummaryStream.apiPublisher, responseTimeSummaryStream.responseTime, responseTimePerApiPercentileTable.responseTimePerApiUpperPercentile
+								select responseTimeSummaryStream.api_version, responseTimeSummaryStream.apiPublisher, responseTimeSummaryStream.tenantDomain, responseTimeSummaryStream.responseTime, responseTimePerApiPercentileTable.responseTimePerApiUpperPercentile
 								insert into responseInfoStream;
 
 								@info(name = 'query13')
 								from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <5:>
-								select api_version, apiPublisher,  str:concat('Response time of API ', api_version , ' is higher than ' , responseTimePerApiUpperPercentile, 'ms continuously for 5 or more responses.') as msg, (time:timestampInMilliseconds()) as alertTimestamp
+								select api_version, apiPublisher, tenantDomain, str:concat('Response time of API ', api_version , ' is higher than ' , responseTimePerApiUpperPercentile, 'ms continuously for 5 or more responses.') as msg, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
 								@info(name = 'query14')
                                 from responseStream
-                                select api_version, apiPublisher,  responseCode
+                                select api_version, apiPublisher,  responseCode, tenantDomain
                                 insert into responseCodeSummaryStream;
 
                                 @info(name = 'query15')
                                 from every responseCodeSummaryStream [responseCode > 499 AND responseCode < 600]  <5:>
-                                select api_version, apiPublisher, str:concat('Server error occurred for API ', api_version, ' continuously for 5 or more times.')  as msg, (time:timestampInMilliseconds()) as alertTimestamp
+                                select api_version, apiPublisher, tenantDomain, str:concat('Server error occurred for API ', api_version, ' continuously for 5 or more times.')  as msg, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into apiHealthMonitorAlertStream;
 
                                 @info(name='query16')

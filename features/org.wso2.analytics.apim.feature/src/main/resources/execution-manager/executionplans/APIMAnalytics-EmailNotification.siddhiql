@@ -10,7 +10,7 @@
 define stream allAlertStream (type string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
-define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, msg string, alertTimestamp long);
+define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.abnormalResponseTimeAlertStream:1.0.0')
 define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, responseTime long, responsePercentile double, msg string, alertTimestamp long);
@@ -19,22 +19,22 @@ define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, 
 define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
-define stream tierLimitHittingAlert (apiPublisher string, api string, applicationId string, applicationName string, msg string, alertTimestamp long);
+define stream tierLimitHittingAlert (apiPublisher string, api string, applicationId string, applicationName string, tenantDomain string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.alert.abnormalTierUsageAlert:1.0.0')
-define stream abnormalTierUsageAlert (applicationId string, api_version string, msg string, alertTimestamp long);
+define stream abnormalTierUsageAlert (applicationId string, api_version string, tenantDomain string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.alert.abnormalTokenRefresh:1.0.0')
-define stream abnormalTokenRefresh (user string, scope string, timestamp long, alertTimestamp long, msg string, consumerKey string);
+define stream abnormalTokenRefresh (userId string, tenantDomain string, scope string, timestamp long, alertTimestamp long, msg string, consumerKey string);
 
 @Import('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
-define stream unusualIPAccess (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, requestTime long, alertTimestamp long);
+define stream unusualIPAccess (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
-define stream requestPatternChangedStream (userid string, applicationName string, applicationOwner string, msg string, alertTimestamp long);
+define stream requestPatternChangedStream (userid string, applicationName string, applicationOwner string, tenantDomain string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
-define stream abnormalRequestsPerMinAlert (api string, userId string, applicationName string, applicationOwner string,resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double,
+define stream abnormalRequestsPerMinAlert (api string, userId string, tenantDomain string, applicationName string, applicationOwner string,resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double,
 										   reason string, msg string, alertTimestamp long);
 @Export('org.wso2.analytics.apim.emailAlertStream:1.0.0')
 define stream emailAlertStream (type string, msg string, alertTimestamp long, emails string);
@@ -64,8 +64,8 @@ having  str:contains(stakeholderInfoTable.alertTypes, 'UnusualIPAccessAlert')
 insert into emailAlertStream;
 
 @info(name = 'query4')
-from abnormalTokenRefresh["admin@carbon.super" != user]#window.length(1) join stakeholderInfoTable
-on (abnormalTokenRefresh.user == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
+from abnormalTokenRefresh["admin@carbon.super" != userId]#window.length(1) join stakeholderInfoTable
+on (abnormalTokenRefresh.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
 select 'AbnormalRefreshAlert' as type , abnormalTokenRefresh.msg, abnormalTokenRefresh.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'AbnormalRefreshAlert')
 insert into emailAlertStream;
@@ -111,4 +111,3 @@ on ("admin@carbon.super" == stakeholderInfoTable.userId)
 select allAlertStream.type , allAlertStream.msg, allAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, allAlertStream.type) and ((type == "FrequentTierHittingAlert" or type == "abnormalResponseTime" or type == "abnormalBackendTime" or type == "healthAvailabilityPerMin") and stakeholderInfoTable.isPublisher  or (type == "abnormalRequestsPerMin" or type == "RequestPatternChanged" or type == "UnusualIPAccessAlert" or type == "AbnormalRefreshAlert" or type == "AbnormalTierUsage") and stakeholderInfoTable.isSubscriber)
 insert into emailAlertStream;
-                    

@@ -29,6 +29,10 @@
       "type": "STRING"
     },
     {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
       "name": "requestTimestamp",
       "type": "STRING"
     }

@@ -2,12 +2,19 @@
 <EventStoreConfiguration>
 	<TableSchema>
 		<ColumnDefinition>
-			<Name>user</Name>
+			<Name>userId</Name>
 			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
+        <ColumnDefinition>
+            <Name>tenantDomain</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
 		<ColumnDefinition>
 			<Name>scope</Name>
 			<EnableIndexing>true</EnableIndexing>

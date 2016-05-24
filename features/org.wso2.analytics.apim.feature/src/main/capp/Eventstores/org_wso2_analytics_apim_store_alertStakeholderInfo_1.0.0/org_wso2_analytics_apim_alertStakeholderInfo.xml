@@ -10,7 +10,7 @@
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>alertTypes</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>

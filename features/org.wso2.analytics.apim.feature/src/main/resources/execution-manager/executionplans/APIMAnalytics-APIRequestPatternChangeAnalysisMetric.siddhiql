@@ -2,10 +2,10 @@
 
 
 @Import('org.wso2.analytics.apim.transitionStream:1.0.0')
-define stream metricStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, userid string, requestTimestamp string);
+define stream metricStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, userid string, tenantDomain string, requestTimestamp string);
 
 @Export('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
-define stream requestPatternChangedStream (userid string, applicationName string, applicationOwner string, msg string, alertTimestamp long);
+define stream requestPatternChangedStream (userid string, applicationName string, applicationOwner string, tenantDomain string, msg string, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream all_apim_alerts_stream (type string, msg string, alertTimestamp long);
@@ -22,44 +22,44 @@ define table RequestPatternAlertSummaryTable(applicationName string, application
 
 /****************************************************** Calculate Miss Probability *******************************************************************************/
 from metricStream[not((startState == MarkovModelTable.startState and endState == MarkovModelTable.endState and consumerKey == MarkovModelTable.consumerKey) in MarkovModelTable)]
-select userid, requestTimestamp, startState , endState, 1.0 as MissProbability, MarkovModelTable.consumerKey, applicationName, applicationOwner
+select userid, requestTimestamp, startState , endState, 1.0 as MissProbability, MarkovModelTable.consumerKey, applicationName, applicationOwner, tenantDomain
 insert into metricValueStreamTemp;
 
 from metricStream as ms join MarkovModelTable
 on (ms.startState == MarkovModelTable.startState and ms.endState == MarkovModelTable.endState and ms.consumerKey == MarkovModelTable.consumerKey)
-select ms.userid, ms.requestTimestamp, ms.startState ,ms.endState, (1- MarkovModelTable.probability) as MissProbability, MarkovModelTable.consumerKey,  ms.applicationName, ms.applicationOwner
+select ms.userid, ms.requestTimestamp, ms.startState ,ms.endState, (1- MarkovModelTable.probability) as MissProbability, MarkovModelTable.consumerKey,  ms.applicationName, ms.applicationOwner, ms.tenantDomain
 insert into metricValueStreamTemp;
 
 /****************************************************** fetch request count for consumerkey *******************************************************************************/
 
 from metricValueStreamTemp as m join RequestCountPerConsumerKeyTable
 on (consumerKey == RequestCountPerConsumerKeyTable.consumerKey)
-select userid, requestTimestamp, startState, endState, MissProbability, m.consumerKey, m.applicationName, m.applicationOwner ,   count
+select userid, requestTimestamp, startState, endState, MissProbability, m.consumerKey, m.applicationName, m.applicationOwner , m.tenantDomain,  count
 insert into metricValueStream;
 
 /****************************************************** Normalize Miss Probability ******************************************************************************/
 from metricValueStream#window.length(1)
-select userid, requestTimestamp, startState, endState, avg (MissProbability) as NormalizeMissProbability, consumerKey, applicationName, applicationOwner, count
+select userid, requestTimestamp, startState, endState, avg (MissProbability) as NormalizeMissProbability, consumerKey, applicationName, applicationOwner, tenantDomain, count
 insert into NormalizeMissProbabilityStream;
 
 /****************************************************** Compare Normalize Miss Probability with Threshold *******************************************************/
 from NormalizeMissProbabilityStream [ NormalizeMissProbability > 0.95 and count >= 500]
-select userid, requestTimestamp,  str:concat(startState,' to ',endState) as transition, NormalizeMissProbability as miss_probability, consumerKey, applicationName, applicationOwner
+select userid, requestTimestamp,  str:concat(startState,' to ',endState) as transition, NormalizeMissProbability as miss_probability, consumerKey, applicationName, applicationOwner, tenantDomain
 insert into IntermediateFraudStream;
 
 
 from IntermediateFraudStream
-select userid, applicationName, applicationOwner, str:concat('Abnormal request pattern detected by user :',userid,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as msg , (time:timestampInMilliseconds()) as alertTimestamp
+select userid, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected by user :',userid,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as msg , (time:timestampInMilliseconds()) as alertTimestamp
 insert into requestPatternChangedStreamTemp;
 
 
 from requestPatternChangedStreamTemp as r left outer join RequestPatternAlertSummaryTable
 on (applicationName == RequestPatternAlertSummaryTable.applicationName   and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userid == RequestPatternAlertSummaryTable.userid and msg == RequestPatternAlertSummaryTable.msg)
-select r.applicationName, r.applicationOwner, r.userid, r.msg, r.alertTimestamp , ifThenElse(lastAlertedTimestamp is null, 0l , lastAlertedTimestamp) as lastAlertedTimestamp
+select r.applicationName, r.applicationOwner, r.tenantDomain, r.userid, r.msg, r.alertTimestamp , ifThenElse(lastAlertedTimestamp is null, 0l , lastAlertedTimestamp) as lastAlertedTimestamp
 insert into requestPatternChangedStreamModified;
 
 from requestPatternChangedStreamModified [(alertTimestamp - lastAlertedTimestamp) > 30*60*1000]
-select userid, applicationName, applicationOwner, msg, alertTimestamp
+select userid, applicationName, applicationOwner, tenantDomain, msg, alertTimestamp
 insert into requestPatternChangedStream;
 
 from requestPatternChangedStream[(applicationName == RequestPatternAlertSummaryTable.applicationName   and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userid == RequestPatternAlertSummaryTable.userid and msg == RequestPatternAlertSummaryTable.msg ) in RequestPatternAlertSummaryTable]
