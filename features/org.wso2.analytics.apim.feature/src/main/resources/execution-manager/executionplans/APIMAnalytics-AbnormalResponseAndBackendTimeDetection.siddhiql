@@ -21,7 +21,7 @@ define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, t
 define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, responseTime long, responsePercentile double, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream allApimAlertStream (type string, tenantDomain string, msg string, alertTimestamp long);
+define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain,resourceTemplate,method')
 define table percentileTable (api_version string, tenantDomain string, resourceTemplate string, method string, responsePercentile double, backendPercentile double );
@@ -52,10 +52,10 @@ insert into abnormalBackendTimeAlertStream;
 
 @info(name = 'query5')
 from abnormalResponseTimeAlertStream
-select 'abnormalResponseTime' as type, tenantDomain, msg,(time:timestampInMilliseconds()) as alertTimestamp
+select 'abnormalResponseTime' as type, tenantDomain, msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;
 
 @info(name = 'query6')
 from abnormalBackendTimeAlertStream
-select 'abnormalBackendTime' as type, tenantDomain, msg,(time:timestampInMilliseconds()) as alertTimestamp
+select 'abnormalBackendTime' as type, tenantDomain, msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;

@@ -13,7 +13,7 @@ define stream OAuthStream (user string, tenantDomain string, userstoreDomain str
 define stream alert_abnormalTokenRefreshStream (userId string, tenantDomain string, scope string, timestamp long, alertTimestamp long, msg string, severity int, consumerKey string);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream alert_allAPIMAlertsStream (type string, tenantDomain string, msg string, alertTimestamp long);
+define stream alert_allAPIMAlertsStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_LASTACCESSTOKENREFRESHEVENTTABLE', primary.keys = 'userId, clientId, scopes', indices = 'userId, clientId, scopes, timestamp')
 define table LastAccessTokenRefreshTable (userId string, clientId string, scopes string, timestamp long);
@@ -47,7 +47,7 @@ select userId, tenantDomain, scopes as scope, timestamp,(time:timestampInMillise
 insert into alert_abnormalTokenRefreshStream;
 
 from alert_abnormalTokenRefreshStream
-select "AbnormalRefreshAlert" as type, tenantDomain, msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "AbnormalRefreshAlert" as type, tenantDomain, msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into alert_allAPIMAlertsStream;
 
 -- Persist the time difference between consequent access token refreshes

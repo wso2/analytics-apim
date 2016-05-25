@@ -6,7 +6,7 @@ define stream throttleStream (meta_clientType string, accessToken string, userId
 
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream allAlertsStream (type string, tenantDomain string, msg string, alertTimestamp long);
+define stream allAlertsStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
 define stream tierLimitHittingAlertStream (apiPublisher string, api string, applicationId string, applicationName string, tenantDomain string, msg string, severity int, alertTimestamp long);
@@ -43,10 +43,10 @@ insert into tierLimitHittingAlertStream;
 /* send to general alert stream */
 @info(name = 'query5')
 from temporarySubscriberStream
-select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api_version," API.") as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api_version," API.") as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
 @info(name = 'query6')
 from temporaryUserStream
-select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
