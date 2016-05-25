@@ -10,32 +10,32 @@
 define stream allAlertStream (type string, tenantDomain string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
-define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
+define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.abnormalResponseTimeAlertStream:1.0.0')
-define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, responseTime long, responsePercentile double, msg string, alertTimestamp long);
+define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, responseTime long, responsePercentile double, msg string, severity int, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.abnormalBackendTimeAlertStream:1.0.0')
-define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, alertTimestamp long);
+define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, severity int, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
-define stream tierLimitHittingAlert (apiPublisher string, api string, applicationId string, applicationName string, tenantDomain string, msg string, alertTimestamp long);
+define stream tierLimitHittingAlert (apiPublisher string, api string, applicationId string, applicationName string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.alert.abnormalTierUsageAlert:1.0.0')
-define stream abnormalTierUsageAlert (applicationId string, api_version string, tenantDomain string, msg string, alertTimestamp long);
+define stream abnormalTierUsageAlert (applicationId string, api_version string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.alert.abnormalTokenRefresh:1.0.0')
-define stream abnormalTokenRefresh (userId string, tenantDomain string, scope string, timestamp long, alertTimestamp long, msg string, consumerKey string);
+define stream abnormalTokenRefresh (userId string, tenantDomain string, scope string, timestamp long, alertTimestamp long, msg string, severity int, consumerKey string);
 
 @Import('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
-define stream unusualIPAccess (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
+define stream unusualIPAccess (type string, msg string, severity int, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
-define stream requestPatternChangedStream (userId string, applicationName string, applicationOwner string, tenantDomain string, msg string, alertTimestamp long);
+define stream requestPatternChangedStream (userId string, applicationName string, applicationOwner string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
 define stream abnormalRequestsPerMinAlert (api string, userId string, tenantDomain string, applicationName string, applicationOwner string,resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double,
-										   reason string, msg string, alertTimestamp long);
+										   reason string, msg string, severity int, alertTimestamp long);
 @Export('org.wso2.analytics.apim.emailAlertStream:1.0.0')
 define stream emailAlertStream (type string, msg string, alertTimestamp long, emails string);
 

@@ -22,7 +22,7 @@
 
 								
 								@Export('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
-								define stream abnormalRequestsPerMinAlertStream (api string, userId string, tenantDomain string, applicationName string, applicationOwner string, resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double, reason string, msg string, alertTimestamp long);
+								define stream abnormalRequestsPerMinAlertStream (api string, userId string, tenantDomain string, applicationName string, applicationOwner string, resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double, reason string, msg string, severity int, alertTimestamp long);
 
  								
 								@Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
@@ -58,7 +58,7 @@
                                 on (requestCountStream.api_version ==requestPercentileTable.api_version and  requestCountStream.userId ==requestPercentileTable.userId  and
                                   requestCountStream.consumerKey ==requestPercentileTable.consumerKey and requestCountStream.resourceTemplate ==requestPercentileTable.resourceTemplate and requestCountStream.method ==requestPercentileTable.method)
                                 select requestCountStream.api_version as api , requestCountStream.userId , requestCountStream.tenantDomain, requestCountStream.applicationName, requestCountStream.applicationOwner, requestCountStream.resourceTemplate, requestCountStream.method, requestCountStream.requestsPerMin,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile, ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') as reason,
-                                str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') , ' detected during last minute by userId:',requestCountStream.userId,' using application ',requestCountStream.applicationName,' owned by ',requestCountStream.applicationOwner,' for http ',requestCountStream.method,' method of resource template ',requestCountStream.resourceTemplate,' in api :',requestCountStream.api_version,', abnormal request count:',requestCountStream.requestsPerMin, ".") as msg ,(time:timestampInMilliseconds()) as alertTimestamp
+                                str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') , ' detected during last minute by userId:',requestCountStream.userId,' using application ',requestCountStream.applicationName,' owned by ',requestCountStream.applicationOwner,' for http ',requestCountStream.method,' method of resource template ',requestCountStream.resourceTemplate,' in api :',requestCountStream.api_version,', abnormal request count:',requestCountStream.requestsPerMin, ".") as msg , 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 having (requestsPerMin > requestsPerMinUpperPercentile or requestsPerMin < requestsPerMinLowerPercentile)
                                 insert into abnormalRequestsPerMinAlertStream;
 

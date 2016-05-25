@@ -10,7 +10,7 @@
 define stream OAuthStream (user string, tenantDomain string, userstoreDomain string, clientId string, grantType string, tokenId string, authzScopes string, unAuthzScopes string, isSuccess bool, errorCode string, errorMsg string, accessTokenValidityMillis long, refreshTokenValidityMillis long, issuedTime long);
 
 @Export('org.wso2.analytics.apim.alert.abnormalTokenRefresh:1.0.0')
-define stream alert_abnormalTokenRefreshStream (userId string, tenantDomain string, scope string, timestamp long, alertTimestamp long, msg string, consumerKey string);
+define stream alert_abnormalTokenRefreshStream (userId string, tenantDomain string, scope string, timestamp long, alertTimestamp long, msg string, severity int, consumerKey string);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream alert_allAPIMAlertsStream (type string, tenantDomain string, msg string, alertTimestamp long);
@@ -43,7 +43,7 @@ select trs.userId as userId, trs.tenantDomain, trs.clientId as consumerKey, trs.
 insert into AbnormalityTesterStream;
 
 from AbnormalityTesterStream[ timeDifference < minTimeDifference or timeDifference > maxTimeDifference]
-select userId, tenantDomain, scopes as scope, timestamp,(time:timestampInMilliseconds()) as alertTimestamp,str:concat('Abnormal access token refresh detected by user:',userId,' using consumer key: ', consumerKey, ' at: ', time:dateFormat(timestamp,'yyyy-MM-dd HH:mm:ss'), '.') as msg, consumerKey
+select userId, tenantDomain, scopes as scope, timestamp,(time:timestampInMilliseconds()) as alertTimestamp,str:concat('Abnormal access token refresh detected by user:',userId,' using consumer key: ', consumerKey, ' at: ', time:dateFormat(timestamp,'yyyy-MM-dd HH:mm:ss'), '.') as msg, 1 as severity, consumerKey
 insert into alert_abnormalTokenRefreshStream;
 
 from alert_abnormalTokenRefreshStream

@@ -11,7 +11,7 @@ define stream APIMRequest (meta_clientType string, consumerKey string, context s
 define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
-define stream alertIpAccessAbnormality (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
+define stream alertIpAccessAbnormality (type string, msg string, severity int, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
 
 @from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
@@ -56,7 +56,7 @@ select *
 insert into NewIPDetectedStream;
 
 from NewIPDetectedStream
-select "UnusualIPAccessAlert" as type, str:concat("A request from a new IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, str:concat("A request from a new IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, 2 as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 from NewIPDetectedStream
@@ -73,7 +73,7 @@ select *
 insert into AbnormalTimeBetweenAccessStream;
 
 from AbnormalTimeBetweenAccessStream
-select "UnusualIPAccessAlert" as type, str:concat("A request from an old IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, str:concat("A request from an old IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, 2 as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream

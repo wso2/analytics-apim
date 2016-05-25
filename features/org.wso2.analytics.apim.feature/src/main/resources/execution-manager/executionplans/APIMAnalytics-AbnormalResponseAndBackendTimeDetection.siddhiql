@@ -15,10 +15,10 @@ string, resourcePath string, resourceTemplate string, method string, version str
 define stream responseStatStream (api_version string, tenantDomain string, resourceTemplate string, method string, avgResponseTime double, sdResponseTime double, avgBackendTime double, sdBackendTime double);
 
 @Export('org.wso2.analytics.apim.abnormalBackendTimeAlertStream:1.0.0')
-define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, alertTimestamp long);
+define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.abnormalResponseTimeAlertStream:1.0.0')
-define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, responseTime long, responsePercentile double, msg string, alertTimestamp long);
+define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, responseTime long, responsePercentile double, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream allApimAlertStream (type string, tenantDomain string, msg string, alertTimestamp long);
@@ -42,12 +42,12 @@ insert into responseInfoStream;
 
 @info(name = 'query3')
 from responseInfoStream[responseTime > responsePercentile]
-select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, responsePercentile , str:concat('Abnormal response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:',api_version,' of tenant domain:',tenantDomain,', threshold value:',responsePercentile, 'ms.') as msg,(time:timestampInMilliseconds()) as alertTimestamp
+select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, responsePercentile , str:concat('Abnormal response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:',api_version,' of tenant domain:',tenantDomain,', threshold value:',responsePercentile, 'ms.') as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into abnormalResponseTimeAlertStream;
 
 @info(name = 'query4')
 from responseInfoStream[backendTime > backendPercentile]
-select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, backendTime, backendPercentile, str:concat('Abnormal backend response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:',api_version,' of tenant domain:',tenantDomain,', threshold value:',backendPercentile, 'ms.') as msg,(time:timestampInMilliseconds()) as alertTimestamp
+select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, backendTime, backendPercentile, str:concat('Abnormal backend response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:',api_version,' of tenant domain:',tenantDomain,', threshold value:',backendPercentile, 'ms.') as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into abnormalBackendTimeAlertStream;
 
 @info(name = 'query5')

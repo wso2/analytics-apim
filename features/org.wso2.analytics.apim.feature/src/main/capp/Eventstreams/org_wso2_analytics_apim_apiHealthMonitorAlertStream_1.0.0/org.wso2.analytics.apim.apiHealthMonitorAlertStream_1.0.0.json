@@ -23,6 +23,10 @@
       "type": "STRING"
     },
     {
+      "name": "severity",
+      "type": "INT"
+    },
+    {
       "name": "alertTimestamp",
       "type": "LONG"
     }

@@ -97,7 +97,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
                 new String[]{"CalculatorAPI:v2.0", "abc@carbon.super", "carbon.super", "/add", "GET", "65", "20.52214676764896",
                         "Abnormal backend time detected. api_version :CalculatorAPI:v2.0 apiPublisher :abc@carbon.super " +
                         "tenantDomain :carbon.super resource template :/add Http method :GET abnormal backend time: 165 " +
-                        "backend time percentile 20.52214676764896", "1459411825099"
+                        "backend time percentile 20.52214676764896", "1", "1459411825099"
                 }
         );
         publishEvent(eventDto);
@@ -110,7 +110,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
                 new String[]{"CalculatorAPI:v2.0", "tom@carbon.super", "carbon.super", "/add", "GET", "65", "20.52214676764896",
                         "Abnormal backend time detected. api_version :CalculatorAPI:v2.0 apiPublisher :tomc@carbon.super " +
                                 "tenantDomain :carbon.super resource template :/add Http method :GET abnormal backend time: 165 " +
-                                "backend time percentile 20.52214676764896", "1459411825099"
+                                "backend time percentile 20.52214676764896", "1", "1459411825099"
                 }
         );
         publishEvent(eventDto);
@@ -127,7 +127,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
         eventDto.setEventStreamId(getStreamId(REQUEST_PATTERN_CHANGED_STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"tom@carbon.super", "DefaultApplication", "admin", "carbon.super", "suscpicious API transition: GET " +
-                        "/calc/1.0_/search to GET /calc/1.0_/pay_fraud transitionTimestamp :2016-02-18 14:15:33", "1459411825099"
+                        "/calc/1.0_/search to GET /calc/1.0_/pay_fraud transitionTimestamp :2016-02-18 14:15:33", "1", "1459411825099"
                 }
         );
         publishEvent(eventDto);

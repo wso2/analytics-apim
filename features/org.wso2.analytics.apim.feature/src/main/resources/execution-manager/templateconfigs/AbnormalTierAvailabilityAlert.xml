@@ -22,5 +22,8 @@
 		<parameter name="daysConsiderForPercentilesCalculation">
 			<value>30</value>
 		</parameter>
+        <parameter name="severity">
+            <value>2</value>
+        </parameter>
 	</parameters>
 </templateConfiguration>
