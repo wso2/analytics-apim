@@ -33,7 +33,7 @@ define stream throttleStream (meta_clientType string, accessToken string, userId
 
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream allAlertsStream (type string, tenantDomain string, msg string, alertTimestamp long);
+define stream allAlertsStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
 define stream tierLimitHittingAlertStream (apiPublisher string, api string, applicationId string, applicationName string, tenantDomain string, msg string, severity int, alertTimestamp long);
@@ -67,12 +67,12 @@ insert into tierLimitHittingAlertStream;
 /* send to general alert stream */
 @info(name = 'query5')
 from temporarySubscriberStream
-select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api_version," API.") as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api_version," API.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
 @info(name = 'query6')
 from temporaryUserStream
-select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
 
@@ -118,7 +118,7 @@ insert into allAlertsStream;
 /* define streams/tables and write queries here ... */
 
 @Import('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream allAlertStream (type string, tenantDomain string, msg string, alertTimestamp long);
+define stream allAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
 define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, severity int, alertTimestamp long);
@@ -252,7 +252,7 @@ define stream metricStream (startState string, endState string, consumerKey stri
 define stream requestPatternChangedStream (userId string, applicationName string, applicationOwner string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, alertTimestamp long);
+define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 
 @from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_MARKOVMODELTABLE', primary.keys='startState,endState, consumerKey', indices = 'startState,endState, count, probability, consumerKey')
@@ -317,7 +317,7 @@ insert into RequestPatternAlertSummaryTable;
 
 
 from requestPatternChangedStreamModified[(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionPeriod]
-select 'RequestPatternChanged' as type, tenantDomain, msg, (time:timestampInMilliseconds()) as alertTimestamp
+select 'RequestPatternChanged' as type, tenantDomain, msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
 
                  ]]>
@@ -441,7 +441,7 @@ insert into transitionStream;
 define stream APIMRequest (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, alertTimestamp long);
+define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
 define stream alertIpAccessAbnormality (type string, msg string, severity int, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
@@ -511,7 +511,7 @@ insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream
 from alertIpAccessAbnormality
-select type, tenantDomain, msg, (time:timestampInMilliseconds()) as alertTimestamp
+select type, tenantDomain, msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate
@@ -569,7 +569,7 @@ insert into IPAccessSummary;
 								define stream minStatusTestStream (api_version string, status bool, reason string);*/
 
 								@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-								define stream allApimAlertStream (type string, tenantDomain string, msg string, alertTimestamp long);
+								define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 								@Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
 								define stream responsePerMinPerApiStream (api_version string, responsesPerMinPerApi long);
@@ -698,7 +698,7 @@ insert into IPAccessSummary;
 
                                 @info(name='query16')
                                 from apiHealthMonitorAlertStream
-                                select 'healthAvailabilityPerMin' as type, tenantDomain, msg as msg , (time:timestampInMilliseconds()) as alertTimestamp
+                                select 'healthAvailabilityPerMin' as type, tenantDomain, msg as msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
 
                                 /* update apiAvailability Table */
@@ -858,7 +858,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                          version "1.0.0",
                          description "This is the table represents all alert stream",
                          nickName "allApimAlertsStream",
-                         payload "type STRING, tenantDomain string, msg STRING, alertTimestamp LONG"
+                         payload "type STRING, tenantDomain string, msg STRING, severity INTEGER, alertTimestamp LONG"
                 );
 
                 INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
@@ -893,7 +893,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
 
                INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
-               SELECT "AbnormalTierUsage", R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'), now('')
+               SELECT "AbnormalTierUsage", R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'),  $severity, now('')
                FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
                WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
                  ]]>

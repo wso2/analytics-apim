@@ -56,7 +56,7 @@
                version "1.0.0",
                description "This is the table represents all alert stream",
                nickName "allApimAlertsStream",
-               payload "type STRING, tenantDomain string, msg STRING, alertTimestamp LONG"
+               payload "type STRING, tenantDomain string, msg STRING, severity INTEGER, alertTimestamp LONG"
       );
 
       INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
@@ -91,7 +91,7 @@
      WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
-     SELECT "AbnormalTierUsage", R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'), now('')
+     SELECT "AbnormalTierUsage", R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'), 2, now('')
      FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
      WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
     </Script>

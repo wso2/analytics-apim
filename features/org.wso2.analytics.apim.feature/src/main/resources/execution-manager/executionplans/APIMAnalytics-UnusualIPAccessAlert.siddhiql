@@ -8,7 +8,7 @@
 define stream APIMRequest (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, alertTimestamp long);
+define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
 define stream alertIpAccessAbnormality (type string, msg string, severity int, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
@@ -78,7 +78,7 @@ insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream
 from alertIpAccessAbnormality
-select type, tenantDomain, msg, (time:timestampInMilliseconds()) as alertTimestamp
+select type, tenantDomain, msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate

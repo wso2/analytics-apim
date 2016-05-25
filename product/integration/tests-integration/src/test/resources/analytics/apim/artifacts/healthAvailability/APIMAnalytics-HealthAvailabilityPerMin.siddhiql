@@ -25,7 +25,7 @@
 								define stream minStatusTestStream (api_version string, status bool, reason string);*/
 
 								@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-								define stream allApimAlertStream (type string, tenantDomain string, msg string, alertTimestamp long);
+								define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 								@Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
 								define stream responsePerMinPerApiStream (api_version string, responsesPerMinPerApi long);
@@ -154,7 +154,7 @@
 
                                 @info(name='query16')
                                 from apiHealthMonitorAlertStream
-                                select 'healthAvailabilityPerMin' as type, tenantDomain, msg as msg , (time:timestampInMilliseconds()) as alertTimestamp
+                                select 'healthAvailabilityPerMin' as type, tenantDomain, msg as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
 
                                 /* update apiAvailability Table */
