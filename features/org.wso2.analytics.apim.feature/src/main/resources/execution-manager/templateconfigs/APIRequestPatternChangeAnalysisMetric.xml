@@ -14,5 +14,8 @@
 		<parameter name="alertSuppressionPeriod">
 			<value>30*60*1000</value>
 		</parameter>
+        <parameter name="severity">
+            <value>1</value>
+        </parameter>
 	</parameters>
 </templateConfiguration>
