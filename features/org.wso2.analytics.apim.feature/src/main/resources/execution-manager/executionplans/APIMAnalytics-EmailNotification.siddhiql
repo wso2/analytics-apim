@@ -7,7 +7,7 @@
 /* define streams/tables and write queries here ... */
 
 @Import('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-define stream allAlertStream (type string, msg string, alertTimestamp long);
+define stream allAlertStream (type string, tenantDomain string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
 define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
@@ -31,7 +31,7 @@ define stream abnormalTokenRefresh (userId string, tenantDomain string, scope st
 define stream unusualIPAccess (type string, msg string, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
-define stream requestPatternChangedStream (userid string, applicationName string, applicationOwner string, tenantDomain string, msg string, alertTimestamp long);
+define stream requestPatternChangedStream (userId string, applicationName string, applicationOwner string, tenantDomain string, msg string, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
 define stream abnormalRequestsPerMinAlert (api string, userId string, tenantDomain string, applicationName string, applicationOwner string,resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double,
@@ -50,8 +50,8 @@ having str:contains(stakeholderInfoTable.alertTypes, 'abnormalRequestsPerMin')
 insert into emailAlertStream;
 
 @info(name = 'query2')
-from requestPatternChangedStream["admin@carbon.super" != userid]#window.length(1) join stakeholderInfoTable
-on (requestPatternChangedStream.userid == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
+from requestPatternChangedStream["admin@carbon.super" != userId]#window.length(1) join stakeholderInfoTable
+on (requestPatternChangedStream.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
 select 'RequestPatternChanged' as type , requestPatternChangedStream.msg, requestPatternChangedStream.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'RequestPatternChanged')
 insert into emailAlertStream;

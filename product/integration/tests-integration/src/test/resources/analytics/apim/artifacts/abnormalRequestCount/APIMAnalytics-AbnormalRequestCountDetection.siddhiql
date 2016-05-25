@@ -18,7 +18,7 @@
 
                               	
 							  	@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-								define stream allApimAlertStream (type string, msg string, alertTimestamp long);
+								define stream allApimAlertStream (type string, tenantDomain string, msg string, alertTimestamp long);
 
 								
 								@Export('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
@@ -64,5 +64,5 @@
 
                                 @info(name = 'query5')
                                 from abnormalRequestsPerMinAlertStream
-                                select 'abnormalRequestsPerMin' as type, msg,(time:timestampInMilliseconds()) as alertTimestamp 
+                                select 'abnormalRequestsPerMin' as type, tenantDomain, msg,(time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
