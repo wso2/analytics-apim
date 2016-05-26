@@ -9,6 +9,10 @@
       "type": "STRING"
     },
     {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
       "name": "status",
       "type": "STRING"
     }
