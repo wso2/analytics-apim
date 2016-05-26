@@ -9,7 +9,7 @@
         CREATE TEMPORARY TABLE loganalyzer_message_level_error_daily USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY",
         schema "tenantID string -i, message string -i, messageCount int -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_message_level_error_daily SELECT temp.tenantID AS tenantID, temp.message AS myMessage,
+        INSERT OVERWRITE table loganalyzer_message_level_error_daily SELECT temp.tenantID AS tenantID, temp.message AS logMessage,
         SUM(temp.messageCount) AS totalMessageCount,
         getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (SELECT _content AS message,
         getYear(_eventTimeStamp) AS byYear, getMonth(_eventTimeStamp) AS byMonth,
@@ -21,7 +21,7 @@
         CREATE TEMPORARY TABLE loganalyzer_class_level_error_daily USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_CLASS_LEVEL_ERROR_DAILY",
         schema "tenantID string -i, class string -i, classCount int -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_class_level_error_daily SELECT temp.tenantID AS tenantID, temp.class AS myClass, SUM(temp.classCount) AS
+        INSERT OVERWRITE table loganalyzer_class_level_error_daily SELECT temp.tenantID AS tenantID, temp.class AS logClass, SUM(temp.classCount) AS
         totalClassCount,
         getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (SELECT _class AS class,
         getYear(_eventTimeStamp) AS byYear, getMonth(_eventTimeStamp) AS byMonth,
@@ -33,7 +33,7 @@
         CREATE TEMPORARY TABLE loganalyzer_class_level_error_monthly USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_CLASS_LEVEL_ERROR_MONTHLY",
         schema "tenantID string -i, class string -i, classCount int -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_class_level_error_monthly SELECT temp.tenantID AS tenantID, temp.class AS myClass, SUM(temp.classCount)
+        INSERT OVERWRITE table loganalyzer_class_level_error_monthly SELECT temp.tenantID AS tenantID, temp.class AS logClass, SUM(temp.classCount)
         AS totalClassCount,
         getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT class AS class, getYear(_timestamp)
         AS byYear, getMonth(_timestamp) AS byMonth, first(classCount) as classCount, tenantID AS tenantID FROM
@@ -44,7 +44,7 @@
         CREATE TEMPORARY TABLE loganalyzer_message_level_error_monthly USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_MESSAGE_LEVEL_ERROR_MONTHLY",
         schema "tenantID string -i, message string -i, messageCount int -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_message_level_error_monthly SELECT temp.tenantID AS tenantID, temp.message AS myMessage,
+        INSERT OVERWRITE table loganalyzer_message_level_error_monthly SELECT temp.tenantID AS tenantID, temp.message AS logMessage,
         SUM(temp.messageCount) AS totalMessageCount,
         getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT message AS message,
         getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, first(messageCount) as messageCount, tenantID AS tenantID FROM
@@ -55,7 +55,7 @@
         CREATE TEMPORARY TABLE loganalyzer_class_level_error_weekly USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_CLASS_LEVEL_ERROR_WEEKLY",
         schema "tenantID string -i, class string -i, classCount int -i, week long -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_class_level_error_weekly SELECT temp.tenantID AS tenantID, temp.class AS myClass, SUM(temp.classCount)
+        INSERT OVERWRITE table loganalyzer_class_level_error_weekly SELECT temp.tenantID AS tenantID, temp.class AS logClass, SUM(temp.classCount)
         AS totalClassCount, temp.byWeek
         AS week,getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT class AS class,
         getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, getWeek(_timestamp) AS byWeek, first(classCount)
@@ -66,7 +66,7 @@
         CREATE TEMPORARY TABLE loganalyzer_message_level_error_weekly USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_MESSAGE_LEVEL_ERROR_WEEKLY",
         schema "tenantID string -i, message string -i, messageCount int -i, week long -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_message_level_error_weekly SELECT temp.tenantID AS tenantID, temp.message AS myMessage,
+        INSERT OVERWRITE table loganalyzer_message_level_error_weekly SELECT temp.tenantID AS tenantID, temp.message AS logMessage,
         SUM(temp.messageCount) AS totalMessageCount,
         temp.byWeek AS week, getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT message AS
         message, getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, getWeek(_timestamp) AS byWeek,
@@ -77,7 +77,7 @@
         CREATE TEMPORARY TABLE loganalyzer_apim_artifact_deployed_daily USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY", schema "artifact string -i -f, tenantID string -i, artifactCount int -i, _timestamp long
         -i");
-        INSERT OVERWRITE table loganalyzer_apim_artifact_deployed_daily SELECT temp.artifact AS myArtifact, temp.tenantID AS tenantID,
+        INSERT OVERWRITE table loganalyzer_apim_artifact_deployed_daily SELECT temp.artifact AS logArtifact, temp.tenantID AS tenantID,
         SUM(temp.artifactCount) AS totalArtifactCount,
         getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (SELECT
         SUBSTRING(_content,18,100) AS artifact, getYear(_eventTimeStamp) AS byYear,
@@ -90,7 +90,7 @@
         CREATE TEMPORARY TABLE loganalyzer_apim_artifact_deleted_daily USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY",
         schema "artifact string -i -f, tenantID string -i, artifactCount int -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_apim_artifact_deleted_daily SELECT temp.artifact AS myArtifact, temp.tenantID AS tenantID,
+        INSERT OVERWRITE table loganalyzer_apim_artifact_deleted_daily SELECT temp.artifact AS logArtifact, temp.tenantID AS tenantID,
         SUM(temp.artifactCount) AS totalArtifactCount,
         getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (SELECT
         SUBSTRING(_content,17,100) AS artifact, getYear(_eventTimeStamp) AS byYear,
@@ -102,7 +102,7 @@
 
         CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_daily USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY", schema "tenantID string -i, apiName string -i, apiCount int -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_apim_message_processing_daily SELECT temp.tenantID AS tenantID, temp.apiName AS myApiName,
+        INSERT OVERWRITE table loganalyzer_apim_message_processing_daily SELECT temp.tenantID AS tenantID, temp.apiName AS logApiName,
         SUM(temp.apiCount) AS totalAPICount,
         getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (SELECT getRegexMatch(_class, "(?&lt;=API_LOGGER.admin--)(.*)")
         AS apiName, getYear(_eventTimeStamp) AS byYear, getMonth(_eventTimeStamp) AS
@@ -114,7 +114,7 @@
         CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_weekly USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY", schema "tenantID string -i, apiName string -i, apiCount int -i, _timestamp long -i,
         week long -i");
-        INSERT OVERWRITE table loganalyzer_apim_message_processing_weekly SELECT temp.tenantID AS tenantID, temp.apiName AS myApiName,
+        INSERT OVERWRITE table loganalyzer_apim_message_processing_weekly SELECT temp.tenantID AS tenantID, temp.apiName AS logApiName,
         SUM(temp.apiCount) AS totalAPICount, temp.byWeek AS week,
         getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT apiName AS apiName,
         getYear(_timestamp) AS byYear, getMonth(_timestamp) AS
@@ -125,7 +125,7 @@
 
         CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_monthly USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY", schema "tenantID string -i, apiName string -i, apiCount int -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_apim_message_processing_monthly SELECT temp.tenantID AS tenantID, temp.apiName AS myApiName,
+        INSERT OVERWRITE table loganalyzer_apim_message_processing_monthly SELECT temp.tenantID AS tenantID, temp.apiName AS logApiName,
         SUM(temp.apiCount) AS totalAPICount,
         getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT apiName AS apiName,
         getYear(_timestamp) AS byYear, getMonth(_timestamp) AS
