@@ -1,1 +1,34 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><EventStoreConfiguration><TableSchema><ColumnDefinition><Name>api_version</Name><IsFacet>false</IsFacet><EnableIndexing>true</EnableIndexing><IsPrimaryKey>true</IsPrimaryKey><EnableScoreParam>false</EnableScoreParam><Type>STRING</Type></ColumnDefinition><ColumnDefinition><Name>status</Name><IsFacet>false</IsFacet><EnableIndexing>true</EnableIndexing><IsPrimaryKey>false</IsPrimaryKey><EnableScoreParam>false</EnableScoreParam><Type>STRING</Type></ColumnDefinition></TableSchema><Source><StreamId>org.wso2.analytics.apim.apiAvailability:1.0.0</StreamId></Source><MergeSchema>false</MergeSchema><RecordStoreName>EVENT_STORE</RecordStoreName></EventStoreConfiguration>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<EventStoreConfiguration>
+	<TableSchema>
+		<ColumnDefinition>
+			<Name>api_version</Name>
+			<IsFacet>false</IsFacet>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>true</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>STRING</Type>
+		</ColumnDefinition>
+		<ColumnDefinition>
+			<Name>tenantDomain</Name>
+			<IsFacet>false</IsFacet>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>false</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>STRING</Type>
+		</ColumnDefinition>
+		<ColumnDefinition>
+			<Name>status</Name>
+			<IsFacet>false</IsFacet>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>false</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>STRING</Type>
+		</ColumnDefinition>
+	</TableSchema>
+	<Source>
+		<StreamId>org.wso2.analytics.apim.apiAvailability:1.0.0</StreamId>
+	</Source>
+	<MergeSchema>false</MergeSchema>
+	<RecordStoreName>EVENT_STORE</RecordStoreName>
+</EventStoreConfiguration>
