@@ -2,7 +2,7 @@
 <EventStoreConfiguration>
     <TableSchema>
         <ColumnDefinition>
-            <Name>logstream</Name>
+            <Name>tenantID</Name>
             <EnableIndexing>true</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
@@ -42,6 +42,20 @@
             <IsPrimaryKey>true</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>LONG</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
+            <Name>_instance</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
+            <Name>_appName</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
         </ColumnDefinition>
     </TableSchema>
     <Source>
