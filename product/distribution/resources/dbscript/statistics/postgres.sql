@@ -91,6 +91,23 @@ CREATE TABLE IF NOT EXISTS API_VERSION_USAGE_SUMMARY  (
   PRIMARY KEY ( api , version , apiPublisher , context , hostName , time )
 );
 
+CREATE TABLE IF NOT EXISTS API_THROTTLED_OUT_SUMMARY (
+  api varchar(100) NOT NULL DEFAULT '',
+  api_version varchar(100) NOT NULL DEFAULT '',
+  context varchar(100) NOT NULL DEFAULT '',
+  apiPublisher varchar(100) NOT NULL DEFAULT '',
+  applicationName varchar(100) NOT NULL DEFAULT '',
+  tenantDomain varchar(100) NOT NULL DEFAULT '',
+  year smallint NOT NULL,
+  month smallint NOT NULL,
+  day smallint NOT NULL,
+  week int NOT NULL,
+  time varchar(30) NOT NULL DEFAULT '',
+  success_request_count int DEFAULT NULL,
+  throttleout_count int DEFAULT NULL,
+  PRIMARY KEY (api,api_version,context,apiPublisher,applicationName,tenantDomain,year,month,day,time)
+);
+
 CREATE TABLE IF NOT EXISTS API_LAST_ACCESS_TIME_SUMMARY (
   tenantDomain varchar(100) NOT NULL DEFAULT '',
   apiPublisher varchar(100) NOT NULL DEFAULT '',
@@ -110,9 +127,9 @@ CREATE TABLE IF NOT EXISTS API_EXE_TME_DAY_SUMMARY (
   mediationName varchar(100) NOT NULL DEFAULT '',
   executionTime int DEFAULT NULL,
   tenantDomain varchar(100) NOT NULL DEFAULT '',
-  year smallint DEFAULT NULL,
-  month smallint DEFAULT NULL,
-  day smallint DEFAULT NULL,
+  year smallint NOT NULL,
+  month smallint NOT NULL,
+  day smallint NOT NULL,
   time bigint,
   PRIMARY KEY (api,version,apiPublisher,context,year,month,day,mediationName,tenantDomain)
 );
@@ -125,10 +142,10 @@ CREATE TABLE IF NOT EXISTS API_EXE_TIME_HOUR_SUMMARY (
   mediationName varchar(100) NOT NULL DEFAULT '',
   executionTime int DEFAULT NULL,
   tenantDomain varchar(100) NOT NULL DEFAULT '',
-  year smallint DEFAULT NULL,
-  month smallint DEFAULT NULL,
-  day smallint DEFAULT NULL,
-  hour smallint DEFAULT NULL,
+  year smallint NOT NULL,
+  month smallint NOT NULL,
+  day smallint NOT NULL,
+  hour smallint NOT NULL,
   time bigint,
   PRIMARY KEY (api,version,apiPublisher,context,year,month,day,hour,mediationName,tenantDomain)
 );
@@ -141,11 +158,11 @@ CREATE TABLE IF NOT EXISTS API_EXE_TIME_MIN_SUMMARY (
   mediationName varchar(100) NOT NULL DEFAULT '',
   executionTime int DEFAULT NULL,
   tenantDomain varchar(100) NOT NULL DEFAULT '',
-  year smallint DEFAULT NULL,
-  month smallint DEFAULT NULL,
-  day smallint DEFAULT NULL,
-  hour smallint DEFAULT NULL,
-  minutes smallint DEFAULT NULL,
+  year smallint NOT NULL,
+  month smallint NOT NULL,
+  day smallint NOT NULL,
+  hour smallint NOT NULL,
+  minutes smallint NOT NULL,
   time bigint,
   PRIMARY KEY (api,version,apiPublisher,context,year,month,day,hour,minutes,mediationName,tenantDomain)
 );
@@ -158,12 +175,12 @@ CREATE TABLE IF NOT EXISTS API_EXE_TIME_SEC_SUMMARY (
   mediationName varchar(100) NOT NULL DEFAULT '',
   executionTime int DEFAULT NULL,
   tenantDomain varchar(100) NOT NULL DEFAULT '',
-  year smallint DEFAULT NULL,
-  month smallint DEFAULT NULL,
-  day smallint DEFAULT NULL,
-  hour smallint DEFAULT NULL,
-  minutes smallint DEFAULT NULL,
-  seconds smallint DEFAULT NULL,
+  year smallint NOT NULL,
+  month smallint NOT NULL,
+  day smallint NOT NULL,
+  hour smallint NOT NULL,
+  minutes smallint NOT NULL,
+  seconds smallint NOT NULL,
   time bigint,
   PRIMARY KEY (api,version,apiPublisher,context,year,month,day,hour,minutes,seconds,mediationName,tenantDomain)
 );
@@ -174,9 +191,9 @@ CREATE TABLE IF NOT EXISTS API_REQ_GEO_LOC_SUMMARY (
   apiPublisher varchar(100) NOT NULL DEFAULT '',
   tenantDomain varchar(100) NOT NULL DEFAULT '',
   total_request_count int DEFAULT NULL,
-  year smallint DEFAULT NULL,
-  month smallint DEFAULT NULL,
-  day smallint DEFAULT NULL,
+  year smallint NOT NULL,
+  month smallint NOT NULL,
+  day smallint NOT NULL,
   requestTime bigint,
   country varchar(200) NOT NULL,
   city varchar(200) NOT NULL,
