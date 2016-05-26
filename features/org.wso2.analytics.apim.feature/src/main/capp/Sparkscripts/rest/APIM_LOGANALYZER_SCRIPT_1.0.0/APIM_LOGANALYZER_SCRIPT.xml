@@ -160,15 +160,15 @@
         WHERE _content LIKE '%API authentication failure due to Invalid Credentials%';
 
         CREATE TEMPORARY TABLE invalidLoginAttemptDaily USING CarbonAnalytics OPTIONS (tableName
-        "LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY", schema "AgentId string -i, InvalidLoginCount int -i, _timestamp long
+        "LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY", schema "tenantID string -i, InvalidLoginCount int -i, _timestamp long
         -i");
 
         CREATE TEMPORARY TABLE invalidLoginAttemptWeekly USING CarbonAnalytics OPTIONS (tableName
-        "LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY", schema "AgentId string -i, InvalidLoginCount int -i, _timestamp long
+        "LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY", schema "tenantID string -i, InvalidLoginCount int -i, _timestamp long
         -i, week long -i");
 
         CREATE TEMPORARY TABLE invalidLoginAttemptMonthly USING CarbonAnalytics OPTIONS (tableName
-        "LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY", schema "AgentId string -i, InvalidLoginCount int -i, _timestamp
+        "LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY", schema "tenantID string -i, InvalidLoginCount int -i, _timestamp
         long -i");
 
         INSERT OVERWRITE table invalidLoginAttemptDaily SELECT temp.agent AS agent, SUM(temp.agentCount) AS
@@ -181,17 +181,17 @@
 
         INSERT OVERWRITE table invalidLoginAttemptMonthly SELECT temp.agent AS agent, SUM(temp.agentCount) AS
         totalAgentCount, getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT
-        AgentId AS agent, getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, first(InvalidLoginCount) as
+        tenantID AS agent, getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, first(InvalidLoginCount) as
         agentCount FROM
-        invalidLoginAttemptDaily GROUP BY AgentId, _timestamp ORDER BY
+        invalidLoginAttemptDaily GROUP BY tenantID, _timestamp ORDER BY
         _timestamp)temp GROUP BY temp.agent, temp.byYear, temp.byMonth ORDER BY temp.byYear,
         temp.byMonth;
 
         INSERT OVERWRITE table invalidLoginAttemptWeekly SELECT temp.agent AS agent, SUM(temp.agentCount) AS
         totalAgentCount, temp.byWeek AS week, getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT
-        AgentId AS agent, getWeek(_timestamp) AS byWeek, getYear(_timestamp) AS byYear,
+        tenantID AS agent, getWeek(_timestamp) AS byWeek, getYear(_timestamp) AS byYear,
         getMonth(_timestamp) AS byMonth, first(InvalidLoginCount) as agentCount FROM
-        invalidLoginAttemptDaily GROUP BY AgentId, _timestamp ORDER BY
+        invalidLoginAttemptDaily GROUP BY tenantID, _timestamp ORDER BY
         _timestamp)temp GROUP BY temp.agent, temp.byYear, temp.byMonth, temp.byWeek ORDER BY temp.byYear,
         temp.byMonth, temp.byWeek;
     </Script>
