@@ -42,20 +42,20 @@ insert into responseInfoStream;
 
 @info(name = 'query3')
 from responseInfoStream[responseTime > responsePercentile]
-select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, responsePercentile , str:concat('Abnormal response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:',api_version,' of tenant domain:',tenantDomain,', threshold value:',responsePercentile, 'ms.') as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, responsePercentile , 'Abnormal response time detected.' as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into abnormalResponseTimeAlertStream;
 
 @info(name = 'query4')
 from responseInfoStream[backendTime > backendPercentile]
-select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, backendTime, backendPercentile, str:concat('Abnormal backend response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:',api_version,' of tenant domain:',tenantDomain,', threshold value:',backendPercentile, 'ms.') as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, backendTime, backendPercentile, 'Abnormal backend response time detected.' as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into abnormalBackendTimeAlertStream;
 
 @info(name = 'query5')
 from abnormalResponseTimeAlertStream
-select 'abnormalResponseTime' as type, tenantDomain, msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
+select 'abnormalResponseTime' as type, tenantDomain, str:concat('Abnormal response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:', api,' of tenant domain:',tenantDomain,', threshold value:',responsePercentile, 'ms.') as msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;
 
 @info(name = 'query6')
 from abnormalBackendTimeAlertStream
-select 'abnormalBackendTime' as type, tenantDomain, msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
+select 'abnormalBackendTime' as type, tenantDomain, str:concat('Abnormal backend response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:', api,' of tenant domain:',tenantDomain,', threshold value:',backendPercentile, 'ms.') as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;

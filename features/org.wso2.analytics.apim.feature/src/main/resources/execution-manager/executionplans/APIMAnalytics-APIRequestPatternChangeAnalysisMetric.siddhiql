@@ -49,13 +49,13 @@ insert into IntermediateFraudStream;
 
 
 from IntermediateFraudStream
-select userId, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected by user :',userId,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as msg , (time:timestampInMilliseconds()) as alertTimestamp
+select userId, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' ,' Suspicious API transition is: ',transition) as msg , transition, (time:timestampInMilliseconds()) as alertTimestamp
 insert into requestPatternChangedStreamTemp;
 
 
 from requestPatternChangedStreamTemp as r left outer join RequestPatternAlertSummaryTable
 on (applicationName == RequestPatternAlertSummaryTable.applicationName   and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userId == RequestPatternAlertSummaryTable.userId and msg == RequestPatternAlertSummaryTable.msg)
-select r.applicationName, r.applicationOwner, r.tenantDomain, r.userId, r.msg, r.alertTimestamp , ifThenElse(lastAlertedTimestamp is null, 0l , lastAlertedTimestamp) as lastAlertedTimestamp
+select r.applicationName, r.applicationOwner, r.tenantDomain, r.userId, r.msg, r.transition, alertTimestamp , ifThenElse(lastAlertedTimestamp is null, 0l , lastAlertedTimestamp) as lastAlertedTimestamp
 insert into requestPatternChangedStreamModified;
 
 from requestPatternChangedStreamModified [(alertTimestamp - lastAlertedTimestamp) > 30*60*1000]
@@ -73,5 +73,5 @@ insert into RequestPatternAlertSummaryTable;
 
 
 from requestPatternChangedStreamModified[(alertTimestamp - lastAlertedTimestamp) > 30*60*1000]
-select 'RequestPatternChanged' as type, tenantDomain, msg, 1 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select 'RequestPatternChanged' as type, tenantDomain, str:concat('Abnormal request pattern detected by user :',userId,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as msg, 1 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;

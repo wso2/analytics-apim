@@ -56,12 +56,12 @@ insert into temporaryUserStream;
 /* send to the alert stream specific to this scenario */
 @info(name = 'query3')
 from temporarySubscriberStream
-select apiPublisher, api, applicationId, applicationName, tenantDomain, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api_version," API.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select apiPublisher, api, applicationId, applicationName, tenantDomain, "Application frequently goes beyond the allocated quota when accessing an api." as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 @info(name = 'query4')
 from temporaryUserStream
-select apiPublisher, api, applicationId, applicationName, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select apiPublisher, api, applicationId, applicationName, tenantDomain, str:concat("User ", userId, " frequently crosses the limit set.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 /* send to general alert stream */
@@ -163,21 +163,21 @@ insert into emailAlertStream;
 @info(name = 'query2')
 from requestPatternChangedStream["$adminUserId" != userId]#window.length(1) join stakeholderInfoTable
 on (requestPatternChangedStream.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
-select 'RequestPatternChanged' as type , requestPatternChangedStream.msg, requestPatternChangedStream.alertTimestamp, stakeholderInfoTable.emails
+select 'RequestPatternChanged' as type , str:concat(requestPatternChangedStream.msg,  ' by user :',requestPatternChangedStream.userId,' using application : ',requestPatternChangedStream.applicationName, ' owned by: ',requestPatternChangedStream.applicationOwner, '.') as msg, requestPatternChangedStream.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'RequestPatternChanged')
 insert into emailAlertStream;
 
 @info(name = 'query3')
 from unusualIPAccess["$adminUserId" != userId]#window.length(1) join stakeholderInfoTable
 on (unusualIPAccess.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
-select 'UnusualIPAccessAlert' as type , unusualIPAccess.msg, unusualIPAccess.alertTimestamp, stakeholderInfoTable.emails
+select 'UnusualIPAccessAlert' as type , str:concat("A request from a ", ifThenElse(str:contains(msg, 'old'), 'old','new'), " IP (", ip, ") detected by user:" , unusualIPAccess.userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, unusualIPAccess.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'UnusualIPAccessAlert')
 insert into emailAlertStream;
 
 @info(name = 'query4')
 from abnormalTokenRefresh["$adminUserId" != userId]#window.length(1) join stakeholderInfoTable
 on (abnormalTokenRefresh.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
-select 'AbnormalRefreshAlert' as type , abnormalTokenRefresh.msg, abnormalTokenRefresh.alertTimestamp, stakeholderInfoTable.emails
+select 'AbnormalRefreshAlert' as type , str:concat('Abnormal access token refresh detected by user:',abnormalTokenRefresh.userId,' using consumer key: ', consumerKey, ' at: ', time:dateFormat(timestamp,'yyyy-MM-dd HH:mm:ss'), '.') as msg, abnormalTokenRefresh.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'AbnormalRefreshAlert')
 insert into emailAlertStream;
 
@@ -191,21 +191,23 @@ insert into emailAlertStream;
 @info(name = 'query6')
 from tierLimitHittingAlert["$adminUserId" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (tierLimitHittingAlert.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
-select 'FrequentTierHittingAlert' as type , tierLimitHittingAlert.msg, tierLimitHittingAlert.alertTimestamp, stakeholderInfoTable.emails
+select 'FrequentTierHittingAlert' as type ,
+ifThenElse(str:contains(tierLimitHittingAlert.msg, 'Application frequently goes beyond the allocated quota'),str:concat("The application ", tierLimitHittingAlert.applicationName, " owned by ", tierLimitHittingAlert.apiPublisher, " frequently goes beyond the allocated quota when accessing the ", tierLimitHittingAlert.api," API."),
+str:concat(tierLimitHittingAlert.msg , " Using the ", tierLimitHittingAlert.applicationName, " application owned by ", tierLimitHittingAlert.apiPublisher, ".")) as msg, tierLimitHittingAlert.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'FrequentTierHittingAlert')
 insert into emailAlertStream;
 
 @info(name = 'query7')
 from abnormalResponseTimeAlertStream["$adminUserId" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (abnormalResponseTimeAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
-select 'abnormalResponseTime' as type , abnormalResponseTimeAlertStream.msg, abnormalResponseTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
+select 'abnormalResponseTime' as type , str:concat('Abnormal response time detected for http ',abnormalResponseTimeAlertStream.method,' method of resource template:',abnormalResponseTimeAlertStream.resourceTemplate,' in api:',abnormalResponseTimeAlertStream.api,' of tenant domain:',abnormalResponseTimeAlertStream.tenantDomain,', threshold value:',abnormalResponseTimeAlertStream.responsePercentile, 'ms.') as msg, abnormalResponseTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'abnormalResponseTime')
 insert into emailAlertStream;
 
 @info(name = 'query8')
 from abnormalBackendTimeAlertStream["$adminUserId" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (abnormalBackendTimeAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
-select 'abnormalBackendTime' as type , abnormalBackendTimeAlertStream.msg, abnormalBackendTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
+select 'abnormalBackendTime' as type , str:concat('Abnormal backend response time detected for http ', abnormalBackendTimeAlertStream.method,' method of resource template:', abnormalBackendTimeAlertStream.resourceTemplate,' in api:',abnormalBackendTimeAlertStream.api,' of tenant domain:',abnormalBackendTimeAlertStream.tenantDomain,', threshold value:',abnormalBackendTimeAlertStream.backendPercentile, 'ms.') as msg, abnormalBackendTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'abnormalBackendTime')
 insert into emailAlertStream;
 
@@ -293,13 +295,13 @@ insert into IntermediateFraudStream;
 
 
 from IntermediateFraudStream
-select userId, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected by user :',userId,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as msg , (time:timestampInMilliseconds()) as alertTimestamp
+select userId, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' ,' Suspicious API transition is: ',transition) as msg , transition, (time:timestampInMilliseconds()) as alertTimestamp
 insert into requestPatternChangedStreamTemp;
 
 
 from requestPatternChangedStreamTemp as r left outer join RequestPatternAlertSummaryTable
 on (applicationName == RequestPatternAlertSummaryTable.applicationName   and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userId == RequestPatternAlertSummaryTable.userId and msg == RequestPatternAlertSummaryTable.msg)
-select r.applicationName, r.applicationOwner, r.tenantDomain, r.userId, r.msg, r.alertTimestamp , ifThenElse(lastAlertedTimestamp is null, 0l , lastAlertedTimestamp) as lastAlertedTimestamp
+select r.applicationName, r.applicationOwner, r.tenantDomain, r.userId, r.msg, r.transition, alertTimestamp , ifThenElse(lastAlertedTimestamp is null, 0l , lastAlertedTimestamp) as lastAlertedTimestamp
 insert into requestPatternChangedStreamModified;
 
 from requestPatternChangedStreamModified [(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionPeriod]
@@ -317,7 +319,7 @@ insert into RequestPatternAlertSummaryTable;
 
 
 from requestPatternChangedStreamModified[(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionPeriod]
-select 'RequestPatternChanged' as type, tenantDomain, msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select 'RequestPatternChanged' as type, tenantDomain, str:concat('Abnormal request pattern detected by user :',userId,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
 
                  ]]>
@@ -489,7 +491,7 @@ select *
 insert into NewIPDetectedStream;
 
 from NewIPDetectedStream
-select "UnusualIPAccessAlert" as type, str:concat("A request from a new IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, $severity as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, "A request from a new IP detected." as msg, $severity as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 from NewIPDetectedStream
@@ -506,12 +508,12 @@ select *
 insert into AbnormalTimeBetweenAccessStream;
 
 from AbnormalTimeBetweenAccessStream
-select "UnusualIPAccessAlert" as type, str:concat("A request from an old IP (", requestHostName, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, $severity as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccessAlert" as type, "A request from an old IP detected." as msg, $severity as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream
 from alertIpAccessAbnormality
-select type, tenantDomain, msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
+select type, tenantDomain, str:concat("A request from a ", ifThenElse(str:contains(msg, 'old'), 'old','new'), " IP (", ip, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate
@@ -683,7 +685,7 @@ insert into IPAccessSummary;
 
 								@info(name = 'query13')
 								from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
-								select api_version, apiPublisher, tenantDomain, str:concat('Response time of API ', api_version , ' is higher than ' , responseTimePerApiUpperPercentile, 'ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+								select api_version, apiPublisher, tenantDomain, str:concat('Response time is higher than ' , responseTimePerApiUpperPercentile, 'ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
 								@info(name = 'query14')
@@ -693,12 +695,12 @@ insert into IPAccessSummary;
 
                                 @info(name = 'query15')
                                 from every responseCodeSummaryStream [responseCode > 499 AND responseCode < 600]  <5:>
-                                select api_version, apiPublisher, tenantDomain, str:concat('Server error occurred for API ', api_version, ' continuously for 5 or more times.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                select api_version, apiPublisher, tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into apiHealthMonitorAlertStream;
 
                                 @info(name='query16')
                                 from apiHealthMonitorAlertStream
-                                select 'healthAvailabilityPerMin' as type, tenantDomain, msg as msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                select 'healthAvailabilityPerMin' as type, tenantDomain, str:concat('API:', api_version, '-', msg) as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
 
                                 /* update apiAvailability Table */
@@ -846,7 +848,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                          description "This is the CEP stream for Abnormal Tier Usage",
                          nickName "abnormalTierUsageAlert",
                          payload "applicationId STRING, api_version STRING, tenantDomain STRING, msg STRING, severity INTEGER, alertTimestamp LONG"
-                );
+      );
 
                 CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
                 USING org.wso2.carbon.analytics.spark.event.EventStreamProvider

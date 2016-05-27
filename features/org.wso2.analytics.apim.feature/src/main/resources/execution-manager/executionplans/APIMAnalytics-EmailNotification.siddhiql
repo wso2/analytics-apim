@@ -52,21 +52,21 @@ insert into emailAlertStream;
 @info(name = 'query2')
 from requestPatternChangedStream["admin@carbon.super" != userId]#window.length(1) join stakeholderInfoTable
 on (requestPatternChangedStream.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
-select 'RequestPatternChanged' as type , requestPatternChangedStream.msg, requestPatternChangedStream.alertTimestamp, stakeholderInfoTable.emails
+select 'RequestPatternChanged' as type , str:concat(requestPatternChangedStream.msg,  ' by user :',requestPatternChangedStream.userId,' using application : ',requestPatternChangedStream.applicationName, ' owned by: ',requestPatternChangedStream.applicationOwner, '.') as msg, requestPatternChangedStream.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'RequestPatternChanged')
 insert into emailAlertStream;
 
 @info(name = 'query3')
 from unusualIPAccess["admin@carbon.super" != userId]#window.length(1) join stakeholderInfoTable
 on (unusualIPAccess.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
-select 'UnusualIPAccessAlert' as type , unusualIPAccess.msg, unusualIPAccess.alertTimestamp, stakeholderInfoTable.emails
+select 'UnusualIPAccessAlert' as type , str:concat("A request from a ", ifThenElse(str:contains(msg, 'old'), 'old','new'), " IP (", ip, ") detected by user:" , unusualIPAccess.userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, unusualIPAccess.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'UnusualIPAccessAlert')
 insert into emailAlertStream;
 
 @info(name = 'query4')
 from abnormalTokenRefresh["admin@carbon.super" != userId]#window.length(1) join stakeholderInfoTable
 on (abnormalTokenRefresh.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
-select 'AbnormalRefreshAlert' as type , abnormalTokenRefresh.msg, abnormalTokenRefresh.alertTimestamp, stakeholderInfoTable.emails
+select 'AbnormalRefreshAlert' as type , str:concat('Abnormal access token refresh detected by user:',abnormalTokenRefresh.userId,' using consumer key: ', consumerKey, ' at: ', time:dateFormat(timestamp,'yyyy-MM-dd HH:mm:ss'), '.') as msg, abnormalTokenRefresh.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'AbnormalRefreshAlert')
 insert into emailAlertStream;
 
@@ -80,21 +80,23 @@ insert into emailAlertStream;
 @info(name = 'query6')
 from tierLimitHittingAlert["admin@carbon.super" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (tierLimitHittingAlert.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
-select 'FrequentTierHittingAlert' as type , tierLimitHittingAlert.msg, tierLimitHittingAlert.alertTimestamp, stakeholderInfoTable.emails
+select 'FrequentTierHittingAlert' as type ,
+ifThenElse(str:contains(tierLimitHittingAlert.msg, 'Application frequently goes beyond the allocated quota'),str:concat("The application ", tierLimitHittingAlert.applicationName, " owned by ", tierLimitHittingAlert.apiPublisher, " frequently goes beyond the allocated quota when accessing the ", tierLimitHittingAlert.api," API."),
+str:concat(tierLimitHittingAlert.msg , " Using the ", tierLimitHittingAlert.applicationName, " application owned by ", tierLimitHittingAlert.apiPublisher, ".")) as msg, tierLimitHittingAlert.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'FrequentTierHittingAlert')
 insert into emailAlertStream;
 
 @info(name = 'query7')
 from abnormalResponseTimeAlertStream["admin@carbon.super" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (abnormalResponseTimeAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
-select 'abnormalResponseTime' as type , abnormalResponseTimeAlertStream.msg, abnormalResponseTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
+select 'abnormalResponseTime' as type , str:concat('Abnormal response time detected for http ',abnormalResponseTimeAlertStream.method,' method of resource template:',abnormalResponseTimeAlertStream.resourceTemplate,' in api:',abnormalResponseTimeAlertStream.api,' of tenant domain:',abnormalResponseTimeAlertStream.tenantDomain,', threshold value:',abnormalResponseTimeAlertStream.responsePercentile, 'ms.') as msg, abnormalResponseTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'abnormalResponseTime')
 insert into emailAlertStream;
 
 @info(name = 'query8')
 from abnormalBackendTimeAlertStream["admin@carbon.super" != apiPublisher]#window.length(1) join stakeholderInfoTable
 on (abnormalBackendTimeAlertStream.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
-select 'abnormalBackendTime' as type , abnormalBackendTimeAlertStream.msg, abnormalBackendTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
+select 'abnormalBackendTime' as type , str:concat('Abnormal backend response time detected for http ', abnormalBackendTimeAlertStream.method,' method of resource template:', abnormalBackendTimeAlertStream.resourceTemplate,' in api:',abnormalBackendTimeAlertStream.api,' of tenant domain:',abnormalBackendTimeAlertStream.tenantDomain,', threshold value:',abnormalBackendTimeAlertStream.backendPercentile, 'ms.') as msg, abnormalBackendTimeAlertStream.alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'abnormalBackendTime')
 insert into emailAlertStream;
 
