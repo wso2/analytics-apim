@@ -159,21 +159,22 @@
 
 								/* update apiAvailability Table */
 
-                                from apiHealthMonitorAlertStream[(api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
+
+                                from apiHealthMonitorAlertStream[((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
                                 select api_version, tenantDomain,msg as status
                                 update apiAvailabilityTable
-                                on (api_version == apiAvailabilityTable.api_version);
+                                on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
 
-                                from apiHealthMonitorAlertStream[ not (api_version == apiAvailabilityTable.api_version in apiAvailabilityTable)]
+                                from apiHealthMonitorAlertStream[ not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
                                 select api_version, tenantDomain, msg as status
                                 insert into apiAvailabilityTable;
 
-				                from requestStream[(not (api_version == apiHealthMonitorAlertStreamTable.api_version in apiHealthMonitorAlertStreamTable)) and (not (api_version == apiAvailabilityTable.api_version in apiAvailabilityTable))]
+				                from requestStream[(not ((api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain) in apiHealthMonitorAlertStreamTable)) and (not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable))]
                                 select api_version , tenantDomain, 'Available' as status
                                 insert into apiAvailabilityTable;
 
                                 from requestStream as r join apiHealthMonitorAlertStreamTable
-                                on (r.api_version == apiHealthMonitorAlertStreamTable.api_version )
+                                on (r.api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain )
                                 select r.api_version, r.tenantDomain, alertTimestamp
                                 insert into tempStream;
 
@@ -181,5 +182,4 @@
                                 from tempStream[(time:timestampInMilliseconds() - alertTimestamp) > 300000]
                                 select api_version , tenantDomain, 'Available' as status
                                 update apiAvailabilityTable
-                                on (api_version == apiAvailabilityTable.api_version);
-
+                                on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
