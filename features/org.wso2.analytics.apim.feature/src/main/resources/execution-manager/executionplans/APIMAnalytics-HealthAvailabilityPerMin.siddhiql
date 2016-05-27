@@ -119,7 +119,7 @@
 
 								@info(name = 'query10')
 								from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <5:>
-								select api_version as api_version , apiPublisher, tenantDomain, str:concat('Response count of API ', api_version , ' is lower than ' , responsesPerMinLowerPercentile, ' continuously for 5 or more minutes.')  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+								select api_version as api_version , apiPublisher, tenantDomain, str:concat('Response count is lower than ' , responsesPerMinLowerPercentile, ' continuously for 5 or more minutes.')  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
 								/* Now start response time queries */
@@ -139,7 +139,7 @@
 
 								@info(name = 'query13')
 								from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <5:>
-								select api_version, apiPublisher, tenantDomain, str:concat('Response time of API ', api_version , ' is higher than ' , responseTimePerApiUpperPercentile, 'ms continuously for 5 or more responses.') as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+								select api_version, apiPublisher, tenantDomain, str:concat('Response time is higher than ' , responseTimePerApiUpperPercentile, 'ms continuously for 5 or more responses.') as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 								insert into apiHealthMonitorAlertStream;
 
 								@info(name = 'query14')
@@ -149,12 +149,12 @@
 
                                 @info(name = 'query15')
                                 from every responseCodeSummaryStream [responseCode > 499 AND responseCode < 600]  <5:>
-                                select api_version, apiPublisher, tenantDomain, str:concat('Server error occurred for API ', api_version, ' continuously for 5 or more times.')  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                select api_version, apiPublisher, tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into apiHealthMonitorAlertStream;
 
                                 @info(name='query16')
                                 from apiHealthMonitorAlertStream
-                                select 'healthAvailabilityPerMin' as type, tenantDomain, msg as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                select 'healthAvailabilityPerMin' as type, tenantDomain, str:concat('API:', api_version, '-', msg) as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
 
 								/* update apiAvailability Table */
