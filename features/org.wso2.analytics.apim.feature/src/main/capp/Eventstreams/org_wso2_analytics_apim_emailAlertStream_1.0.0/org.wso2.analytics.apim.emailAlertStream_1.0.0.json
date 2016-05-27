@@ -14,7 +14,7 @@
         },
         {
             "name": "alertTimestamp",
-            "type": "LONG"
+            "type": "STRING"
         },
         {
             "name": "emails",
