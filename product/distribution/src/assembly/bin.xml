@@ -267,6 +267,17 @@
             </excludes>
         </fileSet>
 
+        <!-- Copying dbscripts related to identity features -->
+        <fileSet>
+            <directory>
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/identity/
+            </directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/identity</outputDirectory>
+            <includes>
+                <include>**/*.sql</include>
+            </includes>
+        </fileSet>
+
         <!-- Copying dbscripts related to metrics feature -->
         <fileSet>
             <directory>
