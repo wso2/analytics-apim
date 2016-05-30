@@ -26,27 +26,46 @@ group by userId, api_version, applicationId
 having numHits > 10
 insert into temporaryUserStream;
 
+@info(name = 'query3')
+from temporarySubscriberStream#window.length(1) as a left outer join temporarySubscriberStream#window.time(10 minute) as b
+on (a.apiPublisher== b.apiPublisher and a.api_version== b.api_version and a.applicationId==b.applicationId)
+select a.apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
+having b.apiPublisher is null
+insert into suppressedTemporarySubscriberStream ;
+
+@info(name = 'query4')
+from temporaryUserStream#window.length(1) as a left outer join temporaryUserStream#window.time(10 minute) as b
+on (a.userId== b.userId and a.api_version== b.api_version and a.applicationId==b.applicationId)
+select a.userId, a.apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
+having b.userId is null
+insert into suppressedTemporaryUserStream;
+
+
 /* TODO: current throttling stream doesn't have apiSubscriber, once it is
      available we have to update following query*/
 
 /* send to the alert stream specific to this scenario */
-@info(name = 'query3')
-from temporarySubscriberStream
+@info(name = 'query5')
+from suppressedTemporarySubscriberStream
 select apiPublisher, api, applicationId, applicationName, tenantDomain, "Application frequently goes beyond the allocated quota when accessing an api." as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
-@info(name = 'query4')
-from temporaryUserStream
+@info(name = 'query6')
+from suppressedTemporaryUserStream
 select apiPublisher, api, applicationId, applicationName, tenantDomain, str:concat("User ", userId, " frequently crosses the limit set.") as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 /* send to general alert stream */
-@info(name = 'query5')
-from temporarySubscriberStream
+@info(name = 'query7')
+from suppressedTemporarySubscriberStream
 select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api_version," API.") as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
-@info(name = 'query6')
-from temporaryUserStream
+@info(name = 'query8')
+from suppressedTemporaryUserStream
 select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
+
+
+
+

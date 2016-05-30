@@ -60,9 +60,16 @@
                                 select requestCountStream.api_version as api , requestCountStream.userId , requestCountStream.tenantDomain, requestCountStream.applicationName, requestCountStream.applicationOwner, requestCountStream.resourceTemplate, requestCountStream.method, requestCountStream.requestsPerMin,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile, ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') as reason,
                                 'Abnormal request count detected during last minute.' as msg , 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 having (requestsPerMin > requestsPerMinUpperPercentile or requestsPerMin < requestsPerMinLowerPercentile)
-                                insert into abnormalRequestsPerMinAlertStream;
+                                insert into tempAbnormalRequestsPerMinAlertStream;
 
                                 @info(name = 'query5')
+                                from tempAbnormalRequestsPerMinAlertStream#window.length(1) as a left outer join tempAbnormalRequestsPerMinAlertStream#window.time(2 millisecond) as b
+                                on (a.api== b.api and a.userId== b.userId and a.applicationName==b.applicationName and a.resourceTemplate==b.resourceTemplate and a.method== b.method and a.reason== b.reason)
+                                select a.api, a.userId, a.tenantDomain, a.applicationName, a.applicationOwner, a.resourceTemplate, a.method, a.requestsPerMin, a.requestsPerMinUpperPercentile, a.requestsPerMinLowerPercentile, a.reason, a.msg, a.severity, a.alertTimestamp
+                                having b.api  is null
+                                insert into abnormalRequestsPerMinAlertStream ;
+
+                                @info(name = 'query6')
                                 from abnormalRequestsPerMinAlertStream
                                 select 'abnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') , ' detected during last minute by userId:',userId,' using application ', applicationName,' owned by ', applicationOwner,' for http ', method,' method of resource template ', resourceTemplate,' in api :', api,', abnormal request count:', requestsPerMin, ".") as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
