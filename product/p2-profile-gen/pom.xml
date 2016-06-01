@@ -358,7 +358,13 @@
                                 </featureArtifactDef>
                                 <!-- END - Tools -->
                                 <featureArtifactDef>
-                                    org.wso2.analytics.common:org.wso2.analytics.common.spark.util.feature:${analytics.common.version}
+                                    org.wso2.carbon.analytics.shared:org.wso2.carbon.analytics.shared.spark.common.udf.feature:${carbon.shared.analytics.version}
+                                </featureArtifactDef>
+				<featureArtifactDef>
+                                    org.wso2.carbon.analytics.shared:org.wso2.carbon.analytics.shared.geolocation.udf.feature:${carbon.shared.analytics.version}
+                                </featureArtifactDef>
+				<featureArtifactDef>
+                                    org.wso2.carbon.analytics.shared:org.wso2.carbon.analytics.shared.useragent.udf.feature:${carbon.shared.analytics.version}
                                 </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
@@ -708,9 +714,17 @@
                                     <version>${cipher.tool.version}</version>
                                 </feature>
                                 <!--END - Tools-->
+				<feature>
+                                    <id>org.wso2.carbon.analytics.shared.spark.common.udf.feature.group</id>
+                                    <version>${carbon.shared.analytics.version}</version>
+                                </feature>
+				<feature>
+                                    <id>org.wso2.carbon.analytics.shared.geolocation.udf.feature.group</id>
+                                    <version>${carbon.shared.analytics.version}</version>
+                                </feature>
                                 <feature>
-                                    <id>org.wso2.analytics.common.spark.util.feature.group</id>
-                                    <version>${analytics.common.version}</version>
+                                    <id>org.wso2.carbon.analytics.shared.useragent.udf.feature.group</id>
+                                    <version>${carbon.shared.analytics.version}</version>
                                 </feature>
                             </features>
                         </configuration>
