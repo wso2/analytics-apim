@@ -17,11 +17,11 @@
   -->
 <templateDomain name="APIMAnalytics">
     <description>Real-time and batch API Analytics.</description>
-      <templates>
+    <templates>
 
-          <template name="FrequentTierLimitHitting">
+        <template name="FrequentTierLimitHitting">
             <description>Detects frequent hitting of the tier limit</description>
-             <executionType>realtime</executionType>
+            <executionType>realtime</executionType>
 
             <script>
                 <![CDATA[
@@ -119,12 +119,12 @@ insert into allAlertsStream;
             </parameters>
         </template>
 
-          <template name="AbnormalRequestCountDetection">
-              <description>Detects abnormal request count</description>
-              <executionType>realtime</executionType>
+        <template name="AbnormalRequestCountDetection">
+            <description>Detects abnormal request count</description>
+            <executionType>realtime</executionType>
 
-              <script>
-                  <![CDATA[
+            <script>
+                <![CDATA[
 /* Enter a unique ExecutionPlan */
 
 
@@ -197,28 +197,28 @@ insert into allApimAlertStream;
 
 
                  ]]>
-              </script>
-              <parameters>
-                  <parameter name="alertSuppressionPeriod" type="long">
-                      <displayName>Alert Suppression Period in Minutes</displayName>
-                      <description>Time period to wait before resending the same alert</description>
-                      <defaultValue>10</defaultValue>
-                  </parameter>
-                  <parameter name="severity" type="int">
-                      <displayName>Severity Level</displayName>
-                      <description>Severity level of the alert:(1:severe,2:moderate,3:mild)</description>
-                      <defaultValue>2</defaultValue>
-                      <options>1, 2, 3</options>
-                  </parameter>
-              </parameters>
-          </template>
+            </script>
+            <parameters>
+                <parameter name="alertSuppressionPeriod" type="long">
+                    <displayName>Alert Suppression Period in Minutes</displayName>
+                    <description>Time period to wait before resending the same alert</description>
+                    <defaultValue>10</defaultValue>
+                </parameter>
+                <parameter name="severity" type="int">
+                    <displayName>Severity Level</displayName>
+                    <description>Severity level of the alert:(1:severe,2:moderate,3:mild)</description>
+                    <defaultValue>2</defaultValue>
+                    <options>1, 2, 3</options>
+                </parameter>
+            </parameters>
+        </template>
 
-          <template name="AbnormalResponseAndBackendTimeDetection">
-              <description>Detects abnormal backend time and response time</description>
-              <executionType>realtime</executionType>
+        <template name="AbnormalResponseAndBackendTimeDetection">
+            <description>Detects abnormal backend time and response time</description>
+            <executionType>realtime</executionType>
 
-              <script>
-                  <![CDATA[
+            <script>
+                <![CDATA[
 /* Enter a unique ExecutionPlan */
 @Plan:name('APIMAnalytics-AbnormalResponseAndBackendTimeDetection')
 
@@ -283,27 +283,27 @@ insert into allApimAlertStream;
 
 
                  ]]>
-              </script>
-              <parameters>
-                  <parameter name="responseTimeSeverity" type="int">
-                      <displayName>Severity Level of Abnormal Response Time</displayName>
-                      <description>Severity level of the abnormal response time alert:(1:severe,2:moderate,3:mild)</description>
-                      <defaultValue>2</defaultValue>
-                      <options>1, 2, 3</options>
-                  </parameter>
-                  <parameter name="backendTimeSeverity" type="int">
-                      <displayName>Severity Level of Abnormal Backend-Response Time</displayName>
-                      <description>Severity level of the abnormal backend-response time alert:(1:severe,2:moderate,3:mild)</description>
-                      <defaultValue>3</defaultValue>
-                      <options>1, 2, 3</options>
-                  </parameter>
-              </parameters>
-          </template>
+            </script>
+            <parameters>
+                <parameter name="responseTimeSeverity" type="int">
+                    <displayName>Severity Level of Abnormal Response Time</displayName>
+                    <description>Severity level of the abnormal response time alert:(1:severe,2:moderate,3:mild)</description>
+                    <defaultValue>2</defaultValue>
+                    <options>1, 2, 3</options>
+                </parameter>
+                <parameter name="backendTimeSeverity" type="int">
+                    <displayName>Severity Level of Abnormal Backend-Response Time</displayName>
+                    <description>Severity level of the abnormal backend-response time alert:(1:severe,2:moderate,3:mild)</description>
+                    <defaultValue>3</defaultValue>
+                    <options>1, 2, 3</options>
+                </parameter>
+            </parameters>
+        </template>
 
 
-          <template name="RequestPatternChangeDetection">
+        <template name="RequestPatternChangeDetection">
             <description>Change the configuration of request pattern detection</description>
-             <executionType>realtime</executionType>
+            <executionType>realtime</executionType>
 
             <script>
                 <![CDATA[
@@ -401,7 +401,7 @@ insert into all_apim_alerts_stream;
                     <defaultValue>500</defaultValue>
                 </parameter>
 
-                 <parameter name="probabilityThreshold" type="float">
+                <parameter name="probabilityThreshold" type="float">
                     <displayName>Probability Threshold</displayName>
                     <description>Probability threshold of a normal API transition</description>
                     <defaultValue>0.95</defaultValue>
@@ -490,12 +490,12 @@ insert into transitionStream;
 
 
 
-          <template name="UnusualIPAccessTemplate">
-              <description>To detect accesses from new or rarely used hostnames</description>
-              <executionType>realtime</executionType>
+        <template name="UnusualIPAccessTemplate">
+            <description>To detect accesses from new or rarely used hostnames</description>
+            <executionType>realtime</executionType>
 
-              <script>
-                  <![CDATA[
+            <script>
+                <![CDATA[
                /* Enter a unique ExecutionPlan */
 @Plan:name('APIMAnalytics-UnusualIPAccessAlert')
 
@@ -584,26 +584,26 @@ from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > 24*60*60]
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;
                  ]]>
-              </script>
-              <parameters>
-                  <parameter name="maxDaysBetweenAccess" type="int">
-                      <displayName>Maximum Days Between Last Access</displayName>
-                      <description>Maximum days between Last access from the hostname to the latest </description>
-                      <defaultValue>30</defaultValue>
-                  </parameter>
+            </script>
+            <parameters>
+                <parameter name="maxDaysBetweenAccess" type="int">
+                    <displayName>Maximum Days Between Last Access</displayName>
+                    <description>Maximum days between Last access from the hostname to the latest </description>
+                    <defaultValue>30</defaultValue>
+                </parameter>
 
-                  <parameter name="severity" type="int">
-                      <displayName>Severity Level</displayName>
-                      <description>Severity level of the alert:(1:severe,2:moderate,3:mild)</description>
-                      <defaultValue>2</defaultValue>
-                      <options>1, 2, 3</options>
-                  </parameter>
-              </parameters>
-          </template>
+                <parameter name="severity" type="int">
+                    <displayName>Severity Level</displayName>
+                    <description>Severity level of the alert:(1:severe,2:moderate,3:mild)</description>
+                    <defaultValue>2</defaultValue>
+                    <options>1, 2, 3</options>
+                </parameter>
+            </parameters>
+        </template>
 
- <template name="HealthAvailabilityPerMinAlert">
+        <template name="HealthAvailabilityPerMinAlert">
             <description>To monitor the API health</description>
-             <executionType>realtime</executionType>
+            <executionType>realtime</executionType>
 
             <script>
                 <![CDATA[
@@ -827,9 +827,9 @@ insert into IPAccessSummary;
 
 
 
-          <template name="Configure access token">
+        <template name="Configure access token">
             <description>Configure access token to analyse data</description>
-             <executionType>batch</executionType>
+            <executionType>batch</executionType>
 
             <script>
                 <![CDATA[
@@ -868,7 +868,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
         <template name="AbnormalTierUsageAlert">
             <description>This is the CEP stream for Abnormal Tier Usage</description>
-             <executionType>batch</executionType>
+            <executionType>batch</executionType>
 
             <script>
                 <![CDATA[
@@ -1002,16 +1002,16 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <defaultValue>2</defaultValue>
                     <options>1, 2, 3</options>
                 </parameter>
-                
-</parameters>
+
+            </parameters>
         </template>
 
-	
 
 
-           <template name="RequestPerApi">
+
+        <template name="RequestPerApi">
             <description>To create RequestPerApi percentile values</description>
-             <executionType>batch</executionType>
+            <executionType>batch</executionType>
 
             <script>
                 <![CDATA[
@@ -1036,15 +1036,15 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <description>Lower percentile value to calculate request per min per api lower percentile</description>
                     <defaultValue>0.05</defaultValue>
                 </parameter>
-             </parameters>
+            </parameters>
         </template>
 
 
 
 
-          <template name="RequestStatGenerator">
+        <template name="RequestStatGenerator">
             <description>To generate request stats</description>
-             <executionType>batch</executionType>
+            <executionType>batch</executionType>
 
             <script>
                 <![CDATA[
@@ -1083,9 +1083,9 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         </template>
 
 
- <template name="ResponsePerApiStatGenerator">
+        <template name="ResponsePerApiStatGenerator">
             <description>To create Response per api percentile values</description>
-             <executionType>batch</executionType>
+            <executionType>batch</executionType>
 
             <script>
                 <![CDATA[
@@ -1116,9 +1116,9 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
 
 
-          <template name="Response time">
+        <template name="Response time">
             <description>To create response time percentile values</description>
-             <executionType>batch</executionType>
+            <executionType>batch</executionType>
 
             <script>
                 <![CDATA[
@@ -1142,14 +1142,14 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <description>Upper percentile value to calculate responseTimePerApiUpperPercentile</description>
                     <defaultValue>0.95</defaultValue>
                 </parameter>
-                </parameters>
+            </parameters>
         </template>
 
 
 
-         <template name="Response stat generator">
+        <template name="Response stat generator">
             <description>To create response percentile values</description>
-             <executionType>batch</executionType>
+            <executionType>batch</executionType>
 
             <script>
                 <![CDATA[
@@ -1182,15 +1182,16 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <description>Upper percentile value to calculate backendPercentile</description>
                     <defaultValue>0.95</defaultValue>
                 </parameter>
-                </parameters>
+            </parameters>
         </template>
 
-   <template name="APIM_GEO_LOCATION_STATS">
-              <description>To generate Geo locations-based statistics</description>
-              <executionType>batch</executionType>
+        <template name="APIM_GEO_LOCATION_STATS">
+            <description>To generate Geo locations-based statistics</description>
+            <executionType>batch</executionType>
 
-              <script>
-                  <![CDATA[
+            <script>
+                <![CDATA[
+    CREATE TEMPORARY TABLE APIGeoLocationData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQ_GEO_LOC_SUMMARY");
     create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
     CREATE TEMPORARY TABLE API_REQUEST_GEOIP_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_GEOIP_SUMMARY",
     schema "api string -i,
@@ -1236,12 +1237,13 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
     sum(apidata.total_request_count) as total_request_count,apidata.year,apidata.month,apidata.day,first(requestTime),getCountry(apidata.clientIp) as country,
     getCity(apidata.clientIp) as city,facet2(getCountry(apidata.clientIp),getCity(apidata.clientIp))
     from API_REQUEST_GEOIP_SUMMARY_FINAL as apidata group by apidata.api,apidata.version,apidata.apiPublisher,apidata.year,apidata.month,apidata.day,apidata.clientIp,getCountry(apidata.clientIp),getCity(apidata.clientIp),apidata.tenantDomain;
+    INSERT OVERWRITE TABLE APIGeoLocationData SELECT api,version,apiPublisher,tenantDomain,total_request_count,year,month,day,requestTime,country,city FROM API_REQUEST_GEO_LOCATION_SUMMARY_FINAL;
 
 
                  ]]>
-              </script>
+            </script>
 
-          </template>
+        </template>
 
 
     </templates>
