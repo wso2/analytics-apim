@@ -6,7 +6,7 @@ org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../featur
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../../statistics/);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/org_wso2_carbon_analytics_apim_RDBMS-1.0.0.car,target:${installFolder}/../../../statistics/org_wso2_carbon_analytics_apim_RDBMS-1.0.0.car,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/org_wso2_carbon_analytics_apim_REST-1.0.0.car,target:${installFolder}/../../../statistics/org_wso2_carbon_analytics_apim_REST-1.0.0.car,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/conf/execution-manager/domain-template-rdbms/apim-analytics.xml,target:${installFolder}/../../../statistics/apim-analytics.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/conf/execution-manager/domain-template-rest/apim-analytics.xml,target:${installFolder}/../../../statistics/apim-analytics.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/execution-manager);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/execution-manager/domain-template);\
