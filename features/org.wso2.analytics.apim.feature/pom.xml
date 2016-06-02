@@ -84,7 +84,7 @@
                                 <resource>
                                     <directory>resources</directory>
                                     <includes>
-                                        <include>org_wso2_carbon_analytics_apim-1.0.0.car</include>
+                                        <include>org_wso2_carbon_analytics_apim_REST-1.0.0.car</include>
                                         <include>org_wso2_carbon_analytics_apim_RDBMS-1.0.0.car</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
