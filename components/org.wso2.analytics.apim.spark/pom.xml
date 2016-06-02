@@ -59,13 +59,10 @@
 						<Private-Package>org.wso2.carbon.analytics.apim.spark.internal.*</Private-Package>
 						<Export-Package>
 							!org.wso2.carbon.analytics.apim.spark.internal.*,
-							org.wso2.carbon.analytics.apim.spark.udf.*,
-							org.wso2.carbon.analytics.apim.spark.geolocation.*,
-							org.wso2.carbon.analytics.apim.spark.useragent.*
+							org.wso2.carbon.analytics.apim.spark.udf.*
 						</Export-Package>
 						<Import-Package>
 							org.apache.commons.math3.*,
-							ua_parser.*,
 							*;resolution:=optional
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
