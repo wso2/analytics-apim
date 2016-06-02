@@ -17,6 +17,7 @@
     <property name="DATA_PURGING_dir" value="Datapurging" />
 
     <property name="ANALYTICS_APIM_RDBMS_capp_suffix" value="RDBMS"/>
+    <property name="ANALYTICS_APIM_REST_capp_suffix" value="REST"/>
     <property name="ANALYTICS_APIM_RDBMS_directory" value="rdbms"/>
     <property name="ANALYTICS_APIM_REST_directory" value="rest"/>
 
@@ -24,7 +25,7 @@
 
     <target name="clean">
         <delete dir="${target-dir}"/>
-        <delete file="${res-dir}/${ANALYTICS_APIM_capp_name}-${ANALYTICS_APIM_capp_version}.car"/>
+        <delete file="${res-dir}/${ANALYTICS_APIM_capp_name}_${ANALYTICS_APIM_REST_capp_suffix}-${ANALYTICS_APIM_capp_version}.car"/>
         <delete file="${res-dir}/${ANALYTICS_APIM_capp_name}_${ANALYTICS_APIM_RDBMS_capp_suffix}-${ANALYTICS_APIM_capp_version}.car"/>
     </target>
 
@@ -33,7 +34,7 @@
     </target>
 
     <target name="zip" depends="clean,pre-configure">
-        <zip destfile="${res-dir}/${ANALYTICS_APIM_capp_name}-${ANALYTICS_APIM_capp_version}.car">
+        <zip destfile="${res-dir}/${ANALYTICS_APIM_capp_name}_${ANALYTICS_APIM_REST_capp_suffix}-${ANALYTICS_APIM_capp_version}.car">
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_RECEIVER_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_STORE_dir}" />
             <zipfileset dir="${ANALYTICS_APIM_dir}/${EVENT_STREAM_dir}" />
