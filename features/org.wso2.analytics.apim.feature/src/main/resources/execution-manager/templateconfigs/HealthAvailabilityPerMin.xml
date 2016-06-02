@@ -1,1 +1,18 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><templateConfiguration from="APIMAnalytics" name="HealthAvailabilityPerMin" type="HealthAvailabilityPerMinAlert"><description>Monitoring API health</description><parameters><parameter name="responsePerMinPattern"><value>5</value></parameter><parameter name="responseTimePattern"><value>5</value></parameter><parameter name="statusChangeTimeInterval"><value>300000</value></parameter><parameter name="severity"><value>2</value></parameter></parameters></templateConfiguration>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templateConfiguration from="APIMAnalytics" name="HealthAvailabilityPerMin" type="HealthAvailabilityPerMinAlert">
+	<description>Monitoring API health</description>
+	<parameters>
+		<parameter name="responsePerMinPattern">
+			<value>5</value>
+		</parameter>
+		<parameter name="responseTimePattern">
+			<value>5</value>
+		</parameter>
+		<parameter name="statusChangeTimeInterval">
+			<value>300000</value>
+		</parameter>
+		<parameter name="severity">
+			<value>2</value>
+		</parameter>
+	</parameters>
+</templateConfiguration>

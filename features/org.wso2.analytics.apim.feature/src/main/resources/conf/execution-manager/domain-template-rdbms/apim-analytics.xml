@@ -796,14 +796,14 @@ insert into IPAccessSummary;
             </script>
             <parameters>
                 <parameter name="responsePerMinPattern" type="int">
-                    <displayName>Number of continues responses</displayName>
+                    <displayName>Number of continuous responses</displayName>
                     <description>Number of responses that should fail to pass the lower percentile</description>
                     <defaultValue>5</defaultValue>
                 </parameter>
 
 
                 <parameter name="responseTimePattern" type="int">
-                    <displayName>Number of continues response time fail</displayName>
+                    <displayName>Number of continuous response time fail</displayName>
                     <description>number of minutes that responses should fail to pass the lower percentile</description>
                     <defaultValue>5</defaultValue>
                 </parameter>
