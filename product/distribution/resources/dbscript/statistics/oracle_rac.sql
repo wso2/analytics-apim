@@ -195,3 +195,18 @@ CREATE TABLE API_REQ_GEO_LOC_SUMMARY (
   city VARCHAR2(200) NOT NULL,
   PRIMARY KEY (api, version, apiPublisher, year, month, day, tenantDomain, country, city)
 );
+
+CREATE TABLE API_REQ_USER_BROW_SUMMARY (
+  api VARCHAR2(100),
+  version VARCHAR2(100),
+  apiPublisher VARCHAR2(100),
+  tenantDomain VARCHAR2(100),
+  total_request_count int,
+  year NUMBER(6),
+  month NUMBER(6),
+  day NUMBER(6),
+  requestTime NUMBER(20),
+  os VARCHAR2(200) NOT NULL,
+  browser VARCHAR2(200) NOT NULL,
+  PRIMARY KEY (api, version, apiPublisher, year, month, day, tenantDomain, os, browser)
+);
