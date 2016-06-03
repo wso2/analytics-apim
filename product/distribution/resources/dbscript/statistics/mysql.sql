@@ -197,3 +197,17 @@ CREATE TABLE IF NOT EXISTS `API_REQ_GEO_LOC_SUMMARY` (
   PRIMARY KEY (`api`,`version`,`apiPublisher`,`year`,`month`,`day`,`tenantDomain`,`country`,`city`)
 );
 
+CREATE TABLE IF NOT EXISTS `API_REQ_USER_BROW_SUMMARY` (
+  `api` varchar(100) NOT NULL DEFAULT '',
+  `version` varchar(100) NOT NULL DEFAULT '',
+  `apiPublisher` varchar(100) NOT NULL DEFAULT '',
+  `tenantDomain` varchar(100) NOT NULL DEFAULT '',
+  `total_request_count` int(11) DEFAULT NULL,
+  `year` smallint(6) NOT NULL,
+  `month` smallint(6) NOT NULL,
+  `day` smallint(6) NOT NULL,
+  `requestTime` bigint(20),
+  `os` varchar(200) NOT NULL,
+  `browser` varchar(200) NOT NULL,
+  PRIMARY KEY (`api`,`version`,`apiPublisher`,`year`,`month`,`day`,`tenantDomain`,`os`,`browser`)
+);

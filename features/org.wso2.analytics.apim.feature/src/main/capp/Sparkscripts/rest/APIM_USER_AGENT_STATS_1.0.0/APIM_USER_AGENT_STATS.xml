@@ -28,7 +28,7 @@
     substring(cast(requestTime/1000 as timestamp),6,2),
     substring(cast(requestTime/1000 as timestamp),9,2);
 
-    CREATE TEMPORARY TABLE API_REQUEST_USER_BROWSER_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_USER_BROWSER_SUMMARY",
+    CREATE TEMPORARY TABLE API_REQUEST_USER_BROWSER_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQ_USER_BROW_SUMMARY",
     schema "api string -i,
     version string -i,
     apiPublisher string -i,

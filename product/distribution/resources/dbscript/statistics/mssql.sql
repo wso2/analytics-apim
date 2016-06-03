@@ -212,3 +212,19 @@ CREATE TABLE API_REQ_GEO_LOC_SUMMARY (
   city varchar(200) NOT NULL,
   PRIMARY KEY (api,version,apiPublisher,year,month,day,tenantDomain,country,city)
 );
+
+IF NOT  EXISTS (SELECT * FROM SYS.OBJECTS WHERE OBJECT_ID = OBJECT_ID(N'[DBO].[API_REQ_USER_BROW_SUMMARY]') AND TYPE IN (N'U'))
+CREATE TABLE API_REQ_USER_BROW_SUMMARY (
+  api varchar(100) NOT NULL DEFAULT '',
+  version varchar(100) NOT NULL DEFAULT '',
+  apiPublisher varchar(100) NOT NULL DEFAULT '',
+  tenantDomain varchar(100) NOT NULL DEFAULT '',
+  total_request_count INTEGER DEFAULT NULL,
+  year INTEGER NOT NULL,
+  month INTEGER NOT NULL,
+  day INTEGER NOT NULL,
+  requestTime INTEGER,
+  os varchar(200) NOT NULL,
+  browser varchar(200) NOT NULL,
+  PRIMARY KEY (api,version,apiPublisher,year,month,day,tenantDomain,os,browser)
+);
