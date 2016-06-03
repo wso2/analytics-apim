@@ -590,7 +590,6 @@
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/database/GEOLOCATION_DB.h2.db
             </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/database</outputDirectory>
-            <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
