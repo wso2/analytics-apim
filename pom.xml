@@ -344,7 +344,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
                 <artifactId>org.wso2.carbon.event.publisher.stub</artifactId>
-                <version>${carbon.analytics.common.version}</version>
+                <version>${carbon.analytics.common.exec.mgr.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.event-processing</groupId>
@@ -354,7 +354,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
                 <artifactId>org.wso2.carbon.event.execution.manager.stub</artifactId>
-                <version>${carbon.analytics.common.version}</version>
+                <version>${carbon.analytics.common.exec.mgr.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jacoco</groupId>
@@ -593,8 +593,10 @@
         <analytics.apim.version>1.0.0-SNAPSHOT</analytics.apim.version>
         <carbon.shared.analytics.version>1.0.0-beta</carbon.shared.analytics.version>
         <carbon.kernel.version>4.4.3</carbon.kernel.version>
-        <carbon.analytics.version>1.0.6-beta</carbon.analytics.version>
-        <carbon.analytics.common.version>5.0.12-beta</carbon.analytics.common.version>
+        <carbon.analytics.version>1.0.6-beta3</carbon.analytics.version>
+        <carbon.analytics.exec.mgr.version>1.0.6-beta</carbon.analytics.exec.mgr.version>
+        <carbon.analytics.common.version>5.0.12-beta2</carbon.analytics.common.version>
+        <carbon.analytics.common.exec.mgr.version>5.0.12-beta</carbon.analytics.common.exec.mgr.version>
         <carbon.automationutils.version>4.4.1</carbon.automationutils.version>
         <carbon.automation.version>4.4.2</carbon.automation.version>
         <carbon.registry.version>4.5.1</carbon.registry.version>
@@ -603,7 +605,7 @@
         <carbon.identity.version>5.0.8</carbon.identity.version>
         <carbon.commons.version>4.5.3</carbon.commons.version>
         <carbon.data.version>4.3.4</carbon.data.version>
-        <carbon.event-processing.version>2.0.13-beta</carbon.event-processing.version>
+        <carbon.event-processing.version>2.0.13-beta2</carbon.event-processing.version>
         <carbon.dashboard.version>1.0.18</carbon.dashboard.version>
         <carbon.metrics.version>1.2.0</carbon.metrics.version>
 

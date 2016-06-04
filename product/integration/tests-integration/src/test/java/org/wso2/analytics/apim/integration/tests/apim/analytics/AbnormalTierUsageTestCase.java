@@ -122,17 +122,8 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 
         if (testDomain == null) {
             Assert.fail("Domain is not loaded");
-        } else {
-            ParameterDTOE[] parameters = testDomain.getParameterDTOs();
-            for (ParameterDTOE parameter : parameters) {
-                if (parameter.getName().equalsIgnoreCase("receiverURLPort")) {
-                    parameter.setValue("8311");
-                } else if (parameter.getName().equalsIgnoreCase("authURLPort")) {
-                    parameter.setValue("8411");
-                }
-            }
-
         }
+        
         executionManagerAdminServiceClient.saveConfiguration(testDomain);
 
         publishDataset();

@@ -7,12 +7,6 @@
 		<parameter name="percentile">
 			<value>0.05</value>
 		</parameter>
-		<parameter name="receiverURLPort">
-			<value>7612</value>
-		</parameter>
-		<parameter name="authURLPort">
-			<value>7712</value>
-		</parameter>
 		<parameter name="alertStartDate">
 			<value>12/2/2016</value>
 		</parameter>
