@@ -99,7 +99,16 @@
                                     org.wso2.carbon.analytics:org.wso2.carbon.analytics.restapi.feature:${carbon.analytics.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.spark.feature:${carbon.analytics.version}
+                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.spark.ui.feature:${carbon.analytics.version}
+                                </featureArtifactDef>
+				<featureArtifactDef>
+                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.spark.server.feature:${carbon.analytics.version}
+                                </featureArtifactDef>
+				<featureArtifactDef>
+                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.spark.event.feature:${carbon.analytics.version}
+                                </featureArtifactDef>
+				<featureArtifactDef>
+                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.spark.template.deployer.feature:${carbon.analytics.exec.mgr.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon.analytics:org.wso2.carbon.analytics.api.feature:${carbon.analytics.version}
@@ -312,7 +321,7 @@
 
                                 <!-- START - execution manager Features -->
                                 <featureArtifactDef>
-                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.execution.manager.feature:${carbon.analytics.common.version}
+                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.execution.manager.feature:${carbon.analytics.common.exec.mgr.version}
                                 </featureArtifactDef>
                                 <!-- spark deployer included in analytics-processors feature -->
                                 <!-- ************** END - Execution manager features ************ -->
@@ -398,8 +407,20 @@
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.analytics.spark.feature.group</id>
+                                    <id>org.wso2.carbon.analytics.spark.ui.feature.group</id>
                                     <version>${carbon.analytics.version}</version>
+                                </feature>
+				<feature>
+                                    <id>org.wso2.carbon.analytics.spark.server.feature.group</id>
+                                    <version>${carbon.analytics.version}</version>
+                                </feature>
+				<feature>
+                                    <id>org.wso2.carbon.analytics.spark.event.feature.group</id>
+                                    <version>${carbon.analytics.version}</version>
+                                </feature>
+				<feature>
+                                    <id>org.wso2.carbon.analytics.spark.template.deployer.feature.group</id>
+                                    <version>${carbon.analytics.exec.mgr.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.analytics.api.feature.group</id>
@@ -662,7 +683,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.event.execution.manager.feature.group</id>
-                                    <version>${carbon.analytics.common.version}</version>
+                                    <version>${carbon.analytics.common.exec.mgr.version}</version>
                                 </feature>
 
                                 <!-- ************** END - EVENT PROCESSING FEATURES ************ -->
