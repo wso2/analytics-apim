@@ -37,6 +37,8 @@ public class APIMAnalyticsIntegrationTestConstants {
     public static final String ABNORMAL_REQ_ALERT_TABLE = "ORG_WSO2_API_ABN_REQ_ALERT";
     public static final String ALL_ALERT_TABLE = "ORG_WSO2_API_ALL_ALERT";
     public static final String ADITIONAL_DATA = "ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA";
+
+    public static final String REST_CAPP_PATH = "statistics";
     
     
     
