@@ -599,8 +599,8 @@
         <carbon.analytics.common.exec.mgr.version>5.0.12-beta</carbon.analytics.common.exec.mgr.version>
         <carbon.automationutils.version>4.4.1</carbon.automationutils.version>
         <carbon.automation.version>4.4.2</carbon.automation.version>
-        <carbon.registry.version>4.5.1</carbon.registry.version>
-        <carbon.multitenancy.version>4.5.1</carbon.multitenancy.version>
+        <carbon.registry.version>4.5.4</carbon.registry.version>
+        <carbon.multitenancy.version>4.5.2</carbon.multitenancy.version>
         <carbon.deployment.version>4.6.1</carbon.deployment.version>
         <carbon.identity.version>5.0.8</carbon.identity.version>
         <carbon.commons.version>4.5.3</carbon.commons.version>
