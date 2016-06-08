@@ -105,7 +105,8 @@ CREATE TABLE  API_THROTTLED_OUT_SUMMARY  (
    time  varchar(30) NOT NULL DEFAULT '',
    success_request_count  int DEFAULT NULL,
    throttleout_count  int DEFAULT NULL,
-  PRIMARY KEY ( api , api_version , context , apiPublisher , applicationName , tenantDomain , year , month , day , time )
+   throttledOutReason  varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY ( api , api_version , context , apiPublisher , applicationName , tenantDomain , year , month , day , time,throttledOutReason )
 )/
 
 CREATE TABLE IF NOT EXISTS API_LAST_ACCESS_TIME_SUMMARY (

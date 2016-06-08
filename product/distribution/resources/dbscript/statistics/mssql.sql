@@ -112,7 +112,8 @@ CREATE TABLE API_THROTTLED_OUT_SUMMARY (
   time varchar(30) NOT NULL DEFAULT '',
   success_request_count INTEGER DEFAULT NULL,
   throttleout_count INTEGER DEFAULT NULL,
-  PRIMARY KEY (api,api_version,context,apiPublisher,applicationName,tenantDomain,year,month,day,time)
+  throttledOutReason varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (api,api_version,context,apiPublisher,applicationName,tenantDomain,year,month,day,time,throttledOutReason)
 );
 
 IF NOT  EXISTS (SELECT * FROM SYS.OBJECTS WHERE OBJECT_ID = OBJECT_ID(N'[DBO].[API_LAST_ACCESS_TIME_SUMMARY]') AND TYPE IN (N'U'))
