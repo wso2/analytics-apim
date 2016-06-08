@@ -605,8 +605,9 @@
         <carbon.identity.version>5.0.8</carbon.identity.version>
         <carbon.commons.version>4.5.3</carbon.commons.version>
         <carbon.data.version>4.3.4</carbon.data.version>
-        <carbon.event-processing.version>2.0.13-beta2</carbon.event-processing.version>
-        <carbon.dashboard.version>1.0.18</carbon.dashboard.version>
+        <carbon.event-processing.version>2.0.13-beta</carbon.event-processing.version>
+		<carbon.analytics.eventtable.version>1.0.6-beta</carbon.analytics.eventtable.version>
+		<carbon.dashboard.version>1.0.18</carbon.dashboard.version>
         <carbon.metrics.version>1.2.0</carbon.metrics.version>
 
         <jaggery.version>0.12.3</jaggery.version>
