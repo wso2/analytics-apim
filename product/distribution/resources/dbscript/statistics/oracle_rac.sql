@@ -105,7 +105,8 @@ CREATE TABLE API_THROTTLED_OUT_SUMMARY (
   time VARCHAR2(30),
   success_request_count int,
   throttleout_count int,
-  PRIMARY KEY (api, api_version, context, apiPublisher, applicationName, tenantDomain, time)
+  throttledOutReason VARCHAR2(100),
+  PRIMARY KEY (api, api_version, context, apiPublisher, applicationName, tenantDomain, time,throttledOutReason)
 );
 
 CREATE TABLE API_LAST_ACCESS_TIME_SUMMARY (
