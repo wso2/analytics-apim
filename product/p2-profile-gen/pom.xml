@@ -220,7 +220,7 @@
                                     org.wso2.carbon.analytics:org.wso2.carbon.analytics.eventsink.feature:${carbon.analytics.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.eventtable.feature:${carbon.analytics.version}
+                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.eventtable.feature:${carbon.analytics.eventtable.version}
                                 </featureArtifactDef>
                                 <!-- ************** END - Data Bridge ************ -->
 
@@ -564,7 +564,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.analytics.eventtable.feature.group</id>
-                                    <version>${carbon.analytics.version}</version>
+                                    <version>${carbon.analytics.eventtable.version}</version>
                                 </feature>
                                 <!-- ************** END - Data Bridge ************ -->
 
