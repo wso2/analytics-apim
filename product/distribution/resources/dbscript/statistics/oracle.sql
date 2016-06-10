@@ -44,7 +44,7 @@ CREATE TABLE API_Resource_USAGE_SUMMARY (
   month smallint,
   day smallint,
   time VARCHAR2(30),
-  PRIMARY KEY (api, version, apiPublisher, consumerKey, context, resourcePath, method, time)
+  PRIMARY KEY (api, version, apiPublisher, consumerKey, context, resourcePath, method, time,hostName)
 );
 
 CREATE TABLE API_RESPONSE_SUMMARY (
@@ -127,11 +127,12 @@ CREATE TABLE API_EXE_TME_DAY_SUMMARY (
   context VARCHAR2(100),
   mediationName VARCHAR2(100),
   executionTime NUMBER(10),
+  tenantDomain VARCHAR2(100),
   year NUMBER(5),
   month NUMBER(5),
   day NUMBER(5),
   time NUMBER(19),
-  PRIMARY KEY (api, version, apiPublisher, context, year, month, day, mediationName)
+  PRIMARY KEY (api, version, apiPublisher, context, year, month, day, mediationName,tenantDomain)
 );
 
 CREATE TABLE API_EXE_TIME_HOUR_SUMMARY (
@@ -141,12 +142,13 @@ CREATE TABLE API_EXE_TIME_HOUR_SUMMARY (
   context VARCHAR2(100),
   mediationName VARCHAR2(100),
   executionTime NUMBER(10),
+  tenantDomain VARCHAR2(100),
   year NUMBER(5),
   month NUMBER(5),
   day NUMBER(5),
   hour NUMBER(5),
   time NUMBER(19),
-  PRIMARY KEY (api, version, apiPublisher, context, year, month, day, hour, mediationName)
+  PRIMARY KEY (api, version, apiPublisher, context, year, month, day, hour, mediationName,tenantDomain)
 );
 
 CREATE TABLE API_EXE_TIME_MIN_SUMMARY (
@@ -156,13 +158,14 @@ CREATE TABLE API_EXE_TIME_MIN_SUMMARY (
   context VARCHAR2(100),
   mediationName VARCHAR2(100),
   executionTime NUMBER(10),
+  tenantDomain VARCHAR2(100),
   year NUMBER(5),
   month NUMBER(5),
   day NUMBER(5),
   hour NUMBER(5),
   minutes NUMBER(5),
   time NUMBER(19),
-  PRIMARY KEY (api, version, apiPublisher, context, year, month, day, hour, minutes, mediationName)
+  PRIMARY KEY (api, version, apiPublisher, context, year, month, day, hour, minutes, mediationName,tenantDomain)
 );
 
 CREATE TABLE API_EXE_TIME_SEC_SUMMARY (
@@ -172,6 +175,7 @@ CREATE TABLE API_EXE_TIME_SEC_SUMMARY (
   context VARCHAR2(100),
   mediationName VARCHAR2(100),
   executionTime NUMBER(10),
+  tenantDomain VARCHAR2(100),
   year NUMBER(5),
   month NUMBER(5),
   day NUMBER(5),
@@ -179,7 +183,7 @@ CREATE TABLE API_EXE_TIME_SEC_SUMMARY (
   minutes NUMBER(5),
   seconds NUMBER(5),
   time NUMBER(19),
-  PRIMARY KEY (api, version, apiPublisher, context, year, month, day, hour, minutes, seconds, mediationName)
+  PRIMARY KEY (api, version, apiPublisher, context, year, month, day, hour, minutes, seconds, mediationName,tenantDomain)
 );
 
 CREATE TABLE API_REQ_GEO_LOC_SUMMARY (
