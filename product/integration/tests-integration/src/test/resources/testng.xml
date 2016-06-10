@@ -3,12 +3,6 @@
 <suite name="Analytics-APIM-features-test-suite" parallel="false">
     <parameter name="useDefaultListeners" value="false"/>
 
-    <test name="rest-capp-upload-test" preserve-order="true" parallel="false">
-        <classes>
-            <class name="org.wso2.analytics.apim.integration.tests.apim.cappdeployer.RestCappDeployerTestCase"/>
-        </classes>
-    </test>
-
     <test name="analytics-apim-tests" preserve-order="true" parallel="false" >
         <packages>
             <package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>
