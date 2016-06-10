@@ -11,11 +11,11 @@ CREATE TABLE IF NOT EXISTS `API_DESTINATION_SUMMARY` (
   `day` smallint(6) DEFAULT NULL,
   `time` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`destination`,`hostName`,`time`)
-); 
+);
 
 CREATE TABLE IF NOT EXISTS `API_FAULT_SUMMARY` (
   `api` varchar(100) NOT NULL DEFAULT '',
-  `version` varchar(100) NOT NULL DEFAULT '',	
+  `version` varchar(100) NOT NULL DEFAULT '',
   `apiPublisher` varchar(100) NOT NULL DEFAULT '',
   `consumerKey` varchar(100) DEFAULT NULL,
   `context` varchar(100) NOT NULL DEFAULT '',
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `API_FAULT_SUMMARY` (
   `day` smallint(6) DEFAULT NULL,
   `time` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`hostName`,`time`)
-); 
+);
 
 
 CREATE TABLE IF NOT EXISTS `API_REQUEST_SUMMARY` (
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `API_REQUEST_SUMMARY` (
   `day` smallint(6) DEFAULT NULL,
   `time` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`api`,`api_version`,`version`,`apiPublisher`,`consumerKey`,`userId`,`context`,`hostName`,`time`)
-); 
+);
 
 CREATE TABLE IF NOT EXISTS `API_Resource_USAGE_SUMMARY` (
   `api` varchar(100) NOT NULL DEFAULT '',
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `API_Resource_USAGE_SUMMARY` (
   `day` smallint(6) DEFAULT NULL,
   `time` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`api`,`version`,`apiPublisher`,`consumerKey`,`context`,`resourcePath`,`method`,`hostName`,`time`)
-); 
+);
 
 CREATE TABLE IF NOT EXISTS `API_RESPONSE_SUMMARY` (
   `api_version` varchar(100) NOT NULL DEFAULT '',
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `API_RESPONSE_SUMMARY` (
   `day` smallint(6) DEFAULT NULL,
   `time` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`api_version`,`apiPublisher`,`context`,`hostName`,`time`)
-); 
+);
 
 
 CREATE TABLE IF NOT EXISTS `API_VERSION_USAGE_SUMMARY` (
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `API_VERSION_USAGE_SUMMARY` (
   `day` smallint(6) DEFAULT NULL,
   `time` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`hostName`,`time`)
-); 
+);
 
 CREATE TABLE IF NOT EXISTS `API_THROTTLED_OUT_SUMMARY` (
   `api` varchar(100) NOT NULL DEFAULT '',
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `API_THROTTLED_OUT_SUMMARY` (
   `throttleout_count` int(11) DEFAULT NULL,
   `throttledOutReason` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`api`,`api_version`,`context`,`apiPublisher`,`applicationName`,`tenantDomain`,`year`,`month`,`day`,`time`,`throttledOutReason`)
-); 
+);
 
 CREATE TABLE IF NOT EXISTS `API_LAST_ACCESS_TIME_SUMMARY` (
   `tenantDomain` varchar(100) NOT NULL DEFAULT '',
@@ -128,11 +128,12 @@ CREATE TABLE IF NOT EXISTS `API_EXE_TME_DAY_SUMMARY` (
   `context` varchar(100) NOT NULL DEFAULT '',
   `mediationName` varchar(100) NOT NULL DEFAULT '',
   `executionTime` int(11) DEFAULT NULL,
+  `tenantDomain` varchar(100) NOT NULL DEFAULT '',
   `year` smallint(6) NOT NULL,
   `month` smallint(6) NOT NULL,
   `day` smallint(6) NOT NULL,
   `time` bigint(20),
-  PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`year`,`month`,`day`,`mediationName`)
+  PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`year`,`month`,`day`,`mediationName`,`tenantDomain`)
 );
 CREATE TABLE IF NOT EXISTS `API_EXE_TIME_HOUR_SUMMARY` (
   `api` varchar(100) NOT NULL DEFAULT '',
@@ -141,12 +142,13 @@ CREATE TABLE IF NOT EXISTS `API_EXE_TIME_HOUR_SUMMARY` (
   `context` varchar(100) NOT NULL DEFAULT '',
   `mediationName` varchar(100) NOT NULL DEFAULT '',
   `executionTime` int(11) DEFAULT NULL,
+  `tenantDomain` varchar(100) NOT NULL DEFAULT '',
   `year` smallint(6) NOT NULL,
   `month` smallint(6) NOT NULL,
   `day` smallint(6) NOT NULL,
   `hour` smallint(6) NOT NULL,
   `time` bigint(20),
-  PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`year`,`month`,`day`,`hour`,`mediationName`)
+  PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`year`,`month`,`day`,`hour`,`mediationName`,`tenantDomain`)
 );
 CREATE TABLE IF NOT EXISTS `API_EXE_TIME_MIN_SUMMARY` (
   `api` varchar(100) NOT NULL DEFAULT '',
@@ -155,13 +157,14 @@ CREATE TABLE IF NOT EXISTS `API_EXE_TIME_MIN_SUMMARY` (
   `context` varchar(100) NOT NULL DEFAULT '',
   `mediationName` varchar(100) NOT NULL DEFAULT '',
   `executionTime` int(11) DEFAULT NULL,
+  `tenantDomain` varchar(100) NOT NULL DEFAULT '',
   `year` smallint(6) NOT NULL,
   `month` smallint(6) NOT NULL,
   `day` smallint(6) NOT NULL,
   `hour` smallint(6) NOT NULL,
   `minutes` smallint(6) NOT NULL,
   `time` bigint(20),
-  PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`year`,`month`,`day`,`hour`,`minutes`,`mediationName`)
+  PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`year`,`month`,`day`,`hour`,`minutes`,`mediationName`,`tenantDomain`)
 );
 CREATE TABLE IF NOT EXISTS `API_EXE_TIME_SEC_SUMMARY` (
   `api` varchar(100) NOT NULL DEFAULT '',
@@ -170,6 +173,7 @@ CREATE TABLE IF NOT EXISTS `API_EXE_TIME_SEC_SUMMARY` (
   `context` varchar(100) NOT NULL DEFAULT '',
   `mediationName` varchar(100) NOT NULL DEFAULT '',
   `executionTime` int(11) DEFAULT NULL,
+  `tenantDomain` varchar(100) NOT NULL DEFAULT '',
   `year` smallint(6) NOT NULL,
   `month` smallint(6) NOT NULL,
   `day` smallint(6) NOT NULL,
@@ -177,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `API_EXE_TIME_SEC_SUMMARY` (
   `minutes` smallint(6) NOT NULL,
   `seconds` smallint(6) NOT NULL,
   `time` bigint(20),
-  PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`year`,`month`,`day`,`hour`,`minutes`,`seconds`,`mediationName`)
+  PRIMARY KEY (`api`,`version`,`apiPublisher`,`context`,`year`,`month`,`day`,`hour`,`minutes`,`seconds`,`mediationName`,`tenantDomain`)
 );
 CREATE TABLE IF NOT EXISTS `API_REQ_GEO_LOC_SUMMARY` (
   `api` varchar(100) NOT NULL DEFAULT '',
