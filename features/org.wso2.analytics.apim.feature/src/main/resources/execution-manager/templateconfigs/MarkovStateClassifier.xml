@@ -1,1 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><templateConfiguration from="APIMAnalytics" name="MarkovStateClassifier" type="MarkovStateClassifier"><description>Clasiffier configurations for Request Patterns</description><executionParameters>null</executionParameters><parameters><parameter name="transitionPeriod"><value>60 min</value></parameter></parameters></templateConfiguration>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenarioConfiguration domain="APIMAnalytics" name="MarkovStateClassifier" scenario="MarkovStateClassifier">
+	<description>Clasiffier configurations for Request Patterns</description>
+	<executionParameters>null</executionParameters>
+	<parameters>
+		<parameter name="transitionPeriod">
+			<value>60 min</value>
+		</parameter>
+	</parameters>
+</scenarioConfiguration>

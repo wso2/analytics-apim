@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templateConfiguration from="APIMAnalytics"
-	name="AbnormalTierAvailabilityAlert" type="AbnormalTierUsageAlert">
+<scenarioConfiguration  domain="APIMAnalytics"
+	name="AbnormalTierAvailabilityAlert" scenario="AbnormalTierUsageAlert">
 	<description>Abnormal tier usage alerts</description>
-	<executionParameters>0 0 23 * * ?</executionParameters>
 	<parameters>
 		<parameter name="percentile">
 			<value>0.05</value>
@@ -20,4 +19,4 @@
             <value>2</value>
         </parameter>
 	</parameters>
-</templateConfiguration>
+</scenarioConfiguration>

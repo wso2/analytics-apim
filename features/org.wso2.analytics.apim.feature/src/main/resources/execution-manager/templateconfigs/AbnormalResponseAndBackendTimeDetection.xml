@@ -1,1 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><templateConfiguration from="APIMAnalytics" name="AbnormalResponseAndBackendTimeDetection" type="AbnormalResponseAndBackendTimeDetection"><description>Detects abnormal backend time and response time</description><parameters><parameter name="responseTimeSeverity"><value>2</value></parameter><parameter name="backendTimeSeverity"><value>3</value></parameter></parameters></templateConfiguration>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenarioConfiguration  domain="APIMAnalytics" name="AbnormalResponseAndBackendTimeDetection"
+					   scenario="AbnormalResponseAndBackendTimeDetection">
+	<description>Detects abnormal backend time and response time</description>
+	<parameters>
+		<parameter name="responseTimeSeverity">
+			<value>2</value>
+		</parameter>
+		<parameter name="backendTimeSeverity">
+			<value>3</value>
+		</parameter>
+	</parameters>
+</scenarioConfiguration>

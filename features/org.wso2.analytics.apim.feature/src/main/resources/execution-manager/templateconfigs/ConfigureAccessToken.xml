@@ -1,1 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><templateConfiguration from="APIMAnalytics" name="ConfigureAccessToken" type="Configure access token"><description>Configure access token to analyze data</description><executionParameters>0 0 12 1/7 * ? *</executionParameters><parameters><parameter name="lowerPercentile"><value>0.10</value></parameter><parameter name="upperPercentile"><value>0.95</value></parameter></parameters></templateConfiguration>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenarioConfiguration  domain="APIMAnalytics" name="ConfigureAccessToken" scenario="Configure access token">
+	<description>Configure access token to analyze data</description>
+	<parameters>
+		<parameter name="lowerPercentile">
+			<value>0.10</value>
+		</parameter>
+		<parameter name="upperPercentile">
+			<value>0.95</value>
+		</parameter>
+	</parameters>
+</scenarioConfiguration>

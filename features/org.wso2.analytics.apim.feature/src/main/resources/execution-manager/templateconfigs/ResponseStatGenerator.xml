@@ -1,1 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><templateConfiguration from="APIMAnalytics" name="ResponseStatGenerator" type="Response stat generator"><description>Response percentile values</description><executionParameters>0 0 23 * * ?</executionParameters><parameters><parameter name="upperPercentileRespondTime"><value>0.95</value></parameter><parameter name="upperPercentilebackendTime"><value>0.95</value></parameter></parameters></templateConfiguration>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenarioConfiguration domain="APIMAnalytics" name="ResponseStatGenerator" scenario="Response stat generator">
+	<description>Response percentile values</description>
+	<parameters>
+		<parameter name="upperPercentileRespondTime">
+			<value>0.95</value>
+		</parameter>
+		<parameter name="upperPercentilebackendTime">
+			<value>0.95</value>
+		</parameter>
+	</parameters>
+</scenarioConfiguration>

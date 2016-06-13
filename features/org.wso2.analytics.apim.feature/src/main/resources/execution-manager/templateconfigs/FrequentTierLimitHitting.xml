@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templateConfiguration from="APIMAnalytics" name="FrequentTierLimitHitting" type="FrequentTierLimitHitting">
+<scenarioConfiguration domain="APIMAnalytics" name="FrequentTierLimitHitting" scenario="FrequentTierLimitHitting">
 	<description>Frequent hitting of tier limits</description>
 	<parameters>
 		<parameter name="timeInterval">
@@ -15,4 +15,4 @@
 			<value>3</value>
 		</parameter>
 	</parameters>
-</templateConfiguration>
+</scenarioConfiguration>

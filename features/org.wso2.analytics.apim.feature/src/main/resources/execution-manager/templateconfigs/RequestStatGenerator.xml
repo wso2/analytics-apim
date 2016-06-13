@@ -1,1 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><templateConfiguration from="APIMAnalytics" name="RequestStatGenerator" type="RequestStatGenerator"><description>To generate request statistics</description><executionParameters>0 0 23 * * ?</executionParameters><parameters><parameter name="upperPercentile"><value>0.98</value></parameter><parameter name="lowerPercentile"><value>0.05</value></parameter></parameters></templateConfiguration>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenarioConfiguration domain="APIMAnalytics" name="RequestStatGenerator" scenario="RequestStatGenerator">
+	<description>To generate request statistics</description>
+	<parameters>
+		<parameter name="upperPercentile">
+			<value>0.98</value>
+		</parameter>
+		<parameter name="lowerPercentile">
+			<value>0.05</value>
+		</parameter>
+	</parameters>
+</scenarioConfiguration>

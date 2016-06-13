@@ -15,16 +15,17 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<templateDomain name="APIMAnalytics">
+<domain name="APIMAnalytics">
     <description>Real-time and batch API Analytics.</description>
-    <templates>
+    <scenarios>
 
-        <template name="FrequentTierLimitHitting">
+
+
+        <scenario type="FrequentTierLimitHitting">
             <description>Detects frequent hitting of the tier limit</description>
-            <executionType>realtime</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="realtime">
+                    <![CDATA[
 /* Enter a unique ExecutionPlan */
 @Plan:name('APIMAnalytics-FrequentTierLimitHitting')
 
@@ -87,10 +88,9 @@ insert into allAlertsStream;
 from suppressedTemporaryUserStream
 select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
-
-
-                 ]]>
-            </script>
+]]>
+                </template>
+            </templates>
             <parameters>
                 <parameter name="timeInterval" type="string">
                     <displayName>Time Interval</displayName>
@@ -117,14 +117,13 @@ insert into allAlertsStream;
                     <options>1, 2, 3</options>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
-        <template name="AbnormalRequestCountDetection">
+        <scenario type="AbnormalRequestCountDetection">
             <description>Detects abnormal request count</description>
-            <executionType>realtime</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="realtime">
+                    <![CDATA[
 /* Enter a unique ExecutionPlan */
 
 
@@ -194,10 +193,9 @@ insert into abnormalRequestsPerMinAlertStream ;
 from abnormalRequestsPerMinAlertStream
 select 'abnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') , ' detected during last minute by userId:',userId,' using application ', applicationName,' owned by ', applicationOwner,' for http ', method,' method of resource template ', resourceTemplate,' in api :', api,', abnormal request count:', requestsPerMin, ".") as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;
-
-
                  ]]>
-            </script>
+                </template>
+            </templates>
             <parameters>
                 <parameter name="alertSuppressionPeriod" type="long">
                     <displayName>Alert Suppression Period in Minutes</displayName>
@@ -211,14 +209,13 @@ insert into allApimAlertStream;
                     <options>1, 2, 3</options>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
-        <template name="AbnormalResponseAndBackendTimeDetection">
+        <scenario type="AbnormalResponseAndBackendTimeDetection">
             <description>Detects abnormal backend time and response time</description>
-            <executionType>realtime</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="realtime">
+                    <![CDATA[
 /* Enter a unique ExecutionPlan */
 @Plan:name('APIMAnalytics-AbnormalResponseAndBackendTimeDetection')
 
@@ -280,10 +277,9 @@ insert into allApimAlertStream;
 from abnormalBackendTimeAlertStream
 select 'abnormalBackendTime' as type, tenantDomain, str:concat('Abnormal backend response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:', api,' of tenant domain:',tenantDomain,', threshold value:',backendPercentile, 'ms.') as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;
-
-
                  ]]>
-            </script>
+                </template>
+            </templates>
             <parameters>
                 <parameter name="responseTimeSeverity" type="int">
                     <displayName>Severity Level of Abnormal Response Time</displayName>
@@ -298,15 +294,13 @@ insert into allApimAlertStream;
                     <options>1, 2, 3</options>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
-
-        <template name="RequestPatternChangeDetection">
+        <scenario type="RequestPatternChangeDetection">
             <description>Change the configuration of request pattern detection</description>
-            <executionType>realtime</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="realtime">
+                    <![CDATA[
              @Plan:name('APIMAnalytics-APIRequestPatternChangeAnalysisMetric')
 
 
@@ -386,7 +380,8 @@ select 'RequestPatternChanged' as type, tenantDomain, str:concat('Abnormal reque
 insert into all_apim_alerts_stream;
 
                  ]]>
-            </script>
+                </template>
+            </templates>
             <parameters>
                 <parameter name="regularAPITransitions" type="int">
                     <displayName>Regular API Transactions</displayName>
@@ -420,15 +415,13 @@ insert into all_apim_alerts_stream;
                     <options>1, 2, 3</options>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
-
-
-        <template name="MarkovStateClassifier">
+        <scenario type="MarkovStateClassifier">
             <description>Clasiffier configurations for Request Patterns</description>
-            <executionType>realtime</executionType>
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="realtime">
+                    <![CDATA[
 /* Enter a unique ExecutionPlan */
 @Plan:name('APIMAnalytics-MarkovStateClassifier')
 
@@ -437,12 +430,7 @@ insert into all_apim_alerts_stream;
 
 /* define streams/tables and write queries here ... */
 
-
-
-
 @Plan:trace('false')
-
-
 
 @Import('org.wso2.apimgt.statistics.request:1.1.0')
 define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
@@ -454,11 +442,9 @@ define stream transitionStream (startState string, endState string, consumerKey 
 @from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
 
-
 from request
 select context,method,resourceTemplate, tenantDomain, str:concat(method,' ',context,' ',resourceTemplate) as state, userId as userId, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner
 insert into stateStream;
-
 
 from request as r left outer join RequestCountPerConsumerKeyTable
 on (r.consumerKey == RequestCountPerConsumerKeyTable.consumerKey)
@@ -478,7 +464,8 @@ from every a = stateStream -> b = stateStream[(userId == a.userId) and (consumer
 select a.state as startState, b.state as endState, a.consumerKey as consumerKey, a.applicationName, a.applicationOwner, b.userId, b.tenantDomain, b.requestTimestamp
 insert into transitionStream;
                                      ]]>
-            </script>
+                </template>
+            </templates>
             <parameters>
                 <parameter name="transitionPeriod" type="string">
                     <displayName>Transition Period</displayName>
@@ -486,16 +473,13 @@ insert into transitionStream;
                     <defaultValue>60 min</defaultValue>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
-
-
-        <template name="UnusualIPAccessTemplate">
+        <scenario type="UnusualIPAccessTemplate">
             <description>To detect accesses from new or rarely used hostnames</description>
-            <executionType>realtime</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="realtime">
+                    <![CDATA[
                /* Enter a unique ExecutionPlan */
 @Plan:name('APIMAnalytics-UnusualIPAccessAlert')
 
@@ -584,7 +568,8 @@ from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > 24*60*60]
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;
                  ]]>
-            </script>
+                </template>
+            </templates>
             <parameters>
                 <parameter name="maxDaysBetweenAccess" type="int">
                     <displayName>Maximum Days Between Last Access</displayName>
@@ -599,14 +584,13 @@ insert into IPAccessSummary;
                     <options>1, 2, 3</options>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
-        <template name="HealthAvailabilityPerMinAlert">
+        <scenario type="HealthAvailabilityPerMinAlert">
             <description>To monitor the API health</description>
-            <executionType>realtime</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="realtime">
+                    <![CDATA[
 /* Enter a unique ExecutionPlan */
 
 
@@ -793,7 +777,8 @@ insert into IPAccessSummary;
 				on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
 
                  ]]>
-            </script>
+                </template>
+            </templates>
             <parameters>
                 <parameter name="responsePerMinPattern" type="int">
                     <displayName>Number of continuous responses</displayName>
@@ -821,18 +806,18 @@ insert into IPAccessSummary;
                     <options>1, 2, 3</options>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
 
-
-
-
-        <template name="Configure access token">
+        <scenario type="Configure access token">
             <description>Configure access token to analyse data</description>
-            <executionType>batch</executionType>
+            <templates>
+                <template type="batch">
+                    <executionParameters>
+                    <cron>0 0 12 1/7 * ? *</cron>
 
-            <script>
-                <![CDATA[
+                    <sparkScript>
+                        <![CDATA[
                   create temporary table accessTokenRefreshTime using CarbonAnalytics options (tableName "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE", schema "userId STRING, clientId STRING, scopes STRING, timeDifference LONG, timestamp LONG");
 
 create temporary table accessTokenRefreshAvrgTime using CarbonAnalytics options (tableName "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHSUMMARYTABLE", schema "userId STRING -i, clientId STRING -i, scopes STRING -i, minTimeDifference DOUBLE -i, maxTimeDifference DOUBLE -i", primaryKeys "userId, clientId, scopes");
@@ -846,7 +831,13 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
       GROUP BY userId, clientId, scopes;
 
                  ]]>
-            </script>
+                    </sparkScript>
+
+                    </executionParameters>
+                </template>
+
+            </templates>
+
             <parameters>
                 <parameter name="lowerPercentile" type="double">
                     <displayName>Lower percentile</displayName>
@@ -861,17 +852,19 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <defaultValue>0.95</defaultValue>
                 </parameter>
             </parameters>
-        </template>
 
 
+    </scenario>
 
 
-        <template name="AbnormalTierUsageAlert">
+        <scenario type="AbnormalTierUsageAlert">
             <description>This is the CEP stream for Abnormal Tier Usage</description>
-            <executionType>batch</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="batch">
+                    <executionParameters>
+                        <cron>0 0 23 * * ?</cron>
+                        <sparkScript>
+                            <![CDATA[
 
                 CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_REQUESTS
                 USING CarbonAnalytics
@@ -951,7 +944,12 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
                WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
                  ]]>
-            </script>
+                        </sparkScript>
+                    </executionParameters>
+                </template>
+            </templates>
+
+
             <parameters>
 
                 <parameter name="percentile" type="double">
@@ -960,7 +958,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <defaultValue>0.05</defaultValue>
                 </parameter>
                 <parameter name="alertStartDate" type="string">
-                    <displayName>Alert Start  Date</displayName>
+                    <displayName>Alert Start Date</displayName>
                     <description>Alerting will be activated from this date onwards. format: dd/mm/yyyy</description>
                     <defaultValue>12/2/2016</defaultValue>
                 </parameter>
@@ -971,7 +969,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 </parameter>
                 <parameter name="daysConsiderForAbnormalTierAvailability" type="int">
                     <displayName>Days Consider for Abnormal Tier Availability Calculation</displayName>
-                    <description>Number of previous days consider for abnormal tier availability calculation.</description>
+                    <description>Number of previous days consider for abnormal tier availability calculation.
+                    </description>
                     <defaultValue>5</defaultValue>
                 </parameter>
                 <parameter name="severity" type="int">
@@ -982,17 +981,17 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 </parameter>
 
             </parameters>
-        </template>
+        </scenario>
 
 
-
-
-        <template name="RequestPerApi">
+        <scenario type="RequestPerApi">
             <description>To create RequestPerApi percentile values</description>
-            <executionType>batch</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+            <template type="batch">
+                <executionParameters>
+                    <cron>0 0 12 * * ?</cron>
+                    <sparkScript>
+                        <![CDATA[
                 CREATE TEMPORARY TABLE REQUEST_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinPerApiStream");
 
         CREATE TEMPORARY TABLE REQUEST_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE",
@@ -1007,25 +1006,30 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         from REQUEST_PER_API_INFO group by api_version;
 
                  ]]>
-            </script>
+                    </sparkScript>
+                </executionParameters>
+            </template>
+            </templates>
+
             <parameters>
                 <parameter name="lowerPercentile" type="double">
                     <displayName>Lower percentile</displayName>
-                    <description>Lower percentile value to calculate request per min per api lower percentile</description>
+                    <description>Lower percentile value to calculate request per min per api lower percentile
+                    </description>
                     <defaultValue>0.05</defaultValue>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
 
-
-
-        <template name="RequestStatGenerator">
+        <scenario type="RequestStatGenerator">
             <description>To generate request stats</description>
-            <executionType>batch</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="batch">
+                    <executionParameters>
+                        <cron>0 0 23 * * ?</cron>
+                        <sparkScript>
+                            <![CDATA[
                 CREATE TEMPORARY TABLE REQUEST_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinStream");
 
         CREATE TEMPORARY TABLE REQUEST_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE",
@@ -1043,7 +1047,11 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         from REQUEST_INFO group by api_version, userId, consumerKey, resourceTemplate, method;
 
                  ]]>
-            </script>
+                        </sparkScript>
+                    </executionParameters>
+                </template>
+            </templates>
+
             <parameters>
                 <parameter name="upperPercentile" type="double">
                     <displayName>Upper Percentile</displayName>
@@ -1054,19 +1062,21 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
                 <parameter name="lowerPercentile" type="double">
                     <displayName>lowerPercentile</displayName>
-                    <description>Lower percentile value to calculate requests per min </description>
+                    <description>Lower percentile value to calculate requests per min</description>
                     <defaultValue>0.05</defaultValue>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
 
-        <template name="ResponsePerApiStatGenerator">
+        <scenario type="ResponsePerApiStatGenerator">
             <description>To create Response per api percentile values</description>
-            <executionType>batch</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="batch">
+                    <executionParameters>
+                        <cron>0 0 23 * * ?</cron>
+                        <sparkScript>
+                            <![CDATA[
                 CREATE TEMPORARY TABLE RESPONSE_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_responsePerMinPerApiStream");
 
         CREATE TEMPORARY TABLE RESPONSE_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE",
@@ -1081,7 +1091,11 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         from RESPONSE_PER_API_INFO group by api_version;
 
                  ]]>
-            </script>
+                        </sparkScript>
+                    </executionParameters>
+                </template>
+            </templates>
+
             <parameters>
                 <parameter name="lowerPercentile" type="double">
                     <displayName>Lower percentile</displayName>
@@ -1089,17 +1103,17 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <defaultValue>0.05</defaultValue>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
 
-
-
-        <template name="Response time">
+        <scenario type="Response time">
             <description>To create response time percentile values</description>
-            <executionType>batch</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="batch">
+                    <executionParameters>
+                        <cron>0 0 22 * * ?</cron>
+                        <sparkScript>
+                            <![CDATA[
                 CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_RESPONSE",schema "_timestamp LONG ");
 
         CREATE TEMPORARY TABLE RESPONSE_PER_TIME_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE",
@@ -1113,7 +1127,11 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
         from RESPONSE_INFO where _timestamp>(now('')-86400000) group by api_version;
                  ]]>
-            </script>
+                        </sparkScript>
+                    </executionParameters>
+                </template>
+            </templates>
+
             <parameters>
                 <parameter name="upperPercentile" type="double">
                     <displayName>Upper percentile</displayName>
@@ -1121,16 +1139,17 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <defaultValue>0.95</defaultValue>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
 
-
-        <template name="Response stat generator">
+        <scenario type="Response stat generator">
             <description>To create response percentile values</description>
-            <executionType>batch</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="batch">
+                    <executionParameters>
+                        <cron>0 0 23 * * ?</cron>
+                        <sparkScript>
+                            <![CDATA[
                 CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName
         "ORG_WSO2_APIMGT_STATISTICS_RESPONSE",schema "_timestamp LONG ");
 
@@ -1148,7 +1167,12 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         from RESPONSE_INFO where _timestamp>(now('')-86400000) group by api_version, tenantDomain, resourceTemplate, method;
 
                  ]]>
-            </script>
+                        </sparkScript>
+                    </executionParameters>
+                </template>
+            </templates>
+
+
             <parameters>
                 <parameter name="upperPercentileRespondTime" type="double">
                     <displayName>Upper percentile response time</displayName>
@@ -1161,14 +1185,16 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                     <defaultValue>0.95</defaultValue>
                 </parameter>
             </parameters>
-        </template>
+        </scenario>
 
-        <template name="APIM_GEO_LOCATION_STATS">
+        <scenario type="APIM_GEO_LOCATION_STATS">
             <description>To generate Geo locations-based statistics</description>
-            <executionType>batch</executionType>
-
-            <script>
-                <![CDATA[
+            <templates>
+                <template type="batch">
+                    <executionParameters>
+                        <cron>0 0 23 * * ?</cron>
+                        <sparkScript>
+                            <![CDATA[
     CREATE TEMPORARY TABLE APIGeoLocationData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQ_GEO_LOC_SUMMARY");
     create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
     CREATE TEMPORARY TABLE API_REQUEST_GEOIP_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_GEOIP_SUMMARY",
@@ -1219,15 +1245,28 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
 
                  ]]>
-            </script>
+                        </sparkScript>
 
-        </template>
+                    </executionParameters>
+                </template>
+            </templates>
+
+            <parameters>
+                <parameter name="dummyParameter" type="double">
+                    <displayName>dummy parameter</displayName>
+                    <description>This is a dummy parameter</description>
+                    <defaultValue>0.95</defaultValue>
+                </parameter>
+
+            </parameters>
+
+        </scenario>
 
 
-    </templates>
+    </scenarios>
 
 
     <streams>
 
     </streams>
-</templateDomain>
+</domain>
