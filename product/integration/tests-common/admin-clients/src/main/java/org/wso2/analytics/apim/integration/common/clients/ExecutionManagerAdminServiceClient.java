@@ -20,8 +20,9 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.TemplateConfigurationDTO;
-import org.wso2.carbon.event.execution.manager.admin.dto.domain.xsd.TemplateDomainDTO;
+import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ScenarioConfigurationInfoDTO;
+import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
+import org.wso2.carbon.event.execution.manager.admin.dto.domain.xsd.DomainInfoDTO ;
 import org.wso2.carbon.event.execution.manager.stub.ExecutionManagerAdminServiceStub;
 
 import java.rmi.RemoteException;
@@ -50,18 +51,18 @@ public class ExecutionManagerAdminServiceClient {
     }
 
 
-    public TemplateDomainDTO[] getAllDomains() throws RemoteException {
+    public DomainInfoDTO[] getAllDomains() throws RemoteException {
         try {
-            return executionManagerAdminServiceStub.getAllDomains();
+            return executionManagerAdminServiceStub.getAllDomainInfos();
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
         }
     }
 
-    public TemplateDomainDTO getDomain(String domainName) throws RemoteException {
+    public DomainInfoDTO getDomain(String domainName) throws RemoteException {
         try {
-            return executionManagerAdminServiceStub.getDomain(domainName);
+            return executionManagerAdminServiceStub.getDomainInfo(domainName);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
@@ -69,7 +70,7 @@ public class ExecutionManagerAdminServiceClient {
     }
 
 
-    public TemplateConfigurationDTO getConfiguration(String domainName, String configurationName)
+    public ScenarioConfigurationDTO getConfiguration(String domainName, String configurationName)
             throws RemoteException {
         try {
             return executionManagerAdminServiceStub.getConfiguration(domainName, configurationName);
@@ -79,16 +80,16 @@ public class ExecutionManagerAdminServiceClient {
         }
     }
 
-    public TemplateConfigurationDTO[] getConfigurations(String domainName) throws RemoteException {
+    public ScenarioConfigurationInfoDTO[] getConfigurations(String domainName) throws RemoteException {
         try {
-            return executionManagerAdminServiceStub.getConfigurations(domainName);
+            return executionManagerAdminServiceStub.getConfigurationInfos(domainName);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
         }
     }
 
-    public boolean saveConfiguration(TemplateConfigurationDTO templateConfigDTO) throws RemoteException {
+    public String[] saveConfiguration(ScenarioConfigurationDTO templateConfigDTO) throws RemoteException {
         try {
             return executionManagerAdminServiceStub.saveConfiguration(templateConfigDTO);
         } catch (RemoteException e) {
@@ -109,7 +110,7 @@ public class ExecutionManagerAdminServiceClient {
     public int getConfigurationsCount(String domainName) throws RemoteException {
         int count = 0;
         try {
-            TemplateConfigurationDTO[] configs = executionManagerAdminServiceStub.getConfigurations(domainName);
+            ScenarioConfigurationInfoDTO[] configs = executionManagerAdminServiceStub.getConfigurationInfos(domainName);
             if (configs != null) {
                 count = configs.length;
             }

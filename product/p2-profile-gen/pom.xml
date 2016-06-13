@@ -108,7 +108,7 @@
                                     org.wso2.carbon.analytics:org.wso2.carbon.analytics.spark.event.feature:${carbon.analytics.version}
                                 </featureArtifactDef>
 				<featureArtifactDef>
-                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.spark.template.deployer.feature:${carbon.analytics.exec.mgr.version}
+                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.spark.template.deployer.feature:${carbon.analytics.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon.analytics:org.wso2.carbon.analytics.api.feature:${carbon.analytics.version}
@@ -220,7 +220,7 @@
                                     org.wso2.carbon.analytics:org.wso2.carbon.analytics.eventsink.feature:${carbon.analytics.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.eventtable.feature:${carbon.analytics.eventtable.version}
+                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.eventtable.feature:${carbon.analytics.version}
                                 </featureArtifactDef>
                                 <!-- ************** END - Data Bridge ************ -->
 
@@ -325,7 +325,7 @@
 
                                 <!-- START - execution manager Features -->
                                 <featureArtifactDef>
-                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.execution.manager.feature:${carbon.analytics.common.exec.mgr.version}
+                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.execution.manager.feature:${carbon.analytics.common.version}
                                 </featureArtifactDef>
                                 <!-- spark deployer included in analytics-processors feature -->
                                 <!-- ************** END - Execution manager features ************ -->
@@ -424,7 +424,7 @@
                                 </feature>
 				<feature>
                                     <id>org.wso2.carbon.analytics.spark.template.deployer.feature.group</id>
-                                    <version>${carbon.analytics.exec.mgr.version}</version>
+                                    <version>${carbon.analytics.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.analytics.api.feature.group</id>
@@ -564,7 +564,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.analytics.eventtable.feature.group</id>
-                                    <version>${carbon.analytics.eventtable.version}</version>
+                                    <version>${carbon.analytics.version}</version>
                                 </feature>
                                 <!-- ************** END - Data Bridge ************ -->
 
@@ -691,7 +691,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.event.execution.manager.feature.group</id>
-                                    <version>${carbon.analytics.common.exec.mgr.version}</version>
+                                    <version>${carbon.analytics.common.version}</version>
                                 </feature>
 
                                 <!-- ************** END - EVENT PROCESSING FEATURES ************ -->

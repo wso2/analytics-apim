@@ -25,8 +25,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.analytics.apim.integration.common.clients.ExecutionManagerAdminServiceClient;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
-import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ParameterDTOE;
-import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.TemplateConfigurationDTO;
+import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 
 import java.util.Calendar;
@@ -117,7 +116,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Tier Usage Alert")
     public void testAbnormalTierUsageAlert() throws Exception {
 
-        TemplateConfigurationDTO testDomain = executionManagerAdminServiceClient.getConfiguration("APIMAnalytics",
+        ScenarioConfigurationDTO testDomain = executionManagerAdminServiceClient.getConfiguration("APIMAnalytics",
                 "AbnormalTierAvailabilityAlert");
 
         if (testDomain == null) {

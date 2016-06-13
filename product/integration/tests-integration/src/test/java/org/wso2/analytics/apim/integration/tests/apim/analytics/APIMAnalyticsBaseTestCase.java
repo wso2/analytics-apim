@@ -38,8 +38,7 @@ import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminService
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
-import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.TemplateConfigurationDTO;
-import org.wso2.carbon.event.execution.manager.admin.dto.domain.xsd.ParameterDTO;
+import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
 import org.wso2.carbon.logging.view.stub.LogViewerLogViewerException;
@@ -300,19 +299,19 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         return configElement.toString();
     }
 
-    protected void saveConfiguration(TemplateConfigurationDTO templateConfigDTO) throws RemoteException {
+    protected void saveConfiguration(ScenarioConfigurationDTO templateConfigDTO) throws RemoteException {
         executionManagerAdminServiceClient.saveConfiguration(templateConfigDTO);
     }
 
-    protected ParameterDTO getParameterDTO(String name, String defaultValue, String type){
-        ParameterDTO parameterDTO = new ParameterDTO();
-        parameterDTO.setName(name);
-        parameterDTO.setDefaultValue(defaultValue);
-        parameterDTO.setType(type);
-        return parameterDTO;
-    }
+//    protected ParameterDTOE getParameterDTO(String name, String defaultValue, String type){
+//        ParameterDTOE parameterDTO = new ParameterDTOE();
+//        parameterDTO.setName(name);
+//        parameterDTO.setDefaultValue(defaultValue);
+//        parameterDTO.setType(type);
+//        return parameterDTO;
+//    }
 
-    protected TemplateConfigurationDTO getConfiguration (String domainName, String configurationName) throws RemoteException {
+    protected ScenarioConfigurationDTO getConfiguration (String domainName, String configurationName) throws RemoteException {
         return executionManagerAdminServiceClient.getConfiguration(domainName,configurationName);
     }
 
