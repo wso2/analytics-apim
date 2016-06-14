@@ -324,57 +324,64 @@ define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
 define table RequestPatternAlertSummaryTable(applicationName string, applicationOwner string, userId string, msg string, lastAlertedTimestamp long);
 
 /****************************************************** Calculate Miss Probability *******************************************************************************/
+@info(name = 'query1')
 from metricStream[not((startState == MarkovModelTable.startState and endState == MarkovModelTable.endState and consumerKey == MarkovModelTable.consumerKey) in MarkovModelTable)]
 select userId, requestTimestamp, startState , endState, 1.0 as MissProbability, MarkovModelTable.consumerKey, applicationName, applicationOwner, tenantDomain
 insert into metricValueStreamTemp;
 
+@info(name = 'query2')
 from metricStream as ms join MarkovModelTable
 on (ms.startState == MarkovModelTable.startState and ms.endState == MarkovModelTable.endState and ms.consumerKey == MarkovModelTable.consumerKey)
 select ms.userId, ms.requestTimestamp, ms.startState ,ms.endState, (1- MarkovModelTable.probability) as MissProbability, MarkovModelTable.consumerKey,  ms.applicationName, ms.applicationOwner, ms.tenantDomain
 insert into metricValueStreamTemp;
 
 /****************************************************** fetch request count for consumerkey *******************************************************************************/
-
+@info(name = 'query3')
 from metricValueStreamTemp as m join RequestCountPerConsumerKeyTable
 on (consumerKey == RequestCountPerConsumerKeyTable.consumerKey)
 select userId, requestTimestamp, startState, endState, MissProbability, m.consumerKey, m.applicationName, m.applicationOwner , m.tenantDomain,  count
 insert into metricValueStream;
 
 /****************************************************** Normalize Miss Probability ******************************************************************************/
+@info(name = 'query4')
 from metricValueStream#window.length($regularAPITransitions)
 select userId, requestTimestamp, startState, endState, avg (MissProbability) as NormalizeMissProbability, consumerKey, applicationName, applicationOwner, tenantDomain, count
 insert into NormalizeMissProbabilityStream;
 
 /****************************************************** Compare Normalize Miss Probability with Threshold *******************************************************/
+@info(name = 'query5')
 from NormalizeMissProbabilityStream [ NormalizeMissProbability > $probabilityThreshold and count >= $requestCount]
 select userId, requestTimestamp,  str:concat(startState,' to ',endState) as transition, NormalizeMissProbability as miss_probability, consumerKey, applicationName, applicationOwner, tenantDomain
 insert into IntermediateFraudStream;
 
-
+@info(name = 'query6')
 from IntermediateFraudStream
 select userId, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' ,' Suspicious API transition is: ',transition) as msg , transition, (time:timestampInMilliseconds()) as alertTimestamp
 insert into requestPatternChangedStreamTemp;
 
-
+@info(name = 'query7')
 from requestPatternChangedStreamTemp as r left outer join RequestPatternAlertSummaryTable
 on (applicationName == RequestPatternAlertSummaryTable.applicationName   and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userId == RequestPatternAlertSummaryTable.userId and msg == RequestPatternAlertSummaryTable.msg)
 select r.applicationName, r.applicationOwner, r.tenantDomain, r.userId, r.msg, r.transition, alertTimestamp , ifThenElse(lastAlertedTimestamp is null, 0l , lastAlertedTimestamp) as lastAlertedTimestamp
 insert into requestPatternChangedStreamModified;
 
+@info(name = 'query8')
 from requestPatternChangedStreamModified [(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionPeriod]
 select userId, applicationName, applicationOwner, tenantDomain, msg, $severity as severity, alertTimestamp
 insert into requestPatternChangedStream;
 
+@info(name = 'query9')
 from requestPatternChangedStream[(applicationName == RequestPatternAlertSummaryTable.applicationName   and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userId == RequestPatternAlertSummaryTable.userId and msg == RequestPatternAlertSummaryTable.msg ) in RequestPatternAlertSummaryTable]
 select  applicationName, applicationOwner,userId, msg, alertTimestamp as lastAlertedTimestamp
 update RequestPatternAlertSummaryTable
 on (applicationName == RequestPatternAlertSummaryTable.applicationName and  applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userId == RequestPatternAlertSummaryTable.userId and msg == RequestPatternAlertSummaryTable.msg);
 
+@info(name = 'query10')
 from requestPatternChangedStream[not ((applicationName == RequestPatternAlertSummaryTable.applicationName and applicationOwner == RequestPatternAlertSummaryTable.applicationOwner and userId == RequestPatternAlertSummaryTable.userId and msg == RequestPatternAlertSummaryTable.msg) in RequestPatternAlertSummaryTable)]
 select  applicationName, applicationOwner,userId, msg,  alertTimestamp as lastAlertedTimestamp
 insert into RequestPatternAlertSummaryTable;
 
-
+@info(name = 'query11')
 from requestPatternChangedStreamModified[(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionPeriod]
 select 'RequestPatternChanged' as type, tenantDomain, str:concat('Abnormal request pattern detected by user :',userId,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
@@ -442,24 +449,29 @@ define stream transitionStream (startState string, endState string, consumerKey 
 @from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
 
+@info(name = 'query1')
 from request
 select context,method,resourceTemplate, tenantDomain, str:concat(method,' ',context,' ',resourceTemplate) as state, userId as userId, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner
 insert into stateStream;
 
+@info(name = 'query2')
 from request as r left outer join RequestCountPerConsumerKeyTable
 on (r.consumerKey == RequestCountPerConsumerKeyTable.consumerKey)
 select r.consumerKey , ifThenElse(count is null,1,count+1) as count
 insert into requestCountPerConsumerKeyTableStream;
 
+@info(name = 'query3')
 from requestCountPerConsumerKeyTableStream [count == 1]
 select consumerKey,count
 insert into RequestCountPerConsumerKeyTable;
 
+@info(name = 'query4')
 from requestCountPerConsumerKeyTableStream [count != 1]
 select consumerKey, count
 update RequestCountPerConsumerKeyTable
 on (consumerKey == RequestCountPerConsumerKeyTable.consumerKey);
 
+@info(name = 'query5')
 from every a = stateStream -> b = stateStream[(userId == a.userId) and (consumerKey == a.consumerKey)] within $transitionPeriod
 select a.state as startState, b.state as endState, a.consumerKey as consumerKey, a.applicationName, a.applicationOwner, b.userId, b.tenantDomain, b.requestTimestamp
 insert into transitionStream;
@@ -502,68 +514,82 @@ define table IPAccessSummary (userId string, consumerKey string, ip string, last
 define table IPAccessAlertCount (userId string, consumerKey string, requestCount long) ;
 
 -- Consumer key is already in the table
+@info(name = 'query1')
 from APIMRequest[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
 on api.consumerKey == ais.consumerKey and api.clientIp == ais.ip
 select api.consumerKey as consumerKey, api.tenantDomain, api.applicationName,  api.applicationOwner ,  api.userId as userId, api.clientIp as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate
 insert into TempStream;
 
 -- New consumer key
+@info(name = 'query2')
 from APIMRequest[not (consumerKey == IPAccessSummary.consumerKey in IPAccessSummary)]
 select userId, consumerKey, clientIp as ip, requestTime as lastAccessedDate
 insert into NewConsumerKeyStream;
 
+@info(name = 'query3')
 from NewConsumerKeyStream
 select userId, consumerKey, ip, lastAccessedDate
 insert into IPAccessSummary;
 
 
 -- Adding the alert count
+@info(name = 'query4')
 from NewConsumerKeyStream
 select userId, consumerKey, convert('1','long') as requestCount
 insert into IPAccessAlertCount;
 
+@info(name = 'query5')
 from TempStream as ts join IPAccessAlertCount as iaac
 on ts.consumerKey == iaac.consumerKey and ts.userId == iaac.userId
 select ts.consumerKey as consumerKey, ts.tenantDomain, ts.applicationName , ts.applicationOwner , ts.userId as userId, ts.requestHostName as requestHostName, ts.ip as ip, ts.requestTime as requestTime, ts.lastAccessedDate as lastAccessedDate, iaac.requestCount as requestCount
 insert into ExistingUserStream;
 
+@info(name = 'query6')
 from ExistingUserStream
 select userId, consumerKey, (requestCount + 1) as requestCount
 insert into IPAccessAlertCount;
 
 -- A new request source IP
 -- generate alert and add it to the table
+@info(name = 'query7')
 from ExistingUserStream[ip is null and requestCount > 500]
 select *
 insert into NewIPDetectedStream;
 
+@info(name = 'query8')
 from NewIPDetectedStream
 select "UnusualIPAccessAlert" as type, "A request from a new IP detected." as msg, $severity as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
+@info(name = 'query9')
 from NewIPDetectedStream
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;
 
 -- Check if the request for the IP is received after the threshold time gap
+@info(name = 'query10')
 from ExistingUserStream[(not (ip is null)) and requestCount > 500]
 select requestHostName, consumerKey, applicationName, applicationOwner, (requestTime - lastAccessedDate) as timeBetweenAccess, requestTime, userId, tenantDomain, lastAccessedDate
 insert into CheckAbnormalTimeBetweenAccessStream;
 
+@info(name = 'query11')
 from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > ($maxDaysBetweenAccess*24*60*60)]
 select *
 insert into AbnormalTimeBetweenAccessStream;
 
+@info(name = 'query12')
 from AbnormalTimeBetweenAccessStream
 select "UnusualIPAccessAlert" as type, "A request from an old IP detected." as msg, $severity as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream
+@info(name = 'query13')
 from alertIpAccessAbnormality
 select type, tenantDomain, str:concat("A request from a ", ifThenElse(str:contains(msg, 'old'), 'old','new'), " IP (", ip, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate
+@info(name = 'query14')
 from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > 24*60*60]
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;
@@ -751,26 +777,31 @@ insert into IPAccessSummary;
                                 insert into allApimAlertStream;
 
                                 /* update apiAvailability Table */
+@info(name = 'query17')
 
 				                from apiHealthMonitorAlertStream[((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
                                 select api_version, tenantDomain,msg as status
                                 update apiAvailabilityTable
                                 on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
 
+@info(name = 'query18')
                                 from apiHealthMonitorAlertStream[ not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
                                 select api_version, tenantDomain, msg as status
                                 insert into apiAvailabilityTable;
 
+@info(name = 'query19')
 				                from requestStream[(not ((api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain) in apiHealthMonitorAlertStreamTable)) and (not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable))]
                                 select api_version , tenantDomain, 'Available' as status
                                 insert into apiAvailabilityTable;
 
+@info(name = 'query20')
                                 from requestStream as r join apiHealthMonitorAlertStreamTable
                                 on (r.api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain )
                                 select r.api_version, r.tenantDomain, alertTimestamp
                                 insert into tempStream;
 
 
+@info(name = 'query21')
 				from tempStream[(time:timestampInMilliseconds() - alertTimestamp) >  $statusChangeTimeInterval]
 				select api_version , tenantDomain, 'Available' as status
 				update apiAvailabilityTable
@@ -814,10 +845,10 @@ insert into IPAccessSummary;
             <templates>
                 <template type="batch">
                     <executionParameters>
-                        <cron>0 0 12 1/7 * ? *</cron>
+                    <cron>0 0 12 1/7 * ? *</cron>
 
-                        <sparkScript>
-                            <![CDATA[
+                    <sparkScript>
+                        <![CDATA[
                   create temporary table accessTokenRefreshTime using CarbonAnalytics options (tableName "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE", schema "userId STRING, clientId STRING, scopes STRING, timeDifference LONG, timestamp LONG");
 
 create temporary table accessTokenRefreshAvrgTime using CarbonAnalytics options (tableName "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHSUMMARYTABLE", schema "userId STRING -i, clientId STRING -i, scopes STRING -i, minTimeDifference DOUBLE -i, maxTimeDifference DOUBLE -i", primaryKeys "userId, clientId, scopes");
@@ -831,7 +862,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
       GROUP BY userId, clientId, scopes;
 
                  ]]>
-                        </sparkScript>
+                    </sparkScript>
 
                     </executionParameters>
                 </template>
@@ -854,7 +885,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
             </parameters>
 
 
-        </scenario>
+    </scenario>
 
 
         <scenario type="AbnormalTierUsageAlert">
@@ -987,11 +1018,11 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         <scenario type="RequestPerApi">
             <description>To create RequestPerApi percentile values</description>
             <templates>
-                <template type="batch">
-                    <executionParameters>
-                        <cron>0 0 12 * * ?</cron>
-                        <sparkScript>
-                            <![CDATA[
+            <template type="batch">
+                <executionParameters>
+                    <cron>0 0 12 * * ?</cron>
+                    <sparkScript>
+                        <![CDATA[
                 CREATE TEMPORARY TABLE REQUEST_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinPerApiStream");
 
         CREATE TEMPORARY TABLE REQUEST_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE",
@@ -1006,9 +1037,9 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         from REQUEST_PER_API_INFO group by api_version;
 
                  ]]>
-                        </sparkScript>
-                    </executionParameters>
-                </template>
+                    </sparkScript>
+                </executionParameters>
+            </template>
             </templates>
 
             <parameters>
@@ -1260,7 +1291,9 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
         </scenario>
 
+
     </scenarios>
+
 
     <streams>
 

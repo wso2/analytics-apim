@@ -20,68 +20,82 @@ define table IPAccessSummary (userId string, consumerKey string, ip string, last
 define table IPAccessAlertCount (userId string, consumerKey string, requestCount long) ;
 
 -- Consumer key is already in the table
+@info(name = 'query1')
 from APIMRequest[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
 on api.consumerKey == ais.consumerKey and api.clientIp == ais.ip
 select api.consumerKey as consumerKey, api.tenantDomain, api.applicationName,  api.applicationOwner ,  api.userId as userId, api.clientIp as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate
 insert into TempStream;
 
 -- New consumer key
+@info(name = 'query2')
 from APIMRequest[not (consumerKey == IPAccessSummary.consumerKey in IPAccessSummary)]
 select userId, consumerKey, clientIp as ip, requestTime as lastAccessedDate
 insert into NewConsumerKeyStream;
 
+@info(name = 'query3')
 from NewConsumerKeyStream
 select userId, consumerKey, ip, lastAccessedDate
 insert into IPAccessSummary;
 
 
 -- Adding the alert count
+@info(name = 'query4')
 from NewConsumerKeyStream
 select userId, consumerKey, convert('1','long') as requestCount
 insert into IPAccessAlertCount;
 
+@info(name = 'query5')
 from TempStream as ts join IPAccessAlertCount as iaac
 on ts.consumerKey == iaac.consumerKey and ts.userId == iaac.userId
 select ts.consumerKey as consumerKey, ts.tenantDomain, ts.applicationName , ts.applicationOwner , ts.userId as userId, ts.requestHostName as requestHostName, ts.ip as ip, ts.requestTime as requestTime, ts.lastAccessedDate as lastAccessedDate, iaac.requestCount as requestCount
 insert into ExistingUserStream;
 
+@info(name = 'query6')
 from ExistingUserStream
 select userId, consumerKey, (requestCount + 1) as requestCount
 insert into IPAccessAlertCount;
 
 -- A new request source IP
 -- generate alert and add it to the table
+@info(name = 'query7')
 from ExistingUserStream[ip is null and requestCount > 500]
 select *
 insert into NewIPDetectedStream;
 
+@info(name = 'query8')
 from NewIPDetectedStream
 select "UnusualIPAccessAlert" as type, "A request from a new IP detected." as msg, 2 as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
+@info(name = 'query9')
 from NewIPDetectedStream
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;
 
 -- Check if the request for the IP is received after the threshold time gap
+@info(name = 'query10')
 from ExistingUserStream[(not (ip is null)) and requestCount > 500]
 select requestHostName, consumerKey, applicationName, applicationOwner, (requestTime - lastAccessedDate) as timeBetweenAccess, requestTime, userId, tenantDomain, lastAccessedDate
 insert into CheckAbnormalTimeBetweenAccessStream;
 
+@info(name = 'query11')
 from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > (30*24*60*60)]
 select *
 insert into AbnormalTimeBetweenAccessStream;
 
+@info(name = 'query12')
 from AbnormalTimeBetweenAccessStream
 select "UnusualIPAccessAlert" as type, "A request from an old IP detected." as msg, 2 as severity, requestHostName as ip, applicationName, applicationOwner, userId, tenantDomain, requestTime,(time:timestampInMilliseconds()) as alertTimestamp
 insert into alertIpAccessAbnormality;
 
 -- Send all the alerts to the Global Alert Stream
+@info(name = 'query13')
 from alertIpAccessAbnormality
 select type, tenantDomain, str:concat("A request from a ", ifThenElse(str:contains(msg, 'old'), 'old','new'), " IP (", ip, ") detected by user:" , userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate
+@info(name = 'query14')
 from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > 24*60*60]
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;
