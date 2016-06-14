@@ -1,1 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><templateConfiguration from="APIMAnalytics" name="AbnormalRequestCountDetection" type="AbnormalRequestCountDetection"><description>Detects abnormal request count</description><parameters><parameter name="alertSuppressionPeriod"><value>10</value></parameter><parameter name="severity"><value>2</value></parameter></parameters></templateConfiguration>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenarioConfiguration domain="APIMAnalytics" name="AbnormalRequestCountDetection" scenario="AbnormalRequestCountDetection">
+	<description>Detects abnormal request count</description>
+	<parameters>
+		<parameter name="alertSuppressionPeriod">
+			<value>10</value>
+		</parameter>
+		<parameter name="severity">
+			<value>2</value>
+		</parameter>
+	</parameters>
+</scenarioConfiguration>

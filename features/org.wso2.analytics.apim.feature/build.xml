@@ -27,6 +27,7 @@
         <delete dir="${target-dir}"/>
         <delete file="${res-dir}/${ANALYTICS_APIM_capp_name}_${ANALYTICS_APIM_REST_capp_suffix}-${ANALYTICS_APIM_capp_version}.car"/>
         <delete file="${res-dir}/${ANALYTICS_APIM_capp_name}_${ANALYTICS_APIM_RDBMS_capp_suffix}-${ANALYTICS_APIM_capp_version}.car"/>
+        <delete file="${res-dir}/${ANALYTICS_APIM_capp_name}-${ANALYTICS_APIM_capp_version}.car"/>
     </target>
 
     <target name="pre-configure">
