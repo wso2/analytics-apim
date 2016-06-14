@@ -4,8 +4,23 @@
   <Script>
 
     <!--create temp table for request summary table in RDBMS-->
-    create temporary table APIRequestSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_REQUEST_SUMMARY");
-
+    create temporary table APIRequestSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_REQUEST_SUMMARY",
+    schema "api STRING ,
+    api_version STRING ,
+    version STRING ,
+    apiPublisher STRING ,
+    consumerKey STRING ,
+    userId STRING ,
+    context STRING ,
+    max_request_time LONG ,
+    total_request_count INTEGER ,
+    hostName STRING ,
+    year INTEGER ,
+    month INTEGER ,
+    day INTEGER ,
+    time STRING -i",
+    primaryKeys "api,api_version,version,apiPublisher,consumerKey,userId,context,hostName,year,month,day"
+    );
     <!--create temp table for request stream table-->
     create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
 
@@ -59,7 +74,20 @@
 
 
     <!--create temp table for API version usage summary table in RDBMS-->
-    create temporary table APIVersionUsageSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_VERSION_USAGE_SUMMARY");
+    create temporary table APIVersionUsageSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_VERSION_USAGE_SUMMARY",
+    schema "api STRING ,
+    version STRING ,
+    apiPublisher STRING ,
+    context STRING ,
+    total_request_count INTEGER ,
+    hostName STRING ,
+    year INTEGER ,
+    month INTEGER ,
+    day INTEGER ,
+    time STRING ,
+    max_request_time LONG",
+    primaryKeys "api,version,apiPublisher,context,hostName,year,month,day"
+    );
 
     <!--create table for API version usage summary in DAL-->
     CREATE TEMPORARY TABLE API_VERSION_USAGE_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_VERSION_USAGE_SUMMARY",
@@ -96,8 +124,23 @@
 
 
     <!--create temp table for API Resource usage summary table in RDBMS-->
-    create temporary table APIResourcePathUsageSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_Resource_USAGE_SUMMARY");
-
+    create temporary table APIResourcePathUsageSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_Resource_USAGE_SUMMARY",
+    schema "api STRING ,
+    version STRING ,
+    apiPublisher STRING ,
+    consumerKey STRING ,
+    resourcePath STRING ,
+    context STRING ,
+    method STRING ,
+    total_request_count INTEGER ,
+    hostName STRING ,
+    year INTEGER ,
+    month INTEGER ,
+    day INTEGER ,
+    time STRING ,
+    max_request_time LONG ",
+    primaryKeys "api,version,apiPublisher,consumerKey,context,resourcePath,method,hostName,year,month,day"
+    );
     <!--create table for API resource usage summary in DAL-->
     CREATE TEMPORARY TABLE API_Resource_USAGE_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_Resource_USAGE_SUMMARY",
     schema "api string -i,
@@ -141,8 +184,20 @@
 
 
     <!--create temp table for API Response summary table in RDBMS-->
-    create temporary table APIResponseSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_RESPONSE_SUMMARY");
-
+    create temporary table APIResponseSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_RESPONSE_SUMMARY",
+    schema "api_version STRING ,
+    apiPublisher STRING ,
+    context STRING ,
+    serviceTime INTEGER ,
+    total_response_count INTEGER ,
+    hostName STRING ,
+    year INTEGER ,
+    month INTEGER ,
+    day INTEGER ,
+    time STRING ,
+    max_request_time LONG ",
+    primaryKeys "api_version,apiPublisher,context,hostName,year,month,day"
+    );
     <!--create temp table for Response event stream data-->
     create temporary table APIResponseData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_RESPONSE");
 
@@ -160,7 +215,7 @@
     time string -i,
     max_request_time long -i,
     api_version_context_facet facet -i",
-    primaryKeys "api,version,apiPublisher,context,hostName,year,month,day"
+    primaryKeys "api_version,apiPublisher,context,hostName,year,month,day"
     );
 
     <!--inserting API Response usage summary data-->
@@ -184,8 +239,21 @@
 
 
     <!--create temp table for API Fault summary table in RDBMS-->
-    create temporary table APIFaultSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_FAULT_SUMMARY");
-
+    create temporary table APIFaultSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_FAULT_SUMMARY",
+    schema "api STRING ,
+    version STRING ,
+    apiPublisher STRING ,
+    consumerKey STRING ,
+    context STRING ,
+    total_fault_count INTEGER ,
+    hostName STRING ,
+    year INTEGER ,
+    month INTEGER ,
+    day INTEGER ,
+    time STRING ,
+    max_request_time LONG ",
+    primaryKeys "api,version,apiPublisher,consumerKey,context,hostName,year,month,day"
+    );
     <!--create temp table for Fault event stream data-->
     create temporary table APIFaultData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_FAULT");
 
@@ -231,8 +299,21 @@
 
 
     <!--create temp table for API Destination summary table in RDBMS-->
-    create temporary table APIDestinationDataSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_DESTINATION_SUMMARY");
-
+    create temporary table APIDestinationDataSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_DESTINATION_SUMMARY",
+    schema "api STRING ,
+    version STRING ,
+    apiPublisher STRING ,
+    context STRING ,
+    destination STRING ,
+    total_request_count INTEGER ,
+    hostName STRING ,
+    year INTEGER ,
+    month INTEGER ,
+    day INTEGER ,
+    time STRING ,
+    max_request_time LONG ",
+    primaryKeys "api,version,apiPublisher,context,destination,hostName,year,month,day"
+    );
     <!--create table for destination summary in DAL-->
     CREATE TEMPORARY TABLE API_DESTINATION_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_DESTINATION_SUMMARY",
     schema "api string -i,
@@ -272,8 +353,16 @@
 
 
     <!--create temp table for API Last access time summary table in RDBMS-->
-    create temporary table APILastAccessSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_LAST_ACCESS_TIME_SUMMARY");
-
+    create temporary table APILastAccessSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_LAST_ACCESS_TIME_SUMMARY",
+    schema "tenantDomain STRING ,
+    apiPublisher STRING ,
+    api STRING ,
+    version STRING ,
+    userId STRING ,
+    context STRING ,
+    max_request_time LONG ",
+    primaryKeys "tenantDomain,apiPublisher,api"
+    );
     <!--create table for API last access time summary in DAL-->
     CREATE TEMPORARY TABLE API_LAST_ACCESS_TIME_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_LAST_ACCESS_TIME_SUMMARY",
     schema "tenantDomain string -i,

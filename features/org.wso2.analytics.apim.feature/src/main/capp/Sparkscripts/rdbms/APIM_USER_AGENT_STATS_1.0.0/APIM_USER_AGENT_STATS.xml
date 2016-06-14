@@ -2,7 +2,20 @@
 <Analytics>
     <Name>APIM_USER_AGENT_STATS</Name>
 <Script>
-    CREATE TEMPORARY TABLE APIUserBrowserData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQ_USER_BROW_SUMMARY");
+    CREATE TEMPORARY TABLE APIUserBrowserData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQ_USER_BROW_SUMMARY",
+    schema "api STRING ,
+    version STRING ,
+    apiPublisher STRING ,
+    tenantDomain STRING ,
+    total_request_count INTEGER ,
+    year INTEGER ,
+    month INTEGER ,
+    day INTEGER ,
+    requestTime LONG ,
+    os STRING ,
+    browser STRING",
+    primaryKeys "api,version,apiPublisher,year,month,day,os,browser,tenantDomain"
+    );
     create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
     CREATE TEMPORARY TABLE API_REQUEST_USER_AGENT_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_USER_AGENT_SUMMARY",
     schema "api string -i,
