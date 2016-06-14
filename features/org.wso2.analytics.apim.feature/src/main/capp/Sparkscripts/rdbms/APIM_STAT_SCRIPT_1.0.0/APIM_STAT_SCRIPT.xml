@@ -84,8 +84,7 @@
     year INTEGER ,
     month INTEGER ,
     day INTEGER ,
-    time STRING ,
-    max_request_time LONG",
+    time STRING",
     primaryKeys "api,version,apiPublisher,context,hostName,year,month,day"
     );
 
@@ -137,8 +136,7 @@
     year INTEGER ,
     month INTEGER ,
     day INTEGER ,
-    time STRING ,
-    max_request_time LONG ",
+    time STRING",
     primaryKeys "api,version,apiPublisher,consumerKey,context,resourcePath,method,hostName,year,month,day"
     );
     <!--create table for API resource usage summary in DAL-->
@@ -194,8 +192,7 @@
     year INTEGER ,
     month INTEGER ,
     day INTEGER ,
-    time STRING ,
-    max_request_time LONG ",
+    time STRING",
     primaryKeys "api_version,apiPublisher,context,hostName,year,month,day"
     );
     <!--create temp table for Response event stream data-->
@@ -250,8 +247,7 @@
     year INTEGER ,
     month INTEGER ,
     day INTEGER ,
-    time STRING ,
-    max_request_time LONG ",
+    time STRING",
     primaryKeys "api,version,apiPublisher,consumerKey,context,hostName,year,month,day"
     );
     <!--create temp table for Fault event stream data-->
@@ -310,8 +306,7 @@
     year INTEGER ,
     month INTEGER ,
     day INTEGER ,
-    time STRING ,
-    max_request_time LONG ",
+    time STRING",
     primaryKeys "api,version,apiPublisher,context,destination,hostName,year,month,day"
     );
     <!--create table for destination summary in DAL-->

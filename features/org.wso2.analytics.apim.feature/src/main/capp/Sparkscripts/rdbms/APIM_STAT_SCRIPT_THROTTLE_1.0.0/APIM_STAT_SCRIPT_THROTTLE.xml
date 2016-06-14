@@ -18,7 +18,6 @@
     time STRING ,
     success_request_count INTEGER ,
     throttleout_count INTEGER ,
-    max_request_time LONG ,
     throttledOutReason STRING",
     primaryKeys "api,api_version,context,apiPublisher,applicationName,tenantDomain,year,month,day,throttledOutReason"
     );
