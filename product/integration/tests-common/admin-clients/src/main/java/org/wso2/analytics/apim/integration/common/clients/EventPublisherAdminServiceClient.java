@@ -123,11 +123,11 @@ public class EventPublisherAdminServiceClient {
 
     public void addXMLEventPublisherConfiguration(String eventPublisherName, String streamNameWithVersion,
             String eventAdapterType, String textData, BasicOutputAdapterPropertyDto[] outputPropertyConfiguration,
-            String dataFrom, long cacheTimeoutDuration, boolean mappingEnabled) throws RemoteException {
+            String dataFrom, boolean mappingEnabled) throws RemoteException {
         try {
             eventPublisherAdminServiceStub
                     .deployXmlEventPublisherConfiguration(eventPublisherName, streamNameWithVersion, eventAdapterType,
-                            textData, outputPropertyConfiguration, dataFrom, cacheTimeoutDuration, mappingEnabled);
+                            textData, outputPropertyConfiguration, dataFrom, mappingEnabled);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException();
@@ -136,10 +136,10 @@ public class EventPublisherAdminServiceClient {
 
     public boolean addTextEventPublisherConfiguration(String eventPublisherName, String streamNameWithVersion,
             String eventAdapterType, String textData, BasicOutputAdapterPropertyDto[] outputPropertyConfiguration,
-            String dataFrom, long cacheTimeoutDuration, boolean mappingEnabled) throws RemoteException {
+            String dataFrom, boolean mappingEnabled) throws RemoteException {
         try {
             return eventPublisherAdminServiceStub.deployTextEventPublisherConfiguration(eventPublisherName
-                    ,streamNameWithVersion,eventAdapterType,textData,outputPropertyConfiguration,dataFrom, cacheTimeoutDuration,
+                    ,streamNameWithVersion,eventAdapterType,textData,outputPropertyConfiguration,dataFrom,
                     mappingEnabled);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
@@ -149,10 +149,10 @@ public class EventPublisherAdminServiceClient {
 
     public void addJSONEventPublisherConfiguration(String eventPublisherName, String streamNameWithVersion,
             String eventAdapterType, String jsonData, BasicOutputAdapterPropertyDto[] outputPropertyConfiguration,
-            String dataFrom, long cacheTimeoutDuration, boolean mappingEnabled)
+            String dataFrom, boolean mappingEnabled)
             throws RemoteException {
         try {
-            eventPublisherAdminServiceStub.deployJsonEventPublisherConfiguration(eventPublisherName, streamNameWithVersion, eventAdapterType, jsonData, outputPropertyConfiguration, dataFrom, cacheTimeoutDuration, mappingEnabled);
+            eventPublisherAdminServiceStub.deployJsonEventPublisherConfiguration(eventPublisherName, streamNameWithVersion, eventAdapterType, jsonData, outputPropertyConfiguration, dataFrom, mappingEnabled);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException();
