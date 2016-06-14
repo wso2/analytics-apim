@@ -4,13 +4,14 @@
     <parameter name="useDefaultListeners" value="false"/>
 
     <test name="analytics-apim-tests" preserve-order="true" parallel="false" >
-        <packages>
-            <package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>
-            <package name="org.wso2.analytics.apim.integration.tests.apim.loganalyzer"/>
-        </packages>
-        <!--<classes>-->
-            <!--<class name="org.wso2.analytics.apim.integration.tests.apim.analytics.AbnormalTierUsageTestCase"></class>-->
-        <!--</classes>-->
+        <!--<packages>-->
+            <!--<package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>-->
+            <!--<package name="org.wso2.analytics.apim.integration.tests.apim.loganalyzer"/>-->
+        <!--</packages>-->
+        <classes>
+            <class name="org.wso2.analytics.apim.integration.tests.apim.analytics.ApiHealthAvailabilityTestCase"></class>
+            <class name="org.wso2.analytics.apim.integration.tests.apim.analytics.AbnormalResponseAndBackendTimeTestCase"></class>
+        </classes>
     </test>
 
 </suite>

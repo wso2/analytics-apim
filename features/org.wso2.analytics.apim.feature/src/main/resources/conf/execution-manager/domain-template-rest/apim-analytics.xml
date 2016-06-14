@@ -227,7 +227,7 @@ insert into allApimAlertStream;
 
 @Import('org.wso2.apimgt.statistics.response:1.1.0')
 define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api
-string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int);
+string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
 
 @Import('org.wso2.analytics.apim.responseStatStream:1.0.0')
 define stream responseStatStream (api_version string, tenantDomain string, resourceTemplate string, method string, avgResponseTime double, sdResponseTime double, avgBackendTime double, sdBackendTime double);
@@ -636,7 +636,7 @@ insert into IPAccessSummary;
 								define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
 								@Import('org.wso2.apimgt.statistics.response:1.1.0')
-								define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int);
+								define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
 
 								/* First define response/request count streams */
 
