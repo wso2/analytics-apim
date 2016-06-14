@@ -101,6 +101,10 @@
     {
       "name":"responseCode",
       "type":"INT"
+    },
+    {
+      "name": "destination",
+      "type": "STRING"
     }
   ]
 }

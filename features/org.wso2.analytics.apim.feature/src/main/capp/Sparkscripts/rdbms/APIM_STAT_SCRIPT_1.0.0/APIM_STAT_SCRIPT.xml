@@ -233,9 +233,6 @@
     <!--create temp table for API Destination summary table in RDBMS-->
     create temporary table APIDestinationDataSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_DESTINATION_SUMMARY");
 
-    <!--create temp table for Destination event stream data-->
-    create temporary table APIDestinationData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_DESTINATION");
-
     <!--create table for destination summary in DAL-->
     CREATE TEMPORARY TABLE API_DESTINATION_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_DESTINATION_SUMMARY",
     schema "api string -i,
@@ -256,18 +253,18 @@
 
     <!--inserting API Destination usage summary data-->
     insert into table API_DESTINATION_SUMMARY_FINAL select
-    api,version,apiPublisher, context, COALESCE(destination,'-'), sum(request) as total_request_count,hostName,
-    substring(cast(first(requestTime)/1000 as timestamp),0,4),
-    substring(cast(first(requestTime)/1000 as timestamp),6,2),
-    substring(cast(first(requestTime)/1000 as timestamp),9,2),
-    substring(cast(first(requestTime)/1000 as timestamp),0,16),
-    max(requestTime),
+    api,version,apiPublisher, context, COALESCE(destination,'-'), sum(response) as total_request_count,hostName,
+    substring(cast(first(eventTime)/1000 as timestamp),0,4),
+    substring(cast(first(eventTime)/1000 as timestamp),6,2),
+    substring(cast(first(eventTime)/1000 as timestamp),9,2),
+    substring(cast(first(eventTime)/1000 as timestamp),0,16),
+    max(eventTime),
     facet4(api,version,context,COALESCE(destination,'-'))
-    from APIDestinationData
+    from APIResponseData
     where context is not NULL group by api,version,apiPublisher,context,destination,hostName,
-    substring(cast(requestTime/1000 as timestamp),0,4),
-    substring(cast(requestTime/1000 as timestamp),6,2),
-    substring(cast(requestTime/1000 as timestamp),9,2);
+    substring(cast(eventTime/1000 as timestamp),0,4),
+    substring(cast(eventTime/1000 as timestamp),6,2),
+    substring(cast(eventTime/1000 as timestamp),9,2);
 
     <!-- inserting API destination summary data in DAL to RDBMS-->
     INSERT OVERWRITE TABLE APIDestinationDataSummaryData SELECT api,version,apiPublisher,context,destination,total_request_count,hostName,year,month,day,time
