@@ -160,25 +160,30 @@
 								/* update apiAvailability Table */
 
 
+                                @info(name='query17')
                                 from apiHealthMonitorAlertStream[((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
                                 select api_version, tenantDomain,msg as status
                                 update apiAvailabilityTable
                                 on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
 
+                                @info(name='query18')
                                 from apiHealthMonitorAlertStream[ not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
                                 select api_version, tenantDomain, msg as status
                                 insert into apiAvailabilityTable;
 
+                                @info(name='query19')
 				                from requestStream[(not ((api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain) in apiHealthMonitorAlertStreamTable)) and (not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable))]
                                 select api_version , tenantDomain, 'Available' as status
                                 insert into apiAvailabilityTable;
 
+                                @info(name='query20')
                                 from requestStream as r join apiHealthMonitorAlertStreamTable
                                 on (r.api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain )
                                 select r.api_version, r.tenantDomain, alertTimestamp
                                 insert into tempStream;
 
 
+                                @info(name='query21')
                                 from tempStream[(time:timestampInMilliseconds() - alertTimestamp) > 300000]
                                 select api_version , tenantDomain, 'Available' as status
                                 update apiAvailabilityTable
