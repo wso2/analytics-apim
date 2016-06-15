@@ -33,8 +33,13 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
     private final String TEST_RESOURCE_PATH = "requestPatternChange";
     private final String PUBLISHER_FILE = "logger_requestPatternChange.xml";
     private final String METRIC_EXECUTION_PLAN_NAME = "APIMAnalytics-APIRequestPatternChangeAnalysisMetric";
-    private final String METRICBUILDER_EXECUTION_PLAN_NAME = "APIMAnalytics-APIRequestPatternChangeAnalysisMatrixBuilder";
+    private final String MATRIXBUILDER_EXECUTION_PLAN_NAME = "APIMAnalytics-APIRequestPatternChangeAnalysisMatrixBuilder";
+    private final String MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME = "APIMAnalytics-MarkovStateClassifier";
     private final int MAX_TRIES = 25;
+    private String originalExecutionPlanMatrixBuilder;
+    private String originalExecutionMetric;
+    private String originalExecutionMarkovStateClassifier;
+
 
 
     @BeforeClass(alwaysRun = true)
@@ -57,9 +62,28 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
         // publish the csv data
         editActiveExecutionPlan(getActiveExecutionPlan(METRIC_EXECUTION_PLAN_NAME),METRIC_EXECUTION_PLAN_NAME);
-        editActiveExecutionPlan(getActiveExecutionPlan(METRICBUILDER_EXECUTION_PLAN_NAME),METRICBUILDER_EXECUTION_PLAN_NAME);
+        editActiveExecutionPlan(getActiveExecutionPlan(MATRIXBUILDER_EXECUTION_PLAN_NAME),MATRIXBUILDER_EXECUTION_PLAN_NAME);
+        editActiveExecutionPlan(getActiveExecutionPlan(MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME),MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME);
+
+        originalExecutionPlanMatrixBuilder = eventProcessorAdminServiceClient.getActiveExecutionPlan(MATRIXBUILDER_EXECUTION_PLAN_NAME);
+        originalExecutionMetric = eventProcessorAdminServiceClient.getActiveExecutionPlan(METRIC_EXECUTION_PLAN_NAME);
+        originalExecutionMarkovStateClassifier = eventProcessorAdminServiceClient.getActiveExecutionPlan(MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME);
+
+
         // publish the csv data
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 200);
+        redeployExecutionPlan();
+    }
+
+    public void redeployExecutionPlan() throws Exception {
+        deleteExecutionPlan(METRIC_EXECUTION_PLAN_NAME);
+        deleteExecutionPlan(MATRIXBUILDER_EXECUTION_PLAN_NAME);
+        deleteExecutionPlan(MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME);
+        Thread.sleep(1000);
+        addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, METRIC_EXECUTION_PLAN_NAME + ".siddhiql"));
+        addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH,MATRIXBUILDER_EXECUTION_PLAN_NAME  + ".siddhiql"));
+        addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME + ".siddhiql"));
+        Thread.sleep(1000);
     }
 
     @AfterClass(alwaysRun = true)
@@ -78,6 +102,15 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
             deleteData(-1234, STREAM_NAME.replace('.', '_'));
         }
         undeployPublisher(PUBLISHER_FILE);
+
+        deleteExecutionPlan(METRIC_EXECUTION_PLAN_NAME);
+        deleteExecutionPlan(MATRIXBUILDER_EXECUTION_PLAN_NAME);
+        deleteExecutionPlan(MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME);
+
+        addExecutionPlan(originalExecutionPlanMatrixBuilder);
+        addExecutionPlan(originalExecutionMetric);
+        addExecutionPlan(originalExecutionMarkovStateClassifier);
+
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published")

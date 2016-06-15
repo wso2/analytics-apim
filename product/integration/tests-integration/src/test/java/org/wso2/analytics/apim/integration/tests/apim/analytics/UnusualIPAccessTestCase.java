@@ -31,6 +31,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     private final String ALERT_TABLE_NAME = "ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY";
     private final String EXECUTION_PLAN_NAME = "APIMAnalytics-UnusualIPAccessAlert";
     private final int MAX_TRIES = 5;
+    private String originalExecutionPlan;
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
@@ -41,6 +42,15 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
             deleteData(-1234, STREAM_NAME.replace('.', '_'));
         }
         editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
+        originalExecutionPlan = eventProcessorAdminServiceClient.getActiveExecutionPlan(EXECUTION_PLAN_NAME);
+        redeployExecutionPlan();
+    }
+
+    public void redeployExecutionPlan() throws Exception {
+        deleteExecutionPlan(EXECUTION_PLAN_NAME);
+        Thread.sleep(1000);
+        addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
+        Thread.sleep(1000);
     }
 
     @AfterClass(alwaysRun = true)
@@ -50,6 +60,8 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
             deleteData(-1234, STREAM_NAME.replace('.', '_'));
         }
         undeployPublisher(PUBLISHER_FILE);
+        deleteExecutionPlan(EXECUTION_PLAN_NAME);
+        addExecutionPlan(originalExecutionPlan);
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published")

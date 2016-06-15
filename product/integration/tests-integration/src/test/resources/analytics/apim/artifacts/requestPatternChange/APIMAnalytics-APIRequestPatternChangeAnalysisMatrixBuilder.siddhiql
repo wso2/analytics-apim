@@ -1,0 +1,87 @@
+/* Enter a unique ExecutionPlan */
+@Plan:name('APIMAnalytics-APIRequestPatternChangeAnalysisMatrixBuilder')
+
+
+@Plan:trace('false')
+
+
+
+@Import('org.wso2.analytics.apim.transitionStream:1.0.0')
+define stream transitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTimestamp string);
+
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_FIRSTCOUNTTABLE', caching = 'false', primary.keys = 'startState,consumerKey', indices = 'startState, count, consumerKey')
+define table firstCountTable (startState string, consumerKey string, count double);
+
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_MARKOVMODELTABLE', caching = 'false', primary.keys = 'consumerKey.startState,endState', indices = 'startState,endState, count, probability, consumerKey')
+define table MarkovModelTable (consumerKey string, startState string, endState string, count double, probability double);
+
+
+
+/* ====== update count in firstcount table ======= */
+@info(name = 'query1')
+from transitionStream as t left outer join firstCountTable
+on (startState == firstCountTable.startState and consumerKey == firstCountTable.consumerKey)
+select t.startState, t.consumerKey, ifThenElse(firstCountTable.count is null,1.0,firstCountTable.count+1) as count
+insert into firstCountTableStream;
+
+@info(name = 'query2')
+from firstCountTableStream [count != 1.0]
+update firstCountTable
+on  (startState == firstCountTable.startState and consumerKey == firstCountTable.consumerKey);
+
+@info(name = 'query3')
+from firstCountTableStream [count == 1.0]
+select *
+insert into firstCountTable;
+
+
+
+/* ====== update count in markovmodel table ========= */ 
+@info(name = 'query4')
+from transitionStream as t left outer join MarkovModelTable
+on (startState==MarkovModelTable.startState and endState == MarkovModelTable.endState and consumerKey == MarkovModelTable.consumerKey)
+select  t.consumerKey,t.startState, t.endState, ifThenElse(MarkovModelTable.count is null,1.0,MarkovModelTable.count+1) as count, 
+ifThenElse(MarkovModelTable.probability is null,0.0,MarkovModelTable.probability) as probability
+insert into MarkovModelTableStream;
+
+@info(name = 'query5')
+from MarkovModelTableStream [count != 1.0]
+update MarkovModelTable
+on (startState==MarkovModelTable.startState and endState == MarkovModelTable.endState and consumerKey == MarkovModelTable.consumerKey);
+
+@info(name = 'query6')
+from MarkovModelTableStream [count == 1.0]
+select *
+insert into MarkovModelTable;
+
+
+/* == correlate firstcount table and markovmodel table == */
+/*
+-- delay event to make sure "FirstCountTable & MarkovModeltable are updated
+from transitionStream#window.time(3 sec)
+select * 
+insert expired events into transitionStreamAddedDelay;
+*/
+
+@info(name = 'query7')
+from transitionStream as t join firstCountTable
+on (t.startState == firstCountTable.startState and t.consumerKey == firstCountTable.consumerKey)
+select t.startState, t.endState, t.consumerKey, firstCountTable.count
+insert into temp;
+
+@info(name = 'query8')
+from temp as t join MarkovModelTable
+on (t.startState == MarkovModelTable.startState and t.consumerKey == MarkovModelTable.consumerKey)
+select MarkovModelTable.endState, MarkovModelTable.consumerKey, MarkovModelTable.startState, MarkovModelTable.count, t.count as firstCount, (MarkovModelTable.count/t.count) as probability
+insert into tempStream;
+
+@info(name = 'query9')
+from tempStream
+select endState, consumerKey, startState, count, probability
+insert into MarkovUpdateStream;
+
+-- ==== update all rows with same transistions ====
+@info(name = 'query10')
+from MarkovUpdateStream
+update MarkovModelTable
+on (startState == MarkovModelTable.startState and endState == MarkovModelTable.endState and consumerKey == MarkovModelTable.consumerKey);
