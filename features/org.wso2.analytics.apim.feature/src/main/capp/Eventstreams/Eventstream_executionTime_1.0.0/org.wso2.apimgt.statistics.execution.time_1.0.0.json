@@ -27,16 +27,36 @@
       "type": "STRING"
     },
     {
-      "name": "mediationName",
-      "type": "STRING"
-    },
-    {
-      "name": "executionTime",
+      "name": "apiResponseTime",
       "type": "LONG"
     },
     {
       "name": "context",
       "type": "STRING"
+    },
+    {
+      "name": "securityLatency",
+      "type": "LONG"
+    },
+    {
+      "name": "throttlingLatency",
+      "type": "LONG"
+    },
+    {
+      "name": "requestMediationLatency",
+      "type": "LONG"
+    },
+    {
+      "name": "responseMediationLatency",
+      "type": "LONG"
+    },
+    {
+      "name": "backendLatency",
+      "type": "LONG"
+    },
+    {
+      "name": "otherLatency",
+      "type": "LONG"
     },
     {
       "name": "eventTime",
