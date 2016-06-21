@@ -623,9 +623,9 @@
             <fileMode>644</fileMode>
         </file>
 
-	<file>
+	    <file>
             <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/org_wso2_carbon_analytics_apim_RDBMS-1.0.0.car
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/org_wso2_carbon_analytics_apim-1.0.0.car
             </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/carbonapps</outputDirectory>
             <!--commented since this tag causes issues in maven assembly plugin when copying zip formats-->
@@ -633,25 +633,27 @@
             <fileMode>644</fileMode>
         </file>
 
-        <file>
-            <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/org_wso2_carbon_analytics_apim_RDBMS-1.0.0.car
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/statistics</outputDirectory>
-            <!--commented since this tag causes issues in maven assembly plugin when copying zip formats-->
-            <!--filtered>true</filtered-->
-            <fileMode>644</fileMode>
-        </file>
 
-        <file>
-            <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/org_wso2_carbon_analytics_apim_REST-1.0.0.car
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/statistics</outputDirectory>
-            <!--commented since this tag causes issues in maven assembly plugin when copying zip formats-->
-            <!--filtered>true</filtered-->
-            <fileMode>644</fileMode>
-        </file>
+
+        <!--<file>-->
+            <!--<source>-->
+                <!--../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/org_wso2_carbon_analytics_apim_RDBMS-1.0.0.car-->
+            <!--</source>-->
+            <!--<outputDirectory>${pom.artifactId}-${pom.version}/statistics</outputDirectory>-->
+            <!--&lt;!&ndash;commented since this tag causes issues in maven assembly plugin when copying zip formats&ndash;&gt;-->
+            <!--&lt;!&ndash;filtered>true</filtered&ndash;&gt;-->
+            <!--<fileMode>644</fileMode>-->
+        <!--</file>-->
+
+        <!--<file>-->
+            <!--<source>-->
+                <!--../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/org_wso2_carbon_analytics_apim_REST-1.0.0.car-->
+            <!--</source>-->
+            <!--<outputDirectory>${pom.artifactId}-${pom.version}/statistics</outputDirectory>-->
+            <!--&lt;!&ndash;commented since this tag causes issues in maven assembly plugin when copying zip formats&ndash;&gt;-->
+            <!--&lt;!&ndash;filtered>true</filtered&ndash;&gt;-->
+            <!--<fileMode>644</fileMode>-->
+        <!--</file>-->
         <!--spark log4j.properties file-->
         <file>
                    <source>
@@ -661,15 +663,15 @@
                     </outputDirectory>
                     <fileMode>755</fileMode>
                 </file>
-        <file>
-            <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/apim-analytics.xml
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/statistics</outputDirectory>
-            <!--commented since this tag causes issues in maven assembly plugin when copying zip formats-->
-            <!--filtered>true</filtered-->
-            <fileMode>644</fileMode>
-        </file>
+        <!--<file>-->
+            <!--<source>-->
+                <!--../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/apim-analytics.xml-->
+            <!--</source>-->
+            <!--<outputDirectory>${pom.artifactId}-${pom.version}/statistics</outputDirectory>-->
+            <!--&lt;!&ndash;commented since this tag causes issues in maven assembly plugin when copying zip formats&ndash;&gt;-->
+            <!--&lt;!&ndash;filtered>true</filtered&ndash;&gt;-->
+            <!--<fileMode>644</fileMode>-->
+        <!--</file>-->
 
         <file>
             <source>
@@ -918,6 +920,27 @@
         </file>-->
 
         <!-- END CEP -->
+
+        <!-- Copying stats datasource file -->
+        <file>
+            <source>
+                src/repository/conf/datasources/stats-datasources.xml
+            </source>
+            <outputDirectory>wso2analytics-apim-${pom.version}/repository/conf/datasources</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+
+        <!-- Copying the stats h2 db -->
+        <file>
+            <source>
+                src/repository/database/WSO2AM_STATS_DB.h2.db
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/database</outputDirectory>
+            <!--commented since this tag causes issues in maven assembly plugin when copying zip formats-->
+            <!--filtered>true</filtered-->
+            <fileMode>644</fileMode>
+        </file>
+
 
     </files>
 </assembly>
