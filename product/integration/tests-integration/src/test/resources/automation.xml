@@ -239,16 +239,16 @@
     <listenerExtensions>
         <platformExecutionManager>
             <extentionClasses>
-                <class>
-                    <name>org.wso2.analytics.apim.integration.tests.apim.extension.CappSwapper</name>
-                    <parameter name="-DportOffset" value="700" />
-                </class>
-
                 <!--<class>-->
-                    <!--<name>org.wso2.carbon.automation.extensions.servers.carbonserver.CarbonServerExtension</name>-->
+                    <!--<name>org.wso2.analytics.apim.integration.tests.apim.extension.CappSwapper</name>-->
                     <!--<parameter name="-DportOffset" value="700" />-->
-                    <!--&lt;!&ndash;<parameter name="cmdArg" value="debug 5005" />&ndash;&gt;-->
                 <!--</class>-->
+
+                <class>
+                    <name>org.wso2.carbon.automation.extensions.servers.carbonserver.CarbonServerExtension</name>
+                    <parameter name="-DportOffset" value="700" />
+                    <!--<parameter name="cmdArg" value="debug 5005" />-->
+                </class>
                 <class>
                     <name>org.wso2.carbon.integration.common.extensions.usermgt.UserPopulateExtension</name>
                 </class>
