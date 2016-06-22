@@ -2,12 +2,14 @@
 <scenarioConfiguration  domain="APIMAnalytics" name="AbnormalResponseAndBackendTimeDetection"
 					   scenario="AbnormalResponseAndBackendTimeDetection">
 	<description>Detects abnormal backend time and response time</description>
-	<parameters>
-		<parameter name="responseTimeSeverity">
+	<parameterMap>
+		<entry>
+			<key>responseTimeSeverity</key>
 			<value>2</value>
-		</parameter>
-		<parameter name="backendTimeSeverity">
+		</entry>
+		<entry>
+			<key>backendTimeSeverity</key>
 			<value>3</value>
-		</parameter>
-	</parameters>
+		</entry>
+	</parameterMap>
 </scenarioConfiguration>
