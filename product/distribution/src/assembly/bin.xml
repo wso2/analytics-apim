@@ -299,12 +299,12 @@
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/resources/execution-manager/sparktemplates</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/execution-manager/sparktemplates</outputDirectory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/template-manager/sparktemplates</outputDirectory>
         </fileSet>
 
         <fileSet>
             <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/resources/execution-manager/templateconfigs</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/execution-manager/templateconfigs</outputDirectory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/template-manager/templateconfigs</outputDirectory>
         </fileSet>
 
         <fileSet>
@@ -573,7 +573,7 @@
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/execution-manager/domain-template/apim-analytics.xml
             </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/execution-manager/domain-template</outputDirectory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/template-manager/domain-template</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
