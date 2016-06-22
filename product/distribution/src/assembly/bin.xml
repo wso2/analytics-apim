@@ -930,17 +930,5 @@
             <fileMode>644</fileMode>
         </file>
 
-        <!-- Copying the stats h2 db -->
-        <file>
-            <source>
-                src/repository/database/WSO2AM_STATS_DB.h2.db
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/database</outputDirectory>
-            <!--commented since this tag causes issues in maven assembly plugin when copying zip formats-->
-            <!--filtered>true</filtered-->
-            <fileMode>644</fileMode>
-        </file>
-
-
     </files>
 </assembly>
