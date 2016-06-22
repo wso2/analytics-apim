@@ -40,13 +40,13 @@ public class ExecutionManagerInitializer {
 
     public static void addTemplateConfigs() {
         String templateConfigDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
-                "resources" + File.separator + "execution-manager" + File.separator + "templateconfigs";
+                "resources" + File.separator + "template-manager" + File.separator + "templateconfigs";
         addInitialConfigs(templateConfigDir, ".xml", ExecutionManagerInitializer.TEMPLATE_CONFIGS_REGISTRY_PATH);
     }
 
     public static void addSparkConfigs() {
         String sparkConfigDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
-                "resources" + File.separator + "execution-manager" + File.separator + "sparktemplates";
+                "resources" + File.separator + "template-manager" + File.separator + "sparktemplates";
         addInitialConfigs(sparkConfigDir, ".xml", ExecutionManagerInitializer.SPARK_SCRIPT_REGISTRY_PATH);
 
     }
