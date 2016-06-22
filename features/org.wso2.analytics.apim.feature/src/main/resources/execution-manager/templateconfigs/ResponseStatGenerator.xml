@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <scenarioConfiguration domain="APIMAnalytics" name="ResponseStatGenerator" scenario="Response stat generator">
 	<description>Response percentile values</description>
-	<parameters>
-		<parameter name="upperPercentileRespondTime">
+	<parameterMap>
+		<entry>
+			<key>upperPercentileRespondTime</key>
 			<value>0.95</value>
-		</parameter>
-		<parameter name="upperPercentilebackendTime">
+		</entry>
+		<entry>
+			<key>upperPercentilebackendTime</key>
 			<value>0.95</value>
-		</parameter>
-	</parameters>
+		</entry>
+	</parameterMap>
 </scenarioConfiguration>

@@ -2,9 +2,10 @@
 <scenarioConfiguration domain="APIMAnalytics" name="MarkovStateClassifier" scenario="MarkovStateClassifier">
 	<description>Clasiffier configurations for Request Patterns</description>
 	<executionParameters>null</executionParameters>
-	<parameters>
-		<parameter name="transitionPeriod">
+	<parameterMap>
+		<entry>
+			<key>transitionPeriod</key>
 			<value>60 min</value>
-		</parameter>
-	</parameters>
+		</entry>
+	</parameterMap>
 </scenarioConfiguration>

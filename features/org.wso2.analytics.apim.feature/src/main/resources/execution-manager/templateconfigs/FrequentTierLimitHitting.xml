@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <scenarioConfiguration domain="APIMAnalytics" name="FrequentTierLimitHitting" scenario="FrequentTierLimitHitting">
 	<description>Frequent hitting of tier limits</description>
-	<parameters>
-		<parameter name="timeInterval">
+	<parameterMap>
+		<entry>
+			<key>timeInterval</key>
 			<value>1 day</value>
-		</parameter>
-		<parameter name="alertSuppressionPeriod">
+		</entry>
+		<entry>
+			<key>alertSuppressionPeriod</key>
 			<value>10</value>
-		</parameter>
-		<parameter name="noTierCrossings">
+		</entry>
+		<entry>
+			<key>noTierCrossings</key>
 			<value>10</value>
-		</parameter>
-		<parameter name="severity">
+		</entry>
+		<entry>
+			<key>severity</key>
 			<value>3</value>
-		</parameter>
-	</parameters>
+		</entry>
+	</parameterMap>
 </scenarioConfiguration>

@@ -2,21 +2,26 @@
 <scenarioConfiguration  domain="APIMAnalytics"
 	name="AbnormalTierAvailabilityAlert" scenario="AbnormalTierUsageAlert">
 	<description>Abnormal tier usage alerts</description>
-	<parameters>
-		<parameter name="percentile">
+	<parameterMap>
+		<entry>
+			<key>percentile</key>
 			<value>0.05</value>
-		</parameter>
-		<parameter name="alertStartDate">
+		</entry>
+		<entry>
+			<key>alertStartDate</key>
 			<value>12/2/2016</value>
-		</parameter>
-		<parameter name="daysConsiderForAbnormalTierAvailability">
+		</entry>
+		<entry>
+			<key>daysConsiderForAbnormalTierAvailability</key>
 			<value>5</value>
-		</parameter>
-		<parameter name="daysConsiderForPercentilesCalculation">
+		</entry>
+		<entry>
+			<key>daysConsiderForPercentilesCalculation</key>
 			<value>30</value>
-		</parameter>
-        <parameter name="severity">
+		</entry>
+        <entry>
+			<key>severity</key>
             <value>2</value>
-        </parameter>
-	</parameters>
+        </entry>
+	</parameterMap>
 </scenarioConfiguration>

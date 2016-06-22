@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <scenarioConfiguration  domain="APIMAnalytics" name="APIRequestPatternChangeAnalysisMetric" scenario="RequestPatternChangeDetection">
 	<description>Detection of request pattern changes</description>
-	<parameters>
-		<parameter name="regularAPITransitions">
+	<parameterMap>
+		<entry>
+			<key>regularAPITransitions</key>
 			<value>1</value>
-		</parameter>
-		<parameter name="requestCount">
+		</entry>
+		<entry>
+			<key>requestCount</key>
 			<value>500</value>
-		</parameter>
-		<parameter name="probabilityThreshold">
+		</entry>
+		<key>
+			<key>probabilityThreshold</key>
 			<value>0.95</value>
-		</parameter>
-		<parameter name="alertSuppressionPeriod">
+		</key>
+		<entry>
+			<key>alertSuppressionPeriod</key>
 			<value>30*60*1000</value>
-		</parameter>
-        <parameter name="severity">
-            <value>1</value>
-        </parameter>
-	</parameters>
+		</entry>
+        <entry>
+            <key>severity</key>
+			<value>1</value>
+        </entry>
+	</parameterMap>
 </scenarioConfiguration>
