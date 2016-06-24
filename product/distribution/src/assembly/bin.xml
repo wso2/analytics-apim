@@ -289,15 +289,6 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/geolocation/
-            </directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/geolocation</outputDirectory>
-            <includes>
-                <include>**/*.sql</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/resources/execution-manager/sparktemplates</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/template-manager/sparktemplates</outputDirectory>
         </fileSet>
@@ -583,13 +574,6 @@
             </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc</outputDirectory>
             <filtered>true</filtered>
-            <fileMode>644</fileMode>
-        </file>
-        <file>
-            <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/database/GEOLOCATION_DB.h2.db
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/database</outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <file>
