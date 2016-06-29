@@ -185,7 +185,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         // for a given applicationId, api_version, last five days average daily usage
         // is less than 0.05th percentile of its last 30 days average daily
         // usage.
-        for (int day = 29; day >= 0; day--) {
+        for (int day = 34; day >= 0; day--) {
             int maxLimit1 = (day < 5) ? 2 : 10;
             int maxLimit2 = (day < 4) ? 2 : 10;
             int maxLimit3 = (day < 2) ? 2 : 10;
