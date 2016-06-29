@@ -1,5 +1,5 @@
 /* Enter a unique ExecutionPlan */
-@Plan:name('APIMAnalytics-MarkovStateClassifier')
+@Plan:name('APIMAnalytics-MarkovStateClassifier-MarkovStateClassifier-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
 -- @Plan:description('ExecutionPlan')
@@ -11,16 +11,13 @@
 
 @Plan:trace('false')
 
-
-
 @Import('org.wso2.apimgt.statistics.request:1.1.0')
 define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
-
 
 @Export('org.wso2.analytics.apim.transitionStream:1.0.0')
 define stream transitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTimestamp string);
 
-@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', caching = 'false',primary.keys='consumerKey', indices = 'consumerKey,count')
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
 
 @info(name = 'query1')

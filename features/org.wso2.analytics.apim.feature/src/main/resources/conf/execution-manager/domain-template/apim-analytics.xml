@@ -18,16 +18,187 @@
 <domain name="APIMAnalytics">
     <description>Real-time and batch API Analytics.</description>
     <scenarios>
+        <scenario type="RequestSummarizer">
+            <description>Responsible for summarizing incoming traffic.</description>
+            <templates>
+                <template type="realtime">
+                    <![CDATA[
+                      /* Enter a unique ExecutionPlan */
+
+@Plan:name('APIMAnalytics-RequestSummarizer-RequestSummarizer-realtime1')
+
+/* Enter a unique description for ExecutionPlan */
+
+-- @Plan:description('ExecutionPlan')
+
+@Plan:statistics('false')
+
+@Import('org.wso2.apimgt.statistics.request:1.1.0')
+define stream requests (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+
+@Import('org.wso2.apimgt.statistics.response:1.1.0')
+define stream responses (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
+
+@Import('org.wso2.apimgt.statistics.execution.time:1.0.0')
+define stream executionTimes (meta_clientType string, api string, api_version string, tenantDomain string, apiPublisher string, apiResponseTime long, context string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, eventTime long);
+
+@Export('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
+define stream perMinuteRequests (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+
+@Export('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
+define stream perMinuteResponses (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long);
+
+@Export('org.wso2.apimgt.statistics.perSecondExecutionTimes:1.0.0')
+define stream perSecondExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, second int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long);
+
+-- requests
+
+-- second
+from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, meta_clientType, consumerKey, context, api_version, api, version, 
+max(requestTime) as requestTime, userId, hostName, apiPublisher, count() as total_request_count, 
+resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
+tier, throttledOut, clientIp, applicationOwner
+group by consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp  
+insert into perSecondRequestsTemp;
+
+from perSecondRequestsTemp
+select meta_clientType, (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+time:extract(requestTime, 'year') as year, time:extract(requestTime, 'month') as month, 
+time:extract(requestTime, 'day') as day, time:extract(requestTime, 'hour') as hour, 
+time:extract(requestTime, 'minute') as minute, time:extract(requestTime, 'second') as second,
+consumerKey, context, api_version, api, version, 
+requestTime, userId, hostName, apiPublisher, total_request_count, 
+resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
+tier, throttledOut, clientIp, applicationOwner
+insert into perSecondRequests;
 
 
+-- minute
 
+from perSecondRequests
+select startTime, meta_clientType, str:concat(facetStartTime, '_', consumerKey, '_', context, '_', 
+  api_version, '_', userId, '_', hostName, '_', apiPublisher, '_', resourceTemplate, '_', method, '_', userAgent, '_', clientIp) 
+as uniqueId, year, month, day, hour, minute, second, consumerKey, context, api_version, api, version, 
+requestTime, userId, hostName, apiPublisher, total_request_count, resourceTemplate, method, applicationName, 
+tenantDomain, userAgent, resourcePath, request, applicationId, tier, throttledOut, clientIp, applicationOwner
+insert into perSecondRequestsWithUniqueId;
+
+from perSecondRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, 10 sec)
+select batchEndTime as startTime, meta_clientType, consumerKey, context, api_version, api, version, 
+max(requestTime) as requestTime, userId, hostName, apiPublisher, sum(total_request_count) as total_request_count, 
+resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, tier, 
+throttledOut, clientIp, applicationOwner
+group by consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp  
+insert into perMinuteRequestsTemp;
+
+from perMinuteRequestsTemp
+select meta_clientType, time:extract(startTime, 'year') as year, time:extract(startTime, 'month') as month, 
+time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
+time:extract(startTime, 'minute') as minute,
+consumerKey, context, api_version, api, version, 
+requestTime, userId, hostName, apiPublisher, total_request_count, 
+resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
+tier, throttledOut, clientIp, applicationOwner
+insert into perMinuteRequests;
+
+-- responses
+
+-- second
+
+from responses#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, 
+tenantDomain, hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, 
+max(responseTime) as responseTime, max(serviceTime) as serviceTime, max(backendTime) as backendTime, 
+username, max(eventTime) as eventTime, applicationName, applicationId, cacheHit, max(responseSize) as responseSize, 
+protocol, responseCode, count() as total_response_count 
+group by consumerKey, context, api_version, username, resourceTemplate, hostName, apiPublisher, method, destination  
+insert into perSecondResponsesTemp;
+
+from perSecondResponsesTemp
+select meta_clientType, (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+time:extract(startTime, 'year') as year, 
+time:extract(startTime, 'month') as month, time:extract(startTime, 'day') as day, 
+time:extract(startTime, 'hour') as hour, time:extract(startTime, 'minute') as minute, 
+time:extract(startTime, 'second') as second, 
+context, api_version, api, resourceTemplate, version, 
+tenantDomain, hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, 
+responseTime, serviceTime, backendTime, 
+username, eventTime, applicationName, applicationId, cacheHit, responseSize, 
+protocol, responseCode, total_response_count 
+insert into perSecondResponses;
+
+-- minute
+
+from perSecondResponses
+select startTime, meta_clientType, str:concat(facetStartTime, '_', consumerKey, '_', context, '_', api_version, 
+  '_', username, '_', hostName, '_', apiPublisher, '_', resourceTemplate, '_', method, '_', destination) as uniqueId, 
+year, month, day, hour, minute, second, context, api_version, api, resourceTemplate, version, tenantDomain, 
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, responseTime, serviceTime, 
+backendTime, username, eventTime, applicationName, applicationId, cacheHit, responseSize, protocol, responseCode, 
+total_response_count
+insert into perSecondResponsesWithUniqueId;
+
+from perSecondResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, 10 sec)
+select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, tenantDomain, 
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, max(responseTime) as responseTime, 
+max(serviceTime) as serviceTime, max(backendTime) as backendTime, username, max(eventTime) as eventTime, applicationName, 
+applicationId, cacheHit, max(responseSize) as responseSize, protocol, responseCode, 
+sum(total_response_count) as total_response_count
+group by consumerKey, context, api_version, username, resourceTemplate, hostName, apiPublisher, method, destination    
+insert into perMinuteResponsesTemp;
+
+from perMinuteResponsesTemp
+select meta_clientType, time:extract(startTime, 'year') as year, time:extract(startTime, 'month') as month, 
+time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
+time:extract(startTime, 'minute') as minute,
+context, api_version, api, resourceTemplate, version, tenantDomain, 
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, responseTime, 
+serviceTime, backendTime, username, eventTime, applicationName, 
+applicationId, cacheHit, responseSize, protocol, responseCode, total_response_count
+insert into perMinuteResponses;
+
+-- execution times
+
+-- second
+
+from executionTimes#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, meta_clientType, context, api_version, api, 
+tenantDomain, apiPublisher, avg(apiResponseTime) as apiResponseTime, avg(securityLatency) as securityLatency,
+avg(throttlingLatency) as throttlingLatency, avg(requestMediationLatency) as requestMediationLatency,
+avg(responseMediationLatency) as responseMediationLatency, avg(backendLatency) as backendLatency,
+avg(otherLatency) as otherLatency
+group by context, api_version, tenantDomain, apiPublisher 
+insert into perSecondExecutionTimesTemp;
+
+from perSecondExecutionTimesTemp
+select meta_clientType,
+time:extract(startTime, 'year') as year, 
+time:extract(startTime, 'month') as month, time:extract(startTime, 'day') as day, 
+time:extract(startTime, 'hour') as hour, time:extract(startTime, 'minute') as minute, 
+time:extract(startTime, 'second') as second, 
+context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, securityLatency,
+throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency,
+startTime as eventTime
+insert into perSecondExecutionTimes;
+                    ]]>
+                </template>
+            </templates>
+            <parameters>
+                <parameter name="timeInterval" type="long">
+                    <displayName>Time Interval</displayName>
+                    <description>Time period in seconds of which the summarization would happen</description>
+                    <defaultValue>60</defaultValue>
+                </parameter>
+            </parameters>
+        </scenario>
         <scenario type="FrequentTierLimitHitting">
             <description>Detects frequent hitting of the tier limit</description>
             <templates>
                 <template type="realtime">
                     <![CDATA[
 /* Enter a unique ExecutionPlan */
-@Plan:name('APIMAnalytics-FrequentTierLimitHitting')
+@Plan:name('APIMAnalytics-FrequentTierLimitHitting-FrequentTierLimitHitting-realtime1')
 
 @Import('org.wso2.apimgt.statistics.throttle:1.0.0')
 define stream throttleStream (meta_clientType string, accessToken string, userId string, tenantDomain string, api string, api_version string, context string, apiPublisher string, throttledTime long, applicationName string, applicationId string, throttledOutReason string);
@@ -124,10 +295,10 @@ insert into allAlertsStream;
             <templates>
                 <template type="realtime">
                     <![CDATA[
-/* Enter a unique ExecutionPlan */
+                      /* Enter a unique ExecutionPlan */
 
 
-@Plan:name('APIMAnalytics-AbnormalRequestCountDetection')
+@Plan:name('APIMAnalytics-AbnormalRequestCountDetection-AbnormalRequestCountDetection-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
 -- @Plan:description('ExecutionPlan')
@@ -135,12 +306,9 @@ insert into allAlertsStream;
 /* define streams/tables and write queries here ... */
 
 
-@Import('org.wso2.apimgt.statistics.request:1.1.0')
-define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
-
-@Import('org.wso2.analytics.apim.requestStatStream:1.0.0')
-define stream requestStatStream (api_version string, userId string, consumerKey string, resourceTemplate string, method string, avgRequestsPerMin double, sdRequestsPerMin double);
-
+@Import('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
+define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+                              
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
@@ -148,50 +316,40 @@ define stream allApimAlertStream (type string, tenantDomain string, msg string, 
 define stream abnormalRequestsPerMinAlertStream (api string, userId string, tenantDomain string, applicationName string, applicationOwner string, resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double, reason string, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
-define stream requestPerMinStream (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long);
+define stream requestPerMin (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long);
 
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE',  primary.keys = 'api_version,userId,consumerKey,resourceTemplate,method')
 define table requestPercentileTable (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double);
 
 @info(name = 'query1')
-from requestStream
-select api_version, userId, tenantDomain, consumerKey, applicationName, applicationOwner, resourceTemplate, method
-insert into requestSummaryStream ;
-
-@info(name = 'query2')
-from requestSummaryStream#window.timeBatch(1 min)
-select api_version, userId , consumerKey, resourceTemplate, method, count() as requestsPerMin
+from requestPerMinStream
+select api_version, userId , consumerKey, resourceTemplate, method, count(total_request_count) as requestsPerMin
 group by api_version, userId , consumerKey, resourceTemplate, method
-insert into requestPerMinStream ;
-
-/* events of the stream requestPerMinStream are persisted. Spark script uses these persisted data to calculate percentiles*/
-
-@info(name = 'query3')
-from requestSummaryStream#window.time(1 min)
-select  api_version, userId , tenantDomain, consumerKey, applicationName, applicationOwner, resourceTemplate, method, count() as  requestsPerMin
-group by api_version, userId ,consumerKey, resourceTemplate, method
-insert into requestCountStream;
+insert into requestPerMin ;
 
 /* retrieving corresponding percentile values from table and filtering abnormal counts*/
-@info(name = 'query4')
-from requestCountStream join requestPercentileTable
-on (requestCountStream.api_version ==requestPercentileTable.api_version and  requestCountStream.userId ==requestPercentileTable.userId  and
-  requestCountStream.consumerKey ==requestPercentileTable.consumerKey and requestCountStream.resourceTemplate ==requestPercentileTable.resourceTemplate and requestCountStream.method ==requestPercentileTable.method)
-select requestCountStream.api_version as api , requestCountStream.userId , requestCountStream.tenantDomain, requestCountStream.applicationName, requestCountStream.applicationOwner, requestCountStream.resourceTemplate, requestCountStream.method, requestCountStream.requestsPerMin,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile, ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') as reason,
+@info(name = 'query2')
+from requestPerMinStream join requestPercentileTable
+on (requestPerMinStream.api_version ==requestPercentileTable.api_version and  requestPerMinStream.userId ==requestPercentileTable.userId  and
+requestPerMinStream.consumerKey ==requestPercentileTable.consumerKey and requestPerMinStream.resourceTemplate ==requestPercentileTable.resourceTemplate and requestPerMinStream.method ==requestPercentileTable.method)
+select requestPerMinStream.api_version as api , requestPerMinStream.userId , requestPerMinStream.tenantDomain, requestPerMinStream.applicationName, requestPerMinStream.applicationOwner, requestPerMinStream.resourceTemplate, requestPerMinStream.method, requestPerMinStream.total_request_count,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile, ifThenElse(total_request_count > requestsPerMinUpperPercentile,'spike','drop') as reason,
 'Abnormal request count detected during last minute.' as msg , $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
-having (requestsPerMin > requestsPerMinUpperPercentile or requestsPerMin < requestsPerMinLowerPercentile)
+having (total_request_count > requestsPerMinUpperPercentile or total_request_count < requestsPerMinLowerPercentile)
 insert into tempAbnormalRequestsPerMinAlertStream;
 
-@info(name = 'query5')
+@info(name = 'query3')
 from tempAbnormalRequestsPerMinAlertStream#window.length(1) as a left outer join tempAbnormalRequestsPerMinAlertStream#window.time($alertSuppressionPeriod minute) as b
 on (a.api== b.api and a.userId== b.userId and a.applicationName==b.applicationName and a.resourceTemplate==b.resourceTemplate and a.method== b.method and a.reason== b.reason)
-select a.api, a.userId, a.tenantDomain, a.applicationName, a.applicationOwner, a.resourceTemplate, a.method, a.requestsPerMin, a.requestsPerMinUpperPercentile, a.requestsPerMinLowerPercentile, a.reason, a.msg, a.severity, a.alertTimestamp
+select a.api, a.userId, a.tenantDomain, a.applicationName, a.applicationOwner, a.resourceTemplate, a.method, a.total_request_count as requestsPerMin, a.requestsPerMinUpperPercentile, a.requestsPerMinLowerPercentile, a.reason, a.msg, a.severity, a.alertTimestamp
 having b.api  is null
 insert into abnormalRequestsPerMinAlertStream ;
 
-@info(name = 'query6')
+@info(name = 'query4')
 from abnormalRequestsPerMinAlertStream
-select 'abnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,'spike','drop') , ' detected during last minute by userId:',userId,' using application ', applicationName,' owned by ', applicationOwner,' for http ', method,' method of resource template ', resourceTemplate,' in api :', api,', abnormal request count:', requestsPerMin, ".") as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
+select 'abnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,
+'spike','drop') , ' detected during last minute by userId:',userId,' using application ', applicationName,' owned by ', applicationOwner,' for http ', 
+method,' method of resource template ', resourceTemplate,' in api :', api,', abnormal request count:', requestsPerMin, ".") as msg , 
+severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;
                  ]]>
                 </template>
@@ -217,20 +375,15 @@ insert into allApimAlertStream;
                 <template type="realtime">
                     <![CDATA[
 /* Enter a unique ExecutionPlan */
-@Plan:name('APIMAnalytics-AbnormalResponseAndBackendTimeDetection')
+@Plan:name('APIMAnalytics-AbnormalResponseAndBackendTimeDetection-AbnormalResponseAndBackendTimeDetection-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
 -- @Plan:description('ExecutionPlan')
 
 /* define streams/tables and write queries here ... */
 
-
-@Import('org.wso2.apimgt.statistics.response:1.1.0')
-define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api
-string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
-
-@Import('org.wso2.analytics.apim.responseStatStream:1.0.0')
-define stream responseStatStream (api_version string, tenantDomain string, resourceTemplate string, method string, avgResponseTime double, sdResponseTime double, avgBackendTime double, sdBackendTime double);
+@Import('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
+define stream responseSummaryStream (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long);
 
 @Export('org.wso2.analytics.apim.abnormalBackendTimeAlertStream:1.0.0')
 define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, severity int, alertTimestamp long);
@@ -244,36 +397,30 @@ define stream allApimAlertStream (type string, tenantDomain string, msg string, 
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain,resourceTemplate,method')
 define table percentileTable (api_version string, tenantDomain string, resourceTemplate string, method string, responsePercentile double, backendPercentile double );
 
-
-@info(name = 'query1')
-from responseStream
-select api, api_version, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, backendTime
-insert into responseSummaryStream;
-
 /*spark script calculates percentile of responseTime and backendTime  and stores in percentileTable */
 
-@info(name = 'query2')
+@info(name = 'query1')
 from responseSummaryStream join percentileTable
 on (responseSummaryStream.api_version==percentileTable.api_version and responseSummaryStream.tenantDomain==percentileTable.tenantDomain and responseSummaryStream.resourceTemplate==percentileTable.resourceTemplate and responseSummaryStream.method==percentileTable.method)
 select responseSummaryStream.api as api_name, responseSummaryStream.api_version, responseSummaryStream.apiPublisher, responseSummaryStream.tenantDomain, responseSummaryStream.resourceTemplate, responseSummaryStream.method, responseSummaryStream.responseTime, percentileTable.responsePercentile , responseSummaryStream.backendTime,  percentileTable.backendPercentile
 insert into responseInfoStream;
 
-@info(name = 'query3')
+@info(name = 'query2')
 from responseInfoStream[responseTime > responsePercentile]
 select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, responsePercentile , 'Abnormal response time detected.' as msg, $responseTimeSeverity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into abnormalResponseTimeAlertStream;
 
-@info(name = 'query4')
+@info(name = 'query3')
 from responseInfoStream[backendTime > backendPercentile]
 select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, backendTime, backendPercentile, 'Abnormal backend response time detected.' as msg, $backendTimeSeverity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into abnormalBackendTimeAlertStream;
 
-@info(name = 'query5')
+@info(name = 'query4')
 from abnormalResponseTimeAlertStream
 select 'abnormalResponseTime' as type, tenantDomain, str:concat('Abnormal response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:', api,' of tenant domain:',tenantDomain,', threshold value:',responsePercentile, 'ms.') as msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;
 
-@info(name = 'query6')
+@info(name = 'query5')
 from abnormalBackendTimeAlertStream
 select 'abnormalBackendTime' as type, tenantDomain, str:concat('Abnormal backend response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:', api,' of tenant domain:',tenantDomain,', threshold value:',backendPercentile, 'ms.') as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;
@@ -301,7 +448,7 @@ insert into allApimAlertStream;
             <templates>
                 <template type="realtime">
                     <![CDATA[
-             @Plan:name('APIMAnalytics-APIRequestPatternChangeAnalysisMetric')
+             @Plan:name('APIMAnalytics-RequestPatternChangeDetection-APIRequestPatternChangeAnalysisMetric-realtime1')
 
 
 @Import('org.wso2.analytics.apim.transitionStream:1.0.0')
@@ -430,7 +577,7 @@ insert into all_apim_alerts_stream;
                 <template type="realtime">
                     <![CDATA[
 /* Enter a unique ExecutionPlan */
-@Plan:name('APIMAnalytics-MarkovStateClassifier')
+@Plan:name('APIMAnalytics-MarkovStateClassifier-MarkovStateClassifier-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
 -- @Plan:description('ExecutionPlan')
@@ -441,7 +588,6 @@ insert into all_apim_alerts_stream;
 
 @Import('org.wso2.apimgt.statistics.request:1.1.0')
 define stream request (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
-
 
 @Export('org.wso2.analytics.apim.transitionStream:1.0.0')
 define stream transitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTimestamp string);
@@ -493,7 +639,7 @@ insert into transitionStream;
                 <template type="realtime">
                     <![CDATA[
                /* Enter a unique ExecutionPlan */
-@Plan:name('APIMAnalytics-UnusualIPAccessAlert')
+@Plan:name('APIMAnalytics-UnusualIPAccessTemplate-UnusualIPAccessAlert-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
 @Plan:description('Alerts if an access from a strange ip is detected')
@@ -620,7 +766,7 @@ insert into IPAccessSummary;
 /* Enter a unique ExecutionPlan */
 
 
-                                @Plan:name('APIMAnalytics-HealthAvailabilityPerMin')
+@Plan:name('APIMAnalytics-HealthAvailabilityPerMinAlert-HealthAvailabilityPerMin-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
 -- @Plan:description('ExecutionPlan')
@@ -632,49 +778,49 @@ insert into IPAccessSummary;
 
 @Plan:statistics('false')
 
-                               	@Import('org.wso2.apimgt.statistics.request:1.1.0')
-								define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+                                @Import('org.wso2.apimgt.statistics.request:1.1.0')
+                define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
-								@Import('org.wso2.apimgt.statistics.response:1.1.0')
-								define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
+                @Import('org.wso2.apimgt.statistics.response:1.1.0')
+                define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
 
-								/* First define response/request count streams */
+                /* First define response/request count streams */
 
-								/*@Export('org.wso2.analytics.apim.healthAvailabilityAlertStream:1.0.0')
-								define stream minStatusTestStream (api_version string, status bool, reason string);*/
+                /*@Export('org.wso2.analytics.apim.healthAvailabilityAlertStream:1.0.0')
+                define stream minStatusTestStream (api_version string, status bool, reason string);*/
 
-								@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-								define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
+                @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+                define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
-								@Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
-								define stream responsePerMinPerApiStream (api_version string, responsesPerMinPerApi long);
+                @Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
+                define stream responsePerMinPerApiStream (api_version string, responsesPerMinPerApi long);
 
-								@Export('org.wso2.analytics.apim.requestPerMinPerApiStream:1.0.0')
-								define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
+                @Export('org.wso2.analytics.apim.requestPerMinPerApiStream:1.0.0')
+                define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
 
-								@Export('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
-								define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, severity int, alertTimestamp long);
+                @Export('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
+                define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
-								/*  -- Event tables -- */
+                /*  -- Event tables -- */
 
-								/* Lower percentiles */
+                /* Lower percentiles */
                                 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version')
                                 define table requestPerApiPercentileTable (requestsPerMinPerApiLowerPercentile double, api_version string);
 
-								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version')
+                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version')
                                 define table responsePerApiPercentileTable (api_version string, responsesPerMinPerApiLowerPercentile double);
 
-								/* Then define response time streams */
-								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version')
-								define table responseTimePerApiPercentileTable (api_version string, responseTimePerApiUpperPercentile double);
+                /* Then define response time streams */
+                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version')
+                define table responseTimePerApiPercentileTable (api_version string, responseTimePerApiUpperPercentile double);
 
-								/* API status availability table */
-								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version,tenantDomain', indices='api_version,tenantDomain, status')
-								define table apiAvailabilityTable (api_version string, tenantDomain string, status string);
+                /* API status availability table */
+                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version,tenantDomain', indices='api_version,tenantDomain, status')
+                define table apiAvailabilityTable (api_version string, tenantDomain string, status string);
 
-								/* APIHEALTHMONITORALERTSTREAM TABLE */
-								@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM')
-								define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
+                /* APIHEALTHMONITORALERTSTREAM TABLE */
+                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM')
+                define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
 
                                 @info(name = 'query1')
@@ -682,86 +828,82 @@ insert into IPAccessSummary;
                                 select api_version, apiPublisher, tenantDomain
                                 insert into requestSummaryStream ;
 
-								@info(name = 'query2')
+                @info(name = 'query2')
                                 from responseStream
                                 select api_version
                                 insert into responseSummaryStream ;
 
-								@info(name = 'query3')
+                @info(name = 'query3')
                                 from requestSummaryStream#window.timeBatch(1 min)
                                 select api_version, count() as requestsPerMinPerApi
                                 group by api_version
                                 insert into requestPerMinPerApiStream ;
 
-								@info(name = 'query4')
+                @info(name = 'query4')
                                 from responseSummaryStream#window.timeBatch(1 min)
                                 select api_version,  count() as responsesPerMinPerApi
                                 group by api_version
                                 insert into responsePerMinPerApiStream ;
 
-								/* Hourly queries */
-
-                                /* events of the streams requestPerHourPerApiStream, responsePerHourPerApiStream are persisted. Spark script uses these persisted data to calculate percentiles*/
-
-								/* timeBatch used because Minutely updates are needed */
+                /* timeBatch used because Minutely updates are needed */
                                 @info(name = 'query5')
                                 from requestSummaryStream#window.time(1 min)
                                 select  api_version, apiPublisher, tenantDomain, count() as  requestsPerMinPerApi
                                 group by api_version
                                 insert into requestPerApiCountStream;
 
-								@info(name = 'query6')
+                @info(name = 'query6')
                                 from responseSummaryStream#window.time(1 min)
                                 select  api_version,   count() as  responsesPerMinPerApi
                                 group by api_version
                                 insert into responsePerApiCountStream;
 
-								/* Creating requests stream with percentiles*/
+                /* Creating requests stream with percentiles*/
                                 @info(name = 'query7')
                                 from requestPerApiCountStream join requestPerApiPercentileTable on (requestPerApiCountStream.api_version == requestPerApiPercentileTable.api_version)
-								select requestPerApiCountStream.api_version as api_version, requestPerApiCountStream.tenantDomain, requestPerApiCountStream.apiPublisher as apiPublisher, requestsPerMinPerApi as requestsPerMin, requestsPerMinPerApiLowerPercentile as requestsPerMinLowerPercentile
+                select requestPerApiCountStream.api_version as api_version, requestPerApiCountStream.tenantDomain, requestPerApiCountStream.apiPublisher as apiPublisher, requestsPerMinPerApi as requestsPerMin, requestsPerMinPerApiLowerPercentile as requestsPerMinLowerPercentile
                                 insert into requestsPercentileStream;
 
-								/* Creating responses stream with percentiles  */
+                /* Creating responses stream with percentiles  */
                                 @info(name = 'query8')
                                 from responsePerApiCountStream join responsePerApiPercentileTable on (responsePerApiCountStream.api_version == responsePerApiPercentileTable.api_version)
-								select responsePerApiCountStream.api_version as api_version, responsesPerMinPerApi as responsesPerMin, responsesPerMinPerApiLowerPercentile as responsesPerMinLowerPercentile
+                select responsePerApiCountStream.api_version as api_version, responsesPerMinPerApi as responsesPerMin, responsesPerMinPerApiLowerPercentile as responsesPerMinLowerPercentile
                                 insert into responsesPercentileStream;
 
-								/* Combine*/
+                /* Combine*/
 
-								@info(name = 'query9')
-								from requestsPercentileStream#window.time(1min) as requestsPercentileStreamWindow join responsesPercentileStream#window.time(1min) as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
-								select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
-								responsesPercentileStreamWindow.responsesPerMin as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,responsesPercentileStreamWindow.responsesPerMinLowerPercentile as responsesPerMinLowerPercentile
+                @info(name = 'query9')
+                from requestsPercentileStream#window.time(1min) as requestsPercentileStreamWindow join responsesPercentileStream#window.time(1min) as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
+                select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
+                responsesPercentileStreamWindow.responsesPerMin as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,responsesPercentileStreamWindow.responsesPerMinLowerPercentile as responsesPerMinLowerPercentile
                                 insert into requestResponseSummaryStream;
 
-								@info(name = 'query10')
-								from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
-								select api_version as api_version , apiPublisher, tenantDomain, str:concat('Response count is lower than ' , responsesPerMinLowerPercentile, ' continuously for $responsePerMinPattern or more minutes.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
-								insert into apiHealthMonitorAlertStream;
+                @info(name = 'query10')
+                from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
+                select api_version as api_version , apiPublisher, tenantDomain, str:concat('Response count is lower than ' , responsesPerMinLowerPercentile, ' continuously for $responsePerMinPattern or more minutes.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                insert into apiHealthMonitorAlertStream;
 
-								/* Now start response time queries */
+                /* Now start response time queries */
 
-								@info(name = 'query11')
-								from responseStream
-								select api_version, apiPublisher, responseTime, tenantDomain
-								insert into responseTimeSummaryStream;
+                @info(name = 'query11')
+                from responseStream
+                select api_version, apiPublisher, responseTime, tenantDomain
+                insert into responseTimeSummaryStream;
 
-								/*spark script calculates percentile of responseTime and stores in percentileTable */
+                /*spark script calculates percentile of responseTime and stores in percentileTable */
 
-								@info(name = 'query12')
-								from responseTimeSummaryStream join responseTimePerApiPercentileTable
-								on (responseTimeSummaryStream.api_version==responseTimePerApiPercentileTable.api_version)
-								select responseTimeSummaryStream.api_version, responseTimeSummaryStream.apiPublisher, responseTimeSummaryStream.tenantDomain, responseTimeSummaryStream.responseTime, responseTimePerApiPercentileTable.responseTimePerApiUpperPercentile
-								insert into responseInfoStream;
+                @info(name = 'query12')
+                from responseTimeSummaryStream join responseTimePerApiPercentileTable
+                on (responseTimeSummaryStream.api_version==responseTimePerApiPercentileTable.api_version)
+                select responseTimeSummaryStream.api_version, responseTimeSummaryStream.apiPublisher, responseTimeSummaryStream.tenantDomain, responseTimeSummaryStream.responseTime, responseTimePerApiPercentileTable.responseTimePerApiUpperPercentile
+                insert into responseInfoStream;
 
-								@info(name = 'query13')
-								from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
-								select api_version, apiPublisher, tenantDomain, str:concat('Response time is higher than ' , responseTimePerApiUpperPercentile, 'ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
-								insert into apiHealthMonitorAlertStream;
+                @info(name = 'query13')
+                from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
+                select api_version, apiPublisher, tenantDomain, str:concat('Response time is higher than ' , responseTimePerApiUpperPercentile, 'ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                insert into apiHealthMonitorAlertStream;
 
-								@info(name = 'query14')
+                @info(name = 'query14')
                                 from responseStream
                                 select api_version, apiPublisher,  responseCode, tenantDomain
                                 insert into responseCodeSummaryStream;
@@ -779,7 +921,7 @@ insert into IPAccessSummary;
                                 /* update apiAvailability Table */
 @info(name = 'query17')
 
-				                from apiHealthMonitorAlertStream[((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
+                        from apiHealthMonitorAlertStream[((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
                                 select api_version, tenantDomain,msg as status
                                 update apiAvailabilityTable
                                 on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
@@ -790,7 +932,7 @@ insert into IPAccessSummary;
                                 insert into apiAvailabilityTable;
 
 @info(name = 'query19')
-				                from requestStream[(not ((api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain) in apiHealthMonitorAlertStreamTable)) and (not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable))]
+                        from requestStream[(not ((api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain) in apiHealthMonitorAlertStreamTable)) and (not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable))]
                                 select api_version , tenantDomain, 'Available' as status
                                 insert into apiAvailabilityTable;
 
@@ -802,10 +944,10 @@ insert into IPAccessSummary;
 
 
 @info(name = 'query21')
-				from tempStream[(time:timestampInMilliseconds() - alertTimestamp) >  $statusChangeTimeInterval]
-				select api_version , tenantDomain, 'Available' as status
-				update apiAvailabilityTable
-				on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
+        from tempStream[(time:timestampInMilliseconds() - alertTimestamp) >  $statusChangeTimeInterval]
+        select api_version , tenantDomain, 'Available' as status
+        update apiAvailabilityTable
+        on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
 
                  ]]>
                 </template>
@@ -840,7 +982,7 @@ insert into IPAccessSummary;
         </scenario>
 
 
-        <scenario type="Configure access token">
+        <scenario type="ConfigureAccessToken">
             <description>Configure access token to analyse data</description>
             <templates>
                 <template type="batch">
@@ -896,10 +1038,9 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                         <cron>0 0 23 * * ?</cron>
                         <sparkScript>
                             <![CDATA[
-
-                CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_REQUESTS
-                USING CarbonAnalytics
-                OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
+                                      CREATE TEMPORARY TABLE ORG_WSO2_API_REQUESTS
+        USING CarbonAnalytics
+        OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST");
 
                 CREATE TEMPORARY TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
                 USING CarbonAnalytics
@@ -942,15 +1083,15 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
                 SELECT applicationId, api_version, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), $percentile) as percentile
                 FROM
-                   (SELECT applicationId, api_version, COUNT(api_version) as request_count
-                    FROM ORG_WSO2_API_ABNORMAL_REQUESTS
+                   (SELECT applicationId, api_version, SUM(total_request_count) as request_count
+                    FROM ORG_WSO2_API_REQUESTS
                     WHERE context is not NULL  AND now('') > convertToTimestamp('$alertStartDate') AND requestTime >= offsetInDays(-$daysConsiderForPercentilesCalculation)
-                    GROUP BY convertToDate(requestTime), applicationId, api_version) ORG_WSO2_API_ABNORMAL_REQUESTS
+                    GROUP BY convertToDate(requestTime), applicationId, api_version) ORG_WSO2_API_REQUESTS_FILTERED
                 GROUP BY applicationId, api_version;
 
                INSERT OVERWRITE TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
-               SELECT applicationId, api_version, COUNT(api_version) as request_count
-               FROM ORG_WSO2_API_ABNORMAL_REQUESTS
+               SELECT applicationId, api_version, SUM(total_request_count) as request_count
+               FROM ORG_WSO2_API_REQUESTS
                WHERE context is not NULL  AND requestTime >= offsetInDays(-$daysConsiderForAbnormalTierAvailability)
                GROUP BY convertToDate(requestTime), applicationId, api_version;
 
@@ -963,7 +1104,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
                INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA
                SELECT DISTINCT applicationId, api_version, tenantDomain, applicationName, applicationOwner, api, tier
-               FROM ORG_WSO2_API_ABNORMAL_REQUESTS;
+               FROM ORG_WSO2_API_REQUESTS;
 
                INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
                SELECT R.applicationId, R.api_version, R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'), $severity, now('')
@@ -974,7 +1115,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                SELECT "AbnormalTierUsage", R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'),  $severity, now('')
                FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
                WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
-                 ]]>
+                
+                            ]]>
                         </sparkScript>
                     </executionParameters>
                 </template>
@@ -1061,7 +1203,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                         <cron>0 0 23 * * ?</cron>
                         <sparkScript>
                             <![CDATA[
-                CREATE TEMPORARY TABLE REQUEST_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinStream");
+                              CREATE TEMPORARY TABLE REQUEST_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST");
 
         CREATE TEMPORARY TABLE REQUEST_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE",
         schema "api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double ",
@@ -1070,10 +1212,10 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
         INSERT OVERWRITE TABLE REQUEST_PERCENTILE_GEN
         select api_version, userId, consumerKey, resourceTemplate, method,
-        getpercentileValue(avg(requestsPerMin), sqrt(avg(cast(requestsPerMin
-        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , $upperPercentile ) as requestsPerMinUpperPercentile,
-        getpercentileValue(avg(requestsPerMin), sqrt(avg(cast(requestsPerMin
-        as double)*cast(requestsPerMin as double))-avg(requestsPerMin)*avg(requestsPerMin)) , $lowerPercentile ) as requestsPerMinLowerPercentile
+        getpercentileValue(avg(total_request_count), sqrt(avg(cast(total_request_count
+        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) , $upperPercentile ) as requestsPerMinUpperPercentile,
+        getpercentileValue(avg(total_request_count), sqrt(avg(cast(total_request_count
+        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) , $lowerPercentile ) as requestsPerMinLowerPercentile
 
         from REQUEST_INFO group by api_version, userId, consumerKey, resourceTemplate, method;
 
@@ -1137,7 +1279,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         </scenario>
 
 
-        <scenario type="Response time">
+        <scenario type="ResponseTime">
             <description>To create response time percentile values</description>
             <templates>
                 <template type="batch">
@@ -1145,10 +1287,10 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                         <cron>0 0 22 * * ?</cron>
                         <sparkScript>
                             <![CDATA[
-                CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_RESPONSE",schema "_timestamp LONG ");
+                              CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE",schema "_timestamp LONG ");
 
         CREATE TEMPORARY TABLE RESPONSE_PER_TIME_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE",
-        schema "api_version string,  responseTimePerApiUpperPercentile double ",
+        schema "api_version string -i,  responseTimePerApiUpperPercentile double ",
         primaryKeys "api_version" , mergeSchema "false"
         );
 
@@ -1156,7 +1298,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         select api_version,
         getpercentileValue(avg(responseTime), sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) , $upperPercentile ) as responseTimePerApiUpperPercentile
 
-        from RESPONSE_INFO where _timestamp>(now('')-86400000) group by api_version;
+        from RESPONSE_INFO group by api_version;
                  ]]>
                         </sparkScript>
                     </executionParameters>
@@ -1173,7 +1315,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         </scenario>
 
 
-        <scenario type="Response stat generator">
+        <scenario type="ResponseStatGenerator">
             <description>To create response percentile values</description>
             <templates>
                 <template type="batch">
@@ -1181,8 +1323,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                         <cron>0 0 23 * * ?</cron>
                         <sparkScript>
                             <![CDATA[
-                CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName
-        "ORG_WSO2_APIMGT_STATISTICS_RESPONSE",schema "_timestamp LONG ");
+                              CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName
+        "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE",schema "_timestamp LONG ");
 
 
         CREATE TEMPORARY TABLE RESPONSE_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE",
@@ -1195,7 +1337,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         select api_version, tenantDomain, resourceTemplate, method,
         getpercentileValue(avg(responseTime), sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) , $upperPercentileRespondTime ) as responsePercentile,
         getpercentileValue(avg(backendTime), sqrt(avg(cast(backendTime as double)*cast(backendTime as double))-avg(backendTime)*avg(backendTime)) , $upperPercentilebackendTime ) as backendPercentile
-        from RESPONSE_INFO where _timestamp>(now('')-86400000) group by api_version, tenantDomain, resourceTemplate, method;
+        from RESPONSE_INFO group by api_version, tenantDomain, resourceTemplate, method;
 
                  ]]>
                         </sparkScript>
@@ -1226,66 +1368,60 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                         <cron>0 0 23 * * ?</cron>
                         <sparkScript>
                             <![CDATA[
-CREATE TEMPORARY TABLE APIGeoLocationData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQ_GEO_LOC_SUMMARY",
-  schema "api STRING ,
-    version STRING ,
-    apiPublisher STRING ,
-    tenantDomain STRING ,
-    total_request_count INTEGER ,
-    year INTEGER ,
-    month INTEGER ,
-    day INTEGER ,
-    requestTime LONG ,
-    country STRING ,
-    city STRING ",
-    primaryKeys "api,version,apiPublisher,year,month,day,country,city,tenantDomain"
-    );
-    create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
-    CREATE TEMPORARY TABLE API_REQUEST_GEOIP_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_GEOIP_SUMMARY",
-    schema "api string -i,
-    version string -i,
-    apiPublisher string -i,
-    tenantDomain string -i,
-    total_request_count int -i,
-    year int -i,
-    month int -i,
-    day int -i,
-    requestTime long -i,
-    clientIp string -i",
-    primaryKeys "api,version,apiPublisher,year,month,day,clientIp,tenantDomain"
-    );
-    insert into table API_REQUEST_GEOIP_SUMMARY_FINAL select api,version, apiPublisher,tenantDomain,
-    sum(request) as total_request_count,
-    substring(cast(first(requestTime)/1000 as timestamp),0,4),
-    substring(cast(first(requestTime)/1000 as timestamp),6,2),
-    substring(cast(first(requestTime)/1000 as timestamp),9,2),
-    first(requestTime),
-    clientIp
-    from APIRequestData group by api,version,apiPublisher,clientIp,tenantDomain,
-    substring(cast(requestTime/1000 as timestamp),0,4),
-    substring(cast(requestTime/1000 as timestamp),6,2),
-    substring(cast(requestTime/1000 as timestamp),9,2);
+                              CREATE TEMPORARY TABLE APIGeoLocationData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQ_GEO_LOC_SUMMARY",
+                              schema "api STRING ,
+                              version STRING ,
+                              apiPublisher STRING ,
+                              tenantDomain STRING ,
+                              total_request_count INTEGER ,
+                              year INTEGER ,
+                              month INTEGER ,
+                              day INTEGER ,
+                              requestTime LONG ,
+                              country STRING ,
+                              city STRING ",
+                              primaryKeys "api,version,apiPublisher,year,month,day,country,city,tenantDomain"
+                              );
+                              create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST");
+                              CREATE TEMPORARY TABLE API_REQUEST_GEOIP_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_GEOIP_SUMMARY",
+                              schema "api string -i,
+                              version string -i,
+                              apiPublisher string -i,
+                              tenantDomain string -i,
+                              total_request_count int -i,
+                              year int -i,
+                              month int -i,
+                              day int -i,
+                              requestTime long -i,
+                              clientIp string -i",
+                              primaryKeys "api,version,apiPublisher,year,month,day,clientIp,tenantDomain"
+                              );
+                              insert into table API_REQUEST_GEOIP_SUMMARY_FINAL select api,version, apiPublisher,tenantDomain,
+                              sum(total_request_count) as total_request_count,
+                              year, month, day,
+                              first(requestTime), clientIp
+                              from APIRequestData group by api,version,apiPublisher,clientIp,tenantDomain,year,month,day;
 
-    CREATE TEMPORARY TABLE API_REQUEST_GEO_LOCATION_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQ_GEO_LOC_SUMMARY",
-    schema "api string -i,
-    version string -i,
-    apiPublisher string -i,
-    tenantDomain string -i,
-    total_request_count int -i,
-    year int -i,
-    month int -i,
-    day int -i,
-    requestTime long -i,
-    country string -i,
-    city string -i,
-    key_country_city_facet facet -i",
-    primaryKeys "api,version,apiPublisher,year,month,day,country,city,tenantDomain"
-    );
-    insert INTO table API_REQUEST_GEO_LOCATION_SUMMARY_FINAL select apidata.api,apidata.version, apidata.apiPublisher,apidata.tenantDomain,
-    sum(apidata.total_request_count) as total_request_count,apidata.year,apidata.month,apidata.day,first(requestTime),getCountry(apidata.clientIp) as country,
-    getCity(apidata.clientIp) as city,facet2(getCountry(apidata.clientIp),getCity(apidata.clientIp))
-    from API_REQUEST_GEOIP_SUMMARY_FINAL as apidata group by apidata.api,apidata.version,apidata.apiPublisher,apidata.year,apidata.month,apidata.day,apidata.clientIp,getCountry(apidata.clientIp),getCity(apidata.clientIp),apidata.tenantDomain;
-    INSERT OVERWRITE TABLE APIGeoLocationData SELECT api,version,apiPublisher,tenantDomain,total_request_count,year,month,day,requestTime,country,city FROM API_REQUEST_GEO_LOCATION_SUMMARY_FINAL;
+                              CREATE TEMPORARY TABLE API_REQUEST_GEO_LOCATION_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQ_GEO_LOC_SUMMARY",
+                              schema "api string -i,
+                              version string -i,
+                              apiPublisher string -i,
+                              tenantDomain string -i,
+                              total_request_count int -i,
+                              year int -i,
+                              month int -i,
+                              day int -i,
+                              requestTime long -i,
+                              country string -i,
+                              city string -i,
+                              key_country_city_facet facet -i",
+                              primaryKeys "api,version,apiPublisher,year,month,day,country,city,tenantDomain"
+                              );
+                              insert INTO table API_REQUEST_GEO_LOCATION_SUMMARY_FINAL select apidata.api,apidata.version, apidata.apiPublisher,apidata.tenantDomain,
+                              sum(apidata.total_request_count) as total_request_count,apidata.year,apidata.month,apidata.day,first(requestTime),getCountry(apidata.clientIp) as country,
+                              getCity(apidata.clientIp) as city,facet2(getCountry(apidata.clientIp),getCity(apidata.clientIp))
+                              from API_REQUEST_GEOIP_SUMMARY_FINAL as apidata group by apidata.api,apidata.version,apidata.apiPublisher,apidata.year,apidata.month,apidata.day,apidata.clientIp,getCountry(apidata.clientIp),getCity(apidata.clientIp),apidata.tenantDomain;
+                              INSERT OVERWRITE TABLE APIGeoLocationData SELECT api,version,apiPublisher,tenantDomain,total_request_count,year,month,day,requestTime,country,city FROM API_REQUEST_GEO_LOCATION_SUMMARY_FINAL;
 
 
                  ]]>

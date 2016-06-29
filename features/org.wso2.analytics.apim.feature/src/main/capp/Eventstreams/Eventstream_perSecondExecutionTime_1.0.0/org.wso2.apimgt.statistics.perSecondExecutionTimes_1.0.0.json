@@ -1,0 +1,90 @@
+{
+  "name": "org.wso2.apimgt.statistics.perSecondExecutionTimes",
+  "version": "1.0.0",
+  "nickName": "perSecondExecutionTimes",
+  "description": "Aggregates incoming execution times in 1 second intervals and persist them.",
+  "metaData": [
+    {
+      "name": "clientType",
+      "type": "STRING"
+    }
+  ],
+  "payloadData": [
+    {
+      "name": "year",
+      "type": "INT"
+    },
+    {
+      "name": "month",
+      "type": "INT"
+    },
+    {
+      "name": "day",
+      "type": "INT"
+    },
+    {
+      "name": "hour",
+      "type": "INT"
+    },
+    {
+      "name": "minute",
+      "type": "INT"
+    },
+    {
+      "name": "second",
+      "type": "INT"
+    },
+    {
+      "name": "context",
+      "type": "STRING"
+    },
+    {
+      "name": "api_version",
+      "type": "STRING"
+    },
+    {
+      "name": "api",
+      "type": "STRING"
+    },
+    {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
+      "name": "apiPublisher",
+      "type": "STRING"
+    },
+    {
+      "name": "apiResponseTime",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "securityLatency",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "throttlingLatency",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "requestMediationLatency",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "responseMediationLatency",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "backendLatency",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "otherLatency",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "eventTime",
+      "type": "LONG"
+    }
+  ]
+}

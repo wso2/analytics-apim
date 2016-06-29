@@ -30,11 +30,12 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
 
     private final String STREAM_NAME = "org.wso2.apimgt.statistics.request";
     private final String STREAM_VERSION = "1.1.0";
+    private final String REQUEST_TABLE = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST";
     private final String TEST_RESOURCE_PATH = "requestPatternChange";
     private final String PUBLISHER_FILE = "logger_requestPatternChange.xml";
-    private final String METRIC_EXECUTION_PLAN_NAME = "APIMAnalytics-APIRequestPatternChangeAnalysisMetric";
+    private final String METRIC_EXECUTION_PLAN_NAME = "APIMAnalytics-RequestPatternChangeDetection-APIRequestPatternChangeAnalysisMetric-realtime1";
     private final String MATRIXBUILDER_EXECUTION_PLAN_NAME = "APIMAnalytics-APIRequestPatternChangeAnalysisMatrixBuilder";
-    private final String MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME = "APIMAnalytics-MarkovStateClassifier";
+    private final String MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME = "APIMAnalytics-MarkovStateClassifier-MarkovStateClassifier-realtime1";
     private final int MAX_TRIES = 25;
     private String originalExecutionPlanMatrixBuilder;
     private String originalExecutionMetric;
@@ -54,8 +55,8 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE)) {
             deleteData(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE);
         }
-        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, REQUEST_TABLE)) {
+            deleteData(-1234, REQUEST_TABLE);
         }
         Thread.sleep(5000);
         // deploy the publisher xml file
@@ -70,12 +71,13 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         originalExecutionMarkovStateClassifier = eventProcessorAdminServiceClient.getActiveExecutionPlan(MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME);
 
 
+        redeployExecutionPlan();
         // publish the csv data
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 200);
-        redeployExecutionPlan();
     }
 
     public void redeployExecutionPlan() throws Exception {
+        int count = getActiveExecutionPlanCount();
         deleteExecutionPlan(METRIC_EXECUTION_PLAN_NAME);
         deleteExecutionPlan(MATRIXBUILDER_EXECUTION_PLAN_NAME);
         deleteExecutionPlan(MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME);
@@ -83,7 +85,9 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, METRIC_EXECUTION_PLAN_NAME + ".siddhiql"));
         addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH,MATRIXBUILDER_EXECUTION_PLAN_NAME  + ".siddhiql"));
         addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, MARKOVSTATECLASSIFIER_EXECUTION_PLAN_NAME + ".siddhiql"));
-        Thread.sleep(1000);
+        do { // wait till it get redeployed
+            Thread.sleep(1000);
+        } while (getActiveExecutionPlanCount() != count);
     }
 
     @AfterClass(alwaysRun = true)
@@ -98,8 +102,8 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         if (isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE)) {
             deleteData(-1234, APIMAnalyticsIntegrationTestConstants.MARKOV_MODEL_TABLE);
         }
-        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, REQUEST_TABLE)) {
+            deleteData(-1234, REQUEST_TABLE);
         }
         undeployPublisher(PUBLISHER_FILE);
 
@@ -120,14 +124,14 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
             Thread.sleep(2000);
-            requestEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
-            eventsPublished = (requestEventCount >= 500);
+            requestEventCount = getRecordCount(-1234, REQUEST_TABLE);
+            eventsPublished = (requestEventCount >= 18);
             if (eventsPublished) {
                 break;
             }
             i++;
         }
-        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:500 but found: " +
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:20 but found: " +
                 +requestEventCount+ "!");
     }
 
@@ -140,7 +144,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         eventDto1.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto1.setAttributeValues(
                 new String[] { "external", "D4rf6fvCohQ7kbQ970euK0LmjcQa", "/calc/1.0", "CalculatorAPI:v1.0",
-                        "CalculatorAPI", "/pay_fraud", "/pay_fraud", "GET", "1", "1", "1455785133372",
+                        "CalculatorAPI", "/pay_fraud", "/pay_fraud", "GET", "1", "1", "1455785133999",
                         "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29","admin" });
         publishEvent(eventDto1);
@@ -149,7 +153,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         eventDto2.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto2.setAttributeValues(
                 new String[] { "external", "D4rf6fvCohQ7kbQ970euK0LmjcQa", "/calc/1.0", "CalculatorAPI:v1.0",
-                        "CalculatorAPI", "/get_fraud", "/get_fraud", "GET", "1", "1", "1455785133372",
+                        "CalculatorAPI", "/get_fraud", "/get_fraud", "GET", "1", "1", "1455785134866",
                         "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29","admin" });
         publishEvent(eventDto2);
@@ -158,7 +162,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         eventDto3.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto3.setAttributeValues(
                 new String[] { "external", "D4rf6fvCohQ7kbQ970euK0LmjcQa", "/calc/1.0", "CalculatorAPI:v1.0",
-                        "CalculatorAPI", "/fraud", "/fraud", "GET", "1", "1", "1455785133372",
+                        "CalculatorAPI", "/fraud", "/fraud", "GET", "1", "1", "1455785135866",
                         "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.29","admin" });
         publishEvent(eventDto3);
@@ -178,7 +182,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[] { "external", "D4rf6fvCohQ7kbQ970euK0LmjcQa", "/calc/1.0", "CalculatorAPI:v1.0",
-                        "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785133372",
+                        "CalculatorAPI", "/search", "/search", "GET", "1", "1", "1455785136866",
                         "fazlan@carbon.super", "carbon.super", "10.100.7.100", "fazlan@carbon.super",
                         "DefaultApplication", "1", "chrome", "Unlimited", "False", "192.168.1.27","admin" });
         publishEvent(eventDto);

@@ -38,6 +38,7 @@ import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminService
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
+import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ConfigurationParameterDTO;
 import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
@@ -47,6 +48,7 @@ import org.wso2.carbon.logging.view.stub.types.carbon.LogEvent;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -57,6 +59,7 @@ import java.util.regex.Matcher;
 
 public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     private static final String ANALYTICS_SERVICE_NAME = "AnalyticsProcessorAdminService";
+    private static final String REQUEST_SUMMARIZER = "APIMAnalytics-RequestSummarizer-RequestSummarizer-realtime1";
     private DataPublisherClient dataPublisherClient;
     private AnalyticsDataAPI analyticsDataAPI;
     private AnalyticsProcessorAdminServiceStub analyticsStub;
@@ -81,6 +84,22 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         analyticsDataAPI = new CarbonAnalyticsAPI(apiConf);
         eventSimulatorAdminServiceClient = getEventSimulatorAdminServiceClient(backendURL, session);
         initializeStub();
+        
+        int count = getActiveExecutionPlanCount();
+        
+        deleteExecutionPlan(REQUEST_SUMMARIZER);
+        
+        // configuring the entry point 
+        ScenarioConfigurationDTO apimAnalyticsExecutionPlan = getConfiguration("APIMAnalytics", "RequestSummarizer");
+        ConfigurationParameterDTO[] params = apimAnalyticsExecutionPlan.getConfigurationParameterDTOs();
+        // set time interval of summarization to 5 seconds
+        params[0].setValue("5");
+        apimAnalyticsExecutionPlan.setConfigurationParameterDTOs(params);
+        saveConfiguration(apimAnalyticsExecutionPlan);
+        do { // wait till it get redeployed
+            Thread.sleep(1000);
+        } while (getActiveExecutionPlanCount() != count);
+        
     }
 
     /**
@@ -113,7 +132,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      * @throws AnalyticsException
      */
     protected long getRecordCount(int tenantId, String tableName) throws AnalyticsException {
-        return analyticsDataAPI.searchCount(tenantId, tableName, "*:*");
+        return analyticsDataAPI.searchCount(tenantId, tableName, "");
     }
 
     /**
@@ -400,6 +419,10 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     protected int getExecutionPlanCount() throws RemoteException {
         return eventProcessorAdminServiceClient.getExecutionPlanConfigurationCount();
+    }
+    
+    protected int getActiveExecutionPlanCount() throws RemoteException {
+        return eventProcessorAdminServiceClient.getActiveExecutionPlanConfigurationCount();
     }
 
     protected void deleteExecutionPlan(String planName) throws RemoteException {

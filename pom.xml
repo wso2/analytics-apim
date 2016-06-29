@@ -159,6 +159,11 @@
                 <artifactId>org.wso2.carbon.registry.core</artifactId>
                 <version>${carbon.kernel.version}</version>
             </dependency>
+	    <dependency>
+            	<groupId>org.wso2.carbon.analytics-common</groupId>
+            	<artifactId>org.wso2.carbon.event.execution.manager.core</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>

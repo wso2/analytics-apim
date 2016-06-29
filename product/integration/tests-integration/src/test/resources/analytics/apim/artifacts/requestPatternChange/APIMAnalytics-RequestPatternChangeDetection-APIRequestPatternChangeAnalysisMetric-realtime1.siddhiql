@@ -1,4 +1,4 @@
-@Plan:name('APIMAnalytics-APIRequestPatternChangeAnalysisMetric')
+@Plan:name('APIMAnalytics-RequestPatternChangeDetection-APIRequestPatternChangeAnalysisMetric-realtime1')
 
 
 @Import('org.wso2.analytics.apim.transitionStream:1.0.0')

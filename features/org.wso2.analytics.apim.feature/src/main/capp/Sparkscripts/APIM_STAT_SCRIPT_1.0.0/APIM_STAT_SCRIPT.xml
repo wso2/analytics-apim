@@ -22,7 +22,7 @@
     primaryKeys "api,api_version,version,apiPublisher,consumerKey,userId,context,hostName,year,month,day"
     );
     <!--create temp table for request stream table-->
-    create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
+    create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST");
 
     <!--create table for request summary in DAL-->
     CREATE TEMPORARY TABLE API_REQUEST_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_SUMMARY",
@@ -53,21 +53,18 @@
     COALESCE(consumerKey,'-'),
     userId,context,
     max(requestTime) as max_request_time,
-    sum(request) as total_request_count,
+    sum(total_request_count) as total_request_count,
     hostName,
-    substring(cast(first(requestTime)/1000 as timestamp),0,4),
-    substring(cast(first(requestTime)/1000 as timestamp),6,2),
-    substring(cast(first(requestTime)/1000 as timestamp),9,2),
+    year,
+    month,
+    day,
     substring(cast(first(requestTime)/1000 as timestamp),0,16),
     facet2(consumerKey,api),
     facet2(consumerKey,userId),
     facet3(api,version,userId),
     facet4(api,version,userId,apiPublisher),
     facet4(api,version,userId,context)
-    from APIRequestData where context is not NULL group by api,api_version,version,apiPublisher,consumerKey,userId,context,hostName,
-    substring(cast(requestTime/1000 as timestamp),0,4),
-    substring(cast(requestTime/1000 as timestamp),6,2),
-    substring(cast(requestTime/1000 as timestamp),9,2);
+    from APIRequestData where context is not NULL group by api,api_version,version,apiPublisher,consumerKey,userId,context,hostName,year,month,day;
 
     <!-- inserting request summary data in DAL to RDBMS-->
     INSERT OVERWRITE TABLE APIRequestSummaryData SELECT api,api_version,version,apiPublisher,consumerKey,userId,context,max_request_time,total_request_count,hostName,year,month,day,time FROM API_REQUEST_SUMMARY_FINAL;
@@ -106,17 +103,11 @@
     );
 
     <!--insert API version usage summary -->
-    insert into table API_VERSION_USAGE_SUMMARY_FINAL select api,version,apiPublisher,context,sum(request) as total_request_count,hostName,
-    substring(cast(first(requestTime)/1000 as timestamp),0,4),
-    substring(cast(first(requestTime)/1000 as timestamp),6,2),
-    substring(cast(first(requestTime)/1000 as timestamp),9,2),
+    insert into table API_VERSION_USAGE_SUMMARY_FINAL select api,version,apiPublisher,context,sum(total_request_count) as total_request_count,hostName,year,month,day,
     substring(cast(first(requestTime)/1000 as timestamp),0,16),
     max(requestTime), facet3(api,version,context)
     from APIRequestData where
-    context is not NULL group by api,version,apiPublisher,context,hostName,
-    substring(cast(requestTime/1000 as timestamp),0,4),
-    substring(cast(requestTime/1000 as timestamp),6,2),
-    substring(cast(requestTime/1000 as timestamp),9,2);
+    context is not NULL group by api,version,apiPublisher,context,hostName,year,month,day;
 
     <!-- inserting API version usage summary data in DAL to RDBMS-->
     INSERT OVERWRITE TABLE APIVersionUsageSummaryData SELECT api,version,apiPublisher,context,total_request_count,hostName,year,month,day,time FROM API_VERSION_USAGE_SUMMARY_FINAL;
@@ -163,19 +154,14 @@
     <!--inserting API resource usage summary data-->
     insert into table API_Resource_USAGE_SUMMARY_FINAL select
     api,version,apiPublisher,COALESCE(consumerKey,'-'),
-    resourceTemplate,context,method,sum(request) as total_request_count,hostName,
-    substring(cast(first(requestTime)/1000 as timestamp),0,4),
-    substring(cast(first(requestTime)/1000 as timestamp),6,2),
-    substring(cast(first(requestTime)/1000 as timestamp),9,2),
+    resourceTemplate,context,method,sum(total_request_count) as total_request_count,hostName,
+    year,month,day,
     substring(cast(first(requestTime)/1000 as timestamp),0,16),
     max(requestTime),
     facet4(consumerKey,api,method,resourceTemplate),
     facet5(api,version,context,method,resourceTemplate)
     from APIRequestData where
-    context is not NULL group by api,version,apiPublisher,consumerKey,resourceTemplate,context,method,hostName,
-    substring(cast(requestTime/1000 as timestamp),0,4),
-    substring(cast(requestTime/1000 as timestamp),6,2),
-    substring(cast(requestTime/1000 as timestamp),9,2);
+    context is not NULL group by api,version,apiPublisher,consumerKey,resourceTemplate,context,method,hostName,year,month,day;
 
     <!-- inserting API resource usage summary data in DAL to RDBMS-->
     INSERT OVERWRITE TABLE APIResourcePathUsageSummaryData SELECT api,version,apiPublisher,consumerKey,resourcePath,context,method,total_request_count,hostName,year,month,day,time FROM API_Resource_USAGE_SUMMARY_FINAL;
@@ -196,7 +182,7 @@
     primaryKeys "api_version,apiPublisher,context,hostName,year,month,day"
     );
     <!--create temp table for Response event stream data-->
-    create temporary table APIResponseData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_RESPONSE");
+    create temporary table APIResponseData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE");
 
     <!--create table for Response summary in DAL-->
     CREATE TEMPORARY TABLE API_RESPONSE_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_RESPONSE_SUMMARY",
@@ -219,17 +205,12 @@
     insert into table API_RESPONSE_SUMMARY_FINAL select
     api_version, COALESCE(apiPublisher,''),
     context, sum(serviceTime) as avg_service_time,
-    sum(response) as total_response_count, hostName,
-    substring(cast(first(eventTime)/1000 as timestamp),0,4),
-    substring(cast(first(eventTime)/1000 as timestamp),6,2),
-    substring(cast(first(eventTime)/1000 as timestamp),9,2),
+    sum(total_response_count) as total_response_count, hostName,
+    year,month,day,
     substring(cast(first(eventTime)/1000 as timestamp),0,16),
     max(eventTime), facet2(api_version,context)
     from APIResponseData where
-    context is not NULL group by api_version,apiPublisher,context,hostName,
-    substring(cast(eventTime/1000 as timestamp),0,4),
-    substring(cast(eventTime/1000 as timestamp),6,2),
-    substring(cast(eventTime/1000 as timestamp),9,2);
+    context is not NULL group by api_version,apiPublisher,context,hostName,year,month,day;
 
     <!-- inserting response summary data in DAL to RDBMS-->
     INSERT OVERWRITE TABLE APIResponseSummaryData SELECT api_version,apiPublisher,context,serviceTime,total_response_count,hostName,year,month,day,time FROM API_RESPONSE_SUMMARY_FINAL;
@@ -329,18 +310,12 @@
 
     <!--inserting API Destination usage summary data-->
     insert into table API_DESTINATION_SUMMARY_FINAL select
-    api,version,apiPublisher, context, COALESCE(destination,'-'), sum(response) as total_request_count,hostName,
-    substring(cast(first(eventTime)/1000 as timestamp),0,4),
-    substring(cast(first(eventTime)/1000 as timestamp),6,2),
-    substring(cast(first(eventTime)/1000 as timestamp),9,2),
+    api,version,apiPublisher, context, COALESCE(destination,'-'), sum(total_response_count) as total_request_count,hostName,year,month,day,
     substring(cast(first(eventTime)/1000 as timestamp),0,16),
     max(eventTime),
     facet4(api,version,context,COALESCE(destination,'-'))
     from APIResponseData
-    where context is not NULL group by api,version,apiPublisher,context,destination,hostName,
-    substring(cast(eventTime/1000 as timestamp),0,4),
-    substring(cast(eventTime/1000 as timestamp),6,2),
-    substring(cast(eventTime/1000 as timestamp),9,2);
+    where context is not NULL group by api,version,apiPublisher,context,destination,hostName,year,month,day;
 
     <!-- inserting API destination summary data in DAL to RDBMS-->
     INSERT OVERWRITE TABLE APIDestinationDataSummaryData SELECT api,version,apiPublisher,context,destination,total_request_count,hostName,year,month,day,time
@@ -374,7 +349,7 @@
     insert into table API_LAST_ACCESS_TIME_SUMMARY_FINAL select tenantDomain, apiPublisher, api, version, userId, context, requestTime from APIRequestData order by requestTime ASC;
 
     <!-- inserting API last access time summary data in DAL to RDBMS-->
-    INSERT OVERWRITE TABLE APILastAccessSummaryData select tenantDomain, apiPublisher, api, version, userId, context, max_request_time from API_LAST_ACCESS_TIME_SUMMARY_FINAL;
+    INSERT OVERWRITE TABLE APILastAccessSummaryData select tenantDomain, apiPublisher, api, version, userId, context, max_request_time from API_LAST_ACCESS_TIME_SUMMARY_FINAL;                      
 
   </Script>
   <CronExpression>0 0/5 * 1/1 * ? *</CronExpression>

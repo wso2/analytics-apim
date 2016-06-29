@@ -36,7 +36,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     private static final String STREAM_VERSION = "1.1.0";
     private static final String TEST_RESOURCE_PATH = "abnormalTierUsage";
     private static final String PUBLISHER_FILE = "logger_abnormalTierUsage.xml";
-    private static final String SPARK_SCRIPT = "APIMAnalytics-AbnormalTierAvailabilityAlert";
+    private static final String SPARK_SCRIPT = "APIMAnalytics-AbnormalTierUsageAlert-AbnormalTierAvailabilityAlert-batch1";
 
     // Request related constants these will be used to build API requests
     private static final String clientType = "external";
@@ -131,8 +131,8 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         int i = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
-            long requestPerMinuteEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
-            eventsPublished = (requestPerMinuteEventCount >= 1332);
+            long requestPerMinuteEventCount = getRecordCount(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_TABLE);
+            eventsPublished = (requestPerMinuteEventCount >= 150);
             if (eventsPublished) {
                 break;
             }
@@ -146,27 +146,28 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 
         executeSparkScript(SPARK_SCRIPT);
 
-        // test case #2
-        boolean testTwo = isAlertReceived(
-                0,
-                "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the tree:v1.0.0 API. It currently uses a Gold subscription.",
-                10, 1000);
-        Assert.assertFalse(testTwo,
-                "Incorrect user alert is received for application: sampleApplication for api_version: tree:v1.0.0");
 
         // test case #1
         boolean testOne = isAlertReceived(
                 0,
                 "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the svm:v1.0.0 API. It currently uses a Gold subscription.",
-                10, 1000);
+                50, 1000);
         Assert.assertTrue(testOne,
                 "Abnormal request alert is not received for application: sampleApplication for api_version: svm:v1.0.0");
+       
+        // test case #2
+        boolean testTwo = isAlertReceived(
+                0,
+                "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the tree:v1.0.0 API. It currently uses a Gold subscription.",
+                50, 1000);
+        Assert.assertFalse(testTwo,
+                "Incorrect user alert is received for application: sampleApplication for api_version: tree:v1.0.0");
 
         // test case #3
         boolean testThree = isAlertReceived(
                 0,
                 "sampleApplication2 Application owned by admin is consuming less than the allowed quota when accessing the svm:v1.0.0 API. It currently uses a Gold subscription.",
-                10, 1000);
+                50, 1000);
         Assert.assertTrue(testThree,
                 "Abnormal request alert is not received for application: sampleApplication2 for api_version: svm:v1.0.0");
 
@@ -174,26 +175,26 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         boolean testFour = isAlertReceived(
                 0,
                 "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the boost:v1.1.0 API. It currently uses a Gold subscription.",
-                10, 1000);
+                50, 1000);
         Assert.assertTrue(testFour,
                 "Abnormal request alert is not received for application: sampleApplication for api_version: boost:v1.1.0");
 
     }
 
     private void publishDataset() throws Exception {
-
-        // for a given applicationId, api_version, last five days average daily
-        // usage
+        // for a given applicationId, api_version, last five days average daily usage
         // is less than 0.05th percentile of its last 30 days average daily
         // usage.
-        for (int day = 0; day < 30; day++) {
-            int maxLimit = (day < 5) ? 2 : 10;
-            for (int request = 0; request < maxLimit; request++) {
+        for (int day = 29; day >= 0; day--) {
+            int maxLimit1 = (day < 5) ? 2 : 10;
+            int maxLimit2 = (day < 4) ? 2 : 10;
+            int maxLimit3 = (day < 2) ? 2 : 10;
+            for (int request = 0; request < maxLimit1; request++) {
                 EventDto eventDto = new EventDto();
                 eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
 
                 long requestTime = offsetInDays(-day);
-                String[] currentReq = buildRequst(clientType, consumerKey, context, "svm:v1.0.0", "svm", resourcePath,
+                String[] currentReq = buildRequest(clientType, consumerKey, context, "svm:v1.0.0", "svm", resourcePath,
                         resourceTemplate, method, version, request, requestTime, userId, tenantDomain, hostName,
                         apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut, clientIp,
                         applicationOwner);
@@ -201,41 +202,12 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                 publishEvent(eventDto);
                 Thread.sleep(10);
             }
-        }
-
-        // for a given applicationId, api_version, last 4 days ( hence should
-        // not
-        // receive an alert)
-        // average daily usage is less
-        // than 0.05th percentile of its last 30 days average daily usage.
-        for (int day = 0; day < 30; day++) {
-            int maxLimit = (day < 4) ? 2 : 10;
-            for (int request = 0; request < maxLimit; request++) {
+            for (int request = 0; request < maxLimit1; request++) {    
                 EventDto eventDto = new EventDto();
                 eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
 
                 long requestTime = offsetInDays(-day);
-                String[] currentReq = buildRequst(clientType, consumerKey, context, "tree:v1.0.0", "tree",
-                        resourcePath, resourceTemplate, method, version, request, requestTime, userId, tenantDomain,
-                        hostName, apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut,
-                        clientIp, applicationOwner);
-                eventDto.setAttributeValues(currentReq);
-                publishEvent(eventDto);
-                Thread.sleep(10);
-            }
-        }
-
-        // adding another abnormal API but for a different applicationId
-        // in this cases also we should get an alert for new applicationIs as
-        // well.
-        for (int day = 0; day < 30; day++) {
-            int maxLimit = (day < 5) ? 2 : 10;
-            for (int request = 0; request < maxLimit; request++) {
-                EventDto eventDto = new EventDto();
-                eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-
-                long requestTime = offsetInDays(-day);
-                String[] currentReq = buildRequst(clientType, consumerKey, context, "svm:v1.0.0", "svm", resourcePath,
+                String[] currentReq = buildRequest(clientType, "abckktg3s00vzz7gg3s198rzb9g3s2me2u2ng3s3", context, "svm:v1.0.0", "svm", resourcePath,
                         resourceTemplate, method, version, request, requestTime, userId, tenantDomain, hostName,
                         apiPublisher, "sampleApplication2", "sampleId2", userAgent, tier, throttledOut, clientIp,
                         applicationOwner);
@@ -243,18 +215,12 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                 publishEvent(eventDto);
                 Thread.sleep(10);
             }
-        }
-
-        // Same API but two API versions and one shows an abnormal behavior
-        // abnormal
-        for (int day = 0; day < 30; day++) {
-            int maxLimit = (day < 5) ? 2 : 10;
-            for (int request = 0; request < maxLimit; request++) {
+            for (int request = 0; request < maxLimit1; request++) {   
                 EventDto eventDto = new EventDto();
                 eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
 
                 long requestTime = offsetInDays(-day);
-                String[] currentReq = buildRequst(clientType, consumerKey, context, "boost:v1.1.0", "boost",
+                String[] currentReq = buildRequest(clientType, consumerKey, context, "boost:v1.1.0", "boost",
                         resourcePath, resourceTemplate, method, version, request, requestTime, userId, tenantDomain,
                         hostName, apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut,
                         clientIp, applicationOwner);
@@ -262,16 +228,12 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                 publishEvent(eventDto);
                 Thread.sleep(10);
             }
-        }
-        // not abnormal
-        for (int day = 0; day < 30; day++) {
-            int maxLimit = (day < 2) ? 2 : 10;
-            for (int request = 0; request < maxLimit; request++) {
+            for (int request = 0; request < maxLimit2; request++) {
                 EventDto eventDto = new EventDto();
                 eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
 
                 long requestTime = offsetInDays(-day);
-                String[] currentReq = buildRequst(clientType, consumerKey, context, "boost:v1.0.0", "boost",
+                String[] currentReq = buildRequest(clientType, consumerKey, context, "tree:v1.0.0", "tree",
                         resourcePath, resourceTemplate, method, version, request, requestTime, userId, tenantDomain,
                         hostName, apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut,
                         clientIp, applicationOwner);
@@ -279,6 +241,21 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                 publishEvent(eventDto);
                 Thread.sleep(10);
             }
+
+            for (int request = 0; request < maxLimit3; request++) {
+                EventDto eventDto = new EventDto();
+                eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+
+                long requestTime = offsetInDays(-day);
+                String[] currentReq = buildRequest(clientType, consumerKey, context, "boost:v1.0.0", "boost",
+                        resourcePath, resourceTemplate, method, version, request, requestTime, userId, tenantDomain,
+                        hostName, apiPublisher, applicationName, applicationId, userAgent, tier, throttledOut,
+                        clientIp, applicationOwner);
+                eventDto.setAttributeValues(currentReq);
+                publishEvent(eventDto);
+                Thread.sleep(10);
+            }
+            
         }
 
     }
@@ -293,17 +270,13 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
     }
 
-    private long offsetInDays(Integer numOfDays) {
-        if (numOfDays == null) {
-            throw new RuntimeException("numOfDays can't be null");
-        }
-
-        Calendar calender = Calendar.getInstance();
-        calender.add(Calendar.DAY_OF_MONTH, numOfDays);
-        return calender.getTimeInMillis();
+    private long offsetInDays(int numOfDays) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, numOfDays);
+        return calendar.getTimeInMillis();
     }
 
-    private String[] buildRequst(String clientType, String consumerKey, String context, String api_version, String api,
+    private String[] buildRequest(String clientType, String consumerKey, String context, String api_version, String api,
             String resourcePath, String resourceTemplate, String method, String version, int request, long requestTime,
             String userId, String tenantDomain, String hostName, String apiPublisher, String applicationName,
             String applicationId, String userAgent, String tier, boolean throttledOut, String clientIp,

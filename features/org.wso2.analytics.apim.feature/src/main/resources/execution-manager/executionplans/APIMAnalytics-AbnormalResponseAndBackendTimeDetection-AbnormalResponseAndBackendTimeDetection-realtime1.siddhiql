@@ -1,18 +1,13 @@
 /* Enter a unique ExecutionPlan */
-@Plan:name('APIMAnalytics-AbnormalResponseAndBackendTimeDetection')
+@Plan:name('APIMAnalytics-AbnormalResponseAndBackendTimeDetection-AbnormalResponseAndBackendTimeDetection-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
 -- @Plan:description('ExecutionPlan')
 
 /* define streams/tables and write queries here ... */
 
-
-@Import('org.wso2.apimgt.statistics.response:1.1.0')
-define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api
-string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
-
-@Import('org.wso2.analytics.apim.responseStatStream:1.0.0')
-define stream responseStatStream (api_version string, tenantDomain string, resourceTemplate string, method string, avgResponseTime double, sdResponseTime double, avgBackendTime double, sdBackendTime double);
+@Import('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
+define stream responseSummaryStream (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long);
 
 @Export('org.wso2.analytics.apim.abnormalBackendTimeAlertStream:1.0.0')
 define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, severity int, alertTimestamp long);
@@ -26,36 +21,30 @@ define stream allApimAlertStream (type string, tenantDomain string, msg string, 
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain,resourceTemplate,method')
 define table percentileTable (api_version string, tenantDomain string, resourceTemplate string, method string, responsePercentile double, backendPercentile double );
 
-
-@info(name = 'query1')
-from responseStream
-select api, api_version, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, backendTime
-insert into responseSummaryStream;
-
 /*spark script calculates percentile of responseTime and backendTime  and stores in percentileTable */
 
-@info(name = 'query2')
+@info(name = 'query1')
 from responseSummaryStream join percentileTable
 on (responseSummaryStream.api_version==percentileTable.api_version and responseSummaryStream.tenantDomain==percentileTable.tenantDomain and responseSummaryStream.resourceTemplate==percentileTable.resourceTemplate and responseSummaryStream.method==percentileTable.method)
 select responseSummaryStream.api as api_name, responseSummaryStream.api_version, responseSummaryStream.apiPublisher, responseSummaryStream.tenantDomain, responseSummaryStream.resourceTemplate, responseSummaryStream.method, responseSummaryStream.responseTime, percentileTable.responsePercentile , responseSummaryStream.backendTime,  percentileTable.backendPercentile
 insert into responseInfoStream;
 
-@info(name = 'query3')
+@info(name = 'query2')
 from responseInfoStream[responseTime > responsePercentile]
 select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, responsePercentile , 'Abnormal response time detected.' as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into abnormalResponseTimeAlertStream;
 
-@info(name = 'query4')
+@info(name = 'query3')
 from responseInfoStream[backendTime > backendPercentile]
 select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, backendTime, backendPercentile, 'Abnormal backend response time detected.' as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into abnormalBackendTimeAlertStream;
 
-@info(name = 'query5')
+@info(name = 'query4')
 from abnormalResponseTimeAlertStream
 select 'abnormalResponseTime' as type, tenantDomain, str:concat('Abnormal response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:', api,' of tenant domain:',tenantDomain,', threshold value:',responsePercentile, 'ms.') as msg, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;
 
-@info(name = 'query6')
+@info(name = 'query5')
 from abnormalBackendTimeAlertStream
 select 'abnormalBackendTime' as type, tenantDomain, str:concat('Abnormal backend response time detected for http ',method,' method of resource template:',resourceTemplate,' in api:', api,' of tenant domain:',tenantDomain,', threshold value:',backendPercentile, 'ms.') as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;

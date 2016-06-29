@@ -2,7 +2,8 @@
 <Analytics>
     <Name>APIM_LATENCY_BREAKDOWN_STATS</Name>
 <Script>
-    CREATE TEMPORARY TABLE APIExecutionTimeData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_EXECUTION_TIME");
+        
+    CREATE TEMPORARY TABLE APIExecutionTimeData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERSECONDEXECUTIONTIMES");
     CREATE TEMPORARY TABLE APIExecutionTimeDaySummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXE_TME_DAY_SUMMARY",
     schema "api STRING ,
     version STRING ,
@@ -44,14 +45,10 @@
     INSERT INTO TABLE API_EXECUTION_TME_DAY_SUMMARY_FINAL select api, api_version, tenantDomain, apiPublisher,
     avg(apiResponseTime), context, avg(securityLatency), avg(throttlingLatency), avg(requestMediationLatency),
     avg(responseMediationLatency), avg(backendLatency), avg(otherLatency),
-    substring(cast(first(eventTime)/1000 as timestamp),0,4),
-    substring(cast(first(eventTime)/1000 as timestamp),6,2),
-    substring(cast(first(eventTime)/1000 as timestamp),9,2),
+    year, month, day,
     first(eventTime)
     from APIExecutionTimeData where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
-    substring(cast((eventTime)/1000 as timestamp),0,4),
-    substring(cast((eventTime)/1000 as timestamp),6,2),
-    substring(cast((eventTime)/1000 as timestamp),9,2);
+    year, month, day;
     INSERT OVERWRITE TABLE APIExecutionTimeDaySummaryData SELECT api,version,tenantDomain,apiPublisher,apiResponseTime,
     context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,backendLatency,
     otherLatency,year,month,day,time FROM API_EXECUTION_TME_DAY_SUMMARY_FINAL;
@@ -101,16 +98,10 @@
     INSERT INTO TABLE API_EXECUTION_TIME_HOUR_SUMMARY_FINAL select api, api_version,tenantDomain,apiPublisher,
     avg(apiResponseTime),context,avg(securityLatency),avg(throttlingLatency),avg(requestMediationLatency),
     avg(responseMediationLatency),avg(backendLatency),avg(otherLatency),
-    substring(cast(first(eventTime)/1000 as timestamp),0,4),
-    substring(cast(first(eventTime)/1000 as timestamp),6,2),
-    substring(cast(first(eventTime)/1000 as timestamp),9,2),
-    substring(cast(first(eventTime)/1000 as timestamp),12,2),
+    year, month, day, hour,
     first(eventTime)
     from APIExecutionTimeData where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
-    substring(cast((eventTime)/1000 as timestamp),0,4),
-    substring(cast((eventTime)/1000 as timestamp),6,2),
-    substring(cast((eventTime)/1000 as timestamp),9,2),
-    substring(cast((eventTime)/1000 as timestamp),12,2);
+    year, month, day, hour;
     INSERT OVERWRITE TABLE APIExecutionTimeHourSummaryData SELECT api,version,tenantDomain,apiPublisher,apiResponseTime,
     context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,backendLatency,
     otherLatency,year,month,day,hour,time FROM API_EXECUTION_TIME_HOUR_SUMMARY_FINAL;
@@ -162,18 +153,10 @@
     INSERT INTO TABLE API_EXECUTION_TIME_MINUTE_SUMMARY_FINAL select api, api_version,tenantDomain,apiPublisher,
     avg(apiResponseTime),context,avg(securityLatency),avg(throttlingLatency),avg(requestMediationLatency),
     avg(responseMediationLatency),avg(backendLatency),avg(otherLatency),
-    substring(cast(first(eventTime)/1000 as timestamp),0,4),
-    substring(cast(first(eventTime)/1000 as timestamp),6,2),
-    substring(cast(first(eventTime)/1000 as timestamp),9,2),
-    substring(cast(first(eventTime)/1000 as timestamp),12,2),
-    substring(cast(first(eventTime)/1000 as timestamp),15,2),
+    year, month, day, hour, minute as minutes,
     first(eventTime)
     from APIExecutionTimeData where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
-    substring(cast((eventTime)/1000 as timestamp),0,4),
-    substring(cast((eventTime)/1000 as timestamp),6,2),
-    substring(cast((eventTime)/1000 as timestamp),9,2),
-    substring(cast((eventTime)/1000 as timestamp),12,2),
-    substring(cast((eventTime)/1000 as timestamp),15,2);
+    year, month, day, hour, minute;
     INSERT OVERWRITE TABLE APIExecutionTimeMinuteSummaryData SELECT api,version,tenantDomain,apiPublisher,
     apiResponseTime,context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,
     backendLatency,otherLatency,year,month,day,hour,minutes,time FROM API_EXECUTION_TIME_MINUTE_SUMMARY_FINAL;
@@ -243,6 +226,7 @@
     INSERT OVERWRITE TABLE APIExecutionTimeSecondsSummaryData SELECT api,version,tenantDomain,apiPublisher,
     apiResponseTime,context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,
     backendLatency,otherLatency,year,month,day,hour,minutes,seconds,time FROM API_EXECUTION_TIME_SECONDS_SUMMARY_FINAL;
+               
 
 </Script>
     <CronExpression>0 0/5 * 1/1 * ? *</CronExpression>

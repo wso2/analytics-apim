@@ -2,12 +2,11 @@
 <Analytics>
     <CronExpression>0 0 23 * * ?</CronExpression>
     <Editable>true</Editable>
-    <Name>APIMAnalytics-AbnormalTierAvailabilityAlert</Name>
+    <Name>APIMAnalytics-AbnormalTierUsageAlert-AbnormalTierAvailabilityAlert-batch1</Name>
       <Script>
-
-      CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_REQUESTS
+      CREATE TEMPORARY TABLE ORG_WSO2_API_REQUESTS
       USING CarbonAnalytics
-      OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
+      OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST");
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
       USING CarbonAnalytics
@@ -50,15 +49,15 @@
       INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
       SELECT applicationId, api_version, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), 0.05) as percentile
       FROM
-         (SELECT applicationId, api_version, COUNT(api_version) as request_count
-          FROM ORG_WSO2_API_ABNORMAL_REQUESTS
+         (SELECT applicationId, api_version, SUM(total_request_count) as request_count
+          FROM ORG_WSO2_API_REQUESTS
           WHERE context is not NULL  AND now('') > convertToTimestamp('12/2/2016') AND requestTime >= offsetInDays(-30)
-          GROUP BY convertToDate(requestTime), applicationId, api_version) ORG_WSO2_API_ABNORMAL_REQUESTS
+          GROUP BY convertToDate(requestTime), applicationId, api_version) ORG_WSO2_API_REQUESTS_FILTERED
       GROUP BY applicationId, api_version;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_AVG_REQ_FOR_X_DAYS
-     SELECT applicationId, api_version, COUNT(api_version) as request_count
-     FROM ORG_WSO2_API_ABNORMAL_REQUESTS
+     SELECT applicationId, api_version, SUM(total_request_count) as request_count
+     FROM ORG_WSO2_API_REQUESTS
      WHERE context is not NULL  AND requestTime >= offsetInDays(-5)
      GROUP BY convertToDate(requestTime), applicationId, api_version;
 
@@ -67,11 +66,11 @@
      FROM ORG_WSO2_API_AVG_REQ_FOR_X_DAYS S, ORG_WSO2_API_PERCENTILE D
      WHERE S.applicationId = D.applicationId AND S.api_version = D.api_version  AND D.requestsPerDayPercentile  > S.request_count
      GROUP BY S.applicationId, S.api_version
-     HAVING COUNT(S.api_version) >= 5;
+     HAVING SUM(S.request_count) >= 5;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA
      SELECT DISTINCT applicationId, api_version, tenantDomain, applicationName, applicationOwner, api, tier
-     FROM ORG_WSO2_API_ABNORMAL_REQUESTS;
+     FROM ORG_WSO2_API_REQUESTS;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
      SELECT R.applicationId, R.api_version, R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'), 2, now('')
@@ -81,6 +80,7 @@
      INSERT OVERWRITE TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
      SELECT "AbnormalTierUsage", R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'), 2, now('')
      FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
-     WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
-    </Script>
+     WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;               
+      
+      </Script>
 </Analytics>

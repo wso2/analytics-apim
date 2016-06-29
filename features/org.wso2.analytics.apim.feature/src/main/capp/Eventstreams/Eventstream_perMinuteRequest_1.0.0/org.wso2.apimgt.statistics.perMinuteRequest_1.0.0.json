@@ -1,0 +1,122 @@
+{
+  "name": "org.wso2.apimgt.statistics.perMinuteRequest",
+  "version": "1.0.0",
+  "nickName": "perMinuteRequest",
+  "description": "Aggregates incoming requests in 1 minute intervals and persist them.",
+  "metaData": [
+    {
+      "name": "clientType",
+      "type": "STRING"
+    }
+  ],
+  "payloadData": [
+    {
+      "name": "year",
+      "type": "INT"
+    },
+    {
+      "name": "month",
+      "type": "INT"
+    },
+    {
+      "name": "day",
+      "type": "INT"
+    },
+    {
+      "name": "hour",
+      "type": "INT"
+    },
+    {
+      "name": "minute",
+      "type": "INT"
+    },
+    {
+      "name": "consumerKey",
+      "type": "STRING"
+    },
+    {
+      "name": "context",
+      "type": "STRING"
+    },
+    {
+      "name": "api_version",
+      "type": "STRING"
+    },
+    {
+      "name": "api",
+      "type": "STRING"
+    },
+    {
+      "name": "version",
+      "type": "STRING"
+    },
+    {
+      "name": "requestTime",
+      "type": "LONG"
+    },
+    {
+      "name": "userId",
+      "type": "STRING"
+    },
+    {
+      "name": "hostName",
+      "type": "STRING"
+    },
+    {
+      "name": "apiPublisher",
+      "type": "STRING"
+    },
+    {
+      "name": "total_request_count",
+      "type": "LONG"
+    },
+    {
+      "name": "resourceTemplate",
+      "type": "STRING"
+    },
+    {
+      "name": "method",
+      "type": "STRING"
+    },
+    {
+      "name": "applicationName",
+      "type": "STRING"
+    },
+    {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
+      "name": "userAgent",
+      "type": "STRING"
+    },
+    {
+      "name": "resourcePath",
+      "type": "STRING"
+    },
+    {
+      "name": "request",
+      "type": "INT"
+    },
+    {
+      "name": "applicationId",
+      "type": "STRING"
+    },
+    {
+      "name": "tier",
+      "type": "STRING"
+    },
+    {
+      "name": "throttledOut",
+      "type": "BOOL"
+    },
+    {
+      "name": "clientIp",
+      "type": "STRING"
+    },
+    {
+      "name": "applicationOwner",
+      "type": "STRING"
+    }
+  ]
+}

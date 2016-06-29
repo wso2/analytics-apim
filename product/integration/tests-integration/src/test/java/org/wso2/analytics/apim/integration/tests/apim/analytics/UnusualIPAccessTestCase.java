@@ -29,7 +29,8 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     private final String TEST_RESOURCE_PATH = "unusualIPAccess";
     private final String PUBLISHER_FILE = "logger.xml";
     private final String ALERT_TABLE_NAME = "ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY";
-    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-UnusualIPAccessAlert";
+    private final String REQUEST_TABLE = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST";
+    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-UnusualIPAccessTemplate-UnusualIPAccessAlert-realtime1";
     private final int MAX_TRIES = 5;
     private String originalExecutionPlan;
 
@@ -38,8 +39,8 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         super.init();
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
-        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, REQUEST_TABLE)) {
+            deleteData(-1234, REQUEST_TABLE);
         }
         editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
         originalExecutionPlan = eventProcessorAdminServiceClient.getActiveExecutionPlan(EXECUTION_PLAN_NAME);
@@ -47,17 +48,20 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     }
 
     public void redeployExecutionPlan() throws Exception {
+        int count = getActiveExecutionPlanCount();
         deleteExecutionPlan(EXECUTION_PLAN_NAME);
         Thread.sleep(1000);
         addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
-        Thread.sleep(1000);
+        do { // wait till it get redeployed
+            Thread.sleep(1000);
+        } while (getActiveExecutionPlanCount() != count);
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
         // undeploy the publishers
-        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, REQUEST_TABLE)) {
+            deleteData(-1234, REQUEST_TABLE);
         }
         undeployPublisher(PUBLISHER_FILE);
         deleteExecutionPlan(EXECUTION_PLAN_NAME);
@@ -74,14 +78,14 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
             Thread.sleep(2000);
-            requestEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
-            eventsPublished = (requestEventCount >= 500);
+            requestEventCount = getRecordCount(-1234, REQUEST_TABLE);
+            eventsPublished = (requestEventCount >= 3);
             if (eventsPublished) {
                 break;
             }
             i++;
         }
-        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:500 but found: " +requestEventCount+ "!");
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:3 but found: " +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if it waits for the provided request count to" +

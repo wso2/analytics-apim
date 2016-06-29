@@ -1,5 +1,5 @@
 /* Enter a unique ExecutionPlan */
-@Plan:name('APIMAnalytics-UnusualIPAccessAlert')
+@Plan:name('APIMAnalytics-UnusualIPAccessTemplate-UnusualIPAccessAlert-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
 @Plan:description('Alerts if an access from a strange ip is detected')
