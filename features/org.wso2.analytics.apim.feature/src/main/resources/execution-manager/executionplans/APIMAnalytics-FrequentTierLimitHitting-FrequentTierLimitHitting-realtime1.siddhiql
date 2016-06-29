@@ -1,5 +1,5 @@
 /* Enter a unique ExecutionPlan */
-@Plan:name('APIMAnalytics-FrequentTierLimitHitting')
+@Plan:name('APIMAnalytics-FrequentTierLimitHitting-FrequentTierLimitHitting-realtime1')
 
 @Import('org.wso2.apimgt.statistics.throttle:1.0.0')
 define stream throttleStream (meta_clientType string, accessToken string, userId string, tenantDomain string, api string, api_version string, context string, apiPublisher string, throttledTime long, applicationName string, applicationId string, throttledOutReason string);

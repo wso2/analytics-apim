@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenarioConfiguration  domain="APIMAnalytics" name="RequestSummarizer" scenario="RequestSummarizer">
+	<description>Responsible for summarizing incoming traffic</description>
+	<parameterMap>
+		<entry>
+			<key>timeInterval</key>
+			<value>60</value>
+		</entry>
+	</parameterMap>
+</scenarioConfiguration>

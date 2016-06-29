@@ -2,7 +2,7 @@
 <analytics-data-purging>
     <cron-expression>0 0 0 * * ?</cron-expression>
     <purge-include-tables>
-        <table>ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINSTREAM</table>
+        <!--table></table-->
     </purge-include-tables>
     <data-retention-days>1</data-retention-days>
 </analytics-data-purging>

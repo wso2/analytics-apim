@@ -1,0 +1,160 @@
+/* Enter a unique ExecutionPlan */
+
+@Plan:name('APIMAnalytics-RequestSummarizer-RequestSummarizer-realtime1')
+
+
+
+/* Enter a unique description for ExecutionPlan */
+
+-- @Plan:description('ExecutionPlan')
+
+@Plan:statistics('false')
+
+@Import('org.wso2.apimgt.statistics.request:1.1.0')
+define stream requests (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+
+@Import('org.wso2.apimgt.statistics.response:1.1.0')
+define stream responses (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
+
+@Import('org.wso2.apimgt.statistics.execution.time:1.0.0')
+define stream executionTimes (meta_clientType string, api string, api_version string, tenantDomain string, apiPublisher string, apiResponseTime long, context string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, eventTime long);
+
+@Export('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
+define stream perMinuteRequests (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+
+@Export('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
+define stream perMinuteResponses (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long);
+
+@Export('org.wso2.apimgt.statistics.perSecondExecutionTimes:1.0.0')
+define stream perSecondExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, second int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long);
+
+-- requests
+
+-- second
+from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, meta_clientType, consumerKey, context, api_version, api, version, 
+max(requestTime) as requestTime, userId, hostName, apiPublisher, count() as total_request_count, 
+resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
+tier, throttledOut, clientIp, applicationOwner
+group by consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp  
+insert into perSecondRequestsTemp;
+
+from perSecondRequestsTemp
+select meta_clientType, (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+time:extract(requestTime, 'year') as year, time:extract(requestTime, 'month') as month, 
+time:extract(requestTime, 'day') as day, time:extract(requestTime, 'hour') as hour, 
+time:extract(requestTime, 'minute') as minute, time:extract(requestTime, 'second') as second,
+consumerKey, context, api_version, api, version, 
+requestTime, userId, hostName, apiPublisher, total_request_count, 
+resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
+tier, throttledOut, clientIp, applicationOwner
+insert into perSecondRequests;
+
+
+-- minute
+
+from perSecondRequests
+select startTime, meta_clientType, str:concat(facetStartTime, '_', consumerKey, '_', context, '_', 
+	api_version, '_', userId, '_', hostName, '_', apiPublisher, '_', resourceTemplate, '_', method, '_', userAgent, '_', clientIp) 
+as uniqueId, year, month, day, hour, minute, second, consumerKey, context, api_version, api, version, 
+requestTime, userId, hostName, apiPublisher, total_request_count, resourceTemplate, method, applicationName, 
+tenantDomain, userAgent, resourcePath, request, applicationId, tier, throttledOut, clientIp, applicationOwner
+insert into perSecondRequestsWithUniqueId;
+
+from perSecondRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec)
+select batchEndTime as startTime, meta_clientType, consumerKey, context, api_version, api, version, 
+max(requestTime) as requestTime, userId, hostName, apiPublisher, sum(total_request_count) as total_request_count, 
+resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, tier, 
+throttledOut, clientIp, applicationOwner
+group by consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp  
+insert into perMinuteRequestsTemp;
+
+from perMinuteRequestsTemp
+select meta_clientType, time:extract(startTime, 'year') as year, time:extract(startTime, 'month') as month, 
+time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
+time:extract(startTime, 'minute') as minute,
+consumerKey, context, api_version, api, version, 
+requestTime, userId, hostName, apiPublisher, total_request_count, 
+resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
+tier, throttledOut, clientIp, applicationOwner
+insert into perMinuteRequests;
+
+-- responses
+
+-- second
+
+from responses#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, 
+tenantDomain, hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, 
+max(responseTime) as responseTime, max(serviceTime) as serviceTime, max(backendTime) as backendTime, 
+username, max(eventTime) as eventTime, applicationName, applicationId, cacheHit, max(responseSize) as responseSize, 
+protocol, responseCode, count() as total_response_count 
+group by consumerKey, context, api_version, username, resourceTemplate, hostName, apiPublisher, method, destination  
+insert into perSecondResponsesTemp;
+
+from perSecondResponsesTemp
+select meta_clientType, (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+time:extract(startTime, 'year') as year, 
+time:extract(startTime, 'month') as month, time:extract(startTime, 'day') as day, 
+time:extract(startTime, 'hour') as hour, time:extract(startTime, 'minute') as minute, 
+time:extract(startTime, 'second') as second, 
+context, api_version, api, resourceTemplate, version, 
+tenantDomain, hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, 
+responseTime, serviceTime, backendTime, 
+username, eventTime, applicationName, applicationId, cacheHit, responseSize, 
+protocol, responseCode, total_response_count 
+insert into perSecondResponses;
+
+-- minute
+
+from perSecondResponses
+select startTime, meta_clientType, str:concat(facetStartTime, '_', consumerKey, '_', context, '_', api_version, 
+	'_', username, '_', hostName, '_', apiPublisher, '_', resourceTemplate, '_', method, '_', destination) as uniqueId, 
+year, month, day, hour, minute, second, context, api_version, api, resourceTemplate, version, tenantDomain, 
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, responseTime, serviceTime, 
+backendTime, username, eventTime, applicationName, applicationId, cacheHit, responseSize, protocol, responseCode, 
+total_response_count
+insert into perSecondResponsesWithUniqueId;
+
+from perSecondResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec)
+select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, tenantDomain, 
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, max(responseTime) as responseTime, 
+max(serviceTime) as serviceTime, max(backendTime) as backendTime, username, max(eventTime) as eventTime, applicationName, 
+applicationId, cacheHit, max(responseSize) as responseSize, protocol, responseCode, 
+sum(total_response_count) as total_response_count
+group by consumerKey, context, api_version, username, resourceTemplate, hostName, apiPublisher, method, destination    
+insert into perMinuteResponsesTemp;
+
+from perMinuteResponsesTemp
+select meta_clientType, time:extract(startTime, 'year') as year, time:extract(startTime, 'month') as month, 
+time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
+time:extract(startTime, 'minute') as minute,
+context, api_version, api, resourceTemplate, version, tenantDomain, 
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, responseTime, 
+serviceTime, backendTime, username, eventTime, applicationName, 
+applicationId, cacheHit, responseSize, protocol, responseCode, total_response_count
+insert into perMinuteResponses;
+
+-- execution times
+
+-- second
+
+from executionTimes#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, meta_clientType, context, api_version, api, 
+tenantDomain, apiPublisher, avg(apiResponseTime) as apiResponseTime, avg(securityLatency) as securityLatency,
+avg(throttlingLatency) as throttlingLatency, avg(requestMediationLatency) as requestMediationLatency,
+avg(responseMediationLatency) as responseMediationLatency, avg(backendLatency) as backendLatency,
+avg(otherLatency) as otherLatency
+group by context, api_version, tenantDomain, apiPublisher 
+insert into perSecondExecutionTimesTemp;
+
+from perSecondExecutionTimesTemp
+select meta_clientType,
+time:extract(startTime, 'year') as year, 
+time:extract(startTime, 'month') as month, time:extract(startTime, 'day') as day, 
+time:extract(startTime, 'hour') as hour, time:extract(startTime, 'minute') as minute, 
+time:extract(startTime, 'second') as second, 
+context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, securityLatency,
+throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency,
+startTime as eventTime
+insert into perSecondExecutionTimes;

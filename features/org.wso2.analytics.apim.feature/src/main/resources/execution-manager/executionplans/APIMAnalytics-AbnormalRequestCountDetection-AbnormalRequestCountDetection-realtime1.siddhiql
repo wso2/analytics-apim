@@ -1,0 +1,61 @@
+/* Enter a unique ExecutionPlan */
+
+@Plan:name('APIMAnalytics-AbnormalRequestCountDetection-AbnormalRequestCountDetection-realtime1')
+
+/* Enter a unique description for ExecutionPlan */
+-- @Plan:description('ExecutionPlan')
+
+/* define streams/tables and write queries here ... */
+
+
+@Import('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
+define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+                            	
+@Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
+
+@Export('org.wso2.analytics.apim.abnormalRequestsPerMinAlertStream:1.0.0')
+define stream abnormalRequestsPerMinAlertStream (api string, userId string, tenantDomain string, applicationName string, applicationOwner string, resourceTemplate string, method string, requestsPerMin long, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double, reason string, msg string, severity int, alertTimestamp long);
+
+@Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
+define stream requestPerMin (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long);
+
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE',  primary.keys = 'api_version,userId,consumerKey,resourceTemplate,method')
+define table requestPercentileTable (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double);
+
+@info(name = 'query1')
+from requestPerMinStream
+select api_version, userId , consumerKey, resourceTemplate, method, count(total_request_count) as requestsPerMin
+group by api_version, userId , consumerKey, resourceTemplate, method
+insert into requestPerMin ;
+
+/* retrieving corresponding percentile values from table and filtering abnormal counts*/
+@info(name = 'query2')
+from requestPerMinStream join requestPercentileTable
+on (requestPerMinStream.api_version ==requestPercentileTable.api_version and  requestPerMinStream.userId ==requestPercentileTable.userId  and
+requestPerMinStream.consumerKey ==requestPercentileTable.consumerKey and requestPerMinStream.resourceTemplate ==requestPercentileTable.resourceTemplate and 
+requestPerMinStream.method ==requestPercentileTable.method)
+select requestPerMinStream.api_version as api , requestPerMinStream.userId , requestPerMinStream.tenantDomain, requestPerMinStream.applicationName, 
+requestPerMinStream.applicationOwner, requestPerMinStream.resourceTemplate, requestPerMinStream.method, requestPerMinStream.total_request_count,  
+requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile, 
+ifThenElse(total_request_count > requestsPerMinUpperPercentile,'spike','drop') as reason,
+'Abnormal request count detected during last minute.' as msg , 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+having (total_request_count > requestsPerMinUpperPercentile or total_request_count < requestsPerMinLowerPercentile)
+insert into tempAbnormalRequestsPerMinAlertStream;
+
+@info(name = 'query3')
+from tempAbnormalRequestsPerMinAlertStream#window.length(1) as a left outer join tempAbnormalRequestsPerMinAlertStream#window.time(10 minute) as b
+on (a.api== b.api and a.userId== b.userId and a.applicationName==b.applicationName and a.resourceTemplate==b.resourceTemplate and a.method== b.method and 
+a.reason== b.reason)
+select a.api, a.userId, a.tenantDomain, a.applicationName, a.applicationOwner, a.resourceTemplate, a.method, a.total_request_count as requestsPerMin, 
+a.requestsPerMinUpperPercentile, a.requestsPerMinLowerPercentile, a.reason, a.msg, a.severity, a.alertTimestamp
+having b.api  is null
+insert into abnormalRequestsPerMinAlertStream ;
+
+@info(name = 'query4')
+from abnormalRequestsPerMinAlertStream
+select 'abnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count ' , ifThenElse(requestsPerMin > requestsPerMinUpperPercentile,
+'spike','drop') , ' detected during last minute by userId:',userId,' using application ', applicationName,' owned by ', applicationOwner,' for http ', 
+method,' method of resource template ', resourceTemplate,' in api :', api,', abnormal request count:', requestsPerMin, ".") as msg , 
+severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into allApimAlertStream;

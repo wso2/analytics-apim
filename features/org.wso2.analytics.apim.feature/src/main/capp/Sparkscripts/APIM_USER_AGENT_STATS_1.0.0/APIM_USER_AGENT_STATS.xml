@@ -2,7 +2,7 @@
 <Analytics>
     <Name>APIM_USER_AGENT_STATS</Name>
 <Script>
-    CREATE TEMPORARY TABLE APIUserBrowserData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQ_USER_BROW_SUMMARY",
+        CREATE TEMPORARY TABLE APIUserBrowserData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_REQ_USER_BROW_SUMMARY",
     schema "api STRING ,
     version STRING ,
     apiPublisher STRING ,
@@ -16,7 +16,7 @@
     browser STRING",
     primaryKeys "api,version,apiPublisher,year,month,day,os,browser,tenantDomain"
     );
-    create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_REQUEST");
+    create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST");
     CREATE TEMPORARY TABLE API_REQUEST_USER_AGENT_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_USER_AGENT_SUMMARY",
     schema "api string -i,
     version string -i,
@@ -32,15 +32,11 @@
     );
     insert into table API_REQUEST_USER_AGENT_SUMMARY_FINAL select api,version, apiPublisher,tenantDomain,
     sum(request) as total_request_count,
-    substring(cast(first(requestTime)/1000 as timestamp),0,4),
-    substring(cast(first(requestTime)/1000 as timestamp),6,2),
-    substring(cast(first(requestTime)/1000 as timestamp),9,2),
+    year, month, day,
     first(requestTime),
     userAgent
     from APIRequestData group by api,version,apiPublisher,userAgent,tenantDomain,
-    substring(cast(requestTime/1000 as timestamp),0,4),
-    substring(cast(requestTime/1000 as timestamp),6,2),
-    substring(cast(requestTime/1000 as timestamp),9,2);
+    year, month, day;
 
     CREATE TEMPORARY TABLE API_REQUEST_USER_BROWSER_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQ_USER_BROW_SUMMARY",
     schema "api string -i,

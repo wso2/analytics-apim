@@ -8,9 +8,9 @@
             <package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>
             <package name="org.wso2.analytics.apim.integration.tests.apim.loganalyzer"/>
         </packages>
-        <!--<classes>-->
-            <!--<class name="org.wso2.analytics.apim.integration.tests.apim.analytics.AbnormalTierUsageTestCase"></class>-->
-        <!--</classes>-->
+        <!-- <classes>
+            <class name="org.wso2.analytics.apim.integration.tests.apim.analytics.AbnormalRequestCountTestCase"></class>
+        </classes> -->
     </test>
 
 </suite>

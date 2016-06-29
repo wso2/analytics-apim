@@ -29,7 +29,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_VERSION = "1.0.0";
     private final String TEST_RESOURCE_PATH = "tierLimitHitting";
     private final String PUBLISHER_FILE = "logger_frequentTierHitting.xml";
-    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-FrequentTierLimitHitting";
+    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-FrequentTierLimitHitting-FrequentTierLimitHitting-realtime1";
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {

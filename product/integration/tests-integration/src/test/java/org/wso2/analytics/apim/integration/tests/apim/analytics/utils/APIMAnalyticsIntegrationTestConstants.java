@@ -30,7 +30,7 @@ public class APIMAnalyticsIntegrationTestConstants {
     public static final String MARKOV_MODEL_TABLE = "ORG_WSO2_ANALYTICS_APIM_MARKOVMODELTABLE";
     
     // abnormal tier usage tables
-    public static final String REQUEST_TABLE = "ORG_WSO2_API_ABNORMAL_REQ";	
+    public static final String REQUEST_TABLE = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST";	
     public static final String REQUEST_PER_X_DAYS_TABLE = "ORG_WSO2_API_AVG_REQ_X_DAYS";
     public static final String PERCENTILE_TABEL = "ORG_WSO2_API_PERCENTILE";
     public static final String ALERT_STORE_TABLE = "ORG_WSO2_API_ALERT_STORE";

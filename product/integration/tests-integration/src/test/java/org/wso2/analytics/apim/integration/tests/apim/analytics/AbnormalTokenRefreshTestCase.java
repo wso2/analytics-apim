@@ -36,7 +36,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
     private final String STREAM_VERSION = "1.0.0";
     private final String TEST_RESOURCE_PATH = "abnormalTokenRefresh";
     private final String PUBLISHER_FILE = "logger_abnormalAccessTokenRefresh.xml";
-    private final String SPARK_SCRIPT = "APIMAnalytics-ConfigureAccessToken";
+    private final String SPARK_SCRIPT = "APIMAnalytics-ConfigureAccessToken-ConfigureAccessToken-batch1";
     private final String SUMMARY_TABLE = "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHSUMMARYTABLE";
     private final String REFRESH_TIME_DIFFERENCE_TABLE = "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE";
     private final String LAST_ACCESS_TOKEN_REFRESH_TABLE = "ORG_WSO2_ANALYTICS_APIM_LASTACCESSTOKENREFRESHEVENTTABLE";
@@ -47,7 +47,6 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
             "success,86400,604800,";
     private String BASE_EVENT_TWO_STRING = "apim,carbon.super,home,h8jfbnghUKepMIulu43Ht9cjaRfh,refreshToken,id1242,ab,c,true,200," +
             "success,86400,604800,";
-    private String originalExecutionPlan;
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
@@ -71,15 +70,6 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
 
         }
         editActiveExecutionPlan(getActiveExecutionPlan(EXECUTION_PLAN_NAME),EXECUTION_PLAN_NAME);
-        originalExecutionPlan = eventProcessorAdminServiceClient.getActiveExecutionPlan(EXECUTION_PLAN_NAME);
-        redeployExecutionPlan();
-    }
-
-    public void redeployExecutionPlan() throws Exception {
-        deleteExecutionPlan(EXECUTION_PLAN_NAME);
-        Thread.sleep(1000);
-        addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
-        Thread.sleep(1000);
     }
 
     @AfterClass(alwaysRun = true)
@@ -101,8 +91,6 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         }
         // undeploy the publishers
         undeployPublisher(PUBLISHER_FILE);
-        deleteExecutionPlan(EXECUTION_PLAN_NAME);
-        addExecutionPlan(originalExecutionPlan);
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the Spark script is deployed")

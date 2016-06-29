@@ -16,17 +16,19 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
 
     private final String REQUEST_STREAM_NAME = "org.wso2.apimgt.statistics.request";
     private final String RESPONSE_STREAM_NAME = "org.wso2.apimgt.statistics.response";
-    private final String RESPONSE_TIME_SPARK_SCRIPT = "APIMAnalytics-ResponseTime";
-    private final String REQUEST_COUNT_SPARK_SCRIPT = "APIMAnalytics-RequestPerAPI";
-    private final String RESPONSE_COUNT_SPARK_SCRIPT = "APIMAnalytics-ResponsePerAPIStatGenerator";
+    private final String RESPONSE_TIME_SPARK_SCRIPT = "APIMAnalytics-ResponseTime-ResponseTime-batch1";
+    private final String REQUEST_COUNT_SPARK_SCRIPT = "APIMAnalytics-RequestPerApi-RequestPerAPI-batch1";
+    private final String RESPONSE_COUNT_SPARK_SCRIPT = "APIMAnalytics-ResponsePerApiStatGenerator-ResponsePerAPIStatGenerator-batch1";
     private final String RESPONSE_PER_API_STREAM = "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERMINPERAPISTREAM";
     private final String REQUEST_PER_API_STREAM = "ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINPERAPISTREAM";
+    private final String REQUEST_TABLE = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST";
+    private final String RESPONSE_TABLE = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE";
     private final String REQUEST_STREAM_VERSION = "1.1.0";
     private final String RESPONSE_STREAM_VERSION = "1.1.0";
     private final String TEST_RESOURCE_PATH = "healthAvailability";
     private final String PUBLISHER_FILE = "logger.xml";
     private final String RESPONSE_TIME_TABLE = "ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE";
-    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-HealthAvailabilityPerMin";
+    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-HealthAvailabilityPerMinAlert-HealthAvailabilityPerMin-realtime1";
     private final int MAX_TRIES_RESPONSE = 50;
     private String originalExecutionPlan;
 
@@ -35,11 +37,11 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         super.init();
         // deploy the publisher xml file
         deployPublisher(TEST_RESOURCE_PATH, PUBLISHER_FILE);
-        if (isTableExist(-1234, REQUEST_STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, REQUEST_TABLE)) {
+            deleteData(-1234, REQUEST_TABLE);
         }
-        if (isTableExist(-1234, RESPONSE_STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, RESPONSE_TABLE)) {
+            deleteData(-1234, RESPONSE_TABLE);
         }
         if (isTableExist(-1234, RESPONSE_TIME_TABLE)) {
             deleteData(-1234, RESPONSE_TIME_TABLE);
@@ -56,19 +58,22 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     }
 
     public void redeployExecutionPlan() throws Exception {
+        int count = getActiveExecutionPlanCount();
         deleteExecutionPlan(EXECUTION_PLAN_NAME);
         Thread.sleep(1000);
         addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
-        Thread.sleep(1000);
+        do { // wait till it get redeployed
+            Thread.sleep(1000);
+        } while (getActiveExecutionPlanCount() != count);
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        if (isTableExist(-1234, REQUEST_STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, REQUEST_TABLE)) {
+            deleteData(-1234, REQUEST_TABLE);
         }
-        if (isTableExist(-1234, RESPONSE_STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, RESPONSE_TABLE)) {
+            deleteData(-1234, RESPONSE_TABLE);
         }
         if (isTableExist(-1234, RESPONSE_TIME_TABLE)) {
             deleteData(-1234, RESPONSE_TIME_TABLE);
@@ -105,26 +110,41 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         boolean eventsPublished = false;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            responseEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
-            eventsPublished = (responseEventCount == 50);
+            responseEventCount = getRecordCount(-1234, RESPONSE_TABLE);
+            eventsPublished = (responseEventCount >= 1);
             if (eventsPublished) {
                 break;
             }
             i++;
         }
-        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:50 but found: " +responseEventCount+ "!");
+        Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:1 but found: " +responseEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if API response time too high alert is not generated for normal scenarios", dependsOnMethods = "testResponseSimulationDataSent")
     public void testResponseTimeNormalAlert() throws Exception {
         executeSparkScript(RESPONSE_TIME_SPARK_SCRIPT);
+        
+        int i = 0;
+        boolean scriptExecuted = false;
+        long percentileTableCount = 0;
+        while (i < MAX_TRIES_RESPONSE) {
+            Thread.sleep(2000);
+            percentileTableCount = getRecordCount(-1234, RESPONSE_TIME_TABLE);
+            scriptExecuted = (percentileTableCount >= 1);
+            if (scriptExecuted) {
+                break;
+            }
+            i++;
+        }
+        Assert.assertTrue(scriptExecuted, "Spark script did not execute as expected, expected entry count:1 but found: "+percentileTableCount+ "!");
+        
         logViewerClient.clearLogs();
         List<EventDto> events = getResponseEventList(2);
         pubishEvents(events, 100);
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0",
-                "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "20", "7", "19", "admin@carbon.super", "1456894602386",
+                "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "20", "7", "19", "admin@carbon.super", String.valueOf(System.currentTimeMillis()),
                 "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200","destination"});
         events.add(eventDto);
         boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response time is higher\"", 5, 2000);
@@ -145,58 +165,107 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     public void test1stRequestCountSimulationDataSent() throws Exception {
         deleteData(-1234, REQUEST_PER_API_STREAM.replace('.', '_'));
         deleteData(-1234, RESPONSE_PER_API_STREAM.replace('.', '_'));
-        deleteData(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
+        deleteData(-1234, REQUEST_TABLE);
         Thread.sleep(3000);
 
         redeployExecutionPlan();
 
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "request1.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 100);
-        Thread.sleep(10000);
-        long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
+        Thread.sleep(1000);
+        int i = 0;
+        long requestEventCount = 0;
         boolean eventsPublished = false;
-        eventsPublished = (requestEventCount == 9);
-        Assert.assertTrue(eventsPublished, "Simulation request events set one did not get published, expected entry count:9 but found: " +requestEventCount+ "!");
+        while (i < MAX_TRIES_RESPONSE) {
+            Thread.sleep(2000);
+            requestEventCount = getRecordCount(-1234, REQUEST_TABLE);
+            eventsPublished = (requestEventCount >= 1);
+            if (eventsPublished) {
+                break;
+            }
+            i++;
+        }
+        Assert.assertTrue(eventsPublished, "Simulation request events set one did not get published, expected entry count:1 but found: " +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
             , dependsOnMethods = "test1stRequestCountSimulationDataSent")
     public void test2ndRequestCountSimulationDataSent() throws Exception {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "request2.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 100);
-        Thread.sleep(9000);
-        long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
-        boolean eventsPublished = (requestEventCount == 22);
-        Assert.assertTrue(eventsPublished, "Simulation request events set two did not get published, expected entry count:22 but found: " +requestEventCount+ "!");
+        Thread.sleep(10000);
+//        int i = 0;
+//        long requestEventCount = 0;
+//        boolean eventsPublished = false;
+//        while (i < MAX_TRIES_RESPONSE) {
+//            Thread.sleep(2000);
+//            requestEventCount = getRecordCount(-1234, REQUEST_TABLE);
+//            eventsPublished = (requestEventCount >= 2);
+//            if (eventsPublished) {
+//                break;
+//            }
+//            i++;
+//        }
+//        Assert.assertTrue(eventsPublished, "Simulation request events set two did not get published, expected entry count:2 but found: " +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
             , dependsOnMethods = "test2ndRequestCountSimulationDataSent")
     public void test3rdRequestCountSimulationDataSent() throws Exception {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "request3.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 100);
-        Thread.sleep(9000);
-        long requestEventCount = getRecordCount(-1234, REQUEST_STREAM_NAME.replace('.', '_'));
-        boolean eventsPublished = (requestEventCount == 37);
-        Assert.assertTrue(eventsPublished, "Simulation request events set three did not get published, expected entry count:37 but found: " +requestEventCount+ "!");
+        Thread.sleep(10000);
+//        int i = 0;
+//        long requestEventCount = 0;
+//        boolean eventsPublished = false;
+//        while (i < MAX_TRIES_RESPONSE) {
+//            Thread.sleep(2000);
+//            requestEventCount = getRecordCount(-1234, REQUEST_TABLE);
+//            eventsPublished = (requestEventCount >= 3);
+//            if (eventsPublished) {
+//                break;
+//            }
+//            i++;
+//        }
+//        Assert.assertTrue(eventsPublished, "Simulation request events set three did not get published, expected entry count:3 but found: " +requestEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the simulation data is published", dependsOnMethods = "test3rdRequestCountSimulationDataSent")
     public void test1stResponseCountSimulationDataSent() throws Exception {
-        deleteData(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
+        deleteData(-1234, RESPONSE_TABLE);
         Thread.sleep(2000);
         redeployExecutionPlan();
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "response.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
-        Thread.sleep(10000);
-        long requestEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
-        boolean eventsPublished = (requestEventCount == 9);
-        Assert.assertTrue(eventsPublished, "Simulation response events set one did not get published, expected entry count:9 but found: " +requestEventCount+ "!");;
+        Thread.sleep(1000);
+        int i = 0;
+        long responseEventCount = 0;
+        boolean eventsPublished = false;
+        while (i < MAX_TRIES_RESPONSE) {
+            Thread.sleep(2000);
+            responseEventCount = getRecordCount(-1234, RESPONSE_TABLE);
+            eventsPublished = (responseEventCount >= 1);
+            if (eventsPublished) {
+                break;
+            }
+            i++;
+        }
+        Assert.assertTrue(eventsPublished, "Simulation response events set one did not get published, expected entry count:1 but found: " +responseEventCount+ "!");;
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the simulation data is published", dependsOnMethods = "test1stResponseCountSimulationDataSent")
     public void test2ndResponseCountSimulationDataSent() throws Exception {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "response2.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
-        Thread.sleep(9000);
-        long requestEventCount = getRecordCount(-1234, RESPONSE_STREAM_NAME.replace('.', '_'));
-        boolean eventsPublished = (requestEventCount == 22);
-        Assert.assertTrue(eventsPublished, "Simulation response events set two did not get published, expected entry count:22 but found: " +requestEventCount+ "!");
+        Thread.sleep(1000);
+        int i = 0;
+        long responseEventCount = 0;
+        boolean eventsPublished = false;
+        while (i < MAX_TRIES_RESPONSE) {
+            Thread.sleep(2000);
+            responseEventCount = getRecordCount(-1234, RESPONSE_TABLE);
+            eventsPublished = (responseEventCount >= 2);
+            if (eventsPublished) {
+                break;
+            }
+            i++;
+        }
+        Assert.assertTrue(eventsPublished, "Simulation response events set two did not get published, expected entry count:2 but found: " +responseEventCount+ "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the Spark script is deployed", dependsOnMethods = "test2ndResponseCountSimulationDataSent")
@@ -217,15 +286,40 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         logViewerClient.clearLogs();
         executeSparkScript(RESPONSE_COUNT_SPARK_SCRIPT);
         executeSparkScript(REQUEST_COUNT_SPARK_SCRIPT);
-        Thread.sleep(10000);
-
+        
+        int i = 0;
+        long responseEventCount = 0;
+        boolean eventsPublished = false;
+        while (i < MAX_TRIES_RESPONSE) {
+            Thread.sleep(2000);
+            responseEventCount = getRecordCount(-1234, RESPONSE_PER_API_STREAM.replace('.', '_'));
+            eventsPublished = (responseEventCount >= 1);
+            if (eventsPublished) {
+                break;
+            }
+            i++;
+        }
+        
+        i = 0;
+        responseEventCount = 0;
+        eventsPublished = false;
+        while (i < MAX_TRIES_RESPONSE) {
+            Thread.sleep(2000);
+            responseEventCount = getRecordCount(-1234, REQUEST_PER_API_STREAM.replace('.', '_'));
+            eventsPublished = (responseEventCount >= 1);
+            if (eventsPublished) {
+                break;
+            }
+            i++;
+        }
+        
         redeployExecutionPlan();
 
-        pubishEvents(getRequestEventList(10), 100);
+        pubishEvents(getRequestEventList(20), 100);
         pubishEvents(getResponseEventListNumApi(1), 1000);
-        Thread.sleep(8010);
-        pubishEvents(getRequestEventList(10), 500);
-        pubishEvents(getResponseEventListNumApi(1), 500);
+        Thread.sleep(2010);
+        pubishEvents(getRequestEventList(20), 200);
+        pubishEvents(getResponseEventListNumApi(1), 100);
         //Thread.sleep(5000);
         /*Thread.sleep(49000);
         pubishEvents(getRequestEventList(10),1000);
@@ -266,7 +360,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
             EventDto eventDto = new EventDto();
             eventDto.setEventStreamId(getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION));
             eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0",
-                    "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "40", "7", "19", "admin@carbon.super", "1456894602386",
+                    "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "40", "7", "19", "admin@carbon.super", String.valueOf(System.currentTimeMillis()),
                     "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200", "destination"});
             events.add(eventDto);
         }
@@ -278,8 +372,8 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         for (int i = 0; i < count; i++) {
             EventDto eventDto = new EventDto();
             eventDto.setEventStreamId(getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION));
-            eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "NumberAPI:v1.0",
-                    "NumberAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "40", "7", "19", "admin@carbon.super", "1456894602386",
+            eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/number/1.0", "NumberAPI:v1.0",
+                    "NumberAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "40", "7", "19", "admin@carbon.super", String.valueOf(System.currentTimeMillis()),
                     "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200", "destination"});
             events.add(eventDto);
         }
@@ -292,7 +386,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
             EventDto eventDto = new EventDto();
             eventDto.setEventStreamId(getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION));
             eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/number/1.0", "NumberAPI:v1.0",
-                    "NumberAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "1455785133394", "admin@carbon.super", "carbon.super", "192.168.66.1",
+                    "NumberAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", String.valueOf(System.currentTimeMillis()), "admin@carbon.super", "carbon.super", "192.168.66.1",
                     "admin@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "FALSE", "192.168.66.1", "admin"});
             events.add(eventDto);
         }

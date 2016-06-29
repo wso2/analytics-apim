@@ -2,7 +2,7 @@
 <Analytics>
     <CronExpression>0 0 12 * * ?</CronExpression>
     <Editable>true</Editable>
-    <Name>APIMAnalytics-ResponsePerAPIStatGenerator</Name>
+    <Name>APIMAnalytics-ResponsePerApiStatGenerator-ResponsePerAPIStatGenerator-batch1</Name>
     <Script>CREATE TEMPORARY TABLE RESPONSE_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_responsePerMinPerApiStream");
 
         CREATE TEMPORARY TABLE RESPONSE_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE",

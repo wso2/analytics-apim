@@ -33,16 +33,17 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
     private final String TEST_RESOURCE_PATH = "abnormalResponseAndBackendTime";
     private final String ABNORMAL_RESPONSE_TIME_PUBLISHER_FILE = "logger_abnormalResponseTime.xml";
     private final String ABNORMAL_BACKEND_TIME_PUBLISHER_FILE = "logger_abnormalBackendTime.xml";
-    private final String SPARK_SCRIPT = "APIMAnalytics-ResponseStatGenerator";
+    private final String SPARK_SCRIPT = "APIMAnalytics-ResponseStatGenerator-ResponseStatGenerator-batch1";
     private final String RESPONSE_PERCENTILE_TABLE = "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE";
-    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-AbnormalResponseAndBackendTimeDetection";
+    private final String RESPONSE_TABLE = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE";
+    private final String EXECUTION_PLAN_NAME = "APIMAnalytics-AbnormalRequestCountDetection-AbnormalRequestCountDetection-realtime1";
     private final int MAX_TRIES = 20;
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
         super.init();
-        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, RESPONSE_TABLE)) {
+            deleteData(-1234, RESPONSE_TABLE);
         }
         if (isTableExist(-1234, RESPONSE_PERCENTILE_TABLE)) {
             deleteData(-1234, RESPONSE_PERCENTILE_TABLE);
@@ -55,8 +56,8 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        if (isTableExist(-1234, STREAM_NAME.replace('.', '_'))) {
-            deleteData(-1234, STREAM_NAME.replace('.', '_'));
+        if (isTableExist(-1234, RESPONSE_TABLE)) {
+            deleteData(-1234, RESPONSE_TABLE);
         }
         if (isTableExist(-1234, RESPONSE_PERCENTILE_TABLE)) {
             deleteData(-1234, RESPONSE_PERCENTILE_TABLE);
@@ -75,15 +76,15 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
             , dependsOnMethods = "testResponseStatGeneratorSparkScriptDeployment")
     public void testResponseSimulationDataSent() throws Exception {
         //publish events
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 100);
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 1);
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 1);
         int i = 0;
         long currentResponseEventCount = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
             Thread.sleep(5000);
-            currentResponseEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
-            eventsPublished = currentResponseEventCount >= 11;
+            currentResponseEventCount = getRecordCount(-1234, RESPONSE_TABLE);
+            eventsPublished = currentResponseEventCount >= 1;
             if (eventsPublished) {
                 break;
             }
@@ -122,13 +123,13 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
-                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "220", "7", "5", "admin@carbon.super", "1456894602386", "carbon.super",
+                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "220", "7", "5", "admin@carbon.super", "1456894602450", "carbon.super",
                         "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200","destination"}
         );
         publishEvent(eventDto);
         publishEvent(eventDto);
 
-        boolean abnormalResponseTimeAlertTriggered = isAlertReceived(0, "Unique ID: logger_abnormalResponseTime", 5, 1000);
+        boolean abnormalResponseTimeAlertTriggered = isAlertReceived(0, "Unique ID: logger_abnormalResponseTime", 20, 1000);
         Assert.assertTrue(abnormalResponseTimeAlertTriggered, "Abnormal ResponseTime Alert event not received!");
     }
 
@@ -141,13 +142,13 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
-                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "12", "7", "165", "admin@carbon.super", "1456894602386",
+                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "12", "7", "165", "admin@carbon.super", "1456894602450",
                         "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200","destination"}
         );
         publishEvent(eventDto);
         publishEvent(eventDto);
 
-        boolean abnormalBackendTimeAlertTriggered = isAlertReceived(0, "Unique ID: logger_abnormalBackendTime", 5, 1000);
+        boolean abnormalBackendTimeAlertTriggered = isAlertReceived(0, "Unique ID: logger_abnormalBackendTime", 20, 1000);
         Assert.assertTrue(abnormalBackendTimeAlertTriggered, "Abnormal BackendTime Alert event not received!");
     }
 
@@ -161,7 +162,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
-                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "12", "7", "15", "admin@carbon.super", "1456894602386",
+                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "12", "7", "15", "admin@carbon.super", "1456894602450",
                         "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200", "destination"}
         );
         publishEvent(eventDto);
@@ -179,7 +180,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
-                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "15", "7", "5", "admin@carbon.super", "1456894602386", "carbon.super",
+                        "/add?x=12&y=3", "/add", "GET", "1.0", "1", "15", "7", "5", "admin@carbon.super", "1456894602450", "carbon.super",
                         "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200", "destination"}
         );
         publishEvent(eventDto);
