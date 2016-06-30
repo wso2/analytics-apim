@@ -346,7 +346,7 @@
     );
 
     <!--inserting API last access time summary data-->
-    insert into table API_LAST_ACCESS_TIME_SUMMARY_FINAL select tenantDomain, apiPublisher, api, version, userId, context, requestTime from APIRequestData order by requestTime ASC;
+    <!--insert into table API_LAST_ACCESS_TIME_SUMMARY_FINAL select tenantDomain, apiPublisher, api, version, userId, context, requestTime from APIRequestData order by requestTime ASC;-->
 
     <!-- inserting API last access time summary data in DAL to RDBMS-->
     INSERT OVERWRITE TABLE APILastAccessSummaryData select tenantDomain, apiPublisher, api, version, userId, context, max_request_time from API_LAST_ACCESS_TIME_SUMMARY_FINAL;                      
