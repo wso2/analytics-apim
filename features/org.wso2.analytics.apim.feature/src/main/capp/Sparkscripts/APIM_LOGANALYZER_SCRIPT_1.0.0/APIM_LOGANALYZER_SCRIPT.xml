@@ -57,7 +57,7 @@
         schema "tenantID string -i, class string -i, classCount int -i, week long -i, _timestamp long -i");
         INSERT OVERWRITE table loganalyzer_class_level_error_weekly SELECT temp.tenantID AS tenantID, temp.class AS logClass, SUM(temp.classCount)
         AS totalClassCount, temp.byWeek
-        AS week,getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT class AS class,
+        AS week, getWeekStartingTime(temp.byYear, temp.byMonth, temp.byWeek) AS _timestamp FROM (SELECT class AS class,
         getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, getWeek(_timestamp) AS byWeek, first(classCount)
         as classCount, tenantID AS tenantID FROM loganalyzer_class_level_error_daily GROUP BY tenantID, class, _timestamp ORDER BY _timestamp)temp GROUP
         BY temp.tenantID, temp.class, temp.byYear,
@@ -68,7 +68,7 @@
         schema "tenantID string -i, message string -i, messageCount int -i, week long -i, _timestamp long -i");
         INSERT OVERWRITE table loganalyzer_message_level_error_weekly SELECT temp.tenantID AS tenantID, temp.message AS logMessage,
         SUM(temp.messageCount) AS totalMessageCount,
-        temp.byWeek AS week, getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT message AS
+        temp.byWeek AS week, getWeekStartingTime(temp.byYear, temp.byMonth, temp.byWeek) AS _timestamp FROM (SELECT message AS
         message, getYear(_timestamp) AS byYear, getMonth(_timestamp) AS byMonth, getWeek(_timestamp) AS byWeek,
         first(messageCount) AS messageCount, tenantID AS tenantID FROM loganalyzer_message_level_error_daily GROUP BY tenantID, message, _timestamp
         ORDER BY _timestamp)temp GROUP BY
@@ -116,7 +116,7 @@
         week long -i");
         INSERT OVERWRITE table loganalyzer_apim_message_processing_weekly SELECT temp.tenantID AS tenantID, temp.apiName AS logApiName,
         SUM(temp.apiCount) AS totalAPICount, temp.byWeek AS week,
-        getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT apiName AS apiName,
+        getWeekStartingTime(temp.byYear, temp.byMonth, temp.byWeek) AS _timestamp FROM (SELECT apiName AS apiName,
         getYear(_timestamp) AS byYear, getMonth(_timestamp) AS
         byMonth, getWeek(_timestamp) AS byWeek, first(apiCount) AS apiCount, tenantID AS tenantID FROM
         loganalyzer_apim_message_processing_daily
@@ -188,7 +188,7 @@
         temp.byMonth;
 
         INSERT OVERWRITE table invalidLoginAttemptWeekly SELECT temp.agent AS agent, SUM(temp.agentCount) AS
-        totalAgentCount, temp.byWeek AS week, getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT
+        totalAgentCount, temp.byWeek AS week, getWeekStartingTime(temp.byYear, temp.byMonth, temp.byWeek) AS _timestamp FROM (SELECT
         tenantID AS agent, getWeek(_timestamp) AS byWeek, getYear(_timestamp) AS byYear,
         getMonth(_timestamp) AS byMonth, first(InvalidLoginCount) as agentCount FROM
         invalidLoginAttemptDaily GROUP BY tenantID, _timestamp ORDER BY
