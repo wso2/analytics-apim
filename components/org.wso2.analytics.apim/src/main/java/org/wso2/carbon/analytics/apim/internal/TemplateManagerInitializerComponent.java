@@ -25,24 +25,24 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 /**
  * This class represents the API Manager - Execution Manager initializer Component.
  *
- * @scr.component name="APIMAnalytics.ExecutionManagerInitializer.component" immediate="true"
+ * @scr.component name="APIMAnalytics.TemplateManagerInitializer.component" immediate="true"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  */
 
-public class ExecutionManagerInitializerComponent {
-    private static final Log log = LogFactory.getLog(ExecutionManagerInitializerComponent.class);
+public class TemplateManagerInitializerComponent {
+    private static final Log log = LogFactory.getLog(TemplateManagerInitializerComponent.class);
 
     protected void activate(ComponentContext ctx) {
-//        ExecutionManagerInitializer executionManagerService = new ExecutionManagerInitializer();
-//        ctx.getBundleContext().registerService(ExecutionManagerInitializer.class.getName(),
-//                executionManagerService, null);
+//        TemplateManagerInitializer templateManagerService = new TemplateManagerInitializer();
+//        ctx.getBundleContext().registerService(TemplateManagerInitializer.class.getName(),
+//                templateManagerService, null);
         if (log.isDebugEnabled()) {
             log.debug("Starting APIManagerInitilizerComponent#activate");
         }
-        ExecutionManagerInitializer.addSparkConfigs();
-        ExecutionManagerInitializer.addTemplateConfigs();
+        TemplateManagerInitializer.addSparkConfigs();
+        TemplateManagerInitializer.addTemplateConfigs();
     }
 
     protected void setRegistryService(RegistryService registryService) {

@@ -23,9 +23,9 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.analytics.apim.integration.common.clients.ExecutionManagerAdminServiceClient;
+import org.wso2.analytics.apim.integration.common.clients.TemplateManagerAdminServiceClient;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.utils.APIMAnalyticsIntegrationTestConstants;
-import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
+import org.wso2.carbon.event.template.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 
 import java.util.Calendar;
@@ -116,14 +116,14 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Tier Usage Alert")
     public void testAbnormalTierUsageAlert() throws Exception {
 
-        ScenarioConfigurationDTO testDomain = executionManagerAdminServiceClient.getConfiguration("APIMAnalytics",
+        ScenarioConfigurationDTO testDomain = templateManagerAdminServiceClient.getConfiguration("APIMAnalytics",
                 "AbnormalTierAvailabilityAlert");
 
         if (testDomain == null) {
             Assert.fail("Domain is not loaded");
         }
         
-        executionManagerAdminServiceClient.saveConfiguration(testDomain);
+        templateManagerAdminServiceClient.saveConfiguration(testDomain);
 
         publishDataset();
         logViewerClient.clearLogs();
@@ -260,11 +260,11 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 
     }
 
-    private void initExecutionManagerAdminServiceClient() throws Exception {
+    private void initTemplateManagerAdminServiceClient() throws Exception {
 
         String loggedInSessionCookie = getSessionCookie();
-        executionManagerAdminServiceClient = new ExecutionManagerAdminServiceClient(backendURL, loggedInSessionCookie);
-        ServiceClient client = executionManagerAdminServiceClient._getServiceClient();
+        templateManagerAdminServiceClient = new TemplateManagerAdminServiceClient(backendURL, loggedInSessionCookie);
+        ServiceClient client = templateManagerAdminServiceClient._getServiceClient();
         Options options = client.getOptions();
         options.setManageSession(true);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);

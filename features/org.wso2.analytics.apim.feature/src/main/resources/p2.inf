@@ -5,20 +5,20 @@ org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../depl
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../../statistics/);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/org_wso2_carbon_analytics_apim-1.0.0.car,target:${installFolder}/../../../statistics/org_wso2_carbon_analytics_apim-1.0.0.car,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/);\
-org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/execution-manager);\
-org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/execution-manager/domain-template);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/conf/execution-manager/domain-template/apim-analytics.xml,target:${installFolder}/../../conf/execution-manager/domain-template/apim-analytics.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/template-manager);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/template-manager/domain-template);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/conf/template-manager/domain-template/apim-analytics.xml,target:${installFolder}/../../conf/template-manager/domain-template/apim-analytics.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../resources/);\
-org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../resources/execution-manager/);\
-org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../resources/execution-manager/sparktemplates/);\
-org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../resources/execution-manager/templateconfigs/);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/execution-manager/sparktemplates/,target:${installFolder}/../../resources/execution-manager/sparktemplates/,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/execution-manager/templateconfigs/,target:${installFolder}/../../resources/execution-manager/templateconfigs/,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../resources/template-manager/);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../resources/template-manager/sparktemplates/);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../resources/template-manager/templateconfigs/);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/template-manager/sparktemplates/,target:${installFolder}/../../resources/template-manager/sparktemplates/,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/template-manager/templateconfigs/,target:${installFolder}/../../resources/template-manager/templateconfigs/,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/executionplans/);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/execution-manager/executionplans/,target:${installFolder}/../../deployment/server/executionplans/,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/template-manager/executionplans/,target:${installFolder}/../../deployment/server/executionplans/,overwrite:true);\
 
 
 instructions.uninstall = \
 org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../deployment/server/carbonapps/org_wso2_carbon_analytics_apim-1.0.0.car,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../../statistics/org_wso2_carbon_analytics_apim-1.0.0.car,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../conf/execution-manager/domain-template/apim-analytics.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../conf/template-manager/domain-template/apim-analytics.xml,overwrite:true);\

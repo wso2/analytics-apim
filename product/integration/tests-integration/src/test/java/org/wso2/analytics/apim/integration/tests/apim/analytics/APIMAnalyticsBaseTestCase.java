@@ -38,8 +38,8 @@ import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminService
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
-import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ConfigurationParameterDTO;
-import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
+import org.wso2.carbon.event.template.manager.admin.dto.configuration.xsd.ConfigurationParameterDTO;
+import org.wso2.carbon.event.template.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
 import org.wso2.carbon.logging.view.stub.LogViewerLogViewerException;
@@ -65,7 +65,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     private AnalyticsProcessorAdminServiceStub analyticsStub;
     private SiddhiSimulatorUtil siddhiSimulatorUtil;
     protected EventPublisherAdminServiceClient eventPublisherAdminServiceClient;
-    protected ExecutionManagerAdminServiceClient executionManagerAdminServiceClient;
+    protected TemplateManagerAdminServiceClient templateManagerAdminServiceClient;
     protected LogViewerClient logViewerClient;
     protected EventSimulatorAdminServiceClient eventSimulatorAdminServiceClient;
     protected EventProcessorAdminServiceClient eventProcessorAdminServiceClient;
@@ -75,7 +75,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         String session = getSessionCookie();
         siddhiSimulatorUtil = new SiddhiSimulatorUtil();
         eventPublisherAdminServiceClient = getEventPublisherAdminServiceClient(backendURL, session);
-        executionManagerAdminServiceClient = getExecutionManagerAdminServiceClient(backendURL, session);
+        templateManagerAdminServiceClient = getTemplateManagerAdminServiceClient(backendURL, session);
         eventProcessorAdminServiceClient = getEventProcessorAdminServiceClien(backendURL,session);
         logViewerClient = new LogViewerClient(backendURL, session);
         String apiConf =
@@ -319,7 +319,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     }
 
     protected void saveConfiguration(ScenarioConfigurationDTO templateConfigDTO) throws RemoteException {
-        executionManagerAdminServiceClient.saveConfiguration(templateConfigDTO);
+        templateManagerAdminServiceClient.saveConfiguration(templateConfigDTO);
     }
 
 //    protected ParameterDTOE getParameterDTO(String name, String defaultValue, String type){
@@ -331,7 +331,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 //    }
 
     protected ScenarioConfigurationDTO getConfiguration (String domainName, String configurationName) throws RemoteException {
-        return executionManagerAdminServiceClient.getConfiguration(domainName,configurationName);
+        return templateManagerAdminServiceClient.getConfiguration(domainName,configurationName);
     }
 
     private String getTestArtifactLocation() {
@@ -383,10 +383,10 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         return eventPublisherAdminServiceClient;
     }
 
-    protected ExecutionManagerAdminServiceClient getExecutionManagerAdminServiceClient(
+    protected TemplateManagerAdminServiceClient getTemplateManagerAdminServiceClient(
             String backendURL, String loggedInSessionCookie) throws AxisFault {
-        initExecutionManagerAdminServiceClient(backendURL, loggedInSessionCookie);
-        return executionManagerAdminServiceClient;
+        initTemplateManagerAdminServiceClient(backendURL, loggedInSessionCookie);
+        return templateManagerAdminServiceClient;
     }
 
     protected EventProcessorAdminServiceClient getEventProcessorAdminServiceClien(
@@ -448,12 +448,12 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
     }
 
-    private void initExecutionManagerAdminServiceClient(
+    private void initTemplateManagerAdminServiceClient(
             String backendURL,
             String loggedInSessionCookie)
             throws AxisFault {
-        executionManagerAdminServiceClient = new ExecutionManagerAdminServiceClient(backendURL, loggedInSessionCookie);
-        ServiceClient client = executionManagerAdminServiceClient._getServiceClient();
+        templateManagerAdminServiceClient = new TemplateManagerAdminServiceClient(backendURL, loggedInSessionCookie);
+        ServiceClient client = templateManagerAdminServiceClient._getServiceClient();
         Options options = client.getOptions();
         options.setManageSession(true);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
