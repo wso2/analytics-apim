@@ -97,7 +97,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
                 break;
             }
             i++;
-            Thread.sleep(5000);
+            Thread.sleep(10000);
         }
 
         Assert.assertTrue(eventsPublished, "Simulation events did not get published, expected entry count:4 but found: "+requestPerMinuteEventCount+ "!");
