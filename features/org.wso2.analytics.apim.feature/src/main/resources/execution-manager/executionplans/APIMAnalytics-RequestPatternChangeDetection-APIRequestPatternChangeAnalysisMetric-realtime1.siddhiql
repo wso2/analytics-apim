@@ -15,7 +15,7 @@ define stream all_apim_alerts_stream (type string, tenantDomain string, msg stri
 define table MarkovModelTable (consumerKey string, startState string, endState string, count double, probability double);
 
 @from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
-define table RequestCountPerConsumerKeyTable(consumerKey string, count int);
+define table RequestCountPerConsumerKeyTable(consumerKey string, count long);
 
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPATTERNALERTSUMMARYTABLE', primary.keys='applicationName, applicationOwner, userId, msg' , indices = 'applicationName, applicationOwner, userId, msg, lastlastAlertedTimestamp')
 define table RequestPatternAlertSummaryTable(applicationName string, applicationOwner string, userId string, msg string, lastAlertedTimestamp long);

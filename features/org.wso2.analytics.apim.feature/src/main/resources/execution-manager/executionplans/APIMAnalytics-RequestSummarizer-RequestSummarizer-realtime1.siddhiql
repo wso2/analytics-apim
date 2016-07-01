@@ -28,9 +28,16 @@ define stream perMinuteResponses (meta_clientType string, year int, month int, d
 @Export('org.wso2.apimgt.statistics.perSecondExecutionTimes:1.0.0')
 define stream perSecondExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, second int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long);
 
+@Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
+define stream responsePerMinPerApiStream (api_version string, responsesPerMinPerApi long);
+
+@Export('org.wso2.analytics.apim.requestPerMinPerApiStream:1.0.0')
+define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
+
 -- requests
 
 -- second
+-- global
 from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
 select batchEndTime as startTime, meta_clientType, consumerKey, context, api_version, api, version, 
 max(requestTime) as requestTime, userId, hostName, apiPublisher, count() as total_request_count, 
@@ -50,9 +57,19 @@ resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath
 tier, throttledOut, clientIp, applicationOwner
 insert into perSecondRequests;
 
+--api_version
+from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, api_version, count() as total_request_count
+group by api_version 
+insert into perSecondPerApiRequestsTemp;
+
+from perSecondPerApiRequestsTemp
+select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+api_version, total_request_count
+insert into perSecondPerApiRequests;
 
 -- minute
-
+-- global
 from perSecondRequests
 select startTime, meta_clientType, str:concat(facetStartTime, '_', consumerKey, '_', context, '_', 
 	api_version, '_', userId, '_', hostName, '_', apiPublisher, '_', resourceTemplate, '_', method, '_', userAgent, '_', clientIp) 
@@ -79,15 +96,26 @@ resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath
 tier, throttledOut, clientIp, applicationOwner
 insert into perMinuteRequests;
 
+-- api_version
+from perSecondPerApiRequests
+select startTime, str:concat(facetStartTime, '_', api_version) 
+as uniqueId, api_version, total_request_count
+insert into perSecondPerApiRequestsWithUniqueId;
+
+from perSecondPerApiRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec)
+select api_version, sum(total_request_count) as requestsPerMinPerApi
+group by api_version 
+insert into requestPerMinPerApiStream;
+
 -- responses
 
 -- second
-
+-- global
 from responses#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
 select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, 
 tenantDomain, hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, 
-max(responseTime) as responseTime, max(serviceTime) as serviceTime, max(backendTime) as backendTime, 
-username, max(eventTime) as eventTime, applicationName, applicationId, cacheHit, max(responseSize) as responseSize, 
+avg(responseTime) as responseTime, avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, 
+username, max(eventTime) as eventTime, applicationName, applicationId, cacheHit, avg(responseSize) as responseSize, 
 protocol, responseCode, count() as total_response_count 
 group by consumerKey, context, api_version, username, resourceTemplate, hostName, apiPublisher, method, destination  
 insert into perSecondResponsesTemp;
@@ -105,8 +133,19 @@ username, eventTime, applicationName, applicationId, cacheHit, responseSize,
 protocol, responseCode, total_response_count 
 insert into perSecondResponses;
 
--- minute
+-- api_version
+from responses#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, api_version, count() as total_response_count
+group by api_version 
+insert into perSecondPerApiResponsesTemp;
 
+from perSecondPerApiResponsesTemp
+select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+api_version, total_response_count
+insert into perSecondPerApiResponses;
+
+-- minute
+-- global
 from perSecondResponses
 select startTime, meta_clientType, str:concat(facetStartTime, '_', consumerKey, '_', context, '_', api_version, 
 	'_', username, '_', hostName, '_', apiPublisher, '_', resourceTemplate, '_', method, '_', destination) as uniqueId, 
@@ -118,8 +157,8 @@ insert into perSecondResponsesWithUniqueId;
 
 from perSecondResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec)
 select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, tenantDomain, 
-hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, max(responseTime) as responseTime, 
-max(serviceTime) as serviceTime, max(backendTime) as backendTime, username, max(eventTime) as eventTime, applicationName, 
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, avg(responseTime) as responseTime, 
+avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, username, max(eventTime) as eventTime, applicationName, 
 applicationId, cacheHit, max(responseSize) as responseSize, protocol, responseCode, 
 sum(total_response_count) as total_response_count
 group by consumerKey, context, api_version, username, resourceTemplate, hostName, apiPublisher, method, destination    
@@ -130,10 +169,21 @@ select meta_clientType, time:extract(startTime, 'year') as year, time:extract(st
 time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
 time:extract(startTime, 'minute') as minute,
 context, api_version, api, resourceTemplate, version, tenantDomain, 
-hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, responseTime, 
-serviceTime, backendTime, username, eventTime, applicationName, 
-applicationId, cacheHit, responseSize, protocol, responseCode, total_response_count
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, math:round(responseTime) as responseTime, 
+math:round(serviceTime) as serviceTime, math:round(backendTime) as backendTime, username, eventTime, applicationName, 
+applicationId, cacheHit, math:round(responseSize) as responseSize, protocol, responseCode, total_response_count
 insert into perMinuteResponses;
+
+-- api_version
+from perSecondPerApiResponses
+select startTime, str:concat(facetStartTime, '_', api_version) 
+as uniqueId, api_version, total_response_count
+insert into perSecondPerApiResponsesWithUniqueId;
+
+from perSecondPerApiResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec)
+select api_version, sum(total_response_count) as responsesPerMinPerApi
+group by api_version 
+insert into responsePerMinPerApiStream;
 
 -- execution times
 

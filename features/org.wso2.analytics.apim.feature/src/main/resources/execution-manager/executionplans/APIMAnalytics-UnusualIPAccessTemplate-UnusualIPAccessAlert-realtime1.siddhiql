@@ -4,8 +4,12 @@
 /* Enter a unique description for ExecutionPlan */
 @Plan:description('Alerts if an access from a strange ip is detected')
 
-@Import('org.wso2.apimgt.statistics.request:1.1.0')
-define stream APIMRequest (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+@Import('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
+								define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, 
+																   api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, 
+																   total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, 
+																   userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string,
+																   applicationOwner string);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
@@ -21,14 +25,14 @@ define table IPAccessAlertCount (userId string, consumerKey string, requestCount
 
 -- Consumer key is already in the table
 @info(name = 'query1')
-from APIMRequest[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
+from requestPerMinStream[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
 on api.consumerKey == ais.consumerKey and api.clientIp == ais.ip
 select api.consumerKey as consumerKey, api.tenantDomain, api.applicationName,  api.applicationOwner ,  api.userId as userId, api.clientIp as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate
 insert into TempStream;
 
 -- New consumer key
 @info(name = 'query2')
-from APIMRequest[not (consumerKey == IPAccessSummary.consumerKey in IPAccessSummary)]
+from requestPerMinStream[not (consumerKey == IPAccessSummary.consumerKey in IPAccessSummary)]
 select userId, consumerKey, clientIp as ip, requestTime as lastAccessedDate
 insert into NewConsumerKeyStream;
 
