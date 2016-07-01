@@ -24,7 +24,6 @@
                 <template type="realtime">
                     <![CDATA[
                       /* Enter a unique ExecutionPlan */
-
 @Plan:name('APIMAnalytics-RequestSummarizer-RequestSummarizer-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
@@ -51,9 +50,16 @@ define stream perMinuteResponses (meta_clientType string, year int, month int, d
 @Export('org.wso2.apimgt.statistics.perSecondExecutionTimes:1.0.0')
 define stream perSecondExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, second int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long);
 
+@Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
+define stream responsePerMinPerApiStream (api_version string, responsesPerMinPerApi long);
+
+@Export('org.wso2.analytics.apim.requestPerMinPerApiStream:1.0.0')
+define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
+
 -- requests
 
 -- second
+-- global
 from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
 select batchEndTime as startTime, meta_clientType, consumerKey, context, api_version, api, version, 
 max(requestTime) as requestTime, userId, hostName, apiPublisher, count() as total_request_count, 
@@ -73,9 +79,19 @@ resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath
 tier, throttledOut, clientIp, applicationOwner
 insert into perSecondRequests;
 
+--api_version
+from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, api_version, count() as total_request_count
+group by api_version 
+insert into perSecondPerApiRequestsTemp;
+
+from perSecondPerApiRequestsTemp
+select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+api_version, total_request_count
+insert into perSecondPerApiRequests;
 
 -- minute
-
+-- global
 from perSecondRequests
 select startTime, meta_clientType, str:concat(facetStartTime, '_', consumerKey, '_', context, '_', 
   api_version, '_', userId, '_', hostName, '_', apiPublisher, '_', resourceTemplate, '_', method, '_', userAgent, '_', clientIp) 
@@ -102,15 +118,26 @@ resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath
 tier, throttledOut, clientIp, applicationOwner
 insert into perMinuteRequests;
 
+-- api_version
+from perSecondPerApiRequests
+select startTime, str:concat(facetStartTime, '_', api_version) 
+as uniqueId, api_version, total_request_count
+insert into perSecondPerApiRequestsWithUniqueId;
+
+from perSecondPerApiRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, 10 sec)
+select api_version, sum(total_request_count) as requestsPerMinPerApi
+group by api_version 
+insert into requestPerMinPerApiStream;
+
 -- responses
 
 -- second
-
+-- global
 from responses#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
 select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, 
 tenantDomain, hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, 
-max(responseTime) as responseTime, max(serviceTime) as serviceTime, max(backendTime) as backendTime, 
-username, max(eventTime) as eventTime, applicationName, applicationId, cacheHit, max(responseSize) as responseSize, 
+avg(responseTime) as responseTime, avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, 
+username, max(eventTime) as eventTime, applicationName, applicationId, cacheHit, avg(responseSize) as responseSize, 
 protocol, responseCode, count() as total_response_count 
 group by consumerKey, context, api_version, username, resourceTemplate, hostName, apiPublisher, method, destination  
 insert into perSecondResponsesTemp;
@@ -128,8 +155,19 @@ username, eventTime, applicationName, applicationId, cacheHit, responseSize,
 protocol, responseCode, total_response_count 
 insert into perSecondResponses;
 
--- minute
+-- api_version
+from responses#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, api_version, count() as total_response_count
+group by api_version 
+insert into perSecondPerApiResponsesTemp;
 
+from perSecondPerApiResponsesTemp
+select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+api_version, total_response_count
+insert into perSecondPerApiResponses;
+
+-- minute
+-- global
 from perSecondResponses
 select startTime, meta_clientType, str:concat(facetStartTime, '_', consumerKey, '_', context, '_', api_version, 
   '_', username, '_', hostName, '_', apiPublisher, '_', resourceTemplate, '_', method, '_', destination) as uniqueId, 
@@ -141,8 +179,8 @@ insert into perSecondResponsesWithUniqueId;
 
 from perSecondResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, 10 sec)
 select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, tenantDomain, 
-hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, max(responseTime) as responseTime, 
-max(serviceTime) as serviceTime, max(backendTime) as backendTime, username, max(eventTime) as eventTime, applicationName, 
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, avg(responseTime) as responseTime, 
+avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, username, max(eventTime) as eventTime, applicationName, 
 applicationId, cacheHit, max(responseSize) as responseSize, protocol, responseCode, 
 sum(total_response_count) as total_response_count
 group by consumerKey, context, api_version, username, resourceTemplate, hostName, apiPublisher, method, destination    
@@ -153,10 +191,21 @@ select meta_clientType, time:extract(startTime, 'year') as year, time:extract(st
 time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
 time:extract(startTime, 'minute') as minute,
 context, api_version, api, resourceTemplate, version, tenantDomain, 
-hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, responseTime, 
-serviceTime, backendTime, username, eventTime, applicationName, 
-applicationId, cacheHit, responseSize, protocol, responseCode, total_response_count
+hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, math:round(responseTime) as responseTime, 
+math:round(serviceTime) as serviceTime, math:round(backendTime) as backendTime, username, eventTime, applicationName, 
+applicationId, cacheHit, math:round(responseSize) as responseSize, protocol, responseCode, total_response_count
 insert into perMinuteResponses;
+
+-- api_version
+from perSecondPerApiResponses
+select startTime, str:concat(facetStartTime, '_', api_version) 
+as uniqueId, api_version, total_response_count
+insert into perSecondPerApiResponsesWithUniqueId;
+
+from perSecondPerApiResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, 10 sec)
+select api_version, sum(total_response_count) as responsesPerMinPerApi
+group by api_version 
+insert into responsePerMinPerApiStream;
 
 -- execution times
 
@@ -181,6 +230,7 @@ context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, security
 throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency,
 startTime as eventTime
 insert into perSecondExecutionTimes;
+
                     ]]>
                 </template>
             </templates>
@@ -641,8 +691,12 @@ insert into transitionStream;
 /* Enter a unique description for ExecutionPlan */
 @Plan:description('Alerts if an access from a strange ip is detected')
 
-@Import('org.wso2.apimgt.statistics.request:1.1.0')
-define stream APIMRequest (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+@Import('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
+                define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, 
+                                   api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, 
+                                   total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, 
+                                   userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string,
+                                   applicationOwner string);
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
@@ -658,14 +712,14 @@ define table IPAccessAlertCount (userId string, consumerKey string, requestCount
 
 -- Consumer key is already in the table
 @info(name = 'query1')
-from APIMRequest[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
+from requestPerMinStream[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
 on api.consumerKey == ais.consumerKey and api.clientIp == ais.ip
 select api.consumerKey as consumerKey, api.tenantDomain, api.applicationName,  api.applicationOwner ,  api.userId as userId, api.clientIp as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate
 insert into TempStream;
 
 -- New consumer key
 @info(name = 'query2')
-from APIMRequest[not (consumerKey == IPAccessSummary.consumerKey in IPAccessSummary)]
+from requestPerMinStream[not (consumerKey == IPAccessSummary.consumerKey in IPAccessSummary)]
 select userId, consumerKey, clientIp as ip, requestTime as lastAccessedDate
 insert into NewConsumerKeyStream;
 
@@ -775,176 +829,163 @@ insert into IPAccessSummary;
 
 @Plan:statistics('false')
 
-                                @Import('org.wso2.apimgt.statistics.request:1.1.0')
-                define stream requestStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, request int, requestTime long, userId string, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, userAgent string, tier string, throttledOut bool, clientIp string, applicationOwner string);
-
+                                @Import('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
+                define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, 
+                                   api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, 
+                                   total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, 
+                                   userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string,
+                                   applicationOwner string);
+    
+                                @Import('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
+                define stream responseSummaryStream (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, 
+                                   api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, 
+                                   destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, 
+                                   serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, 
+                                   cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long);
+                
                 @Import('org.wso2.apimgt.statistics.response:1.1.0')
-                define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
+                                define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, 
+                                resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, 
+                                username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, 
+                                applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
 
-                /* First define response/request count streams */
 
-                /*@Export('org.wso2.analytics.apim.healthAvailabilityAlertStream:1.0.0')
-                define stream minStatusTestStream (api_version string, status bool, reason string);*/
+                                /* First define response/request count streams */
 
-                @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
-                define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
+                                /*@Export('org.wso2.analytics.apim.healthAvailabilityAlertStream:1.0.0')
+                                define stream minStatusTestStream (api_version string, status bool, reason string);*/
 
-                @Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
-                define stream responsePerMinPerApiStream (api_version string, responsesPerMinPerApi long);
+                                @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
+                                define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
-                @Export('org.wso2.analytics.apim.requestPerMinPerApiStream:1.0.0')
-                define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
+                                @Export('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
+                                define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
-                @Export('org.wso2.analytics.apim.apiHealthMonitorAlertStream:1.0.0')
-                define stream apiHealthMonitorAlertStream (api_version string, apiPublisher string, tenantDomain string, msg string, severity int, alertTimestamp long);
+                                /*  -- Event tables -- */
 
-                /*  -- Event tables -- */
-
-                /* Lower percentiles */
+                                /* Lower percentiles */
                                 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version')
                                 define table requestPerApiPercentileTable (requestsPerMinPerApiLowerPercentile double, api_version string);
 
-                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version')
                                 define table responsePerApiPercentileTable (api_version string, responsesPerMinPerApiLowerPercentile double);
 
-                /* Then define response time streams */
-                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version')
-                define table responseTimePerApiPercentileTable (api_version string, responseTimePerApiUpperPercentile double);
+                                /* Then define response time streams */
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version')
+                                define table responseTimePerApiPercentileTable (api_version string, responseTimePerApiUpperPercentile double);
 
-                /* API status availability table */
-                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version,tenantDomain', indices='api_version,tenantDomain, status')
-                define table apiAvailabilityTable (api_version string, tenantDomain string, status string);
+                                /* API status availability table */
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', indices='api_version, tenantDomain, status')
+                                define table apiAvailabilityTable (api_version string, tenantDomain string, status string);
 
-                /* APIHEALTHMONITORALERTSTREAM TABLE */
-                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM')
-                define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
+                                /* APIHEALTHMONITORALERTSTREAM TABLE */
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM')
+                                define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
-
+                                /* timeBatch used because Minutely updates are needed */
                                 @info(name = 'query1')
-                                from requestStream
-                                select api_version, apiPublisher, tenantDomain
-                                insert into requestSummaryStream ;
-
-                @info(name = 'query2')
-                                from responseStream
-                                select api_version
-                                insert into responseSummaryStream ;
-
-                @info(name = 'query3')
-                                from requestSummaryStream#window.timeBatch(1 min)
-                                select api_version, count() as requestsPerMinPerApi
-                                group by api_version
-                                insert into requestPerMinPerApiStream ;
-
-                @info(name = 'query4')
-                                from responseSummaryStream#window.timeBatch(1 min)
-                                select api_version,  count() as responsesPerMinPerApi
-                                group by api_version
-                                insert into responsePerMinPerApiStream ;
-
-                /* timeBatch used because Minutely updates are needed */
-                                @info(name = 'query5')
-                                from requestSummaryStream#window.time(1 min)
-                                select  api_version, apiPublisher, tenantDomain, count() as  requestsPerMinPerApi
+                                from requestPerMinStream
+                                select  api_version, apiPublisher, tenantDomain, sum(total_request_count) as  requestsPerMinPerApi
                                 group by api_version
                                 insert into requestPerApiCountStream;
 
-                @info(name = 'query6')
-                                from responseSummaryStream#window.time(1 min)
-                                select  api_version,   count() as  responsesPerMinPerApi
+                                @info(name = 'query2')
+                                from responseSummaryStream
+                                select  api_version,   sum(total_response_count) as  responsesPerMinPerApi
                                 group by api_version
                                 insert into responsePerApiCountStream;
-
-                /* Creating requests stream with percentiles*/
-                                @info(name = 'query7')
+                
+                 /* Creating requests stream with percentiles*/
+                                @info(name = 'query3')
                                 from requestPerApiCountStream join requestPerApiPercentileTable on (requestPerApiCountStream.api_version == requestPerApiPercentileTable.api_version)
-                select requestPerApiCountStream.api_version as api_version, requestPerApiCountStream.tenantDomain, requestPerApiCountStream.apiPublisher as apiPublisher, requestsPerMinPerApi as requestsPerMin, requestsPerMinPerApiLowerPercentile as requestsPerMinLowerPercentile
+                                select requestPerApiCountStream.api_version as api_version, requestPerApiCountStream.tenantDomain, requestPerApiCountStream.apiPublisher as apiPublisher, requestsPerMinPerApi as requestsPerMin, requestsPerMinPerApiLowerPercentile as requestsPerMinLowerPercentile
                                 insert into requestsPercentileStream;
-
+                
                 /* Creating responses stream with percentiles  */
-                                @info(name = 'query8')
+                                @info(name = 'query4')
                                 from responsePerApiCountStream join responsePerApiPercentileTable on (responsePerApiCountStream.api_version == responsePerApiPercentileTable.api_version)
-                select responsePerApiCountStream.api_version as api_version, responsesPerMinPerApi as responsesPerMin, responsesPerMinPerApiLowerPercentile as responsesPerMinLowerPercentile
+                                select responsePerApiCountStream.api_version as api_version, responsesPerMinPerApi as responsesPerMin, responsesPerMinPerApiLowerPercentile as responsesPerMinLowerPercentile
                                 insert into responsesPercentileStream;
-
+                
                 /* Combine*/
 
-                @info(name = 'query9')
-                from requestsPercentileStream#window.time(1min) as requestsPercentileStreamWindow join responsesPercentileStream#window.time(1min) as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
-                select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
-                responsesPercentileStreamWindow.responsesPerMin as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,responsesPercentileStreamWindow.responsesPerMinLowerPercentile as responsesPerMinLowerPercentile
+                                                                @info(name = 'query5')
+                                                                from requestsPercentileStream as requestsPercentileStreamWindow join responsesPercentileStream as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
+                                                                select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
+                                                                responsesPercentileStreamWindow.responsesPerMin as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,responsesPercentileStreamWindow.responsesPerMinLowerPercentile as responsesPerMinLowerPercentile
                                 insert into requestResponseSummaryStream;
-
-                @info(name = 'query10')
-                from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
-                select api_version as api_version , apiPublisher, tenantDomain, str:concat('Response count is lower than ' , responsesPerMinLowerPercentile, ' continuously for $responsePerMinPattern or more minutes.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
-                insert into apiHealthMonitorAlertStream;
-
+                
+                @info(name = 'query6')
+                                                                from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
+                                                                select api_version as api_version , apiPublisher, tenantDomain, str:concat('Response count is lower than ' , responsesPerMinLowerPercentile, ' continuously for $responsePerMinPattern or more minutes.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                                                insert into apiHealthMonitorAlertStream;
+                                         
                 /* Now start response time queries */
 
-                @info(name = 'query11')
-                from responseStream
-                select api_version, apiPublisher, responseTime, tenantDomain
-                insert into responseTimeSummaryStream;
+                                                                @info(name = 'query7')
+                                                                from responseSummaryStream
+                                                                select api_version, apiPublisher, responseTime, tenantDomain
+                                                                insert into responseTimeSummaryStream;
+                                
+                    /*spark script calculates percentile of responseTime and stores in percentileTable */
 
-                /*spark script calculates percentile of responseTime and stores in percentileTable */
-
-                @info(name = 'query12')
-                from responseTimeSummaryStream join responseTimePerApiPercentileTable
-                on (responseTimeSummaryStream.api_version==responseTimePerApiPercentileTable.api_version)
-                select responseTimeSummaryStream.api_version, responseTimeSummaryStream.apiPublisher, responseTimeSummaryStream.tenantDomain, responseTimeSummaryStream.responseTime, responseTimePerApiPercentileTable.responseTimePerApiUpperPercentile
-                insert into responseInfoStream;
-
-                @info(name = 'query13')
-                from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
-                select api_version, apiPublisher, tenantDomain, str:concat('Response time is higher than ' , responseTimePerApiUpperPercentile, 'ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
-                insert into apiHealthMonitorAlertStream;
-
-                @info(name = 'query14')
+                                                                @info(name = 'query8')
+                                                                from responseTimeSummaryStream join responseTimePerApiPercentileTable
+                                                                on (responseTimeSummaryStream.api_version==responseTimePerApiPercentileTable.api_version)
+                                                                select responseTimeSummaryStream.api_version, responseTimeSummaryStream.apiPublisher, responseTimeSummaryStream.tenantDomain, responseTimeSummaryStream.responseTime, responseTimePerApiPercentileTable.responseTimePerApiUpperPercentile
+                                                                insert into responseInfoStream;
+                                
+                                 @info(name = 'query9')
+                                                                from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
+                                                                select api_version, apiPublisher, tenantDomain, str:concat('Response time is higher than ' , responseTimePerApiUpperPercentile, ' ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                                                insert into apiHealthMonitorAlertStream;
+                                
+                  @info(name = 'query10')
                                 from responseStream
                                 select api_version, apiPublisher,  responseCode, tenantDomain
                                 insert into responseCodeSummaryStream;
 
-                                @info(name = 'query15')
+                                @info(name = 'query11')
                                 from every responseCodeSummaryStream [responseCode > 499 AND responseCode < 600]  <5:>
                                 select api_version, apiPublisher, tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into apiHealthMonitorAlertStream;
 
-                                @info(name='query16')
+                                @info(name='query12')
                                 from apiHealthMonitorAlertStream
                                 select 'healthAvailabilityPerMin' as type, tenantDomain, str:concat('API:', api_version, '-', msg) as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into allApimAlertStream;
 
                                 /* update apiAvailability Table */
-@info(name = 'query17')
 
-                        from apiHealthMonitorAlertStream[((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
+
+                                @info(name='query13')
+                                from apiHealthMonitorAlertStream[((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
                                 select api_version, tenantDomain,msg as status
                                 update apiAvailabilityTable
                                 on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
 
-@info(name = 'query18')
+                                @info(name='query14')
                                 from apiHealthMonitorAlertStream[ not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable)]
                                 select api_version, tenantDomain, msg as status
                                 insert into apiAvailabilityTable;
 
-@info(name = 'query19')
-                        from requestStream[(not ((api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain) in apiHealthMonitorAlertStreamTable)) and (not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable))]
+                                @info(name='query15')
+                                from requestPerMinStream[(not ((api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain) in apiHealthMonitorAlertStreamTable)) and (not ((api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain) in apiAvailabilityTable))]
                                 select api_version , tenantDomain, 'Available' as status
                                 insert into apiAvailabilityTable;
 
-@info(name = 'query20')
-                                from requestStream as r join apiHealthMonitorAlertStreamTable
+                                @info(name='query16')
+                                from requestPerMinStream as r join apiHealthMonitorAlertStreamTable
                                 on (r.api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain )
                                 select r.api_version, r.tenantDomain, alertTimestamp
                                 insert into tempStream;
 
 
-@info(name = 'query21')
-        from tempStream[(time:timestampInMilliseconds() - alertTimestamp) >  $statusChangeTimeInterval]
-        select api_version , tenantDomain, 'Available' as status
-        update apiAvailabilityTable
-        on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
+                                @info(name='query17')
+                                from tempStream[(time:timestampInMilliseconds() - alertTimestamp) > $statusChangeTimeInterval]
+                                select api_version , tenantDomain, 'Available' as status
+                                update apiAvailabilityTable
+                                on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
 
                  ]]>
                 </template>
