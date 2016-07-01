@@ -142,16 +142,17 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 
         Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
 
-        // this is a synchronous call
+        // this is a synchronous call - seems it is not
 
         executeSparkScript(SPARK_SCRIPT);
-
+        // hence sleep
+        Thread.sleep(30000);
 
         // test case #1
         boolean testOne = isAlertReceived(
                 0,
                 "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the svm:v1.0.0 API. It currently uses a Gold subscription.",
-                50, 1000);
+                100, 1000);
         Assert.assertTrue(testOne,
                 "Abnormal request alert is not received for application: sampleApplication for api_version: svm:v1.0.0");
        
@@ -167,7 +168,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         boolean testThree = isAlertReceived(
                 0,
                 "sampleApplication2 Application owned by admin is consuming less than the allowed quota when accessing the svm:v1.0.0 API. It currently uses a Gold subscription.",
-                50, 1000);
+                100, 1000);
         Assert.assertTrue(testThree,
                 "Abnormal request alert is not received for application: sampleApplication2 for api_version: svm:v1.0.0");
 
@@ -175,7 +176,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         boolean testFour = isAlertReceived(
                 0,
                 "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the boost:v1.1.0 API. It currently uses a Gold subscription.",
-                50, 1000);
+                100, 1000);
         Assert.assertTrue(testFour,
                 "Abnormal request alert is not received for application: sampleApplication for api_version: boost:v1.1.0");
 
@@ -185,7 +186,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         // for a given applicationId, api_version, last five days average daily usage
         // is less than 0.05th percentile of its last 30 days average daily
         // usage.
-        for (int day = 29; day >= 0; day--) {
+        for (int day = 34; day >= 0; day--) {
             int maxLimit1 = (day < 5) ? 2 : 10;
             int maxLimit2 = (day < 4) ? 2 : 10;
             int maxLimit3 = (day < 2) ? 2 : 10;
