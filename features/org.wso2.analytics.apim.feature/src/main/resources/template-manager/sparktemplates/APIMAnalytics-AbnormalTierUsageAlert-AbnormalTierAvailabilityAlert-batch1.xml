@@ -66,7 +66,7 @@
      FROM ORG_WSO2_API_AVG_REQ_FOR_X_DAYS S, ORG_WSO2_API_PERCENTILE D
      WHERE S.applicationId = D.applicationId AND S.api_version = D.api_version  AND D.requestsPerDayPercentile  > S.request_count
      GROUP BY S.applicationId, S.api_version
-     HAVING SUM(S.request_count) >= 5;
+     HAVING COUNT(S.request_count) >= 5;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA
      SELECT DISTINCT applicationId, api_version, tenantDomain, applicationName, applicationOwner, api, tier

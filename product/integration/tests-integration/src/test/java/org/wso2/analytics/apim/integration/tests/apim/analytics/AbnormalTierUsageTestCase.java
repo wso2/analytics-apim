@@ -57,7 +57,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     private static final boolean throttledOut = false;
     private static final String clientIp = "127.0.0.1";
     private static final String applicationOwner = "admin";
-    private final int MAX_TRIES = 20;
+    private final int MAX_TRIES = 50;
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
@@ -116,14 +116,14 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Tier Usage Alert")
     public void testAbnormalTierUsageAlert() throws Exception {
 
-        ScenarioConfigurationDTO testDomain = templateManagerAdminServiceClient.getConfiguration("APIMAnalytics",
-                "AbnormalTierAvailabilityAlert");
-
-        if (testDomain == null) {
-            Assert.fail("Domain is not loaded");
-        }
-        
-        templateManagerAdminServiceClient.saveConfiguration(testDomain);
+//        ScenarioConfigurationDTO testDomain = executionManagerAdminServiceClient.getConfiguration("APIMAnalytics",
+//                "AbnormalTierAvailabilityAlert");
+//
+//        if (testDomain == null) {
+//            Assert.fail("Domain is not loaded");
+//        }
+//        
+//        executionManagerAdminServiceClient.saveConfiguration(testDomain);
 
         publishDataset();
         logViewerClient.clearLogs();
@@ -132,21 +132,18 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
             long requestPerMinuteEventCount = getRecordCount(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_TABLE);
-            eventsPublished = (requestPerMinuteEventCount >= 150);
+            eventsPublished = (requestPerMinuteEventCount >= 175);
             if (eventsPublished) {
                 break;
             }
             i++;
-            Thread.sleep(10000);
+            Thread.sleep(5000);
         }
 
         Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
 
-        // this is a synchronous call - seems it is not
-
+        // this is a synchronous call
         executeSparkScript(SPARK_SCRIPT);
-        // hence sleep
-        Thread.sleep(30000);
 
         // test case #1
         boolean testOne = isAlertReceived(
