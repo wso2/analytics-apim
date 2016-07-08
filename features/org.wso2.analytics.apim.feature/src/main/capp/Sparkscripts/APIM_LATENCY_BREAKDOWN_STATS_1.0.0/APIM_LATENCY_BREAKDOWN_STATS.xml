@@ -49,7 +49,7 @@
     first(eventTime)
     from APIExecutionTimeData where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
     year, month, day;
-    INSERT OVERWRITE TABLE APIExecutionTimeDaySummaryData SELECT api,version,tenantDomain,apiPublisher,apiResponseTime,
+    INSERT INTO TABLE APIExecutionTimeDaySummaryData SELECT api,version,tenantDomain,apiPublisher,apiResponseTime,
     context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,backendLatency,
     otherLatency,year,month,day,time FROM API_EXECUTION_TME_DAY_SUMMARY_FINAL;
 
@@ -102,7 +102,7 @@
     first(eventTime)
     from APIExecutionTimeData where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
     year, month, day, hour;
-    INSERT OVERWRITE TABLE APIExecutionTimeHourSummaryData SELECT api,version,tenantDomain,apiPublisher,apiResponseTime,
+    INSERT INTO TABLE APIExecutionTimeHourSummaryData SELECT api,version,tenantDomain,apiPublisher,apiResponseTime,
     context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,backendLatency,
     otherLatency,year,month,day,hour,time FROM API_EXECUTION_TIME_HOUR_SUMMARY_FINAL;
 
@@ -157,7 +157,7 @@
     first(eventTime)
     from APIExecutionTimeData where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
     year, month, day, hour, minute;
-    INSERT OVERWRITE TABLE APIExecutionTimeMinuteSummaryData SELECT api,version,tenantDomain,apiPublisher,
+    INSERT INTO TABLE APIExecutionTimeMinuteSummaryData SELECT api,version,tenantDomain,apiPublisher,
     apiResponseTime,context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,
     backendLatency,otherLatency,year,month,day,hour,minutes,time FROM API_EXECUTION_TIME_MINUTE_SUMMARY_FINAL;
 

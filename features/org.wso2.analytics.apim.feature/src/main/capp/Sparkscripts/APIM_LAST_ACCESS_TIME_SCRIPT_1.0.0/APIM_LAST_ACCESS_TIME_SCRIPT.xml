@@ -26,7 +26,7 @@
     );
 
     <!-- inserting API last access time summary data in DAL to RDBMS-->
-    INSERT OVERWRITE TABLE APILastAccessSummaryData select tenantDomain, apiPublisher, api, version, userId, context, max_request_time from API_LAST_ACCESS_TIME_SUMMARY_FINAL;                      
+    INSERT INTO TABLE APILastAccessSummaryData select tenantDomain, apiPublisher, api, version, userId, context, max_request_time from API_LAST_ACCESS_TIME_SUMMARY_FINAL;
 
   </Script>
   <CronExpression>0 0/5 * 1/1 * ? *</CronExpression>
