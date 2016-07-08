@@ -67,7 +67,7 @@
     from APIRequestData where context is not NULL group by api,api_version,version,apiPublisher,consumerKey,userId,context,hostName,year,month,day;
 
     <!-- inserting request summary data in DAL to RDBMS-->
-    INSERT OVERWRITE TABLE APIRequestSummaryData SELECT api,api_version,version,apiPublisher,consumerKey,userId,context,max_request_time,total_request_count,hostName,year,month,day,time FROM API_REQUEST_SUMMARY_FINAL;
+    INSERT INTO TABLE APIRequestSummaryData SELECT api,api_version,version,apiPublisher,consumerKey,userId,context,max_request_time,total_request_count,hostName,year,month,day,time FROM API_REQUEST_SUMMARY_FINAL;
 
 
     <!--create temp table for API version usage summary table in RDBMS-->
@@ -110,7 +110,7 @@
     context is not NULL group by api,version,apiPublisher,context,hostName,year,month,day;
 
     <!-- inserting API version usage summary data in DAL to RDBMS-->
-    INSERT OVERWRITE TABLE APIVersionUsageSummaryData SELECT api,version,apiPublisher,context,total_request_count,hostName,year,month,day,time FROM API_VERSION_USAGE_SUMMARY_FINAL;
+    INSERT INTO TABLE APIVersionUsageSummaryData SELECT api,version,apiPublisher,context,total_request_count,hostName,year,month,day,time FROM API_VERSION_USAGE_SUMMARY_FINAL;
 
 
     <!--create temp table for API Resource usage summary table in RDBMS-->
@@ -164,7 +164,7 @@
     context is not NULL group by api,version,apiPublisher,consumerKey,resourceTemplate,context,method,hostName,year,month,day;
 
     <!-- inserting API resource usage summary data in DAL to RDBMS-->
-    INSERT OVERWRITE TABLE APIResourcePathUsageSummaryData SELECT api,version,apiPublisher,consumerKey,resourcePath,context,method,total_request_count,hostName,year,month,day,time FROM API_Resource_USAGE_SUMMARY_FINAL;
+    INSERT INTO TABLE APIResourcePathUsageSummaryData SELECT api,version,apiPublisher,consumerKey,resourcePath,context,method,total_request_count,hostName,year,month,day,time FROM API_Resource_USAGE_SUMMARY_FINAL;
 
 
     <!--create temp table for API Response summary table in RDBMS-->
@@ -213,7 +213,7 @@
     context is not NULL group by api_version,apiPublisher,context,hostName,year,month,day;
 
     <!-- inserting response summary data in DAL to RDBMS-->
-    INSERT OVERWRITE TABLE APIResponseSummaryData SELECT api_version,apiPublisher,context,serviceTime,total_response_count,hostName,year,month,day,time FROM API_RESPONSE_SUMMARY_FINAL;
+    INSERT INTO TABLE APIResponseSummaryData SELECT api_version,apiPublisher,context,serviceTime,total_response_count,hostName,year,month,day,time FROM API_RESPONSE_SUMMARY_FINAL;
 
 
     <!--create temp table for API Fault summary table in RDBMS-->
@@ -272,7 +272,7 @@
     substring(cast(requestTime/1000 as timestamp),9,2);
 
     <!-- inserting fault summary data in DAL to RDBMS-->
-    INSERT OVERWRITE TABLE APIFaultSummaryData SELECT api,version,apiPublisher,consumerKey,context,total_fault_count,hostName,year,month,day,time FROM API_FAULT_SUMMARY_FINAL;
+    INSERT INTO TABLE APIFaultSummaryData SELECT api,version,apiPublisher,consumerKey,context,total_fault_count,hostName,year,month,day,time FROM API_FAULT_SUMMARY_FINAL;
 
 
     <!--create temp table for API Destination summary table in RDBMS-->
@@ -318,7 +318,7 @@
     where context is not NULL group by api,version,apiPublisher,context,destination,hostName,year,month,day;
 
     <!-- inserting API destination summary data in DAL to RDBMS-->
-    INSERT OVERWRITE TABLE APIDestinationDataSummaryData SELECT api,version,apiPublisher,context,destination,total_request_count,hostName,year,month,day,time
+    INSERT INTO TABLE APIDestinationDataSummaryData SELECT api,version,apiPublisher,context,destination,total_request_count,hostName,year,month,day,time
     FROM API_DESTINATION_SUMMARY_FINAL where destination !='';
 
   </Script>
