@@ -36,7 +36,7 @@
                         <property>
                             <name>carbon.zip</name>
                             <value>
-                                ${basedir}/../../distribution/target/wso2analytics-apim-${project.version}.zip
+                                ${basedir}/../../distribution/target/wso2am-analytics-${project.version}.zip
                             </value>
                         </property>
                         <property>
@@ -92,7 +92,7 @@
                         </goals>
                         <configuration>
                             <includeGroupIds>org.wso2.analytics.apim</includeGroupIds>
-                            <includeArtifactIds>wso2analytics-apim</includeArtifactIds>
+                            <includeArtifactIds>wso2am-analytics</includeArtifactIds>
                             <outputDirectory>${basedir}/target/tobeCopied/</outputDirectory>
                             <type>zip</type>
                             <includes>**/*.jks,**/*.mar,**/axis2_client.xml</includes>
@@ -126,7 +126,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2analytics-apim-${project.version}/repository/resources/security/
+                                        ${basedir}/target/tobeCopied/wso2am-analytics-${project.version}/repository/resources/security/
                                     </directory>
                                     <includes>
                                         <include>**/*.jks</include>
@@ -147,7 +147,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2analytics-apim-${project.version}/repository/resources/security/
+                                        ${basedir}/target/tobeCopied/wso2am-analytics-${project.version}/repository/resources/security/
                                     </directory>
                                     <includes>
                                         <include>**/*.jks</include>
@@ -168,7 +168,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2analytics-apim-${project.version}/repository/conf/axis2/
+                                        ${basedir}/target/tobeCopied/wso2am-analytics-${project.version}/repository/conf/axis2/
                                     </directory>
                                     <includes>
                                         <include>**/*.xml</include>
