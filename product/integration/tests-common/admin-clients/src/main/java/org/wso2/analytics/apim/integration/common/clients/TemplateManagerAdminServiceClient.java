@@ -20,40 +20,40 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ScenarioConfigurationInfoDTO;
-import org.wso2.carbon.event.execution.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
-import org.wso2.carbon.event.execution.manager.admin.dto.domain.xsd.DomainInfoDTO ;
-import org.wso2.carbon.event.execution.manager.stub.ExecutionManagerAdminServiceStub;
+import org.wso2.carbon.event.template.manager.admin.dto.configuration.xsd.ScenarioConfigurationInfoDTO;
+import org.wso2.carbon.event.template.manager.admin.dto.configuration.xsd.ScenarioConfigurationDTO;
+import org.wso2.carbon.event.template.manager.admin.dto.domain.xsd.DomainInfoDTO ;
+import org.wso2.carbon.event.template.manager.stub.TemplateManagerAdminServiceStub;
 
 import java.rmi.RemoteException;
 
-public class ExecutionManagerAdminServiceClient {
-    private static final Log log = LogFactory.getLog(ExecutionManagerAdminServiceClient.class);
-    private final String serviceName = "ExecutionManagerAdminService";
-    private ExecutionManagerAdminServiceStub executionManagerAdminServiceStub;
+public class TemplateManagerAdminServiceClient {
+    private static final Log log = LogFactory.getLog(TemplateManagerAdminServiceClient.class);
+    private final String serviceName = "TemplateManagerAdminService";
+    private TemplateManagerAdminServiceStub templateManagerAdminServiceStub;
     private String endPoint;
 
-    public ExecutionManagerAdminServiceClient(String backEndUrl, String sessionCookie) throws AxisFault {
+    public TemplateManagerAdminServiceClient(String backEndUrl, String sessionCookie) throws AxisFault {
         this.endPoint = backEndUrl + serviceName;
-        executionManagerAdminServiceStub = new ExecutionManagerAdminServiceStub(endPoint);
-        AuthenticateStubUtil.authenticateStub(sessionCookie, executionManagerAdminServiceStub);
+        templateManagerAdminServiceStub = new TemplateManagerAdminServiceStub(endPoint);
+        AuthenticateStubUtil.authenticateStub(sessionCookie, templateManagerAdminServiceStub);
 
     }
 
-    public ExecutionManagerAdminServiceClient(String backEndUrl, String userName, String password) throws AxisFault {
+    public TemplateManagerAdminServiceClient(String backEndUrl, String userName, String password) throws AxisFault {
         this.endPoint = backEndUrl + serviceName;
-        executionManagerAdminServiceStub = new ExecutionManagerAdminServiceStub(endPoint);
-        AuthenticateStubUtil.authenticateStub(userName, password, executionManagerAdminServiceStub);
+        templateManagerAdminServiceStub = new TemplateManagerAdminServiceStub(endPoint);
+        AuthenticateStubUtil.authenticateStub(userName, password, templateManagerAdminServiceStub);
     }
 
     public ServiceClient _getServiceClient() {
-        return executionManagerAdminServiceStub._getServiceClient();
+        return templateManagerAdminServiceStub._getServiceClient();
     }
 
 
     public DomainInfoDTO[] getAllDomains() throws RemoteException {
         try {
-            return executionManagerAdminServiceStub.getAllDomainInfos();
+            return templateManagerAdminServiceStub.getAllDomainInfos();
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
@@ -62,7 +62,7 @@ public class ExecutionManagerAdminServiceClient {
 
     public DomainInfoDTO getDomain(String domainName) throws RemoteException {
         try {
-            return executionManagerAdminServiceStub.getDomainInfo(domainName);
+            return templateManagerAdminServiceStub.getDomainInfo(domainName);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
@@ -73,7 +73,7 @@ public class ExecutionManagerAdminServiceClient {
     public ScenarioConfigurationDTO getConfiguration(String domainName, String configurationName)
             throws RemoteException {
         try {
-            return executionManagerAdminServiceStub.getConfiguration(domainName, configurationName);
+            return templateManagerAdminServiceStub.getConfiguration(domainName, configurationName);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
@@ -82,7 +82,7 @@ public class ExecutionManagerAdminServiceClient {
 
     public ScenarioConfigurationInfoDTO[] getConfigurations(String domainName) throws RemoteException {
         try {
-            return executionManagerAdminServiceStub.getConfigurationInfos(domainName);
+            return templateManagerAdminServiceStub.getConfigurationInfos(domainName);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
@@ -91,7 +91,7 @@ public class ExecutionManagerAdminServiceClient {
 
     public String[] saveConfiguration(ScenarioConfigurationDTO templateConfigDTO) throws RemoteException {
         try {
-            return executionManagerAdminServiceStub.saveConfiguration(templateConfigDTO);
+            return templateManagerAdminServiceStub.saveConfiguration(templateConfigDTO);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
@@ -100,7 +100,7 @@ public class ExecutionManagerAdminServiceClient {
 
     public boolean deleteConfiguration(String domainName, String configurationName) throws RemoteException {
         try {
-            return executionManagerAdminServiceStub.deleteConfiguration(domainName, configurationName);
+            return templateManagerAdminServiceStub.deleteConfiguration(domainName, configurationName);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
@@ -110,7 +110,7 @@ public class ExecutionManagerAdminServiceClient {
     public int getConfigurationsCount(String domainName) throws RemoteException {
         int count = 0;
         try {
-            ScenarioConfigurationInfoDTO[] configs = executionManagerAdminServiceStub.getConfigurationInfos(domainName);
+            ScenarioConfigurationInfoDTO[] configs = templateManagerAdminServiceStub.getConfigurationInfos(domainName);
             if (configs != null) {
                 count = configs.length;
             }
