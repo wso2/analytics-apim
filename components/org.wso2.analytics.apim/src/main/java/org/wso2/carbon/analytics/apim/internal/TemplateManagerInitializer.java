@@ -32,22 +32,22 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public class ExecutionManagerInitializer {
+public class TemplateManagerInitializer {
     public static final String SPARK_SCRIPT_REGISTRY_PATH = "/repository/components/org.wso2.carbon.analytics.spark";
-    public static final String TEMPLATE_CONFIGS_REGISTRY_PATH = "/repository/components/org.wso2.carbon.event.execution.manager.core/template-config/APIMAnalytics";
+    public static final String TEMPLATE_CONFIGS_REGISTRY_PATH = "/repository/components/org.wso2.carbon.event.template.manager.core/template-config/APIMAnalytics";
 
-    private static final Log log = LogFactory.getLog(ExecutionManagerInitializer.class);
+    private static final Log log = LogFactory.getLog(TemplateManagerInitializer.class);
 
     public static void addTemplateConfigs() {
         String templateConfigDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
                 "resources" + File.separator + "template-manager" + File.separator + "templateconfigs";
-        addInitialConfigs(templateConfigDir, ".xml", ExecutionManagerInitializer.TEMPLATE_CONFIGS_REGISTRY_PATH);
+        addInitialConfigs(templateConfigDir, ".xml", TemplateManagerInitializer.TEMPLATE_CONFIGS_REGISTRY_PATH);
     }
 
     public static void addSparkConfigs() {
         String sparkConfigDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
                 "resources" + File.separator + "template-manager" + File.separator + "sparktemplates";
-        addInitialConfigs(sparkConfigDir, ".xml", ExecutionManagerInitializer.SPARK_SCRIPT_REGISTRY_PATH);
+        addInitialConfigs(sparkConfigDir, ".xml", TemplateManagerInitializer.SPARK_SCRIPT_REGISTRY_PATH);
 
     }
 
