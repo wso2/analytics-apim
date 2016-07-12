@@ -30,13 +30,31 @@
     userAgent string -i",
     primaryKeys "api,version,apiPublisher,year,month,day,userAgent,tenantDomain"
     );
-    insert into table API_REQUEST_USER_AGENT_SUMMARY_FINAL select api,version, apiPublisher,tenantDomain,
-    sum(request) as total_request_count,
-    year, month, day,
-    first(requestTime),
-    userAgent
-    from APIRequestData group by api,version,apiPublisher,userAgent,tenantDomain,
-    year, month, day;
+
+    <!--incrementally processed per month request data table-->
+    create temporary table APIMGT_PERDAY_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST");
+
+    insert into table API_REQUEST_USER_AGENT_SUMMARY_FINAL select a.api,version, a.apiPublisher,a.tenantDomain,
+    sum(b.total_request_count_per_day) as total_request_count,
+    a.year, a.month, a.day,
+    first(a.requestTime),
+    a.userAgent
+    from APIRequestData as a, APIMGT_PERDAY_DATA as b
+    where a.year=b.year
+    and a.month=b.month
+    and a.day=b.day
+    and a.consumerKey=b.consumerKey
+    and a.context=b.context
+    and a.api_version=b.api_version
+    and a.userId=b.userId
+    and a.hostName=b.hostName
+    and a.apiPublisher=b.apiPublisher
+    and a.resourceTemplate=b.resourceTemplate
+    and a.method=b.method
+    and a.userAgent=b.userAgent
+    and a.clientIp=b.clientIp
+    group by b.api,version,b.apiPublisher,b.userAgent,b.tenantDomain,
+    b.year, b.month, b.day;
 
     CREATE TEMPORARY TABLE API_REQUEST_USER_BROWSER_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQ_USER_BROW_SUMMARY",
     schema "api string -i,

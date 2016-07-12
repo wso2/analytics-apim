@@ -48,12 +48,15 @@
     primaryKeys "api,api_version,version,apiPublisher,consumerKey,userId,context,hostName,year,month,day"
     );
 
+    <!--incrementally processed per month request data table-->
+    create temporary table APIMGT_PERDAY_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST");
+
     <!--summarised request event and insert into summary table -->
     insert into table API_REQUEST_SUMMARY_FINAL select api, api_version,version, apiPublisher,
     COALESCE(consumerKey,'-'),
     userId,context,
-    max(requestTime) as max_request_time,
-    sum(total_request_count) as total_request_count,
+    max(maxRequestTime) as max_request_time,
+    sum(total_request_count_per_day) as total_request_count,
     hostName,
     year,
     month,
@@ -64,7 +67,9 @@
     facet3(api,version,userId),
     facet4(api,version,userId,apiPublisher),
     facet4(api,version,userId,context)
-    from APIRequestData where context is not NULL group by api,api_version,version,apiPublisher,consumerKey,userId,context,hostName,year,month,day;
+    from APIMGT_PERDAY_DATA
+    where context is not NULL
+    group by api,api_version,version,apiPublisher,consumerKey,userId,context,hostName,year,month,day;
 
     <!-- inserting request summary data in DAL to RDBMS-->
     INSERT INTO TABLE APIRequestSummaryData SELECT api,api_version,version,apiPublisher,consumerKey,userId,context,max_request_time,total_request_count,hostName,year,month,day,time FROM API_REQUEST_SUMMARY_FINAL;
@@ -103,11 +108,25 @@
     );
 
     <!--insert API version usage summary -->
-    insert into table API_VERSION_USAGE_SUMMARY_FINAL select api,version,apiPublisher,context,sum(total_request_count) as total_request_count,hostName,year,month,day,
-    substring(cast(first(requestTime)/1000 as timestamp),0,16),
-    max(requestTime), facet3(api,version,context)
-    from APIRequestData where
-    context is not NULL group by api,version,apiPublisher,context,hostName,year,month,day;
+    insert into table API_VERSION_USAGE_SUMMARY_FINAL select a.api,a.version,a.apiPublisher,a.context,sum(b.total_request_count_per_day) as total_request_count,a.hostName,a.year,a.month,a.day,
+    substring(cast(first(a.requestTime)/1000 as timestamp),0,16),
+    max(b.maxRequestTime), facet3(api,version,context)
+    from APIRequestData as a, APIMGT_PERDAY_DATA as b
+    where a.year=b.year
+    and a.month=b.month
+    and a.day=b.day
+    and a.consumerKey=b.consumerKey
+    and a.context=b.context
+    and a.api_version=b.api_version
+    and a.userId=b.userId
+    and a.hostName=b.hostName
+    and a.apiPublisher=b.apiPublisher
+    and a.resourceTemplate=b.resourceTemplate
+    and a.method=b.method
+    and a.userAgent=b.userAgent
+    and a.clientIp=b.clientIp
+    and a.context is not NULL
+    group by b.api,b.version,b.apiPublisher,b.context,b.hostName,b.year,b.month,b.day;
 
     <!-- inserting API version usage summary data in DAL to RDBMS-->
     INSERT INTO TABLE APIVersionUsageSummaryData SELECT api,version,apiPublisher,context,total_request_count,hostName,year,month,day,time FROM API_VERSION_USAGE_SUMMARY_FINAL;
@@ -153,15 +172,29 @@
 
     <!--inserting API resource usage summary data-->
     insert into table API_Resource_USAGE_SUMMARY_FINAL select
-    api,version,apiPublisher,COALESCE(consumerKey,'-'),
-    resourceTemplate,context,method,sum(total_request_count) as total_request_count,hostName,
-    year,month,day,
-    substring(cast(first(requestTime)/1000 as timestamp),0,16),
-    max(requestTime),
-    facet4(consumerKey,api,method,resourceTemplate),
-    facet5(api,version,context,method,resourceTemplate)
-    from APIRequestData where
-    context is not NULL group by api,version,apiPublisher,consumerKey,resourceTemplate,context,method,hostName,year,month,day;
+    a.api,a.version,a.apiPublisher,COALESCE(a.consumerKey,'-'),
+    a.resourceTemplate,a.context,a.method,sum(b.total_request_count_per_day) as total_request_count,a.hostName,
+    a.year,a.month,a.day,
+    substring(cast(first(a.requestTime)/1000 as timestamp),0,16),
+    max(b.maxRequestTime),
+    facet4(a.consumerKey,a.api,a.method,a.resourceTemplate),
+    facet5(a.api,a.version,a.context,a.method,a.resourceTemplate)
+    from APIRequestData as a, APIMGT_PERDAY_DATA as b
+    where a.year=b.year
+    and a.month=b.month
+    and a.day=b.day
+    and a.consumerKey=b.consumerKey
+    and a.context=b.context
+    and a.api_version=b.api_version
+    and a.userId=b.userId
+    and a.hostName=b.hostName
+    and a.apiPublisher=b.apiPublisher
+    and a.resourceTemplate=b.resourceTemplate
+    and a.method=b.method
+    and a.userAgent=b.userAgent
+    and a.clientIp=b.clientIp
+    and a.context is not NULL
+    group by b.api,b.version,b.apiPublisher,b.consumerKey,b.resourceTemplate,b.context,b.method,b.hostName,b.year,b.month,b.day;
 
     <!-- inserting API resource usage summary data in DAL to RDBMS-->
     INSERT INTO TABLE APIResourcePathUsageSummaryData SELECT api,version,apiPublisher,consumerKey,resourcePath,context,method,total_request_count,hostName,year,month,day,time FROM API_Resource_USAGE_SUMMARY_FINAL;
