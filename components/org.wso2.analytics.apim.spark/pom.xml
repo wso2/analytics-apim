@@ -62,6 +62,7 @@
 						</Export-Package>
 						<Import-Package>
 							org.apache.commons.math3.*,
+							org.wso2.carbon.analytics.spark.core.udf.*,
 							*;resolution:=optional
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>

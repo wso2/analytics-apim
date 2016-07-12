@@ -325,7 +325,7 @@
 
                                 <!-- START - execution manager Features -->
                                 <featureArtifactDef>
-                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.execution.manager.feature:${carbon.analytics.common.version}
+                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.template.manager.feature:${carbon.analytics.common.version}
                                 </featureArtifactDef>
                                 <!-- spark deployer included in analytics-processors feature -->
                                 <!-- ************** END - Execution manager features ************ -->
@@ -698,7 +698,7 @@
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.event.execution.manager.feature.group</id>
+                                    <id>org.wso2.carbon.event.template.manager.feature.group</id>
                                     <version>${carbon.analytics.common.version}</version>
                                 </feature>
 
