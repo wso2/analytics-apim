@@ -107,6 +107,7 @@ public class APIManagerAnalyticsUDF implements CarbonUDF {
     }
 
     /**
+     * This method converts given year and month to timestamp
      *
      * @param year
      * @param month
@@ -127,6 +128,7 @@ public class APIManagerAnalyticsUDF implements CarbonUDF {
     }
 
     /**
+     * This method converts given year, month and date to timestamp
      *
      * @param year
      * @param month
@@ -148,6 +150,7 @@ public class APIManagerAnalyticsUDF implements CarbonUDF {
     }
 
     /**
+     * This method converts given year, month, date and hour to timestamp
      *
      * @param year
      * @param month
@@ -170,6 +173,7 @@ public class APIManagerAnalyticsUDF implements CarbonUDF {
     }
 
     /**
+     * This method converts given year, month, date, hour and minute to timestamp
      *
      * @param year
      * @param month
@@ -193,6 +197,7 @@ public class APIManagerAnalyticsUDF implements CarbonUDF {
     }
 
     /**
+     * This method converts given year, month, date, hour, minute and second to timestamp
      *
      * @param year
      * @param month

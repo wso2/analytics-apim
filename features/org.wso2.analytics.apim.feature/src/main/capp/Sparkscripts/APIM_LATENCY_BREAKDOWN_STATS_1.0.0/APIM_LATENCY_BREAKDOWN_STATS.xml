@@ -5,7 +5,9 @@
         
     CREATE TEMPORARY TABLE APIExecutionTimeData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERSECONDEXECUTIONTIMES");
 
-    CREATE TEMPORARY TABLE APIMGT_PERDAY_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYXECUTIONTIMES");
+    CREATE TEMPORARY TABLE APIMGT_PERDAY_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES");
+    CREATE TEMPORARY TABLE APIMGT_PERHOUR_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES");
+    CREATE TEMPORARY TABLE APIMGT_PERMINUTE_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES");
 
     CREATE TEMPORARY TABLE APIExecutionTimeDaySummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXE_TME_DAY_SUMMARY",
     schema "api STRING ,
@@ -103,7 +105,7 @@
     avg(responseMediationLatency),avg(backendLatency),avg(otherLatency),
     year, month, day, hour,
     first(firstEventTime)
-    from APIMGT_PERDAY_EXECUTION_TIME where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
+    from APIMGT_PERHOUR_EXECUTION_TIME where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
     year, month, day, hour;
     INSERT INTO TABLE APIExecutionTimeHourSummaryData SELECT api,version,tenantDomain,apiPublisher,apiResponseTime,
     context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,backendLatency,
@@ -158,7 +160,7 @@
     avg(responseMediationLatency),avg(backendLatency),avg(otherLatency),
     year, month, day, hour, minute as minutes,
     first(firstEventTime)
-    from APIMGT_PERDAY_EXECUTION_TIME where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
+    from APIMGT_PERMINUTE_EXECUTION_TIME where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
     year, month, day, hour, minute;
     INSERT INTO TABLE APIExecutionTimeMinuteSummaryData SELECT api,version,tenantDomain,apiPublisher,
     apiResponseTime,context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,

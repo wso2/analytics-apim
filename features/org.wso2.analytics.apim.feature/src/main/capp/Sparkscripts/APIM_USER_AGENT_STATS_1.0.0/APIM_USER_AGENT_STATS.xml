@@ -37,7 +37,7 @@
     sum(total_request_count_per_day) as total_request_count,
     year, month, day,
     first(firstRequestTime),
-    a.userAgent
+    userAgent
     from APIMGT_PERDAY_REQUEST_DATA
     group by api,version,apiPublisher,userAgent,tenantDomain, year, month, day;
 

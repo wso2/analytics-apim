@@ -59,7 +59,7 @@
     year,
     month,
     day,
-    substring(cast(first(requestTime)/1000 as timestamp),0,16),
+    substring(cast(first(firstRequestTime)/1000 as timestamp),0,16),
     facet2(consumerKey,api),
     facet2(consumerKey,userId),
     facet3(api,version,userId),
@@ -158,7 +158,7 @@
     <!--inserting API resource usage summary data-->
     insert into table API_Resource_USAGE_SUMMARY_FINAL select
     api,version,apiPublisher,COALESCE(consumerKey,'-'),
-    resourceTemplate,context,method,sum(total_request_count_per_day) as total_request_count,a.hostName,
+    resourceTemplate,context,method,sum(total_request_count_per_day) as total_request_count,hostName,
     year,month,day,
     substring(cast(first(firstRequestTime)/1000 as timestamp),0,16),
     max(maxRequestTime),
@@ -211,7 +211,7 @@
     insert into table API_RESPONSE_SUMMARY_FINAL select
     api_version, COALESCE(apiPublisher,''),
     context, sum(serviceTime) as avg_service_time,
-    sum(total_response_count_per_day) as total_response_count, b.hostName,
+    sum(total_response_count_per_day) as total_response_count, hostName,
     year,month,day,
     substring(cast(first(firstEventTime)/1000 as timestamp),0,16),
     max(maxEventTime), facet2(api_version,context)
