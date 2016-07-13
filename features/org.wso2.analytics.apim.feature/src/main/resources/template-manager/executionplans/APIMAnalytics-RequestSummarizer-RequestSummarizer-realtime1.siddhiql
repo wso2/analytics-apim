@@ -199,8 +199,6 @@ group by context, api_version, tenantDomain, apiPublisher
 insert into perSecondExecutionTimesTemp;
 
 from perSecondExecutionTimesTemp
-
-
 select meta_clientType,
 time:extract(startTime, 'year') as year, 
 time:extract(startTime, 'month') as month, time:extract(startTime, 'day') as day, 
