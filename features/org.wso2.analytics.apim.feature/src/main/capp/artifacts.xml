@@ -11,6 +11,7 @@
         <dependency artifact="Eventstream_throttle" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstream_executionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstream_perSecondExecutionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstream_requestsPerMinPerKeyStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalBackendTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalRequestsPerMinAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalResponseTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -34,6 +35,7 @@
         <dependency artifact="org_wso2_analytics_apim_apiAvailability" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_accessTokenRefreshTimeDifference" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_ipAccessSummary" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_stateStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_identity_oauth_token_issuance" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_loganalyzer_apim_logEventStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 

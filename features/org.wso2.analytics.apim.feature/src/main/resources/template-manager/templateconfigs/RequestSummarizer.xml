@@ -6,5 +6,9 @@
 			<key>timeInterval</key>
 			<value>60</value>
 		</entry>
+		<entry>
+			<key>schedulerTimeInterval</key>
+			<value>10</value>
+		</entry>
 	</parameterMap>
 </scenarioConfiguration>
