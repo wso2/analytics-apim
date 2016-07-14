@@ -195,5 +195,6 @@
         _timestamp)temp GROUP BY temp.agent, temp.byYear, temp.byMonth, temp.byWeek ORDER BY temp.byYear,
         temp.byMonth, temp.byWeek;
     </Script>
-    <CronExpression>0 10 0 1/1 * ? *</CronExpression>
+    <CronExpression>0 0/15 * 1/1 * ? *</CronExpression>
+
 </Analytics>
