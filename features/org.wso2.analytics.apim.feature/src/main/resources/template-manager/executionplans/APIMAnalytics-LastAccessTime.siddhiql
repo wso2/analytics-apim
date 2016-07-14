@@ -15,7 +15,7 @@ tenantDomain string, userAgent string, resourcePath string, request int, applica
 define table lastAccessTable (tenantDomain string, apiPublisher string, api string, version string, userId string, context string, max_request_time long);
 
 @info(name = 'query_lastAccess')
-from requestPerMinStream
+from requestPerMinStream#window.timeBatch(1 min)
 select tenantDomain, apiPublisher, api, version, userId, context, requestTime as max_request_time
 insert overwrite lastAccessTable
 	on lastAccessTable.tenantDomain == tenantDomain and lastAccessTable.apiPublisher == apiPublisher and lastAccessTable.api == api;
