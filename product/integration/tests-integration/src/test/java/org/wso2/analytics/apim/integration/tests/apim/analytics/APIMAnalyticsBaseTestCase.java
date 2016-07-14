@@ -94,6 +94,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         ConfigurationParameterDTO[] params = apimAnalyticsExecutionPlan.getConfigurationParameterDTOs();
         // set time interval of summarization to 5 seconds
         params[0].setValue("5");
+        params[1].setValue("1");
         apimAnalyticsExecutionPlan.setConfigurationParameterDTOs(params);
         saveConfiguration(apimAnalyticsExecutionPlan);
         do { // wait till it get redeployed

@@ -9,7 +9,9 @@
             <package name="org.wso2.analytics.apim.integration.tests.apim.loganalyzer"/>
         </packages>
         <!-- <classes>
-            <class name="org.wso2.analytics.apim.integration.tests.apim.analytics.AbnormalRequestCountTestCase"></class>
+            <class name="org.wso2.analytics.apim.integration.tests.apim.analytics.ApiHealthAvailabilityTestCase"></class>
+            <class name="org.wso2.analytics.apim.integration.tests.apim.analytics.RequestPatternChangeTestCase"></class>
+            <class name="org.wso2.analytics.apim.integration.tests.apim.analytics.UnusualIPAccessTestCase"></class>
         </classes> -->
     </test>
 
