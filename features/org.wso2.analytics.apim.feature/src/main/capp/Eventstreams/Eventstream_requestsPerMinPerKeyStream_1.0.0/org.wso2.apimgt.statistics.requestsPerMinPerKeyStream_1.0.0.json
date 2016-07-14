@@ -1,0 +1,16 @@
+{
+  "name": "org.wso2.apimgt.statistics.requestsPerMinPerKeyStream",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "requests summarized every minute based on the consumer key",
+  "payloadData": [
+    {
+      "name": "consumerKey",
+      "type": "STRING"
+    },
+    {
+      "name": "requestsPerMinPerKey",
+      "type": "LONG"
+    }
+  ]
+}
