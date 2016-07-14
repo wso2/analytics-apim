@@ -25,7 +25,7 @@ define table RequestPatternAlertSummaryTable(applicationName string, application
 @info(name = 'query1')
 from metricStream as ms left outer join MarkovModelTable
 on (ms.startState == MarkovModelTable.startState and ms.endState == MarkovModelTable.endState and ms.consumerKey == MarkovModelTable.consumerKey)
-select ms.userId, ms.requestTimestamp, ms.startState ,ms.endState, ifThenElse(MarkovModelTable.probability is null, 1.0, 1- MarkovModelTable.probability) as MissProbability, MarkovModelTable.consumerKey,  ms.applicationName, ms.applicationOwner, ms.tenantDomain
+select ms.userId, ms.requestTimestamp, ms.startState ,ms.endState, ifThenElse(MarkovModelTable.probability is null, 1.0, 1- MarkovModelTable.probability) as MissProbability, ms.consumerKey,  ms.applicationName, ms.applicationOwner, ms.tenantDomain
 insert into metricValueStreamTemp;
 
 /****************************************************** fetch request count for consumerkey *******************************************************************************/

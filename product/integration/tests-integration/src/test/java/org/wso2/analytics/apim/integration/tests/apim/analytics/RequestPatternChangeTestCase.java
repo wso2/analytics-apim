@@ -137,7 +137,11 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
 
     @Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert", dependsOnMethods = "testSimulationDataSent")
     public void testRequestPatternChangeAlert() throws Exception {
-
+        if (isTableExist(-1234, "ORG_WSO2_ANALYTICS_APIM_REQUESTPATTERNALERTSUMMARYTABLE")) {
+            deleteData(-1234, "ORG_WSO2_ANALYTICS_APIM_REQUESTPATTERNALERTSUMMARYTABLE");
+        }
+        Thread.sleep(1000);
+        
         logViewerClient.clearLogs();
 
         EventDto eventDto1 = new EventDto();
@@ -180,7 +184,7 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
 
         Assert.assertTrue(requestPatternChangeAlert, "Request pattern change alert event not received!");
     }
-/*
+
     @Test(groups = "wso2.analytics.apim", description = "Test Request Pattern Change Alert is not generated for normal pattern",
             dependsOnMethods = "testSimulationDataSent")
     public void testNoRequestPatternChangeAlert() throws Exception {
@@ -200,5 +204,5 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
 
         Assert.assertFalse(requestPatternChangeAlert, "Request pattern change alert event not received!");
     }
-*/
+
 }

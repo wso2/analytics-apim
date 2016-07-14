@@ -27,13 +27,13 @@ define table IPAccessAlertCount (userId string, consumerKey string, requestCount
 @info(name = 'query1')
 from requestPerMinStream[consumerKey == IPAccessSummary.consumerKey in IPAccessSummary]#window.length(1) as api left outer join IPAccessSummary as ais
 on api.consumerKey == ais.consumerKey and api.clientIp == ais.ip
-select api.consumerKey as consumerKey, api.tenantDomain, api.applicationName,  api.applicationOwner ,  api.userId as userId, api.clientIp as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate
+select api.consumerKey as consumerKey, api.tenantDomain, api.applicationName,  api.applicationOwner ,  api.userId as userId, api.clientIp as requestHostName, ais.ip as ip, api.requestTime as requestTime, ais.lastAccessedDate as lastAccessedDate, total_request_count as count
 insert into TempStream;
 
 -- New consumer key
 @info(name = 'query2')
 from requestPerMinStream[not (consumerKey == IPAccessSummary.consumerKey in IPAccessSummary)]
-select userId, consumerKey, clientIp as ip, requestTime as lastAccessedDate
+select userId, consumerKey, clientIp as ip, requestTime as lastAccessedDate, total_request_count as count
 insert into NewConsumerKeyStream;
 
 @info(name = 'query3')
@@ -45,18 +45,18 @@ insert into IPAccessSummary;
 -- Adding the alert count
 @info(name = 'query4')
 from NewConsumerKeyStream
-select userId, consumerKey, convert('1','long') as requestCount
+select userId, consumerKey, count as requestCount
 insert into IPAccessAlertCount;
 
 @info(name = 'query5')
 from TempStream as ts join IPAccessAlertCount as iaac
 on ts.consumerKey == iaac.consumerKey and ts.userId == iaac.userId
-select ts.consumerKey as consumerKey, ts.tenantDomain, ts.applicationName , ts.applicationOwner , ts.userId as userId, ts.requestHostName as requestHostName, ts.ip as ip, ts.requestTime as requestTime, ts.lastAccessedDate as lastAccessedDate, iaac.requestCount as requestCount
+select ts.consumerKey as consumerKey, ts.tenantDomain, ts.applicationName , ts.applicationOwner , ts.userId as userId, ts.requestHostName as requestHostName, ts.ip as ip, ts.requestTime as requestTime, ts.lastAccessedDate as lastAccessedDate, (ts.count + iaac.requestCount) as requestCount
 insert into ExistingUserStream;
 
 @info(name = 'query6')
 from ExistingUserStream
-select userId, consumerKey, (requestCount + 1) as requestCount
+select userId, consumerKey, requestCount
 insert into IPAccessAlertCount;
 
 -- A new request source IP
