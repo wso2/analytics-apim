@@ -76,7 +76,7 @@ api_version, total_request_count
 insert into perSecondPerApiRequests;
 
 -- consumer key
-from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
+from requests#window.externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
 select batchEndTime as startTime, consumerKey, count() as total_request_count
 group by consumerKey 
 insert into perSecondPerKeyRequestsTemp;
