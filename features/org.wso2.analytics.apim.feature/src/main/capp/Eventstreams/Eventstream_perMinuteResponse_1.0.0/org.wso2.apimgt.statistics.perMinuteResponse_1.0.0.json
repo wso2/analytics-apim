@@ -129,6 +129,10 @@
     {
       "name": "total_response_count",
       "type": "LONG"
+    },
+    {
+      "name": "_timestamp",
+      "type": "LONG"
     }
   ]
 }

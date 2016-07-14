@@ -23,13 +23,13 @@ define stream executionTimes (meta_clientType string, api string, api_version st
 define stream stateStream (context string, method string, resourceTemplate string, tenantDomain string, state string, userId string, requestTimestamp string, consumerKey string, applicationName string, applicationOwner string);
 
 @Export('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
-define stream perMinuteRequests (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+define stream perMinuteRequests (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string, _timestamp long);
 
 @Export('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
-define stream perMinuteResponses (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long);
+define stream perMinuteResponses (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long, _timestamp long);
 
 @Export('org.wso2.apimgt.statistics.perSecondExecutionTimes:1.0.0')
-define stream perSecondExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, second int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long);
+define stream perSecondExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, second int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long, _timestamp long);
 
 @Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
 define stream responsePerMinPerApiStream (api_version string, responsesPerMinPerApi long);
@@ -111,7 +111,7 @@ time:extract(startTime, 'minute') as minute,
 consumerKey, context, api_version, api, version, 
 requestTime, userId, hostName, apiPublisher, total_request_count, 
 resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
-tier, throttledOut, clientIp, applicationOwner
+tier, throttledOut, clientIp, applicationOwner, startTime as _timestamp
 insert into perMinuteRequests;
 
 -- api_version
@@ -206,7 +206,7 @@ time:extract(startTime, 'minute') as minute,
 context, api_version, api, resourceTemplate, version, tenantDomain, 
 hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, math:round(responseTime) as responseTime, 
 math:round(serviceTime) as serviceTime, math:round(backendTime) as backendTime, username, eventTime, applicationName, 
-applicationId, cacheHit, math:round(responseSize) as responseSize, protocol, responseCode, total_response_count
+applicationId, cacheHit, math:round(responseSize) as responseSize, protocol, responseCode, total_response_count, startTime as _timestamp
 insert into perMinuteResponses;
 
 -- api_version
@@ -241,5 +241,5 @@ time:extract(startTime, 'hour') as hour, time:extract(startTime, 'minute') as mi
 time:extract(startTime, 'second') as second, 
 context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, securityLatency,
 throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency,
-startTime as eventTime
+startTime as eventTime, startTime as _timestamp
 insert into perSecondExecutionTimes;
