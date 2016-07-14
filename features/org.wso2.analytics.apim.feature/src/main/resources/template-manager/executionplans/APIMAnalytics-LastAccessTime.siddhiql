@@ -11,10 +11,11 @@ define stream requestPerMinStream (meta_clientType string, year int, month int, 
 requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string,
 tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
-@from(eventtable = 'analytics.table' , table.name = 'API_LAST_ACCESS_TIME_SUMMARY',  primary.keys = 'tenantDomain,apiPublisher,api', wait.for.indexing = 'false')
+@from(eventtable = 'rdbms' , datasource.name = 'WSO2AM_STATS_DB' , table.name = 'API_LAST_ACCESS_TIME_SUMMARY', primary.keys = 'tenantDomain,apiPublisher,api')
 define table lastAccessTable (tenantDomain string, apiPublisher string, api string, version string, userId string, context string, max_request_time long);
 
 @info(name = 'query_lastAccess')
-from requestPerMinStream#window.timeBatch(1 min)
+from requestPerMinStream
 select tenantDomain, apiPublisher, api, version, userId, context, requestTime as max_request_time
-insert into lastAccessTable;
+insert overwrite lastAccessTable
+	on lastAccessTable.tenantDomain == tenantDomain and lastAccessTable.apiPublisher == apiPublisher and lastAccessTable.api == api;
