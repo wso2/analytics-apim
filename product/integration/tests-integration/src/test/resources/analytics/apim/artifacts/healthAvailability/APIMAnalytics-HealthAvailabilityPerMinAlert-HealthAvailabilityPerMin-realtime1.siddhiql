@@ -17,14 +17,14 @@
 																   api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, 
 																   total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, 
 																   userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string,
-																   applicationOwner string);
+																   applicationOwner string, _timestamp long);
     
                                 @Import('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
 								define stream responseSummaryStream (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, 
 																	 api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, 
 																	 destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, 
 																	 serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, 
-																	 cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long);
+																	 cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long, _timestamp long);
 								
 								@Import('org.wso2.apimgt.statistics.response:1.1.0')
                                 define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, 

@@ -25,8 +25,8 @@
     <!--create temp table for Throttle event stream data-->
   create temporary table APIThrottleData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_THROTTLE");
 
-  <!--create temp table for Request event stream data-->
-  create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST");
+    <!--incrementally processed per day request data table-->
+    create temporary table APIMGT_PERDAY_REQUEST_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST");
 
   <!--create table for throttle out summary in DAL-->
   CREATE TEMPORARY TABLE THROTTLED_OUT_FINAL_SUMMARY USING CarbonAnalytics OPTIONS (tableName "API_THROTTLED_OUT_SUMMARY",
@@ -49,7 +49,7 @@
     applicationName_facet facet -i",
     primaryKeys "api,api_version,context,apiPublisher,applicationName,tenantDomain,year,month,day,throttledOutReason"
     );
-
+    <!--create table for throttle out summary in DAL-->
   <!--inserting API throttle out summary data-->
   insert into table THROTTLED_OUT_FINAL_SUMMARY select
     COALESCE(a.api,b.api),
@@ -70,16 +70,16 @@
     facet5( COALESCE(a.api,b.api), COALESCE(a.year,b.year),COALESCE(a.month,b.month),COALESCE(a.week,b.week),COALESCE(a.day,b.day)),
     COALESCE(a.applicationName,b.applicationName,'_ANONYMOUS_')
     from
-    (select api,api_version,context,apiPublisher,applicationName,tenantDomain,first(requestTime) as times,
+    (select api,api_version,context,apiPublisher,applicationName,tenantDomain,first(firstRequestTime) as times,
     cast(year as STRING) year,cast(month as STRING) month,cast(day as STRING) day,
-    cast(first(requestTime)/(1000 * 60 * 60 *24 * 7) as INT) week,
-    substring(cast(first(requestTime)/1000 as timestamp),0,16) time,
-    sum(total_request_count) as success_request_count
+    cast(first(firstRequestTime)/(1000 * 60 * 60 *24 * 7) as INT) week,
+    substring(cast(first(firstRequestTime)/1000 as timestamp),0,16) time,
+    sum(total_request_count_per_day) as success_request_count
 
-    from APIRequestData where context is not NULL group by
+    from APIMGT_PERDAY_REQUEST_DATA where context is not NULL group by
     api,api_version,context,apiPublisher,applicationName,tenantDomain,
     cast(year as STRING),cast(month as STRING),cast(day as STRING),
-    cast(requestTime/(1000 * 60 * 60 *24 * 7) as INT)
+    cast(firstRequestTime/(1000 * 60 * 60 *24 * 7) as INT)
     ) a full outer join
 
     (select api,api_version,context,apiPublisher,applicationName,tenantDomain,throttledOutReason,first(throttledTime) as times,

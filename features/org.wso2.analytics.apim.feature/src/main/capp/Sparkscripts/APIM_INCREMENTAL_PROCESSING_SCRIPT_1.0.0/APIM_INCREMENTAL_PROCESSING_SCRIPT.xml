@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+    <Name>APIM_INCREMENTAL_PROCESSING_SCRIPT</Name>
+<Script>
+    <!--Requests-->
+
+    CREATE TEMPORARY TABLE APIMGT_PERMINUTE_REQUEST_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST", schema "
+    year INT -i, month INT -i, day INT -i, hour INT -i, minute INT -i,
+    consumerKey STRING, context STRING, api_version STRING, api STRING, version STRING, requestTime LONG, userId STRING, hostName STRING,
+    apiPublisher STRING, total_request_count LONG, resourceTemplate STRING, method STRING, applicationName STRING, tenantDomain STRING,
+    userAgent STRING, resourcePath STRING, request INT, applicationId STRING, tier STRING, throttledOut BOOLEAN, clientIp STRING,
+    applicationOwner STRING, _timestamp LONG -i",
+    primaryKeys "year, month, day, hour, minute, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp",
+    incrementalProcessing "APIMGT_PERMINUTE_REQUEST_DATA, HOUR",
+    mergeSchema "false");
+
+    CREATE TEMPORARY TABLE APIMGT_PERHOUR_REQUEST_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERHOURREQUEST", schema "
+    year INT -i, month INT -i, day INT -i, hour INT -i,
+    consumerKey STRING, context STRING, api_version STRING, api STRING, version STRING, maxRequestTime LONG, firstRequestTime LONG, userId STRING, hostName STRING,
+    apiPublisher STRING, total_request_count_per_hour LONG, resourceTemplate STRING, method STRING, applicationName STRING, tenantDomain STRING,
+    userAgent STRING, resourcePath STRING, request INT, applicationId STRING, tier STRING, throttledOut BOOLEAN, clientIp STRING,
+    applicationOwner STRING, _timestamp LONG -i",
+    primaryKeys "year, month, day, hour, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp",
+    incrementalProcessing "APIMGT_PERHOUR_REQUEST_DATA, DAY",
+    mergeSchema "false");
+
+    CREATE TEMPORARY TABLE APIMGT_PERDAY_REQUEST_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST", schema "
+    year INT -i, month INT -i, day INT -i,
+    consumerKey STRING, context STRING, api_version STRING, api STRING, version STRING, maxRequestTime LONG, firstRequestTime LONG, userId STRING, hostName STRING,
+    apiPublisher STRING, total_request_count_per_day LONG, resourceTemplate STRING, method STRING, applicationName STRING, tenantDomain STRING,
+    userAgent STRING, resourcePath STRING, request INT, applicationId STRING, tier STRING, throttledOut BOOLEAN, clientIp STRING,
+    applicationOwner STRING",
+    primaryKeys "year, month, day, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp",
+    mergeSchema "false");
+
+    INSERT INTO TABLE APIMGT_PERHOUR_REQUEST_DATA SELECT year, month, day, hour, consumerKey, context, api_version, api, version, max(requestTime), first(requestTime), userId, hostName,
+    apiPublisher, sum(total_request_count), resourceTemplate, method, applicationName, tenantDomain,
+    userAgent, resourcePath, request, applicationId, tier, throttledOut, clientIp, applicationOwner, getHourStartingTime(year, month, day, hour) as _timestamp
+    FROM APIMGT_PERMINUTE_REQUEST_DATA
+    GROUP BY year, month, day, hour, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp,
+    api, version, applicationName, tenantDomain, resourcePath, request, applicationId, tier, throttledOut, applicationOwner;
+
+    INCREMENTAL_TABLE_COMMIT APIMGT_PERMINUTE_REQUEST_DATA;
+
+    INSERT INTO TABLE APIMGT_PERDAY_REQUEST_DATA SELECT year, month, day, consumerKey, context, api_version, api, version, max(maxRequestTime), first(firstRequestTime), userId, hostName,
+    apiPublisher, sum(total_request_count_per_hour), resourceTemplate, method, applicationName, tenantDomain,
+    userAgent, resourcePath, request, applicationId, tier, throttledOut, clientIp, applicationOwner
+    FROM APIMGT_PERHOUR_REQUEST_DATA
+    GROUP BY year, month, day, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp,
+    api, version, applicationName, tenantDomain, resourcePath, request, applicationId, tier, throttledOut, applicationOwner;
+
+    INCREMENTAL_TABLE_COMMIT APIMGT_PERHOUR_REQUEST_DATA;
+
+    <!--Responses-->
+
+    CREATE TEMPORARY TABLE APIMGT_PERMINUTE_RESPONSE_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE", schema "
+    year INT -i, month INT -i, day INT -i, hour INT -i, minute INT -i,
+    context STRING, api_version STRING, api STRING, resourceTemplate STRING, version STRING, tenantDomain STRING, hostName STRING, apiPublisher STRING,
+    destination STRING, consumerKey STRING, resourcePath STRING, method STRING, response INT, responseTime LONG, serviceTime LONG, backendTime LONG,
+    username STRING, eventTime LONG, applicationName STRING, applicationId STRING, cacheHit BOOLEAN, responseSize LONG, protocol STRING,
+    responseCode INT, total_response_count LONG, _timestamp LONG -i",
+    primaryKeys "year, month, day, hour, minute, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username",
+    incrementalProcessing "APIMGT_PERMINUTE_RESPONSE_DATA, HOUR",
+    mergeSchema "false");
+
+    CREATE TEMPORARY TABLE APIMGT_PERHOUR_RESPONSE_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERHOURRESPONSE", schema "
+    year INT -i, month INT -i, day INT -i, hour INT -i,
+    context STRING, api_version STRING, api STRING, resourceTemplate STRING, version STRING, tenantDomain STRING, hostName STRING, apiPublisher STRING,
+    destination STRING, consumerKey STRING, resourcePath STRING, method STRING, response INT, serviceTime LONG, username STRING, maxEventTime LONG, firstEventTime LONG,
+    applicationName STRING, applicationId STRING, cacheHit BOOLEAN, responseSize LONG, protocol STRING, responseCode INT,
+    total_response_count_per_hour LONG, _timestamp LONG -i",
+    primaryKeys "year, month, day, hour, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username",
+    incrementalProcessing "APIMGT_PERHOUR_RESPONSE_DATA, DAY",
+    mergeSchema "false");
+
+    CREATE TEMPORARY TABLE APIMGT_PERDAY_RESPONSE_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE", schema "
+    year INT -i, month INT -i, day INT -i,
+    context STRING, api_version STRING, api STRING, resourceTemplate STRING, version STRING, tenantDomain STRING, hostName STRING, apiPublisher STRING,
+    destination STRING, consumerKey STRING, resourcePath STRING, method STRING, response INT, serviceTime LONG, username STRING, maxEventTime LONG, firstEventTime LONG,
+    applicationName STRING, applicationId STRING, cacheHit BOOLEAN, responseSize LONG, protocol STRING, responseCode INT,
+    total_response_count_per_day LONG",
+    primaryKeys "year, month, day, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username",
+    mergeSchema "false");
+
+    INSERT INTO TABLE APIMGT_PERHOUR_RESPONSE_DATA SELECT year, month, day, hour, context, api_version, api, resourceTemplate, version, tenantDomain, hostName,
+    apiPublisher, destination, consumerKey, resourcePath, method, response, sum(serviceTime), username, max(eventTime), first(eventTime), applicationName,
+    applicationId, cacheHit, responseSize, protocol, responseCode, sum(total_response_count), getHourStartingTime(year, month, day, hour) as _timestamp
+    FROM APIMGT_PERMINUTE_RESPONSE_DATA
+    GROUP BY year, month, day, hour, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username,
+    api, version, tenantDomain, resourcePath, response, applicationName, applicationId, cacheHit, responseSize, protocol, responseCode;
+
+    INCREMENTAL_TABLE_COMMIT APIMGT_PERMINUTE_RESPONSE_DATA;
+
+    INSERT INTO TABLE APIMGT_PERDAY_RESPONSE_DATA SELECT year, month, day, context, api_version, api, resourceTemplate, version, tenantDomain, hostName,
+    apiPublisher, destination, consumerKey, resourcePath, method, response, sum(serviceTime), username, max(maxEventTime), first(firstEventTime), applicationName,
+    applicationId, cacheHit, responseSize, protocol, responseCode, sum(total_response_count_per_hour)
+    FROM APIMGT_PERHOUR_RESPONSE_DATA
+    GROUP BY year, month, day, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username,
+    api, version, tenantDomain, resourcePath, response, applicationName, applicationId, cacheHit, responseSize, protocol, responseCode;
+
+    INCREMENTAL_TABLE_COMMIT APIMGT_PERHOUR_RESPONSE_DATA;
+
+    <!--Per second execution time-->
+
+    CREATE TEMPORARY TABLE APIMGT_PERSECOND_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERSECONDEXECUTIONTIMES", schema "
+    year INT -i, month INT -i, day INT -i, hour INT -i, minute INT -i, second INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
+    backendLatency DOUBLE, otherLatency DOUBLE, eventTime LONG, _timestamp LONG -i",
+    primaryKeys "year, month, day, hour, minute, second, context, api_version, tenantDomain, apiPublisher",
+    incrementalProcessing "APIMGT_PERSECOND_EXECUTION_TIME, MINUTE",
+    mergeSchema "false");
+
+    CREATE TEMPORARY TABLE APIMGT_PERMINUTE_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES", schema "
+    year INT -i, month INT -i, day INT -i, hour INT -i, minute INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
+    backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG, _timestamp LONG -i",
+    primaryKeys "year, month, day, hour, minute, context, api_version, tenantDomain, apiPublisher",
+    incrementalProcessing "APIMGT_PERMINUTE_EXECUTION_TIME, HOUR",
+    mergeSchema "false");
+
+    CREATE TEMPORARY TABLE APIMGT_PERHOUR_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES", schema "
+    year INT -i, month INT -i, day INT -i, hour INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
+    backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG, _timestamp LONG -i",
+    primaryKeys "year, month, day, hour, context, api_version, tenantDomain, apiPublisher",
+    incrementalProcessing "APIMGT_PERHOUR_EXECUTION_TIME, DAY",
+    mergeSchema "false");
+
+    CREATE TEMPORARY TABLE APIMGT_PERDAY_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES", schema "
+    year INT -i, month INT -i, day INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
+    backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG",
+    primaryKeys "year, month, day, context, api_version, tenantDomain, apiPublisher",
+    mergeSchema "false");
+
+
+    INSERT INTO TABLE APIMGT_PERMINUTE_EXECUTION_TIME SELECT year, month, day, hour, minute, context, api_version, api, tenantDomain,
+    apiPublisher, avg(apiResponseTime), avg(securityLatency), avg(throttlingLatency), avg(requestMediationLatency), avg(responseMediationLatency),
+    avg(backendLatency), avg(otherLatency), first(eventTime), getMinuteStartingTime(year, month, day, hour, minute) as _timestamp
+    FROM APIMGT_PERSECOND_EXECUTION_TIME
+    GROUP BY year, month, day, hour, minute, context, api_version, tenantDomain, apiPublisher,
+    api;
+
+    INCREMENTAL_TABLE_COMMIT APIMGT_PERSECOND_EXECUTION_TIME;
+
+    INSERT INTO TABLE APIMGT_PERHOUR_EXECUTION_TIME SELECT year, month, day, hour, context, api_version, api, tenantDomain,
+    apiPublisher, avg(apiResponseTime), avg(securityLatency), avg(throttlingLatency), avg(requestMediationLatency), avg(responseMediationLatency),
+    avg(backendLatency), avg(otherLatency), first(firstEventTime), getHourStartingTime(year, month, day, hour) as _timestamp
+    FROM APIMGT_PERMINUTE_EXECUTION_TIME
+    GROUP BY year, month, day, hour, context, api_version, tenantDomain, apiPublisher,
+    api;
+
+    INCREMENTAL_TABLE_COMMIT APIMGT_PERMINUTE_EXECUTION_TIME;
+
+    INSERT INTO TABLE APIMGT_PERDAY_EXECUTION_TIME SELECT year, month, day, context, api_version, api, tenantDomain,
+    apiPublisher, avg(apiResponseTime), avg(securityLatency), avg(throttlingLatency), avg(requestMediationLatency), avg(responseMediationLatency),
+    avg(backendLatency), avg(otherLatency), first(firstEventTime)
+    FROM APIMGT_PERHOUR_EXECUTION_TIME
+    GROUP BY year, month, day, context, api_version, tenantDomain, apiPublisher,
+    api;
+
+    INCREMENTAL_TABLE_COMMIT APIMGT_PERHOUR_EXECUTION_TIME;
+</Script>
+    <CronExpression>0 0/2 * 1/1 * ? *</CronExpression>
+</Analytics>

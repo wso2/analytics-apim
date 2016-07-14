@@ -105,4 +105,120 @@ public class APIManagerAnalyticsUDF implements CarbonUDF {
         double zValue = new NormalDistribution().inverseCumulativeProbability(percentile);
         return mean + zValue * stdDeviation;
     }
+
+    /**
+     * This method converts given year and month to timestamp
+     *
+     * @param year
+     * @param month
+     * @return
+     */
+    public String getMonthStartingTime(Integer year, Integer month) {
+        Calendar calender = Calendar.getInstance();
+        synchronized (calender) {
+            calender.set(Calendar.YEAR, year);
+            calender.set(Calendar.MONTH, month - 1);
+            calender.set(Calendar.DAY_OF_MONTH, 1);
+            calender.set(Calendar.HOUR_OF_DAY, 0);
+            calender.set(Calendar.MINUTE, 0);
+            calender.set(Calendar.SECOND, 0);
+            calender.set(Calendar.MILLISECOND, 0);
+            return String.valueOf(calender.getTimeInMillis());
+        }
+    }
+
+    /**
+     * This method converts given year, month and date to timestamp
+     *
+     * @param year
+     * @param month
+     * @param date
+     * @return
+     */
+    public String getDateStartingTime(Integer year, Integer month, Integer date) {
+        Calendar calender = Calendar.getInstance();
+        synchronized (calender) {
+            calender.set(Calendar.YEAR, year);
+            calender.set(Calendar.MONTH, month - 1);
+            calender.set(Calendar.DAY_OF_MONTH, date);
+            calender.set(Calendar.HOUR_OF_DAY, 0);
+            calender.set(Calendar.MINUTE, 0);
+            calender.set(Calendar.SECOND, 0);
+            calender.set(Calendar.MILLISECOND, 0);
+            return String.valueOf(calender.getTimeInMillis());
+        }
+    }
+
+    /**
+     * This method converts given year, month, date and hour to timestamp
+     *
+     * @param year
+     * @param month
+     * @param date
+     * @param hour
+     * @return
+     */
+    public String getHourStartingTime(Integer year, Integer month, Integer date, Integer hour) {
+        Calendar calender = Calendar.getInstance();
+        synchronized (calender) {
+            calender.set(Calendar.YEAR, year);
+            calender.set(Calendar.MONTH, month - 1);
+            calender.set(Calendar.DAY_OF_MONTH, date);
+            calender.set(Calendar.HOUR_OF_DAY, hour);
+            calender.set(Calendar.MINUTE, 0);
+            calender.set(Calendar.SECOND, 0);
+            calender.set(Calendar.MILLISECOND, 0);
+            return String.valueOf(calender.getTimeInMillis());
+        }
+    }
+
+    /**
+     * This method converts given year, month, date, hour and minute to timestamp
+     *
+     * @param year
+     * @param month
+     * @param date
+     * @param hour
+     * @param minute
+     * @return
+     */
+    public String getMinuteStartingTime(Integer year, Integer month, Integer date, Integer hour, Integer minute) {
+        Calendar calender = Calendar.getInstance();
+        synchronized (calender) {
+            calender.set(Calendar.YEAR, year);
+            calender.set(Calendar.MONTH, month - 1);
+            calender.set(Calendar.DAY_OF_MONTH, date);
+            calender.set(Calendar.HOUR_OF_DAY, hour);
+            calender.set(Calendar.MINUTE, minute);
+            calender.set(Calendar.SECOND, 0);
+            calender.set(Calendar.MILLISECOND, 0);
+            return String.valueOf(calender.getTimeInMillis());
+        }
+    }
+
+    /**
+     * This method converts given year, month, date, hour, minute and second to timestamp
+     *
+     * @param year
+     * @param month
+     * @param date
+     * @param hour
+     * @param minute
+     * @param second
+     * @return
+     */
+    public String getSecondStartingTime(Integer year, Integer month, Integer date, Integer hour, Integer minute,
+                                        Integer second) {
+        Calendar calender = Calendar.getInstance();
+        synchronized (calender) {
+            calender.set(Calendar.YEAR, year);
+            calender.set(Calendar.MONTH, month - 1);
+            calender.set(Calendar.DAY_OF_MONTH, date);
+            calender.set(Calendar.HOUR_OF_DAY, hour);
+            calender.set(Calendar.MINUTE, minute);
+            calender.set(Calendar.SECOND, second);
+            calender.set(Calendar.MILLISECOND, 0);
+            return String.valueOf(calender.getTimeInMillis());
+        }
+    }
 }

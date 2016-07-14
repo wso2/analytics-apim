@@ -9,7 +9,7 @@
 @Import('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
 define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, api string, version string,
 requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string,
-tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string, _timestamp long);
 
 @from(eventtable = 'rdbms' , datasource.name = 'WSO2AM_STATS_DB' , table.name = 'API_LAST_ACCESS_TIME_SUMMARY', primary.keys = 'tenantDomain,apiPublisher,api')
 define table lastAccessTable (tenantDomain string, apiPublisher string, api string, version string, userId string, context string, max_request_time long);

@@ -7,6 +7,7 @@
         <packages>
             <package name="org.wso2.analytics.apim.integration.tests.apim.analytics"/>
             <package name="org.wso2.analytics.apim.integration.tests.apim.loganalyzer"/>
+            <package name="org.wso2.analytics.apim.integration.tests.apim.incrementalprocessing"/>
         </packages>
         <!-- <classes>
             <class name="org.wso2.analytics.apim.integration.tests.apim.analytics.ApiHealthAvailabilityTestCase"></class>

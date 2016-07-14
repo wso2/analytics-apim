@@ -7,7 +7,7 @@
 /* define streams/tables and write queries here ... */
 
 @Import('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
-define stream responseSummaryStream (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long);
+define stream responseSummaryStream (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long, _timestamp long);
 
 @Export('org.wso2.analytics.apim.abnormalBackendTimeAlertStream:1.0.0')
 define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, severity int, alertTimestamp long);
