@@ -23,7 +23,7 @@
             <templates>
                 <template type="realtime">
                     <![CDATA[
-                      /* Enter a unique ExecutionPlan */
+/* Enter a unique ExecutionPlan */
 @Plan:name('APIMAnalytics-RequestSummarizer-RequestSummarizer-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
@@ -41,6 +41,9 @@ define stream responses (meta_clientType string, consumerKey string, context str
 @Import('org.wso2.apimgt.statistics.execution.time:1.0.0')
 define stream executionTimes (meta_clientType string, api string, api_version string, tenantDomain string, apiPublisher string, apiResponseTime long, context string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, eventTime long);
 
+@Export('org.wso2.analytics.apim.stateStream:1.0.0')
+define stream stateStream (context string, method string, resourceTemplate string, tenantDomain string, state string, userId string, requestTimestamp string, consumerKey string, applicationName string, applicationOwner string);
+
 @Export('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
 define stream perMinuteRequests (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
@@ -56,11 +59,15 @@ define stream responsePerMinPerApiStream (api_version string, responsesPerMinPer
 @Export('org.wso2.analytics.apim.requestPerMinPerApiStream:1.0.0')
 define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
 
+@Export('org.wso2.apimgt.statistics.requestsPerMinPerKeyStream:1.0.0')
+define stream requestsPerMinPerKeyStream (consumerKey string, requestsPerMinPerKey long);
+
+
 -- requests
 
 -- second
 -- global
-from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
+from requests#externalTimeBatch(requestTime, 1 sec, 0, $schedulerTimeInterval sec)
 select batchEndTime as startTime, meta_clientType, consumerKey, context, api_version, api, version, 
 max(requestTime) as requestTime, userId, hostName, apiPublisher, count() as total_request_count, 
 resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
@@ -70,9 +77,9 @@ insert into perSecondRequestsTemp;
 
 from perSecondRequestsTemp
 select meta_clientType, (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
-time:extract(requestTime, 'year') as year, time:extract(requestTime, 'month') as month, 
-time:extract(requestTime, 'day') as day, time:extract(requestTime, 'hour') as hour, 
-time:extract(requestTime, 'minute') as minute, time:extract(requestTime, 'second') as second,
+time:extract(startTime, 'year') as year, time:extract(startTime, 'month') as month, 
+time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
+time:extract(startTime, 'minute') as minute, time:extract(startTime, 'second') as second,
 consumerKey, context, api_version, api, version, 
 requestTime, userId, hostName, apiPublisher, total_request_count, 
 resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
@@ -80,7 +87,7 @@ tier, throttledOut, clientIp, applicationOwner
 insert into perSecondRequests;
 
 --api_version
-from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
+from requests#externalTimeBatch(requestTime, 1 sec, 0, $schedulerTimeInterval sec)
 select batchEndTime as startTime, api_version, count() as total_request_count
 group by api_version 
 insert into perSecondPerApiRequestsTemp;
@@ -89,6 +96,17 @@ from perSecondPerApiRequestsTemp
 select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
 api_version, total_request_count
 insert into perSecondPerApiRequests;
+
+-- consumer key
+from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, consumerKey, count() as total_request_count
+group by consumerKey 
+insert into perSecondPerKeyRequestsTemp;
+
+from perSecondPerKeyRequestsTemp
+select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+consumerKey, total_request_count
+insert into perSecondPerKeyRequests;
 
 -- minute
 -- global
@@ -100,7 +118,7 @@ requestTime, userId, hostName, apiPublisher, total_request_count, resourceTempla
 tenantDomain, userAgent, resourcePath, request, applicationId, tier, throttledOut, clientIp, applicationOwner
 insert into perSecondRequestsWithUniqueId;
 
-from perSecondRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, 10 sec)
+from perSecondRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, $schedulerTimeInterval sec)
 select batchEndTime as startTime, meta_clientType, consumerKey, context, api_version, api, version, 
 max(requestTime) as requestTime, userId, hostName, apiPublisher, sum(total_request_count) as total_request_count, 
 resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, tier, 
@@ -124,16 +142,33 @@ select startTime, str:concat(facetStartTime, '_', api_version)
 as uniqueId, api_version, total_request_count
 insert into perSecondPerApiRequestsWithUniqueId;
 
-from perSecondPerApiRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, 10 sec)
+from perSecondPerApiRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, $schedulerTimeInterval sec)
 select api_version, sum(total_request_count) as requestsPerMinPerApi
 group by api_version 
 insert into requestPerMinPerApiStream;
+
+-- consumer key
+from perSecondPerKeyRequests
+select startTime, str:concat(facetStartTime, '_', consumerKey) 
+as uniqueId, consumerKey, total_request_count
+insert into perSecondPerKeyRequestsWithUniqueId;
+
+from perSecondPerKeyRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec)
+select consumerKey, sum(total_request_count) as requestsPerMinPerKey
+group by consumerKey 
+insert into requestsPerMinPerKeyStream;
+
+-- state stream
+from requests
+select context,method,resourceTemplate, tenantDomain, str:concat(method,' ',context,' ',resourceTemplate) as state, userId as userId, 
+time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner 
+insert into stateStream;
 
 -- responses
 
 -- second
 -- global
-from responses#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
+from responses#externalTimeBatch(eventTime, 1 sec, 0, $schedulerTimeInterval sec)
 select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, 
 tenantDomain, hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, 
 avg(responseTime) as responseTime, avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, 
@@ -156,7 +191,7 @@ protocol, responseCode, total_response_count
 insert into perSecondResponses;
 
 -- api_version
-from responses#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
+from responses#externalTimeBatch(eventTime, 1 sec, 0, $schedulerTimeInterval sec)
 select batchEndTime as startTime, api_version, count() as total_response_count
 group by api_version 
 insert into perSecondPerApiResponsesTemp;
@@ -177,7 +212,7 @@ backendTime, username, eventTime, applicationName, applicationId, cacheHit, resp
 total_response_count
 insert into perSecondResponsesWithUniqueId;
 
-from perSecondResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, 10 sec)
+from perSecondResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, $schedulerTimeInterval sec)
 select batchEndTime as startTime, meta_clientType, context, api_version, api, resourceTemplate, version, tenantDomain, 
 hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, avg(responseTime) as responseTime, 
 avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, username, max(eventTime) as eventTime, applicationName, 
@@ -202,7 +237,7 @@ select startTime, str:concat(facetStartTime, '_', api_version)
 as uniqueId, api_version, total_response_count
 insert into perSecondPerApiResponsesWithUniqueId;
 
-from perSecondPerApiResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, 10 sec)
+from perSecondPerApiResponsesWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, $schedulerTimeInterval sec)
 select api_version, sum(total_response_count) as responsesPerMinPerApi
 group by api_version 
 insert into responsePerMinPerApiStream;
@@ -211,7 +246,7 @@ insert into responsePerMinPerApiStream;
 
 -- second
 
-from executionTimes#externalTimeBatch(eventTime, 1 sec, 0, 10 sec)
+from executionTimes#externalTimeBatch(eventTime, 1 sec, 0, $schedulerTimeInterval sec)
 select batchEndTime as startTime, meta_clientType, context, api_version, api, 
 tenantDomain, apiPublisher, avg(apiResponseTime) as apiResponseTime, avg(securityLatency) as securityLatency,
 avg(throttlingLatency) as throttlingLatency, avg(requestMediationLatency) as requestMediationLatency,
@@ -239,6 +274,11 @@ insert into perSecondExecutionTimes;
                     <displayName>Time Interval</displayName>
                     <description>Time period in seconds of which the summarization would happen</description>
                     <defaultValue>60</defaultValue>
+                </parameter>
+                <parameter name="schedulerTimeInterval" type="long">
+                    <displayName>Scheduler Time Interval</displayName>
+                    <description>Time period in seconds of which the summarized data would get published if no further events are received</description>
+                    <defaultValue>10</defaultValue>
                 </parameter>
             </parameters>
         </scenario>
@@ -444,7 +484,7 @@ define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain,resourceTemplate,method')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain,resourceTemplate,method', caching = 'true', cache.timeout.seconds='$cacheTimeout')
 define table percentileTable (api_version string, tenantDomain string, resourceTemplate string, method string, responsePercentile double, backendPercentile double );
 
 /*spark script calculates percentile of responseTime and backendTime  and stores in percentileTable */
@@ -478,6 +518,12 @@ insert into allApimAlertStream;
                 </template>
             </templates>
             <parameters>
+                <parameter name="cacheTimeout" type="int">
+                    <displayName>Cache Time-out</displayName>
+                    <description>Cache time-out value in seconds</description>
+                    <defaultValue>300</defaultValue>
+                </parameter>
+                
                 <parameter name="responseTimeSeverity" type="int">
                     <displayName>Severity Level of Abnormal Response Time</displayName>
                     <description>Severity level of the abnormal response time alert:(1:severe,2:moderate,3:mild)</description>
@@ -490,6 +536,7 @@ insert into allApimAlertStream;
                     <defaultValue>3</defaultValue>
                     <options>1, 2, 3</options>
                 </parameter>
+                
             </parameters>
         </scenario>
 
@@ -498,11 +545,12 @@ insert into allApimAlertStream;
             <templates>
                 <template type="realtime">
                     <![CDATA[
-             @Plan:name('APIMAnalytics-RequestPatternChangeDetection-APIRequestPatternChangeAnalysisMetric-realtime1')
+@Plan:name('APIMAnalytics-RequestPatternChangeDetection-APIRequestPatternChangeAnalysisMetric-realtime1')
 
 
 @Import('org.wso2.analytics.apim.transitionStream:1.0.0')
-define stream metricStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTimestamp string);
+define stream metricStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, 
+                   userId string, tenantDomain string, requestTimestamp string);
 
 @Export('org.wso2.analytics.apim.requestPatternChangedStream:1.0.0')
 define stream requestPatternChangedStream (userId string, applicationName string, applicationOwner string, tenantDomain string, msg string, severity int, alertTimestamp long);
@@ -511,10 +559,10 @@ define stream requestPatternChangedStream (userId string, applicationName string
 define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 
-@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_MARKOVMODELTABLE', primary.keys='startState,endState, consumerKey', indices = 'startState,endState, count, probability, consumerKey')
-define table MarkovModelTable (consumerKey string, startState string, endState string, count double, probability double);
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_MARKOVMODELTABLE', primary.keys='startState,endState, consumerKey', indices = 'startState,endState, probability, consumerKey', caching = 'true', cache.timeout.seconds='$cacheTimeout' )
+define table MarkovModelTable (consumerKey string, startState string, endState string, probability double);
 
-@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count', caching = 'true', cache.timeout.seconds='$cacheTimeout')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count long);
 
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPATTERNALERTSUMMARYTABLE', primary.keys='applicationName, applicationOwner, userId, msg' , indices = 'applicationName, applicationOwner, userId, msg, lastlastAlertedTimestamp')
@@ -522,33 +570,22 @@ define table RequestPatternAlertSummaryTable(applicationName string, application
 
 /****************************************************** Calculate Miss Probability *******************************************************************************/
 @info(name = 'query1')
-from metricStream[not((startState == MarkovModelTable.startState and endState == MarkovModelTable.endState and consumerKey == MarkovModelTable.consumerKey) in MarkovModelTable)]
-select userId, requestTimestamp, startState , endState, 1.0 as MissProbability, MarkovModelTable.consumerKey, applicationName, applicationOwner, tenantDomain
-insert into metricValueStreamTemp;
-
-@info(name = 'query2')
-from metricStream as ms join MarkovModelTable
+from metricStream as ms left outer join MarkovModelTable
 on (ms.startState == MarkovModelTable.startState and ms.endState == MarkovModelTable.endState and ms.consumerKey == MarkovModelTable.consumerKey)
-select ms.userId, ms.requestTimestamp, ms.startState ,ms.endState, (1- MarkovModelTable.probability) as MissProbability, MarkovModelTable.consumerKey,  ms.applicationName, ms.applicationOwner, ms.tenantDomain
+select ms.userId, ms.requestTimestamp, ms.startState ,ms.endState, ifThenElse(MarkovModelTable.probability is null, 1.0, 1- MarkovModelTable.probability) as MissProbability, MarkovModelTable.consumerKey,  ms.applicationName, ms.applicationOwner, ms.tenantDomain
 insert into metricValueStreamTemp;
 
 /****************************************************** fetch request count for consumerkey *******************************************************************************/
-@info(name = 'query3')
+@info(name = 'query2')
 from metricValueStreamTemp as m join RequestCountPerConsumerKeyTable
 on (consumerKey == RequestCountPerConsumerKeyTable.consumerKey)
 select userId, requestTimestamp, startState, endState, MissProbability, m.consumerKey, m.applicationName, m.applicationOwner , m.tenantDomain,  count
 insert into metricValueStream;
 
-/****************************************************** Normalize Miss Probability ******************************************************************************/
-@info(name = 'query4')
-from metricValueStream#window.length($regularAPITransitions)
-select userId, requestTimestamp, startState, endState, avg (MissProbability) as NormalizeMissProbability, consumerKey, applicationName, applicationOwner, tenantDomain, count
-insert into NormalizeMissProbabilityStream;
-
 /****************************************************** Compare Normalize Miss Probability with Threshold *******************************************************/
 @info(name = 'query5')
-from NormalizeMissProbabilityStream [ NormalizeMissProbability > $probabilityThreshold and count >= $requestCount]
-select userId, requestTimestamp,  str:concat(startState,' to ',endState) as transition, NormalizeMissProbability as miss_probability, consumerKey, applicationName, applicationOwner, tenantDomain
+from metricValueStream [ MissProbability > $probabilityThreshold and count >= $requestCount]
+select userId, requestTimestamp,  str:concat(startState,' to ',endState) as transition, MissProbability as miss_probability, consumerKey, applicationName, applicationOwner, tenantDomain
 insert into IntermediateFraudStream;
 
 @info(name = 'query6')
@@ -582,7 +619,7 @@ insert into RequestPatternAlertSummaryTable;
 from requestPatternChangedStreamModified[(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionPeriod]
 select 'RequestPatternChanged' as type, tenantDomain, str:concat('Abnormal request pattern detected by user :',userId,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into all_apim_alerts_stream;
-
+             
                  ]]>
                 </template>
             </templates>
@@ -592,7 +629,6 @@ insert into all_apim_alerts_stream;
                     <description>Regular Number of transitions per API</description>
                     <defaultValue>1</defaultValue>
                 </parameter>
-
 
                 <parameter name="requestCount" type="int">
                     <displayName>Request Count</displayName>
@@ -610,6 +646,12 @@ insert into all_apim_alerts_stream;
                     <displayName>Alert Suppression Period</displayName>
                     <description>Time period to wait before resending the same alert</description>
                     <defaultValue>30*60*1000</defaultValue>
+                </parameter>
+
+                <parameter name="cacheTimeout" type="int">
+                    <displayName>Cache Time-out</displayName>
+                    <description>Cache time-out value in seconds</description>
+                    <defaultValue>300</defaultValue>
                 </parameter>
 
                 <parameter name="severity" type="int">
@@ -634,48 +676,44 @@ insert into all_apim_alerts_stream;
 
 /* define streams/tables and write queries here ... */
 
-@Plan:trace('false')
 
-@Import('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
-define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, 
-                   api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, 
-                   resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, 
-                   applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+@Import('org.wso2.analytics.apim.stateStream:1.0.0')
+define stream stateStream (context string, method string, resourceTemplate string, tenantDomain string, state string, userId string, requestTimestamp string, consumerKey string, applicationName string, applicationOwner string);
+
+@Import('org.wso2.apimgt.statistics.requestsPerMinPerKeyStream:1.0.0')
+define stream requestsPerMinPerKeyStream (consumerKey string, requestsPerMinPerKey long);
    
 @Export('org.wso2.analytics.apim.transitionStream:1.0.0')
-define stream transitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTimestamp string);
+define stream stateTransitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, 
+                   userId string, tenantDomain string, requestTimestamp string);
 
 @from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count long);
 
 @info(name = 'query1')
-from requestPerMinStream
-select context,method,resourceTemplate, tenantDomain, str:concat(method,' ',context,' ',resourceTemplate) as state, userId as userId, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner
-insert into stateStream;
-
-@info(name = 'query2')
-from requestPerMinStream as r left outer join RequestCountPerConsumerKeyTable
+from requestsPerMinPerKeyStream as r left outer join RequestCountPerConsumerKeyTable
 on (r.consumerKey == RequestCountPerConsumerKeyTable.consumerKey)
-select r.consumerKey , ifThenElse(count is null,r.total_request_count,count+r.total_request_count) as count
+select r.consumerKey , ifThenElse(count is null,r.requestsPerMinPerKey,count+r.requestsPerMinPerKey) as count
 insert into requestCountPerConsumerKeyTableStream;
 
-@info(name = 'query3')
-from requestCountPerConsumerKeyTableStream
+@info(name = 'query2')
+from requestCountPerConsumerKeyTableStream#window.timeBatch(1 min)
 select consumerKey,count
 insert into RequestCountPerConsumerKeyTable;
 
-@info(name = 'query4')
-from every a = stateStream -> b = stateStream[(userId == a.userId) and (consumerKey == a.consumerKey)] within $transitionPeriod
-select a.state as startState, b.state as endState, a.consumerKey as consumerKey, a.applicationName, a.applicationOwner, b.userId, b.tenantDomain, b.requestTimestamp
-insert into transitionStream;
+
+@info(name = 'query3')
+from stateStream#amAnalytics:buildTransitions(consumerKey, userId, state, applicationName, applicationOwner, tenantDomain, requestTimestamp, $batchSize)
+select startState, state as endState, consumerKey, applicationName, applicationOwner, userId, tenantDomain, requestTimestamp 
+insert into stateTransitionStream;
                                      ]]>
                 </template>
             </templates>
             <parameters>
-                <parameter name="transitionPeriod" type="string">
-                    <displayName>Transition Period</displayName>
-                    <description>Max time duration between two API transitions</description>
-                    <defaultValue>60 min</defaultValue>
+                <parameter name="batchSize" type="int">
+                    <displayName>Batch Size</displayName>
+                    <description>Events collected before submitting to the state transition stream</description>
+                    <defaultValue>10000</defaultValue>
                 </parameter>
             </parameters>
         </scenario>
@@ -685,7 +723,7 @@ insert into transitionStream;
             <templates>
                 <template type="realtime">
                     <![CDATA[
-               /* Enter a unique ExecutionPlan */
+/* Enter a unique ExecutionPlan */
 @Plan:name('APIMAnalytics-UnusualIPAccessTemplate-UnusualIPAccessAlert-realtime1')
 
 /* Enter a unique description for ExecutionPlan */
@@ -704,7 +742,7 @@ define stream all_apim_alerts_stream (type string, tenantDomain string, msg stri
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
 define stream alertIpAccessAbnormality (type string, msg string, severity int, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate', caching ='true', cache.timeout.seconds='$cacheTimeout')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
 
 @from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSALERTCOUNT', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount')
@@ -789,7 +827,7 @@ insert into all_apim_alerts_stream;
 @info(name = 'query14')
 from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > 24*60*60]
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
-insert into IPAccessSummary;
+insert into IPAccessSummary;               
                  ]]>
                 </template>
             </templates>
@@ -798,6 +836,12 @@ insert into IPAccessSummary;
                     <displayName>Maximum Days Between Last Access</displayName>
                     <description>Maximum days between Last access from the hostname to the latest </description>
                     <defaultValue>30</defaultValue>
+                </parameter>
+
+                <parameter name="cacheTimeout" type="int">
+                    <displayName>Cache Time-out</displayName>
+                    <description>Cache time-out value in seconds</description>
+                    <defaultValue>300</defaultValue>
                 </parameter>
 
                 <parameter name="severity" type="int">
@@ -815,7 +859,6 @@ insert into IPAccessSummary;
                 <template type="realtime">
                     <![CDATA[
 /* Enter a unique ExecutionPlan */
-
 
 @Plan:name('APIMAnalytics-HealthAvailabilityPerMinAlert-HealthAvailabilityPerMin-realtime1')
 
@@ -864,22 +907,22 @@ insert into IPAccessSummary;
                                 /*  -- Event tables -- */
 
                                 /* Lower percentiles */
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version', caching = 'true', cache.timeout.seconds='$cacheTimeout')
                                 define table requestPerApiPercentileTable (requestsPerMinPerApiLowerPercentile double, api_version string);
 
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version', caching = 'true', cache.timeout.seconds='$cacheTimeout')
                                 define table responsePerApiPercentileTable (api_version string, responsesPerMinPerApiLowerPercentile double);
 
                                 /* Then define response time streams */
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version', caching = 'true', cache.timeout.seconds='$cacheTimeout')
                                 define table responseTimePerApiPercentileTable (api_version string, responseTimePerApiUpperPercentile double);
 
                                 /* API status availability table */
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', indices='api_version, tenantDomain, status')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', indices='api_version, tenantDomain, status', caching='true', cache.timeout.seconds='$cacheTimeout')
                                 define table apiAvailabilityTable (api_version string, tenantDomain string, status string);
 
                                 /* APIHEALTHMONITORALERTSTREAM TABLE */
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM', caching='true', cache.timeout.seconds='$cacheTimeout')
                                 define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
                                 /* timeBatch used because Minutely updates are needed */
@@ -908,11 +951,10 @@ insert into IPAccessSummary;
                                 insert into responsesPercentileStream;
                 
                 /* Combine*/
-
-                                                                @info(name = 'query5')
-                                                                from requestsPercentileStream as requestsPercentileStreamWindow join responsesPercentileStream as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
+                @info(name = 'query5')
+                                                                from requestsPercentileStream as requestsPercentileStreamWindow left outer join responsesPercentileStream as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
                                                                 select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
-                                                                responsesPercentileStreamWindow.responsesPerMin as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,responsesPercentileStreamWindow.responsesPerMinLowerPercentile as responsesPerMinLowerPercentile
+                                                                ifThenElse(responsesPercentileStreamWindow.responsesPerMin is null, convert(0, 'long'), responsesPercentileStreamWindow.responsesPerMin) as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,ifThenElse(responsesPercentileStreamWindow.responsesPerMinLowerPercentile is null, 1.0, responsesPercentileStreamWindow.responsesPerMinLowerPercentile) as responsesPerMinLowerPercentile
                                 insert into requestResponseSummaryStream;
                 
                 @info(name = 'query6')
@@ -930,7 +972,7 @@ insert into IPAccessSummary;
                     /*spark script calculates percentile of responseTime and stores in percentileTable */
 
                                                                 @info(name = 'query8')
-                                                                from responseTimeSummaryStream join responseTimePerApiPercentileTable
+                                                                from responseTimeSummaryStream#window.timeBatch(1 min) join responseTimePerApiPercentileTable
                                                                 on (responseTimeSummaryStream.api_version==responseTimePerApiPercentileTable.api_version)
                                                                 select responseTimeSummaryStream.api_version, responseTimeSummaryStream.apiPublisher, responseTimeSummaryStream.tenantDomain, responseTimeSummaryStream.responseTime, responseTimePerApiPercentileTable.responseTimePerApiUpperPercentile
                                                                 insert into responseInfoStream;
@@ -1010,12 +1052,19 @@ insert into IPAccessSummary;
                     <defaultValue>300000</defaultValue>
                 </parameter>
 
+                <parameter name="cacheTimeout" type="int">
+                    <displayName>Cache Time-out</displayName>
+                    <description>Cache time-out value in seconds</description>
+                    <defaultValue>300</defaultValue>
+                </parameter>
+
                 <parameter name="severity" type="int">
                     <displayName>Severity Level</displayName>
                     <description>Severity level of the alert:(1:severe,2:moderate,3:mild)</description>
                     <defaultValue>2</defaultValue>
                     <options>1, 2, 3</options>
                 </parameter>
+                
             </parameters>
         </scenario>
 
@@ -1206,7 +1255,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 CREATE TEMPORARY TABLE REQUEST_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinPerApiStream");
 
         CREATE TEMPORARY TABLE REQUEST_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE",
-        schema "requestsPerMinPerApiLowerPercentile double,api_version string",
+        schema "requestsPerMinPerApiLowerPercentile double,api_version string -i",
         primaryKeys "api_version", mergeSchema "false"
         );
 
@@ -1291,7 +1340,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 CREATE TEMPORARY TABLE RESPONSE_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_responsePerMinPerApiStream");
 
         CREATE TEMPORARY TABLE RESPONSE_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE",
-        schema "api_version string, responsesPerMinPerApiLowerPercentile double",
+        schema "api_version string -i, responsesPerMinPerApiLowerPercentile double",
         primaryKeys "api_version"
         );
 
@@ -1325,7 +1374,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                         <cron>0 0 22 * * ?</cron>
                         <sparkScript>
                             <![CDATA[
-                              CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE",schema "_timestamp LONG ");
+                              CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE");
 
         CREATE TEMPORARY TABLE RESPONSE_PER_TIME_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE",
         schema "api_version string -i,  responseTimePerApiUpperPercentile double ",

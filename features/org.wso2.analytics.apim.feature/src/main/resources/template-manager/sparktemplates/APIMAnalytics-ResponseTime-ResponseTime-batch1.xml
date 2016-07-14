@@ -4,7 +4,7 @@
     <Editable>true</Editable>
     <Name>APIMAnalytics-ResponseTime-ResponseTime-batch1</Name>
     <Script>
-        CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE",schema "_timestamp LONG ");
+        CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE");
 
         CREATE TEMPORARY TABLE RESPONSE_PER_TIME_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE",
         schema "api_version string -i,  responseTimePerApiUpperPercentile double ",

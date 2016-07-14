@@ -7,39 +7,33 @@
 /* define streams/tables and write queries here ... */
 
 
+@Import('org.wso2.analytics.apim.stateStream:1.0.0')
+define stream stateStream (context string, method string, resourceTemplate string, tenantDomain string, state string, userId string, requestTimestamp string, consumerKey string, applicationName string, applicationOwner string);
 
-
-@Plan:trace('false')
-
-@Import('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
-define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, 
-								   api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, 
-								   resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, 
-								   applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
+@Import('org.wso2.apimgt.statistics.requestsPerMinPerKeyStream:1.0.0')
+define stream requestsPerMinPerKeyStream (consumerKey string, requestsPerMinPerKey long);
    
 @Export('org.wso2.analytics.apim.transitionStream:1.0.0')
-define stream transitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTimestamp string);
+define stream stateTransitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, 
+									 userId string, tenantDomain string, requestTimestamp string);
 
 @from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count long);
 
-@info(name = 'query1')
-from requestPerMinStream
-select context,method,resourceTemplate, tenantDomain, str:concat(method,' ',context,' ',resourceTemplate) as state, userId as userId, time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner
-insert into stateStream;
 
 @info(name = 'query2')
-from requestPerMinStream as r left outer join RequestCountPerConsumerKeyTable
+from requestsPerMinPerKeyStream as r left outer join RequestCountPerConsumerKeyTable
 on (r.consumerKey == RequestCountPerConsumerKeyTable.consumerKey)
-select r.consumerKey , ifThenElse(count is null,r.total_request_count,count+r.total_request_count) as count
+select r.consumerKey , ifThenElse(count is null,r.requestsPerMinPerKey,count+r.requestsPerMinPerKey) as count
 insert into requestCountPerConsumerKeyTableStream;
 
 @info(name = 'query3')
-from requestCountPerConsumerKeyTableStream
+from requestCountPerConsumerKeyTableStream#window.timeBatch(1 sec)
 select consumerKey,count
 insert into RequestCountPerConsumerKeyTable;
 
+
 @info(name = 'query4')
-from every a = stateStream -> b = stateStream[(userId == a.userId) and (consumerKey == a.consumerKey)] within 60 min
-select a.state as startState, b.state as endState, a.consumerKey as consumerKey, a.applicationName, a.applicationOwner, b.userId, b.tenantDomain, b.requestTimestamp
-insert into transitionStream;
+from stateStream#amAnalytics:buildTransitions(consumerKey, userId, state, applicationName, applicationOwner, tenantDomain, requestTimestamp, 1)
+select startState, state as endState, consumerKey, applicationName, applicationOwner, userId, tenantDomain, requestTimestamp 
+insert into stateTransitionStream;

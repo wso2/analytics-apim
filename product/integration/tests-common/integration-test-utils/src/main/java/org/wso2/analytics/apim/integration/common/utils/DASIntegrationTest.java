@@ -29,8 +29,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
 
-import static junit.framework.Assert.fail;
-
 public class DASIntegrationTest {
 
     private static final Log log = LogFactory.getLog(DASIntegrationTest.class);
