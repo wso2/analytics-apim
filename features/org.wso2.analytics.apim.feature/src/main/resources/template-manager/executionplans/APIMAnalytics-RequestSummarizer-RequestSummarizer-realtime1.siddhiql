@@ -19,6 +19,9 @@ define stream responses (meta_clientType string, consumerKey string, context str
 @Import('org.wso2.apimgt.statistics.execution.time:1.0.0')
 define stream executionTimes (meta_clientType string, api string, api_version string, tenantDomain string, apiPublisher string, apiResponseTime long, context string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, eventTime long);
 
+@Export('org.wso2.analytics.apim.stateStream:1.0.0')
+define stream stateStream (context string, method string, resourceTemplate string, tenantDomain string, state string, userId string, requestTimestamp string, consumerKey string, applicationName string, applicationOwner string);
+
 @Export('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
 define stream perMinuteRequests (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string, applicationOwner string);
 
@@ -34,6 +37,10 @@ define stream responsePerMinPerApiStream (api_version string, responsesPerMinPer
 @Export('org.wso2.analytics.apim.requestPerMinPerApiStream:1.0.0')
 define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
 
+@Export('org.wso2.apimgt.statistics.requestsPerMinPerKeyStream:1.0.0')
+define stream requestsPerMinPerKeyStream (consumerKey string, requestsPerMinPerKey long);
+
+
 -- requests
 
 -- second
@@ -48,9 +55,9 @@ insert into perSecondRequestsTemp;
 
 from perSecondRequestsTemp
 select meta_clientType, (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
-time:extract(requestTime, 'year') as year, time:extract(requestTime, 'month') as month, 
-time:extract(requestTime, 'day') as day, time:extract(requestTime, 'hour') as hour, 
-time:extract(requestTime, 'minute') as minute, time:extract(requestTime, 'second') as second,
+time:extract(startTime, 'year') as year, time:extract(startTime, 'month') as month, 
+time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
+time:extract(startTime, 'minute') as minute, time:extract(startTime, 'second') as second,
 consumerKey, context, api_version, api, version, 
 requestTime, userId, hostName, apiPublisher, total_request_count, 
 resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, 
@@ -67,6 +74,17 @@ from perSecondPerApiRequestsTemp
 select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
 api_version, total_request_count
 insert into perSecondPerApiRequests;
+
+-- consumer key
+from requests#externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
+select batchEndTime as startTime, consumerKey, count() as total_request_count
+group by consumerKey 
+insert into perSecondPerKeyRequestsTemp;
+
+from perSecondPerKeyRequestsTemp
+select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
+consumerKey, total_request_count
+insert into perSecondPerKeyRequests;
 
 -- minute
 -- global
@@ -106,6 +124,23 @@ from perSecondPerApiRequestsWithUniqueId#window.uniqueExternalTimeBatch(uniqueId
 select api_version, sum(total_request_count) as requestsPerMinPerApi
 group by api_version 
 insert into requestPerMinPerApiStream;
+
+-- consumer key
+from perSecondPerKeyRequests
+select startTime, str:concat(facetStartTime, '_', consumerKey) 
+as uniqueId, consumerKey, total_request_count
+insert into perSecondPerKeyRequestsWithUniqueId;
+
+from perSecondPerKeyRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec)
+select consumerKey, sum(total_request_count) as requestsPerMinPerKey
+group by consumerKey 
+insert into requestsPerMinPerKeyStream;
+
+-- state stream
+from requests
+select context,method,resourceTemplate, tenantDomain, str:concat(method,' ',context,' ',resourceTemplate) as state, userId as userId, 
+time:dateFormat(requestTime, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp, consumerKey, applicationName, applicationOwner 
+insert into stateStream;
 
 -- responses
 

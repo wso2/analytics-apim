@@ -29,6 +29,14 @@
     <description>Analytics APIM component</description>
 
     <dependencies>
+    	<dependency>
+            <groupId>org.wso2.siddhi</groupId>
+            <artifactId>siddhi-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.siddhi</groupId>
+            <artifactId>siddhi-query-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
@@ -48,6 +56,11 @@
         <dependency>
             <groupId>org.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+	    <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -82,7 +95,8 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Private-Package>org.wso2.carbon.analytics.apim.internal.*</Private-Package>
                         <Export-Package>
-                            !org.wso2.carbon.analytics.apim.internal.*
+                            !org.wso2.carbon.analytics.apim.internal.*,
+			    org.wso2.carbon.analytics.apim.siddhi.stream.processor.*
                         </Export-Package>
                         <Import-Package>
                         </Import-Package>

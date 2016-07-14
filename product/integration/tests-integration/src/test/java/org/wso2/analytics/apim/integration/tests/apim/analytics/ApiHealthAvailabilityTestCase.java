@@ -21,6 +21,8 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     private final String RESPONSE_COUNT_SPARK_SCRIPT = "APIMAnalytics-ResponsePerApiStatGenerator-ResponsePerAPIStatGenerator-batch1";
     private final String RESPONSE_PER_API_STREAM = "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERMINPERAPISTREAM";
     private final String REQUEST_PER_API_STREAM = "ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINPERAPISTREAM";
+    private final String RESPONSE_PERCENTILE = "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE";
+    private final String REQUEST_PERCENTILE = "ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE";
     private final String REQUEST_TABLE = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST";
     private final String RESPONSE_TABLE = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE";
     private final String REQUEST_STREAM_VERSION = "1.1.0";
@@ -52,6 +54,12 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         if (isTableExist(-1234, REQUEST_PER_API_STREAM)) {
             deleteData(-1234, REQUEST_PER_API_STREAM);
         }
+        if (isTableExist(-1234, REQUEST_PERCENTILE)) {
+            deleteData(-1234, REQUEST_PERCENTILE);
+        }
+        if (isTableExist(-1234, RESPONSE_PERCENTILE)) {
+            deleteData(-1234, RESPONSE_PERCENTILE);
+        }
 
         originalExecutionPlan = eventProcessorAdminServiceClient.getActiveExecutionPlan(EXECUTION_PLAN_NAME);
         redeployExecutionPlan();
@@ -59,8 +67,13 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
 
     public void redeployExecutionPlan() throws Exception {
         int count = getActiveExecutionPlanCount();
+        log.info("#count: "+count);
         deleteExecutionPlan(EXECUTION_PLAN_NAME);
-        Thread.sleep(1000);
+        do {
+            Thread.sleep(1000);
+            log.info("#count: "+getActiveExecutionPlanCount());
+        } while(getActiveExecutionPlanCount() == count);
+        
         addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
         do { // wait till it get redeployed
             Thread.sleep(1000);
@@ -83,6 +96,12 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         }
         if (isTableExist(-1234, REQUEST_PER_API_STREAM)) {
             deleteData(-1234, REQUEST_PER_API_STREAM);
+        }
+        if (isTableExist(-1234, REQUEST_PERCENTILE)) {
+            deleteData(-1234, REQUEST_PERCENTILE);
+        }
+        if (isTableExist(-1234, RESPONSE_PERCENTILE)) {
+            deleteData(-1234, RESPONSE_PERCENTILE);
         }
         // undeploy the publishers
         undeployPublisher(PUBLISHER_FILE);
@@ -147,7 +166,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
                 "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "20", "7", "19", "admin@carbon.super", String.valueOf(System.currentTimeMillis()),
                 "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200","destination"});
         events.add(eventDto);
-        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response time is higher\"", 5, 2000);
+        boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response time is higher\"", 50, 1000);
         Assert.assertFalse(responseTimeTooHigh, "Response time too high for continuous 5 events, alert is received!");
     }
 
@@ -155,7 +174,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     public void testResponseTimeTooHighAlert() throws Exception {
         logViewerClient.clearLogs();
         List<EventDto> events = getResponseEventList(5);
-        pubishEvents(events, 100);
+        pubishEvents(events, 6000);
         boolean responseTimeTooHigh = isAlertReceived(0, "api_version\":\"CalculatorAPI:v1.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Response time is higher", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Response time too high for continuous 5 events, alert not received!");
     }
@@ -292,7 +311,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         boolean eventsPublished = false;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            responseEventCount = getRecordCount(-1234, RESPONSE_PER_API_STREAM.replace('.', '_'));
+            responseEventCount = getRecordCount(-1234, RESPONSE_PERCENTILE);
             eventsPublished = (responseEventCount >= 1);
             if (eventsPublished) {
                 break;
@@ -305,7 +324,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         eventsPublished = false;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            responseEventCount = getRecordCount(-1234, REQUEST_PER_API_STREAM.replace('.', '_'));
+            responseEventCount = getRecordCount(-1234, REQUEST_PERCENTILE);
             eventsPublished = (responseEventCount >= 1);
             if (eventsPublished) {
                 break;
@@ -314,16 +333,13 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         }
         
         redeployExecutionPlan();
-
-        pubishEvents(getRequestEventList(20), 100);
-        pubishEvents(getResponseEventListNumApi(1), 1000);
-        Thread.sleep(2010);
-        pubishEvents(getRequestEventList(20), 200);
-        pubishEvents(getResponseEventListNumApi(1), 100);
-        //Thread.sleep(5000);
-        /*Thread.sleep(49000);
-        pubishEvents(getRequestEventList(10),1000);
-        pubishEvents(getResponseEventListNumApi(1),1000);*/
+        logViewerClient.clearLogs();
+        pubishEvents(getRequestEventList(20), 10);
+        pubishEvents(getResponseEventListNumApi(1), 10);
+        Thread.sleep(6000);
+        pubishEvents(getRequestEventList(20), 10);
+        pubishEvents(getResponseEventListNumApi(1), 10);
+        Thread.sleep(6000);
         boolean responseTimeTooHigh = isAlertReceived(0, "api_version\":\"NumberAPI:v1.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Response count is lower", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Response count is too low continuously, alert not received!");
     }
