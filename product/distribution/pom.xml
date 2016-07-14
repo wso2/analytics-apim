@@ -230,6 +230,6 @@
         </plugins>
     </build>
     <properties>
-            <identity.jar.version>5.1.1.SNAPSHOT</identity.jar.version>
+            <identity.jar.version>5.2.0</identity.jar.version>
     </properties>
 </project>
