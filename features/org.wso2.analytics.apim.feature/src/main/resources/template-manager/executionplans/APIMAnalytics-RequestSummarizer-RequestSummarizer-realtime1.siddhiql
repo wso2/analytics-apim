@@ -77,7 +77,7 @@ insert into perSecondPerApiRequests;
 
 -- consumer key
 from requests#window.externalTimeBatch(requestTime, 1 sec, 0, 10 sec)
-select batchEndTime as startTime, consumerKey, count() as total_request_count
+select requestTime as startTime, consumerKey, count() as total_request_count
 group by consumerKey 
 insert into perSecondPerKeyRequestsTemp;
 
@@ -131,7 +131,7 @@ select startTime, str:concat(facetStartTime, '_', consumerKey)
 as uniqueId, consumerKey, total_request_count
 insert into perSecondPerKeyRequestsWithUniqueId;
 
-from perSecondPerKeyRequestsWithUniqueId#uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec)
+from perSecondPerKeyRequestsWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec)
 select consumerKey, sum(total_request_count) as requestsPerMinPerKey
 group by consumerKey 
 insert into requestsPerMinPerKeyStream;
