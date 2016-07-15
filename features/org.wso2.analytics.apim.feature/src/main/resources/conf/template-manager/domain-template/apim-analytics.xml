@@ -291,26 +291,26 @@ insert into perSecondExecutionTimes;
 @Plan:name('APIMAnalytics-FrequentTierLimitHitting-FrequentTierLimitHitting-realtime1')
 
 @Import('org.wso2.apimgt.statistics.throttle:1.0.0')
-define stream throttleStream (meta_clientType string, accessToken string, userId string, tenantDomain string, api string, api_version string, context string, apiPublisher string, throttledTime long, applicationName string, applicationId string, throttledOutReason string);
+define stream throttleStream (meta_clientType string, accessToken string, userId string, tenantDomain string, api string, api_version string, context string, apiPublisher string, throttledTime long, applicationName string, applicationId string, subscriber string, throttledOutReason string);
 
 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream allAlertsStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Export('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
-define stream tierLimitHittingAlertStream (apiPublisher string, api string, applicationId string, applicationName string, tenantDomain string, msg string, severity int, alertTimestamp long);
+define stream tierLimitHittingAlertStream (subscriber string, apiPublisher string, api string, applicationId string, applicationName string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 /* read data to a temporary stream*/
 @info(name = 'query1')
 from throttleStream[throttledOutReason == 'SUBSCRIPTION_LIMIT_EXCEEDED']#window.time( $timeInterval )
-select apiPublisher, api, api_version, applicationId, applicationName, tenantDomain, count(userId) as numHits
+select apiPublisher, api, api_version, applicationId, applicationName, tenantDomain, subscriber, count(userId) as numHits
 group by apiPublisher, api_version, applicationId
 having numHits > $noTierCrossings
 insert into temporarySubscriberStream;
 
 @info(name = 'query2')
 from throttleStream[throttledOutReason == 'APPLICATION_LIMIT_EXCEEDED']#window.time( $timeInterval )
-select userId, apiPublisher, api, api_version, applicationId, applicationName, tenantDomain, count(userId) as numHits
+select userId, apiPublisher, api, api_version, applicationId, applicationName, tenantDomain, subscriber, count(userId) as numHits
 group by userId, api_version, applicationId
 having numHits > $noTierCrossings
 insert into temporaryUserStream;
@@ -318,36 +318,39 @@ insert into temporaryUserStream;
 @info(name = 'query3')
 from temporarySubscriberStream#window.length(1) as a left outer join temporarySubscriberStream#window.time($alertSuppressionPeriod minute) as b
 on (a.apiPublisher== b.apiPublisher and a.api_version== b.api_version and a.applicationId==b.applicationId)
-select ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.apiPublisher, "@carbon.super"), a.apiPublisher), a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
+select ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.apiPublisher, "@carbon.super"), a.apiPublisher) as apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, 
+ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.subscriber, "@carbon.super"), a.subscriber) as subscriber, a.numHits
 having b.apiPublisher is null
 insert into suppressedTemporarySubscriberStream ;
 
 @info(name = 'query4')
 from temporaryUserStream#window.length(1) as a left outer join temporaryUserStream#window.time($alertSuppressionPeriod minute) as b
 on (a.userId== b.userId and a.api_version== b.api_version and a.applicationId==b.applicationId)
-select a.userId, ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.apiPublisher, "@carbon.super"), a.apiPublisher), a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
+select a.userId, ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.apiPublisher, "@carbon.super"), a.apiPublisher) as apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, 
+ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.subscriber, "@carbon.super"), a.subscriber) as subscriber, a.numHits
 having b.userId is null
 insert into suppressedTemporaryUserStream;
 
+/* send to the alert stream specific to this scenario */
 @info(name = 'query5')
 from suppressedTemporarySubscriberStream
-select apiPublisher, api, applicationId, applicationName, tenantDomain, "Application frequently goes beyond the allocated quota when accessing an api." as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select subscriber, apiPublisher, api, applicationId, applicationName, tenantDomain, "Application frequently goes beyond the allocated quota when accessing an api." as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 @info(name = 'query6')
 from suppressedTemporaryUserStream
-select apiPublisher, api, applicationId, applicationName, tenantDomain, str:concat("User ", userId, " frequently crosses the limit set.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select subscriber, apiPublisher, api, applicationId, applicationName, tenantDomain, str:concat("User ", userId, " frequently crosses the limit set.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into tierLimitHittingAlertStream;
 
 /* send to general alert stream */
 @info(name = 'query7')
 from suppressedTemporarySubscriberStream
-select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api_version," API.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("The Application ", applicationName, " owned by ", subscriber, " frequently goes beyond the allocated quota when accessing the API ", api_version,".") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
 @info(name = 'query8')
 from suppressedTemporaryUserStream
-select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", subscriber, " frequently crosses the limit set for the user.") as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 ]]>
                 </template>
