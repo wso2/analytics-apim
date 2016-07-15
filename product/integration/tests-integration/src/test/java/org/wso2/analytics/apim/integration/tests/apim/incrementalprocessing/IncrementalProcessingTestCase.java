@@ -27,11 +27,11 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
 
     private static final String REQUESTS_PER_MINUTE_STREAM_NAME = "org.wso2.apimgt.statistics.perMinuteRequest";
     private static final String RESPONSES_PER_MINUTE_STREAM_NAME = "org.wso2.apimgt.statistics.perMinuteResponse";
-    private static final String EXECUTION_TIMES_PER_SECOND_STREAM_NAME = "org.wso2.apimgt.statistics.perSecondExecutionTimes";
+    private static final String EXECUTION_TIMES_PER_MINUTE_STREAM_NAME = "org.wso2.apimgt.statistics.perMinuteExecutionTimes";
 
     private static final String REQUESTS_PER_MINUTE_STREAM_VERSION = "1.0.0";
     private static final String RESPONSES_PER_MINUTE_STREAM_VERSION = "1.0.0";
-    private static final String EXECUTION_TIMES_PER_SECOND_STREAM_VERSION = "1.0.0";
+    private static final String EXECUTION_TIMES_PER_MINUTE_STREAM_VERSION = "1.0.0";
 
     private static final String TEST_RESOURCE_PATH = "incrementalProcessing";
     private static final String TEST_REQUESTS_FILE = "requests.csv";
@@ -46,7 +46,6 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
     private static final String ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE";
     private static final String ORG_WSO2_APIMGT_STATISTICS_PERHOURRESPONSE = "ORG_WSO2_APIMGT_STATISTICS_PERHOURRESPONSE";
     private static final String ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE = "ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE";
-    private static final String ORG_WSO2_APIMGT_STATISTICS_PERSECONDEXECUTIONTIMES = "ORG_WSO2_APIMGT_STATISTICS_PERSECONDEXECUTIONTIMES";
     private static final String ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES = "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES";
     private static final String ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES = "ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES";
     private static final String ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES = "ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES";
@@ -84,7 +83,7 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         Thread.sleep(5000);
         // Publish events to per second execution times stream
         pubishEventsFromCSV(TEST_RESOURCE_PATH, TEST_EXECUTION_TIMES_FILE,
-                getStreamId(EXECUTION_TIMES_PER_SECOND_STREAM_NAME, EXECUTION_TIMES_PER_SECOND_STREAM_VERSION), 1);
+                getStreamId(EXECUTION_TIMES_PER_MINUTE_STREAM_NAME, EXECUTION_TIMES_PER_MINUTE_STREAM_VERSION), 1);
         Thread.sleep(5000);
 
         int i = 0;
@@ -121,11 +120,10 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
 
         i = 0;
         boolean eventsPublishedPerPerSecondExecutionTimes = false;
-        long executionTimesPerSecondEventCount = 0;
+        long executionTimesPerMinuteEventCount = 0;
         while (i < MAX_TRIES) {
-            executionTimesPerSecondEventCount = getRecordCount(-1234,
-                    ORG_WSO2_APIMGT_STATISTICS_PERSECONDEXECUTIONTIMES);
-            eventsPublishedPerPerSecondExecutionTimes = (executionTimesPerSecondEventCount >= 4);
+            executionTimesPerMinuteEventCount = getRecordCount(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES);
+            eventsPublishedPerPerSecondExecutionTimes = (executionTimesPerMinuteEventCount >= 4);
             if (eventsPublishedPerPerSecondExecutionTimes) {
                 break;
             }
@@ -134,7 +132,7 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         }
         Assert.assertTrue(eventsPublishedPerPerSecondExecutionTimes,
                 "Simulation events did not get published to execution times per minute stream, expected entry count:4 but found: "
-                        + executionTimesPerSecondEventCount + "!");
+                        + executionTimesPerMinuteEventCount + "!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test APIM_INCREMENTAL_PROCESSING_SCRIPT Spark Script execution",
@@ -154,9 +152,6 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         Assert.assertTrue(isRecordExists(-1234, ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table "
                         + ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE + "!");
-        Assert.assertTrue(isRecordExists(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table "
-                        + ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES + "!");
         Assert.assertTrue(isRecordExists(-1234, ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table "
                         + ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES + "!");
@@ -183,9 +178,6 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         }
         if (isTableExist(-1234, ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE)) {
             deleteData(-1234, ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE);
-        }
-        if (isTableExist(-1234, ORG_WSO2_APIMGT_STATISTICS_PERSECONDEXECUTIONTIMES)) {
-            deleteData(-1234, ORG_WSO2_APIMGT_STATISTICS_PERSECONDEXECUTIONTIMES);
         }
         if (isTableExist(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES)) {
             deleteData(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES);
