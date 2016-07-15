@@ -13,14 +13,14 @@ define stream tierLimitHittingAlertStream (apiPublisher string, api string, appl
 
 /* read data to a temporary stream*/
 @info(name = 'query1')
-from throttleStream[throttledOutReason == 'Application throttling reached']#window.time( 1 day )
+from throttleStream[throttledOutReason == 'SUBSCRIPTION_LIMIT_EXCEEDED']#window.time( 1 day )
 select apiPublisher, api, api_version, applicationId, applicationName, tenantDomain, count(userId) as numHits
 group by apiPublisher, api_version, applicationId
 having numHits > 10
 insert into temporarySubscriberStream;
 
 @info(name = 'query2')
-from throttleStream[throttledOutReason == 'User throttling reached']#window.time( 1 day )
+from throttleStream[throttledOutReason == 'APPLICATION_LIMIT_EXCEEDED']#window.time( 1 day )
 select userId, apiPublisher, api, api_version, applicationId, applicationName, tenantDomain, count(userId) as numHits
 group by userId, api_version, applicationId
 having numHits > 10
@@ -29,14 +29,14 @@ insert into temporaryUserStream;
 @info(name = 'query3')
 from temporarySubscriberStream#window.length(1) as a left outer join temporarySubscriberStream#window.time(10 minute) as b
 on (a.apiPublisher== b.apiPublisher and a.api_version== b.api_version and a.applicationId==b.applicationId)
-select a.apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
+select ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.apiPublisher, "@carbon.super"), a.apiPublisher) as apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
 having b.apiPublisher is null
 insert into suppressedTemporarySubscriberStream ;
 
 @info(name = 'query4')
 from temporaryUserStream#window.length(1) as a left outer join temporaryUserStream#window.time(10 minute) as b
 on (a.userId== b.userId and a.api_version== b.api_version and a.applicationId==b.applicationId)
-select a.userId, a.apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
+select a.userId, ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.apiPublisher, "@carbon.super"), a.apiPublisher) as apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
 having b.userId is null
 insert into suppressedTemporaryUserStream;
 
@@ -58,14 +58,10 @@ insert into tierLimitHittingAlertStream;
 /* send to general alert stream */
 @info(name = 'query7')
 from suppressedTemporarySubscriberStream
-select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("The application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the ", api_version," API.") as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("The Application ", applicationName, " owned by ", apiPublisher, " frequently goes beyond the allocated quota when accessing the API ", api_version,".") as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
 
 @info(name = 'query8')
 from suppressedTemporaryUserStream
 select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
-
-
-
-
