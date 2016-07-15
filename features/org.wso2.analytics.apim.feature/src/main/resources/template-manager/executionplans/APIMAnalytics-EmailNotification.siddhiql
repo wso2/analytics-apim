@@ -19,7 +19,7 @@ define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, 
 define stream abnormalBackendTimeAlertStream (api string, apiPublisher string, tenantDomain string, resourceTemplate string, method string, backendTime long, backendPercentile double, msg string, severity int, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.tierLimitHittingAlert:1.0.0')
-define stream tierLimitHittingAlert (apiPublisher string, api string, applicationId string, applicationName string, tenantDomain string, msg string, severity int, alertTimestamp long);
+define stream tierLimitHittingAlert (subscriber string, apiPublisher string, api string, applicationId string, applicationName string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 @Import('org.wso2.analytics.apim.alert.abnormalTierUsageAlert:1.0.0')
 define stream abnormalTierUsageAlert (applicationId string, api_version string, tenantDomain string, msg string, severity int, alertTimestamp long);
@@ -79,10 +79,10 @@ insert into emailAlertStream;
 
 @info(name = 'query6')
 from tierLimitHittingAlert#window.length(1) join stakeholderInfoTable
-on (tierLimitHittingAlert.apiPublisher == stakeholderInfoTable.userId and true == stakeholderInfoTable.isPublisher )
+on (tierLimitHittingAlert.subscriber == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber )
 select 'FrequentTierHittingAlert' as type ,
-ifThenElse(str:contains(tierLimitHittingAlert.msg, 'Application frequently goes beyond the allocated quota'),str:concat("The application ", tierLimitHittingAlert.applicationName, " owned by ", tierLimitHittingAlert.apiPublisher, " frequently goes beyond the allocated quota when accessing the ", tierLimitHittingAlert.api," API."),
-str:concat(tierLimitHittingAlert.msg , " Using the ", tierLimitHittingAlert.applicationName, " application owned by ", tierLimitHittingAlert.apiPublisher, ".")) as msg, time:dateFormat(tierLimitHittingAlert.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, stakeholderInfoTable.emails
+ifThenElse(str:contains(tierLimitHittingAlert.msg, 'Application frequently goes beyond the allocated quota'),str:concat("The application ", tierLimitHittingAlert.applicationName, " owned by ", tierLimitHittingAlert.subscriber, " frequently goes beyond the allocated quota when accessing the ", tierLimitHittingAlert.api," API."),
+str:concat(tierLimitHittingAlert.msg , " Using the ", tierLimitHittingAlert.applicationName, " application owned by ", tierLimitHittingAlert.subscriber, ".")) as msg, time:dateFormat(tierLimitHittingAlert.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'FrequentTierHittingAlert')
 insert into emailAlertStream;
 

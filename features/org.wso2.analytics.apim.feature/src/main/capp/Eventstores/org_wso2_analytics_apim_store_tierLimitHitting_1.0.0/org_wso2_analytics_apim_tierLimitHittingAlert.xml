@@ -2,6 +2,13 @@
 <EventStoreConfiguration>
     <TableSchema>
         <ColumnDefinition>
+            <Name>subscriber</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
             <Name>apiPublisher</Name>
             <EnableIndexing>true</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
