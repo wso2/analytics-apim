@@ -352,8 +352,17 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         boolean responseTimeTooHigh2 = isAlertReceived(0, "api_version\":\"AbcAPI:v2.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Server error occurred", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh2, "Server error for continuous 5 events, alert not received!");
     }
+    
+    @Test(groups = "wso2.analytics.apim", description = "Test if a failed api becomes normal again and alert when fail again", dependsOnMethods = "testResponseCodeAlert")
+    public void testAnotherApiFailure() throws Exception {
+        logViewerClient.clearLogs();
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseCodeNormal.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
+        boolean responseTimeTooHigh = isAlertReceived(0, "api_version\":\"AbcAPI:v2.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Server error occurred", 50, 1000);
+        Assert.assertTrue(responseTimeTooHigh, "Server error for continuous 5 events, alert not received!");
+        
+    }
 
-    @Test(groups = "wso2.analytics.apim", description = "Test if server error occurred alert is not generated for normal cases", dependsOnMethods = "testResponseCodeAlert")
+    @Test(groups = "wso2.analytics.apim", description = "Test if server error occurred alert is not generated for normal cases", dependsOnMethods = "testAnotherApiFailure")
     public void testNoResponseCodeAlert() throws Exception {
         logViewerClient.clearLogs();
         EventDto eventDto = new EventDto();
