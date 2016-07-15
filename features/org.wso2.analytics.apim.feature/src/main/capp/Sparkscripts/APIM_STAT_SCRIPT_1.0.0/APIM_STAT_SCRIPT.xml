@@ -47,7 +47,14 @@
     );
 
     <!--incrementally processed per day request data table-->
-    create temporary table APIMGT_PERDAY_REQUEST_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST");
+    create temporary table APIMGT_PERDAY_REQUEST_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST", schema "
+    year INT -i, month INT -i, day INT -i,
+    consumerKey STRING, context STRING, api_version STRING, api STRING, version STRING, maxRequestTime LONG, firstRequestTime LONG, userId STRING, hostName STRING,
+    apiPublisher STRING, total_request_count_per_day LONG, resourceTemplate STRING, method STRING, applicationName STRING, tenantDomain STRING,
+    userAgent STRING, resourcePath STRING, request INT, applicationId STRING, tier STRING, throttledOut BOOLEAN, clientIp STRING,
+    applicationOwner STRING",
+    primaryKeys "year, month, day, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp",
+    mergeSchema "false");
 
     <!--summarised request event and insert into summary table -->
     insert into table API_REQUEST_SUMMARY_FINAL select api, api_version,version, apiPublisher,
@@ -188,7 +195,14 @@
     );
 
     <!--incrementally processed per day response data table -->
-    create temporary table APIMGT_PERDAY_RESPONSE_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE");
+    create temporary table APIMGT_PERDAY_RESPONSE_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE", schema "
+    year INT -i, month INT -i, day INT -i,
+    context STRING, api_version STRING, api STRING, resourceTemplate STRING, version STRING, tenantDomain STRING, hostName STRING, apiPublisher STRING,
+    destination STRING, consumerKey STRING, resourcePath STRING, method STRING, response INT, serviceTime LONG, username STRING, maxEventTime LONG, firstEventTime LONG,
+    applicationName STRING, applicationId STRING, cacheHit BOOLEAN, responseSize LONG, protocol STRING, responseCode INT,
+    total_response_count_per_day LONG",
+    primaryKeys "year, month, day, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username",
+    mergeSchema "false");
 
     <!--create table for Response summary in DAL-->
     CREATE TEMPORARY TABLE API_RESPONSE_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_RESPONSE_SUMMARY",
