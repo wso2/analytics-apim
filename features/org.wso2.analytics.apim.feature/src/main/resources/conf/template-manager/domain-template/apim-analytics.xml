@@ -385,13 +385,13 @@ insert into allAlertsStream;
             <parameters>
                 <parameter name="timeInterval" type="string">
                     <displayName>Time Interval</displayName>
-                    <description>Time period of which the request count would be taken</description>
+                    <description>Time period (day/min/sec) of which the request count would be taken.</description>
                     <defaultValue>1 day</defaultValue>
                 </parameter>
 
                 <parameter name="alertSuppressionPeriod" type="long">
                     <displayName>Alert Suppression Period in Minutes</displayName>
-                    <description>Time period to wait before resending the same alert</description>
+                    <description>Time period in minutes to wait before resending the same alert</description>
                     <defaultValue>10</defaultValue>
                 </parameter>
 
@@ -411,7 +411,7 @@ insert into allAlertsStream;
         </scenario>
 
         <scenario type="AbnormalRequestCountDetection">
-            <description>Detects abnormal request count</description>
+            <description>Detects abnormal request counts</description>
             <templates>
                 <template type="realtime">
                     <![CDATA[
@@ -674,7 +674,7 @@ insert into all_apim_alerts_stream;
 
                 <parameter name="alertSuppressionPeriod" type="long">
                     <displayName>Alert Suppression Period</displayName>
-                    <description>Time period to wait before resending the same alert</description>
+                    <description>Time period in milliseconds to wait before resending the same alert</description>
                     <defaultValue>30*60*1000</defaultValue>
                 </parameter>
 
@@ -884,7 +884,7 @@ insert into IPAccessSummary;
         </scenario>
 
         <scenario type="HealthAvailabilityPerMinAlert">
-            <description>To monitor the API health</description>
+            <description>Monitors the API Availability</description>
             <templates>
                 <template type="realtime">
                     <![CDATA[
@@ -1071,7 +1071,7 @@ insert into IPAccessSummary;
 
 
                 <parameter name="responseTimePattern" type="int">
-                    <displayName>Number of continuous response time fail</displayName>
+                    <displayName>Number of continuous response time failures</displayName>
                     <description>number of minutes that responses should fail to pass the lower percentile</description>
                     <defaultValue>5</defaultValue>
                 </parameter>
@@ -1131,14 +1131,14 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
             <parameters>
                 <parameter name="lowerPercentile" type="double">
                     <displayName>Lower percentile</displayName>
-                    <description>Lower percentile to calculate minimum time difference</description>
+                    <description>Lower percentile (value between 0 and 1) to calculate minimum time difference</description>
                     <defaultValue>0.10</defaultValue>
                 </parameter>
 
 
                 <parameter name="upperPercentile" type="double">
                     <displayName>Upper percentile</displayName>
-                    <description>Upper percentile to calculate maximum time difference</description>
+                    <description>Upper percentile (value between 0 and 1) to calculate maximum time difference</description>
                     <defaultValue>0.95</defaultValue>
                 </parameter>
             </parameters>
@@ -1148,7 +1148,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
 
         <scenario type="AbnormalTierUsageAlert">
-            <description>This is the CEP stream for Abnormal Tier Usage</description>
+            <description>Detects Abnormal Tier Usage</description>
             <templates>
                 <template type="batch">
                     <executionParameters>
@@ -1244,22 +1244,22 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
                 <parameter name="percentile" type="double">
                     <displayName>Percentile</displayName>
-                    <description>Percentile value uses to calculate the threshold</description>
+                    <description>Percentile value (between 0 and 1) uses to calculate the threshold</description>
                     <defaultValue>0.05</defaultValue>
                 </parameter>
                 <parameter name="alertStartDate" type="string">
                     <displayName>Alert Start Date</displayName>
-                    <description>Alerting will be activated from this date onwards. format: dd/mm/yyyy</description>
+                    <description>Alerting will be activated from this day onwards. format: dd/mm/yyyy</description>
                     <defaultValue>12/2/2016</defaultValue>
                 </parameter>
                 <parameter name="daysConsiderForPercentilesCalculation" type="int">
-                    <displayName>Days Consider for Percentile Calculation</displayName>
-                    <description>Number of previous days consider for percentile calculation.</description>
+                    <displayName>Days Considered for Percentile Calculation</displayName>
+                    <description>Number of previous days considered for percentile calculation.</description>
                     <defaultValue>30</defaultValue>
                 </parameter>
                 <parameter name="daysConsiderForAbnormalTierAvailability" type="int">
-                    <displayName>Days Consider for Abnormal Tier Availability Calculation</displayName>
-                    <description>Number of previous days consider for abnormal tier availability calculation.
+                    <displayName>Days Considered for Abnormal Tier Availability Calculation</displayName>
+                    <description>Number of previous days considered for abnormal tier availability calculation.
                     </description>
                     <defaultValue>5</defaultValue>
                 </parameter>
@@ -1305,7 +1305,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
             <parameters>
                 <parameter name="lowerPercentile" type="double">
                     <displayName>Lower percentile</displayName>
-                    <description>Lower percentile value to calculate request per min per api lower percentile
+                    <description>Lower percentile value (between 0 and 1) to calculate request per min per api lower percentile
                     </description>
                     <defaultValue>0.05</defaultValue>
                 </parameter>
@@ -1346,14 +1346,14 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
             <parameters>
                 <parameter name="upperPercentile" type="double">
                     <displayName>Upper Percentile</displayName>
-                    <description>Upper percentile value to calculate requests per min upper percentile</description>
+                    <description>Upper percentile value (between 0 and 1) to calculate requests per min upper percentile</description>
                     <defaultValue>0.95</defaultValue>
                 </parameter>
 
 
                 <parameter name="lowerPercentile" type="double">
                     <displayName>lowerPercentile</displayName>
-                    <description>Lower percentile value to calculate requests per min</description>
+                    <description>Lower percentile value (between 0 and 1) to calculate requests per min</description>
                     <defaultValue>0.05</defaultValue>
                 </parameter>
             </parameters>
@@ -1390,7 +1390,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
             <parameters>
                 <parameter name="lowerPercentile" type="double">
                     <displayName>Lower percentile</displayName>
-                    <description>Lower percentile value to calculate responsesPerMinPerApiLowerPercentile</description>
+                    <description>Lower percentile value (between 0 and 1) to calculate responsesPerMinPerApiLowerPercentile</description>
                     <defaultValue>0.05</defaultValue>
                 </parameter>
             </parameters>
@@ -1426,7 +1426,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
             <parameters>
                 <parameter name="upperPercentile" type="double">
                     <displayName>Upper percentile</displayName>
-                    <description>Upper percentile value to calculate responseTimePerApiUpperPercentile</description>
+                    <description>Upper percentile value (between 0 and 1) to calculate responseTimePerApiUpperPercentile</description>
                     <defaultValue>0.95</defaultValue>
                 </parameter>
             </parameters>
@@ -1467,12 +1467,12 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
             <parameters>
                 <parameter name="upperPercentileRespondTime" type="double">
                     <displayName>Upper percentile response time</displayName>
-                    <description>Upper percentile value to calculate responsePercentile</description>
+                    <description>Upper percentile value (between 0 and 1) to calculate responsePercentile</description>
                     <defaultValue>0.95</defaultValue>
                 </parameter>
                 <parameter name="upperPercentilebackendTime" type="double">
                     <displayName>Upper percentile backend time</displayName>
-                    <description>Upper percentile value to calculate backendPercentile</description>
+                    <description>Upper percentile value (between 0 and 1) to calculate backendPercentile</description>
                     <defaultValue>0.95</defaultValue>
                 </parameter>
             </parameters>
