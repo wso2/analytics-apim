@@ -67,11 +67,9 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
 
     public void redeployExecutionPlan() throws Exception {
         int count = getActiveExecutionPlanCount();
-        log.info("#count: "+count);
         deleteExecutionPlan(EXECUTION_PLAN_NAME);
         do {
             Thread.sleep(1000);
-            log.info("#count: "+getActiveExecutionPlanCount());
         } while(getActiveExecutionPlanCount() == count);
         
         addExecutionPlan(getExecutionPlanFromFile(TEST_RESOURCE_PATH, EXECUTION_PLAN_NAME + ".siddhiql"));
@@ -351,6 +349,8 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         //Thread.sleep(8000);
         boolean responseTimeTooHigh = isAlertReceived(0, "api_version\":\"CalculatorAPI:v2.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Server error occurred", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Server error for continuous 5 events, alert not received!");
+        boolean responseTimeTooHigh2 = isAlertReceived(0, "api_version\":\"AbcAPI:v2.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Server error occurred", 50, 1000);
+        Assert.assertTrue(responseTimeTooHigh2, "Server error for continuous 5 events, alert not received!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if server error occurred alert is not generated for normal cases", dependsOnMethods = "testResponseCodeAlert")

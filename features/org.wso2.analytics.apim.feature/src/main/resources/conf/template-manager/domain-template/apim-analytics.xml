@@ -958,8 +958,8 @@ insert into IPAccessSummary;
                                 insert into requestResponseSummaryStream;
                 
                 @info(name = 'query6')
-                                                                from every requestResponseSummaryStream [requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
-                                                                select api_version as api_version , apiPublisher, tenantDomain, str:concat('Response count is lower than ' , responsesPerMinLowerPercentile, ' continuously for $responsePerMinPattern or more minutes.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                                                from every (e1=requestResponseSummaryStream[requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile]) -> e2=requestResponseSummaryStream [e1.api_version == api_version AND requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
+                                                                select e1.api_version as api_version , e1.apiPublisher, e1.tenantDomain, str:concat('Response count is lower than ' , e1.responsesPerMinLowerPercentile, ' continuously for $responsePerMinPattern or more minutes.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                                                 insert into apiHealthMonitorAlertStream;
                                          
                 /* Now start response time queries */
@@ -978,8 +978,8 @@ insert into IPAccessSummary;
                                                                 insert into responseInfoStream;
                                 
                                  @info(name = 'query9')
-                                                                from every responseInfoStream [responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
-                                                                select api_version, apiPublisher, tenantDomain, str:concat('Response time is higher than ' , responseTimePerApiUpperPercentile, ' ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                                                from every (e1=responseInfoStream[responseTime>responseTimePerApiUpperPercentile]) -> e2=responseInfoStream [e1.api_version == api_version AND responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
+                                                                select e1.api_version, e1.apiPublisher, e1.tenantDomain, str:concat('Response time is higher than ' , e1.responseTimePerApiUpperPercentile, ' ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                                                 insert into apiHealthMonitorAlertStream;
                                 
                   @info(name = 'query10')
@@ -988,8 +988,8 @@ insert into IPAccessSummary;
                                 insert into responseCodeSummaryStream;
 
                                 @info(name = 'query11')
-                                from every responseCodeSummaryStream [responseCode > 499 AND responseCode < 600]  <5:>
-                                select api_version, apiPublisher, tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                from every (e1=responseCodeSummaryStream[responseCode > 499 AND responseCode < 600]) -> e2=responseCodeSummaryStream [e1.api_version == api_version AND responseCode > 499 AND responseCode < 600]  <5:>
+                                select e1.api_version, e1.apiPublisher, e1.tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into apiHealthMonitorAlertStream;
 
                                 @info(name='query12')
