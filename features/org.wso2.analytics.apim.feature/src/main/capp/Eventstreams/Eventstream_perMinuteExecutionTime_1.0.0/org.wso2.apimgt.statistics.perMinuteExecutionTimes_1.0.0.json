@@ -1,8 +1,8 @@
 {
-  "name": "org.wso2.apimgt.statistics.perSecondExecutionTimes",
+  "name": "org.wso2.apimgt.statistics.perMinuteExecutionTimes",
   "version": "1.0.0",
-  "nickName": "perSecondExecutionTimes",
-  "description": "Aggregates incoming execution times in 1 second intervals and persist them.",
+  "nickName": "perMinuteExecutionTimes",
+  "description": "Aggregates incoming execution times in 1 minute intervals and persist them.",
   "metaData": [
     {
       "name": "clientType",
@@ -28,10 +28,6 @@
     },
     {
       "name": "minute",
-      "type": "INT"
-    },
-    {
-      "name": "second",
       "type": "INT"
     },
     {

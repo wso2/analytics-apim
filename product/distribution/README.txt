@@ -1,54 +1,27 @@
-WSO2 Data Analytics Server, v3.0.0
-==================================
+WSO2 API Manager Analytics Server, v2.0.0
+=========================================
 
-@buildNumber@
+Welcome to the WSO2 API Manager Analytics Server, v2.0.0 release.
 
-Welcome to the WSO2 Data Analytics Server, v3.0.0 release.
+The WSO2 AM Analytics version 2.0.0 contains real-time and batch analytics related to WSO2 API Manager 2.0.0 release. This server is a variation of WSO2 Data Analytics Server, which is a complete rewrite of the analytics solution based on the latest technologies.
 
-The WSO2 DAS version 3.0.0 is the first version of WSO2 DAS, which is complete rewrite of the analytics solution based on the latest technologies. It contains the following new features and enhancements.
-
-WSO2 DAS is powered by WSO2 Carbon, the SOA middleware component platform. 
+WSO2 AM Analytics is powered by WSO2 Carbon, the SOA middleware component platform. 
 
 New Features
 ============
 
-	- Data abstraction layer for analytics
+	- Real-time and Batch analytics scripts
 
-	- Apache Spark SQL-based analytics query execution
+	- Real-time alerting 
 
-	- Data publisher rewrite
-
-	- RDBMS datasource support
-
-	- REST APIs for analytics data service
-
-	- CLI like user interface for Spark integration
-
-
-Also, WSO2 DAS contains the following major new technological changes/substitutions when compared to its predecessor, which is WSO2 BAM. 
-
-	- Introduction of a generic data store that can mount RDBMS, HBase, Cassandra or any other data store, instead of supporting Cassandra as the one and only event store.
-
-	- Replaced Hadoop by Apache Spark, and Hive by Spark SQL.
-
-	- Introduced indexing on stream persistence using Apache Solr, instead of the Casandra secondary and custom index based indexing.
-
-	- Replaced the Gadget Server and Gadget generating tool with WSO2 UES-based dashboards and its new gadget generating tool.
-
-	- Integration of WSO2 CEP 4.0.0 based features, instead of WSO2 CEP 3.x.
-
-	- Introduced CAR file-based artifact deployment for WSO2 BAM toolbox support.
-
-	- Removed WSO2 BAM report generation.
+	- Log Analysis
 
 
 Features
 ========
 
 *Data aggregation	
-    Receives data from event sources through Java agents (Thrift, Kafka, JMS), JavaScript clients (Web Sockets, REST), to IoT (MQTT), and also from WSO2 Enterprise Service Bus Connectors.
-    Publishes events to one API for real-time, batch or interactive processing.
-    Ability to access the analytics service via comprehensive REST API.
+    Collect API Manager request, response, execution time, fault, throttling data for real-time and batch analysis.
 
 *Integrated, real-time, and batch analytics
     Analyses both persisted and realtime data using a single product.
@@ -78,19 +51,19 @@ Features
 
 Issues Fixed in This Release
 ============================
-* WSO2 Data Analytics Server related components of the WSO2 Carbon Platform - https://wso2.org/jira/issues/?filter=12425
+* WSO2 AM Analytics Server related components of the WSO2 Carbon Platform - https://wso2.org/jira/issues/?filter=13138
 
 Known Issues in This Release
 ============================
 
-* All known issues have been recorded at https://wso2.org/jira/issues/?filter=12426
+* All known issues have been recorded at https://wso2.org/jira/issues/?filter=13139
 
 Installation & Running
 ======================
 1. Extract the downloaded zip file
 2. Run the wso2server.sh or wso2server.bat file in the bin directory
 3. Once the server starts, point your Web browser to
-   https://localhost:9443/carbon/
+   https://localhost:9444/carbon/
 
 For more details, see the Installation Guide
 
@@ -101,14 +74,9 @@ System Requirements
 2. The Management Console requires full Javascript enablement of the Web browser
 
 For more details see the Installation guide or,
-https://docs.wso2.com/display/DAS300/Installation+Prerequisites
+https://docs.wso2.com/display/AM200/WSO2+API+Manager+Analytics
 
-Including External Dependencies
-===============================
-For a complete guide on adding external dependencies to WSO2 Data Analytics Server & other carbon related products refer to the article:
-http://wso2.org/library/knowledgebase/add-external-jar-libraries-wso2-carbon-based-products
-
-WSO2 Data Analytics Server Binary Distribution Directory Structure
+WSO2 API Manager Analytics Server Binary Distribution Directory Structure
 ======================================================
      CARBON_HOME
         |-- bin <directory>
@@ -205,7 +173,7 @@ WSO2 Data Analytics Server Binary Distribution Directory Structure
       This document contains information on installing WSO2 Application Server.
 
     - release-notes.html
-      Release information for WSO2 Data Analytics Server 2.5.0
+      Release information for WSO2 API Manager Analytics Server 2.0.0
 
 Secure sensitive information in carbon configuration files
 ==========================================================
@@ -297,8 +265,8 @@ Crypto Notice
    Bouncycastle     : http://www.bouncycastle.org/
 
 For further details, see the WSO2 Carbon documentation at
-http://docs.wso2.org/display/Carbon420/WSO2+Carbon+Documentation
+http://docs.wso2.org/display/Carbon447/WSO2+Carbon+Documentation
 
 ---------------------------------------------------------------------------
-(c)  @copyright.year@2014, WSO2 Inc.
+(c) @2014, WSO2 Inc.
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ define stream perMinuteRequests (meta_clientType string, year int, month int, da
 @Export('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
 define stream perMinuteResponses (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long, _timestamp long);
 
-@Export('org.wso2.apimgt.statistics.perSecondExecutionTimes:1.0.0')
-define stream perSecondExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, second int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long, _timestamp long);
+@Export('org.wso2.apimgt.statistics.perMinuteExecutionTimes:1.0.0')
+define stream perMinuteExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long, _timestamp long);
 
 @Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
 define stream responsePerMinPerApiStream (api_version string, tenantDomain string, responsesPerMinPerApi long);
@@ -256,7 +256,7 @@ group by context, api_version, tenantDomain, apiPublisher
 insert into perSecondExecutionTimesTemp;
 
 from perSecondExecutionTimesTemp
-select meta_clientType,
+select meta_clientType, (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
 time:extract(startTime, 'year') as year, 
 time:extract(startTime, 'month') as month, time:extract(startTime, 'day') as day, 
 time:extract(startTime, 'hour') as hour, time:extract(startTime, 'minute') as minute, 
@@ -265,6 +265,33 @@ context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, security
 throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency,
 startTime as eventTime, startTime as _timestamp
 insert into perSecondExecutionTimes;
+
+-- minute
+
+from perSecondExecutionTimes
+select startTime, meta_clientType, str:concat(facetStartTime, '_', context, '_', 
+  api_version, '_', apiPublisher, '_', tenantDomain) 
+as uniqueId, year, month, day, hour, minute, second, context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, securityLatency,
+throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency
+insert into perSecondExecutionTimeWithUniqueId;
+
+from perSecondExecutionTimeWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, $schedulerTimeInterval sec, true)
+select startTime, meta_clientType, context, api_version, api,
+tenantDomain, apiPublisher, avg(apiResponseTime) as apiResponseTime, avg(securityLatency) as securityLatency,
+avg(throttlingLatency) as throttlingLatency, avg(requestMediationLatency) as requestMediationLatency,
+avg(responseMediationLatency) as responseMediationLatency, avg(backendLatency) as backendLatency,
+avg(otherLatency) as otherLatency
+group by context, api_version, tenantDomain, apiPublisher  
+insert into perMinuteExecutionTimeTemp;
+
+from perMinuteExecutionTimeTemp
+select meta_clientType, time:extract(startTime, 'year') as year, time:extract(startTime, 'month') as month, 
+time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
+time:extract(startTime, 'minute') as minute,
+context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, securityLatency,
+throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency,
+startTime as eventTime, startTime as _timestamp
+insert into perMinuteExecutionTime;
 
                     ]]>
                 </template>
@@ -1258,15 +1285,16 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 CREATE TEMPORARY TABLE REQUEST_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_requestPerMinPerApiStream");
 
         CREATE TEMPORARY TABLE REQUEST_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE",
-        schema "requestsPerMinPerApiLowerPercentile double,api_version string -i",
-        primaryKeys "api_version", mergeSchema "false"
+        schema "requestsPerMinPerApiLowerPercentile double, api_version string -i, tenantDomain string -i",
+        primaryKeys "api_version, tenantDomain", mergeSchema "false"
         );
 
         INSERT INTO TABLE REQUEST_PER_API_PERCENTILE_GEN
         select getpercentileValue(avg(requestsPerMinPerApi), sqrt(avg(cast(requestsPerMinPerApi
-        as double)*cast(requestsPerMinPerApi as double))-avg(requestsPerMinPerApi)*avg(requestsPerMinPerApi)) , $lowerPercentile ) as requestsPerMinPerApiLowerPercentile,api_version as api_version
+        as double)*cast(requestsPerMinPerApi as double))-avg(requestsPerMinPerApi)*avg(requestsPerMinPerApi)) , $lowerPercentile ) as requestsPerMinPerApiLowerPercentile,
+        api_version as api_version, tenantDomain
 
-        from REQUEST_PER_API_INFO group by api_version;
+        from REQUEST_PER_API_INFO group by api_version, tenantDomain; 
 
                  ]]>
                     </sparkScript>
@@ -1343,15 +1371,15 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 CREATE TEMPORARY TABLE RESPONSE_PER_API_INFO USING CarbonAnalytics OPTIONS (tableName "org_wso2_analytics_apim_responsePerMinPerApiStream");
 
         CREATE TEMPORARY TABLE RESPONSE_PER_API_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE",
-        schema "api_version string -i, responsesPerMinPerApiLowerPercentile double",
-        primaryKeys "api_version"
+        schema "api_version string -i, tenantDomain string -i, responsesPerMinPerApiLowerPercentile double",
+        primaryKeys "api_version, tenantDomain"
         );
 
         INSERT INTO TABLE RESPONSE_PER_API_PERCENTILE_GEN
-        select api_version,
+        select api_version, tenantDomain, 
         getpercentileValue(avg(responsesPerMinPerApi), sqrt(avg(cast(responsesPerMinPerApi
         as double)*cast(responsesPerMinPerApi as double))-avg(responsesPerMinPerApi)*avg(responsesPerMinPerApi)) , $lowerPercentile ) as responsesPerMinPerApiLowerPercentile
-        from RESPONSE_PER_API_INFO group by api_version;
+        from RESPONSE_PER_API_INFO group by api_version, tenantDomain;
 
                  ]]>
                         </sparkScript>
@@ -1380,15 +1408,15 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                               CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE");
 
         CREATE TEMPORARY TABLE RESPONSE_PER_TIME_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE",
-        schema "api_version string -i,  responseTimePerApiUpperPercentile double ",
-        primaryKeys "api_version" , mergeSchema "false"
+        schema "api_version string -i, tenantDomain string -i,  responseTimePerApiUpperPercentile double ",
+        primaryKeys "api_version, tenantDomain" , mergeSchema "false"
         );
 
         INSERT INTO TABLE RESPONSE_PER_TIME_PERCENTILE_GEN
-        select api_version,
+        select api_version, tenantDomain,
         getpercentileValue(avg(responseTime), sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) , $upperPercentile ) as responseTimePerApiUpperPercentile
 
-        from RESPONSE_INFO group by api_version;
+        from RESPONSE_INFO group by api_version, tenantDomain;
                  ]]>
                         </sparkScript>
                     </executionParameters>
@@ -1414,7 +1442,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                         <sparkScript>
                             <![CDATA[
                               CREATE TEMPORARY TABLE RESPONSE_INFO USING CarbonAnalytics OPTIONS (tableName
-        "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE",schema "_timestamp LONG ");
+        "ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE");
 
 
         CREATE TEMPORARY TABLE RESPONSE_PERCENTILE_GEN USING CarbonAnalytics OPTIONS (tableName "ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE",

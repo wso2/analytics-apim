@@ -10,7 +10,7 @@
         <dependency artifact="Eventstream_workflow" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstream_throttle" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstream_executionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="Eventstream_perSecondExecutionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstream_perMinuteExecutionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstream_requestsPerMinPerKeyStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalBackendTimeAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_abnormalRequestsPerMinAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -69,7 +69,6 @@
         <dependency artifact="Eventstore_fault" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstore_workflow" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstore_throttle" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="Eventstore_ExecutionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_tierLimitHitting" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_apiAvailability" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_accessTokenRefreshTimeDifference" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -92,7 +91,7 @@
         <dependency artifact="Eventstore_perMinuteRequest" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_requestPerMinStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstore_perMinuteResponse" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="Eventstore_perSecondExecutionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventstore_perMinuteExecutionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_loganalyzer_apim_store_logEventStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
 
