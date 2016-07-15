@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Analytics>
+  <Name>APIM_LAST_ACCESS_TIME_SCRIPT</Name>
+  <Script>    
+    <!--create temp table for API Last access time summary table in RDBMS-->
+    create temporary table APILastAccessSummaryData using CarbonJDBC options (dataSource "WSO2AM_STATS_DB", tableName "API_LAST_ACCESS_TIME_SUMMARY",
+    schema "tenantDomain STRING ,
+    apiPublisher STRING ,
+    api STRING ,
+    version STRING ,
+    userId STRING ,
+    context STRING ,
+    max_request_time LONG ",
+    primaryKeys "tenantDomain,apiPublisher,api"
+    );
+    <!--create table for API last access time summary in DAL-->
+    CREATE TEMPORARY TABLE API_LAST_ACCESS_TIME_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_LAST_ACCESS_TIME_SUMMARY",
+    schema "tenantDomain string -i,
+    apiPublisher string -i,
+    api string -i,
+    version string -i,
+    userId string -i,
+    context string -i,
+    max_request_time long -i",
+    primaryKeys "tenantDomain,apiPublisher,api"
+    );
+
+    <!-- inserting API last access time summary data in DAL to RDBMS-->
+    INSERT INTO TABLE APILastAccessSummaryData select tenantDomain, apiPublisher, api, version, userId, context, max_request_time from API_LAST_ACCESS_TIME_SUMMARY_FINAL;
+
+  </Script>
+  <CronExpression>0 0/5 * 1/1 * ? *</CronExpression>
+</Analytics>
