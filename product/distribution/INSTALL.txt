@@ -1,8 +1,7 @@
-(1) Installing @product.name@, v@product.version@
-================================================
+Installing WSO2 API Manager Analytics Server, v2.0.0
+====================================================
 
-@product.name@ @product.version@ can be run either in standalone mode or as a webapp within a
-servlet container.
+WSO2 API Manager Analytics Server 2.0.0 can be run either in standalone mode.
 
 
 Standalone Mode
@@ -82,11 +81,10 @@ System Requirements
 -------------------
 1. Minimum memory - 2GB
 
-2. Java SE Development Kit 1.6.0_24 or higher
+2. Java SE Development Kit 1.7.0 or higher
 
-3. To build @product.name@ from the Source distribution, it is also necessary that you
-   have Maven 3.0.3 or later.
+3. To build WSO2 API Manager Analytics Server from the Source distribution, it is also necessary that you have Maven 3.0.3 or later.
 
 For more details see
-    https://docs.wso2.com/display/DAS300/Installing+the+Product
+    https://docs.wso2.com/display/DAS301/Installing+the+Product
 
