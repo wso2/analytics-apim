@@ -116,6 +116,9 @@
 				<featureArtifactDef>
                                      org.wso2.carbon.analytics-common:org.wso2.carbon.spark.commons.feature:${carbon.analytics.common.version}
                                 </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon.analytics-common:org.wso2.carbon.analytics.gadget.template.feature:${carbon.analytics.common.version}
+                                </featureArtifactDef>    
                                 <!-- END - Analytics features -->
 
                                 <featureArtifactDef>
@@ -442,6 +445,10 @@
                                     <id>org.wso2.carbon.spark.commons.feature.group</id>
                                     <version>${carbon.analytics.common.version}</version>
                                 </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.analytics.gadget.template.feature.group</id>
+                                    <version>${carbon.analytics.common.version}</version>
+                                </feature> 
                                 <!-- END - Analytics features -->
                                  <feature>
                                      <id>org.wso2.carbon.analytics.dashboard.ui.feature.group</id>
