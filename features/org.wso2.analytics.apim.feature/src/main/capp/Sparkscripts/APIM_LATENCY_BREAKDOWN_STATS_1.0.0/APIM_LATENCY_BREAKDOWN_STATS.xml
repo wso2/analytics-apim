@@ -3,11 +3,28 @@
     <Name>APIM_LATENCY_BREAKDOWN_STATS</Name>
 <Script>
         
-    CREATE TEMPORARY TABLE APIExecutionTimeData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERSECONDEXECUTIONTIMES");
+    CREATE TEMPORARY TABLE APIMGT_PERDAY_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES", schema "
+    year INT -i, month INT -i, day INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
+    backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG",
+    primaryKeys "year, month, day, context, api_version, tenantDomain, apiPublisher",
+    mergeSchema "false");
 
-    CREATE TEMPORARY TABLE APIMGT_PERDAY_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES");
-    CREATE TEMPORARY TABLE APIMGT_PERHOUR_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES");
-    CREATE TEMPORARY TABLE APIMGT_PERMINUTE_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES");
+    CREATE TEMPORARY TABLE APIMGT_PERHOUR_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES", schema "
+    year INT -i, month INT -i, day INT -i, hour INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
+    backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG, _timestamp LONG -i",
+    primaryKeys "year, month, day, hour, context, api_version, tenantDomain, apiPublisher",
+    incrementalProcessing "APIMGT_PERHOUR_EXECUTION_TIME, DAY",
+    mergeSchema "false");
+    
+    CREATE TEMPORARY TABLE APIMGT_PERMINUTE_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES", schema "
+    year INT -i, month INT -i, day INT -i, hour INT -i, minute INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
+    backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG, _timestamp LONG -i",
+    primaryKeys "year, month, day, hour, minute, context, api_version, tenantDomain, apiPublisher",
+    incrementalProcessing "APIMGT_PERMINUTE_EXECUTION_TIME, HOUR",
+    mergeSchema "false");
 
     CREATE TEMPORARY TABLE APIExecutionTimeDaySummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXE_TME_DAY_SUMMARY",
     schema "api STRING ,
