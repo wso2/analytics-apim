@@ -16,14 +16,14 @@ define stream tierLimitHittingAlertStream (subscriber string, apiPublisher strin
 from throttleStream[throttledOutReason == 'SUBSCRIPTION_LIMIT_EXCEEDED']#window.time( 1 day )
 select apiPublisher, api, api_version, applicationId, applicationName, tenantDomain, subscriber, count(userId) as numHits
 group by apiPublisher, api_version, applicationId
-having numHits > 2
+having numHits > 10
 insert into temporarySubscriberStream;
 
 @info(name = 'query2')
 from throttleStream[throttledOutReason == 'APPLICATION_LIMIT_EXCEEDED']#window.time( 1 day )
 select userId, apiPublisher, api, api_version, applicationId, applicationName, tenantDomain, subscriber, count(userId) as numHits
 group by userId, api_version, applicationId
-having numHits > 2
+having numHits > 10
 insert into temporaryUserStream;
 
 @info(name = 'query3')
