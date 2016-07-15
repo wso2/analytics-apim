@@ -56,20 +56,20 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         boolean noUserAlert = isAlertReceived(
                 0,
-                "applicationId:2,\napplicationName:application2,\ntenantDomain:-1234,\nmsg:User user1 frequently crosses the limit set.",
+                "applicationId:2,\napplicationName:application2,\ntenantDomain:carbon.super,\nmsg:User user1 frequently crosses the limit set.",
                 5, 1000);
         Assert.assertFalse(noUserAlert, "Tier hitting messages received for user1");
 
         boolean alertSubscriber = isAlertReceived(
                 0,
-                "apiPublisher:publisher1,\napi:deeplearning,\napplicationId:1,\napplicationName:application1,\ntenantDomain:-1234,\nmsg:Application frequently goes beyond the allocated quota",
+                "apiPublisher:publisher1@carbon.super,\napi:deeplearning,\napplicationId:1,\napplicationName:application1,\ntenantDomain:carbon.super,\nmsg:Application frequently goes beyond the allocated quota",
                 5, 1000);
 
         Assert.assertTrue(alertSubscriber, "Tier hitting messages has not received for application1");
 
         boolean alertUser = isAlertReceived(
                 0,
-                "apiPublisher:publisher1,\napi:svm,\napplicationId:1,\napplicationName:application1,\ntenantDomain:-1234,\nmsg:User user1 frequently crosses the limit set.",
+                "apiPublisher:publisher1@carbon.super,\napi:svm,\napplicationId:1,\napplicationName:application1,\ntenantDomain:carbon.super,\nmsg:User user1 frequently crosses the limit set.",
                 5, 1000);
         Assert.assertTrue(alertUser, "Tier hitting messages has not user1");
 
@@ -80,7 +80,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         boolean alertSubscriber2 = isAlertReceived(
                 0,
-                "apiPublisher:publisher2,\napi:deeplearning,\napplicationId:1,\napplicationName:application1,\ntenantDomain:-1234,\nmsg:Application frequently goes beyond the allocated quota",
+                "apiPublisher:publisher2@carbon.super,\napi:deeplearning,\napplicationId:1,\napplicationName:application1,\ntenantDomain:carbon.super,\nmsg:Application frequently goes beyond the allocated quota",
                 5, 1000);
         Assert.assertTrue(alertSubscriber2, "Tier hitting messages has not application2");
 
@@ -90,7 +90,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "-1234",
+        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133403",
                 "application1", "1", "Application throttling reached" });
         publishEvent(eventDto);
@@ -98,7 +98,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "-1234",
+        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133404",
                 "application1", "1", "Application throttling reached" });
         publishEvent(eventDto);
@@ -106,7 +106,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "-1234",
+        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133405",
                 "application1", "1", "Application throttling reached" });
         publishEvent(eventDto);
@@ -114,7 +114,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "-1234",
+        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133406",
                 "application1", "1", "Application throttling reached" });
         publishEvent(eventDto);
@@ -122,7 +122,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "-1234",
+        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133407",
                 "application1", "1", "Application throttling reached" });
         publishEvent(eventDto);
@@ -138,7 +138,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
 
         eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
-        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "-1234",
+        eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133409",
                 "application1", "1", "Application throttling reached" });
         publishEvent(eventDto);

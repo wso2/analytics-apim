@@ -29,14 +29,14 @@ insert into temporaryUserStream;
 @info(name = 'query3')
 from temporarySubscriberStream#window.length(1) as a left outer join temporarySubscriberStream#window.time(10 minute) as b
 on (a.apiPublisher== b.apiPublisher and a.api_version== b.api_version and a.applicationId==b.applicationId)
-select a.apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
+select ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.apiPublisher, "@carbon.super"), a.apiPublisher) as apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
 having b.apiPublisher is null
 insert into suppressedTemporarySubscriberStream ;
 
 @info(name = 'query4')
 from temporaryUserStream#window.length(1) as a left outer join temporaryUserStream#window.time(10 minute) as b
 on (a.userId== b.userId and a.api_version== b.api_version and a.applicationId==b.applicationId)
-select a.userId, a.apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
+select a.userId, ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.apiPublisher, "@carbon.super"), a.apiPublisher) as apiPublisher, a.api, a.api_version, a.applicationId, a.applicationName, a.tenantDomain, a.numHits
 having b.userId is null
 insert into suppressedTemporaryUserStream;
 
@@ -65,7 +65,3 @@ insert into allAlertsStream;
 from suppressedTemporaryUserStream
 select "FrequentTierHittingAlert" as type, tenantDomain, str:concat("User ", userId, " using the ", applicationName, " application owned by ", apiPublisher, " frequently crosses the limit set for the user.") as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allAlertsStream;
-
-
-
-
