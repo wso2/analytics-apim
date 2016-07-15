@@ -28,8 +28,8 @@ define stream perMinuteRequests (meta_clientType string, year int, month int, da
 @Export('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
 define stream perMinuteResponses (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long, _timestamp long);
 
-@Export('org.wso2.apimgt.statistics.perSecondExecutionTimes:1.0.0')
-define stream perSecondExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, second int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long, _timestamp long);
+@Export('org.wso2.apimgt.statistics.perMinuteExecutionTimes:1.0.0')
+define stream perMinuteExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long, _timestamp long);
 
 @Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
 define stream responsePerMinPerApiStream (api_version string, tenantDomain string, responsesPerMinPerApi long);
@@ -234,7 +234,7 @@ group by context, api_version, tenantDomain, apiPublisher
 insert into perSecondExecutionTimesTemp;
 
 from perSecondExecutionTimesTemp
-select meta_clientType,
+select meta_clientType, (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
 time:extract(startTime, 'year') as year, 
 time:extract(startTime, 'month') as month, time:extract(startTime, 'day') as day, 
 time:extract(startTime, 'hour') as hour, time:extract(startTime, 'minute') as minute, 
@@ -243,3 +243,30 @@ context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, security
 throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency,
 startTime as eventTime, startTime as _timestamp
 insert into perSecondExecutionTimes;
+
+-- minute
+
+from perSecondExecutionTimes
+select startTime, meta_clientType, str:concat(facetStartTime, '_', context, '_', 
+	api_version, '_', apiPublisher, '_', tenantDomain) 
+as uniqueId, year, month, day, hour, minute, second, context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, securityLatency,
+throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency
+insert into perSecondExecutionTimeWithUniqueId;
+
+from perSecondExecutionTimeWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec, true)
+select startTime, meta_clientType, context, api_version, api,
+tenantDomain, apiPublisher, avg(apiResponseTime) as apiResponseTime, avg(securityLatency) as securityLatency,
+avg(throttlingLatency) as throttlingLatency, avg(requestMediationLatency) as requestMediationLatency,
+avg(responseMediationLatency) as responseMediationLatency, avg(backendLatency) as backendLatency,
+avg(otherLatency) as otherLatency
+group by context, api_version, tenantDomain, apiPublisher  
+insert into perMinuteExecutionTimeTemp;
+
+from perMinuteExecutionTimeTemp
+select meta_clientType, time:extract(startTime, 'year') as year, time:extract(startTime, 'month') as month, 
+time:extract(startTime, 'day') as day, time:extract(startTime, 'hour') as hour, 
+time:extract(startTime, 'minute') as minute,
+context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, securityLatency,
+throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency,
+startTime as eventTime, startTime as _timestamp
+insert into perMinuteExecutionTime;
