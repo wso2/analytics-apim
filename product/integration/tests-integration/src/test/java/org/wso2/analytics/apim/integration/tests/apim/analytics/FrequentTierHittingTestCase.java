@@ -92,7 +92,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133403",
-                "application1", "1", "Application throttling reached" });
+                "application1", "1", "SUBSCRIPTION_LIMIT_EXCEEDED" });
         publishEvent(eventDto);
         Thread.sleep(1000);
 
@@ -100,7 +100,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133404",
-                "application1", "1", "Application throttling reached" });
+                "application1", "1", "SUBSCRIPTION_LIMIT_EXCEEDED" });
         publishEvent(eventDto);
         Thread.sleep(1000);
 
@@ -108,7 +108,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133405",
-                "application1", "1", "Application throttling reached" });
+                "application1", "1", "SUBSCRIPTION_LIMIT_EXCEEDED" });
         publishEvent(eventDto);
         Thread.sleep(1000);
 
@@ -116,7 +116,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133406",
-                "application1", "1", "Application throttling reached" });
+                "application1", "1", "SUBSCRIPTION_LIMIT_EXCEEDED" });
         publishEvent(eventDto);
         Thread.sleep(1000);
 
@@ -124,7 +124,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133407",
-                "application1", "1", "Application throttling reached" });
+                "application1", "1", "SUBSCRIPTION_LIMIT_EXCEEDED" });
         publishEvent(eventDto);
         Thread.sleep(1000);
 
@@ -132,7 +132,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "-1234",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133408",
-                "application1", "1", "Application throttling reached" });
+                "application1", "1", "SUBSCRIPTION_LIMIT_EXCEEDED" });
         publishEvent(eventDto);
         Thread.sleep(1000);
 
@@ -140,7 +140,7 @@ public class FrequentTierHittingTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(new String[] { "external", "sqbkktg3s00vzz7gg3s19", "user1", "carbon.super",
                 "deeplearning", "Deeplearning:1", "deeplearning/predict", "publisher2", "1455785133409",
-                "application1", "1", "Application throttling reached" });
+                "application1", "1", "SUBSCRIPTION_LIMIT_EXCEEDED" });
         publishEvent(eventDto);
         Thread.sleep(1000);
 
