@@ -4,13 +4,20 @@
         <ColumnDefinition>
             <Name>api_version</Name>
             <EnableIndexing>true</EnableIndexing>
-            <IsPrimaryKey>false</IsPrimaryKey>
+            <IsPrimaryKey>true</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
+        <ColumnDefinition>
+            <Name>tenantDomain</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>true</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>
         </ColumnDefinition>
         <ColumnDefinition>
             <Name>requestsPerMinPerApi</Name>
-            <EnableIndexing>true</EnableIndexing>
+            <EnableIndexing>false</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>LONG</Type>

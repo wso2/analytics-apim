@@ -12,6 +12,10 @@
       "type": "STRING"
     },
     {
+      "name": "tenantDomain",
+      "type": "STRING"
+    },
+    {
       "name": "requestsPerMinPerApi",
       "type": "LONG"
     }

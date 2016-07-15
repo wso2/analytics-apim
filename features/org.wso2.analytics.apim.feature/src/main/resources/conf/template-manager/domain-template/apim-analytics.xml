@@ -54,10 +54,10 @@ define stream perMinuteResponses (meta_clientType string, year int, month int, d
 define stream perSecondExecutionTimes (meta_clientType string, year int, month int, day int, hour int, minute int, second int, context string, api_version string, api string, tenantDomain string, apiPublisher string, apiResponseTime double, securityLatency double, throttlingLatency double, requestMediationLatency double, responseMediationLatency double, backendLatency double, otherLatency double, eventTime long, _timestamp long);
 
 @Export('org.wso2.analytics.apim.responsePerMinPerApiStream:1.0.0')
-define stream responsePerMinPerApiStream (api_version string, responsesPerMinPerApi long);
+define stream responsePerMinPerApiStream (api_version string, tenantDomain string, responsesPerMinPerApi long);
 
 @Export('org.wso2.analytics.apim.requestPerMinPerApiStream:1.0.0')
-define stream requestPerMinPerApiStream (api_version string, requestsPerMinPerApi long);
+define stream requestPerMinPerApiStream (api_version string, tenantDomain string, requestsPerMinPerApi long);
 
 @Export('org.wso2.apimgt.statistics.requestsPerMinPerKeyStream:1.0.0')
 define stream requestsPerMinPerKeyStream (consumerKey string, requestsPerMinPerKey long);
@@ -88,13 +88,13 @@ insert into perSecondRequests;
 
 --api_version
 from requests#window.externalTimeBatch(requestTime, 1 sec, 0, $schedulerTimeInterval sec, true)
-select requestTime as startTime, api_version, count() as total_request_count
-group by api_version 
+select requestTime as startTime, api_version, tenantDomain, count() as total_request_count
+group by api_version, tenantDomain 
 insert into perSecondPerApiRequestsTemp;
 
 from perSecondPerApiRequestsTemp
 select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
-api_version, total_request_count
+api_version, tenantDomain, total_request_count
 insert into perSecondPerApiRequests;
 
 -- consumer key
@@ -139,12 +139,12 @@ insert into perMinuteRequests;
 -- api_version
 from perSecondPerApiRequests
 select startTime, str:concat(facetStartTime, '_', api_version) 
-as uniqueId, api_version, total_request_count
+as uniqueId, api_version, tenantDomain, total_request_count
 insert into perSecondPerApiRequestsWithUniqueId;
 
 from perSecondPerApiRequestsWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, $schedulerTimeInterval sec, true)
-select api_version, sum(total_request_count) as requestsPerMinPerApi
-group by api_version 
+select api_version, tenantDomain, sum(total_request_count) as requestsPerMinPerApi
+group by api_version, tenantDomain
 insert into requestPerMinPerApiStream;
 
 -- consumer key
@@ -192,13 +192,13 @@ insert into perSecondResponses;
 
 -- api_version
 from responses#window.externalTimeBatch(eventTime, 1 sec, 0, $schedulerTimeInterval sec, true)
-select eventTime as startTime, api_version, count() as total_response_count
-group by api_version 
+select eventTime as startTime, api_version, tenantDomain, count() as total_response_count
+group by api_version, tenantDomain
 insert into perSecondPerApiResponsesTemp;
 
 from perSecondPerApiResponsesTemp
 select (startTime - (startTime % 1000)) as startTime, convert((startTime - (startTime % 1000)), 'string') as facetStartTime,
-api_version, total_response_count
+api_version, tenantDomain, total_response_count
 insert into perSecondPerApiResponses;
 
 -- minute
@@ -234,12 +234,12 @@ insert into perMinuteResponses;
 -- api_version
 from perSecondPerApiResponses
 select startTime, str:concat(facetStartTime, '_', api_version) 
-as uniqueId, api_version, total_response_count
+as uniqueId, api_version, tenantDomain, total_response_count
 insert into perSecondPerApiResponsesWithUniqueId;
 
 from perSecondPerApiResponsesWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, startTime, $timeInterval sec, 59999 millisec, $schedulerTimeInterval sec, true)
-select api_version, sum(total_response_count) as responsesPerMinPerApi
-group by api_version 
+select api_version, tenantDomain, sum(total_response_count) as responsesPerMinPerApi
+group by api_version, tenantDomain
 insert into responsePerMinPerApiStream;
 
 -- execution times
