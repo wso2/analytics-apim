@@ -107,5 +107,6 @@
         <dependency artifact="APIM_USER_AGENT_STATS" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="APIM_LOGANALYZER_SCRIPT" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="APIM_INCREMENTAL_PROCESSING_SCRIPT" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="APIM_LAST_ACCESS_TIME_SCRIPT" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
     </artifact>
 </artifacts>
