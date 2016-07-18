@@ -21,7 +21,7 @@
     CREATE TEMPORARY TABLE APIMGT_PERMINUTE_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES", schema "
     year INT -i, month INT -i, day INT -i, hour INT -i, minute INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
     apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
-    backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG, _timestamp LONG -i",
+    backendLatency DOUBLE, otherLatency DOUBLE, eventTime LONG, _timestamp LONG -i",
     primaryKeys "year, month, day, hour, minute, context, api_version, tenantDomain, apiPublisher",
     incrementalProcessing "APIMGT_PERMINUTE_EXECUTION_TIME, HOUR",
     mergeSchema "false");
@@ -176,7 +176,7 @@
     avg(apiResponseTime),context,avg(securityLatency),avg(throttlingLatency),avg(requestMediationLatency),
     avg(responseMediationLatency),avg(backendLatency),avg(otherLatency),
     year, month, day, hour, minute as minutes,
-    first(firstEventTime)
+    first(eventTime)
     from APIMGT_PERMINUTE_EXECUTION_TIME where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
     year, month, day, hour, minute;
     INSERT INTO TABLE APIExecutionTimeMinuteSummaryData SELECT api,version,tenantDomain,apiPublisher,
