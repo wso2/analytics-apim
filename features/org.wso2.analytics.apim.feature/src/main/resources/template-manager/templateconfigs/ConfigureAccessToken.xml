@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<scenarioConfiguration  domain="APIMAnalytics" name="ConfigureAccessToken" scenario="Configure access token">
+<scenarioConfiguration  domain="APIMAnalytics" name="ConfigureAccessToken" scenario="ConfigureAccessToken">
 	<description>Configure access token to analyze data</description>
 	<parameterMap>
 		<entry>

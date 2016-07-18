@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<scenarioConfiguration domain="APIMAnalytics" name="ResponseStatGenerator" scenario="Response stat generator">
+<scenarioConfiguration domain="APIMAnalytics" name="ResponseStatGenerator" scenario="ResponseStatGenerator">
 	<description>Response percentile values</description>
 	<parameterMap>
 		<entry>
