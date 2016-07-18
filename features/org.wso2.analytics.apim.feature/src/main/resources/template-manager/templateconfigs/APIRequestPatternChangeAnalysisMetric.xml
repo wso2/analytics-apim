@@ -10,17 +10,21 @@
 			<key>requestCount</key>
 			<value>500</value>
 		</entry>
-		<key>
+		<entry>
 			<key>probabilityThreshold</key>
 			<value>0.95</value>
-		</key>
+		</entry>
 		<entry>
 			<key>alertSuppressionPeriod</key>
 			<value>30*60*1000</value>
 		</entry>
-        <entry>
-            <key>severity</key>
+		<entry>
+                        <key>cacheTimeout</key>
+                        <value>300</value>
+                </entry>
+        	<entry>
+            		<key>severity</key>
 			<value>1</value>
-        </entry>
+        	</entry>
 	</parameterMap>
 </scenarioConfiguration>

@@ -4,8 +4,8 @@
 	<executionParameters>null</executionParameters>
 	<parameterMap>
 		<entry>
-			<key>transitionPeriod</key>
-			<value>60 min</value>
+			<key>batchSize</key>
+			<value>10000</value>
 		</entry>
 	</parameterMap>
 </scenarioConfiguration>
