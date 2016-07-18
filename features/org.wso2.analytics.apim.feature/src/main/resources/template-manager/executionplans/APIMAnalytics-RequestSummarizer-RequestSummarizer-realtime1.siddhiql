@@ -269,4 +269,4 @@ time:extract(startTime, 'minute') as minute,
 context, api_version, api, tenantDomain, apiPublisher, apiResponseTime, securityLatency,
 throttlingLatency, requestMediationLatency, responseMediationLatency, backendLatency, otherLatency,
 startTime as eventTime, startTime as _timestamp
-insert into perMinuteExecutionTime;
+insert into perMinuteExecutionTimes;
