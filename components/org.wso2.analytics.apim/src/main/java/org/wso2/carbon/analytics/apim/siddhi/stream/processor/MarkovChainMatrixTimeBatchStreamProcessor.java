@@ -35,7 +35,6 @@ import org.wso2.siddhi.query.api.definition.AbstractDefinition;
 import org.wso2.siddhi.query.api.definition.Attribute;
 import org.wso2.siddhi.query.api.exception.ExecutionPlanValidationException;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +98,7 @@ public class MarkovChainMatrixTimeBatchStreamProcessor extends StreamProcessor i
                             + attributeExpressionExecutors.length + " input attributes");
         }
 
-        this.consumerKeyToMarkovMatrix = new HashMap<String, MarkovChainMatrixTimeBatchStreamProcessor.MarkovMatrix>();
+        this.consumerKeyToMarkovMatrix = new HashMap<String, MarkovMatrix>();
         this.userToLastStates = new HashMap<String, Map<String, String>>();
 
         ArrayList<Attribute> attributes = new ArrayList<Attribute>(4);
@@ -236,73 +235,4 @@ public class MarkovChainMatrixTimeBatchStreamProcessor extends StreamProcessor i
         return this.scheduler;
     }
 
-    /**
-     * Holds the Markov Matrix
-     */
-    class MarkovMatrix implements Serializable {
-        private static final long serialVersionUID = -6990315134383123885L;
-        Map<String, Double> transitionProbabilities;
-        Map<String, Long> transitionCount;
-        Map<String, Long> startStateCount;
-        boolean isUpdated = false;
-
-        public MarkovMatrix() {
-            transitionProbabilities = new HashMap<String, Double>();
-            transitionCount = new HashMap<String, Long>();
-            startStateCount = new HashMap<String, Long>();
-        }
-
-        public void updateStartStateCount(String startState, long increment) {
-            Long currentCount = startStateCount.get(startState);
-            if (currentCount == null) {
-                startStateCount.put(startState, increment);
-            } else {
-                startStateCount.put(startState, currentCount + increment);
-            }
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("updateStartStateCount: start state: %s count: %s", startState,
-                        startStateCount.get(startState)));
-            }
-        }
-
-        public void update(String startState, String endState, long count) {
-            String key = getKey(startState, endState);
-            // update transitionCount
-            Long currentTransitionCount = transitionCount.get(key);
-            if (currentTransitionCount == null) {
-                transitionCount.put(key, count);
-            } else {
-                transitionCount.put(key, count = currentTransitionCount + count);
-            }
-
-            // update transitionProbabilities
-            double probability = count * 1.0 / startStateCount.get(startState);
-            transitionProbabilities.put(key, probability);
-            isUpdated = true;
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "update: start state: %s end state: %s count: %s total count: %s probability: %s", startState,
-                        endState, count, startStateCount.get(startState), probability));
-            }
-        }
-
-        public List<Object[]> getMatrix(String key) {
-            List<Object[]> rows = new ArrayList<Object[]>();
-
-            for (Map.Entry<String, Double> entry : transitionProbabilities.entrySet()) {
-                Object[] data = new Object[4];
-                data[0] = key;
-                data[1] = entry.getKey().split(",")[0];
-                data[2] = entry.getKey().split(",")[1];
-                data[3] = entry.getValue();
-                rows.add(data);
-            }
-            isUpdated = false;
-            return rows;
-        }
-
-        private String getKey(String startState, String endState) {
-            return startState + "," + endState;
-        }
-    }
 }
