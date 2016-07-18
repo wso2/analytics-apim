@@ -15,6 +15,10 @@
 			<value>300000</value>
 		</entry>
 		<entry>
+                        <key>cacheTimeout</key>
+                        <value>300</value>
+                </entry>
+		<entry>
 			<key>severity</key>
 			<value>2</value>
 		</entry>
