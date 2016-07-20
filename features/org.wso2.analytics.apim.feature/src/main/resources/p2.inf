@@ -6,6 +6,9 @@ org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../../s
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/org_wso2_carbon_analytics_apim-1.0.0.car,target:${installFolder}/../../../statistics/org_wso2_carbon_analytics_apim-1.0.0.car,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/conf/datasources/stats-datasources.xml,target:${installFolder}/../../conf/datasources/stats-datasources.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/analytics);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/analytics/spark);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/conf/analytics/spark/external-spark-classpath.conf,target:${installFolder}/../../conf/analytics/spark/external-spark-classpath.conf,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/template-manager);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/template-manager/domain-template);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.analytics.apim_${feature.version}/conf/template-manager/domain-template/apim-analytics.xml,target:${installFolder}/../../conf/template-manager/domain-template/apim-analytics.xml,overwrite:true);\
@@ -24,3 +27,4 @@ org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../dep
 org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../../statistics/org_wso2_carbon_analytics_apim-1.0.0.car,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../conf/template-manager/domain-template/apim-analytics.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../conf/datasources/stats-datasources.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../conf/analytics/spark/external-spark-classpath.conf,overwrite:true);\
