@@ -599,7 +599,7 @@
 
 	    <file>
             <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/statistics/org_wso2_carbon_analytics_apim-1.0.0.car
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/carbonapps/org_wso2_carbon_analytics_apim-1.0.0.car
             </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/carbonapps</outputDirectory>
             <!--commented since this tag causes issues in maven assembly plugin when copying zip formats-->
