@@ -898,7 +898,7 @@
         <!-- Copying stats datasource file -->
         <file>
             <source>
-                src/repository/conf/datasources/stats-datasources.xml
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/datasources/stats-datasources.xml
             </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/datasources</outputDirectory>
             <fileMode>644</fileMode>
