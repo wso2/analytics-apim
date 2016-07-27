@@ -221,8 +221,8 @@ public class MarkovChainMatrixTimeBatchStreamProcessor extends StreamProcessor i
     public void restoreState(Object[] state) {
         userToLastStates = (Map<String, Map<String, String>>) state[0];
         consumerKeyToMarkovMatrix = (Map<String, MarkovMatrix>) state[1];
-        lastScheduledTime = (Long) state[3];
-        newEventsArrived = (Boolean) state[4];
+        lastScheduledTime = (Long) state[2];
+        newEventsArrived = (Boolean) state[3];
     }
 
     @Override
