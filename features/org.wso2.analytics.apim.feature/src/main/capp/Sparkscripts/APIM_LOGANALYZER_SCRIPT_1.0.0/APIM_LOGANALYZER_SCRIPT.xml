@@ -100,38 +100,82 @@
         by _eventTimeStamp)temp GROUP BY temp.tenantID, temp.artifact, temp.byYear, temp.byMonth, temp.byDay ORDER BY temp.byYear,
         temp.byMonth, temp.byDay;
 
-        CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_daily USING CarbonAnalytics OPTIONS (tableName
-        "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY", schema "tenantID string -i, apiName string -i, apiCount int -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_apim_message_processing_daily SELECT temp.tenantID AS tenantID, temp.apiName AS logApiName,
-        SUM(temp.apiCount) AS totalAPICount,
-        getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp FROM (SELECT getRegexMatch(_class, "(?&lt;=API_LOGGER.admin--)(.*)")
-        AS apiName, getYear(_eventTimeStamp) AS byYear, getMonth(_eventTimeStamp) AS
-        byMonth, getDay(_eventTimeStamp) AS byDay, count(*) AS apiCount, tenantID AS tenantID FROM CopyOfLoganalyzer
+        CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_daily USING CarbonAnalytics 
+        OPTIONS (tableName "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY", schema "tenantID string -i, apiName string -i, fullApiName string -i, apiCount int -i, _timestamp long -i");
+        INSERT OVERWRITE table loganalyzer_apim_message_processing_daily
+        SELECT 
+            temp.tenantID AS tenantID, 
+            temp.apiName AS logApiName,
+            temp.fullApiName as fullApiName, 
+            SUM(temp.apiCount) AS totalAPICount, 
+            getDateStartingTime(temp.byYear, temp.byMonth , temp.byDay) AS _timestamp 
+        FROM (
+        SELECT 
+            getRegexMatch(_class, "(?&lt;=API_LOGGER.admin--)(.*)") AS apiName,
+            _class as fullApiName, 
+            getYear(_eventTimeStamp) AS byYear, 
+            getMonth(_eventTimeStamp) AS byMonth, 
+            getDay(_eventTimeStamp) AS byDay, 
+            count(*) AS apiCount, 
+            tenantID AS tenantID 
+        FROM CopyOfLoganalyzer
         WHERE _content LIKE
-        "%Error while building message%" AND _class LIKE "%API_LOGGER.admin--%" GROUP BY tenantID, _class, _eventTimeStamp ORDER BY _eventTimeStamp)temp GROUP BY
-        temp.tenantID, temp.apiName, temp.byYear, temp.byMonth, temp.byDay ORDER BY temp.byYear, temp.byMonth, temp.byDay;
+        "%Error while building message%" AND _class LIKE "%API_LOGGER.admin--%" GROUP BY tenantID, _class, _eventTimeStamp ORDER BY _eventTimeStamp
+        )temp 
+        GROUP BY temp.tenantID, temp.apiName, temp.byYear, temp.byMonth, temp.byDay, temp.fullApiName 
+        ORDER BY temp.byYear, temp.byMonth, temp.byDay;
 
-        CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_weekly USING CarbonAnalytics OPTIONS (tableName
-        "LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY", schema "tenantID string -i, apiName string -i, apiCount int -i, _timestamp long -i,
-        week long -i");
-        INSERT OVERWRITE table loganalyzer_apim_message_processing_weekly SELECT temp.tenantID AS tenantID, temp.apiName AS logApiName,
-        SUM(temp.apiCount) AS totalAPICount, temp.byWeek AS week,
-        getWeekStartingTime(temp.byYear, temp.byMonth, temp.byWeek) AS _timestamp FROM (SELECT apiName AS apiName,
-        getYear(_timestamp) AS byYear, getMonth(_timestamp) AS
-        byMonth, getWeek(_timestamp) AS byWeek, first(apiCount) AS apiCount, tenantID AS tenantID FROM
-        loganalyzer_apim_message_processing_daily
-        GROUP BY tenantID, apiName, _timestamp ORDER BY _timestamp)temp GROUP BY
-        temp.tenantID, temp.apiName, temp.byYear, temp.byMonth, temp.byWeek ORDER BY temp.byYear, temp.byMonth, temp.byWeek;
 
-        CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_monthly USING CarbonAnalytics OPTIONS (tableName
-        "LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY", schema "tenantID string -i, apiName string -i, apiCount int -i, _timestamp long -i");
-        INSERT OVERWRITE table loganalyzer_apim_message_processing_monthly SELECT temp.tenantID AS tenantID, temp.apiName AS logApiName,
-        SUM(temp.apiCount) AS totalAPICount,
-        getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp FROM (SELECT apiName AS apiName,
-        getYear(_timestamp) AS byYear, getMonth(_timestamp) AS
-        byMonth, first(apiCount) AS apiCount, tenantID AS tenantID FROM loganalyzer_apim_message_processing_daily
-        GROUP BY tenantID, apiName, _timestamp ORDER BY _timestamp)temp GROUP BY
-        temp.tenantID, temp.apiName, temp.byYear, temp.byMonth ORDER BY temp.byYear, temp.byMonth;
+        CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_weekly USING CarbonAnalytics 
+        OPTIONS (tableName "LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY", schema "tenantID string -i, apiName string -i, fullApiName string , apiCount int -i, _timestamp long -i, week long -i");
+        INSERT OVERWRITE table loganalyzer_apim_message_processing_weekly
+        SELECT 
+            temp.tenantID AS tenantID, 
+            temp.apiName AS logApiName,
+            temp.fullApiName as fullApiName,     
+            SUM(temp.apiCount) AS totalAPICount, 
+            temp.byWeek AS week,
+            getWeekStartingTime(temp.byYear, temp.byMonth, temp.byWeek) AS _timestamp 
+        FROM (
+            SELECT  
+                apiName AS apiName,
+                fullApiName as fullApiName,
+                getYear(_timestamp) AS byYear, 
+                getMonth(_timestamp) AS byMonth, 
+                getWeek(_timestamp) AS byWeek, 
+                first(apiCount) AS apiCount, 
+                tenantID AS tenantID 
+        FROM loganalyzer_apim_message_processing_daily
+        GROUP BY tenantID, apiName, _timestamp, fullApiName 
+        ORDER BY _timestamp
+        )temp 
+        GROUP BY temp.tenantID, temp.apiName, temp.byYear, temp.byMonth, temp.byWeek, temp.fullApiName 
+        ORDER BY temp.byYear, temp.byMonth, temp.byWeek;
+
+
+        CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_monthly USING CarbonAnalytics 
+        OPTIONS (tableName "LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY", schema "tenantID string -i, apiName string -i, fullApiName string, apiCount int -i, _timestamp long -i");
+        INSERT OVERWRITE table loganalyzer_apim_message_processing_monthly 
+        SELECT  
+            temp.tenantID AS tenantID, 
+            temp.apiName AS logApiName,
+            temp.fullApiName as fullApiName,
+            SUM(temp.apiCount) AS totalAPICount,
+            getMonthStartingTime(temp.byYear, temp.byMonth) AS _timestamp 
+        FROM (
+            SELECT  
+                apiName AS apiName,
+                fullApiName as fullApiName,
+                getYear(_timestamp) AS byYear, 
+                getMonth(_timestamp) AS byMonth, 
+                first(apiCount) AS apiCount, 
+                tenantID AS tenantID 
+        FROM loganalyzer_apim_message_processing_daily
+        GROUP BY tenantID, apiName, _timestamp, fullApiName 
+        ORDER BY _timestamp
+        )temp 
+        GROUP BY temp.tenantID, temp.apiName, temp.byYear, temp.byMonth, temp.fullApiName 
+        ORDER BY temp.byYear, temp.byMonth;
 
         CREATE TEMPORARY TABLE loganalyzer_apikey_status USING CarbonAnalytics OPTIONS (tableName
         "LOGANALYZER_APIKEY_STATUS",
