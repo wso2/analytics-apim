@@ -113,7 +113,7 @@
         SELECT 
             getRegexMatch(_class, "(?&lt;=API_LOGGER.admin--)(.*)") AS apiName,
             _class as fullApiName, 
-            (_eventTimeStamp) AS byYear, 
+            getYear(_eventTimeStamp) AS byYear, 
             getMonth(_eventTimeStamp) AS byMonth, 
             getDay(_eventTimeStamp) AS byDay, 
             count(*) AS apiCount, 
