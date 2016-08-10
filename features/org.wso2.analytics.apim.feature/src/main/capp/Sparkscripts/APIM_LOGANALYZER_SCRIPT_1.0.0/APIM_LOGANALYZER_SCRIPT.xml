@@ -238,6 +238,25 @@
         invalidLoginAttemptDaily GROUP BY tenantID, _timestamp ORDER BY
         _timestamp)temp GROUP BY temp.agent, temp.byYear, temp.byMonth, temp.byWeek ORDER BY temp.byYear,
         temp.byMonth, temp.byWeek;
+
+        CREATE TEMPORARY TABLE CopyOfLoganalyzer USING CarbonAnalytics OPTIONS (tableName "LOGANALYZER", schema "_class
+        string -i, _content string -i, tenantID string -i, _level string -i, _trace string -i, _eventTimeStamp long
+        -i",primaryKeys "_class, _content, _level, _eventTimeStamp");
+
+        CREATE TEMPORARY TABLE loganalyzer_apim_audit_log USING CarbonAnalytics
+        OPTIONS (tableName "LOGANALYZER_APIM_AUDIT_LOG", schema "tenantID string -i, user string , action string -i, type string -i, info string,_timestamp long -i", mergeSchema "true");
+
+        INSERT OVERWRITE table loganalyzer_apim_audit_log
+        SELECT
+        tenantID AS tenantID,
+        parseJson(_content, "performedBy") as user,
+        parseJson(_content, "action") as action,
+        parseJson(_content, "typ") as type,
+        parseJson(_content, "info") as info,
+        _eventTimeStamp as _timestamp
+        FROM CopyOfLoganalyzer
+        WHERE _class = 'AUDIT_LOG' AND _content LIKE "%performedBy%"
+        ORDER BY _eventTimeStamp;
     </Script>
     <CronExpression>0 0/15 * 1/1 * ? *</CronExpression>
 
