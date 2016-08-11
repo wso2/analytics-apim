@@ -239,9 +239,6 @@
         _timestamp)temp GROUP BY temp.agent, temp.byYear, temp.byMonth, temp.byWeek ORDER BY temp.byYear,
         temp.byMonth, temp.byWeek;
 
-        CREATE TEMPORARY TABLE CopyOfLoganalyzer USING CarbonAnalytics OPTIONS (tableName "LOGANALYZER", schema "_class
-        string -i, _content string -i, tenantID string -i, _level string -i, _trace string -i, _eventTimeStamp long
-        -i",primaryKeys "_class, _content, _level, _eventTimeStamp");
 
         CREATE TEMPORARY TABLE loganalyzer_apim_audit_log USING CarbonAnalytics
         OPTIONS (tableName "LOGANALYZER_APIM_AUDIT_LOG", schema "tenantID string -i, user string , action string -i, type string -i, info string,_timestamp long -i", mergeSchema "true");
