@@ -40,25 +40,26 @@ import java.util.Map;
 public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     private static final Log log = LogFactory.getLog(AbnormalRequestCountTestCase.class);
     private DataPublisherClient dataPublisherClient;
-    private final String STREAM_NAME = "loganalyzer";
-    private final String STREAM_VERSION = "1.0.0";
-    private final String TEST_RESOURCE_PATH = "logAnalyzerArtifacts";
-    private final String SPARK_SCRIPT = "APIM_LOGANALYZER_SCRIPT";
-    private final String LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY = "LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY";
-    private final String LOGANALYZER_MESSAGE_LEVEL_ERROR_WEEKLY = "LOGANALYZER_MESSAGE_LEVEL_ERROR_WEEKLY";
-    private final String LOGANALYZER_MESSAGE_LEVEL_ERROR_MONTHLY = "LOGANALYZER_MESSAGE_LEVEL_ERROR_MONTHLY";
-    private final String LOGANALYZER_CLASS_LEVEL_ERROR_DAILY = "LOGANALYZER_CLASS_LEVEL_ERROR_DAILY";
-    private final String LOGANALYZER_CLASS_LEVEL_ERROR_WEEKLY = "LOGANALYZER_CLASS_LEVEL_ERROR_WEEKLY";
-    private final String LOGANALYZER_CLASS_LEVEL_ERROR_MONTHLY = "LOGANALYZER_CLASS_LEVEL_ERROR_MONTHLY";
-    private final String LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY = "LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY";
-    private final String LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY = "LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY";
-    private final String LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY = "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY";
-    private final String LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY = "LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY";
-    private final String LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY = "LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY";
-    private final String LOGANALYZER_APIKEY_STATUS = "LOGANALYZER_APIKEY_STATUS";
-    private final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY";
-    private final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY";
-    private final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY";
+    private static final String STREAM_NAME = "loganalyzer";
+    private static final String STREAM_VERSION = "1.0.0";
+    private static final String TEST_RESOURCE_PATH = "logAnalyzerArtifacts";
+    private static final String SPARK_SCRIPT = "APIM_LOGANALYZER_SCRIPT";
+    private static final String LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY = "LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY";
+    private static final String LOGANALYZER_MESSAGE_LEVEL_ERROR_WEEKLY = "LOGANALYZER_MESSAGE_LEVEL_ERROR_WEEKLY";
+    private static final String LOGANALYZER_MESSAGE_LEVEL_ERROR_MONTHLY = "LOGANALYZER_MESSAGE_LEVEL_ERROR_MONTHLY";
+    private static final String LOGANALYZER_CLASS_LEVEL_ERROR_DAILY = "LOGANALYZER_CLASS_LEVEL_ERROR_DAILY";
+    private static final String LOGANALYZER_CLASS_LEVEL_ERROR_WEEKLY = "LOGANALYZER_CLASS_LEVEL_ERROR_WEEKLY";
+    private static final String LOGANALYZER_CLASS_LEVEL_ERROR_MONTHLY = "LOGANALYZER_CLASS_LEVEL_ERROR_MONTHLY";
+    private static final String LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY = "LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY";
+    private static final String LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY = "LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY";
+    private static final String LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY = "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY";
+    private static final String LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY = "LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY";
+    private static final String LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY = "LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY";
+    private static final String LOGANALYZER_APIKEY_STATUS = "LOGANALYZER_APIKEY_STATUS";
+    private static final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY";
+    private static final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY";
+    private static final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY";
+    private static final String LOGANALYZER_AUDIT_LOG = "LOGANALYZER_APIM_AUDIT_LOG";
     private static final String[] columns = {"serverName", "appName", "eventTimeStamp", "class", "level", "content", "ip",
             "instance", "trace"};
     private final int MAX_TRIES = 20;
@@ -69,6 +70,7 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         dataPurging();
         Thread.sleep(1000);
     }
+
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
@@ -137,6 +139,8 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
                 "Spark script did not execute as expected, No entries found for table " + LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY + "!");
         Assert.assertTrue(isRecordExists(-1234, LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " + LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY + "!");
+        Assert.assertTrue(isRecordExists(-1234, LOGANALYZER_AUDIT_LOG, MAX_TRIES),
+                "Spark script did not execute as expected, No entries found for table " + LOGANALYZER_AUDIT_LOG + "!");
     }
 
     public void dataPurging() throws Exception {
@@ -187,6 +191,9 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         }
         if (isTableExist(-1234, LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY)) {
             deleteData(-1234, LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY);
+        }
+        if (isTableExist(-1234, LOGANALYZER_AUDIT_LOG)) {
+            deleteData(-1234, LOGANALYZER_AUDIT_LOG);
         }
     }
 
