@@ -57,6 +57,13 @@
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>
         </ColumnDefinition>
+	<ColumnDefinition>
+            <Name>_ip</Name>
+            <EnableIndexing>true</EnableIndexing>
+            <IsPrimaryKey>true</IsPrimaryKey>
+            <EnableScoreParam>false</EnableScoreParam>
+            <Type>STRING</Type>
+        </ColumnDefinition>
     </TableSchema>
     <Source>
         <StreamId>loganalyzer:1.0.0</StreamId>
