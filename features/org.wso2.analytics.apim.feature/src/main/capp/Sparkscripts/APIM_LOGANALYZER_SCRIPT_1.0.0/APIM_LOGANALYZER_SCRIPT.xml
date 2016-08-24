@@ -12,7 +12,7 @@
         OPTIONS (
             tableName "LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY",
             schema "tenantID string -i, message string -i, messageCount int -i, _timestamp long -i",
-            incrementalProcessing "loganalyzer_message_level_error_daily, DAY",
+            incrementalParams "loganalyzer_message_level_error_daily, DAY",
             mergeSchema "false"
         );
         INSERT OVERWRITE table loganalyzer_message_level_error_daily
@@ -42,7 +42,7 @@
         OPTIONS (
             tableName "LOGANALYZER_CLASS_LEVEL_ERROR_DAILY",
             schema "tenantID string -i, class string -i, classCount int -i, _timestamp long -i",
-            incrementalProcessing "loganalyzer_class_level_error_daily, DAY",
+            incrementalParams "loganalyzer_class_level_error_daily, DAY",
             mergeSchema "false"
         );
         INSERT OVERWRITE table loganalyzer_class_level_error_daily
@@ -175,7 +175,7 @@
         OPTIONS (
             tableName "LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY",
             schema "artifact string -i -f, tenantID string -i, artifactCount int -i, _timestamp long -i",
-            incrementalProcessing "loganalyzer_apim_artifact_deployed_daily, DAY",
+            incrementalParams "loganalyzer_apim_artifact_deployed_daily, DAY",
             mergeSchema "false"
         );
         INSERT OVERWRITE table loganalyzer_apim_artifact_deployed_daily
@@ -205,7 +205,7 @@
         OPTIONS (
             tableName "LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY",
             schema "artifact string -i -f, tenantID string -i, artifactCount int -i, _timestamp long -i",
-            incrementalProcessing "loganalyzer_apim_artifact_deleted_daily, DAY",
+            incrementalParams "loganalyzer_apim_artifact_deleted_daily, DAY",
             mergeSchema "false"
         );
         INSERT OVERWRITE table loganalyzer_apim_artifact_deleted_daily
@@ -234,7 +234,7 @@
         OPTIONS (
             tableName "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY",
             schema "tenantID string -i, apiName string -i, fullApiName string -i, apiCount int -i, _timestamp long -i",
-            incrementalProcessing "loganalyzer_apim_message_processing_daily, DAY",
+            incrementalParams "loganalyzer_apim_message_processing_daily, DAY",
             mergeSchema "false"
         );
         INSERT OVERWRITE table loganalyzer_apim_message_processing_daily
@@ -323,7 +323,7 @@
         OPTIONS (
             tableName "LOGANALYZER_APIKEY_STATUS",
             schema "status string -i, content string -i, byYear int -i, byMonth int -i, byDay int -i, _timestamp long -i",
-            incrementalProcessing "loganalyzer_apikey_status, DAY",
+            incrementalParams "loganalyzer_apikey_status, DAY",
             mergeSchema "false"
         );
         INSERT OVERWRITE table loganalyzer_apikey_status
@@ -364,7 +364,7 @@
         OPTIONS (
             tableName "LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY",
             schema "tenantID string -i, InvalidLoginCount int -i, _timestamp long -i",
-            incrementalProcessing "invalidLoginAttemptDaily, DAY",
+            incrementalParams "invalidLoginAttemptDaily, DAY",
             mergeSchema "false"
         );
 
