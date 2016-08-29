@@ -19,7 +19,7 @@ You can install the WSO2 API Manager analytics component by following the docume
 #How to Contribute
 
 Please report issues to our [API Analytics JIRA] (https://wso2.org/jira/browse/ANLYAPIM)
-Send your pull requests to [analytics-apim] (https://github.com/wso2/analytics-esb)
+Send your pull requests to [analytics-apim] (https://github.com/wso2/analytics-apim)
 
 #Contact us
 You can talk to us via the mailing lists:
