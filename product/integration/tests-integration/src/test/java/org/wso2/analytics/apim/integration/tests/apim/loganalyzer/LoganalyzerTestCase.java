@@ -73,7 +73,7 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
 
 
     @AfterClass(alwaysRun = true)
-    public void cleanup() throws Exception {
+    public void cleanup() throws Exception{
         dataPurging();
     }
 
@@ -209,7 +209,7 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         String line = "";
         String cvsSplitBy = ",";
         List<Event> eventDataToList = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        BufferedReader br = new BufferedReader(new FileReader(file));
             while ((line = br.readLine()) != null) {
                 // use comma as separator
                 String[] eventArray = line.split(cvsSplitBy, -1);
@@ -226,9 +226,6 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
                 Event laEvent = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]}, arbitraryDataMap);
                 eventDataToList.add(laEvent);
             }
-        } catch (Exception e) {
-            throw e;
-        }
         return eventDataToList;
     }
 }
