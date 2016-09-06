@@ -73,7 +73,7 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
 
 
     @AfterClass(alwaysRun = true)
-    public void cleanup() throws Exception{
+    public void cleanup() throws Exception {
         dataPurging();
     }
 
@@ -210,22 +210,22 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         String cvsSplitBy = ",";
         List<Event> eventDataToList = new ArrayList<>();
         BufferedReader br = new BufferedReader(new FileReader(file));
-            while ((line = br.readLine()) != null) {
-                // use comma as separator
-                String[] eventArray = line.split(cvsSplitBy, -1);
-                Map<String, String> arbitraryDataMap = new HashMap<String, String>();
-                arbitraryDataMap.put(columns[0], eventArray[1]);//serverName
-                arbitraryDataMap.put(columns[1], eventArray[2]);//appName
-                arbitraryDataMap.put(columns[2], eventArray[3]);//eventTimeStamp
-                arbitraryDataMap.put(columns[3], eventArray[4]);//class
-                arbitraryDataMap.put(columns[4], eventArray[5]);//level
-                arbitraryDataMap.put(columns[5], eventArray[6]);//content
-                arbitraryDataMap.put(columns[6], eventArray[7]);//ip
-                arbitraryDataMap.put(columns[7], eventArray[8]);//instance
-                arbitraryDataMap.put(columns[8], eventArray[9]);//trace
-                Event laEvent = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]}, arbitraryDataMap);
-                eventDataToList.add(laEvent);
-            }
+        while ((line = br.readLine()) != null) {
+            // use comma as separator
+            String[] eventArray = line.split(cvsSplitBy, -1);
+            Map<String, String> arbitraryDataMap = new HashMap<String, String>();
+            arbitraryDataMap.put(columns[0], eventArray[1]);//serverName
+            arbitraryDataMap.put(columns[1], eventArray[2]);//appName
+            arbitraryDataMap.put(columns[2], eventArray[3]);//eventTimeStamp
+            arbitraryDataMap.put(columns[3], eventArray[4]);//class
+            arbitraryDataMap.put(columns[4], eventArray[5]);//level
+            arbitraryDataMap.put(columns[5], eventArray[6]);//content
+            arbitraryDataMap.put(columns[6], eventArray[7]);//ip
+            arbitraryDataMap.put(columns[7], eventArray[8]);//instance
+            arbitraryDataMap.put(columns[8], eventArray[9]);//trace
+            Event laEvent = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]}, arbitraryDataMap);
+            eventDataToList.add(laEvent);
+        }
         return eventDataToList;
     }
 }
