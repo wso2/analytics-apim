@@ -35,6 +35,7 @@ import java.nio.charset.Charset;
 public class TemplateManagerInitializer {
     public static final String SPARK_SCRIPT_REGISTRY_PATH = "/repository/components/org.wso2.carbon.analytics.spark";
     public static final String TEMPLATE_CONFIGS_REGISTRY_PATH = "/repository/components/org.wso2.carbon.event.template.manager.core/template-config/APIMAnalytics";
+    public static final String OVERWRITE_TEMPLATE_MANAGER_VAR = "overwriteTemplateManager";
 
     private static final Log log = LogFactory.getLog(TemplateManagerInitializer.class);
 
@@ -89,8 +90,14 @@ public class TemplateManagerInitializer {
                     RegistryConstants.PATH_SEPARATOR + configPath;
             try {
                 if (configRegistry.resourceExists(resourcePath)) {
-                    // to avoid overwriting user-modified files.
-                    return;
+                    //check template manager need to replace
+                    String overwrite = System.getProperty(OVERWRITE_TEMPLATE_MANAGER_VAR);
+                    if ("true".equalsIgnoreCase(overwrite.trim())) {
+                        log.info("TemplateManager will overwrite since it is selected!");
+                    } else {
+                        // to avoid overwriting user-modified files.
+                        return;
+                    }
                 }
                 String configContent = FileUtil.readFileToString(srcConfigDir + File.separator + configPath);
                 Resource resource = configRegistry.newResource();
