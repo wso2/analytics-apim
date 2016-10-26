@@ -1198,7 +1198,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                 );
 
                 INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
-                SELECT applicationId, api_version, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), $percentile) as percentile
+                SELECT applicationId, api_version, getpercentileValue(cast(AVG(request_count) as double), cast(SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)) as double), cast($percentile as double)) as percentile
                 FROM
                    (SELECT applicationId, api_version, SUM(total_request_count) as request_count
                     FROM ORG_WSO2_API_REQUESTS
@@ -1290,8 +1290,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         );
 
         INSERT INTO TABLE REQUEST_PER_API_PERCENTILE_GEN
-        select getpercentileValue(avg(requestsPerMinPerApi), sqrt(avg(cast(requestsPerMinPerApi
-        as double)*cast(requestsPerMinPerApi as double))-avg(requestsPerMinPerApi)*avg(requestsPerMinPerApi)) , $lowerPercentile ) as requestsPerMinPerApiLowerPercentile,
+        select getpercentileValue(cast(avg(requestsPerMinPerApi) as double), cast(sqrt(avg(cast(requestsPerMinPerApi
+        as double)*cast(requestsPerMinPerApi as double))-avg(requestsPerMinPerApi)*avg(requestsPerMinPerApi)) as double) , cast($lowerPercentile as double) ) as requestsPerMinPerApiLowerPercentile,
         api_version as api_version, tenantDomain
 
         from REQUEST_PER_API_INFO group by api_version, tenantDomain; 
@@ -1330,10 +1330,10 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
         INSERT OVERWRITE TABLE REQUEST_PERCENTILE_GEN
         select api_version, userId, consumerKey, resourceTemplate, method,
-        getpercentileValue(avg(total_request_count), sqrt(avg(cast(total_request_count
-        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) , $upperPercentile ) as requestsPerMinUpperPercentile,
-        getpercentileValue(avg(total_request_count), sqrt(avg(cast(total_request_count
-        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) , $lowerPercentile ) as requestsPerMinLowerPercentile
+        getpercentileValue(cast(avg(total_request_count) as double), cast(sqrt(avg(cast(total_request_count
+        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) as double), cast($upperPercentile as double) ) as requestsPerMinUpperPercentile,
+        getpercentileValue(cast(avg(total_request_count) as double), cast(sqrt(avg(cast(total_request_count
+        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) as double) , cast($lowerPercentile as double)) as requestsPerMinLowerPercentile
 
         from REQUEST_INFO group by api_version, userId, consumerKey, resourceTemplate, method;
 
@@ -1377,8 +1377,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
         INSERT INTO TABLE RESPONSE_PER_API_PERCENTILE_GEN
         select api_version, tenantDomain, 
-        getpercentileValue(avg(responsesPerMinPerApi), sqrt(avg(cast(responsesPerMinPerApi
-        as double)*cast(responsesPerMinPerApi as double))-avg(responsesPerMinPerApi)*avg(responsesPerMinPerApi)) , $lowerPercentile ) as responsesPerMinPerApiLowerPercentile
+        getpercentileValue(cast(avg(responsesPerMinPerApi) as double), cast(sqrt(avg(cast(responsesPerMinPerApi
+        as double)*cast(responsesPerMinPerApi as double))-avg(responsesPerMinPerApi)*avg(responsesPerMinPerApi)) as double), cast($lowerPercentile as double) ) as responsesPerMinPerApiLowerPercentile
         from RESPONSE_PER_API_INFO group by api_version, tenantDomain;
 
                  ]]>
@@ -1413,8 +1413,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
         );
 
         INSERT INTO TABLE RESPONSE_PER_TIME_PERCENTILE_GEN
-        select api_version, tenantDomain,
-        getpercentileValue(avg(responseTime), sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) , $upperPercentile ) as responseTimePerApiUpperPercentile
+        getpercentileValue(cast(avg(responseTime) as double), cast(sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) as double),
+        cast($upperPercentile as double) ) as responseTimePerApiUpperPercentile
 
         from RESPONSE_INFO group by api_version, tenantDomain;
                  ]]>
@@ -1453,8 +1453,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
 
         INSERT OVERWRITE TABLE RESPONSE_PERCENTILE_GEN
         select api_version, tenantDomain, resourceTemplate, method,
-        getpercentileValue(avg(responseTime), sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) , $upperPercentileRespondTime ) as responsePercentile,
-        getpercentileValue(avg(backendTime), sqrt(avg(cast(backendTime as double)*cast(backendTime as double))-avg(backendTime)*avg(backendTime)) , $upperPercentilebackendTime ) as backendPercentile
+        getpercentileValue(cast(avg(responseTime) as double), cast(sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) as double), cast($upperPercentileRespondTime as double) ) as responsePercentile,
+        getpercentileValue(cast(avg(backendTime) as double), cast(sqrt(avg(cast(backendTime as double)*cast(backendTime as double))-avg(backendTime)*avg(backendTime)) as double), cast($upperPercentilebackendTime as double) ) as backendPercentile
         from RESPONSE_INFO group by api_version, tenantDomain, resourceTemplate, method;
 
                  ]]>
