@@ -13,10 +13,10 @@
 
         INSERT OVERWRITE TABLE REQUEST_PERCENTILE_GEN
         select api_version, userId, consumerKey, resourceTemplate, method,
-        getpercentileValue(avg(total_request_count), sqrt(avg(cast(total_request_count
-        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) , 0.95 ) as requestsPerMinUpperPercentile,
-        getpercentileValue(avg(total_request_count), sqrt(avg(cast(total_request_count
-        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) , 0.05 ) as requestsPerMinLowerPercentile
+        getpercentileValue(cast(avg(total_request_count) as double), cast(sqrt(avg(cast(total_request_count
+        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) as double), cast(0.95 as double) ) as requestsPerMinUpperPercentile,
+        getpercentileValue(cast(avg(total_request_count) as double), cast(sqrt(avg(cast(total_request_count
+        as double)*cast(total_request_count as double))-avg(total_request_count)*avg(total_request_count)) as double) , cast(0.05 as double)) as requestsPerMinLowerPercentile
 
         from REQUEST_INFO group by api_version, userId, consumerKey, resourceTemplate, method;
 

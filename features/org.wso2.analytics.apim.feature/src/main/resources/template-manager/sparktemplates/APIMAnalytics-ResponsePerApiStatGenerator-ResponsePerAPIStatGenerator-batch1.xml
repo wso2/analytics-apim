@@ -13,8 +13,8 @@
 
         INSERT INTO TABLE RESPONSE_PER_API_PERCENTILE_GEN
         select api_version, tenantDomain, 
-        getpercentileValue(avg(responsesPerMinPerApi), sqrt(avg(cast(responsesPerMinPerApi
-        as double)*cast(responsesPerMinPerApi as double))-avg(responsesPerMinPerApi)*avg(responsesPerMinPerApi)) , 0.05 ) as responsesPerMinPerApiLowerPercentile
+        getpercentileValue(cast(avg(responsesPerMinPerApi) as double), cast(sqrt(avg(cast(responsesPerMinPerApi
+        as double)*cast(responsesPerMinPerApi as double))-avg(responsesPerMinPerApi)*avg(responsesPerMinPerApi)) as double), cast(0.05 as double) ) as responsesPerMinPerApiLowerPercentile
         from RESPONSE_PER_API_INFO group by api_version, tenantDomain;
     </Script>
 </Analytics>
