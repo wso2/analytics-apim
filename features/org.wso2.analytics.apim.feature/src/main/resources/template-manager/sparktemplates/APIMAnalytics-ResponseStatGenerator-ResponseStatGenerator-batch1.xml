@@ -16,8 +16,8 @@
 
         INSERT OVERWRITE TABLE RESPONSE_PERCENTILE_GEN
         select api_version, tenantDomain, resourceTemplate, method,
-        getpercentileValue(avg(responseTime), sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) , 0.95 ) as responsePercentile,
-        getpercentileValue(avg(backendTime), sqrt(avg(cast(backendTime as double)*cast(backendTime as double))-avg(backendTime)*avg(backendTime)) , 0.95 ) as backendPercentile
+        getpercentileValue(cast(avg(responseTime) as double), cast(sqrt(avg(cast(responseTime as double)*cast(responseTime as double))-avg(responseTime)*avg(responseTime)) as double), cast(0.95 as double) ) as responsePercentile,
+        getpercentileValue(cast(avg(backendTime) as double), cast(sqrt(avg(cast(backendTime as double)*cast(backendTime as double))-avg(backendTime)*avg(backendTime)) as double), cast(0.95 as double) ) as backendPercentile
         from RESPONSE_INFO group by api_version, tenantDomain, resourceTemplate, method;
 
     </Script>

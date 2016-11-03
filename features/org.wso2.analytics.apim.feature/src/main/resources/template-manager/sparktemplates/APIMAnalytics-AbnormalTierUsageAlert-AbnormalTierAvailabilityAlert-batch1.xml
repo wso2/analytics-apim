@@ -47,7 +47,7 @@
       );
 
       INSERT OVERWRITE TABLE ORG_WSO2_API_PERCENTILE
-      SELECT applicationId, api_version, getpercentileValue(AVG(request_count), SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)), 0.05) as percentile
+      SELECT applicationId, api_version, getpercentileValue(cast(AVG(request_count) as double), cast(SQRT(AVG(request_count*request_count) - AVG(request_count)*AVG(request_count)) as double), cast(0.05 as double)) as percentile
       FROM
          (SELECT applicationId, api_version, SUM(total_request_count) as request_count
           FROM ORG_WSO2_API_REQUESTS
