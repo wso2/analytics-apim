@@ -904,5 +904,15 @@
             <fileMode>644</fileMode>
         </file>
 
+        <!--akka conf files-->
+        <file>
+            <source>
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/bundle-config/com.typesafe.config/reference.conf
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc/bundle-config/com.typesafe.config/
+            </outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+
     </files>
 </assembly>
