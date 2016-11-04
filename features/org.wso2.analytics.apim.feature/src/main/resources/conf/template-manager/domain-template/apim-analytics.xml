@@ -1113,7 +1113,7 @@ insert into IPAccessSummary;
 create temporary table accessTokenRefreshAvrgTime using CarbonAnalytics options (tableName "ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHSUMMARYTABLE", schema "userId STRING -i, clientId STRING -i, scopes STRING -i, minTimeDifference DOUBLE -i, maxTimeDifference DOUBLE -i", primaryKeys "userId, clientId, scopes");
 
 INSERT INTO TABLE accessTokenRefreshAvrgTime
-      SELECT temp.userId, temp.clientId, temp.scopes, getpercentileValue(AVG(timeDifference), SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)), $lowerPercentile) as minTimeDifference, getpercentileValue(AVG(timeDifference), SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)), $upperPercentile) as maxTimeDifference
+      SELECT temp.userId, temp.clientId, temp.scopes, getpercentileValue(cast(AVG(timeDifference) as double), cast(SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)) as double), cast($lowerPercentile as double)) as minTimeDifference, getpercentileValue(cast(AVG(timeDifference) as double), cast(SQRT(AVG(timeDifference*timeDifference) - AVG(timeDifference)*AVG(timeDifference)) as double), cast($upperPercentile as double)) as maxTimeDifference
       FROM
          (SELECT userId, clientId,scopes, timeDifference
           FROM accessTokenRefreshTime
