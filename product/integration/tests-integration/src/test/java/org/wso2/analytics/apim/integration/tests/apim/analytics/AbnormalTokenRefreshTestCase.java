@@ -87,7 +87,6 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         }
         if (isTableExist(-1234, LAST_ACCESS_TOKEN_REFRESH_TABLE)) {
             deleteData(-1234, LAST_ACCESS_TOKEN_REFRESH_TABLE);
-
         }
         // undeploy the publishers
         undeployPublisher(PUBLISHER_FILE);

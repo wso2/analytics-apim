@@ -101,7 +101,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
             params[1].setValue("1");
         }
         apimAnalyticsExecutionPlan.setConfigurationParameterDTOs(params);
-        saveConfiguration(apimAnalyticsExecutionPlan);
+        editConfiguration(apimAnalyticsExecutionPlan);
         do { // wait till it get redeployed
             Thread.sleep(1000);
         } while (getActiveExecutionPlanCount() != count);
@@ -324,8 +324,8 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         return configElement.toString();
     }
 
-    protected void saveConfiguration(ScenarioConfigurationDTO templateConfigDTO) throws RemoteException {
-        templateManagerAdminServiceClient.saveConfiguration(templateConfigDTO);
+    protected void editConfiguration(ScenarioConfigurationDTO templateConfigDTO) throws RemoteException {
+        templateManagerAdminServiceClient.editConfiguration(templateConfigDTO);
     }
 
 //    protected ParameterDTOE getParameterDTO(String name, String defaultValue, String type){

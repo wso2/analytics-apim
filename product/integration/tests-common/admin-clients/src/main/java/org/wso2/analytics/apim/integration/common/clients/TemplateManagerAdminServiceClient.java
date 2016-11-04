@@ -89,9 +89,9 @@ public class TemplateManagerAdminServiceClient {
         }
     }
 
-    public String[] saveConfiguration(ScenarioConfigurationDTO templateConfigDTO) throws RemoteException {
+    public String[] editConfiguration(ScenarioConfigurationDTO templateConfigDTO) throws RemoteException {
         try {
-            return templateManagerAdminServiceStub.saveConfiguration(templateConfigDTO);
+            return templateManagerAdminServiceStub.editConfiguration(templateConfigDTO);
         } catch (RemoteException e) {
             log.error("RemoteException", e);
             throw new RemoteException(e.getMessage(), e);
