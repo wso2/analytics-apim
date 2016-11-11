@@ -612,7 +612,7 @@
 
 	<properties>
         <analytics.apim.version>2.1.0-SNAPSHOT</analytics.apim.version>
-        <analytics.apim.jar.version>2.1.0.alpha</analytics.apim.jar.version>
+        <analytics.apim.jar.version>2.1.0.SNAPSHOT</analytics.apim.jar.version>
         <carbon.shared.analytics.version>1.0.3</carbon.shared.analytics.version>
 		<carbon.kernel.version>4.4.10</carbon.kernel.version>
         <carbon.analytics.version>1.2.8</carbon.analytics.version>
