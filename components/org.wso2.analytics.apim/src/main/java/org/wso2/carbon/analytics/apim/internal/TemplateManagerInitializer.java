@@ -69,7 +69,7 @@ public class TemplateManagerInitializer {
         }
         String overwrite = System.getProperty(OVERWRITE_TEMPLATE_MANAGER_VAR);
         for (String path : initialConfigPaths) {
-            deploy(sparkConfigDir + File.separator + path, "", overwrite.trim());
+            deploy(sparkConfigDir + File.separator + path, "", overwrite == null ? null : overwrite.trim());
         }
     }
 
