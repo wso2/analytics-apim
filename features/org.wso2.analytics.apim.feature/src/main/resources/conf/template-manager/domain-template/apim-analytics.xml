@@ -1019,7 +1019,7 @@ insert into IPAccessSummary;
 
                                 @info(name = 'query11')
                                 from every (e1=responseCodeSummaryStream[responseCode > 499 AND responseCode < 600]) -> e2=responseCodeSummaryStream [e1.api_version == api_version AND responseCode > 499 AND responseCode < 600]  <5:>
-                                select e1.api_version, e1.apiPublisher, e1.tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                select e1.api_version,  ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into apiHealthMonitorAlertStream;
 
                                 @info(name='query12')
