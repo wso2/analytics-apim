@@ -100,7 +100,7 @@
                                                                 
                                                                 @info(name = 'query6')
                                                                 from every (e1=requestResponseSummaryStream[requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile]) -> e2=requestResponseSummaryStream [e1.api_version == api_version AND e1.tenantDomain == tenantDomain AND requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <1:>
-                                                                select e1.api_version as api_version , e1.apiPublisher, e1.tenantDomain, str:concat('Response count is lower than ' , e1.responsesPerMinLowerPercentile, ' continuously for 5 or more minutes.')  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                                                select e1.api_version as api_version , ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, str:concat('Response count is lower than ' , e1.responsesPerMinLowerPercentile, ' continuously for 5 or more minutes.')  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                                                 insert into apiHealthMonitorAlertStream;
 																
 							    /* Now start response time queries */
@@ -120,7 +120,7 @@
 																
 																 @info(name = 'query9')
                                                                 from every (e1=responseInfoStream[responseTime>responseTimePerApiUpperPercentile]) -> e2=responseInfoStream [e1.api_version == api_version AND e1.tenantDomain == tenantDomain AND responseTime>responseTimePerApiUpperPercentile] <4:>
-                                                                select e1.api_version, e1.apiPublisher, e1.tenantDomain, str:concat('Response time is higher than ' , e1.responseTimePerApiUpperPercentile, ' ms continuously for 5 or more responses.') as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                                                select e1.api_version, ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, str:concat('Response time is higher than ' , e1.responseTimePerApiUpperPercentile, ' ms continuously for 5 or more responses.') as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                                                 insert into apiHealthMonitorAlertStream;
 																
 									@info(name = 'query10')
@@ -130,7 +130,7 @@
 
                                 @info(name = 'query11')
                                 from every (e1=responseCodeSummaryStream[responseCode > 499 AND responseCode < 600]) -> e2=responseCodeSummaryStream [e1.api_version == api_version AND e1.tenantDomain == tenantDomain AND responseCode > 499 AND responseCode < 600]  <4:>
-                                select e1.api_version, e1.apiPublisher, e1.tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+                                select e1.api_version, ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                 insert into apiHealthMonitorAlertStream;
 								
 
