@@ -162,7 +162,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0",
                 "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "20", "7", "19", "admin@carbon.super", String.valueOf(System.currentTimeMillis()),
-                "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200","destination"});
+                "carbon.super", "192.168.66.1", "admin", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200","destination"});
         events.add(eventDto);
         boolean responseTimeTooHigh = isAlertReceived(0, "\"msg\":\"Response time is higher\"", 50, 1000);
         Assert.assertFalse(responseTimeTooHigh, "Response time too high for continuous 5 events, alert is received!");
@@ -369,7 +369,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         eventDto.setEventStreamId(getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION));
         eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0",
                 "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "40", "7", "19", "admin@carbon.super", "1456894602386",
-                "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "550", "destination"});
+                "carbon.super", "192.168.66.1", "admin", "DefaultApplication", "1", "FALSE", "0", "https-8243", "550", "destination"});
         for(int i=0; i<3; i++){
             publishEvent(eventDto);
         }
@@ -386,7 +386,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
             eventDto.setEventStreamId(getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION));
             eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0",
                     "CalculatorAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "40", "7", "19", "admin@carbon.super", String.valueOf(System.currentTimeMillis()),
-                    "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200", "destination"});
+                    "carbon.super", "192.168.66.1", "admin", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200", "destination"});
             events.add(eventDto);
         }
         return events;
@@ -399,7 +399,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
             eventDto.setEventStreamId(getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION));
             eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/number/1.0", "NumberAPI:v1.0",
                     "NumberAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", "40", "7", "19", "admin@carbon.super", String.valueOf(System.currentTimeMillis()),
-                    "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200", "destination"});
+                    "carbon.super", "192.168.66.1", "admin", "DefaultApplication", "1", "FALSE", "0", "https-8243", "200", "destination"});
             events.add(eventDto);
         }
         return events;
@@ -412,7 +412,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
             eventDto.setEventStreamId(getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION));
             eventDto.setAttributeValues(new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/number/1.0", "NumberAPI:v1.0",
                     "NumberAPI", "/add?x=12&y=3", "/add", "GET", "1", "1", String.valueOf(System.currentTimeMillis()), "admin@carbon.super", "carbon.super", "192.168.66.1",
-                    "admin@carbon.super", "DefaultApplication", "1", "chrome", "Unlimited", "FALSE", "192.168.66.1", "admin"});
+                    "admin", "DefaultApplication", "1", "chrome", "Unlimited", "FALSE", "192.168.66.1", "admin"});
             events.add(eventDto);
         }
         return events;
