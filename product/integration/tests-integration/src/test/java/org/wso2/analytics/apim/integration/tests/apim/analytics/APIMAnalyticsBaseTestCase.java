@@ -84,11 +84,11 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         analyticsDataAPI = new CarbonAnalyticsAPI(apiConf);
         eventSimulatorAdminServiceClient = getEventSimulatorAdminServiceClient(backendURL, session);
         initializeStub();
-        
+
         int count = getActiveExecutionPlanCount();
-        
+
         deleteExecutionPlan(REQUEST_SUMMARIZER);
-        
+
         // configuring the entry point 
         ScenarioConfigurationDTO apimAnalyticsExecutionPlan = getConfiguration("APIMAnalytics", "RequestSummarizer");
         ConfigurationParameterDTO[] params = apimAnalyticsExecutionPlan.getConfigurationParameterDTOs();
@@ -105,7 +105,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         do { // wait till it get redeployed
             Thread.sleep(1000);
         } while (getActiveExecutionPlanCount() != count);
-        
+
     }
 
     /**
@@ -426,7 +426,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     protected int getExecutionPlanCount() throws RemoteException {
         return eventProcessorAdminServiceClient.getExecutionPlanConfigurationCount();
     }
-    
+
     protected int getActiveExecutionPlanCount() throws RemoteException {
         return eventProcessorAdminServiceClient.getActiveExecutionPlanConfigurationCount();
     }
@@ -502,14 +502,14 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      *
      * @param tenantId  Tenant ID of the table.
      * @param tableName name of the Table.
-     * @param max_tries no of attempts to get record count.
+     * @param maxTries no of attempts to get record count.
      * @return true if record exists in the given table.
      * @throws InterruptedException
      * @throws AnalyticsException
      */
-    protected boolean isRecordExists(int tenantId, String tableName, int max_tries) throws InterruptedException, AnalyticsException {
+    protected boolean isRecordExists(int tenantId, String tableName, int maxTries) throws InterruptedException, AnalyticsException {
         int i = 0;
-        while (i < max_tries) {
+        while (i < maxTries) {
             if (getRecordCount(tenantId, tableName) >= 1) {
                 return true;
             }

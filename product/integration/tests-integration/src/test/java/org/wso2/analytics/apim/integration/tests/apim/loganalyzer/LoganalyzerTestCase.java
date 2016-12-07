@@ -39,7 +39,6 @@ import java.util.Map;
 
 public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     private static final Log log = LogFactory.getLog(AbnormalRequestCountTestCase.class);
-    private DataPublisherClient dataPublisherClient;
     private static final String STREAM_NAME = "loganalyzer";
     private static final String STREAM_VERSION = "1.0.0";
     private static final String TEST_RESOURCE_PATH = "logAnalyzerArtifacts";
@@ -60,8 +59,15 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     private static final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY";
     private static final String LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY = "LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY";
     private static final String LOGANALYZER_AUDIT_LOG = "LOGANALYZER_APIM_AUDIT_LOG";
-    private static final String[] columns = {"serverName", "appName", "eventTimeStamp", "class", "level", "content", "ip",
-            "instance", "trace"};
+    private static final String SERVER_NAME = "serverName";
+    private static final String APP_NAME = "appName";
+    private static final String EVENT_TIMESTAMP = "eventTimeStamp";
+    private static final String CLASS = "class";
+    private static final String LEVEL = "level";
+    private static final String CONTENT = "content";
+    private static final String IP = "ip";
+    private static final String INSTANCE = "instance";
+    private static final String TRACE = "trace";
     private final int MAX_TRIES = 20;
 
     @BeforeClass(alwaysRun = true)
@@ -143,7 +149,7 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
                 "Spark script did not execute as expected, No entries found for table " + LOGANALYZER_AUDIT_LOG + "!");
     }
 
-    public void dataPurging() throws Exception {
+    private void dataPurging() throws Exception {
         if (isTableExist(-1234, STREAM_NAME.toUpperCase())) {
             deleteData(-1234, STREAM_NAME.toUpperCase());
         }
@@ -199,35 +205,32 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
 
     private void publishEvent(String testResourcePath, String resourceName, String streamId) throws Exception {
         List<Event> eventListFromCSV = getEventListFromCSV(getFilePath(testResourcePath, resourceName), streamId);
-        dataPublisherClient = new DataPublisherClient();
+        DataPublisherClient dataPublisherClient = new DataPublisherClient();
         dataPublisherClient.publish(STREAM_NAME, STREAM_VERSION, eventListFromCSV);
         Thread.sleep(10000);
         dataPublisherClient.shutdown();
     }
 
-    public List<Event> getEventListFromCSV(String file, String streamId) throws IOException {
-        String line = "";
+    private List<Event> getEventListFromCSV(String file, String streamId) throws IOException {
+        String line ;
         String cvsSplitBy = ",";
         List<Event> eventDataToList = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            while ((line = br.readLine()) != null) {
-                // use comma as separator
-                String[] eventArray = line.split(cvsSplitBy, -1);
-                Map<String, String> arbitraryDataMap = new HashMap<String, String>();
-                arbitraryDataMap.put(columns[0], eventArray[1]);//serverName
-                arbitraryDataMap.put(columns[1], eventArray[2]);//appName
-                arbitraryDataMap.put(columns[2], eventArray[3]);//eventTimeStamp
-                arbitraryDataMap.put(columns[3], eventArray[4]);//class
-                arbitraryDataMap.put(columns[4], eventArray[5]);//level
-                arbitraryDataMap.put(columns[5], eventArray[6]);//content
-                arbitraryDataMap.put(columns[6], eventArray[7]);//ip
-                arbitraryDataMap.put(columns[7], eventArray[8]);//instance
-                arbitraryDataMap.put(columns[8], eventArray[9]);//trace
-                Event laEvent = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]}, arbitraryDataMap);
-                eventDataToList.add(laEvent);
-            }
-        } catch (Exception e) {
-            throw e;
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        while ((line = br.readLine()) != null) {
+            // use comma as separator
+            String[] eventArray = line.split(cvsSplitBy, -1);
+            Map<String, String> arbitraryDataMap = new HashMap<>();
+            arbitraryDataMap.put(SERVER_NAME, eventArray[1]);
+            arbitraryDataMap.put(APP_NAME, eventArray[2]);
+            arbitraryDataMap.put(EVENT_TIMESTAMP, eventArray[3]);
+            arbitraryDataMap.put(CLASS, eventArray[4]);
+            arbitraryDataMap.put(LEVEL, eventArray[5]);
+            arbitraryDataMap.put(CONTENT, eventArray[6]);
+            arbitraryDataMap.put(IP, eventArray[7]);
+            arbitraryDataMap.put(INSTANCE, eventArray[8]);
+            arbitraryDataMap.put(TRACE, eventArray[9]);
+            Event event = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]}, arbitraryDataMap);
+            eventDataToList.add(event);
         }
         return eventDataToList;
     }
