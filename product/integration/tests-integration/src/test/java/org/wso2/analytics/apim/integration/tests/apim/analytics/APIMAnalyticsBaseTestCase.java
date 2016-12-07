@@ -76,7 +76,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         siddhiSimulatorUtil = new SiddhiSimulatorUtil();
         eventPublisherAdminServiceClient = getEventPublisherAdminServiceClient(backendURL, session);
         templateManagerAdminServiceClient = getTemplateManagerAdminServiceClient(backendURL, session);
-        eventProcessorAdminServiceClient = getEventProcessorAdminServiceClien(backendURL,session);
+        eventProcessorAdminServiceClient = getEventProcessorAdminServiceClien(backendURL, session);
         logViewerClient = new LogViewerClient(backendURL, session);
         String apiConf =
                 new File(this.getClass().getClassLoader().
@@ -84,11 +84,11 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         analyticsDataAPI = new CarbonAnalyticsAPI(apiConf);
         eventSimulatorAdminServiceClient = getEventSimulatorAdminServiceClient(backendURL, session);
         initializeStub();
-        
+
         int count = getActiveExecutionPlanCount();
-        
+
         deleteExecutionPlan(REQUEST_SUMMARIZER);
-        
+
         // configuring the entry point 
         ScenarioConfigurationDTO apimAnalyticsExecutionPlan = getConfiguration("APIMAnalytics", "RequestSummarizer");
         ConfigurationParameterDTO[] params = apimAnalyticsExecutionPlan.getConfigurationParameterDTOs();
@@ -105,12 +105,13 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         do { // wait till it get redeployed
             Thread.sleep(1000);
         } while (getActiveExecutionPlanCount() != count);
-        
+
     }
 
     /**
      * Publishes given set of events. Events are in EventDto format.
-     * @param events EventDto list.
+     *
+     * @param events               EventDto list.
      * @param timeGapBetweenEvents time between two events in milliseconds.
      * @throws Exception
      */
@@ -123,6 +124,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Sends a single event.
+     *
      * @param eventDto EventDTO of the event.
      * @throws RemoteException
      */
@@ -132,7 +134,8 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Returns the table count of an INDEXED table.
-     * @param tenantId ID of the tenant.
+     *
+     * @param tenantId  ID of the tenant.
      * @param tableName name of the Table.
      * @return number of records in the table.
      * @throws AnalyticsException
@@ -143,9 +146,10 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Publishes events from a given csv file.
-     * @param testResourcePath test resources folder.
-     * @param resourceName name of the file.
-     * @param streamId stream ID
+     *
+     * @param testResourcePath     test resources folder.
+     * @param resourceName         name of the file.
+     * @param streamId             stream ID
      * @param timeGapBetweenEvents Time difference between sending of two events.
      * @throws Exception
      */
@@ -157,7 +161,8 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Deploys a given publisher for a stream.
-     * @param testResourcePath test resources folder.
+     *
+     * @param testResourcePath  test resources folder.
      * @param publisherFileName publisher file name.
      * @throws Exception
      */
@@ -170,6 +175,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Undeploys a given publisher of a stream.
+     *
      * @param publisherFileName publisher file name.
      * @throws RemoteException
      */
@@ -179,17 +185,19 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Delete data from a given table.
-     * @param tenantId Tenant ID.
+     *
+     * @param tenantId  Tenant ID.
      * @param tableName Name of the Table.
      * @throws AnalyticsException
      */
-    protected void deleteData(int tenantId, String tableName) throws AnalyticsException{
+    protected void deleteData(int tenantId, String tableName) throws AnalyticsException {
         analyticsDataAPI.delete(tenantId, tableName, Long.MIN_VALUE, Long.MAX_VALUE);
     }
 
     /**
      * Know if a table exists or not.
-     * @param tenantId Tenant ID of the table.
+     *
+     * @param tenantId  Tenant ID of the table.
      * @param tableName name of the Table.
      * @return true if a table exists with that name.
      * @throws AnalyticsException
@@ -200,15 +208,17 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Executes a given spark script.
+     *
      * @param scriptName name of the Spark Script.
      * @throws Exception
      */
-    protected void executeSparkScript(String scriptName) throws Exception{
+    protected void executeSparkScript(String scriptName) throws Exception {
         analyticsStub.executeScript(scriptName);
     }
 
     /**
      * Returns true if the Spark Script exists in the server.
+     *
      * @param scriptName Name of the spark script.
      * @return
      * @throws RemoteException
@@ -216,9 +226,9 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      */
     protected boolean isSparkScriptExists(String scriptName) throws RemoteException, AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException {
         AnalyticsProcessorAdminServiceStub.AnalyticsScriptDto[] scriptDtos = analyticsStub.getAllScripts();
-        if (scriptDtos != null){
-            for (AnalyticsProcessorAdminServiceStub.AnalyticsScriptDto scriptDto: scriptDtos){
-                if (scriptDto.getName().equalsIgnoreCase(scriptName)){
+        if (scriptDtos != null) {
+            for (AnalyticsProcessorAdminServiceStub.AnalyticsScriptDto scriptDto : scriptDtos) {
+                if (scriptDto.getName().equalsIgnoreCase(scriptName)) {
                     return true;
                 }
             }
@@ -228,8 +238,9 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Reads through the logs and determines if the given string is in the logs.
+     *
      * @param beforeCount Log count before.
-     * @param message message to look for in the logs.
+     * @param message     message to look for in the logs.
      * @return whether the string exists in the log.
      * @throws RemoteException
      * @throws LogViewerLogViewerException
@@ -250,7 +261,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
                     break;
                 }
             }
-            if(alertReceived){
+            if (alertReceived) {
                 break;
             }
             beforeCount = logs.length;
@@ -261,7 +272,8 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Returns the stream id of a stream.
-     * @param streamName name of the stream.
+     *
+     * @param streamName    name of the stream.
      * @param streamVersion version of the stream.
      * @return stream ID.
      */
@@ -271,8 +283,9 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Gives the absolute path of the given test resource.
+     *
      * @param testCaseFolderName folder relative to the test resources root.
-     * @param configFileName file name.
+     * @param configFileName     file name.
      * @return absolute path of the file.
      */
     protected String getFilePath(String testCaseFolderName, String configFileName) {
@@ -284,9 +297,10 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Publishes a single event.
-     * @param streamName name of the stream.
+     *
+     * @param streamName    name of the stream.
      * @param streamVersion version of the stream.
-     * @param event event.
+     * @param event         event.
      * @throws Exception
      */
     protected void publishEvent(String streamName, String streamVersion, Event event) throws Exception {
@@ -298,9 +312,10 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     /**
      * Publishes a given set of events.
-     * @param streamName name of the stream.
+     *
+     * @param streamName    name of the stream.
      * @param streamVersion version of the stream.
-     * @param events list of events.
+     * @param events        list of events.
      * @throws Exception
      */
     protected void pubishEvents(String streamName, String streamVersion, List<Event> events) throws Exception {
@@ -309,6 +324,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         Thread.sleep(5000);
         dataPublisherClient.shutdown();
     }
+
     /**
      * @param testCaseFolderName Name of the folder created under /artifacts/CEP for the particular test case.
      * @param configFileName     Name of the XML config-file created under above folder.
@@ -336,8 +352,8 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 //        return parameterDTO;
 //    }
 
-    protected ScenarioConfigurationDTO getConfiguration (String domainName, String configurationName) throws RemoteException {
-        return templateManagerAdminServiceClient.getConfiguration(domainName,configurationName);
+    protected ScenarioConfigurationDTO getConfiguration(String domainName, String configurationName) throws RemoteException {
+        return templateManagerAdminServiceClient.getConfiguration(domainName, configurationName);
     }
 
     private String getTestArtifactLocation() {
@@ -396,13 +412,13 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     }
 
     protected EventProcessorAdminServiceClient getEventProcessorAdminServiceClien(
-            String backEndURL, String loggedInSessionCookie) throws AxisFault{
-        initEventProcessorAdminServiceClient(backEndURL,loggedInSessionCookie);
+            String backEndURL, String loggedInSessionCookie) throws AxisFault {
+        initEventProcessorAdminServiceClient(backEndURL, loggedInSessionCookie);
         return eventProcessorAdminServiceClient;
     }
 
-    private void initEventProcessorAdminServiceClient(String backEndURL,String loggedInSessionCookie) throws AxisFault {
-        eventProcessorAdminServiceClient = new EventProcessorAdminServiceClient(backEndURL,loggedInSessionCookie);
+    private void initEventProcessorAdminServiceClient(String backEndURL, String loggedInSessionCookie) throws AxisFault {
+        eventProcessorAdminServiceClient = new EventProcessorAdminServiceClient(backEndURL, loggedInSessionCookie);
         ServiceClient client = eventProcessorAdminServiceClient._getServiceClient();
         Options options = client.getOptions();
         options.setManageSession(true);
@@ -411,7 +427,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
 
     protected String getExecutionPlanFromFile(String testCaseFolderName, String executionPlanFileName)
             throws Exception {
-        String relativeFilePath = getFilePath(testCaseFolderName,executionPlanFileName);
+        String relativeFilePath = getFilePath(testCaseFolderName, executionPlanFileName);
         //String relativeFilePath = getTestArtifactLocation() + CEPIntegrationTestConstants.RELATIVE_PATH_TO_TEST_ARTIFACTS + testCaseFolderName + "/" + executionPlanFileName;
         //relativeFilePath = relativeFilePath.replaceAll("[\\\\/]", Matcher.quoteReplacement(File.separator));
         return siddhiSimulatorUtil.readFile(relativeFilePath);
@@ -426,7 +442,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     protected int getExecutionPlanCount() throws RemoteException {
         return eventProcessorAdminServiceClient.getExecutionPlanConfigurationCount();
     }
-    
+
     protected int getActiveExecutionPlanCount() throws RemoteException {
         return eventProcessorAdminServiceClient.getActiveExecutionPlanConfigurationCount();
     }
@@ -502,14 +518,14 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      *
      * @param tenantId  Tenant ID of the table.
      * @param tableName name of the Table.
-     * @param max_tries no of attempts to get record count.
+     * @param maxTries  no of attempts to get record count.
      * @return true if record exists in the given table.
      * @throws InterruptedException
      * @throws AnalyticsException
      */
-    protected boolean isRecordExists(int tenantId, String tableName, int max_tries) throws InterruptedException, AnalyticsException {
+    protected boolean isRecordExists(int tenantId, String tableName, int maxTries) throws InterruptedException, AnalyticsException {
         int i = 0;
-        while (i < max_tries) {
+        while (i < maxTries) {
             if (getRecordCount(tenantId, tableName) >= 1) {
                 return true;
             }
