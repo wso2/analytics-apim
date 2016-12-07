@@ -212,7 +212,7 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     }
 
     private List<Event> getEventListFromCSV(String file, String streamId) throws IOException {
-        String line ;
+        String line;
         String cvsSplitBy = ",";
         List<Event> eventDataToList = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
