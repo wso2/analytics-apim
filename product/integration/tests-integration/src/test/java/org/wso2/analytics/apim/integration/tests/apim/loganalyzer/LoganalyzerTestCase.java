@@ -226,9 +226,7 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
                 Event laEvent = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]}, arbitraryDataMap);
                 eventDataToList.add(laEvent);
             }
-        } catch (Exception e) {
-            throw e;
+            return eventDataToList;
         }
-        return eventDataToList;
     }
 }
