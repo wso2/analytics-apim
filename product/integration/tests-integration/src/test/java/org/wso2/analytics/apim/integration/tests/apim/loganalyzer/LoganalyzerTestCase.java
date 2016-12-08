@@ -85,7 +85,7 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
 
     @Test(groups = "wso2.analytics.apim", description = "Tests if the Spark script is deployed")
     public void testLoganalyzerSparkScriptDeployment() throws Exception {
-        Assert.assertTrue(isSparkScriptExists(SPARK_SCRIPT), "APIM_LOGANALYZER_SCRIPT spark script is not deployed!");
+        Assert.assertTrue(isSparkScriptExists(SPARK_SCRIPT), SPARK_SCRIPT + " spark script is not deployed!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
