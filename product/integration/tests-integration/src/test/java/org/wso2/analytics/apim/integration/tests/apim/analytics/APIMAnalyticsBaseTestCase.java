@@ -518,7 +518,7 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      *
      * @param tenantId  Tenant ID of the table.
      * @param tableName name of the Table.
-     * @param maxTries  no of attempts to get record count.
+     * @param maxTries no of attempts to get record count.
      * @return true if record exists in the given table.
      * @throws InterruptedException
      * @throws AnalyticsException
