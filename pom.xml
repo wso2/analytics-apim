@@ -323,6 +323,11 @@
                 <version>${carbon.analytics.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.resource.stub</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.analytics</groupId>
                 <artifactId>org.wso2.carbon.analytics.activitydashboard.stub</artifactId>
                 <version>${carbon.analytics.version}</version>

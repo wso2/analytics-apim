@@ -97,6 +97,12 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         Assert.assertTrue(isSparkScriptExists(SPARK_SCRIPT), "Abnormal Token Refresh Alert spark script is not deployed!");
     }
 
+    @Test(groups = "wso2.analytics.apim", description = "Test whether the Spark Script is scheduled",
+            dependsOnMethods = "testSparkScriptDeployment")
+    public void testSparkScriptScheduled() throws Exception {
+        Assert.assertTrue(isSparkScriptScheduled(SPARK_SCRIPT), SPARK_SCRIPT + " spark script is not scheduled!");
+    }
+
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
             , dependsOnMethods = "testSparkScriptDeployment")
     public void testSimulationDataSent() throws Exception {
