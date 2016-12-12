@@ -113,6 +113,13 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
                 "spark script is not deployed!");
     }
 
+    @Test(groups = "wso2.analytics.apim", description = "Test whether the Spark Script is scheduled",
+            dependsOnMethods = "testResponseTimeSparkScriptDeployment")
+    public void testResponseTimeSparkScriptScheduled() throws Exception {
+        Assert.assertTrue(isSparkScriptScheduled(RESPONSE_TIME_SPARK_SCRIPT), RESPONSE_TIME_SPARK_SCRIPT + " spark " +
+                "script is not scheduled!");
+    }
+
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published"
             , dependsOnMethods = "testResponseTimeSparkScriptDeployment")
     public void testResponseSimulationDataSent() throws Exception {
@@ -291,10 +298,24 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
                 "spark script is not deployed!");
     }
 
+    @Test(groups = "wso2.analytics.apim", description = "Test whether the Spark Script is scheduled",
+            dependsOnMethods = "testResponseCountSparkScriptDeployment")
+    public void testResponseCountSparkScriptScheduled() throws Exception {
+        Assert.assertTrue(isSparkScriptScheduled(RESPONSE_COUNT_SPARK_SCRIPT), RESPONSE_COUNT_SPARK_SCRIPT + " spark " +
+                "script is not scheduled!");
+    }
+
     @Test(groups = "wso2.analytics.apim", description = "Tests if the Spark script is deployed", dependsOnMethods = "test3rdRequestCountSimulationDataSent")
     public void testRequestCountSparkScriptDeployment() throws Exception {
         Assert.assertTrue(isSparkScriptExists(REQUEST_COUNT_SPARK_SCRIPT), "Request count percentile generating " +
                 "spark script is not deployed!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test whether the Spark Script is scheduled",
+            dependsOnMethods = "testRequestCountSparkScriptDeployment")
+    public void testRequestCountSparkScriptScheduled() throws Exception {
+        Assert.assertTrue(isSparkScriptScheduled(REQUEST_COUNT_SPARK_SCRIPT), REQUEST_COUNT_SPARK_SCRIPT + " spark " +
+                "script is not scheduled!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Tests abnormally low response count alert",

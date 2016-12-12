@@ -246,6 +246,10 @@
             <artifactId>org.wso2.carbon.analytics.spark.stub</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.resource.stub</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.analytics</groupId>
             <artifactId>org.wso2.carbon.analytics.activitydashboard.stub</artifactId>
         </dependency>
