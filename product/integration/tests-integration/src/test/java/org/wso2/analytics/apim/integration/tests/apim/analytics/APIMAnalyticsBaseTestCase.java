@@ -44,6 +44,10 @@ import org.wso2.carbon.event.simulator.stub.types.EventDto;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
 import org.wso2.carbon.logging.view.stub.LogViewerLogViewerException;
 import org.wso2.carbon.logging.view.stub.types.carbon.LogEvent;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.registry.resource.stub.ResourceAdminServiceExceptionException;
+import org.wso2.carbon.registry.resource.stub.ResourceAdminServiceStub;
+import org.wso2.carbon.registry.resource.stub.common.xsd.ResourceData;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -59,16 +63,22 @@ import java.util.regex.Matcher;
 
 public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
     private static final String ANALYTICS_SERVICE_NAME = "AnalyticsProcessorAdminService";
+    private static final String RESOURCE_ADMIN_SERVICE_NAME = "ResourceAdminService";
     private static final String REQUEST_SUMMARIZER = "APIMAnalytics-RequestSummarizer-RequestSummarizer-realtime1";
     private DataPublisherClient dataPublisherClient;
     private AnalyticsDataAPI analyticsDataAPI;
     private AnalyticsProcessorAdminServiceStub analyticsStub;
+    private ResourceAdminServiceStub resourceAdminServiceStub;
     private SiddhiSimulatorUtil siddhiSimulatorUtil;
     protected EventPublisherAdminServiceClient eventPublisherAdminServiceClient;
     protected TemplateManagerAdminServiceClient templateManagerAdminServiceClient;
     protected LogViewerClient logViewerClient;
     protected EventSimulatorAdminServiceClient eventSimulatorAdminServiceClient;
     protected EventProcessorAdminServiceClient eventProcessorAdminServiceClient;
+    private static final String taskResourcePath = File.separator + "_system" + File.separator +"governance" +
+            File.separator + "repository" + File.separator + "components" + File.separator + "org.wso2.carbon.tasks" +
+            File.separator + "definitions" +File.separator + MultitenantConstants.SUPER_TENANT_ID + File.separator +
+            "ANALYTICS_SPARK" + File.separator;
 
     public void init() throws Exception {
         super.init();
@@ -83,7 +93,8 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
                         getResource("dasconfig" + File.separator + "analytics-data-config.xml").toURI()).getAbsolutePath();
         analyticsDataAPI = new CarbonAnalyticsAPI(apiConf);
         eventSimulatorAdminServiceClient = getEventSimulatorAdminServiceClient(backendURL, session);
-        initializeStub();
+        initializeAnalyticsProcessorAdminServiceStub();
+        initializeResourceAdminServiceStub();
 
         int count = getActiveExecutionPlanCount();
 
@@ -232,6 +243,23 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if the Spark Script is scheduled in the server.
+     * @param scriptName Name of the spark script.
+     * @return
+     * @throws RemoteException
+     * @throws ResourceAdminServiceExceptionException
+     */
+    protected boolean isSparkScriptScheduled(String scriptName) throws RemoteException, ResourceAdminServiceExceptionException {
+
+        ResourceData[] resourceData = resourceAdminServiceStub.getResourceData(new String[]{taskResourcePath+scriptName});
+        if(resourceData != null )
+        {
+            return true;
         }
         return false;
     }
@@ -499,13 +527,27 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, loggedInSessionCookie);
     }
 
-    private void initializeStub() throws Exception {
+    private void initializeAnalyticsProcessorAdminServiceStub() throws Exception {
         ConfigurationContext configContext = ConfigurationContextFactory.
                 createConfigurationContextFromFileSystem(null);
         String loggedInSessionCookie = getSessionCookie();
         analyticsStub = new AnalyticsProcessorAdminServiceStub(configContext,
                 backendURL + ANALYTICS_SERVICE_NAME);
         ServiceClient client = analyticsStub._getServiceClient();
+        Options option = client.getOptions();
+        option.setTimeOutInMilliSeconds(300000);
+        option.setManageSession(true);
+        option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING,
+                loggedInSessionCookie);
+    }
+
+    private void initializeResourceAdminServiceStub() throws Exception {
+        ConfigurationContext configContext = ConfigurationContextFactory.
+                createConfigurationContextFromFileSystem(null);
+        String loggedInSessionCookie = getSessionCookie();
+        resourceAdminServiceStub = new ResourceAdminServiceStub(configContext,
+                backendURL + RESOURCE_ADMIN_SERVICE_NAME);
+        ServiceClient client = resourceAdminServiceStub._getServiceClient();
         Options option = client.getOptions();
         option.setTimeOutInMilliSeconds(300000);
         option.setManageSession(true);

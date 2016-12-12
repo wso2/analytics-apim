@@ -35,9 +35,7 @@ public class TemplateManagerInitializerComponent {
     private static final Log log = LogFactory.getLog(TemplateManagerInitializerComponent.class);
 
     protected void activate(ComponentContext ctx) {
-//        TemplateManagerInitializer templateManagerService = new TemplateManagerInitializer();
-//        ctx.getBundleContext().registerService(TemplateManagerInitializer.class.getName(),
-//                templateManagerService, null);
+
         if (log.isDebugEnabled()) {
             log.debug("Starting APIManagerInitilizerComponent#activate");
         }
