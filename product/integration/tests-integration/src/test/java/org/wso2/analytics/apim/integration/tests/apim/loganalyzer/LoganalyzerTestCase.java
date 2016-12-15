@@ -18,12 +18,15 @@
 
 package org.wso2.analytics.apim.integration.tests.apim.loganalyzer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.APIMAnalyticsBaseTestCase;
+import org.wso2.analytics.apim.integration.tests.apim.analytics.AbnormalRequestCountTestCase;
 import org.wso2.carbon.databridge.commons.Event;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -34,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
+    private static final Log log = LogFactory.getLog(AbnormalRequestCountTestCase.class);
     private static final String STREAM_NAME = "loganalyzer";
     private static final String STREAM_VERSION = "1.0.0";
     private static final String TEST_RESOURCE_PATH = "logAnalyzerArtifacts";

@@ -113,17 +113,20 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         undeployPublisher(PUBLISHER_FILE);
     }
 
-    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Tier Usage Alert")
-    public void testAbnormalTierUsageAlert() throws Exception {
+    @Test(groups = "wso2.analytics.apim", description = "Tests if the Spark script is deployed")
+    public void testSparkScriptDeployment() throws Exception {
+        Assert.assertTrue(isSparkScriptExists(SPARK_SCRIPT), SPARK_SCRIPT + " spark script is not deployed!");
+    }
 
-//        ScenarioConfigurationDTO testDomain = executionManagerAdminServiceClient.getConfiguration("APIMAnalytics",
-//                "AbnormalTierAvailabilityAlert");
-//
-//        if (testDomain == null) {
-//            Assert.fail("Domain is not loaded");
-//        }
-//        
-//        executionManagerAdminServiceClient.saveConfiguration(testDomain);
+    @Test(groups = "wso2.analytics.apim", description = "Test whether the Spark Script is scheduled",
+            dependsOnMethods = "testSparkScriptDeployment")
+    public void testSparkScriptScheduled() throws Exception {
+        Assert.assertTrue(isSparkScriptScheduled(SPARK_SCRIPT), SPARK_SCRIPT + " spark script is not scheduled!");
+    }
+
+    @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Tier Usage Alert",
+            dependsOnMethods = "testSparkScriptDeployment")
+    public void testAbnormalTierUsageAlert() throws Exception {
 
         publishDataset();
         logViewerClient.clearLogs();
