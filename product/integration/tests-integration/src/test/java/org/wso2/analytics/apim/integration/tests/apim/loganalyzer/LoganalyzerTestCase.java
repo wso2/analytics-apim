@@ -28,6 +28,7 @@ import org.wso2.analytics.apim.integration.common.clients.DataPublisherClient;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.APIMAnalyticsBaseTestCase;
 import org.wso2.analytics.apim.integration.tests.apim.analytics.AbnormalRequestCountTestCase;
 import org.wso2.carbon.databridge.commons.Event;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -117,33 +118,47 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         //run the script
         executeSparkScript(SPARK_SCRIPT);
         Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + MESSAGE_LEVEL_ERROR_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        MESSAGE_LEVEL_ERROR_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_WEEKLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + MESSAGE_LEVEL_ERROR_WEEKLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        MESSAGE_LEVEL_ERROR_WEEKLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_MONTHLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + MESSAGE_LEVEL_ERROR_MONTHLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        MESSAGE_LEVEL_ERROR_MONTHLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + CLASS_LEVEL_ERROR_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        CLASS_LEVEL_ERROR_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_WEEKLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + CLASS_LEVEL_ERROR_WEEKLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        CLASS_LEVEL_ERROR_WEEKLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_MONTHLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + CLASS_LEVEL_ERROR_MONTHLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        CLASS_LEVEL_ERROR_MONTHLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_ARTIFACT_DEPLOYED_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_ARTIFACT_DEPLOYED_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_ARTIFACT_DEPLOYED_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_ARTIFACT_DELETED_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_ARTIFACT_DELETED_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_ARTIFACT_DELETED_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_MESSAGE_PROCESSING_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_MESSAGE_PROCESSING_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_WEEKLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_MESSAGE_PROCESSING_WEEKLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_MESSAGE_PROCESSING_WEEKLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_MONTHLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_MESSAGE_PROCESSING_MONTHLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_MESSAGE_PROCESSING_MONTHLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + INVALID_LOGIN_ATTEMPT_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        INVALID_LOGIN_ATTEMPT_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, AUDIT_LOG_TABLE, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " + AUDIT_LOG_TABLE + "!");
     }
@@ -228,7 +243,8 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
                 arbitraryDataMap.put(IP, eventArray[7]);
                 arbitraryDataMap.put(INSTANCE, eventArray[8]);
                 arbitraryDataMap.put(TRACE, eventArray[9]);
-                Event event = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]}, arbitraryDataMap);
+                Event event = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]},
+                        arbitraryDataMap);
                 eventDataToList.add(event);
             }
         }
