@@ -35,6 +35,7 @@ public class TemplateManagerInitializerComponent {
     private static final Log log = LogFactory.getLog(TemplateManagerInitializerComponent.class);
 
     protected void activate(ComponentContext ctx) {
+
         if (log.isDebugEnabled()) {
             log.debug("Starting APIManagerInitilizerComponent#activate");
         }

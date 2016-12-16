@@ -76,7 +76,7 @@ public class TemplateManagerInitializer {
     private static void addInitialConfigs(String srcConfigDir, final String srcFileExtension, String registryDestCollectionPath) {
 
         String[] initialConfigPaths = getFileNames(srcConfigDir, srcFileExtension);
-        
+
         if (initialConfigPaths == null || initialConfigPaths.length == 0) {
             if(log.isDebugEnabled()) {
                 log.debug("No configurations Found.");
@@ -139,7 +139,7 @@ public class TemplateManagerInitializer {
         };
         return file.list(filenameFilter);
     }
-    
+
     private static void deploy(String scriptFilePath, String carbonAppName, String shouldOverwrite) {
         File deploymentFileData = new File(scriptFilePath);
         try {
