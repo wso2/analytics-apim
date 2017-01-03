@@ -33,6 +33,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * LoganalyzerTestCase uses for testing the spark script of
+ * the log analyzer base on the given bench mark log file.
+ */
 public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     private static final String STREAM_NAME = "loganalyzer";
     private static final String STREAM_VERSION = "1.0.0";
@@ -113,33 +117,47 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         //run the script
         executeSparkScript(SPARK_SCRIPT);
         Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + MESSAGE_LEVEL_ERROR_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        MESSAGE_LEVEL_ERROR_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_WEEKLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + MESSAGE_LEVEL_ERROR_WEEKLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        MESSAGE_LEVEL_ERROR_WEEKLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_MONTHLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + MESSAGE_LEVEL_ERROR_MONTHLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        MESSAGE_LEVEL_ERROR_MONTHLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + CLASS_LEVEL_ERROR_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        CLASS_LEVEL_ERROR_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_WEEKLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + CLASS_LEVEL_ERROR_WEEKLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        CLASS_LEVEL_ERROR_WEEKLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_MONTHLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + CLASS_LEVEL_ERROR_MONTHLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        CLASS_LEVEL_ERROR_MONTHLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_ARTIFACT_DEPLOYED_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_ARTIFACT_DEPLOYED_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_ARTIFACT_DEPLOYED_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_ARTIFACT_DELETED_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_ARTIFACT_DELETED_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_ARTIFACT_DELETED_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_MESSAGE_PROCESSING_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_MESSAGE_PROCESSING_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_WEEKLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_MESSAGE_PROCESSING_WEEKLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_MESSAGE_PROCESSING_WEEKLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_MONTHLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + APIM_MESSAGE_PROCESSING_MONTHLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        APIM_MESSAGE_PROCESSING_MONTHLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_DAILY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + INVALID_LOGIN_ATTEMPT_DAILY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        INVALID_LOGIN_ATTEMPT_DAILY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE, MAX_TRIES),
-                "Spark script did not execute as expected, No entries found for table " + INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE + "!");
+                "Spark script did not execute as expected, No entries found for table " +
+                        INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE + "!");
         Assert.assertTrue(isRecordExists(-1234, AUDIT_LOG_TABLE, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " + AUDIT_LOG_TABLE + "!");
     }
@@ -198,6 +216,13 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         }
     }
 
+    /**
+     * Publish sample log events into DAS stream as arbitrary data map.
+     * @param testResourcePath logAnalyzer test resource path.
+     * @param resourceName bench mark file name.
+     * @param streamId DAS stream definition.
+     * @throws Exception bubble up the exception for test framework.
+     */
     private void publishEvent(String testResourcePath, String resourceName, String streamId) throws Exception {
         List<Event> eventListFromCSV = getEventListFromCSV(getFilePath(testResourcePath, resourceName), streamId);
         DataPublisherClient dataPublisherClient = new DataPublisherClient();
@@ -206,6 +231,13 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         dataPublisherClient.shutdown();
     }
 
+    /**
+     * Generate events base on the provided bench mark log file.
+     * @param file file path for bench mark file.
+     * @param streamId DAS stream definition name.
+     * @return list of the events which are generated from the file.
+     * @throws IOException bubble up the exception for test framework.
+     */
     private List<Event> getEventListFromCSV(String file, String streamId) throws IOException {
         String line;
         String cvsSplitBy = ",";
@@ -224,7 +256,8 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
                 arbitraryDataMap.put(IP, eventArray[7]);
                 arbitraryDataMap.put(INSTANCE, eventArray[8]);
                 arbitraryDataMap.put(TRACE, eventArray[9]);
-                Event event = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]}, arbitraryDataMap);
+                Event event = new Event(streamId, System.currentTimeMillis(), null, null, new String[]{eventArray[0]},
+                        arbitraryDataMap);
                 eventDataToList.add(event);
             }
         }
