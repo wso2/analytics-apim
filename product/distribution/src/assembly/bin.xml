@@ -250,9 +250,6 @@
                 <!--<exclude>modules/utils.js</exclude>-->
                 <!--<exclude>extensions/components/gadget/index.js</exclude>-->
             <!--</excludes>-->
-            <excludes>
-                <exclude>jaggery.conf</exclude>
-            </excludes>
         </fileSet>
 
 
@@ -610,14 +607,6 @@
             <fileMode>644</fileMode>
         </file>
 
-        <!-- Portal WebApp Configuration -->
-        <file>
-            <source>
-                src/portal/jaggery.conf
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/portal</outputDirectory>
-            <fileMode>644</fileMode>
-        </file>
 
 
         <!--<file>-->
