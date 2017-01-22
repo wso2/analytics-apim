@@ -1,9 +1,9 @@
-WSO2 API Manager Analytics Server, v2.0.0
+WSO2 API Manager Analytics Server, v2.1.0
 =========================================
 
-Welcome to the WSO2 API Manager Analytics Server, v2.0.0 release.
+Welcome to the WSO2 API Manager Analytics Server, v2.1.0 release.
 
-The WSO2 AM Analytics version 2.0.0 contains real-time and batch analytics related to WSO2 API Manager 2.0.0 release. This server is a variation of WSO2 Data Analytics Server, which is a complete rewrite of the analytics solution based on the latest technologies.
+The WSO2 AM Analytics version 2.1.0 contains real-time and batch analytics related to WSO2 API Manager 2.1.0 release. This server is a variation of WSO2 Data Analytics Server, which is a complete rewrite of the analytics solution based on the latest technologies.
 
 WSO2 AM Analytics is powered by WSO2 Carbon, the SOA middleware component platform. 
 
@@ -51,7 +51,7 @@ Features
 
 Issues Fixed in This Release
 ============================
-* WSO2 AM Analytics Server related components of the WSO2 Carbon Platform - https://wso2.org/jira/issues/?filter=13138
+* WSO2 AM Analytics Server related components of the WSO2 Carbon Platform - https://wso2.org/jira/issues/?filter=13624
 
 Known Issues in This Release
 ============================
@@ -74,7 +74,7 @@ System Requirements
 2. The Management Console requires full Javascript enablement of the Web browser
 
 For more details see the Installation guide or,
-https://docs.wso2.com/display/AM200/WSO2+API+Manager+Analytics
+https://docs.wso2.com/display/AM210/WSO2+API+Manager+Analytics
 
 WSO2 API Manager Analytics Server Binary Distribution Directory Structure
 ======================================================
@@ -173,7 +173,7 @@ WSO2 API Manager Analytics Server Binary Distribution Directory Structure
       This document contains information on installing WSO2 Application Server.
 
     - release-notes.html
-      Release information for WSO2 API Manager Analytics Server 2.0.0
+      Release information for WSO2 API Manager Analytics Server 2.1.0
 
 Secure sensitive information in carbon configuration files
 ==========================================================
@@ -265,7 +265,7 @@ Crypto Notice
    Bouncycastle     : http://www.bouncycastle.org/
 
 For further details, see the WSO2 Carbon documentation at
-http://docs.wso2.org/display/Carbon447/WSO2+Carbon+Documentation
+http://docs.wso2.org/display/Carbon4411/WSO2+Carbon+Documentation
 
 ---------------------------------------------------------------------------
 (c) @2014, WSO2 Inc.
