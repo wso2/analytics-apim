@@ -14,7 +14,7 @@ WSO2 API Analytics provides the capability to monitor API invocations and to sum
 - API Usage by User: Number of times a user has accessed an API
 - Faulty Invocations: The number of API invocations that failed to reach the endpoint per API per user
 
-You can install the WSO2 API Manager analytics component by following the documentation found at https://docs.wso2.com/display/AM200/WSO2+API+Manager+Analytics
+You can install the WSO2 API Manager analytics component by following the documentation found at https://docs.wso2.com/display/AM210/WSO2+API+Manager+Analytics
 
 #How to Contribute
 

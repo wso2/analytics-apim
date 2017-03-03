@@ -1,7 +1,7 @@
-Installing WSO2 API Manager Analytics Server, v2.0.0
+Installing WSO2 API Manager Analytics Server, v2.1.0
 ====================================================
 
-WSO2 API Manager Analytics Server 2.0.0 can be run either in standalone mode.
+WSO2 API Manager Analytics Server 2.1.0 can be run either in standalone mode.
 
 
 Standalone Mode
@@ -86,5 +86,5 @@ System Requirements
 3. To build WSO2 API Manager Analytics Server from the Source distribution, it is also necessary that you have Maven 3.0.3 or later.
 
 For more details see
-    https://docs.wso2.com/display/DAS301/Installing+the+Product
+    https://docs.wso2.com/display/DAS310/Installing+the+Product
 
