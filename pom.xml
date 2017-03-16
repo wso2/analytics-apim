@@ -51,13 +51,13 @@
 	<modules>
 		<module>components</module>
         <module>features</module>
-        <module>product/org.wso2.das.multitenancy.dashboard.ui</module>
+       <!-- <module>product/org.wso2.das.multitenancy.dashboard.ui</module>
         <module>product/org.wso2.cep.storm.dependencies</module>
         <module>product/styles</module>
         <module>product/features</module>
         <module>product/p2-profile-gen</module>
         <module>product/distribution</module>
-        <module>product/integration</module>
+        <module>product/integration</module>-->
 	</modules>
 
 	<repositories>
