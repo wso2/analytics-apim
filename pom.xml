@@ -209,6 +209,17 @@
                 <artifactId>javax.servlet.jsp</artifactId>
                 <version>2.0.0.v200706191603</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim</artifactId>
+                <version>${analytics.apim.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.spark</artifactId>
+                <version>${analytics.apim.version}</version>
+            </dependency>
+
             <!-- ************************ END - Vanilla carbon server + DAS style ************* -->
 
             <!-- START - Integration test dependencies -->
