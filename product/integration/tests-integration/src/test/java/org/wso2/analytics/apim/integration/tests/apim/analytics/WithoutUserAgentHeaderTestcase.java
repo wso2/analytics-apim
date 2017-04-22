@@ -65,9 +65,6 @@ public class WithoutUserAgentHeaderTestcase extends APIMAnalyticsBaseTestCase {
         if(isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.USER_AGENT_SUMMARY)) {
             deleteData(-1234, APIMAnalyticsIntegrationTestConstants.USER_AGENT_SUMMARY);
         }
-        if(isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.STAT_PER_DAY)) {
-            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.STAT_PER_DAY);
-        }
         initializeStub();
     }
 
@@ -100,9 +97,7 @@ public class WithoutUserAgentHeaderTestcase extends APIMAnalyticsBaseTestCase {
         if(isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.USER_AGENT_SUMMARY)) {
             deleteData(-1234, APIMAnalyticsIntegrationTestConstants.USER_AGENT_SUMMARY);
         }
-        if(isTableExist(-1234, APIMAnalyticsIntegrationTestConstants.STAT_PER_DAY)) {
-            deleteData(-1234, APIMAnalyticsIntegrationTestConstants.STAT_PER_DAY);
-        }
+
     }
 
 
