@@ -163,7 +163,7 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
                 "Spark script did not execute as expected, No entries found for table "
                         + ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES + "!");
 
-        Assert.assertTrue(isRecordExists(-1234, API_REQUEST_SUMMARY, 1),
+        Assert.assertTrue(isRecordExists(-1234, API_REQUEST_SUMMARY, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " + API_REQUEST_SUMMARY + "!");
 
         if (isTableExist(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST)) {
