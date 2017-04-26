@@ -18,7 +18,7 @@ define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain,resourceTemplate,method', caching = 'true', cache.timeout.seconds='300')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain,resourceTemplate,method', caching = 'true', cache.timeout.seconds='300', wait.for.indexing = 'false')
 define table percentileTable (api_version string, tenantDomain string, resourceTemplate string, method string, responsePercentile double, backendPercentile double );
 
 /*spark script calculates percentile of responseTime and backendTime  and stores in percentileTable */
