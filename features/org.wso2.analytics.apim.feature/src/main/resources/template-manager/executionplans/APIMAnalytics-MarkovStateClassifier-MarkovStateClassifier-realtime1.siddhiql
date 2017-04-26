@@ -17,7 +17,7 @@ define stream requestsPerMinPerKeyStream (consumerKey string, requestsPerMinPerK
 define stream stateTransitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, 
 									 userId string, tenantDomain string, requestTimestamp string);
 
-@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count', wait.for.indexing = 'false')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count long);
 
 

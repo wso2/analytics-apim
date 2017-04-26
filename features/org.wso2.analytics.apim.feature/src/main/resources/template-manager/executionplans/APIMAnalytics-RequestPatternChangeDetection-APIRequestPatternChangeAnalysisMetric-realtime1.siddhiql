@@ -12,13 +12,13 @@ define stream requestPatternChangedStream (userId string, applicationName string
 define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 
-@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_MARKOVMODELTABLE', primary.keys='startState,endState, consumerKey', indices = 'startState,endState, probability, consumerKey', caching = 'true', cache.timeout.seconds='300' )
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_MARKOVMODELTABLE', primary.keys='startState,endState, consumerKey', indices = 'startState,endState, probability, consumerKey', caching = 'true', cache.timeout.seconds='300', wait.for.indexing = 'false' )
 define table MarkovModelTable (consumerKey string, startState string, endState string, probability double);
 
-@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count', caching = 'true', cache.timeout.seconds='60')
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count', caching = 'true', cache.timeout.seconds='60', wait.for.indexing = 'false')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count long);
 
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPATTERNALERTSUMMARYTABLE', primary.keys='applicationName, applicationOwner, userId, msg' , indices = 'applicationName, applicationOwner, userId, msg, lastlastAlertedTimestamp')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPATTERNALERTSUMMARYTABLE', primary.keys='applicationName, applicationOwner, userId, msg' , indices = 'applicationName, applicationOwner, userId, msg, lastlastAlertedTimestamp', wait.for.indexing = 'false')
 define table RequestPatternAlertSummaryTable(applicationName string, applicationOwner string, userId string, msg string, lastAlertedTimestamp long);
 
 /****************************************************** Calculate Miss Probability *******************************************************************************/
