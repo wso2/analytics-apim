@@ -37,6 +37,9 @@ public class APIMAnalyticsIntegrationTestConstants {
     public static final String ABNORMAL_REQ_ALERT_TABLE = "ORG_WSO2_API_ABN_REQ_ALERT";
     public static final String ALL_ALERT_TABLE = "ORG_WSO2_API_ALL_ALERT";
     public static final String ADITIONAL_DATA = "ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA";
+    public static final String USER_AGENT_DATA = "API_REQ_USER_BROW_SUMMARY";
+    public static final String USER_AGENT_SUMMARY= "API_REQUEST_USER_AGENT_SUMMARY";
+    public static final String STAT_PER_DAY = "ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST";
 
     public static final String REST_CAPP_PATH = "statistics";
     

@@ -39,7 +39,7 @@ define stream abnormalRequestsPerMinAlert (api string, userId string, tenantDoma
 @Export('org.wso2.analytics.apim.emailAlertStream:1.0.0')
 define stream emailAlertStream (type string, msg string, alertTimestamp string, emails string);
 
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_ALERTSTAKEHOLDERINFO' , primary.keys = 'userId,tenantDomain,isSubscriber,isPublisher')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_ALERTSTAKEHOLDERINFO' , primary.keys = 'userId,tenantDomain,isSubscriber,isPublisher', wait.for.indexing = 'false')
 define table stakeholderInfoTable (userId string, alertTypes string, emails	string, isSubscriber bool, isPublisher bool);
 
 @info(name = 'query1')
