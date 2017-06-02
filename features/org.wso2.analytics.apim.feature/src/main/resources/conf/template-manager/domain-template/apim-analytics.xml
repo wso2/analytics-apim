@@ -1502,16 +1502,16 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                               );
                               create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST");
                               CREATE TEMPORARY TABLE API_REQUEST_GEOIP_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_GEOIP_SUMMARY",
-                              schema "api string -i,
-                              version string -i,
-                              apiPublisher string -i,
-                              tenantDomain string -i,
-                              total_request_count int -i,
-                              year int -i,
-                              month int -i,
-                              day int -i,
-                              requestTime long -i,
-                              clientIp string -i",
+                              schema "api string,
+                              version string,
+                              apiPublisher string,
+                              tenantDomain string,
+                              total_request_count int,
+                              year int,
+                              month int,
+                              day int,
+                              requestTime long,
+                              clientIp string",
                               primaryKeys "api,version,apiPublisher,year,month,day,clientIp,tenantDomain"
                               );
                               insert into table API_REQUEST_GEOIP_SUMMARY_FINAL select api,version, apiPublisher,tenantDomain,
@@ -1521,23 +1521,22 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                               from APIRequestData group by api,version,apiPublisher,clientIp,tenantDomain,year,month,day;
 
                               CREATE TEMPORARY TABLE API_REQUEST_GEO_LOCATION_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQ_GEO_LOC_SUMMARY",
-                              schema "api string -i,
-                              version string -i,
-                              apiPublisher string -i,
-                              tenantDomain string -i,
-                              total_request_count int -i,
-                              year int -i,
-                              month int -i,
-                              day int -i,
-                              requestTime long -i,
-                              country string -i,
-                              city string -i,
-                              key_country_city_facet facet -i",
+                              schema "api string,
+                              version string,
+                              apiPublisher string,
+                              tenantDomain string,
+                              total_request_count int,
+                              year int,
+                              month int,
+                              day int,
+                              requestTime long,
+                              country string,
+                              city string",
                               primaryKeys "api,version,apiPublisher,year,month,day,country,city,tenantDomain"
                               );
                               insert INTO table API_REQUEST_GEO_LOCATION_SUMMARY_FINAL select apidata.api,apidata.version, apidata.apiPublisher,apidata.tenantDomain,
                               sum(apidata.total_request_count) as total_request_count,apidata.year,apidata.month,apidata.day,first(requestTime),getCountry(apidata.clientIp) as country,
-                              getCity(apidata.clientIp) as city,facet2(getCountry(apidata.clientIp),getCity(apidata.clientIp))
+                              getCity(apidata.clientIp) as city
                               from API_REQUEST_GEOIP_SUMMARY_FINAL as apidata group by apidata.api,apidata.version,apidata.apiPublisher,apidata.year,apidata.month,apidata.day,apidata.clientIp,getCountry(apidata.clientIp),getCity(apidata.clientIp),apidata.tenantDomain;
                               INSERT INTO TABLE APIGeoLocationData SELECT api,version,apiPublisher,tenantDomain,total_request_count,year,month,day,requestTime,country,city FROM API_REQUEST_GEO_LOCATION_SUMMARY_FINAL;
 
