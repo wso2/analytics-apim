@@ -15,19 +15,22 @@
     );
     <!--create table for API last access time summary in DAL-->
     CREATE TEMPORARY TABLE API_LAST_ACCESS_TIME_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_LAST_ACCESS_TIME_SUMMARY",
-    schema "tenantDomain string -i,
-    apiPublisher string -i,
-    api string -i,
-    version string -i,
-    userId string -i,
-    context string -i,
-    max_request_time long -i",
-    primaryKeys "tenantDomain,apiPublisher,api"
+    schema "tenantDomain string,
+    apiPublisher string,
+    api string,
+    version string,
+    userId string,
+    context string,
+    max_request_time long",
+    primaryKeys "tenantDomain,apiPublisher,api",
+    incrementalParams "API_LAST_ACCESS_TIME_SUMMARY, DAY",
+    mergeSchema "false"
     );
 
     <!-- inserting API last access time summary data in DAL to RDBMS-->
     INSERT INTO TABLE APILastAccessSummaryData select tenantDomain, apiPublisher, api, version, userId, context, max_request_time from API_LAST_ACCESS_TIME_SUMMARY_FINAL;
 
+    INCREMENTAL_TABLE_COMMIT API_LAST_ACCESS_TIME_SUMMARY;
   </Script>
   <CronExpression>0 0/5 * 1/1 * ? *</CronExpression>
 </Analytics>

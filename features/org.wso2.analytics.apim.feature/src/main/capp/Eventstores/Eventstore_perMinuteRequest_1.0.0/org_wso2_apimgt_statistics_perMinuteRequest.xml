@@ -4,7 +4,7 @@
       <ColumnDefinition>
          <Name>year</Name>
          <IsFacet>false</IsFacet>
-         <EnableIndexing>true</EnableIndexing>
+         <EnableIndexing>false</EnableIndexing>
          <IsPrimaryKey>true</IsPrimaryKey>
          <EnableScoreParam>false</EnableScoreParam>
          <Type>INTEGER</Type>
@@ -12,7 +12,7 @@
       <ColumnDefinition>
          <Name>month</Name>
          <IsFacet>false</IsFacet>
-         <EnableIndexing>true</EnableIndexing>
+         <EnableIndexing>false</EnableIndexing>
          <IsPrimaryKey>true</IsPrimaryKey>
          <EnableScoreParam>false</EnableScoreParam>
          <Type>INTEGER</Type>
@@ -20,21 +20,21 @@
       <ColumnDefinition>
          <Name>day</Name>
          <IsFacet>false</IsFacet>
-         <EnableIndexing>true</EnableIndexing>
+         <EnableIndexing>false</EnableIndexing>
          <IsPrimaryKey>true</IsPrimaryKey>
          <EnableScoreParam>false</EnableScoreParam>
          <Type>INTEGER</Type>
       </ColumnDefinition>
       <ColumnDefinition>
          <Name>hour</Name>
-         <EnableIndexing>true</EnableIndexing>
+         <EnableIndexing>false</EnableIndexing>
          <IsPrimaryKey>true</IsPrimaryKey>
          <EnableScoreParam>false</EnableScoreParam>
          <Type>INTEGER</Type>
       </ColumnDefinition>
       <ColumnDefinition>
          <Name>minute</Name>
-         <EnableIndexing>true</EnableIndexing>
+         <EnableIndexing>false</EnableIndexing>
          <IsPrimaryKey>true</IsPrimaryKey>
          <EnableScoreParam>false</EnableScoreParam>
          <Type>INTEGER</Type>

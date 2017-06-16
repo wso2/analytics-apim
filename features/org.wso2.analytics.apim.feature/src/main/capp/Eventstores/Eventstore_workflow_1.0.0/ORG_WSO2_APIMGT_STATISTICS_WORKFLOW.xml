@@ -7,49 +7,49 @@
 
 <ColumnDefinition>
 	<Name>meta_clientType</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>workflowReference</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>workflowStatus</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>tenantDomain</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>workflowType</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>createdTime</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>LONG</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>updatedTime</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>LONG</Type>
