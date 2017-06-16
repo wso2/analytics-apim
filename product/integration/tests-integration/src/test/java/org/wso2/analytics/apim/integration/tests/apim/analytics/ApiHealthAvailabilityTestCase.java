@@ -129,12 +129,14 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         deleteData(-1234, RESPONSE_PER_API_STREAM.replace('.', '_'));
         Thread.sleep(2000);
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseSim.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 10);
+        executeSparkQuery("CREATE TEMPORARY TABLE RESPONSE_INFO_STREAM USING CarbonAnalytics OPTIONS"
+        		+ " (tableName \"ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE\")");
         int i = 0;
         long responseEventCount = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            responseEventCount = getRecordCount(-1234, RESPONSE_TABLE);
+            responseEventCount = executeSparkQuery("SELECT * FROM RESPONSE_INFO_STREAM");
             eventsPublished = (responseEventCount >= 1);
             if (eventsPublished) {
                 break;
@@ -153,7 +155,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         long percentileTableCount = 0;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            percentileTableCount = getRecordCount(-1234, RESPONSE_TIME_TABLE);
+            percentileTableCount = executeSparkQuery("SELECT * FROM RESPONSE_PER_TIME_PERCENTILE_GEN");
             scriptExecuted = (percentileTableCount >= 1);
             if (scriptExecuted) {
                 break;
@@ -196,12 +198,14 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
 
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "request1.csv", getStreamId(REQUEST_STREAM_NAME, REQUEST_STREAM_VERSION), 100);
         Thread.sleep(1000);
+        executeSparkQuery("CREATE TEMPORARY TABLE REQUEST_INFO_STREAM USING CarbonAnalytics "
+    			+ "OPTIONS (tableName \"ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINSTREAM\")");
         int i = 0;
         long requestEventCount = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            requestEventCount = getRecordCount(-1234, REQUEST_TABLE);
+            requestEventCount = executeSparkQuery("SELECT * FROM REQUEST_INFO_STREAM");
             eventsPublished = (requestEventCount >= 1);
             if (eventsPublished) {
                 break;
@@ -258,12 +262,14 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         redeployExecutionPlan();
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "response.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         Thread.sleep(1000);
+        executeSparkQuery("CREATE TEMPORARY TABLE RESPONSE_INFO_STREAM USING CarbonAnalytics OPTIONS"
+        		+ " (tableName \"ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE\")");
         int i = 0;
         long responseEventCount = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            responseEventCount = getRecordCount(-1234, RESPONSE_TABLE);
+            responseEventCount = executeSparkQuery("SELECT * FROM RESPONSE_INFO_STREAM");
             eventsPublished = (responseEventCount >= 1);
             if (eventsPublished) {
                 break;
@@ -277,12 +283,14 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     public void test2ndResponseCountSimulationDataSent() throws Exception {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "response2.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
         Thread.sleep(1000);
+        executeSparkQuery("CREATE TEMPORARY TABLE RESPONSE_INFO_STREAM USING CarbonAnalytics OPTIONS"
+        		+ " (tableName \"ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE\")");
         int i = 0;
         long responseEventCount = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            responseEventCount = getRecordCount(-1234, RESPONSE_TABLE);
+            responseEventCount = executeSparkQuery("SELECT * FROM RESPONSE_INFO_STREAM");
             eventsPublished = (responseEventCount >= 2);
             if (eventsPublished) {
                 break;
@@ -330,7 +338,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         boolean eventsPublished = false;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            responseEventCount = getRecordCount(-1234, RESPONSE_PERCENTILE);
+            responseEventCount = executeSparkQuery("SELECT * FROM RESPONSE_PER_API_PERCENTILE_GEN");
             eventsPublished = (responseEventCount >= 1);
             if (eventsPublished) {
                 break;
@@ -343,7 +351,7 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         eventsPublished = false;
         while (i < MAX_TRIES_RESPONSE) {
             Thread.sleep(2000);
-            responseEventCount = getRecordCount(-1234, REQUEST_PERCENTILE);
+            responseEventCount = executeSparkQuery("SELECT * FROM REQUEST_PER_API_PERCENTILE_GEN");
             eventsPublished = (responseEventCount >= 1);
             if (eventsPublished) {
                 break;

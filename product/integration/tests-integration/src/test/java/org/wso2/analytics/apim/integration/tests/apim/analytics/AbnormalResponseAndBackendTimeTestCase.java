@@ -89,7 +89,9 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
             Thread.sleep(5000);
-            currentResponseEventCount = getRecordCount(-1234, RESPONSE_TABLE);
+            executeSparkQuery("CREATE TEMPORARY TABLE RESPONSE_INFO_STREAM USING CarbonAnalytics OPTIONS"
+            		+ " (tableName \"ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE\")");
+            currentResponseEventCount = executeSparkQuery("SELECT * FROM RESPONSE_INFO_STREAM");
             eventsPublished = currentResponseEventCount >= 1;
             if (eventsPublished) {
                 break;
@@ -110,7 +112,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         long percentileTableCount = 0;
         while (i < MAX_TRIES) {
             Thread.sleep(10000);
-            percentileTableCount = getRecordCount(-1234, RESPONSE_PERCENTILE_TABLE);
+            percentileTableCount = executeSparkQuery("SELECT * FROM RESPONSE_PERCENTILE_GEN");
             scriptExecuted = (percentileTableCount >= 1);
             if (scriptExecuted) {
                 break;

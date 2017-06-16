@@ -93,11 +93,13 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         Thread.sleep(5000);
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 1);
         Thread.sleep(5000);
+        executeSparkQuery("CREATE TEMPORARY TABLE REQUEST_INFO_STREAM USING CarbonAnalytics "
+    			+ "OPTIONS (tableName \"ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINSTREAM\")");
         int i = 0;
         boolean eventsPublished = false;
         long requestPerMinuteEventCount = 0;
         while (i < MAX_TRIES) {
-            requestPerMinuteEventCount = getRecordCount(-1234, REQUEST_COUNT_PER_MINUTE_TABLE);
+        	requestPerMinuteEventCount = executeSparkQuery("SELECT * FROM REQUEST_INFO_STREAM");
             eventsPublished = (requestPerMinuteEventCount >= 4);
             if (eventsPublished) {
                 break;
@@ -119,7 +121,7 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
         long percentileTableCount = 0;
         while (i < MAX_TRIES) {
             Thread.sleep(5000);
-            percentileTableCount = getRecordCount(-1234, REQUEST_PERCENTILE_TABLE);
+            percentileTableCount = executeSparkQuery("SELECT * FROM REQUEST_PERCENTILE_GEN");
             scriptExecuted = (percentileTableCount >= 1);
             if (scriptExecuted) {
                 break;

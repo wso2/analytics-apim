@@ -36,6 +36,7 @@ import org.wso2.carbon.analytics.api.CarbonAnalyticsAPI;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceAnalyticsProcessorAdminExceptionException;
 import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub;
+import org.wso2.carbon.analytics.spark.admin.stub.AnalyticsProcessorAdminServiceStub.AnalyticsQueryResultDto;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.event.template.manager.admin.dto.configuration.xsd.ConfigurationParameterDTO;
@@ -225,6 +226,20 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      */
     protected void executeSparkScript(String scriptName) throws Exception {
         analyticsStub.executeScript(scriptName);
+    }
+    
+    /**
+     * Executes a given spark query.
+     *
+     * @param scriptName name of the Spark Script.
+     * @throws Exception
+     */
+    protected int executeSparkQuery(String query) throws Exception {
+    	AnalyticsQueryResultDto queryResult = analyticsStub.executeQuery(query);
+    	if (queryResult.getRowsResults() != null) {
+    		return queryResult.getRowsResults().length;
+    	}
+    	return 0;
     }
 
     /**
@@ -565,10 +580,11 @@ public class APIMAnalyticsBaseTestCase extends DASIntegrationTest {
      * @throws InterruptedException
      * @throws AnalyticsException
      */
-    protected boolean isRecordExists(int tenantId, String tableName, int maxTries) throws InterruptedException, AnalyticsException {
+    protected boolean isRecordExists(int tenantId, String tableName, int maxTries) throws InterruptedException,
+                                                                             AnalyticsException, Exception {
         int i = 0;
         while (i < maxTries) {
-            if (getRecordCount(tenantId, tableName) >= 1) {
+            if (executeSparkQuery("SELECT * FROM " + tableName) >= 1) {
                 return true;
             }
             i++;

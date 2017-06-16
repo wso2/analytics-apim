@@ -130,11 +130,14 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
 
         publishDataset();
         logViewerClient.clearLogs();
-
+        
+        executeSparkQuery("CREATE TEMPORARY TABLE REQUEST_INFO_STREAM USING CarbonAnalytics "
+    			+ "OPTIONS (tableName \"ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINSTREAM\")");
+        
         int i = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
-            long requestPerMinuteEventCount = getRecordCount(-1234, APIMAnalyticsIntegrationTestConstants.REQUEST_TABLE);
+            long requestPerMinuteEventCount = executeSparkQuery("SELECT * FROM REQUEST_INFO_STREAM");
             eventsPublished = (requestPerMinuteEventCount >= 175);
             if (eventsPublished) {
                 break;
