@@ -7,175 +7,175 @@
 
 <ColumnDefinition>
 	<Name>meta_clientType</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>consumerKey</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>context</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>api_version</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>api</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>resourcePath</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
         <Name>resourceTemplate</Name>
-        <EnableIndexing>true</EnableIndexing>
+        <EnableIndexing>false</EnableIndexing>
         <IsPrimaryKey>false</IsPrimaryKey>
         <EnableScoreParam>false</EnableScoreParam>
         <Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>method</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>version</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>response</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>INTEGER</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>responseTime</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>LONG</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>serviceTime</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>LONG</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>backendTime</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>LONG</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>username</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>eventTime</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>LONG</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>tenantDomain</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>hostName</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>apiPublisher</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>applicationName</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>applicationId</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>cacheHit</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>BOOLEAN</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>responseSize</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>LONG</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>protocol</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>responseCode</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>INTEGER</Type>
 </ColumnDefinition>
 <ColumnDefinition>
    <Name>destination</Name>
-   <EnableIndexing>true</EnableIndexing>
+   <EnableIndexing>false</EnableIndexing>
    <IsPrimaryKey>false</IsPrimaryKey>
    <EnableScoreParam>false</EnableScoreParam>
    <Type>STRING</Type>

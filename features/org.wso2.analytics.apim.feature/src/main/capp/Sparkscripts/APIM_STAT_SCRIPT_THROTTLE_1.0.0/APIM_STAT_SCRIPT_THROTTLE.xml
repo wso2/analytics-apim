@@ -23,42 +23,29 @@
     );
 
     <!--create temp table for Throttle event stream data-->
-  create temporary table APIThrottleData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_THROTTLE");
+    create temporary table APIThrottleData USING CarbonAnalytics OPTIONS(
+      tableName "ORG_WSO2_APIMGT_STATISTICS_THROTTLE",
+      schema "meta_clientType STRING, accessToken STRING, userId STRING, tenantDomain STRING, api STRING, api_version STRING,
+      context STRING, apiPublisher STRING, throttledTime LONG, applicationName STRING, applicationId STRING, subscriber STRING,
+      throttledOutReason STRING",
+      incrementalParams "THROTTLE_APIThrottleData, DAY",
+      mergeSchema "false"
+    );
 
     <!--incrementally processed per day request data table-->
     create temporary table APIMGT_PERDAY_REQUEST_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST", schema "
-    year INT -i, month INT -i, day INT -i,
+    year INT, month INT, day INT,
     consumerKey STRING, context STRING, api_version STRING, api STRING, version STRING, maxRequestTime LONG, firstRequestTime LONG, userId STRING, hostName STRING,
     apiPublisher STRING, total_request_count_per_day LONG, resourceTemplate STRING, method STRING, applicationName STRING, tenantDomain STRING,
     userAgent STRING, resourcePath STRING, request INT, applicationId STRING, tier STRING, throttledOut BOOLEAN, clientIp STRING,
     applicationOwner STRING",
     primaryKeys "year, month, day, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp",
+    incrementalParams "THROTTLE_ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST, DAY",
     mergeSchema "false");
 
-  <!--create table for throttle out summary in DAL-->
-  CREATE TEMPORARY TABLE THROTTLED_OUT_FINAL_SUMMARY USING CarbonAnalytics OPTIONS (tableName "API_THROTTLED_OUT_SUMMARY",
-    schema "api string -i,
-    api_version string -i,
-    context string -i,
-    apiPublisher string -i,
-    applicationName string -i,
-    tenantDomain string -i,
-    year int -i,
-    month int -i,
-    day int -i,
-    week int -i,
-    time string -i,
-    success_request_count int -i,
-    throttleout_count int -i,
-    max_request_time long -i,
-    throttledOutReason string -i,
-    api_year_month_week_day_facet facet -i,
-    applicationName_facet facet -i",
-    primaryKeys "api,api_version,context,apiPublisher,applicationName,tenantDomain,year,month,day,throttledOutReason"
-    );
-    <!--create table for throttle out summary in DAL-->
+
   <!--inserting API throttle out summary data-->
-  insert into table THROTTLED_OUT_FINAL_SUMMARY select
+  insert into table APIThrottleSummaryData select
     COALESCE(a.api,b.api),
     COALESCE(a.api_version,b.api_version),
     COALESCE(a.context,b.context),
@@ -72,10 +59,7 @@
     COALESCE(a.time,b.time),
     COALESCE(success_request_count,0),
     COALESCE(throttleout_count,0),
-    COALESCE(a.times, COALESCE(b.times,0)),
-    COALESCE(b.throttledOutReason,'_'),
-    facet5( COALESCE(a.api,b.api), COALESCE(a.year,b.year),COALESCE(a.month,b.month),COALESCE(a.week,b.week),COALESCE(a.day,b.day)),
-    COALESCE(a.applicationName,b.applicationName,'_ANONYMOUS_')
+    COALESCE(b.throttledOutReason,'_')
     from
     (select api,api_version,context,apiPublisher,COALESCE(applicationName,'_ANONYMOUS_') as applicationName,tenantDomain,first(firstRequestTime) as times,
     cast(year as STRING) year,cast(month as STRING) month,cast(day as STRING) day,
@@ -105,8 +89,8 @@
     ) b ON a.api=b.api AND a.api_version=b.api_version AND a.context=b.context AND a.apiPublisher=b.apiPublisher AND a.applicationName=b.applicationName AND a.tenantDomain=b.tenantDomain AND
     a.year=b.year AND a.month=b.month AND a.day=b.day AND a.week=b.week;
 
-    INSERT INTO TABLE APIThrottleSummaryData SELECT api,api_version,context,apiPublisher,applicationName Descending,tenantDomain,year,month,day,week,time,success_request_count,throttleout_count,throttledOutReason
-    FROM THROTTLED_OUT_FINAL_SUMMARY;
+    INCREMENTAL_TABLE_COMMIT THROTTLE_ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST;
+    INCREMENTAL_TABLE_COMMIT THROTTLE_APIThrottleData;
   </Script>
   <CronExpression>0 0/5 * 1/1 * ? *</CronExpression>
 </Analytics>

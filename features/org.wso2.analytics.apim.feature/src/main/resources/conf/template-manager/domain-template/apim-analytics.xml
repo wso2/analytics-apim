@@ -937,15 +937,15 @@ define stream apiHealthMonitorAlertStream (api_version string, apiPublisher stri
 /*  -- Event tables -- */
 
 /* Lower percentiles */
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version', caching = 'true', cache.timeout.seconds='$cacheTimeout')
-define table requestPerApiPercentileTable (requestsPerMinPerApiLowerPercentile double, api_version string);
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='$cacheTimeout')
+define table requestPerApiPercentileTable (requestsPerMinPerApiLowerPercentile double, api_version string, tenantDomain string);
 
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version', caching = 'true', cache.timeout.seconds='$cacheTimeout')
-define table responsePerApiPercentileTable (api_version string, responsesPerMinPerApiLowerPercentile double);
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='$cacheTimeout')
+define table responsePerApiPercentileTable (api_version string, tenantDomain string, responsesPerMinPerApiLowerPercentile double);
 
 /* Then define response time streams */
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version', caching = 'true', cache.timeout.seconds='$cacheTimeout')
-define table responseTimePerApiPercentileTable (api_version string, responseTimePerApiUpperPercentile double);
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='$cacheTimeout')
+define table responseTimePerApiPercentileTable (api_version string, tenantDomain string, responseTimePerApiUpperPercentile double);
 
 /* API status availability table */
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', indices='api_version, tenantDomain, status', caching='true', cache.timeout.seconds='$cacheTimeout')
@@ -955,34 +955,38 @@ define table apiAvailabilityTable (api_version string, tenantDomain string, stat
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM', caching='true', cache.timeout.seconds='$cacheTimeout')
 define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORCURRENTALERTS', primary.keys = 'api_version, tenantDomain', caching='true', cache.timeout.seconds='300')
+define table apiHealthMonitorCurrentAlertTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
+
 /* timeBatch used because Minutely updates are needed */
 @info(name = 'query1')
 from requestPerMinStream
 select  api_version, apiPublisher, tenantDomain, sum(total_request_count) as  requestsPerMinPerApi
-group by api_version
+group by api_version, tenantDomain
 insert into requestPerApiCountStream;
 
 @info(name = 'query2')
 from responseSummaryStream
-select  api_version,   sum(total_response_count) as  responsesPerMinPerApi
-group by api_version
+select  api_version, tenantDomain,  sum(total_response_count) as  responsesPerMinPerApi
+group by api_version, tenantDomain
 insert into responsePerApiCountStream;
 
- /* Creating requests stream with percentiles*/
+/* Creating requests stream with percentiles*/
 @info(name = 'query3')
-from requestPerApiCountStream join requestPerApiPercentileTable on (requestPerApiCountStream.api_version == requestPerApiPercentileTable.api_version)
-select requestPerApiCountStream.api_version as api_version, requestPerApiCountStream.tenantDomain, requestPerApiCountStream.apiPublisher as apiPublisher, requestsPerMinPerApi as requestsPerMin, requestsPerMinPerApiLowerPercentile as requestsPerMinLowerPercentile
+from requestPerApiCountStream join requestPerApiPercentileTable on (requestPerApiCountStream.api_version == requestPerApiPercentileTable.api_version AND requestPerApiCountStream.tenantDomain == requestPerApiPercentileTable.tenantDomain)
+select requestPerApiCountStream.api_version as api_version, requestPerApiCountStream.tenantDomain as tenantDomain, requestPerApiCountStream.apiPublisher as apiPublisher, requestsPerMinPerApi as requestsPerMin, requestsPerMinPerApiLowerPercentile as requestsPerMinLowerPercentile
 insert into requestsPercentileStream;
 
 /* Creating responses stream with percentiles  */
 @info(name = 'query4')
-from responsePerApiCountStream join responsePerApiPercentileTable on (responsePerApiCountStream.api_version == responsePerApiPercentileTable.api_version)
-select responsePerApiCountStream.api_version as api_version, responsesPerMinPerApi as responsesPerMin, responsesPerMinPerApiLowerPercentile as responsesPerMinLowerPercentile
+from responsePerApiCountStream join responsePerApiPercentileTable on (responsePerApiCountStream.api_version == responsePerApiPercentileTable.api_version AND responsePerApiCountStream.tenantDomain == responsePerApiPercentileTable.tenantDomain)
+select responsePerApiCountStream.api_version as api_version, responsePerApiCountStream.tenantDomain as tenantDomain,responsesPerMinPerApi as responsesPerMin, responsesPerMinPerApiLowerPercentile as responsesPerMinLowerPercentile
 insert into responsesPercentileStream;
 
 /* Combine*/
+
 @info(name = 'query5')
-from requestsPercentileStream as requestsPercentileStreamWindow left outer join responsesPercentileStream as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version)
+from requestsPercentileStream as requestsPercentileStreamWindow left outer join responsesPercentileStream as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version AND requestsPercentileStreamWindow.tenantDomain == responsesPercentileStreamWindow.tenantDomain)
 select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
 ifThenElse(responsesPercentileStreamWindow.responsesPerMin is null, convert(0, 'long'), responsesPercentileStreamWindow.responsesPerMin) as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,ifThenElse(responsesPercentileStreamWindow.responsesPerMinLowerPercentile is null, 1.0, responsesPercentileStreamWindow.responsesPerMinLowerPercentile) as responsesPerMinLowerPercentile
 insert into requestResponseSummaryStream;
@@ -991,7 +995,12 @@ insert into requestResponseSummaryStream;
 from every (e1=requestResponseSummaryStream[requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile]) -> e2=requestResponseSummaryStream [e1.api_version == api_version AND requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
 select e1.api_version as api_version , ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, str:concat('Response count is lower than ' , e1.responsesPerMinLowerPercentile, ' continuously for $responsePerMinPattern or more minutes.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into apiHealthMonitorAlertStream;
-         
+
+@info(name = 'indexing')
+from apiHealthMonitorAlertStream
+select api_version, apiPublisher, tenantDomain, msg, alertTimestamp
+insert into apiHealthMonitorCurrentAlertTable;
+
 /* Now start response time queries */
 
 @info(name = 'query7')
@@ -1003,24 +1012,25 @@ insert into responseTimeSummaryStream;
 
 @info(name = 'query8')
 from responseTimeSummaryStream#window.timeBatch(1 min) join responseTimePerApiPercentileTable
-on (responseTimeSummaryStream.api_version==responseTimePerApiPercentileTable.api_version)
+on (responseTimeSummaryStream.api_version==responseTimePerApiPercentileTable.api_version AND responseTimeSummaryStream.tenantDomain==responseTimePerApiPercentileTable.tenantDomain)
 select responseTimeSummaryStream.api_version, responseTimeSummaryStream.apiPublisher, responseTimeSummaryStream.tenantDomain, responseTimeSummaryStream.responseTime, responseTimePerApiPercentileTable.responseTimePerApiUpperPercentile
 insert into responseInfoStream;
 
- @info(name = 'query9')
-from every (e1=responseInfoStream[responseTime>responseTimePerApiUpperPercentile]) -> e2=responseInfoStream [e1.api_version == api_version AND responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
+@info(name = 'query9')
+from every (e1=responseInfoStream[responseTime>responseTimePerApiUpperPercentile]) -> e2=responseInfoStream [e1.api_version == api_version AND e1.tenantDomain == tenantDomain AND responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
 select e1.api_version, ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, str:concat('Response time is higher than ' , e1.responseTimePerApiUpperPercentile, ' ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into apiHealthMonitorAlertStream;
 
-  @info(name = 'query10')
+@info(name = 'query10')
 from responseStream
 select api_version, apiPublisher,  responseCode, tenantDomain
 insert into responseCodeSummaryStream;
 
 @info(name = 'query11')
-from every (e1=responseCodeSummaryStream[responseCode > 499 AND responseCode < 600]) -> e2=responseCodeSummaryStream [e1.api_version == api_version AND responseCode > 499 AND responseCode < 600]  <5:>
+from every (e1=responseCodeSummaryStream[responseCode > 499 AND responseCode < 600]) -> e2=responseCodeSummaryStream [e1.api_version == api_version AND e1.tenantDomain == tenantDomain AND responseCode > 499 AND responseCode < 600]  <5:>
 select e1.api_version, ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into apiHealthMonitorAlertStream;
+
 
 @info(name='query12')
 from apiHealthMonitorAlertStream
@@ -1047,9 +1057,9 @@ select api_version , tenantDomain, 'Available' as status
 insert into apiAvailabilityTable;
 
 @info(name='query16')
-from requestPerMinStream as r join apiHealthMonitorAlertStreamTable
-on (r.api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain )
-select r.api_version, r.tenantDomain, alertTimestamp
+from requestPerMinStream as rpm join apiHealthMonitorCurrentAlertTable as latestAlertTable
+on (rpm.api_version == latestAlertTable.api_version AND rpm.tenantDomain == latestAlertTable.tenantDomain)
+select rpm.api_version, rpm.tenantDomain, latestAlertTable.alertTimestamp
 insert into tempStream;
 
 
@@ -1058,6 +1068,8 @@ from tempStream[(time:timestampInMilliseconds() - alertTimestamp) > $statusChang
 select api_version , tenantDomain, 'Available' as status
 update apiAvailabilityTable
 on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvailabilityTable.tenantDomain);
+
+
                  ]]>
                 </template>
             </templates>

@@ -3,42 +3,42 @@
 	<TableSchema>
 		<ColumnDefinition>
 			<Name>api_version</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>userId</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>consumerKey</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>resourceTemplate</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>method</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>requestsPerMin</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>LONG</Type>
