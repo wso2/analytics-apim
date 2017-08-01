@@ -119,12 +119,14 @@ public class RequestPatternChangeTestCase extends APIMAnalyticsBaseTestCase {
 
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published")
     public void testSimulationDataSent() throws Exception {
+    	executeSparkQuery("CREATE TEMPORARY TABLE REQUEST_INFO_STREAM USING CarbonAnalytics "
+    			+ "OPTIONS (tableName \"ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINSTREAM\")");
         int i = 0;
         long requestEventCount = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
             Thread.sleep(2000);
-            requestEventCount = getRecordCount(-1234, REQUEST_TABLE);
+            requestEventCount = executeSparkQuery("SELECT * FROM REQUEST_INFO_STREAM");
             eventsPublished = (requestEventCount >= 18);
             if (eventsPublished) {
                 break;

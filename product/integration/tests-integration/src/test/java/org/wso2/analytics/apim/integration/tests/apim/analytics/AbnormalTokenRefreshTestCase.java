@@ -109,13 +109,14 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         //publish training data
         List<EventDto> eventDtoList = publishSimulationData();
         pubishEvents(eventDtoList, 100);
-
+        executeSparkQuery("CREATE TEMPORARY TABLE TOKEN_STREAM USING CarbonAnalytics "
+    			+ "OPTIONS (tableName \"ORG_WSO2_CARBON_IDENTITY_OAUTH_TOKEN_ISSUANCE\")");
         int i = 0;
         long oAuthEventCount = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
             Thread.sleep(2000);
-            oAuthEventCount = getRecordCount(-1234, STREAM_NAME.replace('.', '_'));
+            oAuthEventCount = executeSparkQuery("SELECT * FROM TOKEN_STREAM");
             eventsPublished = (oAuthEventCount >= 6);
             if (eventsPublished) {
                 break;
@@ -135,7 +136,7 @@ public class AbnormalTokenRefreshTestCase extends APIMAnalyticsBaseTestCase {
         boolean scriptExecuted = false;
         while (i < MAX_TRIES) {
             Thread.sleep(10000);
-            summaryTableCount = getRecordCount(-1234, SUMMARY_TABLE);
+            summaryTableCount = executeSparkQuery("SELECT * FROM accessTokenRefreshAvrgTime");
             scriptExecuted = (summaryTableCount >= 1);
             if (scriptExecuted) {
                 break;

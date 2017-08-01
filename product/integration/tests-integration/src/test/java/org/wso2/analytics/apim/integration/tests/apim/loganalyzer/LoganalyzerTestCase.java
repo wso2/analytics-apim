@@ -64,6 +64,23 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     private static final String INSTANCE = "instance";
     private static final String TRACE = "trace";
     private final int MAX_TRIES = 20;
+    
+    private static final String MESSAGE_LEVEL_ERROR_DAILY_TABLE_TMP = "loganalyzer_message_level_error_daily";
+    private static final String MESSAGE_LEVEL_ERROR_WEEKLY_TABLE_TMP = "loganalyzer_message_level_error_weekly";
+    private static final String MESSAGE_LEVEL_ERROR_MONTHLY_TABLE_TMP = "loganalyzer_message_level_error_monthly";
+    private static final String CLASS_LEVEL_ERROR_DAILY_TABLE_TMP = "loganalyzer_class_level_error_daily";
+    private static final String CLASS_LEVEL_ERROR_WEEKLY_TABLE_TMP = "loganalyzer_class_level_error_weekly";
+    private static final String CLASS_LEVEL_ERROR_MONTHLY_TABLE_TMP = "loganalyzer_class_level_error_monthly";
+    private static final String APIM_ARTIFACT_DEPLOYED_DAILY_TABLE_TMP = "loganalyzer_apim_artifact_deployed_daily";
+    private static final String APIM_ARTIFACT_DELETED_DAILY_TABLE_TMP = "loganalyzer_apim_artifact_deleted_daily";
+    private static final String APIM_MESSAGE_PROCESSING_DAILY_TABLE_TMP = "loganalyzer_apim_message_processing_daily";
+    private static final String APIM_MESSAGE_PROCESSING_WEEKLY_TABLE_TMP = "loganalyzer_apim_message_processing_weekly";
+    private static final String APIM_MESSAGE_PROCESSING_MONTHLY_TABLE_TMP = "loganalyzer_apim_message_processing_monthly";
+    private static final String APIKEY_STATUS_TABLE_TMP = "loganalyzer_apikey_status";
+    private static final String INVALID_LOGIN_ATTEMPT_DAILY_TABLE_TMP = "invalidLoginAttemptDaily";
+    private static final String INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE_TMP = "invalidLoginAttemptWeekly";
+    private static final String INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE_TMP = "invalidLoginAttemptMonthly";
+    private static final String AUDIT_LOG_TABLE_TMP = "loganalyzer_apim_audit_log";
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
@@ -90,12 +107,14 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         //publish events
         publishEvent(TEST_RESOURCE_PATH, "wso2carbonBenchmarkLogs.csv", getStreamId(STREAM_NAME, STREAM_VERSION));
         Thread.sleep(12000);
+        executeSparkQuery("CREATE TEMPORARY TABLE LOGANALYZER_STREAM USING CarbonAnalytics "
+                + "OPTIONS (tableName \"LOGANALYZER\")");        
         int i = 0;
         boolean eventsPublished = false;
         long loganalyzerEventCount = 0;
         int benchmarkLogsCount = 3;
         while (i < MAX_TRIES) {
-            loganalyzerEventCount = getRecordCount(-1234, STREAM_NAME.toUpperCase());
+            loganalyzerEventCount = executeSparkQuery("SELECT * FROM LOGANALYZER_STREAM");
             eventsPublished = (loganalyzerEventCount >= benchmarkLogsCount);
             if (eventsPublished) {
                 break;
@@ -112,49 +131,51 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     public void testLoganalyzerSparkScriptExecution() throws Exception {
         //run the script
         executeSparkScript(SPARK_SCRIPT);
-        Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_DAILY_TABLE, MAX_TRIES),
+        Thread.sleep(1000);
+        
+        Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_DAILY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         MESSAGE_LEVEL_ERROR_DAILY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_WEEKLY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_WEEKLY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         MESSAGE_LEVEL_ERROR_WEEKLY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_MONTHLY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, MESSAGE_LEVEL_ERROR_MONTHLY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         MESSAGE_LEVEL_ERROR_MONTHLY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_DAILY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_DAILY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         CLASS_LEVEL_ERROR_DAILY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_WEEKLY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_WEEKLY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         CLASS_LEVEL_ERROR_WEEKLY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_MONTHLY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, CLASS_LEVEL_ERROR_MONTHLY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         CLASS_LEVEL_ERROR_MONTHLY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, APIM_ARTIFACT_DEPLOYED_DAILY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIM_ARTIFACT_DEPLOYED_DAILY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         APIM_ARTIFACT_DEPLOYED_DAILY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, APIM_ARTIFACT_DELETED_DAILY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIM_ARTIFACT_DELETED_DAILY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         APIM_ARTIFACT_DELETED_DAILY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_DAILY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_DAILY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         APIM_MESSAGE_PROCESSING_DAILY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_WEEKLY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_WEEKLY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         APIM_MESSAGE_PROCESSING_WEEKLY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_MONTHLY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIM_MESSAGE_PROCESSING_MONTHLY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         APIM_MESSAGE_PROCESSING_MONTHLY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_DAILY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_DAILY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         INVALID_LOGIN_ATTEMPT_DAILY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         INVALID_LOGIN_ATTEMPT_WEEKLY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " +
                         INVALID_LOGIN_ATTEMPT_MONTHLY_TABLE + "!");
-        Assert.assertTrue(isRecordExists(-1234, AUDIT_LOG_TABLE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, AUDIT_LOG_TABLE_TMP, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " + AUDIT_LOG_TABLE + "!");
     }
 

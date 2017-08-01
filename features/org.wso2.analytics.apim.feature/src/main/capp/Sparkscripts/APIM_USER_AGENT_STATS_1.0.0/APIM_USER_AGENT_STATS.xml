@@ -16,57 +16,25 @@
     browser STRING",
     primaryKeys "api,version,apiPublisher,year,month,day,os,browser,tenantDomain"
     );
-    CREATE TEMPORARY TABLE API_REQUEST_USER_AGENT_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQUEST_USER_AGENT_SUMMARY",
-    schema "api string -i,
-    version string -i,
-    apiPublisher string -i,
-    tenantDomain string -i,
-    total_request_count int -i,
-    year int -i,
-    month int -i,
-    day int -i,
-    requestTime long -i,
-    userAgent string -i",
-    primaryKeys "api,version,apiPublisher,year,month,day,userAgent,tenantDomain"
-    );
 
     <!--incrementally processed per month request data table-->
     create temporary table APIMGT_PERDAY_REQUEST_DATA USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST", schema "
-    year INT -i, month INT -i, day INT -i,
+    year INT, month INT, day INT,
     consumerKey STRING, context STRING, api_version STRING, api STRING, version STRING, maxRequestTime LONG, firstRequestTime LONG, userId STRING, hostName STRING,
     apiPublisher STRING, total_request_count_per_day LONG, resourceTemplate STRING, method STRING, applicationName STRING, tenantDomain STRING,
     userAgent STRING, resourcePath STRING, request INT, applicationId STRING, tier STRING, throttledOut BOOLEAN, clientIp STRING,
     applicationOwner STRING",
     primaryKeys "year, month, day, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp",
+    incrementalParams "USER_AGENT_APIMGT_PERDAY_REQUEST_DATA, DAY",
     mergeSchema "false");
 
-    insert into table API_REQUEST_USER_AGENT_SUMMARY_FINAL select api,version, apiPublisher,tenantDomain,
-    sum(total_request_count_per_day) as total_request_count,
-    year, month, day,
-    first(firstRequestTime),
-    userAgent
-    from APIMGT_PERDAY_REQUEST_DATA
-    group by api,version,apiPublisher,userAgent,tenantDomain, year, month, day;
+    INSERT INTO TABLE APIUserBrowserData
+    SELECT api,version,apiPublisher,tenantDomain,sum(total_request_count_per_day) as total_request_count,year,month,day,
+    first(firstRequestTime) as requestTime,COALESCE(getOSFromUserAgent(userAgent),"UNKNOWN") os,COALESCE(getBrowserFromUserAgent(userAgent),"UNKNOWN") browser
+    FROM APIMGT_PERDAY_REQUEST_DATA
+    group by api,version,apiPublisher,userAgent,tenantDomain,year,month,day,COALESCE(getOSFromUserAgent(userAgent),"UNKNOWN"),COALESCE(getBrowserFromUserAgent(userAgent),"UNKNOWN");
 
-    CREATE TEMPORARY TABLE API_REQUEST_USER_BROWSER_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_REQ_USER_BROW_SUMMARY",
-    schema "api string -i,
-    version string -i,
-    apiPublisher string -i,
-    tenantDomain string -i,
-    total_request_count int -i,
-    year int -i,
-    month int -i,
-    day int -i,
-    requestTime long -i,
-    os string -i,
-    browser string -i,
-    key_os_browser_facet facet -i",
-    primaryKeys "api,version,apiPublisher,year,month,day,os,browser,tenantDomain"
-    );
-    insert INTO table API_REQUEST_USER_BROWSER_SUMMARY_FINAL select apidata.api,apidata.version, apidata.apiPublisher,apidata.tenantDomain,
-    sum(apidata.total_request_count) as total_request_count,apidata.year,apidata.month,apidata.day,first(requestTime),getOSFromUserAgent(apidata.userAgent),getBrowserFromUserAgent(apidata.userAgent),facet2(getOSFromUserAgent(apidata.userAgent),getBrowserFromUserAgent(apidata.userAgent))
-    from API_REQUEST_USER_AGENT_SUMMARY_FINAL as apidata group by apidata.api,apidata.version,apidata.apiPublisher,apidata.year,apidata.month,apidata.day,apidata.userAgent,getOSFromUserAgent(apidata.userAgent),getBrowserFromUserAgent(apidata.userAgent),apidata.tenantDomain;
-    INSERT INTO TABLE APIUserBrowserData SELECT api,version,apiPublisher,tenantDomain,total_request_count,year,month,day,requestTime, if(os is null, "UNKNOWN",os), if(browser is null, "UNKNOWN", browser)  FROM API_REQUEST_USER_BROWSER_SUMMARY_FINAL;
+    INCREMENTAL_TABLE_COMMIT USER_AGENT_APIMGT_PERDAY_REQUEST_DATA;
 </Script>
     <CronExpression>0 0/5 * 1/1 * ? *</CronExpression>
 </Analytics>
