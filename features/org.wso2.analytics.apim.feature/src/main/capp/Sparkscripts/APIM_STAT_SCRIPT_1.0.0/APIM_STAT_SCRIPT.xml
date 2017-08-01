@@ -28,7 +28,7 @@
     consumerKey STRING, context STRING, api_version STRING, api STRING, version STRING, maxRequestTime LONG, firstRequestTime LONG, userId STRING, hostName STRING,
     apiPublisher STRING, total_request_count_per_day LONG, resourceTemplate STRING, method STRING, applicationName STRING, tenantDomain STRING,
     userAgent STRING, resourcePath STRING, request INT, applicationId STRING, tier STRING, throttledOut BOOLEAN, clientIp STRING,
-    applicationOwner STRING, _timestamp LONG",
+    applicationOwner STRING",
     primaryKeys "year, month, day, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp",
     incrementalParams "STAT_SCRIPT_APIMGT_PERDAY_REQUEST_DATA, DAY",
     mergeSchema "false");
@@ -125,7 +125,7 @@
     context STRING, api_version STRING, api STRING, resourceTemplate STRING, version STRING, tenantDomain STRING, hostName STRING, apiPublisher STRING,
     destination STRING, consumerKey STRING, resourcePath STRING, method STRING, response INT, serviceTime LONG, username STRING, maxEventTime LONG, firstEventTime LONG,
     applicationName STRING, applicationId STRING, cacheHit BOOLEAN, responseSize LONG, protocol STRING, responseCode INT,
-    total_response_count_per_day LONG, _timestamp LONG",
+    total_response_count_per_day LONG",
     primaryKeys "year, month, day, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username",
     incrementalParams "STAT_SCRIPT_APIMGT_PERDAY_RESPONSE_DATA, DAY",
     mergeSchema "false");
