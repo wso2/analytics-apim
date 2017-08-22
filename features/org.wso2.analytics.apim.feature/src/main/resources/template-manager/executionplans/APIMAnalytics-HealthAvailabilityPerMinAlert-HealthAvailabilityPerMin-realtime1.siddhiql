@@ -58,7 +58,7 @@
                                 define table responseTimePerApiPercentileTable (api_version string, tenantDomain string, responseTimePerApiUpperPercentile double);
 
                                 /* API status availability table */
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', indices='api_version, tenantDomain, status', caching='true', cache.timeout.seconds='300', wait.for.indexing = 'false')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', caching='true', cache.timeout.seconds='300', wait.for.indexing = 'false')
                                 define table apiAvailabilityTable (api_version string, tenantDomain string, status string);
 
                                 /* APIHEALTHMONITORALERTSTREAM TABLE */
