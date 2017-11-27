@@ -1539,7 +1539,7 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                               sum(apidata.total_request_count) as total_request_count,apidata.year,apidata.month,apidata.day,first(requestTime),getCountry(apidata.clientIp) as country,
                               getCity(apidata.clientIp) as city,facet2(getCountry(apidata.clientIp),getCity(apidata.clientIp))
                               from API_REQUEST_GEOIP_SUMMARY_FINAL as apidata group by apidata.api,apidata.version,apidata.apiPublisher,apidata.year,apidata.month,apidata.day,apidata.clientIp,getCountry(apidata.clientIp),getCity(apidata.clientIp),apidata.tenantDomain;
-                              INSERT OVERWRITE TABLE APIGeoLocationData SELECT api,version,apiPublisher,tenantDomain,total_request_count,year,month,day,requestTime,country,city FROM API_REQUEST_GEO_LOCATION_SUMMARY_FINAL;
+                              INSERT INTO TABLE APIGeoLocationData SELECT api,version,apiPublisher,tenantDomain,total_request_count,year,month,day,requestTime,country,city FROM API_REQUEST_GEO_LOCATION_SUMMARY_FINAL;
 
 
                  ]]>
