@@ -1,9 +1,9 @@
 WSO2 API Manager Analytics Server, v2.1.0
 =========================================
 
-Welcome to the WSO2 API Manager Analytics Server, v2.1.0 release.
+Welcome to the WSO2 API Manager Analytics Server, v2.2.0-SNAPSHOT release.
 
-The WSO2 AM Analytics version 2.1.0 contains real-time and batch analytics related to WSO2 API Manager 2.1.0 release. This server is a variation of WSO2 Data Analytics Server, which is a complete rewrite of the analytics solution based on the latest technologies.
+The WSO2 AM Analytics version 2.2.0-SNAPSHOT contains real-time and batch analytics related to WSO2 API Manager 2.2.0-SNAPSHOT release. This server is a variation of WSO2 Data Analytics Server, which is a complete rewrite of the analytics solution based on the latest technologies.
 
 WSO2 AM Analytics is powered by WSO2 Carbon, the SOA middleware component platform. 
 
@@ -173,7 +173,7 @@ WSO2 API Manager Analytics Server Binary Distribution Directory Structure
       This document contains information on installing WSO2 Application Server.
 
     - release-notes.html
-      Release information for WSO2 API Manager Analytics Server 2.1.0
+      Release information for WSO2 API Manager Analytics Server 2.2.0-SNAPSHOT
 
 Secure sensitive information in carbon configuration files
 ==========================================================

@@ -231,8 +231,8 @@ org.sat4j.core_2.3.5.v201308161310.jar                                          
 org.sat4j.pb_2.3.5.v201308161310.jar                                            bundle         epl1+lgpl21090      
 org.scala-lang.scala-library_2.10.5.v20150226-164155-VFINAL-88c5407613.jar      bundle         bsd       2004      
 org.scala-lang.scala-reflect_2.10.5.v20150226-164155-VFINAL-88c5407613.jar      bundle         bsd       2003      
-org.wso2.analytics.apim.spark_2.1.0.SNAPSHOT.jar                                bundle         apache2   10836     
-org.wso2.analytics.apim_2.1.0.SNAPSHOT.jar                                      bundle         apache2   10835     
+org.wso2.analytics.apim.spark_2.2.0.SNAPSHOT.jar                                bundle         apache2   10836
+org.wso2.analytics.apim_2.2.0.SNAPSHOT.jar                                      bundle         apache2   10835
 org.wso2.carbon.addressing_4.4.11.jar                                           bundle         apache2   10386     
 org.wso2.carbon.analytics.activitydashboard.admin_1.3.0.jar                     bundle         apache2   10834     
 org.wso2.carbon.analytics.activitydashboard.commons_1.3.0.jar                   bundle         apache2   10833     

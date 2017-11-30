@@ -1,7 +1,7 @@
-Installing WSO2 API Manager Analytics Server, v2.1.0
+Installing WSO2 API Manager Analytics Server, v2.2.0
 ====================================================
 
-WSO2 API Manager Analytics Server 2.1.0 can be run either in standalone mode.
+WSO2 API Manager Analytics Server 2.2.0-SNAPSHOT can be run either in standalone mode.
 
 
 Standalone Mode
