@@ -5,13 +5,14 @@
         CREATE TEMPORARY TABLE CopyOfLoganalyzer USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER",
-            schema "_class string, _content string, tenantID string, _level string, _trace string, _eventTimeStamp long",
+            schema "_class string -i, _content string -i, tenantID string -i, _level string -i, _trace string -i,
+            _eventTimeStamp long -i",
             primaryKeys "_class, _content, _level, _eventTimeStamp");
 
         CREATE TEMPORARY TABLE loganalyzer_message_level_error_daily USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_MESSAGE_LEVEL_ERROR_DAILY",
-            schema "tenantID string, message string, messageCount int, _timestamp long",
+            schema "tenantID string -i, message string -i, messageCount int -i, _timestamp long -i",
             incrementalParams "loganalyzer_message_level_error_daily, DAY",
             mergeSchema "false"
         );
@@ -41,7 +42,7 @@
         CREATE TEMPORARY TABLE loganalyzer_class_level_error_daily USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_CLASS_LEVEL_ERROR_DAILY",
-            schema "tenantID string, class string, classCount int, _timestamp long",
+            schema "tenantID string -i, class string -i, classCount int -i, _timestamp long -i",
             incrementalParams "loganalyzer_class_level_error_daily, DAY",
             mergeSchema "false"
         );
@@ -70,7 +71,7 @@
         CREATE TEMPORARY TABLE loganalyzer_class_level_error_monthly USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_CLASS_LEVEL_ERROR_MONTHLY",
-            schema "tenantID string , class string , classCount int , _timestamp long "
+            schema "tenantID string -i, class string -i, classCount int -i, _timestamp long -i"
         );
         INSERT OVERWRITE table loganalyzer_class_level_error_monthly
         SELECT
@@ -95,7 +96,7 @@
         CREATE TEMPORARY TABLE loganalyzer_message_level_error_monthly USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_MESSAGE_LEVEL_ERROR_MONTHLY",
-            schema "tenantID string , message string , messageCount int , _timestamp long "
+            schema "tenantID string -i, message string -i, messageCount int -i, _timestamp long -i"
         );
         INSERT OVERWRITE table loganalyzer_message_level_error_monthly
         SELECT
@@ -120,7 +121,7 @@
         CREATE TEMPORARY TABLE loganalyzer_class_level_error_weekly USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_CLASS_LEVEL_ERROR_WEEKLY",
-            schema "tenantID string , class string , classCount int , week long , _timestamp long "
+            schema "tenantID string -i, class string -i, classCount int -i, week long -i, _timestamp long -i"
         );
         INSERT OVERWRITE table loganalyzer_class_level_error_weekly
         SELECT
@@ -147,7 +148,7 @@
         CREATE TEMPORARY TABLE loganalyzer_message_level_error_weekly USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_MESSAGE_LEVEL_ERROR_WEEKLY",
-            schema "tenantID string , message string , messageCount int , week long , _timestamp long "
+            schema "tenantID string -i, message string -i, messageCount int -i, week long -i, _timestamp long -i"
         );
         INSERT OVERWRITE table loganalyzer_message_level_error_weekly
         SELECT
@@ -174,7 +175,7 @@
         CREATE TEMPORARY TABLE loganalyzer_apim_artifact_deployed_daily USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_APIM_ARTIFACT_DEPLOYED_DAILY",
-            schema "artifact string  -f, tenantID string , artifactCount int , _timestamp long ",
+            schema "artifact string -i -f, tenantID string -i, artifactCount int -i, _timestamp long -i",
             incrementalParams "loganalyzer_apim_artifact_deployed_daily, DAY",
             mergeSchema "false"
         );
@@ -204,7 +205,7 @@
         CREATE TEMPORARY TABLE loganalyzer_apim_artifact_deleted_daily USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_APIM_ARTIFACT_DELETED_DAILY",
-            schema "artifact string  -f, tenantID string , artifactCount int , _timestamp long ",
+            schema "artifact string -i -f, tenantID string -i, artifactCount int -i, _timestamp long -i",
             incrementalParams "loganalyzer_apim_artifact_deleted_daily, DAY",
             mergeSchema "false"
         );
@@ -233,7 +234,7 @@
         CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_daily USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_APIM_MESSAGE_PROCESSING_DAILY",
-            schema "tenantID string , apiName string , fullApiName string , apiCount int , _timestamp long ",
+            schema "tenantID string -i, apiName string -i, fullApiName string -i, apiCount int -i, _timestamp long -i",
             incrementalParams "loganalyzer_apim_message_processing_daily, DAY",
             mergeSchema "false"
         );
@@ -266,7 +267,8 @@
         CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_weekly USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_APIM_MESSAGE_PROCESSING_WEEKLY",
-            schema "tenantID string , apiName string , fullApiName string , apiCount int , _timestamp long , week long "
+            schema "tenantID string -i, apiName string -i, fullApiName string , apiCount int -i, _timestamp long -i,
+            week long -i"
         );
         INSERT OVERWRITE table loganalyzer_apim_message_processing_weekly
         SELECT
@@ -295,7 +297,7 @@
         CREATE TEMPORARY TABLE loganalyzer_apim_message_processing_monthly USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_APIM_MESSAGE_PROCESSING_MONTHLY",
-            schema "tenantID string , apiName string , fullApiName string, apiCount int , _timestamp long "
+            schema "tenantID string -i, apiName string -i, fullApiName string, apiCount int -i, _timestamp long -i"
         );
         INSERT OVERWRITE table loganalyzer_apim_message_processing_monthly
         SELECT
@@ -322,7 +324,7 @@
         CREATE TEMPORARY TABLE loganalyzer_apikey_status USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_APIKEY_STATUS",
-            schema "status string , content string , byYear int , byMonth int , byDay int , _timestamp long ",
+            schema "status string -i, content string -i, byYear int -i, byMonth int -i, byDay int -i, _timestamp long -i",
             incrementalParams "loganalyzer_apikey_status, DAY",
             mergeSchema "false"
         );
@@ -363,7 +365,7 @@
         CREATE TEMPORARY TABLE invalidLoginAttemptDaily USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_INVALID_LOGIN_ATTEMPT_DAILY",
-            schema "tenantID string , InvalidLoginCount int , _timestamp long ",
+            schema "tenantID string -i, InvalidLoginCount int -i, _timestamp long -i",
             incrementalParams "invalidLoginAttemptDaily, DAY",
             mergeSchema "false"
         );
@@ -371,13 +373,13 @@
         CREATE TEMPORARY TABLE invalidLoginAttemptWeekly USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_INVALID_LOGIN_ATTEMPT_WEEKLY",
-            schema "tenantID string , InvalidLoginCount int , _timestamp long , week long "
+            schema "tenantID string -i, InvalidLoginCount int -i, _timestamp long -i, week long -i"
         );
 
         CREATE TEMPORARY TABLE invalidLoginAttemptMonthly USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_INVALID_LOGIN_ATTEMPT_MONTHLY",
-            schema "tenantID string , InvalidLoginCount int , _timestamp long "
+            schema "tenantID string -i, InvalidLoginCount int -i, _timestamp long -i"
         );
 
         INSERT OVERWRITE table invalidLoginAttemptDaily
@@ -442,7 +444,7 @@
         CREATE TEMPORARY TABLE loganalyzer_apim_audit_log USING CarbonAnalytics
         OPTIONS (
             tableName "LOGANALYZER_APIM_AUDIT_LOG",
-            schema "tenantID string , user string, action string , type string , info string,_timestamp long ",
+            schema "tenantID string -i, user string, action string -i, type string -i, info string,_timestamp long -i",
             mergeSchema "true"
         );
 
