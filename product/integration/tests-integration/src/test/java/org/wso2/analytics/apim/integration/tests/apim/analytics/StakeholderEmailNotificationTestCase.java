@@ -70,7 +70,8 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
                 new String[]{"abc@carbon.super", "abnormalBackendTime", "abc@gmail.com,john@gmail,com", "false", "true"}
         );
         publishEvent(eventDto);
-        
+        Thread.sleep(1000);
+
         executeSparkQuery("CREATE TEMPORARY TABLE STAKEHOLDER_STREAM USING CarbonAnalytics "
         		+ "OPTIONS (tableName \"ORG_WSO2_ANALYTICS_APIM_ALERTSTAKEHOLDERINFO\")");
 
