@@ -52,6 +52,15 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
     private static final String ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES = "ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES";
     private static final String ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES = "ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES";
     private static final String API_REQUEST_SUMMARY = "API_REQUEST_SUMMARY";
+    
+    //TEMP table names
+    private static final String APIMGT_PERHOUR_REQUEST_DATA = "APIMGT_PERHOUR_REQUEST_DATA";
+    private static final String APIMGT_PERDAY_REQUEST_DATA = "APIMGT_PERDAY_REQUEST_DATA";
+    private static final String APIMGT_PERHOUR_RESPONSE_DATA = "APIMGT_PERHOUR_RESPONSE_DATA";
+    private static final String APIMGT_PERDAY_RESPONSE_DATA = "APIMGT_PERDAY_RESPONSE_DATA";
+    private static final String APIMGT_PERHOUR_EXECUTION_TIME = "APIMGT_PERHOUR_EXECUTION_TIME";
+    private static final String APIMGT_PERDAY_EXECUTION_TIME = "APIMGT_PERDAY_EXECUTION_TIME";
+    private static final String API_REQUEST_SUMMARY_DATA = "APIRequestSummaryData";
 
     private final int MAX_TRIES = 20;
 
@@ -88,12 +97,14 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         pubishEventsFromCSV(TEST_RESOURCE_PATH, TEST_EXECUTION_TIMES_FILE,
                 getStreamId(EXECUTION_TIMES_PER_MINUTE_STREAM_NAME, EXECUTION_TIMES_PER_MINUTE_STREAM_VERSION), 1);
         Thread.sleep(5000);
+        executeSparkQuery("CREATE TEMPORARY TABLE REQUEST_INFO_STREAM USING CarbonAnalytics "
+    			+ "OPTIONS (tableName \"ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINSTREAM\")");
 
         int i = 0;
         boolean eventsPublishedPerMinuteRequests = false;
         long requestsPerMinuteEventCount = 0;
         while (i < MAX_TRIES) {
-            requestsPerMinuteEventCount = getRecordCount(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST);
+            requestsPerMinuteEventCount = executeSparkQuery("SELECT * FROM REQUEST_INFO_STREAM");
             eventsPublishedPerMinuteRequests = (requestsPerMinuteEventCount >= 4);
             if (eventsPublishedPerMinuteRequests) {
                 break;
@@ -104,12 +115,14 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         Assert.assertTrue(eventsPublishedPerMinuteRequests,
                 "Simulation events did not get published to requests per minute stream, expected entry count:4 but found: "
                         + requestsPerMinuteEventCount + "!");
+        executeSparkQuery("CREATE TEMPORARY TABLE RESPONSE_INFO_STREAM USING CarbonAnalytics OPTIONS"
+        		+ " (tableName \"ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE\")");
 
         i = 0;
         boolean eventsPublishedPerMinuteResponses = false;
         long responsesPerMinuteEventCount = 0;
         while (i < MAX_TRIES) {
-            responsesPerMinuteEventCount = getRecordCount(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTERESPONSE);
+            responsesPerMinuteEventCount = executeSparkQuery("SELECT * FROM RESPONSE_INFO_STREAM");
             eventsPublishedPerMinuteResponses = (responsesPerMinuteEventCount >= 4);
             if (eventsPublishedPerMinuteResponses) {
                 break;
@@ -120,12 +133,13 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         Assert.assertTrue(eventsPublishedPerMinuteResponses,
                 "Simulation events did not get published to responses per minute stream, expected entry count:4 but found: "
                         + responsesPerMinuteEventCount + "!");
-
+        executeSparkQuery("CREATE TEMPORARY TABLE PER_MIN_EXE USING CarbonAnalytics OPTIONS"
+        		+ " (tableName \"ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES\")");
         i = 0;
         boolean eventsPublishedPerPerSecondExecutionTimes = false;
         long executionTimesPerMinuteEventCount = 0;
         while (i < MAX_TRIES) {
-            executionTimesPerMinuteEventCount = getRecordCount(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES);
+            executionTimesPerMinuteEventCount = executeSparkQuery("SELECT * FROM PER_MIN_EXE");
             eventsPublishedPerPerSecondExecutionTimes = (executionTimesPerMinuteEventCount >= 4);
             if (eventsPublishedPerPerSecondExecutionTimes) {
                 break;
@@ -144,26 +158,26 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         // run the script
         executeSparkScript(SPARK_SCRIPT);
         executeSparkScript(APIM_STAT_SCRIPT);
-        Assert.assertTrue(isRecordExists(-1234, ORG_WSO2_APIMGT_STATISTICS_PERHOURREQUEST, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIMGT_PERHOUR_REQUEST_DATA, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table "
                         + ORG_WSO2_APIMGT_STATISTICS_PERHOURREQUEST + "!");
-        Assert.assertTrue(isRecordExists(-1234, ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIMGT_PERDAY_REQUEST_DATA, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table "
                         + ORG_WSO2_APIMGT_STATISTICS_PERDAYREQUEST + "!");
-        Assert.assertTrue(isRecordExists(-1234, ORG_WSO2_APIMGT_STATISTICS_PERHOURRESPONSE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIMGT_PERHOUR_RESPONSE_DATA, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table "
                         + ORG_WSO2_APIMGT_STATISTICS_PERHOURRESPONSE + "!");
-        Assert.assertTrue(isRecordExists(-1234, ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIMGT_PERDAY_RESPONSE_DATA, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table "
                         + ORG_WSO2_APIMGT_STATISTICS_PERDAYRESPONSE + "!");
-        Assert.assertTrue(isRecordExists(-1234, ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIMGT_PERHOUR_EXECUTION_TIME, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table "
                         + ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES + "!");
-        Assert.assertTrue(isRecordExists(-1234, ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES, MAX_TRIES),
+        Assert.assertTrue(isRecordExists(-1234, APIMGT_PERDAY_EXECUTION_TIME, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table "
                         + ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES + "!");
 
-        Assert.assertTrue(isRecordExists(-1234, API_REQUEST_SUMMARY, 1),
+        Assert.assertTrue(isRecordExists(-1234, API_REQUEST_SUMMARY_DATA, MAX_TRIES),
                 "Spark script did not execute as expected, No entries found for table " + API_REQUEST_SUMMARY + "!");
 
         if (isTableExist(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST)) {
@@ -188,7 +202,7 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         boolean eventsPublishedPerMinuteRequests = false;
         long requestsPerMinuteEventCount = 0;
         while (i < MAX_TRIES) {
-            requestsPerMinuteEventCount = getRecordCount(-1234, ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST);
+            requestsPerMinuteEventCount = executeSparkQuery("SELECT * FROM REQUEST_INFO_STREAM");
             eventsPublishedPerMinuteRequests = (requestsPerMinuteEventCount >= 4);
             if (eventsPublishedPerMinuteRequests) {
                 break;
@@ -203,7 +217,7 @@ public class IncrementalProcessingTestCase extends APIMAnalyticsBaseTestCase {
         executeSparkScript(SPARK_SCRIPT);
         executeSparkScript(APIM_STAT_SCRIPT);
 
-        Assert.assertTrue(isRecordExists(-1234, API_REQUEST_SUMMARY, 1),
+        Assert.assertTrue(isRecordExists(-1234, API_REQUEST_SUMMARY_DATA, 1),
                 "Spark script did not execute as expected, No entries found for table " + API_REQUEST_SUMMARY + "!");
     }
 

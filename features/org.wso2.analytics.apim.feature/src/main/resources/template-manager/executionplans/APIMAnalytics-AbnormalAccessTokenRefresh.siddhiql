@@ -15,13 +15,13 @@ define stream alert_abnormalTokenRefreshStream (userId string, tenantDomain stri
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream alert_allAPIMAlertsStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_LASTACCESSTOKENREFRESHEVENTTABLE', primary.keys = 'userId, clientId, scopes', indices = 'userId, clientId, scopes, timestamp')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_LASTACCESSTOKENREFRESHEVENTTABLE', primary.keys = 'userId, clientId, scopes', indices = 'userId, clientId, scopes, timestamp', wait.for.indexing = 'false')
 define table LastAccessTokenRefreshTable (userId string, clientId string, scopes string, timestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE', indices = 'userId, clientId, scopes, timeDifference, timestamp')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHTIMEDIFFERENCE', indices = 'userId, clientId, scopes, timeDifference, timestamp', wait.for.indexing = 'false')
 define table AccessTokenRefreshTable (userId string, clientId string, scopes string, timeDifference long, timestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHSUMMARYTABLE', indices = 'userId, clientId, scopes, minTimeDifference, maxTimeDifference')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_ACCESSTOKENREFRESHSUMMARYTABLE', indices = 'userId, clientId, scopes, minTimeDifference, maxTimeDifference', wait.for.indexing = 'false')
 define table AccessTokenRefreshSummaryTable (userId string, clientId string, scopes string, minTimeDifference double, maxTimeDifference double);
 
 

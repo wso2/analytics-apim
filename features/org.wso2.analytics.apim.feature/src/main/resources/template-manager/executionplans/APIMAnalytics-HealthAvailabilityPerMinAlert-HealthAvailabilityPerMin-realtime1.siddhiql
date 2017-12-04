@@ -47,22 +47,22 @@
                                 /*  -- Event tables -- */
 
                                 /* Lower percentiles */
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='300')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='300', wait.for.indexing = 'false')
                                 define table requestPerApiPercentileTable (requestsPerMinPerApiLowerPercentile double, api_version string, tenantDomain string);
 
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='300')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='300', wait.for.indexing = 'false')
                                 define table responsePerApiPercentileTable (api_version string, tenantDomain string, responsesPerMinPerApiLowerPercentile double);
 
                                 /* Then define response time streams */
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='300')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='300', wait.for.indexing = 'false')
                                 define table responseTimePerApiPercentileTable (api_version string, tenantDomain string, responseTimePerApiUpperPercentile double);
 
                                 /* API status availability table */
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', indices='api_version, tenantDomain, status', caching='true', cache.timeout.seconds='300')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', caching='true', cache.timeout.seconds='300', wait.for.indexing = 'false')
                                 define table apiAvailabilityTable (api_version string, tenantDomain string, status string);
 
                                 /* APIHEALTHMONITORALERTSTREAM TABLE */
-                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM', caching='true', cache.timeout.seconds='300')
+                                @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM', caching='true', cache.timeout.seconds='300', wait.for.indexing = 'false')
                                 define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
                                 /* timeBatch used because Minutely updates are needed */

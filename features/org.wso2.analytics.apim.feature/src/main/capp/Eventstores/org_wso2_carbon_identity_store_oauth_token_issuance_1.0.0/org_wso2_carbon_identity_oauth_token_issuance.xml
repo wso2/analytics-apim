@@ -3,98 +3,98 @@
 	<TableSchema>
 		<ColumnDefinition>
 			<Name>user</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>tenantDomain</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>userstoreDomain</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>clientId</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>grantType</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>tokenId</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>authzScopes</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>unAuthzScopes</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>isSuccess</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>BOOLEAN</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>errorCode</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>errorMsg</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>accessTokenValidityMillis</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>LONG</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>refreshTokenValidityMillis</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>LONG</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>issuedTime</Name>
-			<EnableIndexing>true</EnableIndexing>
+			<EnableIndexing>false</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>LONG</Type>

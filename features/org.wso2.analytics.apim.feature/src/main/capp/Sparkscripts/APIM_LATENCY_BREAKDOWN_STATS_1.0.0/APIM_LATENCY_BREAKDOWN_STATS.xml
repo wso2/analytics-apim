@@ -4,26 +4,27 @@
 <Script>
         
     CREATE TEMPORARY TABLE APIMGT_PERDAY_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERDAYEXECUTIONTIMES", schema "
-    year INT -i, month INT -i, day INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    year INT, month INT, day INT, context STRING, api_version STRING, api STRING, tenantDomain STRING,
     apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
     backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG",
     primaryKeys "year, month, day, context, api_version, tenantDomain, apiPublisher",
+    incrementalParams "LATENCY_APIMGT_PERDAY_EXECUTION_TIME, DAY",
     mergeSchema "false");
 
     CREATE TEMPORARY TABLE APIMGT_PERHOUR_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERHOUREXECUTIONTIMES", schema "
-    year INT -i, month INT -i, day INT -i, hour INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    year INT, month INT, day INT, hour INT, context STRING, api_version STRING, api STRING, tenantDomain STRING,
     apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
-    backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG, _timestamp LONG -i",
+    backendLatency DOUBLE, otherLatency DOUBLE, firstEventTime LONG, _timestamp LONG",
     primaryKeys "year, month, day, hour, context, api_version, tenantDomain, apiPublisher",
-    incrementalParams "APIMGT_PERHOUR_EXECUTION_TIME, DAY",
+    incrementalParams "LATENCY_APIMGT_PERHOUR_EXECUTION_TIME, HOUR",
     mergeSchema "false");
     
     CREATE TEMPORARY TABLE APIMGT_PERMINUTE_EXECUTION_TIME USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEEXECUTIONTIMES", schema "
-    year INT -i, month INT -i, day INT -i, hour INT -i, minute INT -i, context STRING, api_version STRING, api STRING, tenantDomain STRING,
+    year INT, month INT, day INT, hour INT, minute INT, context STRING, api_version STRING, api STRING, tenantDomain STRING,
     apiPublisher STRING, apiResponseTime DOUBLE, securityLatency DOUBLE, throttlingLatency DOUBLE, requestMediationLatency DOUBLE, responseMediationLatency DOUBLE,
-    backendLatency DOUBLE, otherLatency DOUBLE, eventTime LONG, _timestamp LONG -i",
+    backendLatency DOUBLE, otherLatency DOUBLE, eventTime LONG, _timestamp LONG",
     primaryKeys "year, month, day, hour, minute, context, api_version, tenantDomain, apiPublisher",
-    incrementalParams "APIMGT_PERMINUTE_EXECUTION_TIME, HOUR",
+    incrementalParams "LATENCY_APIMGT_PERMINUTE_EXECUTION_TIME, MINUTE",
     mergeSchema "false");
 
     CREATE TEMPORARY TABLE APIExecutionTimeDaySummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB", tableName "API_EXE_TME_DAY_SUMMARY",
@@ -45,35 +46,16 @@
     time LONG ",
     primaryKeys "api,version,apiPublisher,context,year,month,day,tenantDomain"
     );
-    CREATE TEMPORARY TABLE API_EXECUTION_TME_DAY_SUMMARY_FINAL USING CarbonAnalytics OPTIONS (tableName "API_EXE_TME_DAY_SUMMARY",
-    schema "api string -i,
-    version string -i,
-    tenantDomain string -i,
-    apiPublisher string -i,
-    apiResponseTime long -i,
-    context string -i,
-    securityLatency long -i,
-    throttlingLatency long -i,
-    requestMediationLatency long -i,
-    responseMediationLatency long -i,
-    backendLatency long -i,
-    otherLatency long -i,
-    year int -i,
-    month int -i,
-    day int -i,
-    time long -i",
-    primaryKeys "api,version,apiPublisher,context,year,month,day,tenantDomain"
-    );
-    INSERT INTO TABLE API_EXECUTION_TME_DAY_SUMMARY_FINAL select api, api_version, tenantDomain, apiPublisher,
+
+    INSERT INTO TABLE APIExecutionTimeDaySummaryData select api, api_version, tenantDomain, apiPublisher,
     avg(apiResponseTime), context, avg(securityLatency), avg(throttlingLatency), avg(requestMediationLatency),
     avg(responseMediationLatency), avg(backendLatency), avg(otherLatency),
     year, month, day,
     first(firstEventTime)
     from APIMGT_PERDAY_EXECUTION_TIME where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
     year, month, day;
-    INSERT INTO TABLE APIExecutionTimeDaySummaryData SELECT api,version,tenantDomain,apiPublisher,apiResponseTime,
-    context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,backendLatency,
-    otherLatency,year,month,day,time FROM API_EXECUTION_TME_DAY_SUMMARY_FINAL;
+
+    INCREMENTAL_TABLE_COMMIT LATENCY_APIMGT_PERDAY_EXECUTION_TIME;
 
     CREATE TEMPORARY TABLE APIExecutionTimeHourSummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB",
                                                                                 tableName "API_EXE_TIME_HOUR_SUMMARY",
@@ -96,37 +78,16 @@
     time LONG ",
     primaryKeys "api,version,tenantDomain,apiPublisher,context,year,month,day,hour"
     );
-    CREATE TEMPORARY TABLE API_EXECUTION_TIME_HOUR_SUMMARY_FINAL USING CarbonAnalytics OPTIONS
-                                                                                (tableName "API_EXE_TIME_HOUR_SUMMARY",
-    schema "api string -i,
-    version string -i,
-    tenantDomain string -i,
-    apiPublisher string -i,
-    apiResponseTime long -i,
-    context string -i,
-    securityLatency long -i,
-    throttlingLatency long -i,
-    requestMediationLatency long -i,
-    responseMediationLatency long -i,
-    backendLatency long -i,
-    otherLatency long -i,
-    year int -i,
-    month int -i,
-    day int -i,
-    hour int -i,
-    time long -i",
-    primaryKeys "api,version,tenantDomain,apiPublisher,context,year,month,day,hour"
-    );
-    INSERT INTO TABLE API_EXECUTION_TIME_HOUR_SUMMARY_FINAL select api, api_version,tenantDomain,apiPublisher,
+
+    INSERT INTO TABLE APIExecutionTimeHourSummaryData select api, api_version,tenantDomain,apiPublisher,
     avg(apiResponseTime),context,avg(securityLatency),avg(throttlingLatency),avg(requestMediationLatency),
     avg(responseMediationLatency),avg(backendLatency),avg(otherLatency),
     year, month, day, hour,
     first(firstEventTime)
     from APIMGT_PERHOUR_EXECUTION_TIME where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
     year, month, day, hour;
-    INSERT INTO TABLE APIExecutionTimeHourSummaryData SELECT api,version,tenantDomain,apiPublisher,apiResponseTime,
-    context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,backendLatency,
-    otherLatency,year,month,day,hour,time FROM API_EXECUTION_TIME_HOUR_SUMMARY_FINAL;
+
+    INCREMENTAL_TABLE_COMMIT LATENCY_APIMGT_PERHOUR_EXECUTION_TIME;
 
     CREATE TEMPORARY TABLE APIExecutionTimeMinuteSummaryData USING CarbonJDBC OPTIONS (dataSource "WSO2AM_STATS_DB",
                                                                                 tableName "API_EXE_TIME_MIN_SUMMARY",
@@ -150,38 +111,16 @@
     time LONG",
     primaryKeys "api,version,tenantDomain,apiPublisher,context,year,month,day,hour,minutes"
     );
-    CREATE TEMPORARY TABLE API_EXECUTION_TIME_MINUTE_SUMMARY_FINAL USING CarbonAnalytics OPTIONS
-                                                                                (tableName "API_EXE_TIME_MIN_SUMMARY",
-    schema "api string -i,
-    version string -i,
-    tenantDomain string -i,
-    apiPublisher string -i,
-    apiResponseTime long -i,
-    context string -i,
-    securityLatency long -i,
-    throttlingLatency long -i,
-    requestMediationLatency long -i,
-    responseMediationLatency long -i,
-    backendLatency long -i,
-    otherLatency long -i,
-    year int -i,
-    month int -i,
-    day int -i,
-    hour int -i,
-    minutes int -i,
-    time long -i",
-    primaryKeys "api,version,tenantDomain,apiPublisher,context,year,month,day,hour,minutes"
-    );
-    INSERT INTO TABLE API_EXECUTION_TIME_MINUTE_SUMMARY_FINAL select api, api_version,tenantDomain,apiPublisher,
+
+    INSERT INTO TABLE APIExecutionTimeMinuteSummaryData select api, api_version,tenantDomain,apiPublisher,
     avg(apiResponseTime),context,avg(securityLatency),avg(throttlingLatency),avg(requestMediationLatency),
     avg(responseMediationLatency),avg(backendLatency),avg(otherLatency),
     year, month, day, hour, minute as minutes,
     first(eventTime)
     from APIMGT_PERMINUTE_EXECUTION_TIME where api is not NULL group by api,api_version,tenantDomain,apiPublisher,context,
     year, month, day, hour, minute;
-    INSERT INTO TABLE APIExecutionTimeMinuteSummaryData SELECT api,version,tenantDomain,apiPublisher,
-    apiResponseTime,context,securityLatency,throttlingLatency,requestMediationLatency,responseMediationLatency,
-    backendLatency,otherLatency,year,month,day,hour,minutes,time FROM API_EXECUTION_TIME_MINUTE_SUMMARY_FINAL;
+
+    INCREMENTAL_TABLE_COMMIT LATENCY_APIMGT_PERMINUTE_EXECUTION_TIME;
 
 </Script>
     <CronExpression>0 0/5 * 1/1 * ? *</CronExpression>

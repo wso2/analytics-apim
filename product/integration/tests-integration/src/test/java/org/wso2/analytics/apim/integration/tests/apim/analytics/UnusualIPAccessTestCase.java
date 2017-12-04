@@ -72,13 +72,14 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
     public void testSimulationDataSent() throws Exception {
         // publish the csv data
         pubishEventsFromCSV(TEST_RESOURCE_PATH, "sim.csv", getStreamId(STREAM_NAME, STREAM_VERSION), 20);
-        
+        executeSparkQuery("CREATE TEMPORARY TABLE REQUEST_INFO_STREAM USING CarbonAnalytics "
+    			+ "OPTIONS (tableName \"ORG_WSO2_ANALYTICS_APIM_REQUESTPERMINSTREAM\")");
         int i = 0;
         long requestEventCount = 0;
         boolean eventsPublished = false;
         while (i < MAX_TRIES) {
             Thread.sleep(2000);
-            requestEventCount = getRecordCount(-1234, REQUEST_TABLE);
+            requestEventCount = executeSparkQuery("SELECT * FROM REQUEST_INFO_STREAM");
             eventsPublished = (requestEventCount >= 3);
             if (eventsPublished) {
                 break;
@@ -110,7 +111,7 @@ public class UnusualIPAccessTestCase extends APIMAnalyticsBaseTestCase {
 
         Thread.sleep(1000);
         boolean newIpDetectedAlertFound = isAlertReceived(0, "\"type\":\"UnusualIPAccessAlert\"," +
-                "\"msg\":\"A request from a new IP", 10 ,1000);
+                "\"msg\":\"A request from a new IP", 50 ,1000);
         Assert.assertFalse(newIpDetectedAlertFound, "Request count alert suppression does not work");
     }
 
