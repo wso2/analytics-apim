@@ -634,7 +634,7 @@
         <carbon.identity.version>5.2.0</carbon.identity.version>
         <carbon.commons.version>4.5.4</carbon.commons.version>
         <carbon.data.version>4.4.2</carbon.data.version>
-        <carbon.event-processing.version>2.1.6</carbon.event-processing.version>
+        <carbon.event-processing.version>2.1.14</carbon.event-processing.version>
         <carbon.dashboard.version>2.0.2</carbon.dashboard.version>
         <carbon.metrics.version>1.2.2</carbon.metrics.version>
         <carbon.identity.saml2.version>5.1.2</carbon.identity.saml2.version>
