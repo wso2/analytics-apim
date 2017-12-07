@@ -65,6 +65,9 @@
                                 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM', caching='true', cache.timeout.seconds='300', wait.for.indexing = 'false')
                                 define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORCURRENTALERTS', primary.keys = 'api_version, tenantDomain', caching='true', cache.timeout.seconds='300', wait.for.indexing = 'false')
+define table apiHealthMonitorCurrentAlertTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
+
                                 /* timeBatch used because Minutely updates are needed */
                                 @info(name = 'query1')
                                 from requestPerMinStream
@@ -103,6 +106,11 @@
                                                                 select e1.api_version as api_version , ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, str:concat('Response count is lower than ' , e1.responsesPerMinLowerPercentile, ' continuously for 5 or more minutes.')  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
                                                                 insert into apiHealthMonitorAlertStream;
                                                                                                                                 
+@info(name = 'indexing')
+from apiHealthMonitorAlertStream
+select api_version, apiPublisher, tenantDomain, msg, alertTimestamp
+insert into apiHealthMonitorCurrentAlertTable;
+
                                                             /* Now start response time queries */
 
                                                                 @info(name = 'query7')
@@ -159,9 +167,9 @@
                                 insert into apiAvailabilityTable;
 
                                 @info(name='query16')
-                                from requestPerMinStream as r join apiHealthMonitorAlertStreamTable
-                                on (r.api_version == apiHealthMonitorAlertStreamTable.api_version AND tenantDomain == apiHealthMonitorAlertStreamTable.tenantDomain )
-                                select r.api_version, r.tenantDomain, alertTimestamp
+from requestPerMinStream as rpm join apiHealthMonitorCurrentAlertTable as latestAlertTable
+on (rpm.api_version == latestAlertTable.api_version AND rpm.tenantDomain == latestAlertTable.tenantDomain)
+select rpm.api_version, rpm.tenantDomain, latestAlertTable.alertTimestamp
                                 insert into tempStream;
 
 

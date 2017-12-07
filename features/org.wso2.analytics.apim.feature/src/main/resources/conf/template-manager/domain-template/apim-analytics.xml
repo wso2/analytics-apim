@@ -438,7 +438,7 @@ define stream abnormalRequestsPerMinAlertStream (api string, userId string, tena
 @Export('org.wso2.analytics.apim.requestPerMinStream:1.0.0')
 define stream requestPerMin (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMin long);
 
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE',  primary.keys = 'api_version,userId,consumerKey,resourceTemplate,method')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERCENTILE',  primary.keys = 'api_version,userId,consumerKey,resourceTemplate,method',  wait.for.indexing = 'false')
 define table requestPercentileTable (api_version string, userId string, consumerKey string, resourceTemplate string, method string, requestsPerMinUpperPercentile double, requestsPerMinLowerPercentile double);
 
 @info(name = 'query1')
@@ -514,7 +514,7 @@ define stream abnormalResponseTimeAlertStream (api string, apiPublisher string, 
 @Export('org.wso2.analytics.apim.allApimAlertsStream:1.0.0')
 define stream allApimAlertStream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain,resourceTemplate,method', caching = 'true', cache.timeout.seconds='$cacheTimeout')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERCENTILE',  primary.keys = 'api_version,tenantDomain,resourceTemplate,method', caching = 'true', cache.timeout.seconds='$cacheTimeout',  wait.for.indexing = 'false')
 define table percentileTable (api_version string, tenantDomain string, resourceTemplate string, method string, responsePercentile double, backendPercentile double );
 
 /*spark script calculates percentile of responseTime and backendTime  and stores in percentileTable */
@@ -589,13 +589,13 @@ define stream requestPatternChangedStream (userId string, applicationName string
 define stream all_apim_alerts_stream (type string, tenantDomain string, msg string, severity int, alertTimestamp long);
 
 
-@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_MARKOVMODELTABLE', primary.keys='startState,endState, consumerKey', indices = 'startState,endState, probability, consumerKey', caching = 'true', cache.timeout.seconds='$cacheTimeout' )
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_MARKOVMODELTABLE', primary.keys='startState,endState, consumerKey', indices = 'startState,endState, probability, consumerKey', caching = 'true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false' )
 define table MarkovModelTable (consumerKey string, startState string, endState string, probability double);
 
-@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count', caching = 'true', cache.timeout.seconds='$cacheTimeout')
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count', caching = 'true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count long);
 
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPATTERNALERTSUMMARYTABLE', primary.keys='applicationName, applicationOwner, userId, msg' , indices = 'applicationName, applicationOwner, userId, msg, lastlastAlertedTimestamp')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPATTERNALERTSUMMARYTABLE', primary.keys='applicationName, applicationOwner, userId, msg' , indices = 'applicationName, applicationOwner, userId, msg, lastlastAlertedTimestamp', wait.for.indexing = 'false')
 define table RequestPatternAlertSummaryTable(applicationName string, applicationOwner string, userId string, msg string, lastAlertedTimestamp long);
 
 /****************************************************** Calculate Miss Probability *******************************************************************************/
@@ -717,7 +717,7 @@ define stream requestsPerMinPerKeyStream (consumerKey string, requestsPerMinPerK
 define stream stateTransitionStream (startState string, endState string, consumerKey string, applicationName string, applicationOwner string, 
                    userId string, tenantDomain string, requestTimestamp string);
 
-@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count')
+@from(eventtable = 'analytics.table' , table.name = 'org_wso2_analytics_apim_REQUESTCOUNTTABLE', primary.keys='consumerKey', indices = 'consumerKey,count', wait.for.indexing = 'false')
 define table RequestCountPerConsumerKeyTable(consumerKey string, count long);
 
 @info(name = 'query1')
@@ -772,10 +772,10 @@ define stream all_apim_alerts_stream (type string, tenantDomain string, msg stri
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
 define stream alertIpAccessAbnormality (type string, msg string, severity int, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate', caching ='true', cache.timeout.seconds='$cacheTimeout')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate', caching ='true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
 
-@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSALERTCOUNT', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSALERTCOUNT', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount', wait.for.indexing = 'false')
 define table IPAccessAlertCount (userId string, consumerKey string, requestCount long) ;
 
 -- Consumer key is already in the table
@@ -937,22 +937,22 @@ define stream apiHealthMonitorAlertStream (api_version string, apiPublisher stri
 /*  -- Event tables -- */
 
 /* Lower percentiles */
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='$cacheTimeout')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_REQUESTPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
 define table requestPerApiPercentileTable (requestsPerMinPerApiLowerPercentile double, api_version string, tenantDomain string);
 
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='$cacheTimeout')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
 define table responsePerApiPercentileTable (api_version string, tenantDomain string, responsesPerMinPerApiLowerPercentile double);
 
 /* Then define response time streams */
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='$cacheTimeout')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_RESPONSETIMEPERAPIPERCENTILE',  primary.keys = 'api_version, tenantDomain', caching = 'true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
 define table responseTimePerApiPercentileTable (api_version string, tenantDomain string, responseTimePerApiUpperPercentile double);
 
 /* API status availability table */
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', indices='api_version, tenantDomain, status', caching='true', cache.timeout.seconds='$cacheTimeout')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIAVAILABILITY',  primary.keys = 'api_version, tenantDomain', indices='api_version, tenantDomain, status', caching='true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
 define table apiAvailabilityTable (api_version string, tenantDomain string, status string);
 
 /* APIHEALTHMONITORALERTSTREAM TABLE */
-@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM', caching='true', cache.timeout.seconds='$cacheTimeout')
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM', caching='true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
 define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
 @from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORCURRENTALERTS', primary.keys = 'api_version, tenantDomain', caching='true', cache.timeout.seconds='300')
@@ -992,7 +992,7 @@ ifThenElse(responsesPercentileStreamWindow.responsesPerMin is null, convert(0, '
 insert into requestResponseSummaryStream;
 
 @info(name = 'query6')
-from every (e1=requestResponseSummaryStream[requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile]) -> e2=requestResponseSummaryStream [e1.api_version == api_version AND requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
+from every (e1=requestResponseSummaryStream[requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile]) -> e2=requestResponseSummaryStream [e1.api_version == api_version AND e1.tenantDomain == tenantDomain AND requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
 select e1.api_version as api_version , ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, str:concat('Response count is lower than ' , e1.responsesPerMinLowerPercentile, ' continuously for $responsePerMinPattern or more minutes.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into apiHealthMonitorAlertStream;
 
@@ -1511,14 +1511,8 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                               city STRING ",
                               primaryKeys "api,version,apiPublisher,year,month,day,country,city,tenantDomain"
                               );
-                              create temporary table APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST");
-			
 			      CREATE TEMPORARY TABLE APIRequestData USING CarbonAnalytics OPTIONS(tableName "ORG_WSO2_APIMGT_STATISTICS_PERMINUTEREQUEST", schema "
-                                year INT, 
-				month INT, 
-				day INT, 
-				hour INT, 
-				minute INT,
+                                year INT -i, month INT -i, day INT -i, hour INT -i, minute INT -i,
                                 consumerKey STRING, 
 				context STRING, 
 				api_version STRING, 
@@ -1545,12 +1539,11 @@ INSERT INTO TABLE accessTokenRefreshAvrgTime
                                 primaryKeys "year, month, day, hour, minute, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp",
                                 incrementalParams "GEO_APIMGT_PERMINUTE_REQUEST_DATA, DAY",
                                 mergeSchema "false");
-			
-                              INSERT OVERWRITE TABLE APIGeoLocationData SELECT
+                                INSERT INTO TABLE APIGeoLocationData SELECT
                               api,version, apiPublisher,tenantDomain,
-                              sum(total_request_count) as total_request_count,year,month,day,first(requestTime),IF(getCountry(clientIp)='' OR getCountry(clientIp) is null,'NA',getCountry(clientIp)) as country,
-                              IF(getCity(clientIp)='' OR getCity(clientIp) is null,'NA',getCity(clientIp)) as city
-                              from APIRequestData group by api,version,apiPublisher,year,month,day,clientIp,IF(getCountry(clientIp)='' OR getCountry(clientIp) is null,'NA',getCountry(clientIp)),IF(getCity(clientIp)='' OR getCity(clientIp) is null,'NA',getCity(clientIp)),tenantDomain;
+                                sum(total_request_count) as total_request_count,year,month,day,first(requestTime),getCountry(clientIp) as country,
+                                getCity(clientIp) as city
+                                from APIRequestData group by api,version,apiPublisher,year,month,day,clientIp,getCountry(clientIp),getCity(clientIp),tenantDomain;
                               INCREMENTAL_TABLE_COMMIT GEO_APIMGT_PERMINUTE_REQUEST_DATA;
 
                  ]]>
