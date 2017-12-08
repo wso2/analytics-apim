@@ -132,7 +132,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         eventDto.setAttributeValues(
                 new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
                         "/add?x=12&y=3", "/add", "GET", "1.0", "1", "220", "7", "5", "admin@carbon.super", "1456894602450", "carbon.super",
-                        "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200","destination"}
+                        "192.168.66.1", "admin", "DefaultApplication", "1", "False", "0", "https-8243", "200","destination"}
         );
         publishEvent(eventDto);
         publishEvent(eventDto);
@@ -151,7 +151,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         eventDto.setAttributeValues(
                 new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
                         "/add?x=12&y=3", "/add", "GET", "1.0", "1", "12", "7", "165", "admin@carbon.super", "1456894602450",
-                        "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200","destination"}
+                        "carbon.super", "192.168.66.1", "admin", "DefaultApplication", "1", "False", "0", "https-8243", "200","destination"}
         );
         publishEvent(eventDto);
         publishEvent(eventDto);
@@ -171,7 +171,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         eventDto.setAttributeValues(
                 new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
                         "/add?x=12&y=3", "/add", "GET", "1.0", "1", "12", "7", "9", "admin@carbon.super", "1456894702450",
-                        "carbon.super", "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200", "destination"}
+                        "carbon.super", "192.168.66.1", "admin", "DefaultApplication", "1", "False", "0", "https-8243", "200", "destination"}
         );
         publishEvent(eventDto);
 
@@ -189,7 +189,7 @@ public class AbnormalResponseAndBackendTimeTestCase extends APIMAnalyticsBaseTes
         eventDto.setAttributeValues(
                 new String[]{"external", "s8SWbnmzQEgzMIsol7AHt9cjhEsa", "/calc/1.0", "CalculatorAPI:v1.0", "CalculatorAPI",
                         "/add?x=12&y=3", "/add", "GET", "1.0", "1", "14", "7", "5", "admin@carbon.super", "1456894802450", "carbon.super",
-                        "192.168.66.1", "admin@carbon.super", "DefaultApplication", "1", "False", "0", "https-8243", "200", "destination"}
+                        "192.168.66.1", "admin", "DefaultApplication", "1", "False", "0", "https-8243", "200", "destination"}
         );
         publishEvent(eventDto);
 

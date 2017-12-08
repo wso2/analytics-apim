@@ -26,7 +26,7 @@ define table percentileTable (api_version string, tenantDomain string, resourceT
 @info(name = 'query1')
 from responseSummaryStream join percentileTable
 on (responseSummaryStream.api_version==percentileTable.api_version and responseSummaryStream.tenantDomain==percentileTable.tenantDomain and responseSummaryStream.resourceTemplate==percentileTable.resourceTemplate and responseSummaryStream.method==percentileTable.method)
-select responseSummaryStream.api as api_name, responseSummaryStream.api_version, responseSummaryStream.apiPublisher, responseSummaryStream.tenantDomain, responseSummaryStream.resourceTemplate, responseSummaryStream.method, responseSummaryStream.responseTime, percentileTable.responsePercentile , responseSummaryStream.backendTime,  percentileTable.backendPercentile
+select responseSummaryStream.api as api_name, responseSummaryStream.api_version, ifThenElse(responseSummaryStream.tenantDomain == 'carbon.super', str:concat(responseSummaryStream.apiPublisher, "@carbon.super"), responseSummaryStream.apiPublisher) as apiPublisher, responseSummaryStream.tenantDomain, responseSummaryStream.resourceTemplate, responseSummaryStream.method, responseSummaryStream.responseTime, percentileTable.responsePercentile , responseSummaryStream.backendTime,  percentileTable.backendPercentile
 insert into responseInfoStream;
 
 @info(name = 'query2')
