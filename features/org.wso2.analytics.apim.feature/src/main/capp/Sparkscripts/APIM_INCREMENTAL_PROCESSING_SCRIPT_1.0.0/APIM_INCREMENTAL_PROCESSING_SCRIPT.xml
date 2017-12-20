@@ -33,21 +33,21 @@
     primaryKeys "year, month, day, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp",
     mergeSchema "false");
 
-    INSERT INTO TABLE APIMGT_PERHOUR_REQUEST_DATA SELECT year, month, day, hour, consumerKey, context, api_version, api, version, max(requestTime), first(requestTime), userId, hostName,
+    INSERT INTO TABLE APIMGT_PERHOUR_REQUEST_DATA SELECT year, month, day, hour, consumerKey, context, api_version, first(api), first(version), max(requestTime), first(requestTime), userId, hostName,
     apiPublisher, sum(total_request_count), resourceTemplate, method, applicationName, tenantDomain,
-    userAgent, resourcePath, request, applicationId, tier, throttledOut, clientIp, applicationOwner, getHourStartingTime(year, month, day, hour) as _timestamp
+    userAgent, first(resourcePath), request, applicationId, tier, first(throttledOut), clientIp, applicationOwner, getHourStartingTime(year, month, day, hour) as _timestamp
     FROM APIMGT_PERMINUTE_REQUEST_DATA
     GROUP BY year, month, day, hour, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp,
-    api, version, applicationName, tenantDomain, resourcePath, request, applicationId, tier, throttledOut, applicationOwner;
+    applicationName, tenantDomain, request, applicationId, tier, applicationOwner;
 
     INCREMENTAL_TABLE_COMMIT APIMGT_PERMINUTE_REQUEST_DATA;
 
-    INSERT INTO TABLE APIMGT_PERDAY_REQUEST_DATA SELECT year, month, day, consumerKey, context, api_version, api, version, max(maxRequestTime), first(firstRequestTime), userId, hostName,
+    INSERT INTO TABLE APIMGT_PERDAY_REQUEST_DATA SELECT year, month, day, consumerKey, context, api_version, first(api), first(version), max(maxRequestTime), first(firstRequestTime), userId, hostName,
     apiPublisher, sum(total_request_count_per_hour), resourceTemplate, method, applicationName, tenantDomain,
-    userAgent, resourcePath, request, applicationId, tier, throttledOut, clientIp, applicationOwner
+    userAgent, first(resourcePath), request, applicationId, tier, first(throttledOut), clientIp, applicationOwner
     FROM APIMGT_PERHOUR_REQUEST_DATA
     GROUP BY year, month, day, consumerKey, context, api_version, userId, hostName, apiPublisher, resourceTemplate, method, userAgent, clientIp,
-    api, version, applicationName, tenantDomain, resourcePath, request, applicationId, tier, throttledOut, applicationOwner;
+    applicationName, tenantDomain, request, applicationId, tier, applicationOwner;
 
     INCREMENTAL_TABLE_COMMIT APIMGT_PERHOUR_REQUEST_DATA;
 
@@ -82,21 +82,21 @@
     primaryKeys "year, month, day, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username",
     mergeSchema "false");
 
-    INSERT INTO TABLE APIMGT_PERHOUR_RESPONSE_DATA SELECT year, month, day, hour, context, api_version, api, resourceTemplate, version, tenantDomain, hostName,
-    apiPublisher, destination, consumerKey, resourcePath, method, response, sum(serviceTime), username, max(eventTime), first(eventTime), applicationName,
+    INSERT INTO TABLE APIMGT_PERHOUR_RESPONSE_DATA SELECT year, month, day, hour, context, api_version, first(api), resourceTemplate, first(version), tenantDomain, hostName,
+    apiPublisher, destination, consumerKey, first(resourcePath), method, response, sum(serviceTime), username, max(eventTime), first(eventTime), applicationName,
     applicationId, cacheHit, responseSize, protocol, responseCode, sum(total_response_count), getHourStartingTime(year, month, day, hour) as _timestamp
     FROM APIMGT_PERMINUTE_RESPONSE_DATA
     GROUP BY year, month, day, hour, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username,
-    api, version, tenantDomain, resourcePath, response, applicationName, applicationId, cacheHit, responseSize, protocol, responseCode;
+    tenantDomain, response, applicationName, applicationId, cacheHit, responseSize, protocol, responseCode;
 
     INCREMENTAL_TABLE_COMMIT APIMGT_PERMINUTE_RESPONSE_DATA;
 
-    INSERT INTO TABLE APIMGT_PERDAY_RESPONSE_DATA SELECT year, month, day, context, api_version, api, resourceTemplate, version, tenantDomain, hostName,
-    apiPublisher, destination, consumerKey, resourcePath, method, response, sum(serviceTime), username, max(maxEventTime), first(firstEventTime), applicationName,
+    INSERT INTO TABLE APIMGT_PERDAY_RESPONSE_DATA SELECT year, month, day, context, api_version, first(api), resourceTemplate, first(version), tenantDomain, hostName,
+    apiPublisher, destination, consumerKey, first(resourcePath), method, response, sum(serviceTime), username, max(maxEventTime), first(firstEventTime), applicationName,
     applicationId, cacheHit, responseSize, protocol, responseCode, sum(total_response_count_per_hour)
     FROM APIMGT_PERHOUR_RESPONSE_DATA
     GROUP BY year, month, day, context, api_version, resourceTemplate, hostName, apiPublisher, destination, consumerKey, method, username,
-    api, version, tenantDomain, resourcePath, response, applicationName, applicationId, cacheHit, responseSize, protocol, responseCode;
+    tenantDomain, response, applicationName, applicationId, cacheHit, responseSize, protocol, responseCode;
 
     INCREMENTAL_TABLE_COMMIT APIMGT_PERHOUR_RESPONSE_DATA;
 
