@@ -33,6 +33,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * LoganalyzerTestCase uses for testing the spark script of
+ * the log analyzer base on the given bench mark log file.
+ */
 public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
     private static final String STREAM_NAME = "loganalyzer";
     private static final String STREAM_VERSION = "1.0.0";
@@ -233,6 +237,13 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         }
     }
 
+    /**
+     * Publish sample log events into DAS stream as arbitrary data map.
+     * @param testResourcePath logAnalyzer test resource path.
+     * @param resourceName bench mark file name.
+     * @param streamId DAS stream definition.
+     * @throws Exception bubble up the exception for test framework.
+     */
     private void publishEvent(String testResourcePath, String resourceName, String streamId) throws Exception {
         List<Event> eventListFromCSV = getEventListFromCSV(getFilePath(testResourcePath, resourceName), streamId);
         DataPublisherClient dataPublisherClient = new DataPublisherClient();
@@ -241,6 +252,13 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
         dataPublisherClient.shutdown();
     }
 
+    /**
+     * Generate events base on the provided bench mark log file.
+     * @param file file path for bench mark file.
+     * @param streamId DAS stream definition name.
+     * @return list of the events which are generated from the file.
+     * @throws IOException bubble up the exception for test framework.
+     */
     private List<Event> getEventListFromCSV(String file, String streamId) throws IOException {
         String line;
         String cvsSplitBy = ",";
