@@ -3,70 +3,70 @@
 	<TableSchema>
 		<ColumnDefinition>
 			<Name>type</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>msg</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
         <ColumnDefinition>
             <Name>severity</Name>
-            <EnableIndexing>false</EnableIndexing>
+            <EnableIndexing>true</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>INTEGER</Type>
         </ColumnDefinition>
         <ColumnDefinition>
 			<Name>ip</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
         <ColumnDefinition>
             <Name>applicationName</Name>
-            <EnableIndexing>false</EnableIndexing>
+            <EnableIndexing>true</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>
         </ColumnDefinition>
         <ColumnDefinition>
             <Name>applicationOwner</Name>
-            <EnableIndexing>false</EnableIndexing>
+            <EnableIndexing>true</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>
         </ColumnDefinition>
 		<ColumnDefinition>
 			<Name>userId</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>STRING</Type>
 		</ColumnDefinition>
         <ColumnDefinition>
             <Name>tenantDomain</Name>
-            <EnableIndexing>false</EnableIndexing>
+            <EnableIndexing>true</EnableIndexing>
             <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>
         </ColumnDefinition>
 		<ColumnDefinition>
 			<Name>requestTime</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>LONG</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
 			<Name>alertTimestamp</Name>
-			<EnableIndexing>false</EnableIndexing>
+			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>LONG</Type>
