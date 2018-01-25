@@ -903,23 +903,23 @@ insert into IPAccessSummary;
 @Plan:statistics('false')
 
 @Import('org.wso2.apimgt.statistics.perMinuteRequest:1.0.0')
-define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string, 
-api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string, 
-total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string, 
+define stream requestPerMinStream (meta_clientType string, year int, month int, day int, hour int, minute int, consumerKey string, context string,
+api_version string, api string, version string, requestTime long, userId string, hostName string, apiPublisher string,
+total_request_count long, resourceTemplate string, method string, applicationName string, tenantDomain string,
 userAgent string, resourcePath string, request int, applicationId string, tier string, throttledOut bool, clientIp string,
 applicationOwner string, _timestamp long);
-    
+
 @Import('org.wso2.apimgt.statistics.perMinuteResponse:1.0.0')
-define stream responseSummaryStream (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string, 
-api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string, 
-destination string, consumerKey string, resourcePath string, method string, response int, responseTime long, 
-serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string, 
+define stream responseSummaryStream (meta_clientType string, year int, month int, day int, hour int, minute int, context string, api_version string,
+api string, resourceTemplate string, version string, tenantDomain string, hostName string, apiPublisher string,
+destination string, consumerKey string, resourcePath string, method string, response int, responseTime long,
+serviceTime long, backendTime long, username string, eventTime long, applicationName string, applicationId string,
 cacheHit bool, responseSize long, protocol string, responseCode int, total_response_count long, _timestamp long);
 
 @Import('org.wso2.apimgt.statistics.response:1.1.0')
-define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string, 
-resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long, 
-username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string, 
+define stream responseStream (meta_clientType string, consumerKey string, context string, api_version string, api string, resourcePath string,
+resourceTemplate string, method string, version string, response int, responseTime long, serviceTime long, backendTime long,
+username string, eventTime long, tenantDomain string, hostName string, apiPublisher string, applicationName string,
 applicationId string, cacheHit bool, responseSize long, protocol string, responseCode int, destination string);
 
 
@@ -955,10 +955,23 @@ define table apiAvailabilityTable (api_version string, tenantDomain string, stat
 @from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORALERTSTREAM', caching='true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
 define table apiHealthMonitorAlertStreamTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORCURRENTALERTS', primary.keys = 'api_version, tenantDomain', caching='true', cache.timeout.seconds='300')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHMONITORCURRENTALERTS', primary.keys = 'api_version, tenantDomain', caching='true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
 define table apiHealthMonitorCurrentAlertTable (api_version string, apiPublisher string, tenantDomain string, msg string, alertTimestamp long);
 
+@from(eventtable = 'analytics.table' , table.name = 'ORG_WSO2_ANALYTICS_APIM_APIHEALTHALERTSUMMARYTABLE', primary.keys='api_version, apiPublisher, tenantDomain, msg' , indices = 'api_version, apiPublisher, tenantDomain, msg,lastAlertedTimestamp', wait.for.indexing = 'false')
+define table ApiHealthAlertSummaryTable(api_version string, apiPublisher string, tenantDomain string, msg string, lastAlertedTimestamp long);
+
+@IndexBy('tenantApiVersion')
+define table alertTableResponseCode (tenantApiVersion string, count int);
+
+@IndexBy('tenantApiVersion')
+define table alertTableResponseInfo (tenantApiVersion string, count int);
+
+@IndexBy('tenantApiVersion')
+define table alertTableRequestResponse (tenantApiVersion string, count int);
+
 /* timeBatch used because Minutely updates are needed */
+
 @info(name = 'query1')
 from requestPerMinStream
 select  api_version, apiPublisher, tenantDomain, sum(total_request_count) as  requestsPerMinPerApi
@@ -991,11 +1004,43 @@ select requestsPercentileStreamWindow.api_version as api_version, requestsPercen
 ifThenElse(responsesPercentileStreamWindow.responsesPerMin is null, convert(0, 'long'), responsesPercentileStreamWindow.responsesPerMin) as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,ifThenElse(responsesPercentileStreamWindow.responsesPerMinLowerPercentile is null, 1.0, responsesPercentileStreamWindow.responsesPerMinLowerPercentile) as responsesPerMinLowerPercentile
 insert into requestResponseSummaryStream;
 
-@info(name = 'query6')
-from every (e1=requestResponseSummaryStream[requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile]) -> e2=requestResponseSummaryStream [e1.api_version == api_version AND e1.tenantDomain == tenantDomain AND requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile] <$responsePerMinPattern:>
-select e1.api_version as api_version , ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, str:concat('Response count is lower than ' , e1.responsesPerMinLowerPercentile, ' continuously for $responsePerMinPattern or more minutes.')  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
-insert into apiHealthMonitorAlertStream;
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+@info(name = 'requestResponse1')
+from requestResponseSummaryStream
+select str:concat(tenantDomain, "_", api_version) as tenantApiVersion, api_version, tenantDomain, apiPublisher, requestsPerMin, requestsPerMinLowerPercentile, responsesPerMin, responsesPerMinLowerPercentile
+insert into tmpRequestResponseSummaryStream;
 
+@info(name = 'requestResponse2')
+from tmpRequestResponseSummaryStream[(requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile) and not (alertTableRequestResponse.tenantApiVersion == tenantApiVersion in alertTableRequestResponse)]
+select tenantApiVersion, 1 as count
+insert into alertTableRequestResponse;
+
+@info(name = 'requestResponse3')
+from tmpRequestResponseSummaryStream[not(requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile)]
+delete alertTableRequestResponse
+    on alertTableRequestResponse.tenantApiVersion == tenantApiVersion;
+
+@info(name = 'requestResponse4')
+from tmpRequestResponseSummaryStream[(requestsPerMin > requestsPerMinLowerPercentile AND responsesPerMin < responsesPerMinLowerPercentile) and alertTableRequestResponse.tenantApiVersion == tenantApiVersion in alertTableRequestResponse]
+insert into updateRequestReponseStream;
+
+@info(name = 'requestResponse5')
+from updateRequestReponseStream#window.length(1) join alertTableRequestResponse
+	on alertTableRequestResponse.tenantApiVersion == updateRequestReponseStream.tenantApiVersion
+select alertTableRequestResponse.tenantApiVersion, (alertTableRequestResponse.count + 1) as count
+insert into alertTableRequestResponse;
+
+@info(name = 'requestResponse6')
+from tmpRequestResponseSummaryStream#window.length(1) join alertTableRequestResponse
+	on alertTableRequestResponse.tenantApiVersion == tmpRequestResponseSummaryStream.tenantApiVersion
+select alertTableRequestResponse.tenantApiVersion as tenantApiVersion, alertTableRequestResponse.count as count, api_version, tenantDomain, apiPublisher, requestsPerMin, requestsPerMinLowerPercentile, responsesPerMin, responsesPerMinLowerPercentile
+insert into intermRequestReponseSummaryStream;
+
+@info(name = 'requestResponse7')
+from intermRequestReponseSummaryStream[count > $responsePerMinPattern]
+select api_version , ifThenElse(tenantDomain == 'carbon.super', str:concat(apiPublisher, "@carbon.super"), apiPublisher) as apiPublisher, tenantDomain, str:concat('Response count is lower than ' , responsesPerMinLowerPercentile, ' continuously for ', $responsePerMinPattern, ' or more minutes.')  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into apiHealthMonitorAlertStreamTemp;
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 @info(name = 'indexing')
 from apiHealthMonitorAlertStream
 select api_version, apiPublisher, tenantDomain, msg, alertTimestamp
@@ -1016,24 +1061,112 @@ on (responseTimeSummaryStream.api_version==responseTimePerApiPercentileTable.api
 select responseTimeSummaryStream.api_version, responseTimeSummaryStream.apiPublisher, responseTimeSummaryStream.tenantDomain, responseTimeSummaryStream.responseTime, responseTimePerApiPercentileTable.responseTimePerApiUpperPercentile
 insert into responseInfoStream;
 
-@info(name = 'query9')
-from every (e1=responseInfoStream[responseTime>responseTimePerApiUpperPercentile]) -> e2=responseInfoStream [e1.api_version == api_version AND e1.tenantDomain == tenantDomain AND responseTime>responseTimePerApiUpperPercentile] <$responseTimePattern:>
-select e1.api_version, ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, str:concat('Response time is higher than ' , e1.responseTimePerApiUpperPercentile, ' ms continuously for $responseTimePattern or more responses.') as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
-insert into apiHealthMonitorAlertStream;
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+@info(name = 'responseInfo1')
+from responseInfoStream
+select str:concat(tenantDomain, "_", api_version) as tenantApiVersion, api_version, tenantDomain, apiPublisher, responseTime, responseTimePerApiUpperPercentile
+insert into tmpResponseInfoSummaryStream;
+
+@info(name = 'responseInfo2')
+from tmpResponseInfoSummaryStream[(responseTime>responseTimePerApiUpperPercentile) and not (alertTableResponseInfo.tenantApiVersion == tenantApiVersion in alertTableResponseInfo)]
+select tenantApiVersion, 1 as count
+insert into alertTableResponseInfo;
+
+@info(name = 'responseInfo3')
+from tmpResponseInfoSummaryStream[not(responseTime>responseTimePerApiUpperPercentile)]
+delete alertTableResponseInfo
+    on alertTableResponseInfo.tenantApiVersion == tenantApiVersion;
+
+@info(name = 'responseInfo4')
+from tmpResponseInfoSummaryStream[(responseTime>responseTimePerApiUpperPercentile) and alertTableResponseInfo.tenantApiVersion == tenantApiVersion in alertTableResponseInfo]
+insert into updateResponseInfoStream;
+
+@info(name = 'responseInfo5')
+from updateResponseInfoStream#window.length(1) join alertTableResponseInfo
+	on alertTableResponseInfo.tenantApiVersion == updateResponseInfoStream.tenantApiVersion
+select alertTableResponseInfo.tenantApiVersion, (alertTableResponseInfo.count + 1) as count
+insert into alertTableResponseInfo;
+
+@info(name = 'responseInfo6')
+from tmpResponseInfoSummaryStream#window.length(1) join alertTableResponseInfo
+	on alertTableResponseInfo.tenantApiVersion == tmpResponseInfoSummaryStream.tenantApiVersion
+select alertTableResponseInfo.tenantApiVersion as tenantApiVersion, alertTableResponseInfo.count as count, api_version, tenantDomain, apiPublisher, responseTime, responseTimePerApiUpperPercentile
+insert into intermResponseInfoSummaryStream;
+
+@info(name = 'responseInfo7')
+from intermResponseInfoSummaryStream[count > $responseTimePattern]
+select api_version, ifThenElse(tenantDomain == 'carbon.super', str:concat(apiPublisher, "@carbon.super"), apiPublisher) as apiPublisher, tenantDomain, str:concat('Response time is higher than ' , responseTimePerApiUpperPercentile, ' ms continuously for ',$responseTimePattern,' or more responses.') as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into apiHealthMonitorAlertStreamTemp;
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @info(name = 'query10')
 from responseStream
 select api_version, apiPublisher,  responseCode, tenantDomain
 insert into responseCodeSummaryStream;
 
-@info(name = 'query11')
-from every (e1=responseCodeSummaryStream[responseCode > 499 AND responseCode < 600]) -> e2=responseCodeSummaryStream [e1.api_version == api_version AND e1.tenantDomain == tenantDomain AND responseCode > 499 AND responseCode < 600]  <5:>
-select e1.api_version, ifThenElse(e1.tenantDomain == 'carbon.super', str:concat(e1.apiPublisher, "@carbon.super"), e1.apiPublisher) as apiPublisher, e1.tenantDomain, 'Server error occurred continuously for 5 or more times.'  as msg, $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+-----------------------------------------------------------------------------------------------------------------------------
+@info(name = 'responseCode1')
+from responseCodeSummaryStream
+select str:concat(tenantDomain, "_", api_version) as tenantApiVersion, api_version, tenantDomain, apiPublisher, responseCode
+insert into tmpResponseCodeSummaryStream;
+
+@info(name = 'responseCode2')
+from tmpResponseCodeSummaryStream[(responseCode > 499 AND responseCode < 600) and not (alertTableResponseCode.tenantApiVersion == tenantApiVersion in alertTableResponseCode)]
+select tenantApiVersion, 1 as count
+insert into alertTableResponseCode;
+
+@info(name = 'responseCode3')
+from tmpResponseCodeSummaryStream[not(responseCode > 499 AND responseCode < 600)]
+delete alertTableResponseCode
+    on alertTableResponseCode.tenantApiVersion == tenantApiVersion;
+
+@info(name = 'responseCode4')
+from tmpResponseCodeSummaryStream[(responseCode > 499 AND responseCode < 600) and alertTableResponseCode.tenantApiVersion == tenantApiVersion in alertTableResponseCode]
+insert into updateStream;
+
+@info(name = 'responseCode5')
+from updateStream#window.length(1) join alertTableResponseCode
+	on alertTableResponseCode.tenantApiVersion == updateStream.tenantApiVersion
+select alertTableResponseCode.tenantApiVersion, (alertTableResponseCode.count + 1) as count
+insert into alertTableResponseCode;
+
+@info(name = 'responseCode6')
+from tmpResponseCodeSummaryStream#window.length(1) join alertTableResponseCode
+	on alertTableResponseCode.tenantApiVersion == tmpResponseCodeSummaryStream.tenantApiVersion
+select alertTableResponseCode.tenantApiVersion as tenantApiVersion, alertTableResponseCode.count as count, api_version, tenantDomain, apiPublisher, responseCode
+insert into intermResponseCodeSummaryStream;
+
+@info(name = 'responseCode7')
+from intermResponseCodeSummaryStream[count > $responseCodeCount]
+select api_version, ifThenElse(tenantDomain == 'carbon.super', str:concat(apiPublisher, "@carbon.super"), apiPublisher) as apiPublisher, tenantDomain, str:concat('Server error occurred continuously for ', $responseCodeCount, ' or more times.')  as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into apiHealthMonitorAlertStreamTemp;
+
+/* suppression logic for response code */
+
+@info(name = 'suppression1')
+from apiHealthMonitorAlertStreamTemp as r left outer join ApiHealthAlertSummaryTable
+on (api_version ==ApiHealthAlertSummaryTable.api_version and apiPublisher == ApiHealthAlertSummaryTable.apiPublisher and tenantDomain == ApiHealthAlertSummaryTable.tenantDomain and msg == ApiHealthAlertSummaryTable.msg)
+select r.api_version, r.apiPublisher , r.tenantDomain , r.msg, r.severity, (time:timestampInMilliseconds()) as alertTimestamp, ifThenElse(lastAlertedTimestamp is null, 0l , lastAlertedTimestamp) as lastAlertedTimestamp
+insert into ApiHealthAlertSummaryTableModified;
+
+@info(name = 'suppression2')
+from ApiHealthAlertSummaryTableModified[(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionTime]
+select api_version, apiPublisher, tenantDomain, msg, severity, alertTimestamp
 insert into apiHealthMonitorAlertStream;
 
+@info(name='suppression3')
+from apiHealthMonitorAlertStream[(api_version == ApiHealthAlertSummaryTable.api_version   and apiPublisher == ApiHealthAlertSummaryTable.apiPublisher and tenantDomain == ApiHealthAlertSummaryTable.tenantDomain and msg == ApiHealthAlertSummaryTable.msg ) in ApiHealthAlertSummaryTable]
+select  api_version, apiPublisher, tenantDomain, msg, alertTimestamp as lastAlertedTimestamp
+update ApiHealthAlertSummaryTable
+on (api_version == ApiHealthAlertSummaryTable.api_version   and apiPublisher == ApiHealthAlertSummaryTable.apiPublisher and tenantDomain == ApiHealthAlertSummaryTable.tenantDomain and msg == ApiHealthAlertSummaryTable.msg);
+
+@info(name = 'suppression4')
+from apiHealthMonitorAlertStream[not ((api_version == ApiHealthAlertSummaryTable.api_version and apiPublisher == ApiHealthAlertSummaryTable.apiPublisher and tenantDomain == ApiHealthAlertSummaryTable.tenantDomain and msg == ApiHealthAlertSummaryTable.msg) in ApiHealthAlertSummaryTable)]
+select  api_version, apiPublisher, tenantDomain, msg,  alertTimestamp as lastAlertedTimestamp
+insert into ApiHealthAlertSummaryTable;
 
 @info(name='query12')
-from apiHealthMonitorAlertStream
+from ApiHealthAlertSummaryTableModified[(alertTimestamp - lastAlertedTimestamp) > $alertSuppressionTime]
 select 'healthAvailabilityPerMin' as type, tenantDomain, str:concat('API:', api_version, '-', msg) as msg , severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into allApimAlertStream;
 
@@ -1105,7 +1238,18 @@ on (api_version == apiAvailabilityTable.api_version AND tenantDomain == apiAvail
                     <defaultValue>2</defaultValue>
                     <options>1, 2, 3</options>
                 </parameter>
-                
+
+                <parameter name="alertSuppressionTime" type="int">
+                    <displayName>Alert Suppression period(in milliseconds)</displayName>
+                    <description>Same alert will be sent only once within this time period</description>
+                    <defaultValue>30*60*1000</defaultValue>
+                </parameter>
+
+                <parameter name="responseCodeCount" type="int">
+                    <displayName>(500-600)Response Code Count</displayName>
+                    <description>How many response with code 500-600 should come continuously to generate an alert </description>
+                    <defaultValue>5</defaultValue>
+                </parameter>
             </parameters>
         </scenario>
 

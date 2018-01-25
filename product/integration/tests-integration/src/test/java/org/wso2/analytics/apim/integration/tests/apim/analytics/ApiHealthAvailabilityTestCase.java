@@ -367,6 +367,9 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         pubishEvents(getRequestEventList(20), 10);
         pubishEvents(getResponseEventListNumApi(1), 10);
         Thread.sleep(6000);
+        pubishEvents(getRequestEventList(20), 10);
+        pubishEvents(getResponseEventListNumApi(1), 10);
+        Thread.sleep(6000);
         boolean responseTimeTooHigh = isAlertReceived(0, "api_version\":\"NumberAPI:v1.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Response count is lower", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Response count is too low continuously, alert not received!");
     }
@@ -385,7 +388,8 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test if a failed api becomes normal again and alert when fail again", dependsOnMethods = "testResponseCodeAlert")
     public void testAnotherApiFailure() throws Exception {
         logViewerClient.clearLogs();
-        pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseCodeNormal.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 100);
+        Thread.sleep(1000);
+        pubishEventsFromCSV(TEST_RESOURCE_PATH, "responseCodeNormal.csv", getStreamId(RESPONSE_STREAM_NAME, RESPONSE_STREAM_VERSION), 1000);
         boolean responseTimeTooHigh = isAlertReceived(0, "api_version\":\"AbcAPI:v2.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Server error occurred", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Server error for continuous 5 events, alert not received!");
         
