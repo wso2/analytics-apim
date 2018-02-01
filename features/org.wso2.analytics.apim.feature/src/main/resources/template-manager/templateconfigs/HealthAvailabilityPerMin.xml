@@ -22,5 +22,13 @@
 			<key>severity</key>
 			<value>2</value>
 		</entry>
+		<entry>
+			<key>alertSuppressionTime</key>
+			<value>30*60*1000</value>
+		</entry>
+		<entry>
+			<key>responseCodeCount</key>
+			<value>5</value>
+		</entry>
 	</parameterMap>
 </scenarioConfiguration>
