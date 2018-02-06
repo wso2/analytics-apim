@@ -41,10 +41,10 @@ requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.r
 ifThenElse(total_request_count > requestsPerMinUpperPercentile,'spike','drop') as reason,
 'Abnormal request count detected during last minute.' as msg , 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 having (total_request_count > requestsPerMinUpperPercentile or total_request_count < requestsPerMinLowerPercentile)
-insert into tempAbnormalRequestsPerMinAlertStream;
+insert into tempAbnormalRequestsPerMinAlertStreamTemp;
 
 @info(name = 'query3')
-from tempAbnormalRequestsPerMinAlertStream#window.length(1) as a left outer join tempAbnormalRequestsPerMinAlertStream#window.time(10 minute) as b
+from tempAbnormalRequestsPerMinAlertStreamTemp#window.length(1) as a left outer join tempAbnormalRequestsPerMinAlertStreamTemp#window.time(10 minute) as b
 on (a.api== b.api and a.userId== b.userId and a.applicationName==b.applicationName and a.resourceTemplate==b.resourceTemplate and a.method== b.method and 
 a.reason== b.reason)
 select a.api, a.userId, a.tenantDomain, a.applicationName, a.applicationOwner, a.resourceTemplate, a.method, a.total_request_count as requestsPerMin, 

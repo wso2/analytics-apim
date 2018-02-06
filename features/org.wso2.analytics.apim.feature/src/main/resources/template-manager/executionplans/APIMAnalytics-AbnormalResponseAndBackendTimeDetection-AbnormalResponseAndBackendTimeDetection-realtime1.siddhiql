@@ -32,11 +32,28 @@ insert into responseInfoStream;
 @info(name = 'query2')
 from responseInfoStream[responseTime > responsePercentile]
 select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, responsePercentile , 'Abnormal response time detected.' as msg, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into abnormalResponseTimeAlertStreamTemp;
+
+@info(name = 'suppression1')
+from abnormalResponseTimeAlertStreamTemp#window.length(1) as a left outer join abnormalResponseTimeAlertStreamTemp#window.time(10 minute) as b
+on (a.api== b.api and a.apiPublisher== b.apiPublisher and a.tenantDomain==b.tenantDomain and a.resourceTemplate==b.resourceTemplate and a.method== b.method and
+a.msg== b.msg)
+select a.api, a.apiPublisher, a.tenantDomain, a.resourceTemplate, a.method, a.responseTime, a.responsePercentile, a.msg as msg,
+a.severity, a.alertTimestamp
+having b.api  is null
 insert into abnormalResponseTimeAlertStream;
 
 @info(name = 'query3')
 from responseInfoStream[backendTime > backendPercentile]
 select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, backendTime, backendPercentile, 'Abnormal backend response time detected.' as msg, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into abnormalBackendTimeAlertStreamTemp;
+
+@info(name = 'suppression2')
+from abnormalBackendTimeAlertStreamTemp#window.length(1) as a left outer join abnormalBackendTimeAlertStreamTemp#window.time(10 minute) as b
+on (a.api== b.api and a.apiPublisher== b.apiPublisher and a.tenantDomain==b.tenantDomain and a.resourceTemplate==b.resourceTemplate and a.method== b.method and
+a.msg== b.msg)
+select a.api, a.apiPublisher, a.tenantDomain, a.resourceTemplate, a.method, a.backendTime, a.backendPercentile, a.msg as msg, a.severity, a.alertTimestamp
+having b.api  is null
 insert into abnormalBackendTimeAlertStream;
 
 @info(name = 'query4')
