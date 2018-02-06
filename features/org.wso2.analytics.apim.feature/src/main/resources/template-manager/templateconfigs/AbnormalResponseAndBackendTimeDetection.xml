@@ -4,9 +4,13 @@
 	<description>Detects abnormal backend time and response time</description>
 	<parameterMap>
 		<entry>
-                        <key>cacheTimeout</key>
-                        <value>300</value>
-                </entry>
+			<key>alertSuppressionPeriod</key>
+			<value>10</value>
+		</entry>
+		<entry>
+			<key>cacheTimeout</key>
+			<value>300</value>
+		</entry>
 		<entry>
 			<key>responseTimeSeverity</key>
 			<value>2</value>

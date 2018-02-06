@@ -455,10 +455,10 @@ requestPerMinStream.consumerKey ==requestPercentileTable.consumerKey and request
 select requestPerMinStream.api_version as api , requestPerMinStream.userId , requestPerMinStream.tenantDomain, requestPerMinStream.applicationName, requestPerMinStream.applicationOwner, requestPerMinStream.resourceTemplate, requestPerMinStream.method, requestPerMinStream.total_request_count,  requestPercentileTable.requestsPerMinUpperPercentile,   requestPercentileTable.requestsPerMinLowerPercentile, ifThenElse(total_request_count > requestsPerMinUpperPercentile,'spike','drop') as reason,
 'Abnormal request count detected during last minute.' as msg , $severity as severity, (time:timestampInMilliseconds()) as alertTimestamp
 having (total_request_count > requestsPerMinUpperPercentile or total_request_count < requestsPerMinLowerPercentile)
-insert into tempAbnormalRequestsPerMinAlertStream;
+insert into tempAbnormalRequestsPerMinAlertStreamTemp;
 
 @info(name = 'query3')
-from tempAbnormalRequestsPerMinAlertStream#window.length(1) as a left outer join tempAbnormalRequestsPerMinAlertStream#window.time($alertSuppressionPeriod minute) as b
+from tempAbnormalRequestsPerMinAlertStreamTemp#window.length(1) as a left outer join tempAbnormalRequestsPerMinAlertStreamTemp#window.time($alertSuppressionPeriod minute) as b
 on (a.api== b.api and a.userId== b.userId and a.applicationName==b.applicationName and a.resourceTemplate==b.resourceTemplate and a.method== b.method and a.reason== b.reason)
 select a.api, a.userId, a.tenantDomain, a.applicationName, a.applicationOwner, a.resourceTemplate, a.method, a.total_request_count as requestsPerMin, a.requestsPerMinUpperPercentile, a.requestsPerMinLowerPercentile, a.reason, a.msg, a.severity, a.alertTimestamp
 having b.api  is null
@@ -528,11 +528,28 @@ insert into responseInfoStream;
 @info(name = 'query2')
 from responseInfoStream[responseTime > responsePercentile]
 select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, responseTime, responsePercentile , 'Abnormal response time detected.' as msg, $responseTimeSeverity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into abnormalResponseTimeAlertStreamTemp;
+
+@info(name = 'suppression1')
+from abnormalResponseTimeAlertStreamTemp#window.length(1) as a left outer join abnormalResponseTimeAlertStreamTemp#window.time($alertSuppressionPeriod minute) as b
+on (a.api== b.api and a.apiPublisher== b.apiPublisher and a.tenantDomain==b.tenantDomain and a.resourceTemplate==b.resourceTemplate and a.method== b.method and
+a.msg== b.msg)
+select a.api, a.apiPublisher, a.tenantDomain, a.resourceTemplate, a.method, a.responseTime, a.responsePercentile, a.msg as msg,
+a.severity, a.alertTimestamp
+having b.api  is null
 insert into abnormalResponseTimeAlertStream;
 
 @info(name = 'query3')
 from responseInfoStream[backendTime > backendPercentile]
 select api_version as api, apiPublisher, tenantDomain, resourceTemplate, method, backendTime, backendPercentile, 'Abnormal backend response time detected.' as msg, $backendTimeSeverity as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into abnormalBackendTimeAlertStreamTemp;
+
+@info(name = 'suppression2')
+from abnormalBackendTimeAlertStreamTemp#window.length(1) as a left outer join abnormalBackendTimeAlertStreamTemp#window.time($alertSuppressionPeriod minute) as b
+on (a.api== b.api and a.apiPublisher== b.apiPublisher and a.tenantDomain==b.tenantDomain and a.resourceTemplate==b.resourceTemplate and a.method== b.method and
+a.msg== b.msg)
+select a.api, a.apiPublisher, a.tenantDomain, a.resourceTemplate, a.method, a.backendTime, a.backendPercentile, a.msg as msg, a.severity, a.alertTimestamp
+having b.api  is null
 insert into abnormalBackendTimeAlertStream;
 
 @info(name = 'query4')
@@ -548,6 +565,12 @@ insert into allApimAlertStream;
                 </template>
             </templates>
             <parameters>
+                <parameter name="alertSuppressionPeriod" type="long">
+                    <displayName>Alert Suppression Period in Minutes</displayName>
+                    <description>Time period to wait before resending the same alert</description>
+                    <defaultValue>10</defaultValue>
+                </parameter>
+
                 <parameter name="cacheTimeout" type="int">
                     <displayName>Cache Time-out</displayName>
                     <description>Cache time-out value in seconds</description>
