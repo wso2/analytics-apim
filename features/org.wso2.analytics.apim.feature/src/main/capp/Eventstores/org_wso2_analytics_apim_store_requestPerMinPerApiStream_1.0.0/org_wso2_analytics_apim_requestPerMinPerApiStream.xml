@@ -4,14 +4,14 @@
         <ColumnDefinition>
             <Name>api_version</Name>
             <EnableIndexing>false</EnableIndexing>
-            <IsPrimaryKey>true</IsPrimaryKey>
+            <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>
         </ColumnDefinition>
         <ColumnDefinition>
             <Name>tenantDomain</Name>
             <EnableIndexing>false</EnableIndexing>
-            <IsPrimaryKey>true</IsPrimaryKey>
+            <IsPrimaryKey>false</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>
         </ColumnDefinition>
