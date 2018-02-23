@@ -997,13 +997,13 @@ define table alertTableRequestResponse (tenantApiVersion string, count int);
 
 @info(name = 'query1')
 from requestPerMinStream
-select  api_version, apiPublisher, tenantDomain, sum(total_request_count) as  requestsPerMinPerApi
+select  api_version, apiPublisher, tenantDomain, total_request_count as  requestsPerMinPerApi
 group by api_version, tenantDomain
 insert into requestPerApiCountStream;
 
 @info(name = 'query2')
 from responseSummaryStream
-select  api_version, tenantDomain,  sum(total_response_count) as  responsesPerMinPerApi
+select  api_version, tenantDomain,  total_response_count as  responsesPerMinPerApi
 group by api_version, tenantDomain
 insert into responsePerApiCountStream;
 
@@ -1022,9 +1022,10 @@ insert into responsesPercentileStream;
 /* Combine*/
 
 @info(name = 'query5')
-from requestsPercentileStream as requestsPercentileStreamWindow left outer join responsesPercentileStream as responsesPercentileStreamWindow on (requestsPercentileStreamWindow.api_version == responsesPercentileStreamWindow.api_version AND requestsPercentileStreamWindow.tenantDomain == responsesPercentileStreamWindow.tenantDomain)
-select requestsPercentileStreamWindow.api_version as api_version, requestsPercentileStreamWindow.apiPublisher as apiPublisher, requestsPercentileStreamWindow.requestsPerMin as requestsPerMin,requestsPercentileStreamWindow.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
-ifThenElse(responsesPercentileStreamWindow.responsesPerMin is null, convert(0, 'long'), responsesPercentileStreamWindow.responsesPerMin) as responsesPerMin, requestsPercentileStreamWindow.tenantDomain ,ifThenElse(responsesPercentileStreamWindow.responsesPerMinLowerPercentile is null, 1.0, responsesPercentileStreamWindow.responsesPerMinLowerPercentile) as responsesPerMinLowerPercentile
+from every e1=requestsPercentileStream, e2=responsesPercentileStream[e1.api_version == e2.api_version AND e1.tenantDomain == e2.tenantDomain]
+within 1 min
+select e1.api_version as api_version, e1.apiPublisher as apiPublisher, e1.requestsPerMin as requestsPerMin,e1.requestsPerMinLowerPercentile as requestsPerMinLowerPercentile,
+ifThenElse(e2.responsesPerMin is null, convert(0, 'long'), e2.responsesPerMin) as responsesPerMin, e2.tenantDomain ,ifThenElse(e2.responsesPerMinLowerPercentile is null, 1.0, e2.responsesPerMinLowerPercentile) as responsesPerMinLowerPercentile
 insert into requestResponseSummaryStream;
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------

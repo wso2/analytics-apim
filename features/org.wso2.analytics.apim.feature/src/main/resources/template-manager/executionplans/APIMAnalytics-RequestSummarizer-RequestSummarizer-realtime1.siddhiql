@@ -96,7 +96,7 @@ requestTime, userId, hostName, apiPublisher, total_request_count, resourceTempla
 tenantDomain, userAgent, resourcePath, request, applicationId, tier, throttledOut, clientIp, applicationOwner
 insert into perSecondRequestsWithUniqueId;
 
-from perSecondRequestsWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec, true)
+from perSecondRequestsWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 60 sec, true)
 select startTime, meta_clientType, consumerKey, context, api_version, api, version,
 max(requestTime) as requestTime, userId, hostName, apiPublisher, sum(total_request_count) as total_request_count, 
 resourceTemplate, method, applicationName, tenantDomain, userAgent, resourcePath, request, applicationId, tier, 
@@ -190,7 +190,7 @@ backendTime, username, eventTime, applicationName, applicationId, cacheHit, resp
 total_response_count
 insert into perSecondResponsesWithUniqueId;
 
-from perSecondResponsesWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 10 sec, true)
+from perSecondResponsesWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, startTime, 60 sec, 59999 millisec, 60 sec, true)
 select startTime, meta_clientType, context, api_version, api, resourceTemplate, version, tenantDomain,
 hostName, apiPublisher, destination, consumerKey, resourcePath, method, response, avg(responseTime) as responseTime, 
 avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, username, max(eventTime) as eventTime, applicationName, 
