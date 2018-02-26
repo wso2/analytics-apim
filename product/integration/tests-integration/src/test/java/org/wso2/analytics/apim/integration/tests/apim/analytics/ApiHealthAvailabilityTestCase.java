@@ -362,16 +362,24 @@ public class ApiHealthAvailabilityTestCase extends APIMAnalyticsBaseTestCase {
         redeployExecutionPlan();
         logViewerClient.clearLogs();
         pubishEvents(getRequestEventList(20), 10);
-        pubishEvents(getResponseEventListNumApi(1), 10);
+        pubishEvents(getResponseEventListNumApi(4), 10);
         Thread.sleep(6000);
         pubishEvents(getRequestEventList(20), 10);
-        pubishEvents(getResponseEventListNumApi(1), 10);
+        pubishEvents(getResponseEventListNumApi(4), 10);
         Thread.sleep(6000);
         pubishEvents(getRequestEventList(20), 10);
-        pubishEvents(getResponseEventListNumApi(1), 10);
+        pubishEvents(getResponseEventListNumApi(4), 10);
         Thread.sleep(6000);
         boolean responseTimeTooHigh = isAlertReceived(0, "api_version\":\"NumberAPI:v1.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Response count is lower", 50, 1000);
         Assert.assertTrue(responseTimeTooHigh, "Response count is too low continuously, alert not received!");
+
+        //Test whether alerts received when no API Responses are received
+        logViewerClient.clearLogs();
+        pubishEvents(getRequestEventList(20), 10);
+        //does not publish Response events on purpose
+        Thread.sleep(6000);
+        boolean alertReceivedWhenNoResponse = isAlertReceived(0, "api_version\":\"NumberAPI:v1.0\",\"apiPublisher\":\"admin@carbon.super\",\"tenantDomain\":\"carbon.super\",\"msg\":\"Response count is lower", 60, 1000);
+        Assert.assertFalse(alertReceivedWhenNoResponse, "Alert received when there were no responses at all!");
     }
 
     @Test(groups = "wso2.analytics.apim", description = "Test if server error occurred", dependsOnMethods = "testAbnormalLowResponseCount")
