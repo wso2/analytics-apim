@@ -36,6 +36,13 @@
 			<EnableScoreParam>false</EnableScoreParam>
 			<Type>BOOLEAN</Type>
 		</ColumnDefinition>
+		<ColumnDefinition>
+			<Name>isAdmin</Name>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>true</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>BOOLEAN</Type>
+		</ColumnDefinition>
 	</TableSchema>
 	<Source>
 		<StreamId>org.wso2.analytics.apim.alertStakeholderInfo:1.0.0</StreamId>
