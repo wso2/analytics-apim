@@ -61,24 +61,24 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
-                new String[]{"tom@carbon.super", "RequestPatternChanged", "abc@gmail.com,john@gmail,com", "true", "false"}
+                new String[]{"tom@carbon.super", "RequestPatternChanged", "abc@gmail.com,john@gmail,com", "true", "false", "false"}
         );
         publishEvent(eventDto);
 
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
-                new String[]{"abc@carbon.super", "abnormalBackendTime", "abc@gmail.com,john@gmail,com", "false", "true"}
+                new String[]{"abc@carbon.super", "abnormalBackendTime", "abc@gmail.com,john@gmail,com", "false", "true", "false"}
         );
         publishEvent(eventDto);
         Thread.sleep(1000);
-
-        executeSparkQuery("CREATE TEMPORARY TABLE STAKEHOLDER_STREAM USING CarbonAnalytics "
-        		+ "OPTIONS (tableName \"ORG_WSO2_ANALYTICS_APIM_ALERTSTAKEHOLDERINFO\")");
 
         int i = 0;
         boolean eventsPublished = false;
         long stakeholderEventCount = 0;
         while (i < MAX_TRIES) {
+            executeSparkQuery("CREATE TEMPORARY TABLE STAKEHOLDER_STREAM USING CarbonAnalytics "
+                    + "OPTIONS (tableName \"ORG_WSO2_ANALYTICS_APIM_ALERTSTAKEHOLDERINFO\")");
+
             stakeholderEventCount = executeSparkQuery("SELECT * FROM STAKEHOLDER_STREAM");
             eventsPublished = (stakeholderEventCount == 2);
             if (eventsPublished) {
@@ -120,7 +120,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
                 }
         );
         publishEvent(eventDto);
-        abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 5 ,1000);
+        abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,1000);
         Assert.assertFalse(abnormalBackendTimeEmailAlertTriggered, "Abnormal backend time email alert event received!");
     }
 
@@ -132,14 +132,14 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(REQUEST_PATTERN_CHANGED_STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
-                new String[]{"tom@carbon.super", "DefaultApplication", "admin", "carbon.super", "suscpicious API transition: GET " +
+                new String[]{"bob@carbon.super", "DefaultApplication", "tom@carbon.super", "carbon.super", "suscpicious API transition: GET " +
                         "/calc/1.0_/search to GET /calc/1.0_/pay_fraud transitionTimestamp :2016-02-18 14:15:33", "1", "1459411825099"
                 }
         );
         publishEvent(eventDto);
         Thread.sleep(1000);
         
-        boolean requestPatternChangedEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,10000);
+        boolean requestPatternChangedEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,1000);
         Assert.assertTrue(requestPatternChangedEmailAlertTriggered, "RequestPatternChanged email alert event not received!");
     }
 

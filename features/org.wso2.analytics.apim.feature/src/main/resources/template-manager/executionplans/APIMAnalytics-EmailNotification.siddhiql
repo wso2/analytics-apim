@@ -44,21 +44,21 @@ define table stakeholderInfoTable (userId string, alertTypes string, emails	stri
 
 @info(name = 'query1')
 from abnormalRequestsPerMinAlert#window.length(1) join stakeholderInfoTable
-on ((abnormalRequestsPerMinAlert.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber ) or true == stakeholderInfoTable.isAdmin )
+on ((abnormalRequestsPerMinAlert.applicationOwner == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber ) or true == stakeholderInfoTable.isAdmin )
 select 'abnormalRequestsPerMin' as type , str:concat('Abnormal request count ' , ifThenElse(abnormalRequestsPerMinAlert.requestsPerMin > abnormalRequestsPerMinAlert.requestsPerMinUpperPercentile,'spike','drop') , ' detected during last minute by userId:',abnormalRequestsPerMinAlert.userId,' using application ', abnormalRequestsPerMinAlert.applicationName,' owned by ', abnormalRequestsPerMinAlert.applicationOwner,' for http ', abnormalRequestsPerMinAlert.method,' method of resource template ', abnormalRequestsPerMinAlert.resourceTemplate,' in api :', abnormalRequestsPerMinAlert.api,', abnormal request count:', abnormalRequestsPerMinAlert.requestsPerMin, ".") as msg, time:dateFormat(abnormalRequestsPerMinAlert.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'abnormalRequestsPerMin')
 insert into emailAlertStream;
 
 @info(name = 'query2')
 from requestPatternChangedStream#window.length(1) join stakeholderInfoTable
-on ((requestPatternChangedStream.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber ) or true == stakeholderInfoTable.isAdmin )
+on ((requestPatternChangedStream.applicationOwner == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber ) or true == stakeholderInfoTable.isAdmin )
 select 'RequestPatternChanged' as type , str:concat(requestPatternChangedStream.msg,  ' by user :',requestPatternChangedStream.userId,' using application : ',requestPatternChangedStream.applicationName, ' owned by: ',requestPatternChangedStream.applicationOwner, '.') as msg, time:dateFormat(requestPatternChangedStream.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, stakeholderInfoTable.emails
 having str:contains(stakeholderInfoTable.alertTypes, 'RequestPatternChanged')
 insert into emailAlertStream;
 
 @info(name = 'query3')
 from unusualIPAccess#window.length(1) join stakeholderInfoTable
-on ((unusualIPAccess.userId == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber ) or true == stakeholderInfoTable.isAdmin )
+on ((unusualIPAccess.applicationOwner == stakeholderInfoTable.userId and true == stakeholderInfoTable.isSubscriber ) or true == stakeholderInfoTable.isAdmin )
 select 'UnusualIPAccessAlert' as type , str:concat("A request from a ", ifThenElse(str:contains(msg, 'old'), 'old','new'), " IP (", ip, ") detected by user:" , unusualIPAccess.userId,  " using application:", applicationName, " owned by ", applicationOwner, ".") as msg, time:dateFormat(unusualIPAccess.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, stakeholderInfoTable.emails
 having  str:contains(stakeholderInfoTable.alertTypes, 'UnusualIPAccessAlert')
 insert into emailAlertStream;

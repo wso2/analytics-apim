@@ -106,14 +106,16 @@ public class LoganalyzerTestCase extends APIMAnalyticsBaseTestCase {
 
         //publish events
         publishEvent(TEST_RESOURCE_PATH, "wso2carbonBenchmarkLogs.csv", getStreamId(STREAM_NAME, STREAM_VERSION));
-        Thread.sleep(12000);
-        executeSparkQuery("CREATE TEMPORARY TABLE LOGANALYZER_STREAM USING CarbonAnalytics "
-                + "OPTIONS (tableName \"LOGANALYZER\")");        
+        Thread.sleep(1000);
+
         int i = 0;
         boolean eventsPublished = false;
         long loganalyzerEventCount = 0;
         int benchmarkLogsCount = 3;
         while (i < MAX_TRIES) {
+            executeSparkQuery("CREATE TEMPORARY TABLE LOGANALYZER_STREAM USING CarbonAnalytics "
+                    + "OPTIONS (tableName \"LOGANALYZER\")");
+
             loganalyzerEventCount = executeSparkQuery("SELECT * FROM LOGANALYZER_STREAM");
             eventsPublished = (loganalyzerEventCount >= benchmarkLogsCount);
             if (eventsPublished) {
