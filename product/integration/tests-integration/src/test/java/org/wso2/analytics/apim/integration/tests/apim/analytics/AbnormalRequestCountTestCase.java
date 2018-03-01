@@ -25,6 +25,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 
+
 public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     private static final Log log = LogFactory.getLog(AbnormalRequestCountTestCase.class);
 
@@ -134,7 +135,6 @@ public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     @Test(groups = "wso2.analytics.apim", description = "Test Abnormal Request Count Alert",
             dependsOnMethods = "testRequestStatGeneratorSparkScriptExecution")
     public void testAbnormalRequestCountAlert() throws Exception {
-        logViewerClient.clearLogs();
         
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
