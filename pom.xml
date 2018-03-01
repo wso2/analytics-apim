@@ -597,7 +597,7 @@
 	</build>
 
 	<properties>
-        <analytics.apim.version>2.2.0.update8</analytics.apim.version>
+        <analytics.apim.version>2.2.0-SNAPSHOT</analytics.apim.version>
         <analytics.apim.jar.version>2.2.0.update8</analytics.apim.jar.version>
         <carbon.kernel.version>4.4.23</carbon.kernel.version>
         <carbon.shared.analytics.version>1.0.3</carbon.shared.analytics.version>
