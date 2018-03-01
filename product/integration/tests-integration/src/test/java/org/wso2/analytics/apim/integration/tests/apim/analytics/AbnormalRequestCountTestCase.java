@@ -25,7 +25,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.event.simulator.stub.types.EventDto;
 
-import java.rmi.RemoteException;
 
 public class AbnormalRequestCountTestCase extends APIMAnalyticsBaseTestCase {
     private static final Log log = LogFactory.getLog(AbnormalRequestCountTestCase.class);
