@@ -110,7 +110,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
         boolean abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,10000);
         Assert.assertTrue(abnormalBackendTimeEmailAlertTriggered, "Abnormal backend time email alert event not received!");
 
-//        logViewerClient.clearLogs();
+        logViewerClient.clearLogs();
         eventDto.setEventStreamId(getStreamId(ABNORMAL_BACKEND_TIME_STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"CalculatorAPI:v2.0", "tom@carbon.super", "carbon.super", "/add", "GET", "65", "20.52214676764896",
@@ -120,7 +120,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
                 }
         );
         publishEvent(eventDto);
-        abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,10000);
+        abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,1000);
         Assert.assertFalse(abnormalBackendTimeEmailAlertTriggered, "Abnormal backend time email alert event received!");
     }
 
