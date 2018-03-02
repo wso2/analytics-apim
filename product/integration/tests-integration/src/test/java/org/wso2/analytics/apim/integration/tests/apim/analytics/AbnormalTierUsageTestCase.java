@@ -129,7 +129,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
     public void testAbnormalTierUsageAlert() throws Exception {
 
         publishDataset();
-//        logViewerClient.clearLogs();
+        logViewerClient.clearLogs();
 
 
         int i = 0;
