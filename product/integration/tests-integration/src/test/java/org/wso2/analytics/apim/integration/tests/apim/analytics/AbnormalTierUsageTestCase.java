@@ -150,13 +150,16 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
         Assert.assertTrue(eventsPublished, "Simulation events did not get published!");
 
         // this is a synchronous call
-        executeSparkScript(SPARK_SCRIPT);
-
+        boolean testOne = false;
+        int j=0;
+        while(j < 5 && !testOne) {
+            executeSparkScript(SPARK_SCRIPT);
+            testOne = isAlertReceived(
+                    0,
+                    "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the svm:v1.0.0 API. It currently uses a Gold subscription.",
+                    100, 1000);
+        }
         // test case #1
-        boolean testOne = isAlertReceived(
-                0,
-                "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the svm:v1.0.0 API. It currently uses a Gold subscription.",
-                100, 1000);
         Assert.assertTrue(testOne,
                 "Abnormal request alert is not received for application: sampleApplication for api_version: svm:v1.0.0");
        

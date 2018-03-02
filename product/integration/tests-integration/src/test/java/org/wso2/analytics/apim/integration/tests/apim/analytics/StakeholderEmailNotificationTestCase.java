@@ -107,7 +107,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
         publishEvent(eventDto);
         Thread.sleep(1000);
         
-        boolean abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,10000);
+        boolean abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 60 ,5000);
         Assert.assertTrue(abnormalBackendTimeEmailAlertTriggered, "Abnormal backend time email alert event not received!");
 
         logViewerClient.clearLogs();
