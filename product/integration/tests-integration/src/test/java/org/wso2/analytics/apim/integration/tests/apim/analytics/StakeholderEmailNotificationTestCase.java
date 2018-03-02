@@ -94,7 +94,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
     @Test(groups = "wso2.analytics.apim", description = "Test abnormalBackendTime email Alert",
             dependsOnMethods = "testStakeholdersInfoSimulationDataSent")
     public void testAbnormalBackendTimeEmailAlert() throws Exception {
-        logViewerClient.clearLogs();
+//        logViewerClient.clearLogs();
         EventDto eventDto = new EventDto();
         eventDto.setEventStreamId(getStreamId(ABNORMAL_BACKEND_TIME_STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
@@ -110,7 +110,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
         boolean abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 20 ,10000);
         Assert.assertTrue(abnormalBackendTimeEmailAlertTriggered, "Abnormal backend time email alert event not received!");
 
-        logViewerClient.clearLogs();
+//        logViewerClient.clearLogs();
         eventDto.setEventStreamId(getStreamId(ABNORMAL_BACKEND_TIME_STREAM_NAME, STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"CalculatorAPI:v2.0", "tom@carbon.super", "carbon.super", "/add", "GET", "65", "20.52214676764896",
