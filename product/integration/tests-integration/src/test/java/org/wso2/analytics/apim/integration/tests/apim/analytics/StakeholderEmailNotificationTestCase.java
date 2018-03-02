@@ -104,10 +104,15 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
                         "backend time percentile 20.52214676764896", "1", "1459411825099"
                 }
         );
-        publishEvent(eventDto);
-        Thread.sleep(1000);
-        
-        boolean abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 60 ,5000);
+        boolean abnormalBackendTimeEmailAlertTriggered = false;
+        int i =0;
+
+        while(i < 5 && !abnormalBackendTimeEmailAlertTriggered) {
+            publishEvent(eventDto);
+            Thread.sleep(1500);
+            abnormalBackendTimeEmailAlertTriggered = isAlertReceived(0, "Unique ID: logger_emailAlert", 60, 5000);
+            i++;
+        }
         Assert.assertTrue(abnormalBackendTimeEmailAlertTriggered, "Abnormal backend time email alert event not received!");
 
         logViewerClient.clearLogs();
