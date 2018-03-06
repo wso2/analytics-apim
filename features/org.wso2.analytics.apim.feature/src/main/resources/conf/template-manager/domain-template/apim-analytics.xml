@@ -460,7 +460,7 @@ insert into tempAbnormalRequestsPerMinAlertStreamTemp;
 @info(name = 'query3')
 from tempAbnormalRequestsPerMinAlertStreamTemp#window.length(1) as a left outer join tempAbnormalRequestsPerMinAlertStreamTemp#window.time($alertSuppressionPeriod minute) as b
 on (a.api== b.api and a.userId== b.userId and a.applicationName==b.applicationName and a.resourceTemplate==b.resourceTemplate and a.method== b.method and a.reason== b.reason)
-select a.api, a.userId, a.tenantDomain, a.applicationName, a.applicationOwner, a.resourceTemplate, a.method, a.total_request_count as requestsPerMin, a.requestsPerMinUpperPercentile, a.requestsPerMinLowerPercentile, a.reason, a.msg, a.severity, a.alertTimestamp
+select a.api, a.userId, a.tenantDomain, a.applicationName, ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.applicationOwner, "@carbon.super"), a.applicationOwner) as applicationOwner, a.resourceTemplate, a.method, a.total_request_count as requestsPerMin, a.requestsPerMinUpperPercentile, a.requestsPerMinLowerPercentile, a.reason, a.msg, a.severity, a.alertTimestamp
 having b.api  is null
 insert into abnormalRequestsPerMinAlertStream ;
 
