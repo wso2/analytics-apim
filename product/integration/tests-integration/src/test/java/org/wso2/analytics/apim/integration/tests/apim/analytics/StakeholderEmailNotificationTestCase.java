@@ -32,6 +32,7 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
     private final String ABNORMAL_BACKEND_TIME_STREAM_NAME = "org.wso2.analytics.apim.abnormalBackendTimeAlertStream";
     private final String REQUEST_PATTERN_CHANGED_STREAM_NAME = "org.wso2.analytics.apim.requestPatternChangedStream";
     private final String STREAM_VERSION = "1.0.0";
+    private final String STAKEHOLDER_STREAM_VERSION = "1.0.1";
     private final String TEST_RESOURCE_PATH = "stakeholderEmailNotification";
     private final String PUBLISHER_FILE = "logger_emailAlert.xml";
     private final String STAKEHOLDER_INFO_TABLE = "ORG_WSO2_ANALYTICS_APIM_ALERTSTAKEHOLDERINFO";
@@ -59,13 +60,13 @@ public class StakeholderEmailNotificationTestCase extends APIMAnalyticsBaseTestC
     @Test(groups = "wso2.analytics.apim", description = "Test if the Simulation data has been published")
     public void testStakeholdersInfoSimulationDataSent() throws Exception {
         EventDto eventDto = new EventDto();
-        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STAKEHOLDER_STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"tom@carbon.super", "RequestPatternChanged", "abc@gmail.com,john@gmail,com", "true", "false", "false"}
         );
         publishEvent(eventDto);
 
-        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STREAM_VERSION));
+        eventDto.setEventStreamId(getStreamId(STREAM_NAME, STAKEHOLDER_STREAM_VERSION));
         eventDto.setAttributeValues(
                 new String[]{"abc@carbon.super", "abnormalBackendTime", "abc@gmail.com,john@gmail,com", "false", "true", "false"}
         );
