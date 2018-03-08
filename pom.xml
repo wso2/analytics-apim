@@ -615,7 +615,7 @@
         <carbon.event-processing.version>2.1.19</carbon.event-processing.version>
         <carbon.dashboard.version>2.0.3</carbon.dashboard.version>
         <carbon.metrics.version>1.2.2</carbon.metrics.version>
-        <carbon.identity.auth.saml2.version>5.2.3</carbon.identity.auth.saml2.version>
+        <carbon.identity.auth.saml2.version>5.2.4</carbon.identity.auth.saml2.version>
 
         <jaggery.version>0.12.8</jaggery.version>
         <jaggery.modules.carbon.version>1.5.5</jaggery.modules.carbon.version>

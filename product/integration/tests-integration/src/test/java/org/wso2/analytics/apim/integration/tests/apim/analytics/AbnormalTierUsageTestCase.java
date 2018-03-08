@@ -158,6 +158,7 @@ public class AbnormalTierUsageTestCase extends APIMAnalyticsBaseTestCase {
                     0,
                     "sampleApplication Application owned by admin is consuming less than the allowed quota when accessing the svm:v1.0.0 API. It currently uses a Gold subscription.",
                     100, 1000);
+            j++;
         }
         // test case #1
         Assert.assertTrue(testOne,
