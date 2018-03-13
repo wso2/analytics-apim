@@ -227,6 +227,6 @@
         </plugins>
     </build>
     <properties>
-            <identity.jar.version>5.11.139</identity.jar.version>
+            <identity.jar.version>5.11.141</identity.jar.version>
     </properties>
 </project>
