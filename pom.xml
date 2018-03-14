@@ -658,6 +658,7 @@
         <apache.common.collection.version>3.2.0.wso2v1</apache.common.collection.version>
         <org.eclipse.osgi.version>3.7.0.v20110613</org.eclipse.osgi.version>
         <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
+        <forgetme.tool.version>1.1.15</forgetme.tool.version>
 	</properties>
 
 	<organization>
