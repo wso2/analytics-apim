@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<EventStoreConfiguration>
+	<TableSchema>
+		<ColumnDefinition>
+			<Name>userId</Name>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>true</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>STRING</Type>
+		</ColumnDefinition>
+		<ColumnDefinition>
+			<Name>alertTypes</Name>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>false</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>STRING</Type>
+		</ColumnDefinition>
+		<ColumnDefinition>
+			<Name>emails</Name>
+			<EnableIndexing>false</EnableIndexing>
+			<IsPrimaryKey>false</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>STRING</Type>
+		</ColumnDefinition>
+		<ColumnDefinition>
+			<Name>isSubscriber</Name>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>true</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>BOOLEAN</Type>
+		</ColumnDefinition>
+		<ColumnDefinition>
+			<Name>isPublisher</Name>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>true</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>BOOLEAN</Type>
+		</ColumnDefinition>
+	</TableSchema>
+	<Source>
+		<StreamId>org.wso2.analytics.apim.alertStakeholderInfo:1.0.0</StreamId>
+	</Source>
+	<MergeSchema>false</MergeSchema>
+	<RecordStoreName>EVENT_STORE</RecordStoreName>
+</EventStoreConfiguration>
