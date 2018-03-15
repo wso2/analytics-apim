@@ -74,6 +74,14 @@
                                     <overWrite>true</overWrite>
                                     <outputDirectory>target</outputDirectory>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.wso2.carbon.privacy</groupId>
+                                    <artifactId>org.wso2.carbon.privacy.forgetme.tool</artifactId>
+                                    <version>${forgetme.tool.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target/forget-me</outputDirectory>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -153,6 +161,7 @@
                                 <delete dir="target/site" />
                                 <delete dir="src/site" />
                                 <delete dir="target/identity-ui" />
+                                <delete dir="target/forget-me" />
                             </tasks>
                         </configuration>
                         <goals>

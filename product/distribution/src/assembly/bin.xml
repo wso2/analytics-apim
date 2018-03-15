@@ -309,6 +309,23 @@
             </includes>
         </fileSet>
 
+        <!-- Forget-me tool -->
+        <fileSet>
+            <directory>target/forget-me/identity-anonymization-tool-${forgetme.tool.version}</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/tools/forget-me</outputDirectory>
+            <excludes>
+                <exclude>**/forgetme.sh</exclude>
+                <exclude>**/forgetme.bat</exclude>
+                <exclude>**/config.json</exclude>
+                <exclude>conf/datasources/**</exclude>
+                <exclude>conf/log-config/**</exclude>
+                <exclude>conf/product-config/**</exclude>
+                <exclude>conf/sql/**</exclude>
+                <exclude>conf/streams/**</exclude>
+            </excludes>
+            <fileMode>644</fileMode>
+        </fileSet>
+
     </fileSets>
 
 
@@ -923,6 +940,28 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc/bundle-config/com.typesafe.config/
             </outputDirectory>
             <fileMode>644</fileMode>
+        </file>
+
+        <!-- Forget me tool -->
+        <file>
+            <source>src/bin/forgetme.sh</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/bin/</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+        <file>
+            <source>src/bin/forgetme.bat</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/bin/</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+        <file>
+            <source>src/bin/tools/forget-me/forgetme.sh</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/tools/forget-me/bin/</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+        <file>
+            <source>src/bin/tools/forget-me/forgetme.bat</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/tools/forget-me/bin/</outputDirectory>
+            <fileMode>744</fileMode>
         </file>
 
     </files>
