@@ -795,7 +795,7 @@ define stream all_apim_alerts_stream (type string, tenantDomain string, msg stri
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
 define stream alertIpAccessAbnormality (type string, msg string, severity int, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate', caching ='true', cache.timeout.seconds='$cacheTimeout', wait.for.indexing = 'false')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate', wait.for.indexing = 'false')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
 
 @from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSALERTCOUNT', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount', wait.for.indexing = 'false')
@@ -840,7 +840,7 @@ insert into IPAccessAlertCount;
 -- A new request source IP
 -- generate alert and add it to the table
 @info(name = 'query7')
-from ExistingUserStream[ip is null and requestCount > 500]
+from ExistingUserStream[ip is null and requestCount > $learningCount]
 select *
 insert into NewIPDetectedStream;
 
@@ -856,12 +856,12 @@ insert into IPAccessSummary;
 
 -- Check if the request for the IP is received after the threshold time gap
 @info(name = 'query10')
-from ExistingUserStream[(not (ip is null)) and requestCount > 500]
+from ExistingUserStream[(not (ip is null)) and requestCount > $learningCount]
 select requestHostName, consumerKey, applicationName, applicationOwner, (requestTime - lastAccessedDate) as timeBetweenAccess, requestTime, userId, tenantDomain, lastAccessedDate
 insert into CheckAbnormalTimeBetweenAccessStream;
 
 @info(name = 'query11')
-from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > ($maxDaysBetweenAccess*24*60*60)]
+from CheckAbnormalTimeBetweenAccessStream[(timeBetweenAccess/1000) > ($maxDaysBetweenAccess*24*60*60)]
 select *
 insert into AbnormalTimeBetweenAccessStream;
 
@@ -878,7 +878,7 @@ insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate
 @info(name = 'query14')
-from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > 24*60*60]
+from CheckAbnormalTimeBetweenAccessStream[(timeBetweenAccess/1000) > 24*60*60]
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;               
                  ]]>
@@ -890,18 +890,16 @@ insert into IPAccessSummary;
                     <description>Maximum days between Last access from the hostname to the latest </description>
                     <defaultValue>30</defaultValue>
                 </parameter>
-
-                <parameter name="cacheTimeout" type="int">
-                    <displayName>Cache Time-out</displayName>
-                    <description>Cache time-out value in seconds</description>
-                    <defaultValue>300</defaultValue>
-                </parameter>
-
                 <parameter name="severity" type="int">
                     <displayName>Severity Level</displayName>
                     <description>Severity level of the alert:(1:severe,2:moderate,3:mild)</description>
                     <defaultValue>2</defaultValue>
                     <options>1, 2, 3</options>
+                </parameter>
+                <parameter name="learningCount" type="long">
+                    <displayName>Learning IP Count</displayName>
+                    <description>This will be used as learning count for unusual IP access alerts</description>
+                    <defaultValue>500</defaultValue>
                 </parameter>
             </parameters>
         </scenario>

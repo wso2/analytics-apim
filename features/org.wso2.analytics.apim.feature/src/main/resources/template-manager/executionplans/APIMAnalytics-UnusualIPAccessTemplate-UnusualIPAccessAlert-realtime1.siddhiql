@@ -17,7 +17,7 @@ define stream all_apim_alerts_stream (type string, tenantDomain string, msg stri
 @Export('org.wso2.analytics.apim.alert.unusualIPAccess:1.0.0')
 define stream alertIpAccessAbnormality (type string, msg string, severity int, ip string, applicationName string, applicationOwner string, userId string, tenantDomain string, requestTime long, alertTimestamp long);
 
-@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate', caching ='true', cache.timeout.seconds='300', wait.for.indexing = 'false')
+@from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSSUMMARY', primary.keys = 'consumerKey, ip', indices = 'userId, consumerKey, ip, lastAccessedDate', wait.for.indexing = 'false')
 define table IPAccessSummary (userId string, consumerKey string, ip string, lastAccessedDate long) ;
 
 @from(eventtable = 'analytics.table', table.name = 'ORG_WSO2_ANALYTICS_APIM_IPACCESSALERTCOUNT', primary.keys = 'consumerKey, userId', indices = 'userId, consumerKey, requestCount', wait.for.indexing = 'false')
@@ -83,7 +83,7 @@ select requestHostName, consumerKey, applicationName, applicationOwner, (request
 insert into CheckAbnormalTimeBetweenAccessStream;
 
 @info(name = 'query11')
-from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > (30*24*60*60)]
+from CheckAbnormalTimeBetweenAccessStream[(timeBetweenAccess/1000) > (30*24*60*60)]
 select *
 insert into AbnormalTimeBetweenAccessStream;
 
@@ -100,6 +100,6 @@ insert into all_apim_alerts_stream;
 
 -- Update the request time for the lastAccessDate
 @info(name = 'query14')
-from CheckAbnormalTimeBetweenAccessStream[timeBetweenAccess > 24*60*60]
+from CheckAbnormalTimeBetweenAccessStream[(timeBetweenAccess/1000) > 24*60*60]
 select userId, consumerKey, requestHostName as ip, requestTime as lastAccessedDate
 insert into IPAccessSummary;
