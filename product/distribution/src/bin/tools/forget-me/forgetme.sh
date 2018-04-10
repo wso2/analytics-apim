@@ -99,18 +99,18 @@ fi
 
 CLASSPATH="$BASEDIR"/conf:"$REPO"/*
 
-pluginsDirPath="$BASEDIR"/../../plugins
-for file in "$pluginsDirPath"/*.jar
+PLUGINS_DIR_PATH="$BASEDIR"/../../plugins
+for file in "$PLUGINS_DIR_PATH"/*.jar
 do
   name=${file##*/}
-  if ! [[ $name == slf4j* ]];
-  then
-    CLASSPATH="$CLASSPATH":"$BASEDIR"/../../plugins/"$name"
-  fi
+  case $name in
+ 	"slf4j"*) ;;
+ 	*) CLASSPATH="$CLASSPATH":"$BASEDIR"/../../plugins/"$name" ;;
+  esac
 done
 
-libDirPath="$BASEDIR"/../../../../lib
-for file in "$libDirPath"/*.jar
+LIB_DIR_PATH="$BASEDIR"/../../../../lib
+for file in "$LIB_DIR_PATH"/*.jar
 do
   name=${file##*/}
   CLASSPATH="$CLASSPATH":"$BASEDIR"/../../../../lib/"$name"
