@@ -663,15 +663,15 @@
         <siddhi.version>3.2.3</siddhi.version>
         <carbon.automationutils.version>4.4.1</carbon.automationutils.version>
         <carbon.automation.version>4.4.3</carbon.automation.version>
-        <carbon.registry.version>4.6.28</carbon.registry.version>
+        <carbon.registry.version>4.6.29</carbon.registry.version>
         <carbon.multitenancy.version>4.6.11</carbon.multitenancy.version>
-        <carbon.deployment.version>4.7.15</carbon.deployment.version>
+        <carbon.deployment.version>4.7.17</carbon.deployment.version>
         <carbon.identity.version>5.11.217</carbon.identity.version>
         <carbon.commons.version>4.6.21</carbon.commons.version>
-        <carbon.data.version>4.4.43</carbon.data.version>
-        <carbon.event-processing.version>2.1.23</carbon.event-processing.version>
-        <carbon.dashboard.version>2.0.16</carbon.dashboard.version>
-        <carbon.metrics.version>1.2.2</carbon.metrics.version>
+        <carbon.data.version>4.4.54</carbon.data.version>
+        <carbon.event-processing.version>2.1.24</carbon.event-processing.version>
+        <carbon.dashboard.version>2.0.19</carbon.dashboard.version>
+        <carbon.metrics.version>1.2.3</carbon.metrics.version>
         <carbon.identity.auth.saml2.version>5.2.6</carbon.identity.auth.saml2.version>
 
         <jaggery.version>0.12.8</jaggery.version>
@@ -715,7 +715,7 @@
         <apache.common.collection.version>3.2.0.wso2v1</apache.common.collection.version>
         <org.eclipse.osgi.version>3.7.0.v20110613</org.eclipse.osgi.version>
         <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
-        <forgetme.tool.version>1.1.15</forgetme.tool.version>
+        <forgetme.tool.version>1.1.19</forgetme.tool.version>
 	</properties>
 
 	<organization>
