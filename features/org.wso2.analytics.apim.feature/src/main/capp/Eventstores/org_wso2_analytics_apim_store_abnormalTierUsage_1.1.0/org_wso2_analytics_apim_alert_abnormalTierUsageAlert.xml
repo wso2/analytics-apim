@@ -9,6 +9,13 @@
 			<Type>STRING</Type>
 		</ColumnDefinition>
 		<ColumnDefinition>
+			<Name>applicationOwner</Name>
+			<EnableIndexing>true</EnableIndexing>
+			<IsPrimaryKey>false</IsPrimaryKey>
+			<EnableScoreParam>false</EnableScoreParam>
+			<Type>STRING</Type>
+		</ColumnDefinition>
+		<ColumnDefinition>
 			<Name>api_version</Name>
 			<EnableIndexing>true</EnableIndexing>
 			<IsPrimaryKey>false</IsPrimaryKey>
@@ -45,7 +52,7 @@
 		</ColumnDefinition>
 	</TableSchema>
 	<Source>
-		<StreamId>org.wso2.analytics.apim.alert.abnormalTierUsageAlert:1.0.0</StreamId>
+		<StreamId>org.wso2.analytics.apim.alert.abnormalTierUsageAlert:1.1.0</StreamId>
 	</Source>
 	<MergeSchema>false</MergeSchema>
 	<RecordStoreName>EVENT_STORE</RecordStoreName>

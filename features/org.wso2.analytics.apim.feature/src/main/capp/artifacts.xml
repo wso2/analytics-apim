@@ -27,7 +27,7 @@
         <dependency artifact="org_wso2_analytics_apim_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_allApimAlertsStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_alert_abnormalAccessTokenRefreshStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageAlert" version="1.1.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_tierLimitHittingAlert" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_apiHealthMonitorAlertStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_requestPerMinPerApiStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -59,9 +59,7 @@
         <dependency artifact="Eventreceiver_workflow" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventreceiver_throttle" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventreceiver_executionTime" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageEventReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_carbon_identity_oauth_token_issuance_receiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_abnormalTierUsageEventReceiveForAllAlerts" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_alertStakeholderInfoEventReceiver" version="1.0.1" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_loganalyzer_apim_logEventReceiver" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
@@ -87,7 +85,7 @@
         <dependency artifact="org_wso2_analytics_apim_store_responsePercentile" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_requestPatternChangedStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_allApimAlertsStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <dependency artifact="org_wso2_analytics_apim_store_abnormalTierUsage" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="org_wso2_analytics_apim_store_abnormalTierUsage" version="1.1.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstore_perMinuteRequest" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="org_wso2_analytics_apim_store_requestPerMinStream" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstore_perMinuteResponse" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
