@@ -35,8 +35,8 @@
       CREATE TEMPORARY TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
       USING org.wso2.carbon.analytics.spark.event.EventStreamProvider
       OPTIONS (streamName "org.wso2.analytics.apim.alert.abnormalTierUsageAlert",
-               version "1.0.0",
-               payload "applicationId STRING, api_version STRING, tenantDomain STRING, msg STRING, severity INTEGER, alertTimestamp LONG"
+               version "1.1.0",
+               payload "applicationId STRING, applicationOwner STRING, api_version STRING, tenantDomain STRING, msg STRING, severity INTEGER, alertTimestamp LONG"
       );
 
       CREATE TEMPORARY TABLE ORG_WSO2_API_ALL_ALERT_STREAM_TABLE
@@ -73,7 +73,7 @@
      FROM ORG_WSO2_API_REQUESTS;
 
      INSERT OVERWRITE TABLE ORG_WSO2_API_ABNORMAL_STREAM_TABLE
-     SELECT R.applicationId, R.api_version, R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'), 2, now('')
+     SELECT R.applicationId, R.applicationOwner, R.api_version, R.tenantDomain, concat(concat(concat(concat(concat(concat(concat(concat(concat('The ', R.applicationName), ' Application owned by '), R.applicationOwner), ' is consuming less than the allowed quota when accessing the '), R.api_version), ' API'), '. It currently uses a '), R.tier), ' subscription.'), 2, now('')
      FROM ORG_WSO2_API_ABNORMAL_USAGE_ALERT A, ORG_WSO2_API_ABNORMAL_ADITIONAL_DATA R
      WHERE A.api_version = R.api_version AND A.applicationId = R.applicationId;
 
