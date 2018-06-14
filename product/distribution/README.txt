@@ -74,7 +74,7 @@ System Requirements
 2. The Management Console requires full Javascript enablement of the Web browser
 
 For more details see the Installation guide or,
-https://docs.wso2.com/display/AM210/WSO2+API+Manager+Analytics
+https://docs.wso2.com/display/AM250/WSO2+API+Manager+Analytics
 
 WSO2 API Manager Analytics Server Binary Distribution Directory Structure
 ======================================================
