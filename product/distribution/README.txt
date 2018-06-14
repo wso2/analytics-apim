@@ -24,7 +24,7 @@ Features
     Collect API Manager request, response, execution time, fault, throttling data for real-time and batch analysis.
 
 *Integrated, real-time, and batch analytics
-    Analyses both persisted and realtime data using a single product.
+    Analyzes both persisted and realtime data using a single product.
     Executes batch programs faster than Hadoop MapReduce in memory using Apache Spark.
     Detects patterns (fraud detection) by correlating events from multiple data sources in real time using the high performing, open source WSO2 CEP engine powered by WSO2 Siddhi.
 
