@@ -668,7 +668,7 @@
         <carbon.deployment.version>4.7.19</carbon.deployment.version>
         <carbon.identity.version>5.11.256</carbon.identity.version>
         <carbon.commons.version>4.6.21</carbon.commons.version>
-        <carbon.data.version>4.4.63</carbon.data.version>
+        <carbon.data.version>4.4.67</carbon.data.version>
         <carbon.event-processing.version>2.1.24</carbon.event-processing.version>
         <carbon.dashboard.version>2.0.19</carbon.dashboard.version>
         <carbon.metrics.version>1.2.3</carbon.metrics.version>
