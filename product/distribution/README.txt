@@ -1,9 +1,9 @@
-WSO2 API Manager Analytics Server, v2.1.0
+WSO2 API Manager Analytics Server, v2.5.0
 =========================================
 
-Welcome to the WSO2 API Manager Analytics Server, v2.1.0 release.
+Welcome to the WSO2 API Manager Analytics Server, v2.5.0 release.
 
-The WSO2 AM Analytics version 2.1.0 contains real-time and batch analytics related to WSO2 API Manager 2.1.0 release. This server is a variation of WSO2 Data Analytics Server, which is a complete rewrite of the analytics solution based on the latest technologies.
+The WSO2 AM Analytics version 2.5.0 contains real-time and batch analytics related to WSO2 API Manager 2.5.0 release. This server is a variation of WSO2 Data Analytics Server, which is a complete rewrite of the analytics solution based on the latest technologies.
 
 WSO2 AM Analytics is powered by WSO2 Carbon, the SOA middleware component platform. 
 
@@ -24,7 +24,7 @@ Features
     Collect API Manager request, response, execution time, fault, throttling data for real-time and batch analysis.
 
 *Integrated, real-time, and batch analytics
-    Analyses both persisted and realtime data using a single product.
+    Analyzes both persisted and realtime data using a single product.
     Executes batch programs faster than Hadoop MapReduce in memory using Apache Spark.
     Detects patterns (fraud detection) by correlating events from multiple data sources in real time using the high performing, open source WSO2 CEP engine powered by WSO2 Siddhi.
 
@@ -74,7 +74,7 @@ System Requirements
 2. The Management Console requires full Javascript enablement of the Web browser
 
 For more details see the Installation guide or,
-https://docs.wso2.com/display/AM210/WSO2+API+Manager+Analytics
+https://docs.wso2.com/display/AM250/WSO2+API+Manager+Analytics
 
 WSO2 API Manager Analytics Server Binary Distribution Directory Structure
 ======================================================
@@ -173,7 +173,7 @@ WSO2 API Manager Analytics Server Binary Distribution Directory Structure
       This document contains information on installing WSO2 Application Server.
 
     - release-notes.html
-      Release information for WSO2 API Manager Analytics Server 2.1.0
+      Release information for WSO2 API Manager Analytics Server 2.5.0
 
 Secure sensitive information in carbon configuration files
 ==========================================================
