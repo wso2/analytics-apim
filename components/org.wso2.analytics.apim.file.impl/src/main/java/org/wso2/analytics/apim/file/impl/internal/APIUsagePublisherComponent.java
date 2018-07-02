@@ -23,19 +23,18 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.analytics.apim.file.impl.config.ConfigManager;
 import org.wso2.analytics.apim.file.impl.exception.FileBasedAnalyticsException;
-import org.wso2.analytics.apim.file.impl.task.UploadedUsagePublisherExecutorTask;
 import org.wso2.analytics.apim.file.impl.util.FileBasedAnalyticsConstants;
-import org.wso2.carbon.ntask.core.service.TaskService;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import org.wso2.carbon.event.stream.core.EventStreamService;
+import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * @scr.component name="micro.api.gateway.usage.component" immediate="true"
- * @scr.reference name="ntask.component"
- * interface="org.wso2.carbon.ntask.core.service.TaskService"
- * cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
+ * @scr.reference name="eventStreamService.component"
+ * interface="org.wso2.carbon.event.stream.core.EventStreamService"
+ * cardinality="1..1" policy="dynamic" bind="setEventStreamService" unbind="unsetEventStreamService"
+ * @scr.reference name="user.realm.service"
+ * interface="org.wso2.carbon.user.core.service.RealmService"
+ * cardinality="1..1" policy="dynamic" bind="setRealmService" unbind="unsetRealmService"
  */
 public class APIUsagePublisherComponent {
 
@@ -63,9 +62,6 @@ public class APIUsagePublisherComponent {
                                 + FileBasedAnalyticsConstants.DEFAULT_UPLOADED_USAGE_PUBLISH_FREQUENCY, e);
                     }
                 }
-                TimerTask usagePublisherTask = new UploadedUsagePublisherExecutorTask();
-                Timer timer = new Timer();
-                timer.schedule(usagePublisherTask, 5000, usagePublishFrequency);
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Micro GW API Usage data publishing is disabled.");
@@ -87,24 +83,46 @@ public class APIUsagePublisherComponent {
     }
 
     /**
-     * Set task service
+     * Set EventStream service
      *
-     * @param taskService task service
-     * @throws RegistryException
+     * @param eventStreamService task service
+     * @throws FileBasedAnalyticsException
      */
-    protected void setTaskService(TaskService taskService) throws RegistryException {
-        if (log.isDebugEnabled()) {
-            log.debug("TaskService is acquired");
-        }
-        ServiceReferenceHolder.getInstance().setTaskService(taskService);
+    protected void setEventStreamService(EventStreamService eventStreamService) throws FileBasedAnalyticsException {
+        //if (log.isDebugEnabled()) {
+            log.info("EventStreamService is acquired");
+        //}
+        ServiceReferenceHolder.getInstance().setEventStreamService(eventStreamService);
     }
 
     /**
-     * Remove task service
+     * Remove EventStream service
      *
-     * @param taskService task service
+     * @param eventStreamService task service
      */
-    protected void unsetTaskService(TaskService taskService) {
-        ServiceReferenceHolder.getInstance().setTaskService(null);
+    protected void unsetEventStreamService(EventStreamService eventStreamService) {
+        ServiceReferenceHolder.getInstance().setEventStreamService(null);
     }
+
+    /**
+     * Set the RealmService to the the bundle's {@link ServiceReferenceHolder}
+     *
+     * @param realmService Realm Service
+     */
+    protected void setRealmService(RealmService realmService) {
+        if (realmService != null && log.isDebugEnabled()) {
+            log.debug("Realm service initialized");
+        }
+        ServiceReferenceHolder.getInstance().setRealmService(realmService);
+    }
+
+    /**
+     * Unset the RealmService in the the bundle's {@link ServiceReferenceHolder}
+     *
+     * @param realmService Realm Service
+     */
+    protected void unsetRealmService(RealmService realmService) {
+        ServiceReferenceHolder.getInstance().setRealmService(null);
+    }
+
 }

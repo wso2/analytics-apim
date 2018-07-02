@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifacts>
+    <artifact name="org.wso2.carbon.analytics.apim.file.receivers" version="1.0.0" type="carbon/application">
+        <!-- receivers -->
+        <dependency artifact="Eventreceiver_fault_file" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_request_file" version="1.1.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_response_file" version="1.1.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_throttle_file" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="Eventreceiver_executionTime_file" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+    </artifact>
+</artifacts>

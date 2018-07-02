@@ -23,14 +23,6 @@ package org.wso2.analytics.apim.file.rest.api.exceptions;
  */
 public class AuthenticationException extends Exception {
 
-    public AuthenticationException(String s) {
-        super(s);
-    }
-
-    public AuthenticationException(Throwable throwable) {
-        super(throwable);
-    }
-
     public AuthenticationException(String s, Throwable throwable) {
         super(s, throwable);
     }

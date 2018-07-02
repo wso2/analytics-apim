@@ -33,42 +33,31 @@
         <dependency>
             <groupId>commons-io.wso2</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>${google.code.gson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.7.10</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.commons</groupId>
-            <artifactId>org.wso2.carbon.ntask.core</artifactId>
-            <version>4.5.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.analytics-common</groupId>
-            <artifactId>org.wso2.carbon.databridge.agent</artifactId>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple.wso2</groupId>
             <artifactId>json-simple</artifactId>
-            <version>1.1.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.event.stream.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.event.input.adapter.core</artifactId>
+            <version>5.0.12-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -101,16 +90,16 @@
                             org.wso2.analytics.apim.file.impl.*;version="${project.version}"
                         </Export-Package>
                         <Import-Package>
-                            org.wso2.carbon.ntask.common;version="${carbon.ntask.import.version.range}",
-                            org.wso2.carbon.ntask.core.*;version="${carbon.ntask.import.version.range}",
-                            org.wso2.carbon.registry.core.exceptions;version="${carbon.registry.imp.pkg.version}",
                             org.wso2.carbon.utils;version="${carbon.platform.package.import.version.range}",
                             org.apache.commons.*,
                             javax.*,
                             org.json.simple.*,
                             org.wso2.carbon.databridge.*,
-                            org.osgi.framework.*,
                             org.osgi.service.component.*,
+                            org.wso2.carbon.event.stream.core.*,
+                            org.wso2.carbon.user.core.*;version="${carbon.platform.package.import.version.range}",
+                            org.wso2.carbon.context.*,
+                            org.wso2.carbon.event.input.adapter.core.*,
                         </Import-Package>
                     </instructions>
                 </configuration>

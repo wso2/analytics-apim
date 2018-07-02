@@ -1,29 +1,24 @@
 /*
- * Copyright (c) 2018 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+* Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+package org.wso2.analytics.apim.file.adapter.util;
 
-package org.wso2.analytics.apim.file.impl.util;
+public final class FileEventAdapterConstants {
+    public static final String ADAPTER_TYPE_MGW_FILE = "mgwfile";
 
-/**
- * Constants Class
- */
-public class FileBasedAnalyticsConstants {
-
-    public static final String CONFIG_FILE_NAME = "on-premise-gateway.properties";
+    public static final String ADAPTER_IS_EVENTS_DUPLICATED_IN_CLUSTER_HINT = "events.duplicated.in.cluster.hint";
 
     public static final String API_USAGE_OUTPUT_DIRECTORY = "api-usage-data";
 
@@ -35,11 +30,15 @@ public class FileBasedAnalyticsConstants {
 
     public static final String UPLOADED_USAGE_PUBLISH_FREQUENCY_PROPERTY = "usage.publishing.frequency";
 
+    public static final String UPLOADED_USAGE_CLEANUP_FREQUENCY_PROPERTY = "usage.cleanup.frequency";
+
+    public static final String FILE_RETENTION_DAYS = "file.retention.days";
+
     public static final String WORKER_THREAD_COUNT_PROPERTY = "microGatewayUsagePublishers";
 
-    public static final int DEFAULT_UPLOADED_USAGE_PUBLISH_FREQUENCY = 300000;
+    public static final String DEFAULT_UPLOADED_USAGE_PUBLISH_FREQUENCY = "300000";
 
-    public static final String STREAM_DEFINITIONS_DIRECTORY = "stream-definitions";
+    public static final String DEFAULT_UPLOADED_USAGE_CLEANUP_FREQUENCY = "3600000";
 
     public static final String INSERT_UPLOADED_FILE_INFO_QUERY = "INSERT INTO AM_USAGE_UPLOADED_FILES "
             + "(TENANT_DOMAIN,FILE_NAME,FILE_TIMESTAMP,FILE_CONTENT) VALUES(?,?,?,?)";
@@ -80,4 +79,16 @@ public class FileBasedAnalyticsConstants {
     public static final String KEY_VALUE_SEPARATOR = "--KVS--";
 
     public static final String OBJECT_SEPARATOR = "--OBJ--";
+
+    public static final String REQUEST_STREAM_ID = "org.wso2.apimgt.statistics.request:1.1.0";
+
+    public static final String RESPONSE_STREAM_ID = "org.wso2.apimgt.statistics.response:1.1.0";
+
+    public static final String EXECUTION_STREAM_ID = "org.wso2.apimgt.statistics.execution.time:1.0.0";
+
+    public static final String FAULT_STREAM_ID = "org.wso2.apimgt.statistics.fault:1.0.0";
+
+    public static final String THROTTLE_STREAM_ID = "org.wso2.apimgt.statistics.throttle:1.1.0";
+
 }
+

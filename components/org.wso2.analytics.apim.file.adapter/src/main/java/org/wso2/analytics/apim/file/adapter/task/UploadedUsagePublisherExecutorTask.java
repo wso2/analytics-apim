@@ -16,19 +16,17 @@
  * under the License.
  */
 
-package org.wso2.analytics.apim.file.impl.task;
+package org.wso2.analytics.apim.file.adapter.task;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.analytics.apim.file.impl.FileDataPublisher;
-import org.wso2.analytics.apim.file.impl.UsagePublisherThreadFactory;
-import org.wso2.analytics.apim.file.impl.UsagePublisherUtils;
-import org.wso2.analytics.apim.file.impl.dao.FileBasedAnalyticsDAO;
-import org.wso2.analytics.apim.file.impl.dto.UploadedFileInfoDTO;
-import org.wso2.analytics.apim.file.impl.exception.FileBasedAnalyticsException;
-import org.wso2.analytics.apim.file.impl.util.FileBasedAnalyticsConstants;
-import org.wso2.carbon.event.input.adapter.core.InputEventAdapterListener;
+import org.wso2.analytics.apim.file.adapter.FileDataRetriever;
+import org.wso2.analytics.apim.file.adapter.FileDataRetrieverThreadFactory;
+import org.wso2.analytics.apim.file.adapter.dao.FIleEventAdapterDAO;
+import org.wso2.analytics.apim.file.adapter.dto.UploadedFileInfoDTO;
+import org.wso2.analytics.apim.file.adapter.exception.FileBasedAnalyticsException;
+import org.wso2.analytics.apim.file.adapter.util.FileEventAdapterConstants;
 
 import java.util.List;
 import java.util.TimerTask;
@@ -40,26 +38,21 @@ import java.util.concurrent.Executors;
  */
 public class UploadedUsagePublisherExecutorTask extends TimerTask {
 
-    private static final Log log = LogFactory.getLog(UploadedUsagePublisherExecutorTask.class);
+    private static final Log log = LogFactory.getLog(
+            UploadedUsagePublisherExecutorTask.class);
 
     private boolean initialized = false;
     private static int workerThreadCount = getWorkerThreadCount();
     private static Executor usagePublisherPool = Executors
-            .newFixedThreadPool(workerThreadCount, new UsagePublisherThreadFactory());
-    private InputEventAdapterListener inputEventAdapterListener;
+            .newFixedThreadPool(workerThreadCount, new FileDataRetrieverThreadFactory());
+    private String tenantDomain;
+    private int tenantId;
 
-    public UploadedUsagePublisherExecutorTask(InputEventAdapterListener inputEventAdapterListener) {
-        this.inputEventAdapterListener = inputEventAdapterListener;
-        //if (log.isDebugEnabled()) {
-            log.info("######################Initializing Uploaded Usage Publisher Executor Task.");
-        //}
-        try {
-            UsagePublisherUtils.getStreamDefinitions();
-            getWorkerThreadCount();
-            initialized = true;
-        } catch (FileBasedAnalyticsException e) {
-            log.error("Error while initializing the UploadedUsagePublisherExecutorTask.", e);
-        }
+    public UploadedUsagePublisherExecutorTask(String tenantDomain, int tenantId) {
+        log.debug("Initializing Uploaded Usage Publisher Executor Task");
+        this.tenantDomain = tenantDomain;
+        this.tenantId = tenantId;
+        this.initialized = true;
     }
 
     /**
@@ -69,17 +62,17 @@ public class UploadedUsagePublisherExecutorTask extends TimerTask {
      */
     private static int getWorkerThreadCount() {
 
-        int threadCount = FileBasedAnalyticsConstants.DEFAULT_WORKER_THREAD_COUNT;
+        int threadCount = FileEventAdapterConstants.DEFAULT_WORKER_THREAD_COUNT;
         String workerThreadCountSystemPropertyValue = System
-                .getProperty(FileBasedAnalyticsConstants.WORKER_THREAD_COUNT_PROPERTY);
-        if (StringUtils.isNotBlank(workerThreadCountSystemPropertyValue)) {
+                .getProperty(FileEventAdapterConstants.WORKER_THREAD_COUNT_PROPERTY);
+        if (StringUtils.isNotEmpty(workerThreadCountSystemPropertyValue)) {
             try {
                 threadCount = Integer.parseInt(workerThreadCountSystemPropertyValue);
             } catch (NumberFormatException e) {
                 log.error("Error while parsing the system property: "
-                        + FileBasedAnalyticsConstants.WORKER_THREAD_COUNT_PROPERTY
+                        + FileEventAdapterConstants.WORKER_THREAD_COUNT_PROPERTY
                         + " to integer. Using default usage publish worker thread count: "
-                        + FileBasedAnalyticsConstants.DEFAULT_WORKER_THREAD_COUNT, e);
+                        + FileEventAdapterConstants.DEFAULT_WORKER_THREAD_COUNT, e);
             }
         }
         return threadCount;
@@ -89,13 +82,13 @@ public class UploadedUsagePublisherExecutorTask extends TimerTask {
     public void run() {
         if (initialized) {
             try {
-                List<UploadedFileInfoDTO> uploadedFileList = FileBasedAnalyticsDAO
+                List<UploadedFileInfoDTO> uploadedFileList = FIleEventAdapterDAO
                         .getNextFilesToProcess(workerThreadCount);
                 for (UploadedFileInfoDTO dto : uploadedFileList) {
                     //if (log.isDebugEnabled()) {
-                        log.info("Scheduled publishing On-Premise API Usage data for : " + dto.getKey());
+                    log.info("Scheduled publishing On-Premise API Usage data for : " + dto.getKey());
                     //}
-                    Runnable worker = new FileDataPublisher(dto, inputEventAdapterListener, "carbon.super", -1234);
+                    Runnable worker = new FileDataRetriever(dto, tenantDomain, tenantId);
                     usagePublisherPool.execute(worker);
                 }
             } catch (FileBasedAnalyticsException e) {

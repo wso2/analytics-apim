@@ -26,12 +26,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.wso2.analytics.apim.file.impl.exception.FileBasedAnalyticsException;
 import org.wso2.analytics.apim.file.impl.util.FileBasedAnalyticsConstants;
-import org.wso2.carbon.databridge.agent.DataPublisher;
-import org.wso2.carbon.databridge.agent.exception.DataEndpointAgentConfigurationException;
-import org.wso2.carbon.databridge.agent.exception.DataEndpointAuthenticationException;
-import org.wso2.carbon.databridge.agent.exception.DataEndpointConfigurationException;
-import org.wso2.carbon.databridge.agent.exception.DataEndpointException;
-import org.wso2.carbon.databridge.commons.exception.TransportException;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.BufferedReader;
@@ -49,7 +43,6 @@ import java.util.Map;
  */
 public class UsagePublisherUtils {
 
-    private static volatile DataPublisher dataPublisher = null;
     private static volatile Map<String, JSONArray> streamDefinitions = null;
 
     public static Map<String, JSONArray> getStreamDefinitions() throws FileBasedAnalyticsException {
@@ -95,30 +88,6 @@ public class UsagePublisherUtils {
         }
         return streamDefinitions;
 
-    }
-
-    public static DataPublisher getDataPublisher() throws FileBasedAnalyticsException {
-        //If a DataPublisher had not been registered for the tenant.
-        if (dataPublisher == null) {
-            synchronized (FileDataPublisher.class) {
-                String serverUser = "admin";
-                String serverPassword = "admin";
-                String serverURL = "tcp://localhost:7612";
-                String serverAuthURL = "ssl://localhost:7712";
-                try {
-                    //Create new DataPublisher for the tenant.
-                    if (dataPublisher == null) {
-                        dataPublisher = new DataPublisher(null, serverURL, serverAuthURL, serverUser,
-                                serverPassword);
-                    }
-                } catch (DataEndpointConfigurationException | DataEndpointException
-                        | DataEndpointAgentConfigurationException | TransportException
-                        | DataEndpointAuthenticationException e) {
-                    throw new FileBasedAnalyticsException("Error occurred while creating data publisher.", e);
-                }
-            }
-        }
-        return dataPublisher;
     }
 
     public static Object createMetaData(String str) throws Exception {

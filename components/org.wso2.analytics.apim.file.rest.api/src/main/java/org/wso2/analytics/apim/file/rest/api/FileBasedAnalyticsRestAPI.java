@@ -21,14 +21,14 @@ package org.wso2.analytics.apim.file.rest.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.wso2.analytics.apim.file.impl.dao.FileBasedAnalyticsDAO;
+import org.wso2.analytics.apim.file.adapter.dao.FIleEventAdapterDAO;
+import org.wso2.analytics.apim.file.adapter.dto.UploadedFileInfoDTO;
+import org.wso2.analytics.apim.file.adapter.exception.FileBasedAnalyticsException;
 import org.wso2.analytics.apim.file.rest.api.exceptions.AuthenticationException;
 import org.wso2.analytics.apim.file.rest.api.util.AuthDTO;
 import org.wso2.analytics.apim.file.rest.api.util.AuthenticatorUtil;
 import org.wso2.analytics.apim.file.rest.api.util.UploadServiceConstants;
 import org.wso2.analytics.apim.file.rest.api.util.UploadServiceUtil;
-import org.wso2.analytics.apim.file.impl.dto.UploadedFileInfoDTO;
-import org.wso2.analytics.apim.file.impl.exception.FileBasedAnalyticsException;
 
 import java.io.InputStream;
 import java.util.List;
@@ -88,21 +88,21 @@ public class FileBasedAnalyticsRestAPI {
                 //Add the uploaded file info into the database
                 long timeStamp = Long.parseLong(uploadedFileName.split("\\.")[2]);
                 UploadedFileInfoDTO dto = new UploadedFileInfoDTO(tenantDomain, uploadedFileName, timeStamp);
-                FileBasedAnalyticsDAO.persistUploadedFile(dto, uploadedInputStream);
+                FIleEventAdapterDAO.persistUploadedFile(dto, uploadedInputStream);
                 log.info("Successfully uploaded the API Usage file [" + uploadedFileName + "] for Tenant : "
                         + tenantDomain + " By : " + tenantAwareUsername);
                 return Response.status(Response.Status.CREATED).entity("File uploaded successfully.\n").build();
             } else {
-                log.warn("Un Authorized access for API Usage Upload Service. " + authDTO.getMessage());
-                return UploadServiceUtil.getJsonResponse(authDTO.getResponseStatus(), authDTO.getMessage(),
-                        authDTO.getDescription());
+                log.warn("Unauthorized access for API Usage Upload Service. " + authDTO.getMessage());
+                return UploadServiceUtil
+                        .getJsonResponse(authDTO.getResponseStatus(), authDTO.getMessage(), authDTO.getDescription());
             }
         } catch (FileBasedAnalyticsException | AuthenticationException e) {
-            String msg = "Error occurred while uploading API Usage file : " + uploadedFileName
-                    + " for tenant : " + tenantDomain;
+            String msg = "Error occurred while uploading API Usage file : " + uploadedFileName + " for tenant : "
+                    + tenantDomain;
             log.error(msg, e);
-            return Response.serverError().entity("Error occurred while uploading usage file. "
-                    + e.getMessage()).build();
+            return Response.serverError().entity("Error occurred while uploading usage file. " + e.getMessage())
+                    .build();
         }
     }
 

@@ -18,7 +18,8 @@
 
 package org.wso2.analytics.apim.file.impl.internal;
 
-import org.wso2.carbon.ntask.core.service.TaskService;
+import org.wso2.carbon.event.stream.core.EventStreamService;
+import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * ServiceReferenceHolder
@@ -27,31 +28,43 @@ public class ServiceReferenceHolder {
 
     private static final ServiceReferenceHolder instance = new ServiceReferenceHolder();
 
-    private TaskService taskService;
+    private EventStreamService eventStreamService;
+    private RealmService realmService;
 
     private ServiceReferenceHolder() {
 
     }
 
+    public RealmService getRealmService() {
+        return realmService;
+    }
+
+
     public static ServiceReferenceHolder getInstance() {
         return instance;
     }
+
 
     /**
      * Get task service
      *
      * @return TaskService
      */
-    public TaskService getTaskService() {
-        return taskService;
+    public EventStreamService getCarbonEventStreamServiceService() {
+        return eventStreamService;
     }
 
     /**
      * Set task service
      *
-     * @param taskService task service
+     * @param eventStreamService task service
      */
-    public void setTaskService(TaskService taskService) {
-        this.taskService = taskService;
+    public void setEventStreamService(EventStreamService eventStreamService) {
+        this.eventStreamService = eventStreamService;
     }
+
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
+    }
+
 }
