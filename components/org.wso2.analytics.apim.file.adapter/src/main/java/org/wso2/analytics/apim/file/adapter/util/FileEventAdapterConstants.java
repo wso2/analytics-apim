@@ -34,7 +34,7 @@ public final class FileEventAdapterConstants {
 
     public static final String FILE_RETENTION_DAYS = "file.retention.days";
 
-    public static final String WORKER_THREAD_COUNT_PROPERTY = "microGatewayUsagePublishers";
+    public static final String WORKER_THREAD_COUNT_PROPERTY = "usage.publishing.thread.count";
 
     public static final String DEFAULT_UPLOADED_USAGE_PUBLISH_FREQUENCY = "300000";
 
