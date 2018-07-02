@@ -30,5 +30,3 @@ sonar-pom.xml
 *.em
 *.log*
 *.h2.db
-!/components/org.wso2.analytics.apim.microgateway.rest.api/src/main/java/org/wso2/carbon/apimgt/micro/gateway/rest/api/dao/FileBasedAnalyticsDAO.java
-!/components/org.wso2.analytics.apim.file.impl/src/main/java/org/wso2/analytics/file/impl/dto/UploadedFileInfoDTO.java
