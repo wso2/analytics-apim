@@ -5,7 +5,7 @@
     <parent>
         <artifactId>analytics-apim-components</artifactId>
         <groupId>org.wso2.analytics.apim</groupId>
-        <version>2.5.0-SNAPSHOT</version>
+        <version>2.5.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -99,7 +99,6 @@
                 javax.xml.namespace; version=0.0.0,
                 *;resolution:=optional,
             </Import-Package>
-            <DynamicImport-Package>*</DynamicImport-Package>
         </instructions>
     </configuration>
     </plugin>

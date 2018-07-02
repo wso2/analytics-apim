@@ -26,8 +26,6 @@ public final class FileEventAdapterConstants {
 
     public static final String API_USAGE_OUTPUT_FILE_NAME = "api-usage-data.dat";
 
-    public static final String IS_UPLOADED_USAGE_DATA_PUBLISH_ENABLED_PROPERTY = "usage.data.publishing.enabled";
-
     public static final String UPLOADED_USAGE_PUBLISH_FREQUENCY_PROPERTY = "usage.publishing.frequency";
 
     public static final String UPLOADED_USAGE_CLEANUP_FREQUENCY_PROPERTY = "usage.cleanup.frequency";
@@ -38,7 +36,7 @@ public final class FileEventAdapterConstants {
 
     public static final String DEFAULT_UPLOADED_USAGE_PUBLISH_FREQUENCY = "300000";
 
-    public static final String DEFAULT_UPLOADED_USAGE_CLEANUP_FREQUENCY = "3600000";
+    public static final String DEFAULT_UPLOADED_USAGE_CLEANUP_FREQUENCY = "1800000";
 
     public static final String INSERT_UPLOADED_FILE_INFO_QUERY = "INSERT INTO AM_USAGE_UPLOADED_FILES "
             + "(TENANT_DOMAIN,FILE_NAME,FILE_TIMESTAMP,FILE_CONTENT) VALUES(?,?,?,?)";

@@ -39,7 +39,7 @@ public class FileDataRetrieverUtil {
     private static volatile Map<String, JSONArray> streamDefinitions = null;
 
     private static String[] getStreamIdList() {
-        String[] streamIdList = new String[3];
+        String[] streamIdList = new String[5];
         streamIdList[0] = FileEventAdapterConstants.REQUEST_STREAM_ID;
         streamIdList[1] = FileEventAdapterConstants.RESPONSE_STREAM_ID;
         streamIdList[2] = FileEventAdapterConstants.EXECUTION_STREAM_ID;
