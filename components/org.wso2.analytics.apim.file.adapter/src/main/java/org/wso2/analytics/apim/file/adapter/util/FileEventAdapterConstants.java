@@ -88,7 +88,7 @@ public final class FileEventAdapterConstants {
 
     public static final String FAULT_STREAM_ID = "org.wso2.apimgt.statistics.fault:1.0.0";
 
-    public static final String THROTTLE_STREAM_ID = "org.wso2.apimgt.statistics.throttle:1.1.0";
+    public static final String THROTTLE_STREAM_ID = "org.wso2.apimgt.statistics.throttle:1.0.0";
 
 }
 

@@ -74,6 +74,7 @@ public class FileEventAdapter implements InputEventAdapter {
         String usagePublishFrequency = System
                 .getProperty(FileEventAdapterConstants.UPLOADED_USAGE_PUBLISH_FREQUENCY_PROPERTY);
         if(StringUtils.isEmpty(usagePublishFrequency)) {
+            log.debug("Default usage publishing frequency will be used");
             usagePublishFrequency = FileEventAdapterConstants.DEFAULT_UPLOADED_USAGE_PUBLISH_FREQUENCY;
         }
         timer.schedule(usagePublisherTask, 1000, Long.parseLong(usagePublishFrequency));

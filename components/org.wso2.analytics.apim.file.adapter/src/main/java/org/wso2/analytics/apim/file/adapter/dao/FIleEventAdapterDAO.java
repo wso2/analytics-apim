@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This class contains methods for persisting File Upload information
+ * This class contains methods DB access for FileEventAdapter
  */
 public class FIleEventAdapterDAO {
 

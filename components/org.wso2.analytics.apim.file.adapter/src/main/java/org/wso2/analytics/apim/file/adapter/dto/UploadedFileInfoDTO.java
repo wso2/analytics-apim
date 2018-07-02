@@ -19,7 +19,7 @@
 package org.wso2.analytics.apim.file.adapter.dto;
 
 /**
- * This class represents a Uploaded File
+ * This class represents an uploaded file
  */
 public class UploadedFileInfoDTO {
     private String tenantDomain;

@@ -37,7 +37,6 @@ public class FileDataRetrieverThreadFactory implements ThreadFactory {
         namePrefix = "UsagePublisher-pool-" + POOL_NUMBER.getAndIncrement() + "-thread-";
     }
 
-
     @Override
     public Thread newThread(Runnable r) {
         Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);

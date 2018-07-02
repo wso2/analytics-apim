@@ -26,7 +26,7 @@ import org.wso2.analytics.apim.file.adapter.dto.UploadedFileInfoDTO;
 import org.wso2.analytics.apim.file.adapter.exception.FileBasedAnalyticsException;
 import org.wso2.analytics.apim.file.adapter.internal.ds.FileEventAdapterServiceValueHolder;
 import org.wso2.analytics.apim.file.adapter.util.FileEventAdapterConstants;
-import org.wso2.analytics.apim.file.adapter.util.UsagePublisherUtils;
+import org.wso2.analytics.apim.file.adapter.util.FileDataRetrieverUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.databridge.commons.Event;
 
@@ -111,9 +111,9 @@ public class FileDataRetriever implements Runnable {
                                 try {
                                     adapter.getInputEventAdapterListener().onEvent(
                                             new Event(streamId, Long.parseLong(timeStamp),
-                                                    (Object[]) UsagePublisherUtils.createMetaData(metaData),
-                                                    (Object[]) UsagePublisherUtils.createMetaData(correlationData),
-                                                    UsagePublisherUtils.createPayload(streamId, payloadData)));
+                                                    (Object[]) FileDataRetrieverUtil.createMetaData(metaData),
+                                                    (Object[]) FileDataRetrieverUtil.createMetaData(correlationData),
+                                                    FileDataRetrieverUtil.createPayload(streamId, payloadData)));
                                 } catch (Exception e) {
                                     log.warn("Error occurred while publishing event : " + Arrays.toString(elements), e);
                                 }
