@@ -71,11 +71,11 @@ public final class FileEventAdapterServiceValueHolder {
         return null;
     }
 
-    public static void setEventStreamService(EventStreamService eventStreamService) {
-        FileEventAdapterServiceValueHolder.eventStreamService = eventStreamService;
-    }
-
     public static EventStreamService getEventStreamService() {
         return eventStreamService;
+    }
+
+    public static void setEventStreamService(EventStreamService eventStreamService) {
+        FileEventAdapterServiceValueHolder.eventStreamService = eventStreamService;
     }
 }
