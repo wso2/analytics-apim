@@ -30,5 +30,6 @@
     <modules>
         <module>org.wso2.analytics.apim.feature</module>
         <module>org.wso2.analytics.apim.spark.feature</module>
+        <module>org.wso2.analytics.apim.file.feature</module>
     </modules>
 </project>

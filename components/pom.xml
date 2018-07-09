@@ -28,7 +28,9 @@
     <artifactId>analytics-apim-components</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>/org.wso2.analytics.apim</module>
-        <module>/org.wso2.analytics.apim.spark</module>
+        <module>org.wso2.analytics.apim</module>
+        <module>org.wso2.analytics.apim.spark</module>
+        <module>org.wso2.analytics.apim.file.adapter</module>
+        <module>org.wso2.analytics.apim.file.rest.api</module>
     </modules>
 </project>
