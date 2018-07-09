@@ -93,9 +93,9 @@ public class FileEventAdapter implements InputEventAdapter {
 
     }
 
-    @Override
-    public boolean isEventDuplicatedInCluster() {
-        return Boolean.parseBoolean(eventAdapterConfiguration.getProperties().get(EventAdapterConstants.EVENTS_DUPLICATED_IN_CLUSTER));
+    @Override public boolean isEventDuplicatedInCluster() {
+        return Boolean.parseBoolean(
+                eventAdapterConfiguration.getProperties().get(EventAdapterConstants.EVENTS_DUPLICATED_IN_CLUSTER));
     }
 
     @Override
