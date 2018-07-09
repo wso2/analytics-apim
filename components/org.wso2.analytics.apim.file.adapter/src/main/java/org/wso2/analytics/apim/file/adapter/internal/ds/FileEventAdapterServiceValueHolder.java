@@ -22,7 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class FileEventAdapterServiceValueHolder {
 
-    private static ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, FileEventAdapter>>> inputEventAdapterListenerMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, FileEventAdapter>>>
+            inputEventAdapterListenerMap = new ConcurrentHashMap<>();
     private static EventStreamService eventStreamService;
 
     private FileEventAdapterServiceValueHolder() {
@@ -31,14 +32,16 @@ public final class FileEventAdapterServiceValueHolder {
     public static synchronized void registerAdapterService(String tenantDomain, String streamId,
             FileEventAdapter fileEventAdapter) {
 
-        ConcurrentHashMap<String, ConcurrentHashMap<String, FileEventAdapter>> tenantSpecificInputEventAdapterListenerMap = inputEventAdapterListenerMap
+        ConcurrentHashMap<String, ConcurrentHashMap<String, FileEventAdapter>>
+                tenantSpecificInputEventAdapterListenerMap = inputEventAdapterListenerMap
                 .get(tenantDomain);
 
         if (tenantSpecificInputEventAdapterListenerMap == null) {
             tenantSpecificInputEventAdapterListenerMap = new ConcurrentHashMap<>();
             inputEventAdapterListenerMap.put(tenantDomain, tenantSpecificInputEventAdapterListenerMap);
         }
-        ConcurrentHashMap<String, FileEventAdapter> streamSpecificInputEventAdapterListenerMap = tenantSpecificInputEventAdapterListenerMap
+        ConcurrentHashMap<String, FileEventAdapter> streamSpecificInputEventAdapterListenerMap =
+                tenantSpecificInputEventAdapterListenerMap
                 .get(streamId);
         if (streamSpecificInputEventAdapterListenerMap == null) {
             streamSpecificInputEventAdapterListenerMap = new ConcurrentHashMap<>();
@@ -50,11 +53,13 @@ public final class FileEventAdapterServiceValueHolder {
 
     public static void unregisterAdapterService(String tenantDomain, String streamId,
             FileEventAdapter fileEventAdapter) {
-        ConcurrentHashMap<String, ConcurrentHashMap<String, FileEventAdapter>> tenantSpecificInputEventAdapterListenerMap = inputEventAdapterListenerMap
+        ConcurrentHashMap<String, ConcurrentHashMap<String, FileEventAdapter>>
+                tenantSpecificInputEventAdapterListenerMap = inputEventAdapterListenerMap
                 .get(tenantDomain);
 
         if (tenantSpecificInputEventAdapterListenerMap != null) {
-            ConcurrentHashMap<String, FileEventAdapter> streamSpecificInputEventAdapterListenerMap = tenantSpecificInputEventAdapterListenerMap
+            ConcurrentHashMap<String, FileEventAdapter> streamSpecificInputEventAdapterListenerMap =
+                    tenantSpecificInputEventAdapterListenerMap
                     .get(streamId);
             if (streamSpecificInputEventAdapterListenerMap != null) {
                 streamSpecificInputEventAdapterListenerMap.remove(fileEventAdapter.getEventAdapterName());
@@ -63,7 +68,8 @@ public final class FileEventAdapterServiceValueHolder {
     }
 
     public static ConcurrentHashMap<String, FileEventAdapter> getAdapterService(String tenantDomain, String streamId) {
-        ConcurrentHashMap<String, ConcurrentHashMap<String, FileEventAdapter>> tenantSpecificInputEventAdapterListenerMap = inputEventAdapterListenerMap
+        ConcurrentHashMap<String, ConcurrentHashMap<String, FileEventAdapter>>
+                tenantSpecificInputEventAdapterListenerMap = inputEventAdapterListenerMap
                 .get(tenantDomain);
         if (tenantSpecificInputEventAdapterListenerMap != null) {
             return tenantSpecificInputEventAdapterListenerMap.get(streamId);
