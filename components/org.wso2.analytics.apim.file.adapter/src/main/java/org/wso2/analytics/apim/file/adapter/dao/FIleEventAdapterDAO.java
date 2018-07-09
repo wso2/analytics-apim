@@ -81,7 +81,8 @@ public class FIleEventAdapterDAO {
             } catch (SQLException e1) {
                 log.error("Error occurred while rolling back inserting uploaded information into db transaction,", e1);
             }
-            throw new FileBasedAnalyticsException("Error occurred while inserting uploaded information into database", e);
+            throw new FileBasedAnalyticsException("Error occurred while inserting uploaded information into database",
+                    e);
         } finally {
             try {
                 connection.setAutoCommit(autoCommitStatus);

@@ -44,7 +44,8 @@ public class FileEventAdapter implements InputEventAdapter {
     String streamId;
     int tenantId;
 
-    public FileEventAdapter(InputEventAdapterConfiguration eventAdapterConfiguration, Map<String, String> globalProperties) {
+    public FileEventAdapter(InputEventAdapterConfiguration eventAdapterConfiguration,
+            Map<String, String> globalProperties) {
         this.eventAdapterConfiguration = eventAdapterConfiguration;
         this.globalProperties = globalProperties;
     }
