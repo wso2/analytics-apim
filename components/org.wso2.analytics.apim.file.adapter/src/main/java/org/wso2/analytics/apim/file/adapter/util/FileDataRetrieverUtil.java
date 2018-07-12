@@ -48,7 +48,7 @@ public class FileDataRetrieverUtil {
         return streamIdList;
     }
 
-    public static Map<String, JSONArray> getStreamDefinitions() throws FileBasedAnalyticsException {
+    public static void initStreamDefinitions() throws FileBasedAnalyticsException {
         streamDefinitions = new HashMap<>();
         EventStreamService eventStreamService = FileEventAdapterServiceValueHolder.getEventStreamService();
         try {
@@ -65,8 +65,6 @@ public class FileDataRetrieverUtil {
         } catch (EventStreamConfigurationException | ParseException e) {
            throw new FileBasedAnalyticsException("error");
         }
-
-        return streamDefinitions;
     }
 
 
@@ -78,14 +76,7 @@ public class FileDataRetrieverUtil {
     }
 
     public static Object[] createPayload(String streamId, String str) throws Exception {
-        JSONArray jsonArray = null;
-        try {
-
-            jsonArray = getStreamDefinitions().get(streamId);
-        } catch (FileBasedAnalyticsException e) {
-            //Ignoring this hence usage Publishing will be disabled if there is an error in the initial startup
-        }
-
+        JSONArray jsonArray = streamDefinitions.get(streamId);
         if (jsonArray != null) {
             String[] strings = str.split(FileEventAdapterConstants.OBJECT_SEPARATOR);
             Object[] objects = new Object[strings.length];
