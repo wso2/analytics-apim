@@ -91,6 +91,9 @@ public class FileDataRetriever implements Runnable {
                     PrivilegedCarbonContext.startTenantFlow();
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
+
+                    FileDataRetrieverUtil.initStreamDefinitions();
+
                     while ((readLine = bufferedReader.readLine()) != null) {
                         String[] elements = readLine.split(FileEventAdapterConstants.EVENT_SEPARATOR);
                         //StreamID
