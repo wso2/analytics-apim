@@ -1,4 +1,4 @@
-@App:name('API_ACCESS_SUMMARY_DETAILED')
+@App:name('API_ACCESS_SUMMARY')
 @App:description('Recieve the request event from the APIM, do the aggregations and store in the database.')
 
 -- Streams
