@@ -1,7 +1,7 @@
-@App:name("API_FAULT_SUMMARY")
-@App:description("Defines aggregations for fault stream")
+@App:name("APIM_FAULT_SUMMARY")
+@App:description("Defines aggregations for Fault stream")
 
-@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0', 
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0', 
 	@map(type = 'wso2event'))
 define stream FaultStream(
     metaClientType string,
