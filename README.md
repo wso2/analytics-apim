@@ -1,7 +1,7 @@
 
 # WSO2 API Manager Analytics
 
-WSO2 API Analytics provides the capability to monitor API invocations and to summarize statistics in order to monetize API usage. WSO2 API Manager analytics is powered by the WSO2 Data Analytics Server (DAS).
+WSO2 API Analytics provides the capability to monitor API invocations and to summarize statistics in order to monetize API usage. WSO2 API Manager analytics is powered by the WSO2 Stream Processor (SP).
 
 # WSO2 API Manager Analytics can monitor the following:
 
