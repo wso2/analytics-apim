@@ -34,9 +34,9 @@
     <url>http://wso2.com/products/api-manager</url>
 
     <scm>
-        <url>https://github.com/wso2/product-sp.git</url>
-        <developerConnection>scm:git:https://github.com/wso2/product-sp.git</developerConnection>
-        <connection>scm:git:https://github.com/wso2/product-sp.git</connection>
+        <url>https://github.com/wso2/analytics-apim.git</url>
+        <developerConnection>scm:git:https://github.com/wso2/analytics-apim.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2/analytics-apim.git</connection>
         <tag>HEAD</tag>
     </scm>
 
