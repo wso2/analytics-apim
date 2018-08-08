@@ -24,7 +24,6 @@
         <version>2.6.0-m2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
 
     <artifactId>mgw-analytics-restapi</artifactId>
     <packaging>bundle</packaging>

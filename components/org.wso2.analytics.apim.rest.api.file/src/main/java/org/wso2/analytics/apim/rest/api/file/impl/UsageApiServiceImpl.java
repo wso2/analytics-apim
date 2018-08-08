@@ -43,8 +43,8 @@ public class UsageApiServiceImpl extends UsageApiService {
                 log.error(errorMsg);
                 return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
             }
-            String adminUserName = extractUsernameFromAuthHeader(authorization);
-            boolean isAdmin = isUserAdmin(adminUserName);
+            String userName = extractUsernameFromAuthHeader(authorization);
+            boolean isAdmin = isUserAdmin(userName);
             if (!isAdmin) {
                 String errorMessage = "Authenticated user does not have admin role.\n";
                 log.error(errorMessage);
@@ -74,11 +74,16 @@ public class UsageApiServiceImpl extends UsageApiService {
         }
     }
 
-    private boolean isUserAdmin(String adminUsername) {
+    /**
+     * This method will return a boolean on whether the user has admin role or not
+     * @param userName username of the user who invoked the API
+     * @return
+     */
+    private boolean isUserAdmin(String userName) {
         IdPClient idPClient = ServiceHolder.getInstance().getIdPClient();
         try {
             String adminRole = idPClient.getAdminRole().getDisplayName();
-            List<Role> userRoles = idPClient.getUserRoles(adminUsername);
+            List<Role> userRoles = idPClient.getUserRoles(userName);
             for (Role role : userRoles) {
                 if (adminRole.equals(role.getDisplayName())) {
                     return true;
@@ -92,6 +97,11 @@ public class UsageApiServiceImpl extends UsageApiService {
         }
     }
 
+    /**
+     * Extracts the username given the authorization token
+     * @param authHeader auth token with the "Basic" prefix
+     * @return
+     */
     private String extractUsernameFromAuthHeader(List<String> authHeader) {
         String encodedCredentials = authHeader.get(0).replaceFirst("Basic" + " ", "");
 
