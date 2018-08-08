@@ -1,0 +1,14 @@
+@App:name("WORKFLOW")
+@App:description("Description of the plan")
+
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.workflow:1.0.0', 
+	@map(type = 'wso2event'))
+define stream workflowStream(
+    workflowReference string,
+    workflowStatus string,
+    tenantDomain string,
+    workflowType string,
+    createdTime long,
+    updatedTime long
+);
+
