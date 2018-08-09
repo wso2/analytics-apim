@@ -987,11 +987,11 @@
                 <artifactId>org.wso2.carbon.analytics.msf4j.interceptor.common</artifactId>
                 <version>${carbon.analytics.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.wso2.extension.siddhi.io.mgwfile</groupId>
-                <artifactId>siddhi-io-mgwfile</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.wso2.extension.siddhi.io.mgwfile</groupId>-->
+                <!--<artifactId>siddhi-io-mgwfile</artifactId>-->
+                <!--<version>1.0.0-SNAPSHOT</version>-->
+            <!--</dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -1395,7 +1395,7 @@
     </properties>
 
     <modules>
-        <module>components</module>
+        <!--<module>components</module>-->
         <module>modules/distribution</module>
     </modules>
 </project>
