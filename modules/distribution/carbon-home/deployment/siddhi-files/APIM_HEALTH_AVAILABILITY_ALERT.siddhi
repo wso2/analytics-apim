@@ -100,7 +100,3 @@ select 'healthAvailabilityPerMin' as type , str:concat('API:', apiName,' ',apiVe
 having str:contains(ApimAlertStakeholderInfo.alertTypes, 'healthAvailabilityPerMin')
 insert into EmailAlertStream;
 
-
-
-
-

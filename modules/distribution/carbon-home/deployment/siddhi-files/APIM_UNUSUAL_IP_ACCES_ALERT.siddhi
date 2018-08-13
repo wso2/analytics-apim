@@ -153,6 +153,3 @@ select 'UnusualIPAccessAlert' as type , str:concat("A request from a ", ifThenEl
 having  str:contains(ASI.alertTypes, 'UnusualIPAccessAlert')
 insert into EmailAlertStream;
 
-    
-
-
