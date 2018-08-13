@@ -1,4 +1,4 @@
-@App:name("APIM_ThrottledOut_Summary")
+@App:name("APIM_THROTTLED_OUT_SUMMARY")
 @App:description("Defines aggregations for api throttled out stream")
 
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0', 
