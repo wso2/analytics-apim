@@ -101,19 +101,3 @@ str:concat(TL.message , " Using the ", TL.applicationName, " application owned b
 having  str:contains(ASI.alertTypes, 'FrequentTierHittingAlert')
 insert into EmailAlertStream;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
