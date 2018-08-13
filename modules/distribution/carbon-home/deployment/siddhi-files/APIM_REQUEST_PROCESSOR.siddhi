@@ -78,7 +78,7 @@ insert into Request;
 
 -- Join the request stream with in memory configuration tables to get threashold values.
 @info(name = 'creatorConfigurationInfoRetrievQuery')
-from Request as R join ApiCreatorAlertConfigurationInMemoryTable as C
+from Request as R left outer join ApiCreatorAlertConfigurationInMemoryTable as C
 on(R.apiName == C.apiName and R.apiVersion == C.apiVersion and R.apiCreatorTenantDomain == C.apiCreatorTenantDomain )
 select R.apiContext, R.apiName, R.apiVersion,  R.apiResourceTemplate, R.apiMethod, ifThenElse(R.apiCreatorTenantDomain == 'carbon.super', str:concat(R.apiCreator, "@carbon.super"), R.apiCreator) as apiCreator, R.apiCreatorTenantDomain, R.requestTimestamp, R.responseTime, R.backendTime, C.thresholdBackendTime, C.thresholdResponseTime,R.responseCode
 insert into RequestAlertInfoStream;

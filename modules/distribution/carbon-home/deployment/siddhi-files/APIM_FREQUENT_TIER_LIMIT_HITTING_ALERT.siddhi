@@ -1,0 +1,103 @@
+@App:name("APIM_FREQUENT_TIER_LIMIT_HITTING_ALERT")
+@App:description("Alerts when a user or application goes beyond the subscribed quota frequently")
+
+-- This stream definition is only to define the Aggregation. It does not consume the actual API request.
+define stream ThrottledOutStream(
+    meta_clientType string,
+    username string,
+    userTenantDomain string,
+    apiName string,
+    apiVersion string,
+    apiContext string,
+    apiCreator string,
+    apiCreatorTenantDomain string,
+    applicationId string,
+    applicationName string,
+    subscriber string,	
+    throttledOutReason string,
+    gatewayType string,
+    throttledOutTimestamp long
+);
+
+--This aggregation definition is only for retrieving data. No data is actually aggregated from this.
+@store(type='rdbms', datasource='APIM_ANALYTICS_DB') 
+define aggregation ApiThrottledOutAgg
+from ThrottledOutStream
+select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,applicationId,applicationName,subscriber,count() as throttledOutCount,throttledOutReason,gatewayType
+group by apiContext,applicationId,throttledOutReason
+aggregate by throttledOutTimestamp every seconds...year;
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);
+
+@PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAlertStakeholderInfo(userId string, alertTypes	string, emails	string, isSubscriber bool, isPublisher	bool, isAdmin	bool);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimTierLimitHittingAlert (subscriber string, apiCreator string, apiName string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, message string, severity int, alertTimestamp long);
+
+@sink(type="inMemory", topic="APIM_EMAIL_NOTIFICATION", @map(type='passThrough'))
+define stream EmailAlertStream (type string, message string, alertTimestamp	string, emails	string);
+
+define trigger DayTrigger at every 1 day;
+
+from DayTrigger 
+select currentTimeMillis() as currentTimestamp, (currentTimeMillis() - 24*60*60*1000) as endTimestamp
+insert into TriggerInfoStream;
+
+--Gets the total trhottled out data for a day
+@info(name='requestsPerMinCountingQuery') 
+from TriggerInfoStream as T join ApiThrottledOutAgg as TA
+within T.endTimestamp, T.currentTimestamp
+  per "days"
+select apiName, apiVersion, applicationId, applicationName,apiCreator, apiCreatorTenantDomain,username,userTenantDomain,subscriber,throttledOutCount,throttledOutReason
+group by applicationId, apiContext, apiCreator, apiCreatorTenantDomain  
+insert into ThrottledOutTriggerStream;
+
+--checks whether total throttled out count with the throttled out reson SUBSCRIPTION_LIMIT_EXCEEDED is higer than the specified value
+@info(name = 'TemporarySubscriberStream generating Query')
+from ThrottledOutTriggerStream[throttledOutReason == 'SUBSCRIPTION_LIMIT_EXCEEDED']
+select apiCreator, apiName, apiVersion, applicationId, applicationName,apiCreatorTenantDomain,userTenantDomain, subscriber, throttledOutCount as numHits
+group by apiCreator,apiName,apiVersion, applicationId
+having numHits > 10
+insert into TemporarySubscriberStream;
+
+--checks whether total throttled out count with the throttled out reson APPLICATION_LIMIT_EXCEEDED is higer than the specified value
+@info(name = 'TemporaryUserStream generating Query')
+from ThrottledOutTriggerStream[throttledOutReason == 'APPLICATION_LIMIT_EXCEEDED']
+select username, apiCreator, apiName, apiVersion, applicationId, applicationName, 
+apiCreatorTenantDomain,userTenantDomain, subscriber, throttledOutCount as numHits
+group by username, apiName,apiVersion, applicationId
+having numHits > 10
+insert into TemporaryUserStream;
+
+-- send to the alert stream specific to this scenario 
+@info(name = 'Query generates TierLimitHittingAlertStream from SuppressedTemporarySubscriberStream')
+from TemporarySubscriberStream
+select subscriber,ifThenElse(a.apiCreatorTenantDomain == 'carbon.super', str:concat(a.apiCreator, "@carbon.super"), a.apiCreator) as apiCreator, apiName, applicationId, applicationName, apiCreatorTenantDomain,userTenantDomain,str:concat('Application: ',applicationName,' frequently goes beyond the allocated quota when accessing API : ',apiName) as message, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into TierLimitHittingAlertStream;
+
+@info(name = 'Query generates TierLimitHittingAlertStream from SuppressedTemporaryUserStream')
+from TemporaryUserStream
+select subscriber,ifThenElse(a.apiCreatorTenantDomain == 'carbon.super', str:concat(a.apiCreator, "@carbon.super"), a.apiCreator) as apiCreator, apiName, applicationId, applicationName, apiCreatorTenantDomain, userTenantDomain, str:concat("User ", username, " frequently crosses the limit set when accessing ",apiName) as message, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into TierLimitHittingAlertStream;
+
+from TierLimitHittingAlertStream
+select "FrequentTierHittingAlert" as type, userTenantDomain as tenantDomain,message,severity,alertTimestamp
+insert into ApimAllAlert;
+
+@info(name='Query inserts data to ApimTierLimitHittingAlert table')
+from TierLimitHittingAlertStream
+select *
+insert into ApimTierLimitHittingAlert;
+
+@info(name='Email generation query') 
+from TierLimitHittingAlertStream#window.length(1) as TL join ApimAlertStakeholderInfo as ASI
+on ((TL.subscriber == ASI.userId and true == ASI.isSubscriber ) or true == ASI.isAdmin )
+select 'FrequentTierHittingAlert' as type ,
+ifThenElse(str:contains(TL.message, 'Application frequently goes beyond the allocated quota'),str:concat("The application ", TL.applicationName, " owned by ", TL.subscriber, " frequently goes beyond the allocated quota when accessing the ", TL.apiName," API."),
+str:concat(TL.message , " Using the ", TL.applicationName, " application owned by ",TL.subscriber, ".")) as message, time:dateFormat(TL.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp,ASI.emails
+having  str:contains(ASI.alertTypes, 'FrequentTierHittingAlert')
+insert into EmailAlertStream;
+
