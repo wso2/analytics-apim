@@ -6,12 +6,12 @@ import org.wso2.analytics.apim.rest.api.file.NotFoundException;
 import org.wso2.analytics.apim.rest.api.file.UsageApiService;
 import org.wso2.analytics.apim.rest.api.file.internal.ServiceHolder;
 import org.wso2.analytics.apim.rest.api.file.util.UploadServiceConstants;
-import org.wso2.analytics.apim.siddhi.io.mgwfile.dao.MGWFileSourceDAO;
-import org.wso2.analytics.apim.siddhi.io.mgwfile.dto.MGWFileInfoDTO;
-import org.wso2.analytics.apim.siddhi.io.mgwfile.exception.MGWFileSourceException;
 import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 import org.wso2.carbon.analytics.idp.client.core.exception.IdPClientException;
 import org.wso2.carbon.analytics.idp.client.core.models.Role;
+import org.wso2.extension.siddhi.io.mgwfile.dao.MGWFileSourceDAO;
+import org.wso2.extension.siddhi.io.mgwfile.dto.MGWFileInfoDTO;
+import org.wso2.extension.siddhi.io.mgwfile.exception.MGWFileSourceException;
 import org.wso2.msf4j.Request;
 import org.wso2.msf4j.formparam.FileInfo;
 

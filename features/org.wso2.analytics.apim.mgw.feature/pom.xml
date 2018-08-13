@@ -19,13 +19,62 @@
             <artifactId>org.wso2.analytics.apim.rest.api.file</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.h2database.wso2</groupId>
+            <artifactId>h2-database-engine</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
-            <artifactId>org.wso2.analytics.apim.siddhi.io.mgwfile</artifactId>
+            <artifactId>siddhi-io-mgwfile</artifactId>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>clean-mgw-analytics-h2-database</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <delete file="src/main/resources/wso2/worker/database/WSO2AM_MGW_ANALYTICS_DB.h2.db"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-mgw-analytics-database</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <path id="h2.classpath">
+                                    <path refid="maven.compile.classpath"/>
+                                </path>
+                                <echo message="########### Creating API Manager Database ##############"/>
+                                <sql driver="org.h2.Driver"
+                                     url="jdbc:h2:${basedir}/src/main/resources/wso2/worker/database/WSO2AM_MGW_ANALYTICS_DB;create=true"
+                                     userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
+                                    <classpath>
+                                        <path refid="h2.classpath"/>
+                                    </classpath>
+                                    <fileset
+                                            file="${basedir}/src/main/resources/sql/h2.sql"/>
+                                </sql>
+                                <echo message="##################### END ########################"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.wso2.carbon.maven</groupId>
                 <artifactId>carbon-feature-plugin</artifactId>
@@ -46,13 +95,17 @@
                                 </advice>
                                 <advice>
                                     <name>org.eclipse.equinox.p2.type.group</name>
-                                    <value>true</value>
+                                    <value>false</value>
                                 </advice>
                             </adviceFileContents>
                             <bundles>
                                 <bundle>
                                     <symbolicName>org.wso2.analytics.apim.rest.api.file</symbolicName>
-                                    <version>${project.version}</version>
+                                    <version>${apim.analytics.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>siddhi-io-mgwfile</symbolicName>
+                                    <version>${apim.analytics.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>

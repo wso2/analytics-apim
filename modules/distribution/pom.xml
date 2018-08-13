@@ -341,6 +341,13 @@
             <artifactId>siddhi-execution-filterwords</artifactId>
             <type>jar</type>
         </dependency>
+
+        <!-- APIM Analytics -->
+        <dependency>
+            <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.analytics.apim.mgw.feature</artifactId>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -957,6 +964,12 @@
                                     <id>org.wso2.sp.portal.message.tracer.solution.feature</id>
                                     <version>${sp.version}</version>
                                 </feature>
+
+                                <!-- APIM Analytics -->
+                                <feature>
+                                    <id>org.wso2.analytics.apim.mgw.feature</id>
+                                    <version>${project.version}</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -1192,6 +1205,11 @@
                                 <feature>
                                     <id>org.wso2.carbon.permissions.rest.api.feature</id>
                                     <version>${carbon.analytics.version}</version>
+                                </feature>
+
+                                <feature>
+                                    <id>org.wso2.analytics.apim.mgw.feature</id>
+                                    <version>${project.version}</version>
                                 </feature>
                             </features>
                         </configuration>

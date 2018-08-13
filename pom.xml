@@ -989,7 +989,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.siddhi.io.mgwfile</artifactId>
+                <artifactId>siddhi-io-mgwfile</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -1001,6 +1001,17 @@
                 <groupId>org.wso2.extension.siddhi.map.wso2event</groupId>
                 <artifactId>siddhi-map-wso2event</artifactId>
                 <version>${siddhi.map.wso2event.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.mgw.feature</artifactId>
+                <type>zip</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database.wso2</groupId>
+                <artifactId>h2-database-engine</artifactId>
+                <version>1.2.140.wso2v3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -1207,6 +1218,7 @@
 
     <properties>
 
+        <apim.analytics.version>2.6.0.m2-SNAPSHOT</apim.analytics.version>
         <carbon.analytics.version>2.0.392</carbon.analytics.version>
         <siddhi.version>4.1.57</siddhi.version>
 
@@ -1409,7 +1421,7 @@
     </properties>
 
     <modules>
-        <module>components/org.wso2.analytics.apim.siddhi.io.mgwfile</module>
+        <module>components/org.wso2.extension.siddhi.io.mgwfile</module>
         <module>components/org.wso2.analytics.apim.rest.api.file</module>
         <module>features/org.wso2.analytics.apim.mgw.feature</module>
         <module>modules/distribution</module>

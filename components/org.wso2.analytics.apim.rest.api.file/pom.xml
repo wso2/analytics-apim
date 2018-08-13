@@ -85,7 +85,7 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
-            <artifactId>org.wso2.analytics.apim.siddhi.io.mgwfile</artifactId>
+            <artifactId>siddhi-io-mgwfile</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -103,14 +103,15 @@
             org.slf4j.*;version="[1.7.1, 2.0.0)",
             javax.ws.rs.*; version="[2.0.0,3.0.0)",
             org.json.simple.*;
-            org.wso2.analytics.apim.siddhi.io.mgwfile.*,
+            org.wso2.extension.siddhi.io.mgwfile.*,
             *;resolution:=optional
         </import.package>
         <export.package>
-            org.wso2.analytics.apim.rest.api.file.*;
+            org.wso2.analytics.apim.rest.api.file.*; version="${project.version}"
         </export.package>
         <carbon.component>
             osgi.service; objectClass="org.wso2.msf4j.Microservice"; serviceCount="1"
         </carbon.component>
+        <bundle-version>2.6.0-m2-SNAPSHOT</bundle-version>
     </properties>
 </project>
