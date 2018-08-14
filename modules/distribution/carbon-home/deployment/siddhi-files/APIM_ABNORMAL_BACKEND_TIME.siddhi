@@ -1,4 +1,4 @@
-@App:name("APIM_ABNORMAL_RESPONSE_TIME")
+@App:name("APIM_ABNORMAL_BACKEND_TIME")
 @App:description("Identifies the API requests with abnormal backend time and add to AllAlertStream and AbnormalBackendTimeAlertStream")
 
 @source(type ='inMemory', topic = 'APIM_REQUEST_ALERT_INFO')
