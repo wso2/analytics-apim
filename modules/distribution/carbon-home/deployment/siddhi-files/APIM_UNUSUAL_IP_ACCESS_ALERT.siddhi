@@ -1,4 +1,4 @@
-@App:name("APIM_UNUSUAL_IP_ACCES_ALERT")
+@App:name("APIM_UNUSUAL_IP_ACCESS_ALERT")
 @App:description("Alerts if an access from a strange ip is detected")
 
 @source(type='inMemory' , topic='APIM_REQUEST')

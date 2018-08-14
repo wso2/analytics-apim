@@ -1,0 +1,2 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim.mgw_${feature.version}/wso2/worker/database/WSO2AM_MGW_ANALYTICS_DB.h2.db/,target:${installFolder}/../../wso2/worker/database/WSO2AM_MGW_ANALYTICS_DB.h2.db,overwrite:true);\

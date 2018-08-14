@@ -2,6 +2,7 @@
 @App:description('Receive the request stream and load the configuration tables to in memeory.')
 
 -- Streams
+@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.0.0', @map(type = 'wso2event'))
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.0.0', @map(type = 'wso2event'))
 define stream InComingRequestStream (meta_clientType string,
     applicationConsumerKey string, 
