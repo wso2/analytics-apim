@@ -84,7 +84,7 @@ select subscriber,ifThenElse(a.apiCreatorTenantDomain == 'carbon.super', str:con
 insert into TierLimitHittingAlertStream;
 
 from TierLimitHittingAlertStream
-select "FrequentTierHittingAlert" as type, userTenantDomain as tenantDomain,message,severity,alertTimestamp
+select "FrequentTierLimitHitting" as type, userTenantDomain as tenantDomain,message,severity,alertTimestamp
 insert into ApimAllAlert;
 
 @info(name='Query inserts data to ApimTierLimitHittingAlert table')
@@ -95,9 +95,8 @@ insert into ApimTierLimitHittingAlert;
 @info(name='Email generation query') 
 from TierLimitHittingAlertStream#window.length(1) as TL join ApimAlertStakeholderInfo as ASI
 on ((TL.subscriber == ASI.userId and true == ASI.isSubscriber ) or true == ASI.isAdmin )
-select 'FrequentTierHittingAlert' as type ,
+select 'FrequentTierLimitHitting' as type ,
 ifThenElse(str:contains(TL.message, 'Application frequently goes beyond the allocated quota'),str:concat("The application ", TL.applicationName, " owned by ", TL.subscriber, " frequently goes beyond the allocated quota when accessing the ", TL.apiName," API."),
 str:concat(TL.message , " Using the ", TL.applicationName, " application owned by ",TL.subscriber, ".")) as message, time:dateFormat(TL.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp,ASI.emails
-having  str:contains(ASI.alertTypes, 'FrequentTierHittingAlert')
+having  str:contains(ASI.alertTypes, 'FrequentTierLimitHitting')
 insert into EmailAlertStream;
-

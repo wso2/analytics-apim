@@ -103,7 +103,7 @@ insert into NewIPDetectedStream;
 
 @info(name = 'query generates AlertIPAccessAbnormalityStream')
 from NewIPDetectedStream
-select "UnusualIPAccessAlert" as type, "A request from a new IP detected." as message, 2 as severity, requestHostName as ip, applicationName, applicationOwner, username, userTenantDomain as tenantDomain, requestTimestamp,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccess" as type, "A request from a new IP detected." as message, 2 as severity, requestHostName as ip, applicationName, applicationOwner, username, userTenantDomain as tenantDomain, requestTimestamp,(time:timestampInMilliseconds()) as alertTimestamp
 insert into AlertIpAccessAbnormalityStream;
 
 @info(name = 'query inserts data to ApimIPAccessSummaryTable')
@@ -125,7 +125,7 @@ insert into AbnormalTimeBetweenAccessStream;
 
 @info(name = 'query generates AlertIpAccessAbnormalityStream')
 from AbnormalTimeBetweenAccessStream
-select "UnusualIPAccessAlert" as type, "A request from an old IP detected." as message, 2 as severity, requestHostName as ip, applicationName, applicationOwner, username,tenantDomain , requestTimestamp,(time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccess" as type, "A request from an old IP detected." as message, 2 as severity, requestHostName as ip, applicationName, applicationOwner, username,tenantDomain , requestTimestamp,(time:timestampInMilliseconds()) as alertTimestamp
 insert into AlertIpAccessAbnormalityStream;
 
 -- Send all the alerts to the Global Alert Stream
@@ -149,7 +149,6 @@ ApimIPAccessSummary.applicationConsumerKey == applicationConsumerKey and ApimIPA
 
 from AlertIpAccessAbnormalityStream#window.length(1) join ApimAlertStakeholderInfo as ASI
 on ((AlertIpAccessAbnormalityStream.applicationOwner == ASI.userId and true == ASI.isSubscriber ) or true == ASI.isAdmin )
-select 'UnusualIPAccessAlert' as type , str:concat("A request from a ", ifThenElse(str:contains(message, 'old'), 'old','new'), " IP (", ip, ") detected by user:" , AlertIpAccessAbnormalityStream.username,  " using application:", applicationName, " owned by ", applicationOwner, ".") as message, time:dateFormat(AlertIpAccessAbnormalityStream.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, ASI.emails
-having  str:contains(ASI.alertTypes, 'UnusualIPAccessAlert')
+select 'UnusualIPAccess' as type , str:concat("A request from a ", ifThenElse(str:contains(message, 'old'), 'old','new'), " IP (", ip, ") detected by user:" , AlertIpAccessAbnormalityStream.username,  " using application:", applicationName, " owned by ", applicationOwner, ".") as message, time:dateFormat(AlertIpAccessAbnormalityStream.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, ASI.emails
+having  str:contains(ASI.alertTypes, 'UnusualIPAccess')
 insert into EmailAlertStream;
-

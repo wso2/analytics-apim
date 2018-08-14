@@ -54,7 +54,7 @@ insert into ApiHealthMonitorAlertStreamTemp;
 
 @info(name='Query generating TempallApimAlertStream') 
 from ApiHealthMonitorAlertStreamTemp 
-select 'healthAvailabilityPerMin' as type, apiCreatorTenantDomain, str:concat('API:', apiName,' ',apiVersion, '-', message) as message , severity, (time:timestampInMilliseconds()) as alertTimestamp
+select 'ApiHealthMonitor' as type, apiCreatorTenantDomain, str:concat('API:', apiName,' ',apiVersion, '-', message) as message , severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into TempallApimAlertStream;
 
 --inserts data into ApimAllAlertSummary, if the same alert was not generated for a time defined in #window.time
@@ -96,7 +96,6 @@ on ApimApiAvailabilityInfo.apiName==apiName and ApimApiAvailabilityInfo.apiVersi
 @info(name='Query inserting data to Alert Stream')
 from ApiHealthMonitorAlertStreamTemp#window.length(1) join ApimAlertStakeholderInfo
 on ((ApiHealthMonitorAlertStreamTemp.apiCreator == ApimAlertStakeholderInfo.userId and true == ApimAlertStakeholderInfo.isPublisher ) or true == ApimAlertStakeholderInfo.isAdmin )
-select 'healthAvailabilityPerMin' as type , str:concat('API:', apiName,' ',apiVersion, '-', message) as message, time:dateFormat(ApiHealthMonitorAlertStreamTemp.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, ApimAlertStakeholderInfo.emails
-having str:contains(ApimAlertStakeholderInfo.alertTypes, 'healthAvailabilityPerMin')
+select 'ApiHealthMonitor' as type , str:concat('API:', apiName,' ',apiVersion, '-', message) as message, time:dateFormat(ApiHealthMonitorAlertStreamTemp.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, ApimAlertStakeholderInfo.emails
+having str:contains(ApimAlertStakeholderInfo.alertTypes, 'ApiHealthMonitor')
 insert into EmailAlertStream;
-
