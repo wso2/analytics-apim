@@ -91,6 +91,145 @@
                   "defaultValue": "30"
                }
             }
+         },
+         {
+            "uuid": "abnormal-response-time-alert",
+            "name": "Abnormal Response Time Alert",
+            "description": "Detects requests with response time greater than a configured threshold value and triggers an alert",
+            "type": "template",
+            "instanceCount": "one",
+            "script": "",
+            "templates": [
+               {
+                  "type": "siddhiApp",
+                  "content": "@App:name(\"APIM_ABNORMAL_RESPONSE_TIME\")\n@App:description(\"Identifies the API requests with abnormal response time and add to AllAlertStream and AbnormalResponseTimeAlertStream\")\n\n@source(type ='inMemory', topic = 'APIM_REQUEST_ALERT_INFO')\ndefine stream RequestAlertInfoStream (apiContext string,apiName string, apiVersion string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, requestTimestamp long, responseTime long, backendTime long, thresholdBackendTime long, thresholdResponseTime long,responseCode int );\n\ndefine stream AbnormalResponseTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, responseTime long, thresholdResponseTime long, message string, severity int,alertTimestamp long);\n\n@sink(type=\"inMemory\", topic=\"APIM_EMAIL_NOTIFICATION\", @map(type='passThrough'))\ndefine stream EmailAlertStream (type\tstring, message\tstring, alertTimestamp\tstring, emails\tstring);\n\n@PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAlertStakeholderInfo(userId string, alertTypes\tstring, emails\tstring, isSubscriber bool, isPublisher\tbool, isAdmin\tbool);\n\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);\n\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAbnormalResponseTimeAlert( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, \n    responseTime long,thresholdResponseTime long, message string, severity int, alertTimestamp long);\n\n@info(name = 'responseTimeExceedFilterQuery')\nfrom RequestAlertInfoStream[responseTime > thresholdResponseTime and thresholdResponseTime > 0]\nselect apiName, apiVersion, apiCreator, apiCreatorTenantDomain, apiResourceTemplate, apiMethod, responseTime, thresholdResponseTime , \n    'Abnormal response time detected.' as message, ${severityLevel} as severity, (time:timestampInMilliseconds()) as alertTimestamp\ninsert into AbnormalResponseTimeAlertStreamTemp;\n\n@info(name = 'repeatedAlertIgnoreQuery')\nfrom AbnormalResponseTimeAlertStreamTemp#window.length(1) as a left outer join AbnormalResponseTimeAlertStreamTemp#window.time(${suppressionPeriod} minute) as b\non (a.apiName == b.apiName and a.apiVersion== b.apiVersion and a.apiCreator== b.apiCreator and a.apiCreatorTenantDomain==b.apiCreatorTenantDomain and \n    a.apiResourceTemplate==b.apiResourceTemplate and a.apiMethod== b.apiMethod and a.message== b.message)\nselect a.apiName as apiName, a.apiVersion as apiVersion, a.apiCreator as apiCreator, a.apiCreatorTenantDomain as apiCreatorTenantDomain, a.apiResourceTemplate as apiResourceTemplate,\n    a.apiMethod as apiMethod, a.responseTime as responseTime, a.thresholdResponseTime as thresholdResponseTime, a.message as message, a.severity as severity, a.alertTimestamp as alertTimestamp\nhaving b.apiName  is null\ninsert into AbnormalResponseTimeAlertStream;\n\n@info(name = 'commonAlertDabaseInsertQuery')\nfrom AbnormalResponseTimeAlertStream\nselect 'AbnormalResponseTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal response time detected for http ',apiMethod,' method of resource template:',apiResourceTemplate,' in api:', apiName,' of tenant domain:',apiCreatorTenantDomain,', threshold value:',thresholdResponseTime, 'ms.') as message, severity, (time:timestampInMilliseconds()) as alertTimestamp\ninsert into ApimAllAlert;\n\n@info(name='dbInsertQuery') \nfrom AbnormalResponseTimeAlertStream\nselect *\ninsert into ApimAbnormalResponseTimeAlert;\n\n@info(name = 'customizeEmailMessageGenerateQuery')\nfrom AbnormalResponseTimeAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S\non ((A.apiCreator == S.userId and true == S.isPublisher ) or true == S.isAdmin )\nselect 'AbnormalResponseTime' as type , str:concat('Abnormal response time detected for http ',A.apiMethod,' method of resource template:',A.apiResourceTemplate,' in api:',A.apiName,' of tenant domain:',A.apiCreatorTenantDomain,', threshold value:',A.thresholdResponseTime, 'ms.') as message, time:dateFormat(A.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails\nhaving str:contains(S.alertTypes, 'AbnormalResponseTime')\ninsert into EmailAlertStream;\n"
+               }
+            ],
+            "properties": {
+               "severityLevel": {
+                  "fieldName": "Severity Level of Abnormal Response Time",
+                  "description": "Severity level of the abnormal response time alert:(1:severe,2:moderate,3:mild)",
+                  "defaultValue": "3",
+                  "options": [
+                     "1",
+                     "2",
+                     "3"
+                  ]
+               },
+               "suppressionPeriod": {
+                  "fieldName": "Alert Suppression Period in Minutes",
+                  "description": "Time period to wait before resending the same alert",
+                  "defaultValue": "10"
+               }
+            }
+         },
+         {
+            "uuid": "abnormal-backend-time-alert",
+            "name": "Abnormal Backend Time Alert",
+            "description": "Detects requests with backend time greater than a configured threshold value and triggers an alert",
+            "type": "template",
+            "instanceCount": "one",
+            "script": "",
+            "templates": [
+               {
+                  "type": "siddhiApp",
+                  "content": "@App:name(\"APIM_ABNORMAL_BACKEND_TIME\")\n@App:description(\"Identifies the API requests with abnormal backend time and add to AllAlertStream and AbnormalBackendTimeAlertStream\")\n\n@source(type ='inMemory', topic = 'APIM_REQUEST_ALERT_INFO')\ndefine stream RequestAlertInfoStream (apiContext string,apiName string, apiVersion string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, requestTimestamp long, responseTime long, backendTime long, thresholdBackendTime long, thresholdResponseTime long,responseCode int );\n\ndefine stream AbnormalBackendTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long, message string, severity int,alertTimestamp long);\n\n@sink(type=\"inMemory\", topic=\"APIM_EMAIL_NOTIFICATION\", @map(type='passThrough'))\ndefine stream EmailAlertStream (type\tstring, message\tstring, alertTimestamp\tstring, emails\tstring);\n\n@PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAlertStakeholderInfo(userId string, alertTypes\tstring, emails\tstring, isSubscriber bool, isPublisher\tbool, isAdmin\tbool);\n\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);\n\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAbnormalBackendTimeAlert (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long,\n    message string, severity int, alertTimestamp long);\n\n@info(name = 'backendTimeExceedFilterQuery')\nfrom RequestAlertInfoStream[backendTime > thresholdBackendTime and thresholdBackendTime > 0]\nselect apiName, apiVersion, apiCreator, apiCreatorTenantDomain, apiResourceTemplate, apiMethod, backendTime, thresholdBackendTime , \n    'Abnormal backend time detected.' as message, ${severityLevel} as severity, (time:timestampInMilliseconds()) as alertTimestamp\ninsert into AbnormalBackendTimeAlertStreamTemp;\n\n@info(name = 'repeatedAlertIgnoreQuery')\nfrom AbnormalBackendTimeAlertStreamTemp#window.length(1) as a left outer join AbnormalBackendTimeAlertStreamTemp#window.time(${suppressionPeriod} minute) as b\non (a.apiName == b.apiName and a.apiVersion== b.apiVersion and a.apiCreator== b.apiCreator and a.apiCreatorTenantDomain==b.apiCreatorTenantDomain and \n    a.apiResourceTemplate==b.apiResourceTemplate and a.apiMethod== b.apiMethod and a.message== b.message)\nselect a.apiName, a.apiVersion, a.apiCreator, a.apiCreatorTenantDomain, a.apiResourceTemplate, a.apiMethod, a.backendTime, a.thresholdBackendTime, a.message as message, a.severity, a.alertTimestamp\nhaving b.apiName  is null\ninsert into AbnormalBackendTimeAlertStream;\n\n@info(name = 'commonAlertDabaseInsertQuery')\nfrom AbnormalBackendTimeAlertStream\nselect 'AbnormalBackendTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal backend time detected for http ',apiMethod,' method of resource template:',apiResourceTemplate,' in api:', apiName,' of tenant domain:',apiCreatorTenantDomain,', threshold value:',thresholdBackendTime, 'ms.') as message, severity, (time:timestampInMilliseconds()) as alertTimestamp\ninsert into ApimAllAlert;\n\n@info(name='dbInsertQuery') \nfrom AbnormalBackendTimeAlertStream\nselect *\ninsert into ApimAbnormalBackendTimeAlert;\n\n@info(name='customizeEmailMessageGenerateQuery') \nfrom AbnormalBackendTimeAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S\non ((A.apiCreator == S.userId and true == S.isPublisher ) or true == S.isAdmin )\nselect 'AbnormalBackendTime' as type , str:concat('Abnormal backend time detected for http ', A.apiMethod,' method of resource template:', A.apiResourceTemplate,' in api:',A.apiName,' of tenant domain:',A.apiCreatorTenantDomain,', threshold value:',A.thresholdBackendTime, 'ms.') as message, time:dateFormat(A.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails\nhaving  str:contains(S.alertTypes, 'AbnormalBackendTime')\ninsert into EmailAlertStream;\n"
+               }
+            ],
+            "properties": {
+               "severityLevel": {
+                  "fieldName": "Severity Level of Abnormal Backend Time",
+                  "description": "Severity level of the abnormal backend time alert:(1:severe,2:moderate,3:mild)",
+                  "defaultValue": "3",
+                  "options": [
+                     "1",
+                     "2",
+                     "3"
+                  ]
+               },
+               "suppressionPeriod": {
+                  "fieldName": "Alert Suppression Period in Minutes",
+                  "description": "Time period to wait before resending the same alert",
+                  "defaultValue": "10"
+               }
+            }
+         },
+         {
+            "uuid": "abnormal-request-count-alert",
+            "name": "Abnormal Request Count Alert",
+            "description": "Triggers an alert if the number of requests per minute for an application is greater than a configured threshold",
+            "type": "template",
+            "instanceCount": "one",
+            "script": "",
+            "templates": [
+               {
+                  "type": "siddhiApp",
+                  "content": "@App:name(\"APIM_ABNORMAL_REQUEST_COUNT\")\n@App:description(\"Identifies the API requests with abnormal request count per minute and add to AllAlertStream and AbnormalRequestCountAlertStream\")\n\ndefine trigger MinTriggerEventStream at every 1 min;\ndefine stream MinTriggerEventStream (triggered_time long);\n\n-- This stream definition is only to define the Aggregation. It does not consume the actual API request.\ndefine stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, gatewayType string, label string);\n\n-- Table definitions\n@sink(type=\"inMemory\", topic=\"APIM_EMAIL_NOTIFICATION\", @map(type='passThrough'))\ndefine stream EmailAlertStream (type\tstring, message\tstring, alertTimestamp\tstring, emails\tstring);\n\n@PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAlertStakeholderInfo(userId string, alertTypes\tstring, emails\tstring, isSubscriber bool, isPublisher\tbool, isAdmin\tbool);\n\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\n@PrimaryKey('applicationId','apiName', 'apiVersion')\ndefine table ApiSubscriberAlertConfiguration (applicationId string,apiName string, apiVersion string, thresholdRequestCountPerMin int);\n\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAbnormalRequestsPerMinAlert(applicationName\tstring, applicationOwner string, tenantDomain string, apiName string,apiVersion string,requestCountPerMin long,   thresholdRequestCountPerMin\tint, message string,severity int, alertTimestamp long);\n\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);\n\n-- This aggregation definition is only for retrieving data. No data is actually aggregated from this.\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine aggregation ApiUserPerAppAgg\nfrom Request \nselect apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain, count(apiName) as totalRequestCount, gatewayType, label \ngroup by apiContext,apiHostname, applicationId, username, userTenantDomain\naggregate by requestTimestamp every seconds...years;\n\n-- Generate a event every one minute. The time period within which the abnormal request count should be considered is substracted from the current timestamp.\nfrom MinTriggerEventStream \nselect currentTimeMillis() as currentTimestamp, (currentTimeMillis() - 5*60*1000) as endTimestamp\ninsert into TriggerInfoStream;\n\n@info(name='requestsPerMinCountingQuery') \nfrom TriggerInfoStream as T join ApiUserPerAppAgg as A\nwithin T.endTimestamp, T.currentTimestamp\n  per \"minutes\"\nselect apiName, apiVersion, applicationId, applicationName, applicationOwner, userTenantDomain as tenantDomain, totalRequestCount as requestCountPerMin, gatewayType, label \ngroup by applicationId, apiContext, apiCreator, apiCreatorTenantDomain  \ninsert into RequestsPerMinStream;\n\n-- Filtering abnormal requests comparing with the in memory configuration table\n@info(name = 'configurationInfoRetrieveQuery')\nfrom RequestsPerMinStream as R join ApiSubscriberAlertConfiguration as T\non ( R.applicationId == T.applicationId and R.apiName == T.apiName and  R.apiVersion == T.apiVersion)\nselect R.applicationName, R.applicationOwner, R.tenantDomain, R.apiName, R.apiVersion, R.requestCountPerMin, T.thresholdRequestCountPerMin\ninsert into RequestCountInfoStream;\n\n@info(name = 'requestCountExceedFilterQuery')\nfrom RequestCountInfoStream[requestCountPerMin > thresholdRequestCountPerMin and thresholdRequestCountPerMin > 0]\nselect applicationName, applicationOwner,tenantDomain, apiName, apiVersion, requestCountPerMin, thresholdRequestCountPerMin,\n    'Abnormal request count detected during last minute.' as message , ${severityLevel} as severity, (time:timestampInMilliseconds()) as alertTimestamp\ninsert into AbnormalRequestsPerMinAlertStreamTemp;\n\n@info(name = 'repeatedAlertIgnoreQuery')\nfrom AbnormalRequestsPerMinAlertStreamTemp#window.length(1) as a left outer join AbnormalRequestsPerMinAlertStreamTemp#window.time(${suppressionPeriod} minute) as b\non (a.applicationName== b.applicationName and a.applicationOwner== b.applicationOwner and a.tenantDomain == b.tenantDomain and \n    a.apiName == b.apiName and a.apiVersion == b.apiVersion and a.message == b.message)\nselect  a.applicationName, ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.applicationOwner, \"@carbon.super\"), a.applicationOwner) as applicationOwner, \n    a.tenantDomain, a.apiName, a.apiVersion, a.requestCountPerMin, a.thresholdRequestCountPerMin, a.message, a.severity, a.alertTimestamp\nhaving b.apiName is null\ninsert into AbnormalRequestsPerMinAlertStream ;\n\n@info(name = 'commonAlertdatabaseInsertQuery')\nfrom AbnormalRequestsPerMinAlertStream\nselect 'AbnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count detected during last minute using application ', applicationName,' owned by ', applicationOwner,' for api :', apiName,', abnormal requst count:', requestCountPerMin, \".\") as message, severity, (time:timestampInMilliseconds()) as alertTimestamp\ninsert into ApimAllAlert;\n\n@info(name='dbInsertQuery') \nfrom AbnormalRequestsPerMinAlertStream\nselect *\ninsert into ApimAbnormalRequestsPerMinAlert;\n\n@info(name = 'query1')\nfrom AbnormalRequestsPerMinAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S\non ((A.applicationOwner == S.userId and true == S.isSubscriber ) or true == S.isAdmin )\nselect 'AbnormalRequestsPerMin' as type , str:concat('Abnormal request count detected during last minute using application ', A.applicationName,' owned by ', A.applicationOwner,' for api :', A.apiName,', abnormal request count:', A.requestCountPerMin, \".\") as message, time:dateFormat(A.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails\nhaving str:contains(S.alertTypes, 'AbnormalRequestsPerMin')\ninsert into EmailAlertStream;\n"
+               }
+            ],
+            "properties": {
+               "severityLevel": {
+                  "fieldName": "Severity Level of Abnormal Request Count",
+                  "description": "Severity level of abnormal request count per minute alert:(1:severe,2:moderate,3:mild)",
+                  "defaultValue": "2",
+                  "options": [
+                     "1",
+                     "2",
+                     "3"
+                  ]
+               },
+               "suppressionPeriod": {
+                  "fieldName": "Alert Suppression Period in Minutes",
+                  "description": "Time period to wait before resending the same alert",
+                  "defaultValue": "10"
+               }
+            }
+         },
+         {
+            "uuid": "abnormal-resource-access-pattern-alert",
+            "name": "Abnormal Resource Access Pattern Alert",
+            "description": "Triggers an alert if there is a change in the resource access pattern of a for a particular application",
+            "type": "template",
+            "instanceCount": "one",
+            "script": "",
+            "templates": [
+               {
+                  "type": "siddhiApp",
+                  "content": "@App:name(\"APIM_ABNORMAL_REQUEST_PATTERN\")\n\n@App:description(\"Identifies the API requests wchich are outside the normal access pattern and add to AllAlertStream and AbormalRequestPatternStream\")\n\n@source(type='inMemory' , topic='APIM_REQUEST')\ndefine stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, gatewayType string, label string);\n    \n@sink(type=\"inMemory\", topic=\"APIM_EMAIL_NOTIFICATION\", @map(type='passThrough'))\ndefine stream EmailAlertStream (type\tstring, message\tstring, alertTimestamp\tstring, emails\tstring);\n\n@PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAlertStakeholderInfo(userId string, alertTypes\tstring, emails\tstring, isSubscriber bool, isPublisher\tbool, isAdmin\tbool);\n\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);\n\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimRequestPatternChangedAlert (username string, applicationName string, applicationOwner string, tenantDomain string, message string, severity int, alertTimestamp long);\n\n@info(name='stateStreamGenerateQuery') \nfrom Request\nselect  userTenantDomain as tenantDomain, username, str:concat(username,'@',applicationId) as appSpecificUsername,  applicationConsumerKey, applicationName, applicationOwner, str:concat(apiMethod,' ',apiContext,' ',apiResourceTemplate) as state,time:dateFormat(requestTimestamp, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp\ninsert into StateStream;\n\n@info(name='markovChaniGenerateQuery') \nfrom StateStream#markov:markovChain(appSpecificUsername, state, ${durationToKeep} min, ${probabilityThreshold}, ${requestCount}, true)\nselect lastState as startState, transitionProbability, notify, state as endState, tenantDomain, username, applicationConsumerKey, applicationName, applicationOwner, requestTimestamp\ninsert into TransitionProbabilityStream;\n\n@info(name = 'abnormalPatternFilterQuery')\nfrom TransitionProbabilityStream [ notify ]\nselect username, requestTimestamp,  str:concat(startState,' to ',endState) as transition, transitionProbability, applicationConsumerKey, applicationName, applicationOwner, tenantDomain\ninsert into IntermediateFraudStream;\n\n@info(name = 'detailedAlertGenerateQuery')\nfrom IntermediateFraudStream\nselect username, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' ,' Suspicious API transition is: ',transition) as message , transition, (time:timestampInMilliseconds()) as alertTimestamp\ninsert into RequestPatternChangedStreamTemp;\n\n@info(name = 'repeatedAlertIgnoreQuery')\nfrom RequestPatternChangedStreamTemp#window.length(1) as a left outer join RequestPatternChangedStreamTemp#window.time(${suppressionPeriod} minute) as b\non ( a.username == b.username and a.applicationName == b.applicationName and a.applicationOwner == b.applicationOwner and a.tenantDomain == b.tenantDomain and a.message == b.message)\nselect a.username, a.applicationName, a.applicationOwner, a.tenantDomain, a.message, a.transition, a.alertTimestamp\nhaving b.username  is null\ninsert into RequestPatternChangedAlertStream;\n\n@info(name = 'commonAlertDabaseInsertQuery')\nfrom RequestPatternChangedAlertStream\nselect 'AbnormalRequestPattern' as type, tenantDomain, str:concat('Abnormal request pattern detected by user :',username,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as message, ${severityLevel} as severity, (time:timestampInMilliseconds()) as alertTimestamp\ninsert into ApimAllAlert;\n\n@info(name='dbInsertQuery') \nfrom RequestPatternChangedAlertStream\nselect username, applicationName, applicationOwner, tenantDomain, message, ${severityLevel} as severity, alertTimestamp\ninsert into ApimRequestPatternChangedAlert;\n\n@info(name = 'customizeEmailMessageGenerateQuery')\nfrom RequestPatternChangedAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S\non ((A.applicationOwner == S.userId and true == S.isSubscriber ) or true == S.isAdmin )\nselect 'AbnormalRequestPattern' as type , str:concat(A.message,  ' by user :',A.username,' using application : ',A.applicationName, ' owned by: ',A.applicationOwner, '.') as message, time:dateFormat(A.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails\nhaving str:contains(S.alertTypes, 'AbnormalRequestPattern')\ninsert into EmailAlertStream;\n"
+               }
+            ],
+            "properties": {
+               "durationToKeep": {
+                  "fieldName": "Duration to keep an event in minutes",
+                  "description": "The maximum time duration to be considered for a continuous state change of a particular  user",
+                  "defaultValue": "60"
+               },
+               "probabilityThreshold": {
+                  "fieldName": "The alert threshold probability",
+                  "description": "Alert is triggered if the probability is below this value. (0 < threshold < 1)",
+                  "defaultValue": "0.2"
+               },
+               "requestCount": {
+                  "fieldName": "Number of requests to train the model",
+                  "description": "This number of requests is considered to train the Markov Matrix before generating alerts",
+                  "defaultValue": "500"
+               },
+               "suppressionPeriod": {
+                  "fieldName": "Alert Suppression Period in Minutes",
+                  "description": "Time period to wait before resending the same alert",
+                  "defaultValue": "10"
+               },
+               "severityLevel": {
+                  "fieldName": "Severity Level of Abnormal Response Time",
+                  "description": "Severity level of the abnormal response time alert:(1:severe,2:moderate,3:mild)",
+                  "defaultValue": "1",
+                  "options": [
+                     "1",
+                     "2",
+                     "3"
+                  ]
+               }
+            }
          }
       ]
    }
