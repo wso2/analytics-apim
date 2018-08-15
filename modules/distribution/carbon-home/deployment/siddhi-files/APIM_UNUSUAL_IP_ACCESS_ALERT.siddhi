@@ -97,7 +97,7 @@ on ApimIPAccessAlertCount.username == username and ApimIPAccessAlertCount.applic
     Note: ip will be null if its a new ip from the user
 */ 
 @info(name = 'query generates NewIPDetectedStream')
-from ExistingUserStream[ip is null and requestCount > 10]
+from ExistingUserStream[ip is null and requestCount > 100]
 select *
 insert into NewIPDetectedStream;
 
@@ -114,7 +114,7 @@ on ApimIPAccessSummary.applicationConsumerKey==applicationConsumerKey and ApimIP
 
 -- Check if the request for the IP is received after the threshold time gap
 @info(name = 'query generates CheckAbnormalTimeBetweenAccessStream ')
-from ExistingUserStream[(not (ip is null)) and requestCount > 10]
+from ExistingUserStream[(not (ip is null)) and requestCount > 100]
 select requestHostName, applicationConsumerKey, applicationName, applicationOwner, (requestTimestamp - lastAccessedDate) as timeBetweenAccess, requestTimestamp, username, userTenantDomain as tenantDomain, lastAccessedDate
 insert into CheckAbnormalTimeBetweenAccessStream;
 
