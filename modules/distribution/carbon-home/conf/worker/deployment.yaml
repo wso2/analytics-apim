@@ -444,18 +444,6 @@ cluster.config:
     heartbeatMaxRetry: 2
     eventPollingInterval: 1000
 
- # Extension configuration
-siddhi:
-  extensions:
-   - extension:
-       name: email
-       namespace: sink
-       properties:
-         username: testing@gmail.com
-         address: testing@gmail.com
-         password: testing@123
-
-
   # Sample of deployment.config for Two node HA
 #deployment.config:
 #  type: ha
