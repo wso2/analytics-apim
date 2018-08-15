@@ -24,7 +24,7 @@ select  userTenantDomain as tenantDomain, username, str:concat(username,'@',appl
 insert into StateStream;
 
 @info(name='markovChaniGenerateQuery') 
-from StateStream#markov:markovChain(appSpecificUsername, state, 60 min, 0.2, 1, true)
+from StateStream#markov:markovChain(appSpecificUsername, state, 60 min, 0.2, 500, true)
 select lastState as startState, transitionProbability, notify, state as endState, tenantDomain, username, applicationConsumerKey, applicationName, applicationOwner, requestTimestamp
 insert into TransitionProbabilityStream;
 
