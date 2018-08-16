@@ -23,7 +23,7 @@ aggregate by requestTimestamp every seconds...years;
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 define aggregation ApiResourcePathPerAppAgg
 from Request
-select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationName, apiResourceTemplate, apiMethod, count() as totalRequestCount, gatewayType, label
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, apiResourceTemplate, apiMethod, count() as totalRequestCount, gatewayType, label
 group by apiContext, apiHostname, applicationId, apiResourceTemplate, apiMethod
 aggregate by requestTimestamp every seconds...years;
 	
