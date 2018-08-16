@@ -1,0 +1,29 @@
+{
+    "name": "APIM Api Creator Alert Configuration",
+    "id": "APIMApiCreatorAlertConfiguration",
+    "thumbnailURL": "",
+    "configs": {
+    	"pubsub": {
+      		"types": ["publisher"]
+    	},
+      
+    
+    "providerConfig" : {
+        "configs": {
+            "type": "SiddhiStoreDataProvider",
+            "config": {
+                "siddhiApp": "@App:name('AlertConf') @primaryKey('apiName','apiVersion','apiCreator','apiCreatorTenantDomain') @store(type=\"rdbms\" , datasource=\"APIM_ANALYTICS_DB\") define table ApiCreatorAlertConfiguration(apiName string,apiVersion string,apiCreator string,apiCreatorTenantDomain string,thresholdResponseTime int,thresholdBackendTime int);",
+                "queryData": {
+                    "query": "from ApiCreatorAlertConfiguration select apiName,apiVersion,apiCreator,apiCreatorTenantDomain,thresholdResponseTime,thresholdBackendTime;",
+                    "queryInsert" : "select '{{apiName}}' as apiName, '{{apiVersion}}' as apiVersion, '{{apiCreator}}' as apiCreator, '{{apiCreatorTenantDomain}}' as apiCreatorTenantDomain,{{tResponseTime}} as thresholdResponseTime,{{tBackendTime}} as thresholdBackendTime update or insert into ApiCreatorAlertConfiguration set ApiCreatorAlertConfiguration.thresholdResponseTime = thresholdResponseTime , ApiCreatorAlertConfiguration.thresholdBackendTime = thresholdBackendTime on ApiCreatorAlertConfiguration.apiName == apiName and ApiCreatorAlertConfiguration.apiVersion == apiVersion",
+                    "queryDelete" : "delete ApiCreatorAlertConfiguration on ApiCreatorAlertConfiguration.apiName == '{{apiName}}' and ApiCreatorAlertConfiguration.apiVersion == '{{apiVersion}}'"
+                },
+                "publishingInterval": 60
+            }
+        }   
+      
+      }
+     
+	}
+}
+
