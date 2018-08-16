@@ -152,6 +152,7 @@
             <fileMode>644</fileMode>
             <excludes>
                 <exclude>empty.txt</exclude>
+                <exclude>APIM_ALERT_EMAIL_NOTIFICATION.siddhi</exclude>
             </excludes>
         </fileSet>
         <fileSet>
