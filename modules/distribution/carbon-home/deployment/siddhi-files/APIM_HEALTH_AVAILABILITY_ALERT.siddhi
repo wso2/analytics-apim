@@ -59,14 +59,14 @@ insert into TempallApimAlertStream;
 
 --inserts data into ApimAllAlertSummary, if the same alert was not generated for a time defined in #window.time
 @info(name='Query generates ApimAllAlertSummary') 
-from TempallApimAlertStream#window.length(1) as TA left outer join ApimAllAlertSummary#window.time(30 minutes) as AAS
+from TempallApimAlertStream#window.length(1) as TA left outer join ApimAllAlertSummary#window.time(10 minutes) as AAS
 on TA.message == AAS.message
 select TA.type,TA.apiCreatorTenantDomain as tenantDomain,TA.message,TA.severity,TA.alertTimestamp
 having AAS.message is null
 insert into ApimAllAlertSummary;
 
 @info(name='Query inserts data to ApimApiHealthMonitorAler') 
- from ApiHealthMonitorAlertStreamTemp#window.length(1) as AH left outer join ApimApiHealthMonitorAlert#window.time(30 minutes) as AM
+ from ApiHealthMonitorAlertStreamTemp#window.length(1) as AH left outer join ApimApiHealthMonitorAlert#window.time(10 minutes) as AM
 on AH.apiName==AM.apiName and AH.apiVersion==AM.apiVersion and AH.message==AM.message
 select AH.apiName,AH.apiVersion,AH.apiCreator,AH.apiCreatorTenantDomain,AH.message,AH.severity,AH.alertTimestamp
 having AM.apiName is null and AM.apiVersion is null and AM.message is null
