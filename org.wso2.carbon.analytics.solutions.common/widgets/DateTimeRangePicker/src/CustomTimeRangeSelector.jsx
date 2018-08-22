@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import React from 'react';
-import { MenuItem , Select, Button } from 'material-ui';
+import React from "react";
+import {Button, MenuItem, Select} from "material-ui";
 import DateTimePicker from "./DateTimePicker";
 
 export default class CustomTimeRangeSelector extends React.Component {
@@ -28,8 +28,8 @@ export default class CustomTimeRangeSelector extends React.Component {
             inputType: 'millisecond',
         };
 
-        this.startTime= new Date();
-        this.endTime= new Date();
+        this.startTime = new Date();
+        this.endTime = new Date();
         this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
         this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
     }
@@ -44,7 +44,7 @@ export default class CustomTimeRangeSelector extends React.Component {
 
     render() {
         let {inputType} = this.state;
-        let { publishMethod } = this.props;
+        let {publishMethod} = this.props;
 
         return (
             <div style={{marginTop: 10}}>
@@ -62,8 +62,8 @@ export default class CustomTimeRangeSelector extends React.Component {
                             minWidth: 200,
                             maxWidth: 400,
                         }}
-                        onChange={(evt)=>{
-                            this.setState({ inputType: evt.target.value })
+                        onChange={(evt) => {
+                            this.setState({inputType: evt.target.value})
                         }}
                     >
                         <MenuItem value={'year'}>Year</MenuItem>
@@ -76,7 +76,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                     </Select>
                 </div>
                 <div
-                    style={{ minWidth:420 }}
+                    style={{minWidth: 420}}
                 >
                     <div
                         style={{
@@ -108,9 +108,13 @@ export default class CustomTimeRangeSelector extends React.Component {
                 <Button
                     variant="raised"
                     color="primary"
-                    style={{ marginTop: 10, float: 'right' }}
-                    onClick={()=>{
-                        publishMethod({ granularity:inputType, from: this.startTime.getTime(), to: this.endTime.getTime() });
+                    style={{marginTop: 10, float: 'right'}}
+                    onClick={() => {
+                        publishMethod({
+                            granularity: inputType,
+                            from: this.startTime.getTime(),
+                            to: this.endTime.getTime()
+                        });
                     }}
                 >
                     Apply

@@ -16,10 +16,10 @@
  * under the License.
  */
 
-import React from 'react';
-import { Button, IconButton } from 'material-ui';
-import HighGranularityMode from '@material-ui/icons/KeyboardArrowRight';
-import LowGranularityMode from '@material-ui/icons/KeyboardArrowLeft';
+import React from "react";
+import {Button, IconButton} from "material-ui";
+import HighGranularityMode from "@material-ui/icons/KeyboardArrowRight";
+import LowGranularityMode from "@material-ui/icons/KeyboardArrowLeft";
 
 export default class GranularityModeSelector extends React.Component {
     constructor(props) {
@@ -74,16 +74,16 @@ export default class GranularityModeSelector extends React.Component {
     }
 
     render() {
-        let { granularityMode } = this.state;
+        let {granularityMode} = this.state;
         return (
             <div>
                 <div>
                     Last :
                     {this.generateTabs(granularityMode)}
-                    <IconButton aria-label="Delete" style={{ marginRight: 5 }} onClick={this.switchGranularity}>
+                    <IconButton aria-label="Delete" style={{marginRight: 5}} onClick={this.switchGranularity}>
                         {
                             granularityMode === 'low' ?
-                                <HighGranularityMode />:
+                                <HighGranularityMode /> :
                                 <LowGranularityMode />
                         }
                     </IconButton>
@@ -94,20 +94,20 @@ export default class GranularityModeSelector extends React.Component {
     }
 
     switchGranularity() {
-        this.setState({ granularityMode : this.state.granularityMode==='low' ? 'high' : 'low' });
+        this.setState({granularityMode: this.state.granularityMode === 'low' ? 'high' : 'low'});
     }
 
     generateTabs(granularityMode) {
-        let options = granularityMode==='high' ? this.highGranularityOptions : this.lowGranularityOptions;
-        return  options.map((option) =>
+        let options = granularityMode === 'high' ? this.highGranularityOptions : this.lowGranularityOptions;
+        return options.map((option) =>
             <Button onClick={() => this.onGranularityModeChange(option.value)}>
                 {option.label}</Button>
         );
     }
 
     onGranularityModeChange(value) {
-        let { onChange } = this.props;
-        this.setState({ granularityModeValue: value });
+        let {onChange} = this.props;
+        this.setState({granularityModeValue: value});
         return onChange && onChange(value);
     }
 }

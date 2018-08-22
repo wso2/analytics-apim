@@ -16,13 +16,13 @@
  * under the License.
  */
 
-import React from 'react';
-import Widget from '@wso2-dashboards/widget';
-import { MuiThemeProvider, createMuiTheme, MenuItem, Select} from 'material-ui';
+import React from "react";
+import Widget from "@wso2-dashboards/widget";
+import {createMuiTheme, MenuItem, MuiThemeProvider, Select} from "material-ui";
 import GranularityModeSelector from "./GranularityModeSelector";
 import CustomTimeRangeSelector from "./CustomTimeRangeSelector";
-import Moment from 'moment';
-import { Scrollbars } from 'react-custom-scrollbars';
+import Moment from "moment";
+import {Scrollbars} from "react-custom-scrollbars";
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -63,7 +63,7 @@ export default class DateRangePicker extends Widget {
     }
 
     publishTimeRange(message) {
-       super.publish(message);
+        super.publish(message);
     }
 
     handleGranularityChange(mode) {
@@ -71,7 +71,7 @@ export default class DateRangePicker extends Widget {
         let granularity = '';
         let startTime = null;
 
-        if(mode !== 'custom') {
+        if (mode !== 'custom') {
 
             switch (mode) {
                 case '1 Min':
@@ -119,7 +119,12 @@ export default class DateRangePicker extends Widget {
             });
         }
 
-        this.setState({ granularityMode: mode, granularityValue: granularity, startTime: startTime, endTime: new Date() });
+        this.setState({
+            granularityMode: mode,
+            granularityValue: granularity,
+            startTime: startTime,
+            endTime: new Date()
+        });
     }
 
     componentDidMount() {
@@ -127,15 +132,15 @@ export default class DateRangePicker extends Widget {
     }
 
     render() {
-        let { granularityMode, width, height } = this.state;
+        let {granularityMode, width, height} = this.state;
         return (
             <MuiThemeProvider theme={this.props.muiTheme.name === 'dark' ? darkTheme : lightTheme}>
-                <Scrollbars style={{ width, height }} >
-                    <div style={{ margin: '2%', maxWidth: 840 }}>
-                        <GranularityModeSelector onChange={this.handleGranularityChange} />
+                <Scrollbars style={{width, height}}>
+                    <div style={{margin: '2%', maxWidth: 840}}>
+                        <GranularityModeSelector onChange={this.handleGranularityChange}/>
                         {
                             granularityMode === 'custom' ?
-                                <CustomTimeRangeSelector publishMethod={this.publishTimeRange} /> :
+                                <CustomTimeRangeSelector publishMethod={this.publishTimeRange}/> :
                                 this.getTimeIntervalDescriptor(granularityMode)
                         }
                     </div>
@@ -213,17 +218,17 @@ export default class DateRangePicker extends Widget {
     }
 
     generateGranularitySelector() {
-        return(
+        return (
             <Select
                 className={'perUnderline'}
                 value={this.state.granularityValue}
-                onChange={(evt)=> {
+                onChange={(evt) => {
                     super.publish({
                         granularity: evt.target.value,
                         from: this.state.startTime.getTime(),
                         to: this.state.endTime.getTime(),
                     });
-                    this.setState({ granularityValue: evt.target.value });
+                    this.setState({granularityValue: evt.target.value});
                 }}
             >
                 <MenuItem value={'millisecond'}>Millisecond</MenuItem>

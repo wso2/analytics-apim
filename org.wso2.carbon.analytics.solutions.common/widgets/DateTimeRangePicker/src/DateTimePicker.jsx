@@ -15,9 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
-import { MenuItem, Select } from 'material-ui';
-import moment from 'moment';
+import React from "react";
+import {MenuItem, Select} from "material-ui";
+import moment from "moment";
 
 export default class DateTimePicker extends React.Component {
     constructor(props) {
@@ -37,12 +37,12 @@ export default class DateTimePicker extends React.Component {
 
     handleOnChange(property, evt) {
 
-        let { inputType, onChange } = this.props;
+        let {inputType, onChange} = this.props;
         let state = this.state;
 
         state[property] = evt.target.value;
 
-        let date = moment(`${state.year}:${(state.month+1)}:${state.days} ${state.time}`,'YYYY-MM-DD HH:mm:ss.SSS').toDate();
+        let date = moment(`${state.year}:${(state.month + 1)}:${state.days} ${state.time}`, 'YYYY-MM-DD HH:mm:ss.SSS').toDate();
 
         switch (inputType) {
             case 'year':
@@ -65,8 +65,8 @@ export default class DateTimePicker extends React.Component {
     }
 
     render() {
-        let { year, month, days, time } = this.state;
-        let { inputType } = this.props;
+        let {year, month, days, time} = this.state;
+        let {inputType} = this.props;
 
 
         switch (inputType) {
@@ -89,7 +89,7 @@ export default class DateTimePicker extends React.Component {
                     }}
                 >
                     {
-                        ['year','millisecond','month','day', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ?
+                        ['year', 'millisecond', 'month', 'day', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ?
                             <Select
                                 value={year}
                                 onChange={event => {
@@ -99,11 +99,11 @@ export default class DateTimePicker extends React.Component {
                                 {
                                     this.generateYears()
                                 }
-                            </Select>:
+                            </Select> :
                             null
                     }
                     {
-                        ['month','millisecond','day', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ?
+                        ['month', 'millisecond', 'day', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ?
                             <Select
                                 value={month}
                                 onChange={event => {
@@ -114,11 +114,11 @@ export default class DateTimePicker extends React.Component {
                                 {
                                     this.generateMonths()
                                 }
-                            </Select>:
+                            </Select> :
                             null
                     }
                     {
-                        ['day','millisecond', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ?
+                        ['day', 'millisecond', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ?
                             <Select
                                 value={days}
                                 onChange={event => {
@@ -129,7 +129,7 @@ export default class DateTimePicker extends React.Component {
                                 {
                                     this.generateDays(year, month)
                                 }
-                            </Select>:
+                            </Select> :
                             null
                     }
                 </div>
@@ -138,8 +138,10 @@ export default class DateTimePicker extends React.Component {
                         <div>
                             <br/>Time<br/>
                             <div className={'MuiFormControl-root-69'}>
-                                <div className={'MuiInput-root-52 MuiInput-formControl-53 MuiInput-underline-56 underline'}>
-                                    <input className={'MuiInput-input-60'} type="time" step={this.getTimeStep(inputType)} value={time} onChange={(evt) => {
+                                <div
+                                    className={'MuiInput-root-52 MuiInput-formControl-53 MuiInput-underline-56 underline'}>
+                                    <input className={'MuiInput-input-60'} type="time"
+                                           step={this.getTimeStep(inputType)} value={time} onChange={(evt) => {
                                         this.handleOnChange('time', evt);
 
                                     }}/>
@@ -147,7 +149,7 @@ export default class DateTimePicker extends React.Component {
                                 </div>
                             </div>
 
-                        </div>:
+                        </div> :
                         null
 
                 }
