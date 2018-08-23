@@ -18,19 +18,20 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>analytics-solutions-common-features</artifactId>
         <groupId>org.wso2.analytics.solutions</groupId>
+        <artifactId>analytics-solutions-common-features</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>WSO2 Analytics Solution - Common - Feature</name>
-    <artifactId>org.wso2.carbon.analytics.solutions.common.feature</artifactId>
+    <artifactId>org.wso2.analytics.solutions.common.feature</artifactId>
 
     <dependencies>
         <!-- Widgets-->
         <dependency>
             <groupId>org.wso2.analytics.solutions</groupId>
-            <artifactId>org.wso2.carbon.analytics.solutions.common.date-time-range-picker</artifactId>
+            <artifactId>org.wso2.analytics.solutions.common.widgets.date-time-range-picker</artifactId>
             <type>zip</type>
         </dependency>
     </dependencies>
