@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/icons": "1.0.0-beta.43",
     "@wso2-dashboards/widget": "^1.2.0",
     "lodash": "^4.17.10",
-    "material-ui": "1.0.0-beta.45",
+    "material-ui": "^0.20.0",
     "moment": "^2.22.1",
     "react": "^16.1.1",
     "react-custom-scrollbars": "^4.2.1",
