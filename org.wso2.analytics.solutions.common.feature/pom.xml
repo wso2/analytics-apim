@@ -53,7 +53,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.wso2.analytics.solutions</groupId>
-                                    <artifactId>org.wso2.carbon.analytics.solutions.common.date-time-range-picker
+                                    <artifactId>org.wso2.analytics.solutions.common.widgets.date-time-range-picker
                                     </artifactId>
                                     <version>${project.version}</version>
                                     <type>zip</type>
@@ -105,7 +105,7 @@
                 <directory>${project.build.directory}/target</directory>
             </resource>
             <resource>
-                <directory>../org.wso2.carbon.analytics.solutions.common.feature/src/main/resources</directory>
+                <directory>../org.wso2.analytics.solutions.common.feature/src/main/resources</directory>
             </resource>
         </resources>
     </build>
