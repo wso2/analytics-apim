@@ -21,7 +21,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.analytics.solutions.apim.analytics.rest.api.file</artifactId>
+    <artifactId>org.wso2.analytics.apim.rest.api.file</artifactId>
     <packaging>bundle</packaging>
     <modelVersion>4.0.0</modelVersion>
     <name>Microgateway Analytics REST API</name>
