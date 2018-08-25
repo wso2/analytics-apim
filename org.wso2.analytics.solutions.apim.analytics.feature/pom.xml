@@ -41,7 +41,7 @@
 
         <dependency>
             <groupId>org.wso2.analytics.solutions</groupId>
-            <artifactId>org.wso2.analytics.solutions.apim.analytics.rest.api.file</artifactId>
+            <artifactId>org.wso2.analytics.apim.rest.api.file</artifactId>
             <type>jar</type>
         </dependency>
 
@@ -163,7 +163,7 @@
                             </adviceFileContents>
                             <bundles>
                                 <bundle>
-                                    <symbolicName>org.wso2.analytics.solutions.apim.analytics.rest.api.file</symbolicName>
+                                    <symbolicName>org.wso2.analytics.apim.rest.api.file</symbolicName>
                                     <version>${project.version}</version>
                                 </bundle>
                                 <bundle>
