@@ -1,0 +1,79 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("APIM_ABNORMAL_REQUEST_PATTERN")
+
+@App:description("Identifies the API requests wchich are outside the normal access pattern and add to AllAlertStream and AbormalRequestPatternStream")
+
+@source(type='inMemory' , topic='APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, gatewayType string, label string);
+    
+@sink(type="inMemory", topic="APIM_EMAIL_NOTIFICATION", @map(type='passThrough'))
+define stream EmailAlertStream (type	string, message	string, alertTimestamp	string, emails	string);
+
+@PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAlertStakeholderInfo(userId string, alertTypes	string, emails	string, isSubscriber bool, isPublisher	bool, isAdmin	bool);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimRequestPatternChangedAlert (username string, applicationName string, applicationOwner string, tenantDomain string, message string, severity int, alertTimestamp long);
+
+@info(name='stateStreamGenerateQuery') 
+from Request
+select  userTenantDomain as tenantDomain, username, str:concat(username,'@',applicationId) as appSpecificUsername,  applicationConsumerKey, applicationName, applicationOwner, str:concat(apiMethod,' ',apiContext,' ',apiResourceTemplate) as state,time:dateFormat(requestTimestamp, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp
+insert into StateStream;
+
+@info(name='markovChaniGenerateQuery') 
+from StateStream#markov:markovChain(appSpecificUsername, state, 60 min, 0.2, 500, true)
+select lastState as startState, transitionProbability, notify, state as endState, tenantDomain, username, applicationConsumerKey, applicationName, applicationOwner, requestTimestamp
+insert into TransitionProbabilityStream;
+
+@info(name = 'abnormalPatternFilterQuery')
+from TransitionProbabilityStream [ notify ]
+select username, requestTimestamp,  str:concat(startState,' to ',endState) as transition, transitionProbability, applicationConsumerKey, applicationName, applicationOwner, tenantDomain
+insert into IntermediateFraudStream;
+
+@info(name = 'detailedAlertGenerateQuery')
+from IntermediateFraudStream
+select username, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' ,' Suspicious API transition is: ',transition) as message , transition, (time:timestampInMilliseconds()) as alertTimestamp
+insert into RequestPatternChangedStreamTemp;
+
+@info(name = 'repeatedAlertIgnoreQuery')
+from RequestPatternChangedStreamTemp#window.length(1) as a left outer join RequestPatternChangedStreamTemp#window.time(10 minute) as b
+on ( a.username == b.username and a.applicationName == b.applicationName and a.applicationOwner == b.applicationOwner and a.tenantDomain == b.tenantDomain and a.message == b.message)
+select a.username, a.applicationName, a.applicationOwner, a.tenantDomain, a.message, a.transition, a.alertTimestamp
+having b.username  is null
+insert into RequestPatternChangedAlertStream;
+
+@info(name = 'commonAlertDabaseInsertQuery')
+from RequestPatternChangedAlertStream
+select 'AbnormalRequestPattern' as type, tenantDomain, str:concat('Abnormal request pattern detected by user :',username,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as message, 1 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into ApimAllAlert;
+
+@info(name='dbInsertQuery') 
+from RequestPatternChangedAlertStream
+select username, applicationName, applicationOwner, tenantDomain, message, 1 as severity, alertTimestamp
+insert into ApimRequestPatternChangedAlert;
+
+@info(name = 'customizeEmailMessageGenerateQuery')
+from RequestPatternChangedAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
+on ((A.applicationOwner == S.userId and true == S.isSubscriber ) or true == S.isAdmin )
+select 'AbnormalRequestPattern' as type , str:concat(A.message,  ' by user :',A.username,' using application : ',A.applicationName, ' owned by: ',A.applicationOwner, '.') as message, time:dateFormat(A.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails
+having str:contains(S.alertTypes, 'AbnormalRequestPattern')
+insert into EmailAlertStream;

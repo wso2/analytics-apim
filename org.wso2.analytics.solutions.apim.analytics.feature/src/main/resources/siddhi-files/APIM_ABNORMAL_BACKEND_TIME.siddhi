@@ -1,0 +1,69 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("APIM_ABNORMAL_BACKEND_TIME")
+@App:description("Identifies the API requests with abnormal backend time and add to AllAlertStream and AbnormalBackendTimeAlertStream")
+
+@source(type ='inMemory', topic = 'APIM_REQUEST_ALERT_INFO')
+define stream RequestAlertInfoStream (apiContext string,apiName string, apiVersion string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, requestTimestamp long, responseTime long, backendTime long, thresholdBackendTime long, thresholdResponseTime long,responseCode int );
+
+define stream AbnormalBackendTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long, message string, severity int,alertTimestamp long);
+
+@sink(type="inMemory", topic="APIM_EMAIL_NOTIFICATION", @map(type='passThrough'))
+define stream EmailAlertStream (type	string, message	string, alertTimestamp	string, emails	string);
+
+@PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAlertStakeholderInfo(userId string, alertTypes	string, emails	string, isSubscriber bool, isPublisher	bool, isAdmin	bool);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAbnormalBackendTimeAlert (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long,
+    message string, severity int, alertTimestamp long);
+
+@info(name = 'backendTimeExceedFilterQuery')
+from RequestAlertInfoStream[backendTime > thresholdBackendTime and thresholdBackendTime > 0]
+select apiName, apiVersion, apiCreator, apiCreatorTenantDomain, apiResourceTemplate, apiMethod, backendTime, thresholdBackendTime , 
+    'Abnormal backend time detected.' as message, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into AbnormalBackendTimeAlertStreamTemp;
+
+@info(name = 'repeatedAlertIgnoreQuery')
+from AbnormalBackendTimeAlertStreamTemp#window.length(1) as a left outer join AbnormalBackendTimeAlertStreamTemp#window.time(10 minute) as b
+on (a.apiName == b.apiName and a.apiVersion== b.apiVersion and a.apiCreator== b.apiCreator and a.apiCreatorTenantDomain==b.apiCreatorTenantDomain and 
+    a.apiResourceTemplate==b.apiResourceTemplate and a.apiMethod== b.apiMethod and a.message== b.message)
+select a.apiName, a.apiVersion, a.apiCreator, a.apiCreatorTenantDomain, a.apiResourceTemplate, a.apiMethod, a.backendTime, a.thresholdBackendTime, a.message as message, a.severity, a.alertTimestamp
+having b.apiName  is null
+insert into AbnormalBackendTimeAlertStream;
+
+@info(name = 'commonAlertDabaseInsertQuery')
+from AbnormalBackendTimeAlertStream
+select 'AbnormalBackendTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal backend time detected for http ',apiMethod,' method of resource template:',apiResourceTemplate,' in api:', apiName,' of tenant domain:',apiCreatorTenantDomain,', threshold value:',thresholdBackendTime, 'ms.') as message, severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into ApimAllAlert;
+
+@info(name='dbInsertQuery') 
+from AbnormalBackendTimeAlertStream
+select *
+insert into ApimAbnormalBackendTimeAlert;
+
+@info(name='customizeEmailMessageGenerateQuery') 
+from AbnormalBackendTimeAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
+on ((A.apiCreator == S.userId and true == S.isPublisher ) or true == S.isAdmin )
+select 'AbnormalBackendTime' as type , str:concat('Abnormal backend time detected for http ', A.apiMethod,' method of resource template:', A.apiResourceTemplate,' in api:',A.apiName,' of tenant domain:',A.apiCreatorTenantDomain,', threshold value:',A.thresholdBackendTime, 'ms.') as message, time:dateFormat(A.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails
+having  str:contains(S.alertTypes, 'AbnormalBackendTime')
+insert into EmailAlertStream;
+

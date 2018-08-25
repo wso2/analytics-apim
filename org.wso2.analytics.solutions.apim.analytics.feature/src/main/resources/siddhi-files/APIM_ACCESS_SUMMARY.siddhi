@@ -1,0 +1,109 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name('APIM_ACCESS_SUMMARY')
+@App:description('Do aggregations to the request events and store in the database.')
+
+-- Streams
+@source(type='inMemory' , topic='APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+define stream ApiUsagePerVersionFilteredStream (apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, apiHostname string, applicationId string, applicationName string, quotaExceededValue int, requestTimestamp long, gatewayType string, label string);
+
+define stream ApiUserAgentFilteredStream(apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, operatingSystem string, browser string, requestTimestamp long, gatewayType string, label string);
+
+-- Aggregations
+
+-- API usage per version summary. (Specific to an application)
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define aggregation ApiVersionPerAppAgg
+from ApiUsagePerVersionFilteredStream
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationName, count() as totalRequestCount, sum(quotaExceededValue) as aboveQuotaCount, gatewayType, label
+group by apiContext, apiHostname, applicationId
+aggregate by requestTimestamp every seconds...years;
+
+-- API usage summary per resource path. (Specific to an application)
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define aggregation ApiResourcePathPerAppAgg
+from Request
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, apiResourceTemplate, apiMethod, count() as totalRequestCount, gatewayType, label
+group by apiContext, apiHostname, applicationId, apiResourceTemplate, apiMethod
+aggregate by requestTimestamp every seconds...years;
+	
+	
+-- API usage summary per destination.
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define aggregation ApiPerDestinationAgg
+from Request
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, destination, count() as totalRequestCount, gatewayType, label
+group by apiContext, apiHostname, destination
+aggregate by requestTimestamp every seconds...years;
+
+-- Overall API usage summary. depends on the user and the application. 
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define aggregation ApiUserPerAppAgg
+from Request
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain, count() as totalRequestCount, gatewayType, label
+group by apiContext,apiHostname, applicationId, username, userTenantDomain
+aggregate by requestTimestamp every seconds...years;
+
+-- API user browser summary 
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define aggregation ApiUserBrowserAgg
+from ApiUserAgentFilteredStream
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, operatingSystem, browser, count() as totalRequestCount, gatewayType, label 
+group by apiContext, apiCreator, apiCreatorTenantDomain, operatingSystem, browser
+aggregate by requestTimestamp every seconds...years;
+
+-- API usage execution summary
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define aggregation ApiExecutionTimeAgg
+from Request
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, apiResourceTemplate, apiMethod, avg(responseTime) as responseTime, avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, avg(securityLatency) as securityLatency, avg(throttlingLatency) as throttlingLatency, avg(requestMediationLatency) as requestMediationLatency, avg(responseMediationLatency) as responseMediationLatency, avg(backendLatency) as backendLatency, avg(otherLatency) as otherLatency
+group by apiContext, apiHostname, apiResourceTemplate, apiMethod
+aggregate by requestTimestamp every seconds...years;
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@primaryKey('apiName','apiCreatorTenantDomain','apiHostName', 'gatewayType','label')
+define table ApiLastAccessSummary (apiContext string, apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiHostname string, applicationOwner string, tenantDomain string, lastAccessTime long, gatewayType string, label string );
+
+-- Queries
+from Request
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, ifThenElse(throttledOut, 1, 0) as quotaExceededValue, requestTimestamp,
+    gatewayType, label
+insert current events into ApiUsagePerVersionFilteredStream;
+
+
+from Request
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, 
+    ifThenElse(userAgent is null, 'Other', env:getUserAgentProperty(userAgent,'os')) as operatingSystem, ifThenElse(userAgent is null, 'Other', env:getUserAgentProperty(userAgent,'browser')) as browser,
+    requestTimestamp, gatewayType, label 
+insert current events into ApiUserAgentFilteredStream;
+
+-- Filter the event with the most recent request timestamp
+from Request as R left outer join ApiLastAccessSummary as S
+on R.apiName == S.apiName and R.apiCreatorTenantDomain == S.apiCreatorTenantDomain and R.apiHostname == S.apiHostname and R.gatewayType == S.gatewayType and R.label == S.label
+select R.apiContext, R.apiName, R.apiVersion, R.apiCreator, R.apiCreatorTenantDomain, R.apiHostname, R.applicationOwner, R.userTenantDomain as tenantDomain, R.requestTimestamp as lastAccessTime,
+    R.gatewayType, R.label
+having R.requestTimestamp >= S.lastAccessTime or S.lastAccessTime is null
+insert into ApiLastAccessStream;
+
+from ApiLastAccessStream
+select apiContext, apiName, apiVersion, apiCreator,apiCreatorTenantDomain, apiHostname, applicationOwner,tenantDomain, lastAccessTime, gatewayType, label
+update or insert into ApiLastAccessSummary
+set ApiLastAccessSummary.apiContext = apiContext, ApiLastAccessSummary.apiVersion = apiVersion, ApiLastAccessSummary.applicationOwner = applicationOwner, ApiLastAccessSummary.tenantDomain = tenantDomain, ApiLastAccessSummary.lastAccessTime = lastAccessTime
+on ApiLastAccessSummary.apiName == apiName and ApiLastAccessSummary.apiCreatorTenantDomain == apiCreatorTenantDomain and ApiLastAccessSummary.apiHostname == apiHostname and
+    ApiLastAccessSummary.gatewayType == gatewayType and ApiLastAccessSummary.label == label;
