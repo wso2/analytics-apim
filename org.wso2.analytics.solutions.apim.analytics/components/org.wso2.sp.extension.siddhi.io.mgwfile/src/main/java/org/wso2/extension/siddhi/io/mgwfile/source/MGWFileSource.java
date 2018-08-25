@@ -22,50 +22,7 @@ import java.util.Map;
 import java.util.Timer;
 
 /**
- * This is a sample class-level comment, explaining what the extension class does.
- */
-
-/**
- * Annotation of Siddhi Extension.
- * <pre><code>
- * eg:-
- * {@literal @}Extension(
- * name = "The name of the extension",
- * namespace = "The namespace of the extension",
- * description = "The description of the extension (optional).",
- * //Source configurations
- * parameters = {
- * {@literal @}Parameter(name = "The name of the first parameter",
- *                               description= "The description of the first parameter",
- *                               type =  "Supported parameter types.
- *                                        eg:{DataType.STRING, DataType.INT, DataType.LONG etc}",
- *                               dynamic= "false
- *                                         (if parameter doesn't depend on each event then dynamic parameter is false.
- *                                         In Source, only use static parameter)",
- *                               optional= "true/false, defaultValue= if it is optional then assign a default value
- *                                          according to the type."),
- * {@literal @}Parameter(name = "The name of the second parameter",
- *                               description= "The description of the second parameter",
- *                               type =   "Supported parameter types.
- *                                         eg:{DataType.STRING, DataType.INT, DataType.LONG etc}",
- *                               dynamic= "false
- *                                         (if parameter doesn't depend on each event then dynamic parameter is false.
- *                                         In Source, only use static parameter)",
- *                               optional= "true/false, defaultValue= if it is optional then assign a default value
- *                                         according to the type."),
- * },
- * //If Source system configurations will need then
- * systemParameters = {
- * {@literal @}SystemParameter(name = "The name of the first  system parameter",
- *                                      description="The description of the first system parameter." ,
- *                                      defaultValue = "the default value of the system parameter.",
- *                                      possibleParameter="the possible value of the system parameter.",
- *                               ),
- * },
- * examples = {
- * {@literal @}Example(syntax = "sample query with Source annotation that explain how extension use in Siddhi."
- *                              description =" The description of the given example's query."
- *                      ),})
+ * Micro Gateway File Source
  */
 
 @Extension(
@@ -82,7 +39,6 @@ import java.util.Timer;
         }
 )
 
-// for more information refer https://wso2.github.io/siddhi/documentation/siddhi-4.0/#sources
 public class MGWFileSource extends Source {
     private static final Log log = LogFactory.getLog(MGWFileSource.class);
     private SourceEventListener sourceEventListener;
