@@ -29,6 +29,8 @@ import org.wso2.extension.siddhi.io.mgwfile.util.FileDataRetrieverUtil;
 import org.wso2.extension.siddhi.map.wso2event.source.WSO2SourceMapper;
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.annotation.Parameter;
+import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
 import org.wso2.siddhi.core.stream.input.source.Source;
@@ -43,16 +45,40 @@ import java.util.Timer;
  * Micro Gateway File Source
  */
 
-@Extension(
-        name = "mgwfile",
-        namespace = "source",
-        description = " ",
+@Extension(name = "mgwfile", namespace = "source", description = "Event source to receive WSO2 Microgateway analytics"
+        + " data",
         parameters = {
-        },
+        @Parameter(
+                name = "usage.publishing.frequency",
+                description = "Time interval to run the data retrieval timer task in milliseconds.",
+                type = { DataType.STRING },
+                optional = true,
+                defaultValue = "300000"),
+        @Parameter(name = "usage.cleanup.frequency",
+                description = "Time interval to run the data cleanup timer task in milliseconds.",
+                type = {
+                DataType.STRING },
+                optional = true,
+                defaultValue = "1800000"),
+        @Parameter(name = "file.retention.days",
+                description = "Number of days to keep already read microgateway analytics zip files before removal.",
+                type = {
+                DataType.STRING },
+                optional = true,
+                defaultValue = "5"),
+        @Parameter(name = "usage.publishing.thread.count",
+                description = "Number of threads to use for data retrieval when the timer task runs. A single thread "
+                        + "will process data from a single file.",
+                type = {
+                DataType.STRING },
+                optional = true,
+                defaultValue = "3"), },
         examples = {
                 @Example(
-                        syntax = " ",
-                        description = " "
+                        syntax = "@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.0.0'"
+                                + ", @map(type = 'wso2event'))",
+                        description = "All the parameters for microgateway analytics should be passed in as system "
+                                + "properties."
                 )
         }
 )
