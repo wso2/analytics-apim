@@ -150,7 +150,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <propertyFile>../org.wso2.analytics.solutions.apim.analytics.feature/etc/feature.properties</propertyFile>
+                            <propertyFile>..//org.wso2.analytics.solutions.apim.analytics.feature/etc/feature.properties</propertyFile>
                             <adviceFileContents>
                                 <advice>
                                     <name>org.wso2.carbon.p2.category.type</name>
@@ -188,7 +188,7 @@
                 <directory>${project.build.directory}/target</directory>
             </resource>
             <resource>
-                <directory>/src/main/resources</directory>
+                <directory>..//org.wso2.analytics.solutions.apim.analytics.feature//src/main/resources</directory>
             </resource>
         </resources>
     </build>
