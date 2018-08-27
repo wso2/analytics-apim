@@ -32,6 +32,30 @@
           ]
         },
         "defaultValue": "3 Months"
+      },
+      {
+        "id": "availableGranularities",
+        "title": "Available Granularities",
+        "type": {
+          "name": "ENUM",
+          "possibleValues": [
+            "From Second",
+            "From Minute",
+            "From Hour",
+            "From Day",
+            "From Month",
+            "From Year"
+          ]
+        },
+        "defaultValue": "From Second"
+      },
+      {
+        "id": "autoSyncInterval",
+        "title": "Auto-Sync Interval (Seconds)",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "10"
       }
     ]
   }
