@@ -39,5 +39,5 @@ org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/das
 org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/dashboard/,target:${installFolder}/../../wso2/dashboard/resources/dashboards/,overwrite:true);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/worker/database/);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/wso2/worker/database/,target:${installFolder}/../../wso2/worker/database/,overwrite:true);\
-org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../resources/solutions/apim-analytics/);\
-org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/email-notification-siddhi-file/,target:${installFolder}/../../resources/solutions/apim-analytics/,overwrite:true);\
+org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../resources/apim-analytics/);\
+org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/email-notification-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
