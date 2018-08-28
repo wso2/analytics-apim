@@ -1,6 +1,16 @@
 
 # WSO2 API Manager Analytics
 
+---
+
+| Branch | Build Status |
+| :------------ |:-------------
+| 2.x | [![Build Status](https://wso2.org/jenkins/job/analytics-products/job/analytics-apim_2.x/badge/icon)](https://wso2.org/jenkins/view/analytics/job/analytics-products/job/analytics-apim_2.x/) |
+
+[<img src="https://cdn.sstatic.net/Sites/stackoverflow/company/img/logos/so/so-logo.svg" width="120">](https://stackoverflow.com/tags/wso2-am/)
+
+---
+
 WSO2 API Analytics provides the capability to monitor API invocations and to summarize statistics in order to monetize API usage. WSO2 API Manager analytics is powered by the WSO2 Stream Processor (SP).
 
 # WSO2 API Manager Analytics can monitor the following:
