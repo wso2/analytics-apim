@@ -152,7 +152,6 @@
             <fileMode>644</fileMode>
             <excludes>
                 <exclude>empty.txt</exclude>
-                <exclude>APIM_ALERT_EMAIL_NOTIFICATION.siddhi</exclude>
             </excludes>
         </fileSet>
         <fileSet>
@@ -241,14 +240,6 @@
         <fileSet>
             <directory>src/policies/</directory>
             <outputDirectory>wso2/dashboard/deployment/web-ui-apps/policies</outputDirectory>
-            <fileMode>644</fileMode>
-        </fileSet>
-        <fileSet>
-            <directory>carbon-home/deployment/widgets/</directory>
-            <outputDirectory>wso2/dashboard/deployment/web-ui-apps/portal/extensions/widgets</outputDirectory>
-            <excludes>
-                <exclude>**/src/</exclude>
-            </excludes>
             <fileMode>644</fileMode>
         </fileSet>
     </fileSets>
