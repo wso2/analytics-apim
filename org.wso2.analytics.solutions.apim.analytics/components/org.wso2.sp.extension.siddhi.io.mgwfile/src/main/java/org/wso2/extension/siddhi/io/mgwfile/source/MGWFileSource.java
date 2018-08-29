@@ -167,7 +167,9 @@ public class MGWFileSource extends Source {
      */
     @Override
     public void pause() {
-        fileReaderTask.setPaused(true);
+        if (fileReaderTask != null) {
+            fileReaderTask.setPaused(true);
+        }
     }
 
     /**
@@ -175,7 +177,9 @@ public class MGWFileSource extends Source {
      */
     @Override
     public void resume() {
-        fileReaderTask.setPaused(false);
+        if (fileReaderTask != null) {
+            fileReaderTask.setPaused(false);
+        }
     }
 
     /**
