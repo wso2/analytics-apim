@@ -1052,12 +1052,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>org.wso2.analytics.solutions.is.analytics.widgets.attempts.over.time</artifactId>
-                <type>zip</type>
-                <version>${analytics.solutions.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.analytics.solutions</groupId>
                 <artifactId>org.wso2.analytics.solutions.is.analytics.widgets.session.count</artifactId>
                 <type>zip</type>
                 <version>${analytics.solutions.version}</version>
@@ -1141,43 +1135,43 @@
             <!--EI widgets-->
             <dependency>
                 <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>wso2sp-solutions.ei-analytics.statschart</artifactId>
+                <artifactId>org.wso2.analytics.solutions.ei.analytics.widgets.horizontal.bar.chart</artifactId>
                 <version>${analytics.solutions.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>wso2sp-solutions.ei-analytics.horizontalbarchart</artifactId>
+                <artifactId>org.wso2.analytics.solutions.ei.analytics.widgets.mediator.properties</artifactId>
                 <version>${analytics.solutions.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>wso2sp-solutions.ei-analytics.messageflow</artifactId>
+                <artifactId>org.wso2.analytics.solutions.ei.analytics.widgets.message.flow</artifactId>
                 <version>${analytics.solutions.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>wso2sp-solutions.ei-analytics.mediatorproperties</artifactId>
+                <artifactId>org.wso2.analytics.solutions.ei.analytics.widgets.message.table</artifactId>
                 <version>${analytics.solutions.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>wso2sp-solutions.ei-analytics.tps</artifactId>
+                <artifactId>org.wso2.analytics.solutions.ei.analytics.widgets.search.box</artifactId>
                 <version>${analytics.solutions.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>wso2sp-solutions.ei-analytics.messagetable</artifactId>
+                <artifactId>org.wso2.analytics.solutions.ei.analytics.widgets.stats.chart</artifactId>
                 <version>${analytics.solutions.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>wso2sp-solutions.ei-analytics.searchbox</artifactId>
+                <artifactId>org.wso2.analytics.solutions.ei.analytics.widgets.tps</artifactId>
                 <version>${analytics.solutions.version}</version>
                 <type>zip</type>
             </dependency>
@@ -1291,7 +1285,7 @@
         <siddhi.version>4.2.7</siddhi.version>
 
         <carbon.analytics-common.version>6.0.66</carbon.analytics-common.version>
-        <analytics.solutions.version>1.0.1</analytics.solutions.version>
+        <analytics.solutions.version>1.0.3</analytics.solutions.version>
         <!-- Maven plugins -->
         <!--Bundle Plugin - Overridden from parent due to a bug in latest version related to capability providers-->
         <maven.bundle.plugin.version>2.5.4</maven.bundle.plugin.version>
@@ -1336,7 +1330,7 @@
 
         <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.0.29</carbon.dashboards.version>
+        <carbon.dashboards.version>4.0.31</carbon.dashboards.version>
         <carbon.uis.version>0.19.5</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
 
@@ -1448,7 +1442,7 @@
         <siddhi.map.csv.version>1.0.10</siddhi.map.csv.version>
 
         <siddhi.store.mongodb.version>1.0.18</siddhi.store.mongodb.version>
-        <siddhi.store.rdbms.version>4.0.27</siddhi.store.rdbms.version>
+        <siddhi.store.rdbms.version>4.0.29</siddhi.store.rdbms.version>
         <siddhi.store.solr.version>1.0.18</siddhi.store.solr.version>
         <siddhi.store.hbase.version>4.0.10</siddhi.store.hbase.version>
         <siddhi.store.cassandra.version>1.0.5</siddhi.store.cassandra.version>
