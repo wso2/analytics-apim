@@ -44,6 +44,7 @@ export default class DateRangePicker extends Widget {
         this.handleGranularityChange = this.handleGranularityChange.bind(this);
         this.handleGranularityChangeForCustom = this.handleGranularityChangeForCustom.bind(this);
         this.publishTimeRange = this.publishTimeRange.bind(this);
+        this.getDateTimeRangeInfo = this.getDateTimeRangeInfo.bind(this);
         this.getTimeIntervalDescriptor = this.getTimeIntervalDescriptor.bind(this);
         this.getStartTimeAndEndTimeForTimeIntervalDescriptor =
             this.getStartTimeAndEndTimeForTimeIntervalDescriptor.bind(this);
@@ -83,6 +84,10 @@ export default class DateRangePicker extends Widget {
 
     publishTimeRange(message) {
         super.publish(message);
+    }
+
+    getDateTimeRangeInfo() {
+        return super.getGlobalState('dtrp');
     }
 
     handleGranularityChange(mode) {
@@ -211,40 +216,35 @@ export default class DateRangePicker extends Widget {
     }
 
     loadDefaultTimeRange() {
-        if (location.search !== '') {
-            let dateTimeRangeInfo = JSON.parse(decodeURI(location.search.substr(1)));
-            if (dateTimeRangeInfo.hasOwnProperty('tr')) {
-                if (dateTimeRangeInfo.tr.toLowerCase() === 'custom') {
-                    if (dateTimeRangeInfo.hasOwnProperty('sd')
-                        && dateTimeRangeInfo.hasOwnProperty('ed')) {
-                        if (dateTimeRangeInfo.hasOwnProperty('g')) {
-                            this.loadUserSpecifiedCustomTimeRange(dateTimeRangeInfo.sd,
-                                dateTimeRangeInfo.ed, dateTimeRangeInfo.g)
-                        } else {
-                            this.loadUserSpecifiedCustomTimeRange(dateTimeRangeInfo.sd,
-                                dateTimeRangeInfo.ed, '')
-                        }
+        let dateTimeRangeInfo = this.getDateTimeRangeInfo();
+        if (dateTimeRangeInfo.hasOwnProperty('tr')) {
+            if (dateTimeRangeInfo.tr.toLowerCase() === 'custom') {
+                if (dateTimeRangeInfo.hasOwnProperty('sd')
+                    && dateTimeRangeInfo.hasOwnProperty('ed')) {
+                    if (dateTimeRangeInfo.hasOwnProperty('g')) {
+                        this.loadUserSpecifiedCustomTimeRange(dateTimeRangeInfo.sd,
+                            dateTimeRangeInfo.ed, dateTimeRangeInfo.g)
                     } else {
-                        this.handleGranularityChange(this.getDefaultTimeRange());
+                        this.loadUserSpecifiedCustomTimeRange(dateTimeRangeInfo.sd,
+                            dateTimeRangeInfo.ed, '')
                     }
                 } else {
-                    if (dateTimeRangeInfo.hasOwnProperty('sync')) {
-                        if (dateTimeRangeInfo.sync === true) {
-                            this.setState({
-                                enableSync: true,
-                                btnType: <NotificationSync color='#f17b31'/>
-                            });
-                        }
-                    }
-                    if (dateTimeRangeInfo.hasOwnProperty('g')) {
-                        this.loadUserSpecifiedTimeRange(dateTimeRangeInfo.tr, dateTimeRangeInfo.g)
-                    } else {
-                        this.loadUserSpecifiedTimeRange(dateTimeRangeInfo.tr, '')
+                    this.handleGranularityChange(this.getDefaultTimeRange());
+                }
+            } else {
+                if (dateTimeRangeInfo.hasOwnProperty('sync')) {
+                    if (dateTimeRangeInfo.sync) {
+                        this.setState({
+                            enableSync: true,
+                            btnType: <NotificationSync color='#f17b31'/>
+                        });
                     }
                 }
-
-            } else {
-                this.handleGranularityChange(this.getDefaultTimeRange());
+                if (dateTimeRangeInfo.hasOwnProperty('g')) {
+                    this.loadUserSpecifiedTimeRange(dateTimeRangeInfo.tr, dateTimeRangeInfo.g)
+                } else {
+                    this.loadUserSpecifiedTimeRange(dateTimeRangeInfo.tr, '')
+                }
             }
         } else {
             this.handleGranularityChange(this.getDefaultTimeRange());
@@ -468,6 +468,7 @@ export default class DateRangePicker extends Widget {
 
     render() {
         let {granularityMode, width, height} = this.state;
+
         return (
             <MuiThemeProvider
                 muiTheme={this.props.muiTheme}>
@@ -482,7 +483,8 @@ export default class DateRangePicker extends Widget {
                             onChange={this.handleGranularityChange}
                             onChangeCustom={this.handleGranularityChangeForCustom}
                             options={this.state.options}
-                            getTimeRangeName={this.getTimeRangeName}/>
+                            getTimeRangeName={this.getTimeRangeName}
+                            getDateTimeRangeInfo={this.getDateTimeRangeInfo}/>
                         {this.getTimeIntervalDescriptor(granularityMode)}
                     </div>
                 </Scrollbars>
@@ -794,21 +796,19 @@ export default class DateRangePicker extends Widget {
 
     clearRefreshInterval() {
         clearInterval(this.state.refreshIntervalId);
-        this.setState({refreshIntervalId: null});
+        this.setState({
+            refreshIntervalId: null
+        });
     }
 
     setQueryParamToURL(timeRange, startTime, endTime, granularity, autoSync) {
-        if (history.pushState) {
-            let newurl = location.protocol + '//' + location.host + location.pathname + '?'
-                + encodeURI(JSON.stringify({
-                    tr: timeRange,
-                    sd: startTime,
-                    ed: endTime,
-                    g: granularity,
-                    sync: autoSync
-                }));
-            history.pushState({path: newurl}, '', newurl);
-        }
+        super.setGlobalState('dtrp', {
+            tr: timeRange,
+            sd: startTime,
+            ed: endTime,
+            g: granularity,
+            sync: autoSync,
+        });
     }
 
 }

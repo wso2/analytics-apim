@@ -164,8 +164,8 @@ export default class GranularityModeSelector extends React.Component {
 
     getCustomSelectButton() {
         let selectedTimeRange = '';
-        if (location.search.length > 1) {
-            selectedTimeRange = JSON.parse(decodeURI(location.search.substr(1))).tr;
+        if (this.props.getDateTimeRangeInfo().hasOwnProperty('tr')) {
+            selectedTimeRange = this.props.getDateTimeRangeInfo().tr;
         }
         let customButton = selectedTimeRange === 'custom' ?
             <FlatButton
@@ -227,8 +227,8 @@ export default class GranularityModeSelector extends React.Component {
 
     getSelectedTimeRange() {
         let selectedTimeRange = '';
-        if (location.search.length > 1) {
-            selectedTimeRange = this.props.getTimeRangeName(JSON.parse(decodeURI(location.search.substr(1))).tr);
+        if (this.props.getDateTimeRangeInfo().hasOwnProperty('tr')) {
+            selectedTimeRange = this.props.getTimeRangeName(this.props.getDateTimeRangeInfo().tr);
         }
         return selectedTimeRange;
     }
