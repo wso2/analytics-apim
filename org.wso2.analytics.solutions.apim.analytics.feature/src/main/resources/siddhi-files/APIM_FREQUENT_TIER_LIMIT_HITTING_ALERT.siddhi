@@ -36,7 +36,8 @@ define stream ThrottledOutStream(
     subscriber string,	
     throttledOutReason string,
     gatewayType string,
-    throttledOutTimestamp long
+    throttledOutTimestamp long,
+    hostname string
 );
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
