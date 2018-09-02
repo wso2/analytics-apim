@@ -1281,11 +1281,11 @@
 
     <properties>
 
-        <carbon.analytics.version>2.0.404</carbon.analytics.version>
-        <siddhi.version>4.2.7</siddhi.version>
+        <carbon.analytics.version>2.0.407</carbon.analytics.version>
+        <siddhi.version>4.2.11</siddhi.version>
 
         <carbon.analytics-common.version>6.0.66</carbon.analytics-common.version>
-        <analytics.solutions.version>1.0.3</analytics.solutions.version>
+        <analytics.solutions.version>1.0.4</analytics.solutions.version>
         <!-- Maven plugins -->
         <!--Bundle Plugin - Overridden from parent due to a bug in latest version related to capability providers-->
         <maven.bundle.plugin.version>2.5.4</maven.bundle.plugin.version>
@@ -1407,7 +1407,7 @@
         <siddhi.execution.time.version>4.0.14</siddhi.execution.time.version>
         <siddhi.execution.unique.version>4.0.24</siddhi.execution.unique.version>
         <siddhi.execution.priority.version>4.0.11</siddhi.execution.priority.version>
-        <siddhi.execution.markov.version>4.0.13</siddhi.execution.markov.version>
+        <siddhi.execution.markov.version>4.0.14</siddhi.execution.markov.version>
         <siddhi.execution.geo.version>4.0.14</siddhi.execution.geo.version>
         <siddhi.execution.map.version>4.0.13</siddhi.execution.map.version>
         <siddhi.execution.sentiment.version>4.0.13</siddhi.execution.sentiment.version>
