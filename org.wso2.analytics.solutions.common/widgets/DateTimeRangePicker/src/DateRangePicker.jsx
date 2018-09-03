@@ -1,3 +1,5 @@
+/* eslint-disable object-curly-newline,no-unused-vars,no-nested-ternary,react/prop-types,no-restricted-globals,
+import/prefer-default-export,react/forbid-prop-types,comma-dangle */
 /*
  * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -18,11 +20,39 @@
 
 import React from 'react';
 import Widget from '@wso2-dashboards/widget';
-import {MuiThemeProvider, MenuItem, SelectField, FlatButton} from 'material-ui';
-import {NotificationSync, NotificationSyncDisabled} from 'material-ui/svg-icons'
-import GranularityModeSelector from './GranularityModeSelector';
+import { MuiThemeProvider, MenuItem, SelectField, FlatButton } from 'material-ui';
+import { NotificationSync, NotificationSyncDisabled } from 'material-ui/svg-icons';
 import Moment from 'moment';
-import {Scrollbars} from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars';
+import JssProvider from 'react-jss/lib/JssProvider';
+import GranularityModeSelector from './GranularityModeSelector';
+
+
+// This is the workaround suggested in https://github.com/marmelab/react-admin/issues/1782
+const escapeRegex = /([[\].#*$><+~=|^:(),"'`\s])/g;
+let classCounter = 0;
+
+export const generateClassName = (rule, styleSheet) => {
+    classCounter += 1;
+
+    if (process.env.NODE_ENV === 'production') {
+        return `c${classCounter}`;
+    }
+
+    if (styleSheet && styleSheet.options.classNamePrefix) {
+        let prefix = styleSheet.options.classNamePrefix;
+        // Sanitize the string as will be used to prefix the generated class name.
+        prefix = prefix.replace(escapeRegex, '-');
+
+        if (prefix.match(/^Mui/)) {
+            return `${prefix}-${rule.key}`;
+        }
+
+        return `${prefix}-${rule.key}-${classCounter}`;
+    }
+
+    return `${rule.key}-${classCounter}`;
+};
 
 export default class DateRangePicker extends Widget {
 
@@ -36,24 +66,22 @@ export default class DateRangePicker extends Widget {
             granularityValue: '',
             options: this.props.configs.options,
             enableSync: false,
-            btnType: <NotificationSyncDisabled color='#BDBDBD'/>
+            btnType: <NotificationSyncDisabled color='#BDBDBD' />,
         };
 
-        this.handleResize = this.handleResize.bind(this);
-        this.props.glContainer.on('resize', this.handleResize);
         this.handleGranularityChange = this.handleGranularityChange.bind(this);
         this.handleGranularityChangeForCustom = this.handleGranularityChangeForCustom.bind(this);
         this.publishTimeRange = this.publishTimeRange.bind(this);
         this.getDateTimeRangeInfo = this.getDateTimeRangeInfo.bind(this);
         this.getTimeIntervalDescriptor = this.getTimeIntervalDescriptor.bind(this);
-        this.getStartTimeAndEndTimeForTimeIntervalDescriptor =
-            this.getStartTimeAndEndTimeForTimeIntervalDescriptor.bind(this);
+        this.getStartTimeAndEndTimeForTimeIntervalDescriptor = this
+            .getStartTimeAndEndTimeForTimeIntervalDescriptor.bind(this);
         this.generateGranularitySelector = this.generateGranularitySelector.bind(this);
+        this.OnChangeOfSelectField = this.OnChangeOfSelectField.bind(this);
         this.verifySelectedGranularityForCustom = this.verifySelectedGranularityForCustom.bind(this);
         this.onChangeForFixedTimeRange = this.onChangeForFixedTimeRange.bind(this);
         this.onChangeForCustomTimeRange = this.onChangeForCustomTimeRange.bind(this);
         this.getStartTimeAndGranularity = this.getStartTimeAndGranularity.bind(this);
-        this.lowerCaseFirstChar = this.lowerCaseFirstChar.bind(this);
         this.capitalizeCaseFirstChar = this.capitalizeCaseFirstChar.bind(this);
         this.generateGranularityMenuItems = this.generateGranularityMenuItems.bind(this);
         this.getAvailableGranularities = this.getAvailableGranularities.bind(this);
@@ -73,13 +101,11 @@ export default class DateRangePicker extends Widget {
         this.setRefreshInterval = this.setRefreshInterval.bind(this);
         this.clearRefreshInterval = this.clearRefreshInterval.bind(this);
         this.setQueryParamToURL = this.setQueryParamToURL.bind(this);
-    }
 
-    handleResize() {
-        this.setState({
+        this.props.glContainer.on('resize', () => this.setState({
             width: this.props.glContainer.width,
-            height: this.props.glContainer.height
-        });
+            height: this.props.glContainer.height,
+        }));
     }
 
     publishTimeRange(message) {
@@ -93,23 +119,21 @@ export default class DateRangePicker extends Widget {
     handleGranularityChange(mode) {
         this.clearRefreshInterval();
         let granularity = '';
-        let startTime = null;
 
         if (mode !== 'custom') {
-            let startTimeAndGranularity = this.getStartTimeAndGranularity(mode);
+            const startTimeAndGranularity = this.getStartTimeAndGranularity(mode);
             granularity = this.verifyDefaultGranularityOfTimeRange(startTimeAndGranularity.granularity);
-            startTime = startTimeAndGranularity.startTime;
             this.publishTimeRange({
-                granularity: granularity,
-                from: startTime.getTime(),
-                to: new Date().getTime()
+                granularity,
+                from: startTimeAndGranularity.startTime.getTime(),
+                to: new Date().getTime(),
             });
             this.setRefreshInterval();
             this.setState({
                 granularityMode: mode,
                 granularityValue: granularity,
-                startTime: startTime,
-                endTime: new Date()
+                startTime: startTimeAndGranularity.startTime,
+                endTime: new Date(),
             });
         }
     }
@@ -117,18 +141,17 @@ export default class DateRangePicker extends Widget {
     handleGranularityChangeForCustom(mode, startTime, endTime, granularity) {
         this.clearRefreshInterval();
         this.publishTimeRange({
-            granularity: granularity,
+            granularity,
             from: startTime.getTime(),
-            to: endTime.getTime()
+            to: endTime.getTime(),
         });
         this.setState({
             granularityMode: mode,
             granularityValue: granularity,
-            startTime: startTime,
-            endTime: endTime
+            startTime,
+            endTime,
         });
     }
-
 
     getStartTimeAndGranularity(mode) {
         let granularity = '';
@@ -143,7 +166,7 @@ export default class DateRangePicker extends Widget {
                 startTime = Moment().subtract(15, 'minutes').toDate();
                 granularity = 'minute';
                 break;
-            case '1 Hour' :
+            case '1 Hour':
                 startTime = Moment().subtract(1, 'hours').toDate();
                 granularity = 'minute';
                 break;
@@ -171,22 +194,25 @@ export default class DateRangePicker extends Widget {
                 startTime = Moment().subtract(1, 'years').toDate();
                 granularity = 'month';
                 break;
+            default:
+            // do nothing
         }
-        return {startTime: startTime, granularity: granularity};
+        return { startTime, granularity };
     }
 
     verifyDefaultGranularityOfTimeRange(granularity) {
-        let availableGranularities = this.getAvailableGranularities();
+        const availableGranularities = this.getAvailableGranularities();
         if (availableGranularities.indexOf(this.capitalizeCaseFirstChar(granularity)) > -1) {
             return granularity;
         } else {
-            return this.lowerCaseFirstChar(availableGranularities[0]);
+            return availableGranularities[0].toLowerCase();
         }
     }
 
     getDefaultTimeRange() {
-        let defaultTimeRange = this.state.options.defaultValue;
-        let minGranularity = this.state.options.availableGranularities;
+        const { options } = this.state;
+        const defaultTimeRange = options.defaultValue || '3 Months';
+        const minGranularity = options.availableGranularities || 'From Second';
         let availableViews = [];
         switch (minGranularity) {
             case 'From Second':
@@ -206,6 +232,8 @@ export default class DateRangePicker extends Widget {
             case 'From Year':
                 availableViews = ['1 Year'];
                 break;
+            default:
+            // do nothing
         }
 
         if (availableViews.indexOf(defaultTimeRange) > -1) {
@@ -216,61 +244,59 @@ export default class DateRangePicker extends Widget {
     }
 
     loadDefaultTimeRange() {
-        let dateTimeRangeInfo = this.getDateTimeRangeInfo();
-        if (dateTimeRangeInfo.hasOwnProperty('tr')) {
+        const dateTimeRangeInfo = this.getDateTimeRangeInfo();
+        if (dateTimeRangeInfo.tr) {
             if (dateTimeRangeInfo.tr.toLowerCase() === 'custom') {
-                if (dateTimeRangeInfo.hasOwnProperty('sd')
-                    && dateTimeRangeInfo.hasOwnProperty('ed')) {
-                    if (dateTimeRangeInfo.hasOwnProperty('g')) {
+                if (dateTimeRangeInfo.sd
+                    && dateTimeRangeInfo.ed) {
+                    if (dateTimeRangeInfo.g) {
                         this.loadUserSpecifiedCustomTimeRange(dateTimeRangeInfo.sd,
-                            dateTimeRangeInfo.ed, dateTimeRangeInfo.g)
+                            dateTimeRangeInfo.ed, dateTimeRangeInfo.g);
                     } else {
                         this.loadUserSpecifiedCustomTimeRange(dateTimeRangeInfo.sd,
-                            dateTimeRangeInfo.ed, '')
+                            dateTimeRangeInfo.ed, '');
                     }
                 } else {
                     this.handleGranularityChange(this.getDefaultTimeRange());
                 }
             } else {
-                if (dateTimeRangeInfo.hasOwnProperty('sync')) {
-                    if (dateTimeRangeInfo.sync) {
-                        this.setState({
-                            enableSync: true,
-                            btnType: <NotificationSync color='#f17b31'/>
-                        });
-                    }
+                if (dateTimeRangeInfo.sync) {
+                    this.setState({
+                        enableSync: true,
+                        btnType: <NotificationSync color='#f17b31' />,
+                    });
                 }
-                if (dateTimeRangeInfo.hasOwnProperty('g')) {
-                    this.loadUserSpecifiedTimeRange(dateTimeRangeInfo.tr, dateTimeRangeInfo.g)
+                if (dateTimeRangeInfo.g) {
+                    this.loadUserSpecifiedTimeRange(dateTimeRangeInfo.tr, dateTimeRangeInfo.g);
                 } else {
-                    this.loadUserSpecifiedTimeRange(dateTimeRangeInfo.tr, '')
+                    this.loadUserSpecifiedTimeRange(dateTimeRangeInfo.tr, '');
                 }
             }
         } else {
             this.handleGranularityChange(this.getDefaultTimeRange());
         }
-
     }
 
     loadUserSpecifiedCustomTimeRange(start, end, granularity) {
-        let startAndEndTime = this.formatTimeRangeDetails(start, end);
+        const startAndEndTime = this.formatTimeRangeDetails(start, end);
         if (startAndEndTime != null) {
             this.clearRefreshInterval();
             if (granularity.length === 0
                 || this.getSupportedGranularitiesForCustom(
-                    startAndEndTime.startTime, startAndEndTime.endTime).indexOf(granularity) === -1) {
-                granularity = this.lowerCaseFirstChar(this.getAvailableGranularities()[0]);
+                    startAndEndTime.startTime, startAndEndTime.endTime
+                ).indexOf(granularity) === -1) {
+                granularity = this.getAvailableGranularities()[0].toLowerCase();
             }
             this.publishTimeRange({
-                granularity: granularity,
+                granularity,
                 from: startAndEndTime.startTime,
-                to: startAndEndTime.endTime
+                to: startAndEndTime.endTime,
             });
             this.setState({
                 granularityMode: 'custom',
                 granularityValue: granularity,
                 startTime: Moment(startAndEndTime.startTime).toDate(),
-                endTime: Moment(startAndEndTime.endTime).toDate()
+                endTime: Moment(startAndEndTime.endTime).toDate(),
             });
         } else {
             this.handleGranularityChange(this.getDefaultTimeRange());
@@ -278,33 +304,31 @@ export default class DateRangePicker extends Widget {
     }
 
     loadUserSpecifiedTimeRange(range, granularity) {
-        let timeRange = this.getTimeRangeName(range);
+        const timeRange = this.getTimeRangeName(range);
         if (timeRange.length > 0) {
             if (granularity.length > 0) {
                 this.clearRefreshInterval();
                 granularity = granularity.toLowerCase();
-                let supportedGranularities = this.getSupportedGranularitiesForFixed(timeRange);
-                if (supportedGranularities.indexOf(
-                    this.capitalizeCaseFirstChar(granularity)) > -1) {
-                    let availableGranularities = this.getAvailableGranularities();
-                    if (availableGranularities.indexOf(
-                        this.capitalizeCaseFirstChar(granularity)) === -1) {
-                        granularity = this.lowerCaseFirstChar(availableGranularities[0])
+                const supportedGranularities = this.getSupportedGranularitiesForFixed(timeRange);
+                if (supportedGranularities.indexOf(this.capitalizeCaseFirstChar(granularity)) > -1) {
+                    const availableGranularities = this.getAvailableGranularities();
+                    if (availableGranularities.indexOf(this.capitalizeCaseFirstChar(granularity)) === -1) {
+                        granularity = availableGranularities[0].toLowerCase();
                     }
                 } else {
-                    granularity = this.lowerCaseFirstChar(supportedGranularities[supportedGranularities.length - 1]);
+                    granularity = supportedGranularities[supportedGranularities.length - 1].toLowerCase();
                 }
-                let startTimeAndDefaultGranularity = this.getStartTimeAndGranularity(timeRange);
+                const startTimeAndDefaultGranularity = this.getStartTimeAndGranularity(timeRange);
                 this.publishTimeRange({
-                    granularity: granularity,
+                    granularity,
                     from: startTimeAndDefaultGranularity.startTime.getTime(),
-                    to: new Date().getTime()
+                    to: new Date().getTime(),
                 });
                 this.setState({
                     granularityMode: timeRange,
                     granularityValue: granularity,
                     startTime: startTimeAndDefaultGranularity.startTime,
-                    endTime: new Date()
+                    endTime: new Date(),
                 });
                 this.setRefreshInterval();
             } else {
@@ -317,36 +341,40 @@ export default class DateRangePicker extends Widget {
 
     getTimeRangeName(timeRange) {
         let name = '';
-        let rangeParts = (timeRange.toLowerCase().match(/[0-9]+|[a-z]+/g) || []);
-        if (rangeParts.length === 2) {
-            switch (rangeParts[0] + ' ' + rangeParts[1]) {
-                case '1 min':
-                    name = '1 Min';
-                    break;
-                case '15 min':
-                    name = '15 Min';
-                    break;
-                case '1 hour' :
-                    name = '1 Hour';
-                    break;
-                case '1 day':
-                    name = '1 Day';
-                    break;
-                case '7 days':
-                    name = '7 Days';
-                    break;
-                case '1 month':
-                    name = '1 Month';
-                    break;
-                case '3 months':
-                    name = '3 Months';
-                    break;
-                case '6 months':
-                    name = '6 Months';
-                    break;
-                case '1 year':
-                    name = '1 Year';
-                    break;
+        if (timeRange) {
+            const rangeParts = (timeRange.toLowerCase().match(/[0-9]+|[a-z]+/g) || []);
+            if (rangeParts.length === 2) {
+                switch (rangeParts[0] + ' ' + rangeParts[1]) {
+                    case '1 min':
+                        name = '1 Min';
+                        break;
+                    case '15 min':
+                        name = '15 Min';
+                        break;
+                    case '1 hour':
+                        name = '1 Hour';
+                        break;
+                    case '1 day':
+                        name = '1 Day';
+                        break;
+                    case '7 days':
+                        name = '7 Days';
+                        break;
+                    case '1 month':
+                        name = '1 Month';
+                        break;
+                    case '3 months':
+                        name = '3 Months';
+                        break;
+                    case '6 months':
+                        name = '6 Months';
+                        break;
+                    case '1 year':
+                        name = '1 Year';
+                        break;
+                    default:
+                    // do nothing
+                }
             }
         }
         return name;
@@ -357,22 +385,22 @@ export default class DateRangePicker extends Widget {
         let end = null;
         let result = null;
 
-        let startTimeFormat = this.getDateTimeFormat(startTime);
-        let endTimeFormat = this.getDateTimeFormat(endTime);
+        const startTimeFormat = this.getDateTimeFormat(startTime);
+        const endTimeFormat = this.getDateTimeFormat(endTime);
 
 
         if (startTimeFormat != null && endTimeFormat != null) {
             start = Moment(startTime, startTimeFormat).valueOf();
             end = Moment(endTime, endTimeFormat).valueOf();
             if (start !== 'Invalid date' && end !== 'Invalid date') {
-                result = {startTime: start, endTime: end};
+                result = { startTime: start, endTime: end };
             }
         }
         return result;
     }
 
     getDateTimeFormat(dateTime) {
-        let dateTimeParts = dateTime.split(' ');
+        const dateTimeParts = dateTime.split(' ');
 
         let timeFormat = null;
         if (dateTimeParts.length === 3) {
@@ -402,7 +430,7 @@ export default class DateRangePicker extends Widget {
 
         let dateFormat = null;
         if (dateDelimiter != null) {
-            let dateParts = dateTimeParts[0].split(dateDelimiter);
+            const dateParts = dateTimeParts[0].split(dateDelimiter);
             if (dateParts.length === 2) {
                 let monthFormat = 'MM';
                 if (dateParts[1].length === 3) {
@@ -432,7 +460,7 @@ export default class DateRangePicker extends Widget {
     }
 
     timestampToDateFormat(timestamp, granularityMode) {
-        let format = this.getStandardDateTimeFormat(granularityMode);
+        const format = this.getStandardDateTimeFormat(granularityMode);
         if (format.length > 0) {
             return Moment.unix(timestamp).format(format);
         } else {
@@ -441,18 +469,19 @@ export default class DateRangePicker extends Widget {
     }
 
     getStandardDateTimeFormat(granularityMode) {
+        granularityMode = granularityMode.toLowerCase();
         let format = '';
-        if (granularityMode.toLowerCase().indexOf('second') > -1) {
+        if (granularityMode.indexOf('second') > -1) {
             format = 'YYYY-MMM-DD hh:mm:ss A';
-        } else if (granularityMode.toLowerCase().indexOf('minute') > -1) {
+        } else if (granularityMode.indexOf('minute') > -1) {
             format = 'YYYY-MMM-DD hh:mm A';
-        } else if (granularityMode.toLowerCase().indexOf('hour') > -1) {
+        } else if (granularityMode.indexOf('hour') > -1) {
             format = 'YYYY-MMM-DD hh:00 A';
-        } else if (granularityMode.toLowerCase().indexOf('day') > -1) {
+        } else if (granularityMode.indexOf('day') > -1) {
             format = 'YYYY-MMM-DD';
-        } else if (granularityMode.toLowerCase().indexOf('month') > -1) {
+        } else if (granularityMode.indexOf('month') > -1) {
             format = 'YYYY-MMM';
-        } else if (granularityMode.toLowerCase().indexOf('year') > -1) {
+        } else if (granularityMode.indexOf('year') > -1) {
             format = 'YYYY';
         }
         return format;
@@ -467,44 +496,59 @@ export default class DateRangePicker extends Widget {
     }
 
     render() {
-        let {granularityMode, width, height} = this.state;
+        const { granularityMode, width, height } = this.state;
 
         return (
-            <MuiThemeProvider
-                muiTheme={this.props.muiTheme}>
-                <Scrollbars
-                    style={{width, height}}>
-                    <div
-                        style={{
-                            margin: '2%',
-                            maxWidth: 840
-                        }}>
-                        <GranularityModeSelector
-                            onChange={this.handleGranularityChange}
-                            onChangeCustom={this.handleGranularityChangeForCustom}
-                            options={this.state.options}
-                            getTimeRangeName={this.getTimeRangeName}
-                            getDateTimeRangeInfo={this.getDateTimeRangeInfo}/>
-                        {this.getTimeIntervalDescriptor(granularityMode)}
-                    </div>
-                </Scrollbars>
-            </MuiThemeProvider>
+            <JssProvider
+                generateClassName={generateClassName}
+            >
+                <MuiThemeProvider
+                    muiTheme={this.props.muiTheme}
+                >
+                    <Scrollbars
+                        style={{ width, height }}
+                    >
+                        <div
+                            style={{
+                                margin: '2%',
+                                maxWidth: 840,
+                            }}
+                        >
+                            <GranularityModeSelector
+                                onChange={this.handleGranularityChange}
+                                onChangeCustom={this.handleGranularityChangeForCustom}
+                                options={this.state.options}
+                                getTimeRangeName={this.getTimeRangeName}
+                                getDateTimeRangeInfo={this.getDateTimeRangeInfo}
+                                theme={this.props.muiTheme.name}
+                                width={this.state.width}
+                                height={this.state.height}
+                            />
+                            {this.getTimeIntervalDescriptor(granularityMode)}
+                        </div>
+                    </Scrollbars>
+                </MuiThemeProvider>
+            </JssProvider>
         );
     }
 
     getTimeIntervalDescriptor(granularityMode) {
-        let startTime = null;
-        let endTime = null;
+        let startAndEnd = {
+            startTime: null,
+            endTime: null
+        };
         if (granularityMode !== 'custom') {
-            let startAndEndTime = this.getStartTimeAndEndTimeForTimeIntervalDescriptor(granularityMode);
-            startTime = startAndEndTime.startTime;
-            endTime = startAndEndTime.endTime;
+            startAndEnd = this.getStartTimeAndEndTimeForTimeIntervalDescriptor(granularityMode);
         } else if (granularityMode === 'custom'
             && this.state.startTime
             && this.state.endTime) {
-            startTime = this.timestampToDateFormat(this.state.startTime.getTime() / 1000, this.state.granularityValue);
-            endTime = this.timestampToDateFormat(this.state.endTime.getTime() / 1000, this.state.granularityValue);
+            startAndEnd.startTime = this
+                .timestampToDateFormat(this.state.startTime.getTime() / 1000, this.state.granularityValue);
+            startAndEnd.endTime = this
+                .timestampToDateFormat(this.state.endTime.getTime() / 1000, this.state.granularityValue);
         }
+
+        const { startTime, endTime } = startAndEnd;
         if (granularityMode && startTime && endTime) {
             this.setQueryParamToURL(
                 granularityMode.replace(' ', '').toLowerCase(),
@@ -519,17 +563,19 @@ export default class DateRangePicker extends Widget {
                         display: 'flex',
                         alignContent: 'center',
                         marginTop: 5,
-                        width: '100%'
-                    }}>
+                        width: '100%',
+                    }}
+                >
                     <div
                         style={{
                             lineHeight: 3,
-                            verticalAlign: 'middle'
-                        }}>
+                            verticalAlign: 'middle',
+                        }}
+                    >
                         {`${startTime}`}
-                        <span style={{color: '#828282'}}> to </span>
+                        <span style={{ color: '#828282' }}> to </span>
                         {`${endTime}`}
-                        <span style={{color: '#828282'}}> per </span>
+                        <span style={{ color: '#828282' }}> per </span>
                     </div>
                     {this.generateGranularitySelector()}
                     <FlatButton
@@ -538,10 +584,11 @@ export default class DateRangePicker extends Widget {
                         onClick={this.autoSyncClick}
                         style={{
                             marginLeft: 20,
-                            marginTop: 8
-                        }}/>
+                            marginTop: 8,
+                        }}
+                    />
                 </div>
-            )
+            );
         } else {
             return null;
         }
@@ -560,7 +607,7 @@ export default class DateRangePicker extends Widget {
                 startTime = Moment().subtract(15, 'minutes').format('YYYY-MMM-DD hh:mm A');
                 endTime = Moment().format('YYYY-MMM-DD hh:mm A');
                 break;
-            case '1 Hour' :
+            case '1 Hour':
                 startTime = Moment().subtract(1, 'hours').format('YYYY-MMM-DD hh:mm A');
                 endTime = Moment().format('YYYY-MMM-DD hh:mm A');
                 break;
@@ -588,8 +635,10 @@ export default class DateRangePicker extends Widget {
                 startTime = Moment().subtract(1, 'years').format('YYYY');
                 endTime = Moment().format('YYYY');
                 break;
+            default:
+            // do nothing
         }
-        return {startTime: startTime, endTime: endTime};
+        return { startTime, endTime };
     }
 
     generateGranularitySelector() {
@@ -600,14 +649,15 @@ export default class DateRangePicker extends Widget {
                     this.setQueryParamToURL(
                         this.state.granularityMode.replace(' ', '').toLowerCase(),
                         this.timestampToDateFormat(
-                            this.state.startTime.getTime(), this.state.granularityMode).toLowerCase(),
+                            this.state.startTime.getTime(), this.state.granularityMode
+                        ).toLowerCase(),
                         this.timestampToDateFormat(
-                            this.state.endTime.getTime(), this.state.granularityMode).toLowerCase(),
+                            this.state.endTime.getTime(), this.state.granularityMode
+                        ).toLowerCase(),
                         value,
-                        this.state.enableSync);
-                    this.state.granularityMode === 'custom' ?
-                        this.onChangeForCustomTimeRange(value) :
-                        this.onChangeForFixedTimeRange(value)
+                        this.state.enableSync
+                    );
+                    this.OnChangeOfSelectField(value);
                 }}
                 style={{
                     marginLeft: 10,
@@ -615,7 +665,15 @@ export default class DateRangePicker extends Widget {
             >
                 {this.generateGranularityMenuItems()}
             </SelectField>
-        )
+        );
+    }
+
+    OnChangeOfSelectField(value) {
+        if (this.state.granularityMode === 'custom') {
+            this.onChangeForCustomTimeRange(value);
+        } else {
+            this.onChangeForFixedTimeRange(value);
+        }
     }
 
     getDefaultSelectedOption() {
@@ -641,7 +699,7 @@ export default class DateRangePicker extends Widget {
             from: this.state.startTime.getTime(),
             to: this.state.endTime.getTime(),
         });
-        this.setState({granularityValue: value});
+        this.setState({ granularityValue: value });
     }
 
     onChangeForCustomTimeRange(value) {
@@ -650,7 +708,7 @@ export default class DateRangePicker extends Widget {
             from: Moment(this.state.startTime).startOf(value).valueOf(),
             to: Moment(this.state.endTime).startOf(value).valueOf(),
         });
-        this.setState({granularityValue: value});
+        this.setState({ granularityValue: value });
     }
 
     generateGranularityMenuItems() {
@@ -661,28 +719,25 @@ export default class DateRangePicker extends Widget {
             supportedGranularities = this.getSupportedGranularitiesForFixed(this.state.granularityMode);
         }
 
-        return (this.getAvailableGranularities()).map((view) =>
-            supportedGranularities.indexOf(view) > -1 ?
-                <MenuItem
-                    value={this.lowerCaseFirstChar(view)}
-                    primaryText={view}/> :
-                <MenuItem
-                    value={this.lowerCaseFirstChar(view)}
-                    primaryText={view}
-                    disabled={true}/>
-        );
-    }
-
-    lowerCaseFirstChar(str) {
-        return str.charAt(0).toLowerCase() + str.slice(1);
+        return (this.getAvailableGranularities()).map(view => (
+            <MenuItem
+                value={view.toLowerCase()}
+                primaryText={view}
+                disabled={supportedGranularities.indexOf(view) === -1}
+            />
+        ));
     }
 
     capitalizeCaseFirstChar(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
+        let result = '';
+        if (str) {
+            result = str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        return result;
     }
 
     getAvailableGranularities() {
-        let minGranularity = this.state.options.availableGranularities;
+        const minGranularity = this.state.options.availableGranularities || 'From Second';
         let granularities = [];
         switch (minGranularity) {
             case 'From Second':
@@ -703,6 +758,8 @@ export default class DateRangePicker extends Widget {
             case 'From Year':
                 granularities = ['Year'];
                 break;
+            default:
+            // do nothing
         }
         return granularities;
     }
@@ -714,7 +771,7 @@ export default class DateRangePicker extends Widget {
             case '15 Min':
                 supportedGranularities = ['Second', 'Minute'];
                 break;
-            case '1 Hour' :
+            case '1 Hour':
                 supportedGranularities = ['Second', 'Minute', 'Hour'];
                 break;
             case '1 Day':
@@ -729,14 +786,16 @@ export default class DateRangePicker extends Widget {
             case '1 Year':
                 supportedGranularities = ['Second', 'Minute', 'Hour', 'Day', 'Month', 'Year'];
                 break;
+            default:
+            // do nothing
         }
         return supportedGranularities;
     }
 
     getSupportedGranularitiesForCustom(startTime, endTime) {
-        let start = Moment(startTime);
-        let end = Moment(endTime);
-        let supportedGranularities = [];
+        const start = Moment(startTime);
+        const end = Moment(endTime);
+        const supportedGranularities = [];
 
         if (end.diff(start, 'seconds') !== 0) {
             supportedGranularities.push('Second');
@@ -764,12 +823,12 @@ export default class DateRangePicker extends Widget {
         if (!this.state.enableSync) {
             this.setState({
                 enableSync: true,
-                btnType: <NotificationSync color='#f17b31'/>
+                btnType: <NotificationSync color='#f17b31' />,
             }, this.setRefreshInterval);
         } else {
             this.setState({
                 enableSync: false,
-                btnType: <NotificationSyncDisabled color='#BDBDBD'/>
+                btnType: <NotificationSyncDisabled color='#BDBDBD' />,
             });
             this.clearRefreshInterval();
         }
@@ -777,19 +836,19 @@ export default class DateRangePicker extends Widget {
 
     setRefreshInterval() {
         if (this.state.enableSync) {
-            let refreshInterval = this.state.options.autoSyncInterval * 1000;
-            let refresh = () => {
-                let startTimeAndGranularity = this.getStartTimeAndGranularity(this.state.granularityMode);
+            const refreshInterval = this.state.options.autoSyncInterval * 1000 || 10000;
+            const refresh = () => {
+                const startTimeAndGranularity = this.getStartTimeAndGranularity(this.state.granularityMode);
                 this.publishTimeRange({
                     granularity: this.state.granularityValue,
                     from: startTimeAndGranularity.startTime.getTime(),
                     to: new Date().getTime(),
                 });
             };
-            let intervalID = setInterval(refresh, refreshInterval);
+            const intervalID = setInterval(refresh, refreshInterval);
             this.setState({
                 refreshIntervalId: intervalID,
-                endTime: new Date()
+                endTime: new Date(),
             });
         }
     }
@@ -797,7 +856,7 @@ export default class DateRangePicker extends Widget {
     clearRefreshInterval() {
         clearInterval(this.state.refreshIntervalId);
         this.setState({
-            refreshIntervalId: null
+            refreshIntervalId: null,
         });
     }
 
@@ -810,7 +869,6 @@ export default class DateRangePicker extends Widget {
             sync: autoSync,
         });
     }
-
 }
 
 global.dashboard.registerWidget('DateRangePicker', DateRangePicker);

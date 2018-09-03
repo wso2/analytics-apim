@@ -1,3 +1,5 @@
+/* eslint-disable object-curly-newline,no-unused-vars,no-nested-ternary,react/prop-types,no-restricted-globals,
+import/prefer-default-export,react/forbid-prop-types,comma-dangle */
 /*
  * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -17,7 +19,7 @@
  */
 
 import React from 'react';
-import {MenuItem, SelectField} from 'material-ui';
+import { MenuItem, SelectField } from 'material-ui';
 import moment from 'moment';
 
 export default class DateTimePicker extends React.Component {
@@ -27,170 +29,46 @@ export default class DateTimePicker extends React.Component {
             year: new Date().getFullYear(),
             month: new Date().getMonth(),
             days: new Date().getDate(),
-            time: moment().format('HH:mm:ss.SSS')
+            time: moment().format('HH:mm:ss.SSS'),
         };
 
         this.generateDays = this.generateDays.bind(this);
         this.generateMonths = this.generateMonths.bind(this);
         this.generateYears = this.generateYears.bind(this);
-
     }
 
-    handleOnChange(property, value) {
-
-        let {inputType, onChange} = this.props;
-        let state = this.state;
-
-        state[property] = value;
-
-        let date =
-            moment(`${state.year}:${(state.month + 1)}:${state.days} ${state.time}`, 'YYYY-MM-DD HH:mm:ss.SSS').toDate();
-
-        switch (inputType) {
-            case 'year':
-                date.setMonth(0);
-            case 'month':
-                date.setDate(1);
-            case 'day':
-                date.setHours(0);
-            case 'hour':
-                date.setMinutes(0);
-            case 'minute':
-                date.setSeconds(0);
-            case 'second':
-                date.setMilliseconds(0);
-        }
-
-        this.setState(state);
-
-        return onChange && onChange(date);
-    }
-
-    render() {
-        let {year, month, days, time} = this.state;
-        let {inputType} = this.props;
-
+    getTimeStep(inputType) {
         switch (inputType) {
             case 'hour':
-                time = moment(time, 'HH:mm').format('HH:00:00.000');
-                break;
+                return 3600;
             case 'minute':
-                time = moment(time, 'HH:mm').format('HH:mm:00.000');
-                break;
+                return 60;
             case 'second':
-                time = moment(time, 'HH:mm:ss').format('HH:mm:ss.000');
-                break;
+                return 1;
+            default:
+                return '';
         }
-
-        return (
-            <div>
-                <div
-                    style={{
-                        display: 'inline-block'
-                    }}>
-                    {
-                        ['year', 'month', 'day', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ?
-                            <SelectField
-                                value={year}
-                                onChange={(event, index, value) => {
-                                    this.handleOnChange('year', value);
-                                }}>
-                                {
-                                    this.generateYears()
-                                }
-                            </SelectField> :
-                            null
-                    }
-                    {
-                        ['month', 'day', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ?
-                            <SelectField
-                                value={month}
-                                onChange={(event, index, value) => {
-                                    this.handleOnChange('month', value);
-                                }}>
-                                {
-                                    this.generateMonths()
-                                }
-                            </SelectField> :
-                            null
-                    }
-                    {
-                        ['day', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ?
-                            <SelectField
-                                value={days}
-                                onChange={(event, index, value) => {
-                                    this.handleOnChange('days', value);
-                                }}>
-                                {
-                                    this.generateDays(year, month)
-                                }
-                            </SelectField> :
-                            null
-                    }
-                </div>
-                {
-                    ['hour', 'minute', 'second'].indexOf(inputType) > -1 ?
-                        <div>
-                            <br/>Time<br/>
-                            <div
-                                className={'MuiFormControl-root-69'}>
-                                <div
-                                    className=
-                                        {'MuiInput-root-52 MuiInput-formControl-53 MuiInput-underline-56 underline'}>
-                                    <input
-                                        className={'MuiInput-input-60'}
-                                        type='time'
-                                        step={this.getTimeStep(inputType)}
-                                        value={time}
-                                        onChange={(evt) => {
-                                            this.handleOnChange('time', evt.target.value);
-
-                                        }}/>
-
-                                </div>
-                            </div>
-                        </div> :
-                        null
-
-                }
-            </div>
-        );
     }
 
-    generateYears() {
-        let yearArray = [];
-
-        for (let index = 1970; index <= 2099; index++) {
-            yearArray.push(
-                <MenuItem
-                    key={`year-${index}`}
-                    value={index}
-                    primaryText={index}/>
-            )
+    getTimeString(inputType) {
+        switch (inputType) {
+            case 'hour':
+                return moment().format('HH:00:00.000');
+            case 'minute':
+                return moment().format('HH:mm:00.000');
+            case 'second':
+                return moment().format('HH:mm:ss.000');
+            default:
+                return '';
         }
-
-        return yearArray;
     }
 
-    generateMonths() {
-        let monthComponents = [];
-        let monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-            'October', 'November', 'December'];
-
-        for (let i = 0; i < monthArray.length; i++) {
-            monthComponents.push(
-                <MenuItem
-                    key={`month-${i}`}
-                    value={i}
-                    primaryText={monthArray[i]}/>
-            )
-        }
-
-        return monthComponents;
+    isLeapYear(year) {
+        return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
     }
 
     generateDays(year, month) {
-        let dayComponents = [];
+        const dayComponents = [];
         let days = 0;
 
         if (month === 1) {
@@ -207,36 +85,183 @@ export default class DateTimePicker extends React.Component {
                 <MenuItem
                     key={`$days-${i}`}
                     value={i}
-                    primaryText={i}/>
-            )
+                    primaryText={i}
+                />
+            );
         }
 
         return dayComponents;
     }
 
-    isLeapYear(year) {
-        return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+    generateMonths() {
+        const monthComponents = [];
+        const monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+            'October', 'November', 'December'];
+
+        for (let i = 0; i < monthArray.length; i++) {
+            monthComponents.push(
+                <MenuItem
+                    key={`month-${i}`}
+                    value={i}
+                    primaryText={monthArray[i]}
+                />
+            );
+        }
+
+        return monthComponents;
     }
 
-    getTimeStep(inputType) {
-        switch (inputType) {
-            case 'hour':
-                return 3600;
-            case 'minute':
-                return 60;
-            case 'second':
-                return 1;
+    generateYears() {
+        const yearArray = [];
+
+        for (let index = 1970; index <= 2099; index++) {
+            yearArray.push(
+                <MenuItem
+                    key={`year-${index}`}
+                    value={index}
+                    primaryText={index}
+                />
+            );
         }
+
+        return yearArray;
     }
 
-    getTimeString(inputType) {
+    handleOnChange(property, value) {
+        const { inputType, onChange } = this.props;
+        const { state } = this;
+
+        state[property] = value;
+        const date = moment(`${state.year}:${(state.month + 1)}:${state.days} ${state.time}`,
+            'YYYY-MM-DD HH:mm:ss.SSS').toDate();
+
+        switch (inputType) {
+            case 'year':
+                date.setMonth(0);
+                break;
+            case 'month':
+                date.setDate(1);
+                break;
+            case 'day':
+                date.setHours(0);
+                break;
+            case 'hour':
+                date.setMinutes(0);
+                break;
+            case 'minute':
+                date.setSeconds(0);
+                break;
+            case 'second':
+                date.setMilliseconds(0);
+                break;
+            default:
+            //  do nothing
+        }
+
+        this.setState(state);
+
+        return onChange && onChange(date);
+    }
+
+    render() {
+        const { year, month, days } = this.state;
+        let { time } = this.state;
+        const { inputType } = this.props;
+
         switch (inputType) {
             case 'hour':
-                return moment().format('HH:00:00.000');
+                time = moment(time, 'HH:mm').format('HH:00:00.000');
+                break;
             case 'minute':
-                return moment().format('HH:mm:00.000');
+                time = moment(time, 'HH:mm').format('HH:mm:00.000');
+                break;
             case 'second':
-                return moment().format('HH:mm:ss.000');
+                time = moment(time, 'HH:mm:ss').format('HH:mm:ss.000');
+                break;
+            default:
+            //  do nothing
         }
+
+        return (
+            <div>
+                <div
+                    style={{
+                        display: 'inline-block',
+                    }}
+                >
+                    {
+                        ['year', 'month', 'day', 'hour', 'minute', 'second'].indexOf(inputType) > -1
+                            ? (
+                                <SelectField
+                                    value={year}
+                                    onChange={(event, index, value) => {
+                                        this.handleOnChange('year', value);
+                                    }}
+                                >
+                                    { this.generateYears() }
+                                </SelectField>
+                            )
+                            : null
+                    }
+                    {
+                        ['month', 'day', 'hour', 'minute', 'second'].indexOf(inputType) > -1
+                            ? (
+                                <SelectField
+                                    value={month}
+                                    onChange={(event, index, value) => {
+                                        this.handleOnChange('month', value);
+                                    }}
+                                >
+                                    { this.generateMonths() }
+                                </SelectField>
+                            )
+                            : null
+                    }
+                    {
+                        ['day', 'hour', 'minute', 'second'].indexOf(inputType) > -1
+                            ? (
+                                <SelectField
+                                    value={days}
+                                    onChange={(event, index, value) => {
+                                        this.handleOnChange('days', value);
+                                    }}
+                                >
+                                    { this.generateDays(year, month) }
+                                </SelectField>
+                            )
+                            : null
+                    }
+                </div>
+                {
+                    ['hour', 'minute', 'second'].indexOf(inputType) > -1
+                        ? (
+                            <div>
+                                <br />
+                                Time
+                                <br />
+                                <div
+                                    className="MuiFormControl-root-69"
+                                >
+                                    <div
+                                        className='MuiInput-root-52 MuiInput-formControl
+                                        -53 MuiInput-underline-56 underline'
+                                    >
+                                        <input
+                                            className="MuiInput-input-60"
+                                            type='time'
+                                            step={this.getTimeStep(inputType)}
+                                            value={time}
+                                            onChange={(evt) => {
+                                                this.handleOnChange('time', evt.target.value);
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                        : null
+                }
+            </div>
+        );
     }
 }
