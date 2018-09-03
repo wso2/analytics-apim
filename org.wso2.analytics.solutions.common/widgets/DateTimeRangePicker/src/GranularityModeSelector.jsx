@@ -1,5 +1,4 @@
-/* eslint-disable object-curly-newline,no-unused-vars,no-nested-ternary,react/prop-types,no-restricted-globals,
-import/prefer-default-export,react/forbid-prop-types,react/no-unused-state */
+/* eslint-disable react/prop-types,react/no-unused-state */
 /*
  * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -19,10 +18,12 @@ import/prefer-default-export,react/forbid-prop-types,react/no-unused-state */
  */
 
 import React from 'react';
-import { IconButton, FlatButton, Popover, Menu } from 'material-ui';
 import { HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft } from 'material-ui/svg-icons';
+import FlatButton from 'material-ui/FlatButton';
+import Popover from 'material-ui/Popover';
+import Menu from 'material-ui/Menu';
+import IconButton from 'material-ui/IconButton';
 import CustomTimeRangeSelector from './CustomTimeRangeSelector';
-
 
 export default class GranularityModeSelector extends React.Component {
     constructor(props) {
@@ -101,7 +102,9 @@ export default class GranularityModeSelector extends React.Component {
     }
 
     getCustomSelectButton() {
-        const { getDateTimeRangeInfo, options, onChangeCustom, theme, width, height } = this.props;
+        const {
+            getDateTimeRangeInfo, options, onChangeCustom, theme,
+        } = this.props;
         const { open, anchorEl } = this.state;
         const selectedTimeRange = getDateTimeRangeInfo().tr || '';
         const customButton = selectedTimeRange === 'custom'
@@ -135,7 +138,7 @@ export default class GranularityModeSelector extends React.Component {
                         vertical: 'top',
                     }}
                     onRequestClose={this.handleRequestClose}
-                    style={{ maxWidth: width > 550 ? 550 : width }}
+                    style={{ maxWidth: 550 }}
                 >
                     <Menu>
                         <div

@@ -1,5 +1,4 @@
-/* eslint-disable object-curly-newline,no-unused-vars,no-nested-ternary,react/prop-types,no-restricted-globals,
-import/prefer-default-export,react/forbid-prop-types,comma-dangle */
+/* eslint-disable comma-dangle */
 /*
  * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -20,13 +19,16 @@ import/prefer-default-export,react/forbid-prop-types,comma-dangle */
 
 import React from 'react';
 import Widget from '@wso2-dashboards/widget';
-import { MuiThemeProvider, MenuItem, SelectField, FlatButton } from 'material-ui';
+import FlatButton from 'material-ui/FlatButton';
+import MenuItem from 'material-ui/MenuItem';
+import SelectField from 'material-ui/SelectField';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 import { NotificationSync, NotificationSyncDisabled } from 'material-ui/svg-icons';
 import Moment from 'moment';
 import { Scrollbars } from 'react-custom-scrollbars';
 import JssProvider from 'react-jss/lib/JssProvider';
 import GranularityModeSelector from './GranularityModeSelector';
-
 
 // This is the workaround suggested in https://github.com/marmelab/react-admin/issues/1782
 const escapeRegex = /([[\].#*$><+~=|^:(),"'`\s])/g;
@@ -55,7 +57,6 @@ export const generateClassName = (rule, styleSheet) => {
 };
 
 export default class DateRangePicker extends Widget {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -511,7 +512,7 @@ export default class DateRangePicker extends Widget {
                         <div
                             style={{
                                 margin: '2%',
-                                maxWidth: 840,
+                                maxWidth: 860,
                             }}
                         >
                             <GranularityModeSelector

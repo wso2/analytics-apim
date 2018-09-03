@@ -1,5 +1,4 @@
-/* eslint-disable object-curly-newline,no-unused-vars,no-nested-ternary,react/prop-types,no-restricted-globals,
-import/prefer-default-export,react/forbid-prop-types,comma-dangle */
+/* eslint-disable react/prop-types,comma-dangle */
 /*
  * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
