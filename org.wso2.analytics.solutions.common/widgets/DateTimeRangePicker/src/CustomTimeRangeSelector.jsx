@@ -25,9 +25,7 @@ export default class CustomTimeRangeSelector extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            inputType: this.getDefaultGranularity(),
-        };
+        this.state = { inputType: this.getDefaultGranularity() };
 
         this.startTime = new Date();
         this.endTime = new Date();
@@ -127,14 +125,10 @@ export default class CustomTimeRangeSelector extends React.Component {
         const { theme } = this.props;
         return (
             <div
-                style={{
-                    marginTop: 10,
-                }}
+                style={{ marginTop: 10 }}
             >
                 <div
-                    style={{
-                        marginBottom: 10,
-                    }}
+                    style={{ marginBottom: 10 }}
                 >
                     Per
                     <br />

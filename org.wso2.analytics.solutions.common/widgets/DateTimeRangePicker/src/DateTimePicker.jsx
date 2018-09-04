@@ -184,9 +184,7 @@ export default class DateTimePicker extends React.Component {
         return (
             <div>
                 <div
-                    style={{
-                        display: 'inline-block',
-                    }}
+                    style={{ display: 'inline-block' }}
                 >
                     {
                         ['year', 'month', 'day', 'hour', 'minute', 'second'].indexOf(inputType) > -1

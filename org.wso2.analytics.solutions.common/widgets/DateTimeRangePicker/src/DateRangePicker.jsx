@@ -515,9 +515,7 @@ export default class DateRangePicker extends Widget {
                         style={{ width, height }}
                     >
                         <div
-                            style={{
-                                paddingLeft: 15,
-                            }}
+                            style={{ paddingLeft: 15 }}
                         >
                             <GranularityModeSelector
                                 onChange={this.handleGranularityChange}
@@ -665,9 +663,7 @@ export default class DateRangePicker extends Widget {
                     );
                     this.OnChangeOfSelectField(value);
                 }}
-                style={{
-                    marginLeft: 10,
-                }}
+                style={{ marginLeft: 10 }}
             >
                 {this.generateGranularityMenuItems()}
             </SelectField>
