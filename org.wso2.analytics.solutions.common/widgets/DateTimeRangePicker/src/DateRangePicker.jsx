@@ -767,30 +767,30 @@ export default class DateRangePicker extends Widget {
 
     getAvailableGranularities() {
         const minGranularity = this.state.options.availableGranularities || 'From Second';
-        let granularity = [];
+        let granularities = [];
         switch (minGranularity) {
             case 'From Second':
-                granularity = ['Second', 'Minute', 'Hour', 'Day', 'Month', 'Year'];
+                granularities = ['Second', 'Minute', 'Hour', 'Day', 'Month', 'Year'];
                 break;
             case 'From Minute':
-                granularity = ['Minute', 'Hour', 'Day', 'Month', 'Year'];
+                granularities = ['Minute', 'Hour', 'Day', 'Month', 'Year'];
                 break;
             case 'From Hour':
-                granularity = ['Hour', 'Day', 'Month', 'Year'];
+                granularities = ['Hour', 'Day', 'Month', 'Year'];
                 break;
             case 'From Day':
-                granularity = ['Day', 'Month', 'Year'];
+                granularities = ['Day', 'Month', 'Year'];
                 break;
             case 'From Month':
-                granularity = ['Month', 'Year'];
+                granularities = ['Month', 'Year'];
                 break;
             case 'From Year':
-                granularity = ['Year'];
+                granularities = ['Year'];
                 break;
             default:
             // do nothing
         }
-        return granularity;
+        return granularities;
     }
 
     getSupportedGranularitiesForFixed(granularityMode) {
