@@ -84,6 +84,7 @@ export default class DateRangePicker extends Widget {
         this.getStartTimeAndGranularity = this.getStartTimeAndGranularity.bind(this);
         this.capitalizeCaseFirstChar = this.capitalizeCaseFirstChar.bind(this);
         this.generateGranularityMenuItems = this.generateGranularityMenuItems.bind(this);
+        this.getSupportedTimeRanges = this.getSupportedTimeRanges.bind(this);
         this.getAvailableGranularities = this.getAvailableGranularities.bind(this);
         this.getSupportedGranularitiesForFixed = this.getSupportedGranularitiesForFixed.bind(this);
         this.getSupportedGranularitiesForCustom = this.getSupportedGranularitiesForCustom.bind(this);
@@ -306,33 +307,38 @@ export default class DateRangePicker extends Widget {
     loadUserSpecifiedTimeRange(range, granularity) {
         const timeRange = this.getTimeRangeName(range);
         if (timeRange.length > 0) {
-            if (granularity.length > 0) {
-                this.clearRefreshInterval();
-                granularity = granularity.toLowerCase();
-                const supportedGranularities = this.getSupportedGranularitiesForFixed(timeRange);
-                if (supportedGranularities.indexOf(this.capitalizeCaseFirstChar(granularity)) > -1) {
-                    const availableGranularities = this.getAvailableGranularities();
-                    if (availableGranularities.indexOf(this.capitalizeCaseFirstChar(granularity)) === -1) {
-                        granularity = availableGranularities[0].toLowerCase();
+            const supportedTimeRanges = this.getSupportedTimeRanges();
+            if (supportedTimeRanges.indexOf(timeRange) > -1) {
+                if (granularity.length > 0) {
+                    this.clearRefreshInterval();
+                    granularity = granularity.toLowerCase();
+                    const supportedGranularities = this.getSupportedGranularitiesForFixed(timeRange);
+                    if (supportedGranularities.indexOf(this.capitalizeCaseFirstChar(granularity)) > -1) {
+                        const availableGranularities = this.getAvailableGranularities();
+                        if (availableGranularities.indexOf(this.capitalizeCaseFirstChar(granularity)) === -1) {
+                            granularity = availableGranularities[0].toLowerCase();
+                        }
+                    } else {
+                        granularity = supportedGranularities[supportedGranularities.length - 1].toLowerCase();
                     }
+                    const startTimeAndDefaultGranularity = this.getStartTimeAndGranularity(timeRange);
+                    this.publishTimeRange({
+                        granularity,
+                        from: startTimeAndDefaultGranularity.startTime.getTime(),
+                        to: new Date().getTime(),
+                    });
+                    this.setState({
+                        granularityMode: timeRange,
+                        granularityValue: granularity,
+                        startTime: startTimeAndDefaultGranularity.startTime,
+                        endTime: new Date(),
+                    });
+                    this.setRefreshInterval();
                 } else {
-                    granularity = supportedGranularities[supportedGranularities.length - 1].toLowerCase();
+                    this.handleGranularityChange(timeRange);
                 }
-                const startTimeAndDefaultGranularity = this.getStartTimeAndGranularity(timeRange);
-                this.publishTimeRange({
-                    granularity,
-                    from: startTimeAndDefaultGranularity.startTime.getTime(),
-                    to: new Date().getTime(),
-                });
-                this.setState({
-                    granularityMode: timeRange,
-                    granularityValue: granularity,
-                    startTime: startTimeAndDefaultGranularity.startTime,
-                    endTime: new Date(),
-                });
-                this.setRefreshInterval();
             } else {
-                this.handleGranularityChange(timeRange);
+                this.handleGranularityChange(supportedTimeRanges[0]);
             }
         } else {
             this.handleGranularityChange(this.getDefaultTimeRange());
@@ -519,6 +525,7 @@ export default class DateRangePicker extends Widget {
                                 options={this.state.options}
                                 getTimeRangeName={this.getTimeRangeName}
                                 getDateTimeRangeInfo={this.getDateTimeRangeInfo}
+                                getDefaultTimeRange={this.getDefaultTimeRange}
                                 theme={this.props.muiTheme}
                                 width={this.state.width}
                                 height={this.state.height}
@@ -735,32 +742,59 @@ export default class DateRangePicker extends Widget {
         return result;
     }
 
-    getAvailableGranularities() {
+    getSupportedTimeRanges() {
         const minGranularity = this.state.options.availableGranularities || 'From Second';
-        let granularities = [];
+        let timeRanges = [];
         switch (minGranularity) {
             case 'From Second':
-                granularities = ['Second', 'Minute', 'Hour', 'Day', 'Month', 'Year'];
-                break;
             case 'From Minute':
-                granularities = ['Minute', 'Hour', 'Day', 'Month', 'Year'];
+                timeRanges = ['1 Min', '15 Min', '1 Hour', '1 Day', '7 Days', '1 Month', '3 Months',
+                    '6 Months', '1 Year'];
                 break;
             case 'From Hour':
-                granularities = ['Hour', 'Day', 'Month', 'Year'];
+                timeRanges = ['1 Hour', '1 Day', '7 Days', '1 Month', '3 Months', '6 Months', '1 Year'];
                 break;
             case 'From Day':
-                granularities = ['Day', 'Month', 'Year'];
+                timeRanges = ['1 Day', '7 Days', '1 Month', '3 Months', '6 Months', '1 Year'];
                 break;
             case 'From Month':
-                granularities = ['Month', 'Year'];
+                timeRanges = ['1 Month', '3 Months', '6 Months', '1 Year'];
                 break;
             case 'From Year':
-                granularities = ['Year'];
+                timeRanges = ['1 Year'];
                 break;
             default:
             // do nothing
         }
-        return granularities;
+        return timeRanges;
+    }
+
+    getAvailableGranularities() {
+        const minGranularity = this.state.options.availableGranularities || 'From Second';
+        let granularity = [];
+        switch (minGranularity) {
+            case 'From Second':
+                granularity = ['Second', 'Minute', 'Hour', 'Day', 'Month', 'Year'];
+                break;
+            case 'From Minute':
+                granularity = ['Minute', 'Hour', 'Day', 'Month', 'Year'];
+                break;
+            case 'From Hour':
+                granularity = ['Hour', 'Day', 'Month', 'Year'];
+                break;
+            case 'From Day':
+                granularity = ['Day', 'Month', 'Year'];
+                break;
+            case 'From Month':
+                granularity = ['Month', 'Year'];
+                break;
+            case 'From Year':
+                granularity = ['Year'];
+                break;
+            default:
+            // do nothing
+        }
+        return granularity;
     }
 
     getSupportedGranularitiesForFixed(granularityMode) {

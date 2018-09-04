@@ -42,7 +42,6 @@ export default class GranularityModeSelector extends React.Component {
         this.generateGranularityModeSwitchButton = this.generateGranularityModeSwitchButton.bind(this);
         this.generateLeftArrow = this.generateLeftArrow.bind(this);
         this.generateRightArrow = this.generateRightArrow.bind(this);
-        this.generateRightArrow = this.generateRightArrow.bind(this);
         this.getCustomSelectButton = this.getCustomSelectButton.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleRequestClose = this.handleRequestClose.bind(this);
@@ -82,8 +81,6 @@ export default class GranularityModeSelector extends React.Component {
 
         switch (minGranularity) {
             case 'From Second':
-                granularityOptions = ['1 Day', '7 Days', '1 Month', '3 Months', '6 Months', '1 Year'];
-                break;
             case 'From Minute':
             case 'From Hour':
             case 'From Day':
@@ -163,18 +160,23 @@ export default class GranularityModeSelector extends React.Component {
     }
 
     getSelectedGranularityLevel() {
-        const { getTimeRangeName, getDateTimeRangeInfo, options } = this.props;
+        const {
+            getTimeRangeName, getDateTimeRangeInfo, getDefaultTimeRange,
+        } = this.props;
         const selectedTimeRange = getTimeRangeName(getDateTimeRangeInfo().tr) || '';
         if (this.getHighGranularityOptions().indexOf(selectedTimeRange) > -1) {
             return 'high';
         } else if (this.getLowGranularityOptions().indexOf(selectedTimeRange) > -1) {
             return 'low';
-        } else if (this.getHighGranularityOptions().indexOf(options.defaultValue) > -1) {
-            return 'high';
-        } else if (this.getLowGranularityOptions().indexOf(options.defaultValue) > -1) {
-            return 'low';
         } else {
-            return '';
+            const defaultValue = getDefaultTimeRange();
+            if (this.getHighGranularityOptions().indexOf(defaultValue) > -1) {
+                return 'high';
+            } else if (this.getLowGranularityOptions().indexOf(defaultValue) > -1) {
+                return 'low';
+            } else {
+                return '';
+            }
         }
     }
 
