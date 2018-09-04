@@ -136,9 +136,9 @@ export default class GranularityModeSelector extends React.Component {
                         vertical: 'top',
                     }}
                     onRequestClose={this.handleRequestClose}
-                    style={{ width: 560 }}
+                    style={{ maxWidth: 560 }}
                 >
-                    <Menu style={{ width: 560 }}>
+                    <Menu style={{ maxWidth: 560 }}>
                         <div
                             style={{
                                 paddingLeft: 15,

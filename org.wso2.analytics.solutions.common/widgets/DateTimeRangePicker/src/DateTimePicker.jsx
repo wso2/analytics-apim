@@ -248,6 +248,13 @@ export default class DateTimePicker extends React.Component {
                                             style={{
                                                 color: theme.palette.textColor,
                                                 backgroundColor: theme.palette.canvasColor,
+                                                borderBottom: '1px solid',
+                                                borderTop: 'none',
+                                                borderLeft: 'none',
+                                                borderRight: 'none',
+                                                width: 200,
+                                                height: 30,
+                                                fontSize: 15
                                             }}
                                         />
                                     </div>
