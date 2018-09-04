@@ -25,7 +25,18 @@ define stream ApiUsagePerVersionFilteredStream (apiName string, apiVersion strin
 
 define stream ApiUserAgentFilteredStream(apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, operatingSystem string, browser string, requestTimestamp long, gatewayType string, label string);
 
+define stream geoTempStream(apiName string, apiVersion string,apiContext string, apiCreator string, apiCreatorTenantDomain string, username string, userTenantDomain string, country string, city string, totalCount long, requestTimestamp long);
+
 -- Aggregations
+
+--Geo Location Aggregations
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
+define aggregation GeoLocationAgg
+from geoTempStream
+select apiName,apiVersion,apiCreator,apiCreatorTenantDomain,username,userTenantDomain, country, city, totalCount,'default' as regionalID
+group by apiContext,country,city
+aggregate by requestTimestamp every seconds...years;
 
 -- API usage per version summary. (Specific to an application)
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
@@ -87,6 +98,10 @@ aggregate by requestTimestamp every seconds...years;
 define table ApiLastAccessSummary (apiContext string, apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiHostname string, applicationOwner string, tenantDomain string, lastAccessTime long, gatewayType string, label string, regionalID string);
 
 -- Queries
+
+from Request
+select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain, geo:findCountryFromIP(userIp) as country, geo:findCityFromIP(userIp) as city, count() as totalCount,requestTimestamp
+insert into geoTempStream;
 
 from Request
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, ifThenElse(throttledOut, 1, 0) as quotaExceededValue, requestTimestamp,
