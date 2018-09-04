@@ -510,7 +510,7 @@ export default class DateRangePicker extends Widget {
                     >
                         <div
                             style={{
-                                margin: 5,
+                                paddingLeft: 15,
                             }}
                         >
                             <GranularityModeSelector
@@ -519,7 +519,7 @@ export default class DateRangePicker extends Widget {
                                 options={this.state.options}
                                 getTimeRangeName={this.getTimeRangeName}
                                 getDateTimeRangeInfo={this.getDateTimeRangeInfo}
-                                theme={this.props.muiTheme.name}
+                                theme={this.props.muiTheme}
                                 width={this.state.width}
                                 height={this.state.height}
                             />

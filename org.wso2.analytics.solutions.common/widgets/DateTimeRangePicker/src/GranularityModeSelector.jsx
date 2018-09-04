@@ -21,7 +21,7 @@ import React from 'react';
 import { HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft } from 'material-ui/svg-icons';
 import FlatButton from 'material-ui/FlatButton';
 import Popover from 'material-ui/Popover';
-import List from 'material-ui/List';
+import Menu from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
 import CustomTimeRangeSelector from './CustomTimeRangeSelector';
 
@@ -112,13 +112,14 @@ export default class GranularityModeSelector extends React.Component {
                 <FlatButton
                     onClick={this.handleClick}
                     label='Custom'
-                    style={{ backgroundColor: theme === 'dark' ? '#383838' : '#E0E0E0' }}
+                    style={{ borderBottom: theme.name === 'dark' ? '1px solid red' : '1px solid gray' }}
                 />
             )
             : (
                 <FlatButton
                     onClick={this.handleClick}
                     label='Custom'
+                    style={{ borderBottom: 'none' }}
                 />
             );
         return (
@@ -138,22 +139,24 @@ export default class GranularityModeSelector extends React.Component {
                         vertical: 'top',
                     }}
                     onRequestClose={this.handleRequestClose}
-                    style={{ maxWidth: 550 }}
+                    style={{ width: 560 }}
                 >
-                    <List>
+                    <Menu style={{ width: 560 }}>
                         <div
                             style={{
-                                margin: 20,
-                                paddingBottom: 20,
+                                paddingLeft: 15,
+                                paddingRight: 15,
+                                paddingBottom: 15,
                             }}
                         >
                             <CustomTimeRangeSelector
                                 options={options}
                                 handleClose={this.handleRequestClose}
                                 onChangeCustom={onChangeCustom}
+                                theme={theme}
                             />
                         </div>
-                    </List>
+                    </Menu>
                 </Popover>
             </div>
         );
@@ -239,7 +242,7 @@ export default class GranularityModeSelector extends React.Component {
                     <FlatButton
                         onClick={() => this.onGranularityModeChange(option)}
                         label={option}
-                        style={{ backgroundColor: theme === 'dark' ? '#383838' : '#E0E0E0' }}
+                        style={{ borderBottom: theme.name === 'dark' ? '1px solid red' : '1px solid gray' }}
                     />
                 );
             } else {
@@ -247,6 +250,7 @@ export default class GranularityModeSelector extends React.Component {
                     <FlatButton
                         onClick={() => this.onGranularityModeChange(option)}
                         label={option}
+                        style={{ borderBottom: 'none' }}
                     />
                 );
             }

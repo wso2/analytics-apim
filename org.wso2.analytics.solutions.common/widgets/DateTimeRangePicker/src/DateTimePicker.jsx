@@ -165,7 +165,7 @@ export default class DateTimePicker extends React.Component {
     render() {
         const { year, month, days } = this.state;
         let { time } = this.state;
-        const { inputType } = this.props;
+        const { inputType, theme } = this.props;
 
         switch (inputType) {
             case 'hour':
@@ -238,20 +238,18 @@ export default class DateTimePicker extends React.Component {
                                 <br />
                                 Time
                                 <br />
-                                <div
-                                    className="MuiFormControl-root-69"
-                                >
-                                    <div
-                                        className='MuiInput-root-52 MuiInput-formControl
-                                        -53 MuiInput-underline-56 underline'
-                                    >
+                                <div>
+                                    <div>
                                         <input
-                                            className="MuiInput-input-60"
                                             type='time'
                                             step={this.getTimeStep(inputType)}
                                             value={time}
                                             onChange={(evt) => {
                                                 this.handleOnChange('time', evt.target.value);
+                                            }}
+                                            style={{
+                                                color: theme.palette.textColor,
+                                                backgroundColor: theme.palette.canvasColor,
                                             }}
                                         />
                                     </div>
