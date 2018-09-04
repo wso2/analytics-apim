@@ -19,7 +19,7 @@
 @App:description("Defines aggregations for api throttled out stream")
 
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0', @map(type = 'wso2event'))
-@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0', 
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0',
 	@map(type = 'wso2event'))
 define stream ThrottledOutStream(
     meta_clientType string,
@@ -32,17 +32,18 @@ define stream ThrottledOutStream(
     apiCreatorTenantDomain string,
     applicationId string,
     applicationName string,
-    subscriber string,	
+    subscriber string,
     throttledOutReason string,
     gatewayType string,
     throttledOutTimestamp long,
     hostname string
 );
 
-@store(type='rdbms', datasource='APIM_ANALYTICS_DB') 
+@store(type='rdbms', datasource='APIM_ANALYTICS_DB')
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation ApiThrottledOutAgg
 from ThrottledOutStream
-select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,applicationId,applicationName,subscriber,count() as throttledOutCount,throttledOutReason,gatewayType,hostname
+select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,applicationId,applicationName,subscriber,count() as throttledOutCount,throttledOutReason,gatewayType,hostname,'default' as regionalID
 group by apiContext,applicationId,throttledOutReason,hostname
 aggregate by throttledOutTimestamp every seconds...year;
 

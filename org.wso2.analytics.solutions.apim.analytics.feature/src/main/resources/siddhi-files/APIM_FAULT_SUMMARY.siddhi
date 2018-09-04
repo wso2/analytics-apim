@@ -20,7 +20,7 @@
 @App:description("Defines aggregations for fault stream")
 
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0', @map(type = 'wso2event'))
-@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0', 
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0',
 	@map(type = 'wso2event'))
 define stream FaultStream(
     meta_clientType string,
@@ -44,8 +44,9 @@ define stream FaultStream(
 );
 
 @store(type='rdbms', datasource='APIM_ANALYTICS_DB')
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation ApiFaultyInvocationAgg
-from FaultStream 
-select apiName,apiVersion,apiCreator,apiCreatorTenantDomain,apiContext,applicationConsumerKey,hostname,applicationId,applicationName,requestTimestamp,count() as totalFaultCount
+from FaultStream
+select apiName,apiVersion,apiCreator,apiCreatorTenantDomain,apiContext,applicationConsumerKey,hostname,applicationId,applicationName,requestTimestamp,count() as totalFaultCount,'default' as regionalID
 group by apiContext,applicationId,hostname
 aggregate by requestTimestamp every seconds...year;
