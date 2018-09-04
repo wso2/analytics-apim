@@ -126,7 +126,10 @@ export default class CustomTimeRangeSelector extends React.Component {
         const { inputType } = this.state;
         return (
             <div
-                style={{ marginTop: 10 }}
+                style={{
+                    marginTop: 10,
+                    maxWidth: 600,
+                }}
             >
                 <div
                     style={{
@@ -147,7 +150,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                     </SelectField>
                 </div>
                 <div
-                    style={{ minWidth: 420 }}
+                    style={{ minWidth: 400 }}
                 >
                     <div
                         style={{

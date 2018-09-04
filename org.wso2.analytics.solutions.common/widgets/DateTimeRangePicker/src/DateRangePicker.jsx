@@ -69,10 +69,10 @@ export default class DateRangePicker extends Widget {
             btnType: <NotificationSyncDisabled color='#BDBDBD' />,
         };
 
-        this.handleGranularityChange = this.handleGranularityChange.bind(this);
-        this.handleGranularityChangeForCustom = this.handleGranularityChangeForCustom.bind(this);
         this.publishTimeRange = this.publishTimeRange.bind(this);
         this.getDateTimeRangeInfo = this.getDateTimeRangeInfo.bind(this);
+        this.handleGranularityChange = this.handleGranularityChange.bind(this);
+        this.handleGranularityChangeForCustom = this.handleGranularityChangeForCustom.bind(this);
         this.getTimeIntervalDescriptor = this.getTimeIntervalDescriptor.bind(this);
         this.getStartTimeAndEndTimeForTimeIntervalDescriptor = this
             .getStartTimeAndEndTimeForTimeIntervalDescriptor.bind(this);
@@ -510,8 +510,7 @@ export default class DateRangePicker extends Widget {
                     >
                         <div
                             style={{
-                                margin: '2%',
-                                maxWidth: 860,
+                                margin: 5,
                             }}
                         >
                             <GranularityModeSelector

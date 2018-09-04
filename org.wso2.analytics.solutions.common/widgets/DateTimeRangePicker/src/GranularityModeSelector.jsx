@@ -21,7 +21,7 @@ import React from 'react';
 import { HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft } from 'material-ui/svg-icons';
 import FlatButton from 'material-ui/FlatButton';
 import Popover from 'material-ui/Popover';
-import Menu from 'material-ui/Menu';
+import List from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
 import CustomTimeRangeSelector from './CustomTimeRangeSelector';
 
@@ -69,7 +69,7 @@ export default class GranularityModeSelector extends React.Component {
                 granularityOptions = ['1 Hour', '1 Day'];
                 break;
             default:
-                // do nothing
+            // do nothing
         }
         return granularityOptions;
     }
@@ -96,7 +96,7 @@ export default class GranularityModeSelector extends React.Component {
                 granularityOptions = ['1 Year'];
                 break;
             default:
-                // do nothing
+            // do nothing
         }
         return granularityOptions;
     }
@@ -140,7 +140,7 @@ export default class GranularityModeSelector extends React.Component {
                     onRequestClose={this.handleRequestClose}
                     style={{ maxWidth: 550 }}
                 >
-                    <Menu>
+                    <List>
                         <div
                             style={{
                                 margin: 20,
@@ -153,7 +153,7 @@ export default class GranularityModeSelector extends React.Component {
                                 onChangeCustom={onChangeCustom}
                             />
                         </div>
-                    </Menu>
+                    </List>
                 </Popover>
             </div>
         );
