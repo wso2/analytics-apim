@@ -23,7 +23,6 @@ import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
 import { NotificationSync, NotificationSyncDisabled } from 'material-ui/svg-icons';
 import Moment from 'moment';
 import { Scrollbars } from 'react-custom-scrollbars';
