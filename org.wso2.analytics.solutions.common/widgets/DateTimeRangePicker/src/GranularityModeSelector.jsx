@@ -42,7 +42,6 @@ export default class GranularityModeSelector extends React.Component {
         this.generateGranularityModeSwitchButton = this.generateGranularityModeSwitchButton.bind(this);
         this.generateLeftArrow = this.generateLeftArrow.bind(this);
         this.generateRightArrow = this.generateRightArrow.bind(this);
-        this.generateRightArrow = this.generateRightArrow.bind(this);
         this.getCustomSelectButton = this.getCustomSelectButton.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleRequestClose = this.handleRequestClose.bind(this);
@@ -69,7 +68,7 @@ export default class GranularityModeSelector extends React.Component {
                 granularityOptions = ['1 Hour', '1 Day'];
                 break;
             default:
-                // do nothing
+            // do nothing
         }
         return granularityOptions;
     }
@@ -82,8 +81,6 @@ export default class GranularityModeSelector extends React.Component {
 
         switch (minGranularity) {
             case 'From Second':
-                granularityOptions = ['1 Day', '7 Days', '1 Month', '3 Months', '6 Months', '1 Year'];
-                break;
             case 'From Minute':
             case 'From Hour':
             case 'From Day':
@@ -96,7 +93,7 @@ export default class GranularityModeSelector extends React.Component {
                 granularityOptions = ['1 Year'];
                 break;
             default:
-                // do nothing
+            // do nothing
         }
         return granularityOptions;
     }
@@ -112,13 +109,14 @@ export default class GranularityModeSelector extends React.Component {
                 <FlatButton
                     onClick={this.handleClick}
                     label='Custom'
-                    style={{ backgroundColor: theme === 'dark' ? '#383838' : '#E0E0E0' }}
+                    style={{ borderBottom: theme.name === 'dark' ? '1px solid red' : '1px solid gray' }}
                 />
             )
             : (
                 <FlatButton
                     onClick={this.handleClick}
                     label='Custom'
+                    style={{ borderBottom: 'none' }}
                 />
             );
         return (
@@ -138,19 +136,21 @@ export default class GranularityModeSelector extends React.Component {
                         vertical: 'top',
                     }}
                     onRequestClose={this.handleRequestClose}
-                    style={{ maxWidth: 550 }}
+                    style={{ maxWidth: 560 }}
                 >
-                    <Menu>
+                    <Menu style={{ maxWidth: 560 }}>
                         <div
                             style={{
-                                margin: 20,
-                                paddingBottom: 20,
+                                paddingLeft: 15,
+                                paddingRight: 15,
+                                paddingBottom: 15,
                             }}
                         >
                             <CustomTimeRangeSelector
                                 options={options}
                                 handleClose={this.handleRequestClose}
                                 onChangeCustom={onChangeCustom}
+                                theme={theme}
                             />
                         </div>
                     </Menu>
@@ -160,18 +160,23 @@ export default class GranularityModeSelector extends React.Component {
     }
 
     getSelectedGranularityLevel() {
-        const { getTimeRangeName, getDateTimeRangeInfo, options } = this.props;
+        const {
+            getTimeRangeName, getDateTimeRangeInfo, getDefaultTimeRange,
+        } = this.props;
         const selectedTimeRange = getTimeRangeName(getDateTimeRangeInfo().tr) || '';
         if (this.getHighGranularityOptions().indexOf(selectedTimeRange) > -1) {
             return 'high';
         } else if (this.getLowGranularityOptions().indexOf(selectedTimeRange) > -1) {
             return 'low';
-        } else if (this.getHighGranularityOptions().indexOf(options.defaultValue) > -1) {
-            return 'high';
-        } else if (this.getLowGranularityOptions().indexOf(options.defaultValue) > -1) {
-            return 'low';
         } else {
-            return '';
+            const defaultValue = getDefaultTimeRange();
+            if (this.getHighGranularityOptions().indexOf(defaultValue) > -1) {
+                return 'high';
+            } else if (this.getLowGranularityOptions().indexOf(defaultValue) > -1) {
+                return 'low';
+            } else {
+                return '';
+            }
         }
     }
 
@@ -239,7 +244,7 @@ export default class GranularityModeSelector extends React.Component {
                     <FlatButton
                         onClick={() => this.onGranularityModeChange(option)}
                         label={option}
-                        style={{ backgroundColor: theme === 'dark' ? '#383838' : '#E0E0E0' }}
+                        style={{ borderBottom: theme.name === 'dark' ? '1px solid red' : '1px solid gray' }}
                     />
                 );
             } else {
@@ -247,6 +252,7 @@ export default class GranularityModeSelector extends React.Component {
                     <FlatButton
                         onClick={() => this.onGranularityModeChange(option)}
                         label={option}
+                        style={{ borderBottom: 'none' }}
                     />
                 );
             }

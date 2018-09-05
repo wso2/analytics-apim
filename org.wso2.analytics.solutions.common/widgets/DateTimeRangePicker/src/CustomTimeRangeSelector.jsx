@@ -25,9 +25,7 @@ export default class CustomTimeRangeSelector extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            inputType: this.getDefaultGranularity(),
-        };
+        this.state = { inputType: this.getDefaultGranularity() };
 
         this.startTime = new Date();
         this.endTime = new Date();
@@ -124,15 +122,13 @@ export default class CustomTimeRangeSelector extends React.Component {
 
     render() {
         const { inputType } = this.state;
+        const { theme } = this.props;
         return (
             <div
                 style={{ marginTop: 10 }}
             >
                 <div
-                    style={{
-                        width: '100%',
-                        marginBottom: 10,
-                    }}
+                    style={{ marginBottom: 10 }}
                 >
                     Per
                     <br />
@@ -146,9 +142,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                         {this.generateGranularityMenuItems()}
                     </SelectField>
                 </div>
-                <div
-                    style={{ minWidth: 420 }}
-                >
+                <div>
                     <div
                         style={{
                             width: '50%',
@@ -160,6 +154,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                         <DateTimePicker
                             onChange={this.handleStartTimeChange}
                             inputType={inputType}
+                            theme={theme}
                         />
                     </div>
                     <div
@@ -173,6 +168,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                         <DateTimePicker
                             onChange={this.handleEndTimeChange}
                             inputType={inputType}
+                            theme={theme}
                         />
                     </div>
                 </div>
