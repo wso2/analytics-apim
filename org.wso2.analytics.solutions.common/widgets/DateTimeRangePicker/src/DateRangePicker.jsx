@@ -566,7 +566,6 @@ export default class DateRangePicker extends Widget {
                     style={{
                         display: 'flex',
                         alignContent: 'center',
-                        marginTop: 5,
                         width: '100%',
                     }}
                 >

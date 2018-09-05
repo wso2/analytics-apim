@@ -252,7 +252,7 @@ export default class DateTimePicker extends React.Component {
                                                 borderTop: 'none',
                                                 borderLeft: 'none',
                                                 borderRight: 'none',
-                                                width: 200,
+                                                width: 150,
                                                 height: 30,
                                                 fontSize: 15
                                             }}
