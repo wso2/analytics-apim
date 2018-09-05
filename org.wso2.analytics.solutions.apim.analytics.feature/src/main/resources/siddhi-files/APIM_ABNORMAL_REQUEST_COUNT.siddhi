@@ -44,22 +44,22 @@ define table ApimAllAlert (type string, tenantDomain string, message string, sev
 -- This aggregation definition is only for retrieving data. No data is actually aggregated from this.
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 define aggregation ApiUserPerAppAgg
-from Request 
-select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain, count(apiName) as totalRequestCount, gatewayType, label 
+from Request
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain, count() as totalRequestCount, gatewayType, label,'default' as regionalID
 group by apiContext,apiHostname, applicationId, username, userTenantDomain
 aggregate by requestTimestamp every seconds...years;
 
 -- Generate a event every one minute. The time period within which the abnormal request count should be considered is substracted from the current timestamp.
-from MinTriggerEventStream 
+from MinTriggerEventStream
 select currentTimeMillis() as currentTimestamp, (currentTimeMillis() - 5*60*1000) as endTimestamp
 insert into TriggerInfoStream;
 
-@info(name='requestsPerMinCountingQuery') 
+@info(name='requestsPerMinCountingQuery')
 from TriggerInfoStream as T join ApiUserPerAppAgg as A
 within T.endTimestamp, T.currentTimestamp
   per "minutes"
-select apiName, apiVersion, applicationId, applicationName, applicationOwner, userTenantDomain as tenantDomain, totalRequestCount as requestCountPerMin, gatewayType, label 
-group by applicationId, apiContext, apiCreator, apiCreatorTenantDomain  
+select apiName, apiVersion, applicationId, applicationName, applicationOwner, userTenantDomain as tenantDomain, totalRequestCount as requestCountPerMin, gatewayType, label
+group by applicationId, apiContext, apiCreator, apiCreatorTenantDomain
 insert into RequestsPerMinStream;
 
 -- Filtering abnormal requests comparing with the in memory configuration table
@@ -77,9 +77,9 @@ insert into AbnormalRequestsPerMinAlertStreamTemp;
 
 @info(name = 'repeatedAlertIgnoreQuery')
 from AbnormalRequestsPerMinAlertStreamTemp#window.length(1) as a left outer join AbnormalRequestsPerMinAlertStreamTemp#window.time(10 minute) as b
-on (a.applicationName== b.applicationName and a.applicationOwner== b.applicationOwner and a.tenantDomain == b.tenantDomain and 
+on (a.applicationName== b.applicationName and a.applicationOwner== b.applicationOwner and a.tenantDomain == b.tenantDomain and
     a.apiName == b.apiName and a.apiVersion == b.apiVersion and a.message == b.message)
-select  a.applicationName, ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.applicationOwner, "@carbon.super"), a.applicationOwner) as applicationOwner, 
+select  a.applicationName, ifThenElse(a.tenantDomain == 'carbon.super', str:concat(a.applicationOwner, "@carbon.super"), a.applicationOwner) as applicationOwner,
     a.tenantDomain, a.apiName, a.apiVersion, a.requestCountPerMin, a.thresholdRequestCountPerMin, a.message, a.severity, a.alertTimestamp
 having b.apiName is null
 insert into AbnormalRequestsPerMinAlertStream ;
@@ -89,7 +89,7 @@ from AbnormalRequestsPerMinAlertStream
 select 'AbnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count detected during last minute using application ', applicationName,' owned by ', applicationOwner,' for api :', apiName,', abnormal requst count:', requestCountPerMin, ".") as message, severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into ApimAllAlert;
 
-@info(name='dbInsertQuery') 
+@info(name='dbInsertQuery')
 from AbnormalRequestsPerMinAlertStream
 select *
 insert into ApimAbnormalRequestsPerMinAlert;
@@ -100,4 +100,3 @@ on ((A.applicationOwner == S.userId and true == S.isSubscriber ) or true == S.is
 select 'AbnormalRequestsPerMin' as type , str:concat('Abnormal request count detected during last minute using application ', A.applicationName,' owned by ', A.applicationOwner,' for api :', A.apiName,', abnormal request count:', A.requestCountPerMin, ".") as message, time:dateFormat(A.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails
 having str:contains(S.alertTypes, 'AbnormalRequestsPerMin')
 insert into EmailAlertStream;
-
