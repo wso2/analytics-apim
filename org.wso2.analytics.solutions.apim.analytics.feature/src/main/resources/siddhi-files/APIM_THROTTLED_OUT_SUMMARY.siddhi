@@ -57,7 +57,7 @@ aggregate by throttledOutTimestamp every seconds...year;
 define aggregation APIM_ReqCountAgg
 from reqCountTempStream
 select apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationName, sum(successCount) as successCount, sum(throttleCount) as throttleCount
-group by apiName, apiVersion
+group by apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationName
 aggregate by timestamp every seconds...year;
 
 from ThrottledOutStream left outer join Request
