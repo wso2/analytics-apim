@@ -1,0 +1,26 @@
+@App:name("APIM_ANALYTICS_DATA_PURGING")
+@App:description("App purges data of Raw tables in APIM Analytics")
+-- Please refer to http://wso2.github.io/siddhi/documentation/siddhi-4.0/
+
+define trigger ThreeMonthTrigger at every 3 months;
+define stream MinTriggerEventStream (triggered_time long);
+
+-- Table Used in Unusual IP Access Alert
+@PrimaryKey('applicationConsumerKey','ip')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimIPAccessSummary (username string, applicationConsumerKey string, ip string, lastAccessedDate long) ;
+
+-- Table Used in Unusual IP Access Alert
+@PrimaryKey('applicationConsumerKey','username')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimIPAccessAlertCount (username string, applicationConsumerKey string, requestCount long) ;
+
+-- Delete all Data from ApimIPAccessSummary when the trigger is triggered
+from ThreeMonthTrigger
+delete ApimIPAccessSummary on TRUE;
+
+-- Delete all Data from ApimIPAccessAlertCount when the trigger is triggered
+from ThreeMonthTrigger
+delete ApimIPAccessAlertCount on TRUE
+
+
