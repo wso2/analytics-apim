@@ -16,6 +16,7 @@
 
   # Carbon Configuration Parameters
 wso2.carbon:
+  type: wso2-apim-analytics
     # value to uniquely identify a server
   id: wso2-am-analytics
     # server name
@@ -347,57 +348,6 @@ wso2.datasources:
           validationTimeout: 30000
           isAutoCommit: false
 
-    - name: HTTP_ANALYTICS_DB
-      description: The datasource used for HTTP Analytics dashboard
-      jndiConfig:
-        name: jdbc/HTTP_ANALYTICS_DB
-        useJndiReference: false
-      definition:
-        type: RDBMS
-        configuration:
-          jdbcUrl: 'jdbc:h2:${sys:carbon.home}/wso2/worker/database/HTTP_ANALYTICS_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;MVCC=TRUE;AUTO_SERVER=TRUE'
-          username: wso2carbon
-          password: wso2carbon
-          driverClassName: org.h2.Driver
-          maxPoolSize: 50
-          idleTimeout: 60000
-          connectionTestQuery: SELECT 1
-          validationTimeout: 30000
-          isAutoCommit: false
-    - name: Twitter_Analytics
-      description: The datasource used for Twitter Analytics dashboard
-      jndiConfig:
-        name: jdbc/Twitter_Analytics
-        useJndiReference: false
-      definition:
-        type: RDBMS
-        configuration:
-          jdbcUrl: 'jdbc:h2:${sys:carbon.home}/wso2/worker/database/Twitter_Analytics;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;MVCC=TRUE;AUTO_SERVER=TRUE'
-          username: wso2carbon
-          password: wso2carbon
-          driverClassName: org.h2.Driver
-          maxPoolSize: 50
-          idleTimeout: 60000
-          connectionTestQuery: SELECT 1
-          validationTimeout: 30000
-          isAutoCommit: false
-
-    - name: Message_Tracing_DB
-      description: "The datasource used for message tracer to store span information."
-      jndiConfig:
-        name: jdbc/Message_Tracing_DB
-      definition:
-        type: RDBMS
-        configuration:
-          jdbcUrl: 'jdbc:h2:${sys:carbon.home}/wso2/dashboard/database/MESSAGE_TRACING_DB;AUTO_SERVER=TRUE'
-          username: wso2carbon
-          password: wso2carbon
-          driverClassName: org.h2.Driver
-          maxPoolSize: 50
-          idleTimeout: 60000
-          connectionTestQuery: SELECT 1
-          validationTimeout: 30000
-          isAutoCommit: false
 
     - name: GEO_LOCATION_DATA
       description: "The data source used for geo location database"
