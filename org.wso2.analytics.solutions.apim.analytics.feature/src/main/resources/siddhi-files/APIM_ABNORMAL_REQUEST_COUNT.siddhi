@@ -43,6 +43,7 @@ define table ApimAllAlert (type string, tenantDomain string, message string, sev
 
 -- This aggregation definition is only for retrieving data. No data is actually aggregated from this.
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@purging(enable='false')
 define aggregation ApiUserPerAppAgg
 from Request
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain, count() as totalRequestCount, gatewayType, label,'default' as regionalID
