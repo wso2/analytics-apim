@@ -59,11 +59,7 @@
             <outputDirectory>conf/worker</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
-        <fileSet>
-            <directory>carbon-home/conf/editor</directory>
-            <outputDirectory>conf/editor</outputDirectory>
-            <fileMode>644</fileMode>
-        </fileSet>
+
         <fileSet>
             <directory>carbon-home/conf/dashboard</directory>
             <outputDirectory>conf/dashboard</outputDirectory>
@@ -79,11 +75,6 @@
         <fileSet>
             <directory>carbon-home/conf/transports/worker</directory>
             <outputDirectory>wso2/worker/conf/transports</outputDirectory>
-            <fileMode>644</fileMode>
-        </fileSet>
-        <fileSet>
-            <directory>carbon-home/conf/transports/editor</directory>
-            <outputDirectory>wso2/editor/conf/transports</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
         <fileSet>
@@ -165,30 +156,6 @@
         <fileSet>
             <directory>.</directory>
             <outputDirectory>wso2/worker/deployment/simulation-configs</outputDirectory>
-            <excludes>
-                <exclude>*/**</exclude>
-            </excludes>
-            <fileMode>644</fileMode>
-        </fileSet>
-        <fileSet>
-            <directory>.</directory>
-            <outputDirectory>wso2/editor/deployment/workspace</outputDirectory>
-            <excludes>
-                <exclude>*/**</exclude>
-            </excludes>
-            <fileMode>644</fileMode>
-        </fileSet>
-        <fileSet>
-            <directory>.</directory>
-            <outputDirectory>wso2/editor/deployment/csv-files</outputDirectory>
-            <excludes>
-                <exclude>*/**</exclude>
-            </excludes>
-            <fileMode>644</fileMode>
-        </fileSet>
-        <fileSet>
-            <directory>.</directory>
-            <outputDirectory>wso2/editor/deployment/simulation-configs</outputDirectory>
             <excludes>
                 <exclude>*/**</exclude>
             </excludes>
@@ -313,26 +280,8 @@
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>carbon-home/runtime/editor/carbon.sh</source>
-            <outputDirectory>wso2/editor/bin/</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>755</fileMode>
-        </file>
-        <file>
-            <source>carbon-home/runtime/editor/carbon.bat</source>
-            <outputDirectory>wso2/editor/bin/</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>755</fileMode>
-        </file>
-        <file>
             <source>carbon-home/conf/dashboard/log4j2.xml</source>
             <outputDirectory>conf/dashboard/</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>644</fileMode>
-        </file>
-        <file>
-            <source>carbon-home/conf/editor/log4j2.xml</source>
-            <outputDirectory>conf/editor/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
