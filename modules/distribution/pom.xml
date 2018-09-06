@@ -1542,18 +1542,6 @@
                                     <id>org.wso2.analytics.solutions.common.feature</id>
                                     <version>${analytics.solutions.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.analytics.solutions.sp.twitter.analytics.feature</id>
-                                    <version>${analytics.solutions.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.analytics.solutions.sp.http.analytics.feature</id>
-                                    <version>${analytics.solutions.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.analytics.solutions.sp.message.tracer.feature</id>
-                                    <version>${analytics.solutions.version}</version>
-                                </feature>
                             </features>
                         </configuration>
                     </execution>
