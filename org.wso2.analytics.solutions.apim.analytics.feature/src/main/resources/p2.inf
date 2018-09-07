@@ -41,5 +41,3 @@ org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/wor
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/wso2/worker/database/,target:${installFolder}/../../wso2/worker/database/,overwrite:true);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../resources/);\
 org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/email-notification-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
-org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../resources/);\
-org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/data-purging-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
