@@ -3,7 +3,6 @@
 -- Please refer to http://wso2.github.io/siddhi/documentation/siddhi-4.0/
 
 define trigger ThreeMonthTrigger at every 3 months;
-define stream MinTriggerEventStream (triggered_time long);
 
 -- Table Used in Unusual IP Access Alert
 @PrimaryKey('applicationConsumerKey','ip')
