@@ -15,6 +15,18 @@
     },
     "options": [
       {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      },
+      {
         "id": "defaultValue",
         "title": "Default Range",
         "type": {
