@@ -1,15 +1,15 @@
 {
    "templateGroup": {
-      "uuid": "apim-analytics",
+      "uuid": "APIM-ANALYTICS",
       "name": "APIM Analytics",
       "description": "Real Time Analytics of APIM",
       "ruleTemplates": [
          {
-            "uuid": "apim-frequent-tier-limit-hitting-alert",
+            "uuid": "APIM_FREQUENT_TIER_LIMIT_HITTING_ALERT",
             "name": "APIM Frequent Tier Limit Hitting Alert",
             "description": "Alerts when a user or an application goes beyond the subscribed quota frequently",
             "type": "template",
-            "instanceCount": "many",
+            "instanceCount": "one",
             "script": "",
             "templates": [
                {
@@ -41,11 +41,11 @@
             }
          },
          {
-            "uuid": "apim-health-availability-alert",
-            "name": "APIM API Health Availability Alert",
+            "uuid": "APIM_HEALTH_AVAILABILITY_ALERT",
+            "name": "APIM Health Availability Alert",
             "description": "Monitors the Health of an API",
             "type": "template",
-            "instanceCount": "many",
+            "instanceCount": "one",
             "script": "",
             "templates": [
                {
@@ -72,11 +72,11 @@
             }
          },
          {
-            "uuid": "apim-unusual-ip-access-alert",
-            "name": "APIM Unusual IP Access Alert",
+            "uuid": "APIM_UNUSUAL_IP_ACCESS_ALERT",
+            "name": "APIM Unusula IP Access Alert",
             "description": "Monitoring API health",
             "type": "template",
-            "instanceCount": "many",
+            "instanceCount": "one",
             "script": "",
             "templates": [
                {
@@ -103,8 +103,8 @@
             }
          },
          {
-            "uuid": "abnormal-response-time-alert",
-            "name": "Abnormal Response Time Alert",
+            "uuid": "APIM_ABNORMAL_RESPONSE_TIME",
+            "name": "APIM  Abnormal Response Time",
             "description": "Detects requests with response time greater than a configured threshold value and triggers an alert",
             "type": "template",
             "instanceCount": "one",
@@ -134,8 +134,8 @@
             }
          },
          {
-            "uuid": "abnormal-backend-time-alert",
-            "name": "Abnormal Backend Time Alert",
+            "uuid": "APIM_ABNORMAL_BACKEND_TIME",
+            "name": "APIM Abnormal Back End Time",
             "description": "Detects requests with backend time greater than a configured threshold value and triggers an alert",
             "type": "template",
             "instanceCount": "one",
@@ -165,8 +165,8 @@
             }
          },
          {
-            "uuid": "abnormal-request-count-alert",
-            "name": "Abnormal Request Count Alert",
+            "uuid": "APIM_ABNORMAL_REQUEST_COUNT",
+            "name": "APIM Abnormal Request Count",
             "description": "Triggers an alert if the number of requests per minute for an application is greater than a configured threshold",
             "type": "template",
             "instanceCount": "one",
@@ -196,8 +196,8 @@
             }
          },
          {
-            "uuid": "abnormal-resource-access-pattern-alert",
-            "name": "Abnormal Resource Access Pattern Alert",
+            "uuid": "APIM_ABNORMAL_REQUEST_PATTERN",
+            "name": "APIM Abnormal Request Pattern",
             "description": "Triggers an alert if there is a change in the resource access pattern of a for a particular application",
             "type": "template",
             "instanceCount": "one",
@@ -238,6 +238,27 @@
                      "2",
                      "3"
                   ]
+               }
+            }
+         },
+         {
+            "uuid": "APIM_DATA_PURGING",
+            "name": "APIM DATA PURGING",
+            "description": "Enables Data Purging",
+            "type": "template",
+            "instanceCount": "one",
+            "script": "",
+            "templates": [
+               {
+                  "type": "siddhiApp",
+                  "content": "@App:name(\"APIM_DATA_PURGING\")\n@App:description(\"App purges data of Raw tables in APIM Analytics\")\n-- Please refer to http://wso2.github.io/siddhi/documentation/siddhi-4.0/\n\ndefine trigger ThreeMonthTrigger at every ${triggerTime};\n\n-- Table Used in Unusual IP Access Alert\n@PrimaryKey('applicationConsumerKey','ip')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimIPAccessSummary (username string, applicationConsumerKey string, ip string, lastAccessedDate long) ;\n\n-- Table Used in Unusual IP Access Alert\n@PrimaryKey('applicationConsumerKey','username')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimIPAccessAlertCount (username string, applicationConsumerKey string, requestCount long) ;\n\n-- Delete all Data from ApimIPAccessSummary when the trigger is triggered\nfrom ThreeMonthTrigger\ndelete ApimIPAccessSummary on TRUE;\n\n-- Delete all Data from ApimIPAccessAlertCount when the trigger is triggered\nfrom ThreeMonthTrigger\ndelete ApimIPAccessAlertCount on TRUE;\n"
+               }
+            ],
+            "properties": {
+               "triggerTime": {
+                  "fieldName": "Time Interval For Trigger",
+                  "description": "Time Interval to trigger Data purging",
+                  "defaultValue": "1 years"
                }
             }
          }
