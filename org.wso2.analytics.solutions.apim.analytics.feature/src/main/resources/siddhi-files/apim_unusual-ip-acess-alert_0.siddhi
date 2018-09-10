@@ -16,7 +16,7 @@
  * under the License.
  */
  
-@App:name("APIM_UNUSUAL_IP_ACCESS_ALERT")
+@App:name("apim_unusual-ip-acess-alert_0")
 @App:description("Alerts if an access from a strange ip is detected")
 
 @source(type='inMemory' , topic='APIM_REQUEST')
@@ -108,6 +108,12 @@ select username, applicationConsumerKey, requestCount
 update or insert into ApimIPAccessAlertCount
 set ApimIPAccessAlertCount.requestCount=requestCount
 on ApimIPAccessAlertCount.username == username and ApimIPAccessAlertCount.applicationConsumerKey==applicationConsumerKey;
+
+@info(name = 'query update or insert data to ApimIPAccessSummary')
+from ExistingUserStream[not (exUsername  is null)]
+select username, applicationConsumerKey, requestHostName as ip, requestTimestamp as lastAccessedDate
+update or insert into ApimIPAccessSummary
+on ApimIPAccessSummary.applicationConsumerKey==applicationConsumerKey and ApimIPAccessSummary.ip==ip and ApimIPAccessSummary.username==username;
 
 /*
     if a requestCount from particular user has reached the threshold limit 
