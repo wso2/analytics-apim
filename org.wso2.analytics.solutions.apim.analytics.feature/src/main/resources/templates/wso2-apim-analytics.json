@@ -1,6 +1,6 @@
 {
    "templateGroup": {
-      "uuid": "wso2_apim-analytics",
+      "uuid": "wso2-apim-analytics",
       "name": "WSO2 APIM Analytics",
       "description": "Real Time Analytics of APIM",
       "ruleTemplates": [
