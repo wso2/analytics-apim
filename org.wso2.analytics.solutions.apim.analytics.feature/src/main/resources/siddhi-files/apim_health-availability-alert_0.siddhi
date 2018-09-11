@@ -16,7 +16,7 @@
  * under the License.
  */
 
-@App:name("apim_health-availability-alert_0.siddhi")
+@App:name("apim_health-availability-alert_0")
 @App:description("Determines the availablity and health of an api")
 
 @source(type ='inMemory', topic = 'APIM_REQUEST_ALERT_INFO')
