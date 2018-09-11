@@ -26,7 +26,7 @@ define stream AlertStakeholderInfoStream (
     isPublisher	bool,
     isAdmin	bool);
 
-@PrimaryKey('userId','isSubscriber','isPublisher', 'isAdmin')
+@PrimaryKey('userId','isSubscriber','isPublisher','isAdmin')
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 define table ApimAlertStakeholderInfo(userId string, alertTypes	string, emails	string, isSubscriber bool, isPublisher	bool, isAdmin	bool);
 
