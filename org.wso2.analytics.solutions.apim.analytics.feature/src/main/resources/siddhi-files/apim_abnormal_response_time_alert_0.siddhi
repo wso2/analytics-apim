@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-@App:name("apim_abnormal-response-time-alert_0")
+@App:name("apim_abnormal_response_time_alert_0")
 @App:description("Identifies the API requests with abnormal response time and add to AllAlertStream and AbnormalResponseTimeAlertStream")
 
 @source(type ='inMemory', topic = 'APIM_REQUEST_ALERT_INFO')
