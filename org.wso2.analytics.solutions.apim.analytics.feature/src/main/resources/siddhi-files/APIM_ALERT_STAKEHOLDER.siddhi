@@ -19,14 +19,14 @@
 
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.analytics.apim.alertStakeholderInfo:1.0.1', @map(type = 'wso2event'))
 define stream AlertStakeholderInfoStream (
-    userId	string,
-    alertTypes	string,
-    emails	string,
-    isSubscriber	bool,
-    isPublisher	bool,
-    isAdmin	bool);
+    userId string,
+    alertTypes string,
+    emails string,
+    isSubscriber bool,
+    isPublisher bool,
+    isAdmin bool);
 
-@PrimaryKey('userId','alertTypes','isSubscriber', 'isPublisher', 'isAdmin')
+@PrimaryKey('userId','isSubscriber','isPublisher','isAdmin')
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 define table ApimAlertStakeholderInfo(userId string, alertTypes	string, emails	string, isSubscriber bool, isPublisher	bool, isAdmin	bool);
 
