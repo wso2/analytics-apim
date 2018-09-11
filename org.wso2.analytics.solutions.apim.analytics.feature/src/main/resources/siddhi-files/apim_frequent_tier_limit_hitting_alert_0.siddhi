@@ -16,7 +16,7 @@
  * under the License.
  */
 
-@App:name("APIM_FREQUENT_TIER_LIMIT_HITTING_ALERT")
+@App:name("apim_frequent_tier_limit_hitting_alert_0")
 @App:description("Alerts when a user or application goes beyond the subscribed quota frequently")
 
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0', @map(type = 'wso2event'))

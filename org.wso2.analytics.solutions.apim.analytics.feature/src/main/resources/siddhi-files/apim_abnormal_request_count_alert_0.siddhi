@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-@App:name("APIM_ABNORMAL_REQUEST_COUNT")
+@App:name("apim_abnormal_request_count_alert_0")
 @App:description("Identifies the API requests with abnormal request count per minute and add to AllAlertStream and AbnormalRequestCountAlertStream")
 
 define trigger MinTriggerEventStream at every 1 min;

@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-@App:name("APIM_ABNORMAL_BACKEND_TIME")
+@App:name("apim_abnormal_backend_time_alert_0")
 @App:description("Identifies the API requests with abnormal backend time and add to AllAlertStream and AbnormalBackendTimeAlertStream")
 
 @source(type ='inMemory', topic = 'APIM_REQUEST_ALERT_INFO')

@@ -14,8 +14,7 @@
     limitations under the License.
 */
 
-@App:name("APIM_ABNORMAL_REQUEST_PATTERN")
-
+@App:name("apim_abnormal_request_pattern_alert_0")
 @App:description("Identifies the API requests wchich are outside the normal access pattern and add to AllAlertStream and AbormalRequestPatternStream")
 
 @source(type='inMemory' , topic='APIM_REQUEST')
