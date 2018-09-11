@@ -22,7 +22,7 @@ define stream AlertStakeholderInfoStream (
     userId	string,
     alertTypes	string,
     emails	string,
-    isSubscriber	bool,
+    isSubscriber bool,
     isPublisher	bool,
     isAdmin	bool);
 
