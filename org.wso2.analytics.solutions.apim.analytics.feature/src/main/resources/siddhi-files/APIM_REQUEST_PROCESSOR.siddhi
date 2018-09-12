@@ -73,10 +73,10 @@ define table ApiCreatorAlertConfigurationInMemoryTable (apiName string, apiVersi
 
 @PrimaryKey('applicationId','apiName', 'apiVersion')
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-define table ApiSubscriberAlertConfiguration (applicationId string,apiName string, apiVersion string, thresholdRequestCountPerMin int);
+define table ApiSubscriberAlertConfiguration (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
 
 @PrimaryKey('applicationId','apiName', 'apiVersion')
-define table ApiSubscriberAlertConfigurationInMemoryTable (applicationId string,apiName string, apiVersion string, thresholdRequestCountPerMin int);
+define table ApiSubscriberAlertConfigurationInMemoryTable (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
 
 define trigger MinTriggerEventStream at every 1 min;
 define stream MinTriggerEventStream (triggered_time long);
