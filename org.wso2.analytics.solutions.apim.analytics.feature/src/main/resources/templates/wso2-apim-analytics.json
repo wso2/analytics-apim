@@ -26,7 +26,12 @@
                "severityLevel": {
                   "fieldName": "Severity Level",
                   "description": " Severity level of the alert:(1:severe,2:moderate,3:mild)",
-                  "defaultValue": "3"
+                  "defaultValue": "3",
+                  "options": [
+                     "1",
+                     "2",
+                     "3"
+                  ]
                },
                "countingTime": {
                   "fieldName": "Counting Time Interval",
@@ -57,7 +62,12 @@
                "severityLevel": {
                   "fieldName": "Severity Level",
                   "description": "Severity level of the alert:(1:severe,2:moderate,3:mild)",
-                  "defaultValue": "2"
+                  "defaultValue": "2",
+                  "options": [
+                     "1",
+                     "2",
+                     "3"
+                  ]
                },
                "alertSupressTime": {
                   "fieldName": "Alert Suppression period",
@@ -93,7 +103,12 @@
                "severityLevel": {
                   "fieldName": "Severity Level",
                   "description": "Severity level of the alert:(1:severe,2:moderate,3:mild)",
-                  "defaultValue": "2"
+                  "defaultValue": "2",
+                  "options": [
+                     "1",
+                     "2",
+                     "3"
+                  ]
                },
                "mdbLastAccess": {
                   "fieldName": "Maximum Days Between Last Access",
