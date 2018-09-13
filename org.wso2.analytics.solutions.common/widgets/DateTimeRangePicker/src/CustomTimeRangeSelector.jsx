@@ -160,8 +160,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                         {this.generateGranularityMenuItems()}
                     </SelectField>
                 </div>
-                <div
-                    style={{ display: 'flex'}}>
+                <div style={{ display: 'flex'}}>
                     <div
                         style={{
                             width: '50%',
