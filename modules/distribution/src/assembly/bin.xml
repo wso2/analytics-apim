@@ -298,6 +298,14 @@
             <fileMode>644</fileMode>
         </file>
 
+        <!--In Place Updates-->
+        <file>
+            <source>carbon-home/updates/product.txt</source>
+            <outputDirectory>updates</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+
         <!--Forget me tool-->
         <file>
             <source>src/scripts/forgetme.sh</source>
