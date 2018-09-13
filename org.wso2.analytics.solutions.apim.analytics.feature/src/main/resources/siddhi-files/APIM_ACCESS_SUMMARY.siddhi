@@ -41,7 +41,7 @@ aggregate by requestTimestamp every seconds...years;
 -- API usage per version summary. (Specific to an application)
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
-define aggregation ApiVersionPerApp
+define aggregation ApiVersionPerAppAgg
 from ApiUsagePerVersionFilteredStream
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationName, count() as totalRequestCount, sum(quotaExceededValue) as aboveQuotaCount, gatewayType, label, 'default' as regionalID
 group by apiContext, apiHostname, applicationId
@@ -60,7 +60,7 @@ aggregate by requestTimestamp every seconds...years;
 -- API usage summary per destination.
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
-define aggregation ApiPerDestination
+define aggregation ApiPerDestinationAgg
 from Request
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, destination, count() as totalRequestCount, gatewayType, label,'default' as regionalID
 group by apiContext, apiHostname, destination
@@ -78,7 +78,7 @@ aggregate by requestTimestamp every seconds...years;
 -- API user browser summary
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
-define aggregation ApiUserBrowser
+define aggregation ApiUserBrowserAgg
 from ApiUserAgentFilteredStream
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, operatingSystem, browser, count() as totalRequestCount, gatewayType, label, 'default' as regionalID
 group by apiContext, apiCreator, apiCreatorTenantDomain, operatingSystem, browser
