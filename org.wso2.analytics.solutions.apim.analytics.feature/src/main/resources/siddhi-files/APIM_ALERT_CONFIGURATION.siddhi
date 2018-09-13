@@ -42,7 +42,7 @@ define stream ApiSubscriberAlertConfigurationStream (
 
 @PrimaryKey('applicationId','apiName', 'apiVersion')
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-define table ApiSubscriberAlertConfiguration (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
+define table ApiSubAlertConf (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
 
 -- Data storing logic
 from ApiCreatorAlertConfigurationStream
@@ -53,6 +53,6 @@ on ApiCreatorAlertConfiguration.apiName == apiName and ApiCreatorAlertConfigurat
 
 from ApiSubscriberAlertConfigurationStream
 select *
-update or insert into ApiSubscriberAlertConfiguration
-set ApiSubscriberAlertConfiguration.thresholdRequestCountPerMin = thresholdRequestCountPerMin
-on ApiSubscriberAlertConfiguration.applicationId == applicationId and ApiSubscriberAlertConfiguration.apiName == apiName and ApiSubscriberAlertConfiguration.apiVersion == apiVersion;
+update or insert into ApiSubAlertConf
+set ApiSubAlertConf.thresholdRequestCountPerMin = thresholdRequestCountPerMin
+on ApiSubAlertConf.applicationId == applicationId and ApiSubAlertConf.apiName == apiName and ApiSubAlertConf.apiVersion == apiVersion;

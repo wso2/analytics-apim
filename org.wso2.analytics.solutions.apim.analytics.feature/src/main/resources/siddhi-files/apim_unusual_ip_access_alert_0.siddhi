@@ -20,7 +20,7 @@
 @App:description("Alerts if an access from a strange ip is detected")
 
 @source(type='inMemory' , topic='APIM_REQUEST')
-define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, gatewayType string, label string);
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
 
 --Table Definitions
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
@@ -47,7 +47,7 @@ define stream EmailAlertStream (type string, message string, alertTimestamp	stri
 @info(name = 'Query generates TempStream')
 from Request[applicationConsumerKey == ApimIPAccessSummary.applicationConsumerKey in ApimIPAccessSummary]#window.length(1) as api left outer join ApimIPAccessSummary as ais
 on api.applicationConsumerKey == ais.applicationConsumerKey and api.userIp==ais.ip
-select api.applicationConsumerKey as applicationConsumerKey, api.userTenantDomain as userTenantDomain, api.applicationName as applicationName ,  api.applicationOwner as applicationOwner,  api.username as username, api.userIp as requestHostName, ais.ip as ip, api.requestTimestamp, ais.lastAccessedDate as lastAccessedDate, count() as count 
+select api.applicationConsumerKey as applicationConsumerKey, api.userTenantDomain as userTenantDomain, api.applicationName as applicationName , ifThenElse(api.userTenantDomain == 'carbon.super', str:concat(api.applicationOwner, '@carbon.super'), api.applicationOwner) as applicationOwner , api.username as username, api.userIp as requestHostName, ais.ip as ip, api.requestTimestamp, ais.lastAccessedDate as lastAccessedDate, count() as count
 insert into TempStream;
 
 @info(name = 'Query generates NewConsumerKeyStream')
