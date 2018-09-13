@@ -21,7 +21,7 @@ define trigger MinTriggerEventStream at every 1 min;
 define stream MinTriggerEventStream (triggered_time long);
 
 -- This stream definition is only to define the Aggregation. It does not consume the actual API request.
-define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long, gatewayType string, label string);
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
 
 -- Table definitions
 @sink(type="inMemory", topic="APIM_EMAIL_NOTIFICATION", @map(type='passThrough'))
@@ -33,10 +33,10 @@ define table ApimAlertStakeholderInfo(userId string, alertTypes	string, emails	s
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @PrimaryKey('applicationId','apiName', 'apiVersion')
-define table ApiSubscriberAlertConfiguration (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
+define table ApiSubAlertConf (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-define table ApimAbnormalRequestsPerMinAlert(applicationName	string, applicationOwner string, tenantDomain string, apiName string,apiVersion string,requestCountPerMin long,   thresholdRequestCountPerMin	int, message string,severity int, alertTimestamp long);
+define table ApimAbnormalReqAlert(applicationName	string, applicationOwner string, tenantDomain string, apiName string,apiVersion string,requestCountPerMin long,   thresholdRequestCountPerMin	int, message string,severity int, alertTimestamp long);
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 define table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);
@@ -65,7 +65,7 @@ insert into RequestsPerMinStream;
 
 -- Filtering abnormal requests comparing with the in memory configuration table
 @info(name = 'configurationInfoRetrieveQuery')
-from RequestsPerMinStream as R join ApiSubscriberAlertConfiguration as T
+from RequestsPerMinStream as R join ApiSubAlertConf as T
 on ( R.applicationId == T.applicationId and R.apiName == T.apiName and  R.apiVersion == T.apiVersion)
 select R.applicationName, R.applicationOwner, R.tenantDomain, R.apiName, R.apiVersion, R.requestCountPerMin, T.thresholdRequestCountPerMin
 insert into RequestCountInfoStream;
@@ -93,7 +93,7 @@ insert into ApimAllAlert;
 @info(name='dbInsertQuery')
 from AbnormalRequestsPerMinAlertStream
 select *
-insert into ApimAbnormalRequestsPerMinAlert;
+insert into ApimAbnormalReqAlert;
 
 @info(name = 'query1')
 from AbnormalRequestsPerMinAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
