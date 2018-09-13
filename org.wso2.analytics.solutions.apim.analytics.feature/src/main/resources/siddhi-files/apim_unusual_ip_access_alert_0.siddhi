@@ -47,7 +47,7 @@ define stream EmailAlertStream (type string, message string, alertTimestamp	stri
 @info(name = 'Query generates TempStream')
 from Request[applicationConsumerKey == ApimIPAccessSummary.applicationConsumerKey in ApimIPAccessSummary]#window.length(1) as api left outer join ApimIPAccessSummary as ais
 on api.applicationConsumerKey == ais.applicationConsumerKey and api.userIp==ais.ip
-select api.applicationConsumerKey as applicationConsumerKey, api.userTenantDomain as userTenantDomain, api.applicationName as applicationName , ifThenElse(api.userTenantDomain == 'carbon.super', str:concat(a.applicationOwner, '@carbon.super'), a.applicationOwner) as applicationOwner , api.username as username, api.userIp as requestHostName, ais.ip as ip, api.requestTimestamp, ais.lastAccessedDate as lastAccessedDate, count() as count
+select api.applicationConsumerKey as applicationConsumerKey, api.userTenantDomain as userTenantDomain, api.applicationName as applicationName , ifThenElse(api.userTenantDomain == 'carbon.super', str:concat(api.applicationOwner, '@carbon.super'), api.applicationOwner) as applicationOwner , api.username as username, api.userIp as requestHostName, ais.ip as ip, api.requestTimestamp, ais.lastAccessedDate as lastAccessedDate, count() as count
 insert into TempStream;
 
 @info(name = 'Query generates NewConsumerKeyStream')
