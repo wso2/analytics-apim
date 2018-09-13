@@ -25,7 +25,10 @@ export default class CustomTimeRangeSelector extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { inputType: this.getDefaultGranularity() };
+        this.state = {
+            inputType: this.getDefaultGranularity(),
+            inValidDateRange: false,
+        };
 
         this.startTime = new Date();
         this.endTime = new Date();
@@ -114,10 +117,16 @@ export default class CustomTimeRangeSelector extends React.Component {
     }
 
     publishCustomTimeRange() {
-        const { handleClose, onChangeCustom } = this.props;
-        const { inputType } = this.state;
-        handleClose();
-        onChangeCustom('custom', this.startTime, this.endTime, inputType);
+        if (this.startTime.getTime() < this.endTime.getTime()) {
+            const { handleClose, onChangeCustom } = this.props;
+            const { inputType } = this.state;
+            handleClose();
+            onChangeCustom('custom', this.startTime, this.endTime, inputType);
+            this.setState({ inValidDateRange: false});
+        } else {
+            this.setState({ inValidDateRange: true})
+        }
+
     }
 
     render() {
@@ -142,7 +151,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                         {this.generateGranularityMenuItems()}
                     </SelectField>
                 </div>
-                <div>
+                <div style={{ display: 'flex'}}>
                     <div
                         style={{
                             width: '50%',
@@ -172,6 +181,8 @@ export default class CustomTimeRangeSelector extends React.Component {
                         />
                     </div>
                 </div>
+                {this.state.inValidDateRange ? <div style={{color: '#dc3545', paddingTop: 10}}>
+                    Invalid date range, Please select a valid date range. </div> : ''}
                 <RaisedButton
                     primary
                     style={{
