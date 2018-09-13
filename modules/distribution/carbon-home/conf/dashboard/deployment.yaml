@@ -222,7 +222,7 @@ wso2.datasources:
         username: wso2carbon
         password: wso2carbon
         driverClassName: org.h2.Driver
-        maxPoolSize: 50
+        maxPoolSize: 20
         idleTimeout: 60000
         connectionTestQuery: SELECT 1
         validationTimeout: 30000
@@ -239,7 +239,7 @@ wso2.datasources:
         username: wso2carbon
         password: wso2carbon
         driverClassName: org.h2.Driver
-        maxPoolSize: 50
+        maxPoolSize: 20
         idleTimeout: 60000
         connectionTestQuery: SELECT 1
         validationTimeout: 30000
@@ -256,7 +256,7 @@ wso2.datasources:
         username: wso2carbon
         password: wso2carbon
         driverClassName: org.h2.Driver
-        maxPoolSize: 50
+        maxPoolSize: 10
         idleTimeout: 60000
         connectionTestQuery: SELECT 1
         validationTimeout: 30000
@@ -275,7 +275,7 @@ wso2.datasources:
         username: wso2carbon
         password: wso2carbon
         driverClassName: org.h2.Driver
-        maxPoolSize: 50
+        maxPoolSize: 20
         idleTimeout: 60000
         connectionTestQuery: SELECT 1
         validationTimeout: 30000
@@ -293,7 +293,7 @@ wso2.datasources:
         username: wso2carbon
         password: wso2carbon
         driverClassName: org.h2.Driver
-        maxPoolSize: 50
+        maxPoolSize: 20
         idleTimeout: 60000
         connectionTestQuery: SELECT 1
         validationTimeout: 30000
@@ -311,11 +311,11 @@ wso2.datasources:
         username: wso2carbon
         password: wso2carbon
         driverClassName: org.h2.Driver
-        maxPoolSize: 50
+        maxPoolSize: 10
         idleTimeout: 60000
         connectionTestQuery: SELECT 1
         validationTimeout: 30000
-        isAutoCommit: false     
+        isAutoCommit: false 
 
   #Data source for APIM Analytics
   - name: APIM_ANALYTICS_DB
@@ -363,34 +363,6 @@ wso2.status.dashboard:
   workerAccessCredentials:
     username: 'admin'
     password: 'admin'
-  queries:
-    -
-     mappings:
-        tableCreateQuery:
-        foreignKeyQuery:
-        tableCheckQuery:
-        recordSelectQuery:
-        recordSelectAppMetricsQuery:
-        recordSelectAgregatedAppMetricsQuery:
-        recordSelectWorkerThroughputQuery:
-        recordSelectWorkerAggregateThroughputQuery:
-        recordSelectWorkerMetricsQuery:
-        recordSelectWorkerAggregateMetricsQuery:
-        recordInsertQuery:
-        recordDeleteQuery:
-        selectAppComponentList:
-        selectAppComponentMetrics:
-        selectAppComponentHistory:
-        selectAppComponentAggregatedHistory:
-        doubleType:
-        floatType:
-        integerType:
-        longType:
-        stringType:
-        booleanType:
-
-     type: default
-     version: default
 
 wso2.transport.http:
   transportProperties:
