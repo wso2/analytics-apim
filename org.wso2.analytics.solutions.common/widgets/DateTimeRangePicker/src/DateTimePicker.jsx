@@ -25,10 +25,10 @@ export default class DateTimePicker extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            year: new Date().getFullYear(),
-            month: new Date().getMonth(),
-            days: new Date().getDate(),
-            time: moment().format('HH:mm:ss.SSS'),
+            year: this.props.initTime.year(),
+            month: this.props.initTime.month(),
+            days: this.props.initTime.date(),
+            time: this.props.initTime.format('HH:mm:ss.000'),
         };
 
         this.generateDays = this.generateDays.bind(this);
@@ -132,7 +132,7 @@ export default class DateTimePicker extends React.Component {
 
         state[property] = value;
         const date = moment(`${state.year}:${(state.month + 1)}:${state.days} ${state.time}`,
-            'YYYY-MM-DD HH:mm:ss.SSS').toDate();
+            'YYYY-MM-DD HH:mm:ss.000').toDate();
 
         switch (inputType) {
             case 'year':

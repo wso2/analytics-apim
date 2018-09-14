@@ -102,9 +102,8 @@ export default class CustomTimeRangeSelector extends React.Component {
 
     handleStartTimeChange(date) {
         this.startTime = date;
-        const start = Moment(this.startTime);
-        const end = Moment(this.endTime);
-        if(end.diff(start) < 0) {
+        if(Moment(this.startTime,'YYYY-MM-DD HH:mm:ss.000').unix() >=
+            Moment(this.endTime,'YYYY-MM-DD HH:mm:ss.000').unix()) {
             this.setState({ invalidDateRange: true });
         } else {
             this.setState({ invalidDateRange: false });
@@ -113,9 +112,8 @@ export default class CustomTimeRangeSelector extends React.Component {
 
     handleEndTimeChange(date) {
         this.endTime = date;
-        const start = Moment(this.startTime);
-        const end = Moment(this.endTime);
-        if(end.diff(start) < 0) {
+        if(Moment(this.startTime,'YYYY-MM-DD HH:mm:ss.000').unix() >=
+            Moment(this.endTime,'YYYY-MM-DD HH:mm:ss.000').unix()) {
             this.setState({ invalidDateRange: true });
         } else {
             this.setState({ invalidDateRange: false });
@@ -173,6 +171,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                             onChange={this.handleStartTimeChange}
                             inputType={inputType}
                             theme={theme}
+                            initTime = {Moment().subtract(1, 'days')}
                         />
                     </div>
                     <div
@@ -187,6 +186,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                             onChange={this.handleEndTimeChange}
                             inputType={inputType}
                             theme={theme}
+                            initTime = {Moment()}
                         />
                     </div>
                 </div>
