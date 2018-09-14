@@ -31,7 +31,7 @@ export default class CustomTimeRangeSelector extends React.Component {
             invalidDateRange: false
         };
 
-        this.startTime = new Date();
+        this.startTime = Moment().subtract(1, 'days').toDate();
         this.endTime = new Date();
         this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
         this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
