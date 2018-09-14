@@ -48,7 +48,7 @@ define stream reqCountTempStream(apiName string, apiVersion string, apiCreator s
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation ApiThrottledOutAgg
 from ThrottledOutStream
-select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,applicationId,applicationName,subscriber,count() as throttledOutCount,throttledOutReason,gatewayType,hostname
+select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,applicationId,applicationName,subscriber,count() as throttledOutCount,throttledOutReason,gatewayType,hostname,'default' as regionalID
 group by apiContext,applicationId,throttledOutReason,hostname
 aggregate by throttledOutTimestamp every seconds...year;
 
@@ -56,7 +56,7 @@ aggregate by throttledOutTimestamp every seconds...year;
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation APIM_ReqCountAgg
 from reqCountTempStream
-select apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationName, sum(successCount) as successCount, sum(throttleCount) as throttleCount
+select apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationName, sum(successCount) as successCount, sum(throttleCount) as throttleCount,'default' as regionalID
 group by apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationName
 aggregate by timestamp every seconds...year;
 
