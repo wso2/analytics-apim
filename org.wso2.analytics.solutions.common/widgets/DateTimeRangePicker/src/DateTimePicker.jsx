@@ -66,7 +66,7 @@ export default class DateTimePicker extends React.Component {
         return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
     }
 
-    generateDays(year, month) {
+    generateDays(year, month, inputName, startTime) {
         const dayComponents = [];
         let days = 0;
 
@@ -78,49 +78,125 @@ export default class DateTimePicker extends React.Component {
         } else {
             days = 30;
         }
-
-        for (let i = 1; i <= days; i++) {
-            dayComponents.push(
-                <MenuItem
-                    key={`$days-${i}`}
-                    value={i}
-                    primaryText={i}
-                />
-            );
+        if(inputName === 'startTime') {
+            for (let i = 1; i <= days; i++) {
+                dayComponents.push(
+                    <MenuItem
+                        key={`$days-${i}`}
+                        value={i}
+                        primaryText={i}
+                    />
+                );
+            }
+        } else if(inputName === 'endTime') {
+            if(moment(startTime).month() === this.state.month) {
+                const startDate = moment(startTime).date();
+                for (let i = startDate; i <= days; i++) {
+                    dayComponents.push(
+                        <MenuItem
+                            key={`$days-${i}`}
+                            value={i}
+                            primaryText={i}
+                        />
+                    );
+                }
+                if(this.state.days < startDate) {
+                    this.setState({ days: startDate + 1 });
+                    this.handleOnChange('days', startDate + 1 )
+                }
+            } else {
+                for (let i = 1; i <= days; i++) {
+                    dayComponents.push(
+                        <MenuItem
+                            key={`$days-${i}`}
+                            value={i}
+                            primaryText={i}
+                        />
+                    );
+                }
+            }
         }
 
         return dayComponents;
     }
 
-    generateMonths() {
+    generateMonths(inputName, startTime) {
         const monthComponents = [];
         const monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
             'October', 'November', 'December'];
 
-        for (let i = 0; i < monthArray.length; i++) {
-            monthComponents.push(
-                <MenuItem
-                    key={`month-${i}`}
-                    value={i}
-                    primaryText={monthArray[i]}
-                />
-            );
+        if(inputName === 'startTime') {
+            for (let i = 0; i < monthArray.length; i++) {
+                monthComponents.push(
+                    <MenuItem
+                        key={`month-${i}`}
+                        value={i}
+                        primaryText={monthArray[i]}
+                    />
+                );
+            }
+        } else if(inputName === 'endTime') {
+            const start = moment(startTime);
+            const yearDiff = this.state.year-start.year();
+            if(yearDiff <= 0) {
+                const startMonth = start.month();
+                for (let i = startMonth; i < monthArray.length; i++) {
+                    monthComponents.push(
+                        <MenuItem
+                            key={`month-${i}`}
+                            value={i}
+                            primaryText={monthArray[i]}
+                        />
+                    );
+                }
+                if(this.state.month < startMonth) {
+                    this.setState({ month: startMonth });
+                    this.handleOnChange('month', startMonth)
+                }
+            } else if(yearDiff > 0){
+                for (let i = 0; i < monthArray.length; i++) {
+                    monthComponents.push(
+                        <MenuItem
+                            key={`month-${i}`}
+                            value={i}
+                            primaryText={monthArray[i]}
+                        />
+                    );
+                }
+            }
         }
 
         return monthComponents;
     }
 
-    generateYears() {
+    generateYears(inputName, startTime) {
         const yearArray = [];
 
-        for (let index = 1970; index <= 2099; index++) {
-            yearArray.push(
-                <MenuItem
-                    key={`year-${index}`}
-                    value={index}
-                    primaryText={index}
-                />
-            );
+        if(inputName === 'startTime') {
+            for (let index = 1970; index <= 2099; index++) {
+                yearArray.push(
+                    <MenuItem
+                        key={`year-${index}`}
+                        value={index}
+                        primaryText={index}
+                    />
+                );
+            }
+        } else if(inputName === 'endTime') {
+            const startYear = moment(startTime).year();
+            for (let index = startYear; index <= 2099; index++) {
+                yearArray.push(
+                    <MenuItem
+                        key={`year-${index}`}
+                        value={index}
+                        primaryText={index}
+                    />
+                );
+            }
+            if(this.state.year < startYear) {
+                this.setState({ year: startYear });
+                this.handleOnChange('year', startYear)
+            }
         }
 
         return yearArray;
@@ -165,7 +241,7 @@ export default class DateTimePicker extends React.Component {
     render() {
         const { year, month, days } = this.state;
         let { time } = this.state;
-        const { inputType, theme } = this.props;
+        const { inputType, theme, inputName, startTime } = this.props;
 
         switch (inputType) {
             case 'hour':
@@ -195,7 +271,7 @@ export default class DateTimePicker extends React.Component {
                                         this.handleOnChange('year', value);
                                     }}
                                 >
-                                    { this.generateYears() }
+                                    { this.generateYears(inputName, startTime) }
                                 </SelectField>
                             )
                             : null
@@ -209,7 +285,7 @@ export default class DateTimePicker extends React.Component {
                                         this.handleOnChange('month', value);
                                     }}
                                 >
-                                    { this.generateMonths() }
+                                    { this.generateMonths(inputName, startTime) }
                                 </SelectField>
                             )
                             : null
@@ -223,7 +299,7 @@ export default class DateTimePicker extends React.Component {
                                         this.handleOnChange('days', value);
                                     }}
                                 >
-                                    { this.generateDays(year, month) }
+                                    { this.generateDays(year, month, inputName, startTime) }
                                 </SelectField>
                             )
                             : null

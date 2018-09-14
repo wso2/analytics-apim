@@ -172,6 +172,7 @@ export default class CustomTimeRangeSelector extends React.Component {
                             inputType={inputType}
                             theme={theme}
                             initTime = {Moment().subtract(1, 'days')}
+                            inputName='startTime'
                         />
                     </div>
                     <div
@@ -187,6 +188,8 @@ export default class CustomTimeRangeSelector extends React.Component {
                             inputType={inputType}
                             theme={theme}
                             initTime = {Moment()}
+                            inputName='endTime'
+                            startTime={this.startTime}
                         />
                     </div>
                 </div>
