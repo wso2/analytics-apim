@@ -45,7 +45,7 @@ define stream Request (meta_clientType string, applicationConsumerKey string, ap
 define stream reqCountTempStream(apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, applicationName string, successCount int, throttleCount int, timestamp long);
 
 @store(type='rdbms', datasource='APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiThrottledOutAgg
 from ThrottledOutStream
 select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,applicationId,applicationName,subscriber,count() as throttledOutCount,throttledOutReason,gatewayType,hostname,'default' as regionalID
@@ -53,7 +53,7 @@ group by apiContext,applicationId,throttledOutReason,hostname
 aggregate by throttledOutTimestamp every seconds...year;
 
 @store(type='rdbms', datasource='APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation APIM_ReqCountAgg
 from reqCountTempStream
 select apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationName, sum(successCount) as successCount, sum(throttleCount) as throttleCount,'default' as regionalID
