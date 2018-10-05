@@ -113,7 +113,7 @@ on ApimIPAccessAlertCount.username == username and ApimIPAccessAlertCount.applic
 from ExistingUserStream[not (exUsername  is null)]
 select username, applicationConsumerKey, requestHostName as ip, requestTimestamp as lastAccessedDate
 update or insert into ApimIPAccessSummary
-on ApimIPAccessSummary.applicationConsumerKey==applicationConsumerKey and ApimIPAccessSummary.ip==ip and ApimIPAccessSummary.username==username;
+on ApimIPAccessSummary.applicationConsumerKey==applicationConsumerKey and ApimIPAccessSummary.ip==ip;
 
 /*
     if a requestCount from particular user has reached the threshold limit 
