@@ -31,7 +31,7 @@ define stream geoTempStream(apiName string, apiVersion string,apiContext string,
 
 --Geo Location Aggregations
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation GeoLocationAgg
 from geoTempStream
 select apiName,apiVersion,apiCreator,apiCreatorTenantDomain,username,userTenantDomain, country, city, totalCount,'default' as regionalID
@@ -40,7 +40,7 @@ aggregate by requestTimestamp every seconds...years;
 
 -- API usage per version summary. (Specific to an application)
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation ApiVersionPerAppAgg
 from ApiUsagePerVersionFilteredStream
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationName, count() as totalRequestCount, sum(quotaExceededValue) as aboveQuotaCount, gatewayType, label, 'default' as regionalID
@@ -49,7 +49,7 @@ aggregate by requestTimestamp every seconds...years;
 
 -- API usage summary per resource path. (Specific to an application)
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation ApiResPathPerApp
 from Request
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, apiResourceTemplate, apiMethod, count() as totalRequestCount, gatewayType, label,'default' as regionalID
@@ -59,7 +59,7 @@ aggregate by requestTimestamp every seconds...years;
 
 -- API usage summary per destination.
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation ApiPerDestinationAgg
 from Request
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, destination, count() as totalRequestCount, gatewayType, label,'default' as regionalID
@@ -68,7 +68,7 @@ aggregate by requestTimestamp every seconds...years;
 
 -- Overall API usage summary. depends on the user and the application.
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation ApiUserPerAppAgg
 from Request
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain, count() as totalRequestCount, gatewayType, label,'default' as regionalID
@@ -77,7 +77,7 @@ aggregate by requestTimestamp every seconds...years;
 
 -- API user browser summary
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation ApiUserBrowserAgg
 from ApiUserAgentFilteredStream
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, operatingSystem, browser, count() as totalRequestCount, gatewayType, label, 'default' as regionalID
@@ -86,7 +86,7 @@ aggregate by requestTimestamp every seconds...years;
 
 -- API usage execution summary
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='7 days', hours='90 days', days='1 year', months='10 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='7 days', hours='90 days', days='1 year', months='2 years', years='3 years'))
 define aggregation ApiExeTime
 from Request
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, apiResourceTemplate, apiMethod, avg(responseTime) as responseTime, avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, avg(securityLatency) as securityLatency, avg(throttlingLatency) as throttlingLatency, avg(requestMedLat) as requestMedLat, avg(responseMedLat) as responseMedLat, avg(backendLatency) as backendLatency, avg(otherLatency) as otherLatency,'default' as regionalID
