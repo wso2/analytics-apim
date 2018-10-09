@@ -58,8 +58,10 @@ public class MGWFileCleanUpTask extends TimerTask {
         log.debug("UploadUsage Cleaning task started");
         String fileRetentionDays = MGWFileSourceDS.getFileRetentionDays();
         Date lastKeptDate = getLastKeptDate(Integer.parseInt(fileRetentionDays));
-        log.debug("Uploaded API Usage data in the db will be cleaned up to : " +
-                dateFormat.format(lastKeptDate));
+        if (log.isDebugEnabled()) {
+            log.debug("Uploaded API Usage data in the db will be cleaned up to : " +
+                    dateFormat.format(lastKeptDate));
+        }
         try {
             MGWFileSourceDAO.deleteProcessedOldFiles(lastKeptDate);
         } catch (MGWFileSourceException e) {
