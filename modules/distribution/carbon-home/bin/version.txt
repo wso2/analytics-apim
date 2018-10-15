@@ -1,0 +1,1 @@
+WSO2 API Manager Analytics Server v${project.version}
