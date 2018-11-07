@@ -399,3 +399,4 @@ auth.configs:
          role:
            id: 1
            displayName: admin
+           
