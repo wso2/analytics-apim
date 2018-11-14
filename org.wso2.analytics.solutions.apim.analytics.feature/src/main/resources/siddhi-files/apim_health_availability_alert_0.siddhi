@@ -47,6 +47,10 @@ define stream EmailAlertStream (type string, message string, alertTimestamp	stri
 
 define stream ApimAllAlertSummary (type string, tenantDomain string, message string, severity int, alertTimestamp long);
 
+Define stream ApimApiHealthMonitorAlertStream (apiName string,apiVersion string,apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
+
+Define stream ApiHealthMonitorAlertEmailStream (apiName string,apiVersion string,apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
+
 partition with (apiContext of RequestAlertInfoStream)
 begin
     -- checks whether the response time is higher than the threshold response time continously for 5 times
