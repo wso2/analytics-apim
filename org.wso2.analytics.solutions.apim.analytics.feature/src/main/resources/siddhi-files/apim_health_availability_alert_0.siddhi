@@ -84,7 +84,7 @@ having AAS.message is null
 insert into ApimAllAlertSummary;
 
 @info(name='Query inserts data to ApiHealthMonitorAlertStream')
-from ApiHealthMonitorAlertStreamTemp#window.length(1) as AH left outer join ApiHealthMonitorAlertStreamTemp#window.time(10 minutes) as AM
+from ApiHealthMonitorAlertStreamTemp#window.length(1) as AH left outer join ApiHealthMonitorAlertStream#window.time(10 minutes) as AM
 on AH.apiName==AM.apiName and AH.apiVersion==AM.apiVersion and AH.message==AM.message
 select AH.apiName,AH.apiVersion,AH.apiCreator,AH.apiCreatorTenantDomain,AH.message,AH.severity,AH.alertTimestamp
 having AM.apiName is null and AM.apiVersion is null and AM.message is null
