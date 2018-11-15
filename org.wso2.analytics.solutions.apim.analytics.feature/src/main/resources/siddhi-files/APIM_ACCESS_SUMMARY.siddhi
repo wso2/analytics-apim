@@ -23,6 +23,8 @@ define stream Request (meta_clientType string, applicationConsumerKey string, ap
 
 define stream ApiUsagePerVersionFilteredStream (apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, apiHostname string, applicationId string, applicationName string, quotaExceededValue int, requestTimestamp long, gatewayType string, label string);
 
+define stream ApiUserAgentFilteredStreamExtend (apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, operatingSystem string, browser string, requestTimestamp long, gatewayType string, label string);
+
 define stream ApiUserAgentFilteredStream(apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, operatingSystem string, browser string, requestTimestamp long, gatewayType string, label string);
 
 define stream geoTempStream(apiName string, apiVersion string,apiContext string, apiCreator string, apiCreatorTenantDomain string, username string, userTenantDomain string, country string, city string, totalCount long, requestTimestamp long);
@@ -48,7 +50,7 @@ group by apiContext, apiHostname, applicationId
 aggregate by requestTimestamp every seconds...years;
 
 -- API usage summary per resource path. (Specific to an application)
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "AGG_TIMESTAMP:20, AGG_EVENT_TIMESTAMP:20, apiContext:254, apiHostname:200, applicationId:254, apiResourceTemplate:254, apiMethod:20")
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "apiHostname:200, apiMethod:20")
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiResPathPerApp
 from Request
@@ -67,7 +69,7 @@ group by apiContext, apiHostname, destination
 aggregate by requestTimestamp every seconds...years;
 
 -- Overall API usage summary. depends on the user and the application.
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "AGG_TIMESTAMP:20, AGG_EVENT_TIMESTAMP:20, apiContext:254, apiHostname:200, applicationId:254, username:150, userTenantDomain:150")
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "apiHostname:200, username:150, userTenantDomain:150")
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiUserPerAppAgg
 from Request
@@ -76,10 +78,10 @@ group by apiContext,apiHostname, applicationId, username, userTenantDomain
 aggregate by requestTimestamp every seconds...years;
 
 -- API user browser summary
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "AGG_TIMESTAMP:20, AGG_EVENT_TIMESTAMP:20, apiContext:254, apiCreator:150, apiCreatorTenantDomain:150, operatingSystem:254, browser:200")
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "apiCreator:150, apiCreatorTenantDomain:150, browser:200")
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiUserBrowserAgg
-from ApiUserAgentFilteredStream
+from ApiUserAgentFilteredStreamExtend
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, operatingSystem, browser, count() as totalRequestCount, gatewayType, label, 'default' as regionalID
 group by apiContext, apiCreator, apiCreatorTenantDomain, operatingSystem, browser
 aggregate by requestTimestamp every seconds...years;
@@ -113,6 +115,11 @@ select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain,
     ifThenElse(userAgent is null, 'Other', env:getUserAgentProperty(userAgent,'os')) as operatingSystem, ifThenElse(userAgent is null, 'Other', env:getUserAgentProperty(userAgent,'browser')) as browser,
     requestTimestamp, gatewayType, label
 insert current events into ApiUserAgentFilteredStream;
+
+-- This was added as a fix to an error when connecting to Mysql RDBMS when UTF8 character set is used (https://github.com/wso2/analytics-solutions/issues/182).
+from ApiUserAgentFilteredStream
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, operatingSystem, ifThenElse(str:length(browser)>200, str:substr(browser,0,200), browser) as browser,requestTimestamp, gatewayType, label
+insert into ApiUserAgentFilteredStreamExtend;
 
 -- Filter the event with the most recent request timestamp
 from Request as R left outer join ApiLastAccessSummary as S
