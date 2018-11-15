@@ -48,7 +48,7 @@ group by apiContext, apiHostname, applicationId
 aggregate by requestTimestamp every seconds...years;
 
 -- API usage summary per resource path. (Specific to an application)
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "AGG_TIMESTAMP:20, AGG_EVENT_TIMESTAMP:20, apiContext:254, apiHostname:200, applicationId:254, apiResourceTemplate:254, apiMethod:20")
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiResPathPerApp
 from Request
@@ -67,7 +67,7 @@ group by apiContext, apiHostname, destination
 aggregate by requestTimestamp every seconds...years;
 
 -- Overall API usage summary. depends on the user and the application.
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "AGG_TIMESTAMP:20, AGG_EVENT_TIMESTAMP:20, apiContext:254, apiHostname:200, applicationId:254, username:150, userTenantDomain:150")
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiUserPerAppAgg
 from Request
@@ -76,7 +76,7 @@ group by apiContext,apiHostname, applicationId, username, userTenantDomain
 aggregate by requestTimestamp every seconds...years;
 
 -- API user browser summary
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "AGG_TIMESTAMP:20, AGG_EVENT_TIMESTAMP:20, apiContext:254, apiCreator:150, apiCreatorTenantDomain:150, operatingSystem:254, browser:200")
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiUserBrowserAgg
 from ApiUserAgentFilteredStream

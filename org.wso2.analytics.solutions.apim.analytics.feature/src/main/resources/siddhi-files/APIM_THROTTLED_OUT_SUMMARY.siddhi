@@ -52,7 +52,7 @@ select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,
 group by apiContext,applicationId,throttledOutReason,hostname
 aggregate by throttledOutTimestamp every seconds...year;
 
-@store(type='rdbms', datasource='APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "AGG_TIMESTAMP:20, AGG_EVENT_TIMESTAMP:20, apiName:254, apiVersion:100, apiCreator:150, apiCreatorTenantDomain:150, applicationName:254" )
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation APIM_ReqCountAgg
 from reqCountTempStream
