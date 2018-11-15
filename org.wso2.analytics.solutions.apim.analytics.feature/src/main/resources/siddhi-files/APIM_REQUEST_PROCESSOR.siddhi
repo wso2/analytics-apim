@@ -88,9 +88,9 @@ update or insert into ApiCreatorAlertConfigurationInMemoryTable
 set ApiCreatorAlertConfigurationInMemoryTable.thresholdResponseTime = thresholdResponseTime, ApiCreatorAlertConfigurationInMemoryTable.thresholdBackendTime = thresholdBackendTime
 on ApiCreatorAlertConfigurationInMemoryTable.apiName == apiName and ApiCreatorAlertConfigurationInMemoryTable.apiVersion == apiVersion and ApiCreatorAlertConfigurationInMemoryTable.apiCreator == apiCreator and ApiCreatorAlertConfigurationInMemoryTable.apiCreatorTenantDomain == apiCreatorTenantDomain;
 
--- Insert the recieving request events into a in memory stream.
+-- Insert the recieving request events into a in memory stream. This was changed due to an error when connecting to Mysql RDBMS when UTF8 character set is used (https://github.com/wso2/analytics-solutions/issues/182).
 from InComingRequestStream
-select * 
+select  meta_clientType, applicationConsumerKey, applicationName, applicationId, applicationOwner, apiContext,apiName, apiVersion, apiResourcePath, apiResourceTemplate, ifThenElse(str:length(apiMethod)>20,str:substr(apiMethod,0,20),apiMethod) as apiMethod,ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150), apiCreator) as  apiCreator, ifThenElse(str:length(apiCreatorTenantDomain) > 150,str:substr(apiCreatorTenantDomain,0,150), apiCreatorTenantDomain) as apiCreatorTenantDomain, apiTier, ifThenElse(str:length(apiHostname)>200, str:substr(apiHostname,0,200), apiHostname) as apiHostname, ifThenElse(str:length(username) > 150,str:substr(username,0,150), username) as username, ifThenElse(str:length(userTenantDomain) > 150,str:substr(userTenantDomain,0,150), userTenantDomain) as userTenantDomain, userIp, userAgent, requestTimestamp, throttledOut, responseTime, serviceTime, backendTime, responseCacheHit, responseSize, protocol, responseCode, destination, securityLatency, throttlingLatency, requestMedLat, responseMedLat, backendLatency, otherLatency, gatewayType, label
 insert into Request;
 
 -- Join the request stream with in memory configuration tables to get threashold values.
@@ -99,4 +99,3 @@ from Request as R left outer join ApiCreatorAlertConfigurationInMemoryTable as C
 on(R.apiName == C.apiName and R.apiVersion == C.apiVersion and R.apiCreatorTenantDomain == C.apiCreatorTenantDomain )
 select R.apiContext, R.apiName, R.apiVersion,  R.apiResourceTemplate, R.apiMethod, ifThenElse(R.apiCreatorTenantDomain == 'carbon.super', str:concat(R.apiCreator, "@carbon.super"), R.apiCreator) as apiCreator, R.apiCreatorTenantDomain, R.requestTimestamp, R.responseTime, R.backendTime, C.thresholdBackendTime, C.thresholdResponseTime,R.responseCode
 insert into RequestAlertInfoStream;
-
