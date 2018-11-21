@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.analytics.solutions</groupId>
         <artifactId>org.wso2.analytics.solutions.parent</artifactId>
-        <version>1.0.22-SNAPSHOT</version>
+        <version>1.0.22</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
