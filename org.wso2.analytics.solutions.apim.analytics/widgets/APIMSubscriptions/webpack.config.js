@@ -4,11 +4,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     context: path.resolve(__dirname, './src'),
     entry: {
-        index: './Subscriptions.jsx',
+        index: './APIMSubscriptions.jsx',
     },
     output: {
-        path: path.resolve(__dirname, './dist/Subscriptions'),
-        filename: 'Subscriptions.js',
+        path: path.resolve(__dirname, './dist/APIMSubscriptions'),
+        filename: 'APIMSubscriptions.js',
     },
     module: {
         loaders: [
