@@ -43,6 +43,11 @@
             <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.apicreated</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.analytics.solutions</groupId>
+            <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.appcreated</artifactId>
+            <type>zip</type>
+        </dependency>
 
         <dependency>
             <groupId>org.wso2.analytics.solutions</groupId>
