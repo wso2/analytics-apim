@@ -53,6 +53,11 @@
             <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.subscriptions</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.analytics.solutions</groupId>
+            <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.developersignups</artifactId>
+            <type>zip</type>
+        </dependency>
 
         <dependency>
             <groupId>org.wso2.analytics.solutions</groupId>
