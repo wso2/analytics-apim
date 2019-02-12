@@ -1,0 +1,38 @@
+{
+  "name" : "APIM App Created",
+  "id" : "APIMAppCreated",
+  "thumbnailURL" : "",
+  "configs" : {
+    "pubsub" : {
+      "types" : ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs" : {
+        "type" : "SiddhiStoreDataProvider",
+        "config" : {
+          "siddhiApp" : "@App:name('APIMAppCreatedSiddhi') @primaryKey('APPLICATION_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_APPLICATION(APPLICATION_ID int,NAME string,SUBSCRIBER_ID int,APPLICATION_TIER string,CALLBACK_URL string,DESCRIPTION string,APPLICATION_STATUS string,GROUP_ID string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string,UUID string,TOKEN_TYPE string);",
+          "queryData" : {
+            "totalQuery": "from AM_APPLICATION select count(APPLICATION_ID) as totalCount",
+            "weekQuery" : "from AM_APPLICATION on CREATED_TIME >= '{{weekStart}}' select count(APPLICATION_ID) as weekCount;"
+          },
+          "publishingInterval" : 60
+        }
+      }
+    },
+    "options" : [
+      {
+        "id" : "header",
+        "title" : "Header",
+        "type" : {
+          "name" : "BOOLEAN",
+          "possibleValues" : [
+            true,
+            false
+          ]
+        },
+        "defaultValue" : true
+      }
+    ]
+
+  }
+}
