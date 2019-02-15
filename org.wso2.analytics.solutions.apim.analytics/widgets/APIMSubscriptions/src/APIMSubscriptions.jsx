@@ -334,7 +334,6 @@ class APIMSubscriptions extends Widget {
                                 </p>
                             </div>
                             <button
-                                type='submit'
                                 style={{
                                     display: 'block',
                                     width: '100%',
@@ -349,9 +348,10 @@ class APIMSubscriptions extends Widget {
                                     padding: '0 5%',
                                     fontSize: '90%',
                                     letterSpacing: 1,
+                                    cursor: 'pointer',
                                 }}
                                 onClick={() => {
-                                    window.location.href = '/portal/dashboards/apimanalytics/Subscriptions-Analysis';
+                                    window.location.href = './Subscriptions-Analysis';
                                 }}
                             >
                                 <FormattedMessage id='overtime.btn.text' defaultMessage='Overtime Analysis' />

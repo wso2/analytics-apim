@@ -332,7 +332,6 @@ class APIMAppCreated extends Widget {
                                 </p>
                             </div>
                             <button
-                                type='submit'
                                 style={{
                                     display: 'block',
                                     width: '100%',
@@ -347,9 +346,10 @@ class APIMAppCreated extends Widget {
                                     padding: '0 5%',
                                     fontSize: '90%',
                                     letterSpacing: 1,
+                                    cursor: 'pointer',
                                 }}
                                 onClick={() => {
-                                    window.location.href = '/portal/dashboards/apimanalytics/APP-Created-Analysis';
+                                    window.location.href = './APP-Created-Analysis';
                                 }}
                             >
                                 <FormattedMessage id='overtime.btn.text' defaultMessage='Overtime Analysis' />
