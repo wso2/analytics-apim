@@ -22,12 +22,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * Create React Component for Custom Icon
- * @function CustomIcon
+ * Create React Component for App Icon
+ * @function AppIcon
  * @param {object} props - strokeColor, width, height, style
- * @returns {ReactElement} Render the Custom Icon
+ * @returns {ReactElement} Render the App Icon
  */
-export default function CustomIcon(props) {
+export default function AppIcon(props) {
     const {
         strokeColor, width, height, style,
     } = props;
@@ -105,7 +105,7 @@ export default function CustomIcon(props) {
     );
 }
 
-CustomIcon.propTypes = {
+AppIcon.propTypes = {
     strokeColor: PropTypes.string.isRequired,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,

@@ -4,7 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     context: path.resolve(__dirname, './src'),
     entry: {
-        index: './APIMDeveloperSignups.jsx',
+        index: './APIMDeveloperSignupsWidget.jsx',
     },
     output: {
         path: path.resolve(__dirname, './dist/APIMDeveloperSignups'),

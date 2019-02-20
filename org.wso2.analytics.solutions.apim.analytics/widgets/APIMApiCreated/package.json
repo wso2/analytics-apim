@@ -13,13 +13,9 @@
         "rimraf": "^2.6.3"
     },
     "scripts": {
-        "start": "react-scripts start",
         "build": "webpack -p",
-        "test": "react-scripts test --env=jsdom",
-        "eject": "react-scripts eject",
         "clean": "rimraf dist",
-        "dev": "NODE_ENV=development webpack -d --config webpack.config.js --watch --progress",
-        "build-dev": "webpack -d --config webpack.config.js --watch --progress"
+        "dev": "NODE_ENV=development webpack -d --config webpack.config.js --watch --progress"
     },
     "devDependencies": {
         "babel-core": "^6.25.0",
