@@ -1,4 +1,3 @@
-
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -113,7 +112,7 @@ class APIMDeveloperSignupsWidget extends Widget {
      * Load locale file.
      * @memberof APIMDeveloperSignupsWidget
      */
-    loadLocale(locale = 'en') {
+    loadLocale(locale) {
         Axios.get(`${window.contextPath}/public/extensions/widgets/APIMDeveloperSignups/locales/${locale}.json`)
             .then((response) => {
                 this.setState({ localeMessages: defineMessages(response.data) });

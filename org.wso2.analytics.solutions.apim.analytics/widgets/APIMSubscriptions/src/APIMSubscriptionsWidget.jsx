@@ -1,4 +1,3 @@
-
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -113,7 +112,7 @@ class APIMSubscriptionsWidget extends Widget {
      * Load locale file.
      * @memberof APIMSubscriptionsWidget
      */
-    loadLocale(locale = 'en') {
+    loadLocale(locale) {
         Axios.get(`${window.contextPath}/public/extensions/widgets/APIMSubscriptions/locales/${locale}.json`)
             .then((response) => {
                 this.setState({ localeMessages: defineMessages(response.data) });

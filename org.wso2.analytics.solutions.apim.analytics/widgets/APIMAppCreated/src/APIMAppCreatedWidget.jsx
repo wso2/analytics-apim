@@ -1,4 +1,3 @@
-
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -113,7 +112,7 @@ class APIMAppCreatedWidget extends Widget {
      * Load locale file.
      * @memberof APIMAppCreatedWidget
      */
-    loadLocale(locale = 'en') {
+    loadLocale(locale) {
         Axios.get(`${window.contextPath}/public/extensions/widgets/APIMAppCreated/locales/${locale}.json`)
             .then((response) => {
                 this.setState({ localeMessages: defineMessages(response.data) });
