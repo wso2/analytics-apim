@@ -1,0 +1,36 @@
+{
+  "name": "APIM Top Subscribers",
+  "id": "APIMTopSubscribers",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMTopSubscribersSiddhi') @primaryKey('SUBSCRIPTION_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_SUBSCRIPTION(SUBSCRIPTION_ID int,TIER_ID string,API_ID int,LAST_ACCESSED string,APPLICATION_ID int,SUB_STATUS string,SUBS_CREATE_STATE string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string,UUID string);",
+          "queryData": {
+            "query": "from AM_SUBSCRIPTION select CREATED_BY,count(SUBSCRIPTION_ID) AS count group by CREATED_BY order by count desc limit {{limit}};"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}
