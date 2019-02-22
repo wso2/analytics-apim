@@ -37,6 +37,7 @@
         <module>APIMAppCreated</module>
         <module>APIMSubscriptions</module>
         <module>APIMDeveloperSignups</module>
+        <module>APIMTopApiCreators</module>
     </modules>
 
 </project>
