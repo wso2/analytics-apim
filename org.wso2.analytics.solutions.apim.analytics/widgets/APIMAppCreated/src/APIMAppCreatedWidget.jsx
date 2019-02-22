@@ -23,6 +23,7 @@ import Moment from 'moment';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import cloneDeep from 'lodash/cloneDeep';
 import Axios from 'axios';
 import {
     defineMessages, IntlProvider, FormattedMessage,
@@ -127,7 +128,7 @@ class APIMAppCreatedWidget extends Widget {
     assembletotalQuery() {
         const { providerConfig } = this.state;
 
-        const dataProviderConfigs = _.cloneDeep(providerConfig);
+        const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.totalQuery;
         super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleTotalCountReceived, dataProviderConfigs);
     }
@@ -157,7 +158,7 @@ class APIMAppCreatedWidget extends Widget {
         const { providerConfig } = this.state;
         const weekStart = Moment().subtract(7, 'days');
 
-        const dataProviderConfigs = _.cloneDeep(providerConfig);
+        const dataProviderConfigs = cloneDeep(providerConfig);
         let query = dataProviderConfigs.configs.config.queryData.weekQuery;
         query = query
             .replace('{{weekStart}}', Moment(weekStart).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'));
