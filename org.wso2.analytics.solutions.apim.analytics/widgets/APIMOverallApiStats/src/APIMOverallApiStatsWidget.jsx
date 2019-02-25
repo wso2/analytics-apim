@@ -19,7 +19,6 @@
 
 import React from 'react';
 import Widget from '@wso2-dashboards/widget';
-import { Scrollbars } from 'react-custom-scrollbars';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -29,8 +28,6 @@ import {
     defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
-import ApiAvailability from './ApiAvailability';
-import CustomTable from './CustomTable';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -98,11 +95,6 @@ class APIMOverallApiStatsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            headingWrapper: {
-                height: '10%',
-                margin: 'auto',
-                width: '90%',
             },
         };
 
@@ -259,11 +251,11 @@ class APIMOverallApiStatsWidget extends Widget {
         const {
             localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData,
         } = this.state;
-        const {
-            loadingIcon, paper, paperWrapper, headingWrapper,
-        } = this.styles;
+        const { loadingIcon, paper, paperWrapper } = this.styles;
         const themeName = this.props.muiTheme.name;
-        const availabilityProps = { availableApiData, legendData };
+        const overallStatsProps = {
+            themeName, height, availableApiData, legendData, topApiNameData,
+        };
 
         if (!localeMessages) {
             return (<CircularProgress style={loadingIcon} />);
@@ -272,66 +264,30 @@ class APIMOverallApiStatsWidget extends Widget {
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 {
                     faultyProviderConfig ? (
-                        <div
-                            style={paperWrapper}
-                        >
-                            <Paper
-                                elevation={1}
-                                style={paper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='config.error.body'
-                                        defaultMessage='Cannot fetch provider configuration for APIM Overall Api Stats widget'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                    ) : (
                         <MuiThemeProvider
                             theme={themeName === 'dark' ? darkTheme : lightTheme}
                         >
-                            <Scrollbars
-                                style={{ height }}
+                            <div
+                                style={paperWrapper}
                             >
-                                <div style={{
-                                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                                    width: '80%',
-                                    margin: '5% auto',
-                                    padding: '10% 5%',
-                                }}
+                                <Paper
+                                    elevation={1}
+                                    style={paper}
                                 >
-                                    <div style={headingWrapper}>
-                                        <h3 style={{
-                                            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                                            paddingBottom: '10px',
-                                            margin: 'auto',
-                                            textAlign: 'left',
-                                            fontWeight: 'normal',
-                                            letterSpacing: 1.5,
-                                        }}
-                                        >
-                                            <FormattedMessage id='widget.heading' defaultMessage='OVERALL API STATS' />
-                                        </h3>
-                                    </div>
-                                    <div>
-                                        <div style={{
-                                            marginTop: '10%',
-                                            marginBottom: '10%',
-                                            background: themeName === 'dark' ? '#162638' : '#f7f7f7',
-                                            padding: '5%',
-                                        }}
-                                        >
-                                            <ApiAvailability {...availabilityProps} />
-                                        </div>
-                                        <CustomTable data={topApiNameData} />
-                                    </div>
-                                </div>
-                            </Scrollbars>
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='config.error.body'
+                                            defaultMessage='Cannot fetch provider configuration for APIM Overall Api Stats widget'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
                         </MuiThemeProvider>
+                    ) : (
+                        <APIMOverallApiStats {...overallStatsProps} />
                     )
                 }
             </IntlProvider>
