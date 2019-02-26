@@ -19,6 +19,7 @@
 
 import React from 'react';
 import Widget from '@wso2-dashboards/widget';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -28,6 +29,24 @@ import {
     defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
 import APIMTopSubscribers from './APIMTopSubscribers';
+
+const darkTheme = createMuiTheme({
+    palette: {
+        type: 'dark',
+    },
+    typography: {
+        useNextVariants: true,
+    },
+});
+
+const lightTheme = createMuiTheme({
+    palette: {
+        type: 'light',
+    },
+    typography: {
+        useNextVariants: true,
+    },
+});
 
 /**
  * Query string parameter
@@ -223,24 +242,28 @@ class APIMTopSubscribersWidget extends Widget {
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 {
                     faultyProviderConfig ? (
-                        <div
-                            style={paperWrapper}
+                        <MuiThemeProvider
+                            theme={themeName === 'dark' ? darkTheme : lightTheme}
                         >
-                            <Paper
-                                elevation={1}
-                                style={paper}
+                            <div
+                                style={paperWrapper}
                             >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='config.error.body'
-                                        defaultMessage='Cannot fetch provider configuration for APIM Top Subscribers widget'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
+                                <Paper
+                                    elevation={1}
+                                    style={paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='config.error.body'
+                                            defaultMessage='Cannot fetch provider configuration for APIM Top Subscribers widget'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        </MuiThemeProvider>
                     ) : (
                         <APIMTopSubscribers {...subscribersProps} handleChange={this.handleChange} />
                     )
