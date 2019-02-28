@@ -143,6 +143,11 @@
             <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.top.throttled.out.apis</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.analytics.solutions</groupId>
+            <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.top.user.agents</artifactId>
+            <type>zip</type>
+        </dependency>
 
         <dependency>
             <groupId>org.wso2.analytics.solutions</groupId>
@@ -405,6 +410,16 @@
                                     <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopThrottledOutApis/**</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.wso2.analytics.solutions</groupId>
+                                    <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.top.user.agents</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    </outputDirectory>
+                                    <includes>APIMTopUserAgents/**</includes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
