@@ -1,0 +1,9 @@
+{
+  "apiName.label": "API Name",
+  "apiVersion.label": "API Version",
+  "config.error.body": "Cannot fetch provider configuration for APIM Geo Based Invocations widget",
+  "config.error.heading": "Configuration Error !",
+  "createdBy.label": "API Created By",
+  "widget.heading": "GEO LOCATION BASED INVOCATIONS"
+}
+

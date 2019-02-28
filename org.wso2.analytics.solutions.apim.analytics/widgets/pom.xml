@@ -57,6 +57,7 @@
         <module>APIMTopUserAgents</module>
         <module>APIMTopPlatforms</module>
         <module>APIMApiLatencyTime</module>
+        <module>APIMGeoBasedInvocations</module>
     </modules>
 
 </project>
