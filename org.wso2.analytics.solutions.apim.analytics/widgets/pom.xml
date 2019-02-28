@@ -45,6 +45,7 @@
         <module>APIMAppCreatedAnalytics</module>
         <module>APIMSubscriptionsAnalytics</module>
         <module>APIMSignupsAnalytics</module>
+        <module>APIMTopApiUsers</module>
     </modules>
 
 </project>
