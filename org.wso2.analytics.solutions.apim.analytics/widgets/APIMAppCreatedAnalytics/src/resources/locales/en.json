@@ -1,0 +1,20 @@
+{
+  "all.menuItem": "All",
+  "api.createdBy.label": "API Created By",
+  "app.createdBy.label": "APP Created By",
+  "back.btn": "BACK",
+  "config.error.body": "Cannot fetch provider configuration for APIM App Created Analytics widget",
+  "config.error.heading": "Configuration Error !",
+  "filter.column.menu.heading": "Column Name",
+  "filter.label.title": "Filter By",
+  "filter.search.placeholder": "Search Field",
+  "me.menuItem": "Me",
+  "nodata.error.body": "No matching data available for the selected options.",
+  "nodata.error.heading": "No Data Available !",
+  "sort.label.title": "Sort",
+  "subscribedTo.label": "Subscribed To",
+  "table.heading": "APP CREATION TIMES",
+  "table.heading.appname": "APP NAME",
+  "table.heading.createdtime": "CREATED TIME",
+  "widget.heading": "APPS CREATED OVER TIME"
+}

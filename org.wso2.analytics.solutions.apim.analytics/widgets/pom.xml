@@ -42,6 +42,7 @@
         <module>APIMTopSubscribers</module>
         <module>APIMOverallApiStats</module>
         <module>APIMApiCreatedAnalytics</module>
+        <module>APIMAppCreatedAnalytics</module>
     </modules>
 
 </project>
