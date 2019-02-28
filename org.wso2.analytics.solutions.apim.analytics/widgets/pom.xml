@@ -48,6 +48,7 @@
         <module>APIMTopApiUsers</module>
         <module>APIMApiVersionUsageSummary</module>
         <module>APIMApiResourceUsageSummary</module>
+        <module>APIMApiBackendUsageSummary</module>
     </modules>
 
 </project>
