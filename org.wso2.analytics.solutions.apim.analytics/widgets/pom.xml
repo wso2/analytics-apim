@@ -50,6 +50,7 @@
         <module>APIMApiResourceUsageSummary</module>
         <module>APIMApiBackendUsageSummary</module>
         <module>APIMApiLastAccessSummary</module>
+        <module>APIMApiResponseSummary</module>
     </modules>
 
 </project>
