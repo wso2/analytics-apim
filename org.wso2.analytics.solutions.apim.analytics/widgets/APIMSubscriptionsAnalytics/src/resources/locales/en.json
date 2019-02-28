@@ -1,0 +1,20 @@
+{
+  "all.menuItem": "All",
+  "api.createdBy.label": "API Created By",
+  "back.btn": "BACK",
+  "config.error.body": "Cannot fetch provider configuration for APIM Subscriptions Analytics widget",
+  "config.error.heading": "Configuration Error !",
+  "filter.column.menu.heading": "Column Name",
+  "filter.label.title": "Filter By",
+  "filter.search.placeholder": "Search Field",
+  "me.menuItem": "Me",
+  "nodata.error.body": "No matching data available for the selected options.",
+  "nodata.error.heading": "No Data Available !",
+  "sort.label.title": "Sort",
+  "subscribedTo.label": "Subscribed To",
+  "table.heading": "SUBSCRIBED TIMES",
+  "table.heading.apiname": "API NAME",
+  "table.heading.appname": "APP NAME",
+  "table.heading.subscribedtime": "SUBSCRIBED TIME",
+  "widget.heading": "SUBSCRIPTIONS OVER TIME"
+}
