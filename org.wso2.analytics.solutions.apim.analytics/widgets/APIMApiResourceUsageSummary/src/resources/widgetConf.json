@@ -1,0 +1,36 @@
+{
+  "name": "APIM Api Resource Usage Summary",
+  "id": "APIMApiResourceUsageSummary",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMApiResourceUsageSummarySiddhi') define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string); @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB') @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years')) define aggregation ApiResPathPerApp from Request select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, apiResourceTemplate, apiMethod, count() as totalRequestCount, gatewayType, label,'default' as regionalID group by apiContext, apiHostname, applicationId, apiResourceTemplate, apiMethod aggregate by requestTimestamp every seconds...years;",
+          "queryData": {
+            "apiusagequery": "from ApiResPathPerApp within {{from}}L, {{to}}L per \"{{per}}s\" select apiName,apiVersion,apiCreator,apiResourceTemplate,apiMethod,sum(totalRequestCount) as RequestCount group by apiName,apiVersion,apiCreator,apiResourceTemplate,apiMethod order by RequestCount desc limit {{limit}};"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}
