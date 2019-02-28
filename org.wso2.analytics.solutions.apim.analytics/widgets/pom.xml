@@ -52,6 +52,7 @@
         <module>APIMApiLastAccessSummary</module>
         <module>APIMApiResponseSummary</module>
         <module>APIMOverallApiUsage</module>
+        <module>APIMTopFaultyApis</module>
     </modules>
 
 </project>
