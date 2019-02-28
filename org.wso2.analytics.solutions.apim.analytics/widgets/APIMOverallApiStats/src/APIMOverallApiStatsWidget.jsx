@@ -19,6 +19,7 @@
 
 import React from 'react';
 import Widget from '@wso2-dashboards/widget';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -27,7 +28,7 @@ import Axios from 'axios';
 import {
     defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
+import APIMOverallApiStats from './APIMOverallApiStats';
 
 const darkTheme = createMuiTheme({
     palette: {
