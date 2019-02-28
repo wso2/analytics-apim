@@ -56,6 +56,7 @@
         <module>APIMTopThrottledOutApis</module>
         <module>APIMTopUserAgents</module>
         <module>APIMTopPlatforms</module>
+        <module>APIMApiLatencyTime</module>
     </modules>
 
 </project>

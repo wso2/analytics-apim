@@ -1,0 +1,38 @@
+{
+  "name": "APIM Api Latency Time",
+  "id": "APIMApiLatencyTime",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMApiLatencyTimeSiddhi') define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string); @primaryKey('API_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API(API_ID int,API_PROVIDER string,API_NAME string,API_VERSION string,CONTEXT string,CONTEXT_TEMPLATE string,API_TIER string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string);  @primaryKey('URL_MAPPING_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API_URL_MAPPING(URL_MAPPING_ID int,API_ID int,HTTP_METHOD string,AUTH_SCHEME string,URL_PATTERN string,THROTTLING_TIER string,MEDIATION_SCRIPT string); @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB') @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='7 days', hours='90 days', days='1 year', months='2 years', years='3 years')) define aggregation ApiExeTime from Request select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, apiResourceTemplate, apiMethod, avg(responseTime) as responseTime, avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, avg(securityLatency) as securityLatency, avg(throttlingLatency) as throttlingLatency, avg(requestMedLat) as requestMedLat, avg(responseMedLat) as responseMedLat, avg(backendLatency) as backendLatency, avg(otherLatency) as otherLatency,'default' as regionalID group by apiContext, apiHostname, apiResourceTemplate, apiMethod aggregate by requestTimestamp every seconds...years;",
+          "queryData": {
+            "apilistquery": "from AM_API select API_ID,API_NAME,API_VERSION,CREATED_BY;",
+            "resourcequery": "from AM_API_URL_MAPPING on API_ID=='{{apiID}}' select URL_PATTERN,HTTP_METHOD;",
+            "mainquery": "from ApiExeTime {{querystring}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select responseTime,securityLatency,throttlingLatency,requestMedLat,responseMedLat,backendLatency,otherLatency,AGG_TIMESTAMP;"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}
