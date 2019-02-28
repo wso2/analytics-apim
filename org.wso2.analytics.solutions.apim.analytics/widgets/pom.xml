@@ -49,6 +49,7 @@
         <module>APIMApiVersionUsageSummary</module>
         <module>APIMApiResourceUsageSummary</module>
         <module>APIMApiBackendUsageSummary</module>
+        <module>APIMApiLastAccessSummary</module>
     </modules>
 
 </project>
