@@ -54,6 +54,7 @@
         <module>APIMOverallApiUsage</module>
         <module>APIMTopFaultyApis</module>
         <module>APIMTopThrottledOutApis</module>
+        <module>APIMTopUserAgents</module>
     </modules>
 
 </project>
