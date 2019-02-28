@@ -53,6 +53,7 @@
         <module>APIMApiResponseSummary</module>
         <module>APIMOverallApiUsage</module>
         <module>APIMTopFaultyApis</module>
+        <module>APIMTopThrottledOutApis</module>
     </modules>
 
 </project>

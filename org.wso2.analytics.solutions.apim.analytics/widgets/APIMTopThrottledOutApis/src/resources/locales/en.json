@@ -1,0 +1,14 @@
+{
+  "config.error.body": "Cannot fetch provider configuration for APIM Top Throttled Out Apis widget",
+  "config.error.heading": "Configuration Error !",
+  "filter.column.menu.heading": "Column Name",
+  "filter.label.title": "Filter By",
+  "filter.search.placeholder": "Search Field",
+  "limit": "Limit :",
+  "nodata.error.heading": "No Data Available !",
+  "nodata.error.body": "No data available for the selected options.",
+  "sort.label.title": "Sort",
+  "table.heading.apiname": "API NAME",
+  "table.heading.throttledcount": "THROTTLED OUT COUNT",
+  "widget.heading": "TOP THROTTLED OUT APIS"
+}
