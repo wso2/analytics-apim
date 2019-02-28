@@ -46,6 +46,7 @@
         <module>APIMSubscriptionsAnalytics</module>
         <module>APIMSignupsAnalytics</module>
         <module>APIMTopApiUsers</module>
+        <module>APIMApiVersionUsageSummary</module>
     </modules>
 
 </project>
