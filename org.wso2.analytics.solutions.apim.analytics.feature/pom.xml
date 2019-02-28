@@ -153,6 +153,11 @@
             <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.top.platforms</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.analytics.solutions</groupId>
+            <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.api.latency.time</artifactId>
+            <type>zip</type>
+        </dependency>
 
         <dependency>
             <groupId>org.wso2.analytics.solutions</groupId>
@@ -435,6 +440,16 @@
                                     <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopPlatforms/**</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.wso2.analytics.solutions</groupId>
+                                    <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.api.latency.time</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    </outputDirectory>
+                                    <includes>APIMApiLatencyTime/**</includes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
