@@ -113,6 +113,11 @@
             <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.api.resource.usage.summary</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.analytics.solutions</groupId>
+            <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.api.backend.usage.summary</artifactId>
+            <type>zip</type>
+        </dependency>
 
         <dependency>
             <groupId>org.wso2.analytics.solutions</groupId>
@@ -315,6 +320,16 @@
                                     <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiResourceUsageSummary/**</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.wso2.analytics.solutions</groupId>
+                                    <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.api.backend.usage.summary</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    </outputDirectory>
+                                    <includes>APIMApiBackendUsageSummary/**</includes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
