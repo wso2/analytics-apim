@@ -55,6 +55,7 @@
         <module>APIMTopFaultyApis</module>
         <module>APIMTopThrottledOutApis</module>
         <module>APIMTopUserAgents</module>
+        <module>APIMTopPlatforms</module>
     </modules>
 
 </project>

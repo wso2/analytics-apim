@@ -1,0 +1,9 @@
+{
+  "apiName.label": "API Name",
+  "apiVersion.label": "API Version",
+  "config.error.body": "Cannot fetch provider configuration for APIM Top Platforms widget",
+  "config.error.heading": "Configuration Error !",
+  "createdBy.label": "API Created By",
+  "limit": "Limit :",
+  "widget.heading": "TOP PLATFORMS"
+}
