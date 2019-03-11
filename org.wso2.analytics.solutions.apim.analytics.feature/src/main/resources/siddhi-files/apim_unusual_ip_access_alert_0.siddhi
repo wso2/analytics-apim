@@ -82,7 +82,7 @@ insert into ExistingUserStream;
 --checks whether the username is new
 @info(name='query generates new user stream') 
 from ExistingUserStream[exUsername  is null]
-select ts.applicationConsumerKey as applicationConsumerKey, ts.userTenantDomain, ts.applicationName , ts.applicationOwner , ts.username as username, ts.requestHostName as requestHostName, ts.ip as ip, ts.requestTimestamp, ts.lastAccessedDate as lastAccessedDate, count() as requestCount
+select applicationConsumerKey, userTenantDomain, applicationName , applicationOwner , username, requestHostName, ip, requestTimestamp, lastAccessedDate, count() as requestCount
 insert into NewUserStream;
 
 @info(name='query inserts data to DB table : ApimIPAccessAlertCount') 
