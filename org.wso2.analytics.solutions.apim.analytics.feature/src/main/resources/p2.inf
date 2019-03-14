@@ -33,12 +33,3 @@ org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/wor
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/wso2/worker/database/,target:${installFolder}/../../wso2/worker/database/,overwrite:true);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../resources/);\
 org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/email-notification-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
-org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/);\
-org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/resources/dashboards/);\
-org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/deployment/);\
-org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/deployment/web-ui-apps/);\
-org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/deployment/web-ui-apps/portal/);\
-org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/deployment/web-ui-apps/portal/extensions/);\
-org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/deployment/web-ui-apps/portal/extensions/widgets/);\
-org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.solutions.apim.analytics_${feature.version}/portal/extensions/widgets/,target:${installFolder}/../../wso2/dashboard/deployment/web-ui-apps/portal/extensions/widgets/,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../lib/features/org.wso2.carbon.dashboards.samples_${feature.version}/widgets/);
