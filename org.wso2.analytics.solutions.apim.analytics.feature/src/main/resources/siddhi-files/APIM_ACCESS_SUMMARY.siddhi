@@ -122,7 +122,12 @@ select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, oper
 insert into ApiUserAgentFilteredStreamExtend;
 
 -- Filter the event with the most recent request timestamp
-from Request as R left outer join ApiLastAccessSummary as S
+from Request#window.timeBatch(1 sec)
+select apiContext, apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationOwner, max(requestTimestamp) as requestTimestamp
+group by apiContext, apiCreatorTenantDomain, apiCreator
+insert into RequestInterm;
+
+from RequestInterm as R left outer join ApiLastAccessSummary as S
 on R.apiName == S.apiName and R.apiCreatorTenantDomain == S.apiCreatorTenantDomain and R.apiCreator == S.apiCreator
 select R.apiContext, R.apiName, R.apiVersion, R.apiCreator, R.apiCreatorTenantDomain, R.applicationOwner, R.requestTimestamp as lastAccessTime
 having R.requestTimestamp >= S.lastAccessTime or S.lastAccessTime is null
