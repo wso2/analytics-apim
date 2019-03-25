@@ -87,15 +87,15 @@ select TA.type,TA.apiCreatorTenantDomain as tenantDomain,TA.message,TA.severity,
 having AAS.message is null
 insert into ApimAllAlertSummary;
 
-@info(name='Query inserts data to ApiHealthMonitorAlertStream')
-from ApiHealthMonitorAlertStreamTemp#window.length(1) as AH left outer join ApiHealthMonitorAlertStream#window.time(10 minutes) as AM
+@info(name='Query inserts data to ApimApiHealthMonitorAlertStream')
+from ApiHealthMonitorAlertStreamTemp#window.length(1) as AH left outer join ApimApiHealthMonitorAlertStream#window.time(10 minutes) as AM
 on AH.apiName==AM.apiName and AH.apiVersion==AM.apiVersion and AH.message==AM.message
 select AH.apiName,AH.apiVersion,AH.apiCreator,AH.apiCreatorTenantDomain,AH.message,AH.severity,AH.alertTimestamp
 having AM.apiName is null and AM.apiVersion is null and AM.message is null
-insert into ApiHealthMonitorAlertStream;
+insert into ApimApiHealthMonitorAlertStream;
 
-@info(name='Query inserts data to ApimApiHealthMonitorAlert')
-from ApiHealthMonitorAlertStream
+@info(name='Query inserts data from ApimApiHealthMonitorAlertStream to ApimApiHealthMonitorAlert')
+from ApimApiHealthMonitorAlertStream
 select *
 insert into ApimApiHealthMonitorAlert;
 
