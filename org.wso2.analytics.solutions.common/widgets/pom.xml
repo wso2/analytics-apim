@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wso2.analytics.solutions</groupId>
         <artifactId>org.wso2.analytics.solutions.common</artifactId>
-        <version>1.0.37</version>
+        <version>1.0.38-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
