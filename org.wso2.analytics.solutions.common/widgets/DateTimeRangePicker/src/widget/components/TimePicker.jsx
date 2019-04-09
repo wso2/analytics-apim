@@ -58,7 +58,6 @@ export default class TimePicker extends React.Component {
    * @param(integer) year
    */
   isLeapYear = (year) => {
-    console.log("year", year);
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   };
 
