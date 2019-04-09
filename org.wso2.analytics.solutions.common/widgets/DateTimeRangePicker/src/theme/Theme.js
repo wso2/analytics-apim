@@ -1,8 +1,5 @@
 import { createMuiTheme } from "@material-ui/core/styles";
 export const dark = createMuiTheme({
-  typography: {
-    useNextVariants: true
-  },
   overrides: {
     MuiPopover: {
       paper: {
@@ -43,12 +40,6 @@ export const dark = createMuiTheme({
         }
       }
     },
-
-    MuiInputLabel: {
-      root: {
-        color: "#ffffff"
-      }
-    },
     MuiMenuItem: {
       root: {
         "&:hover": {
@@ -62,34 +53,34 @@ export const dark = createMuiTheme({
     MuiSelect: {
       root: {
         color: "#ffffff",
-        width: 130,
+        width: 120,
         margin: 5,
         fontSize: 13
       },
       icon: {
         color: "#756e71"
       }
+    },
+    typography: {
+      root: {
+        color: "#ffffff"
+      },
+      useNextVariants: true
     }
   }
 });
 
 export const light = createMuiTheme({
-  typography: {
-    useNextVariants: true
-  },
   overrides: {
+    MuiPopover: {
+      paper: {
+        borderRadius: 0
+      }
+    },
     MuiGrid: {
       container: {
         background: "ffffff",
         color: "#ffffff"
-      }
-    },
-    MuiSelect: {
-      root: {
-        color: "#000",
-        width: 120,
-        margin: 5,
-        fontSize: 13
       }
     },
     MuiButton: {
@@ -98,6 +89,13 @@ export const light = createMuiTheme({
         textTransform: "none"
       }
     },
+    MuiList: {
+      root: {
+        backgroundColor: "#ffffff"
+      },
+      padding: 0
+    },
+
     MuiInput: {
       root: {
         color: "#000",
@@ -111,6 +109,27 @@ export const light = createMuiTheme({
           borderBottomColor: "#000"
         }
       }
+    },
+    MuiMenuItem: {
+      root: {
+        color: "#000",
+        fontSize: 15,
+        backgroundColor: "#ffffff"
+      }
+    },
+    MuiSelect: {
+      root: {
+        color: "#000",
+        width: 120,
+        margin: 5,
+        fontSize: 13
+      }
+    },
+    typography: {
+      root: {
+        color: "#000"
+      },
+      useNextVariants: true
     }
   }
 });

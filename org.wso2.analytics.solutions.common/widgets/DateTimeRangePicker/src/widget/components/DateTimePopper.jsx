@@ -18,13 +18,12 @@
  */
 
 import React from "react";
+import CustomTimeRangeSelector from "./CustomTimeRangeSelector";
 import Popover from "@material-ui/core/Popover/Popover";
 import Grid from "@material-ui/core/Grid/Grid";
 import Button from "@material-ui/core/Button/Button";
 import Typography from "@material-ui/core/Typography/Typography";
-import CustomTimeRangeSelector from "./CustomTimeRangeSelector";
-// TODO: props validation
-const DateTimePopper = props => {
+const DateTimePopper = (props) => {
   const quickRangeButtons = [
     "1 Min",
     "15 Min",
@@ -44,10 +43,11 @@ const DateTimePopper = props => {
     startTime,
     endTime,
     customRangeGranularityValue,
-    anchorEl,
+    anchorPopperButton,
     open,
     changeQuickRangeGranularities,
-    quickRangeGranularityValue
+    quickRangeGranularityValue,
+    disableSelectedQuickRangeValue
   } = props;
 
   const quickRanges = {
@@ -80,7 +80,7 @@ const DateTimePopper = props => {
     <Popover
       id={"popper"}
       open={open}
-      anchorEl={anchorEl}
+      anchorEl={anchorPopperButton}
       onClose={onClose}
       anchorOrigin={{
         vertical: "bottom",
@@ -112,8 +112,8 @@ const DateTimePopper = props => {
                         ? "#505050"
                         : "#323435"
                       : quickRangeGranularityValue === quickRangeButton
-                      ? "#e9e8e8"
-                      : "#ffffff"
+                        ? "#e9e8e8"
+                        : "#ffffff"
                 }}
               >
                 {quickRangeButton}
@@ -144,6 +144,8 @@ const DateTimePopper = props => {
               Granularity Modes
             </Typography>
             <CustomTimeRangeSelector
+              disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
+              quickRangeGranularityValue={quickRangeGranularityValue}
               customRangeGranularityValue={customRangeGranularityValue}
               options={options}
               handleClose={onClose}

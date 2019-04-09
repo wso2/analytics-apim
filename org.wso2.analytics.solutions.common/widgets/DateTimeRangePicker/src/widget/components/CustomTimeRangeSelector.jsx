@@ -19,9 +19,9 @@
 
 import React from "react";
 import Moment from "moment";
+import TimePicker from "./TimePicker";
 import Button from "@material-ui/core/Button/Button";
 import Typography from "@material-ui/core/Typography/Typography";
-import TimePicker from "./TimePicker";
 export default class CustomTimeRangeSelector extends React.Component {
   state = {
     invalidDateRange: false,
@@ -36,7 +36,7 @@ export default class CustomTimeRangeSelector extends React.Component {
    * Setting the start time using the custom  ranges
    * @param{object} date
    */
-  handleStartTimeChange = date => {
+  handleStartTimeChange = (date) => {
     const { endTime } = this.state;
     const startTime = date;
     if (Moment(startTime).isSameOrAfter(Moment(endTime))) {
@@ -56,7 +56,7 @@ export default class CustomTimeRangeSelector extends React.Component {
    * Setting the end time using the custom  ranges
    * @param{object} date
    */
-  handleEndTimeChange = date => {
+  handleEndTimeChange = (date) => {
     const { startTime } = this.state;
     const endTime = date;
     if (Moment(startTime).isSameOrAfter(Moment(endTime))) {
@@ -90,7 +90,8 @@ export default class CustomTimeRangeSelector extends React.Component {
    * change according to the granularity value
    * @param{string} customGranularityValue:'second','minute','hour' etc
    */
-  changeCustomRangeGranularity = customGranularityValue => {
+  changeCustomRangeGranularity = (customGranularityValue) => {
+    this.props.disableSelectedQuickRangeValue()
     const { startTime, endTime } = this.state;
     let invalidDateRange = false;
     let applyBtnColor = "#ef6c00";
@@ -145,7 +146,7 @@ export default class CustomTimeRangeSelector extends React.Component {
    * Change the background color of the apply button when hovering the button
    * @param{string} color
    */
-  applyButtonsBgColor = color => {
+  applyButtonsBgColor = (color) => {
     this.setState({
       applyButtonBackgroundColor: color
     });
@@ -154,7 +155,7 @@ export default class CustomTimeRangeSelector extends React.Component {
    * Change the background color of the cancel button when hovering the button
    * @param{string} color
    */
-  cancelButtonsBgColor = color => {
+  cancelButtonsBgColor = (color) => {
     this.setState({
       cancelButtonBackgroundColor: color
     });
@@ -202,7 +203,7 @@ export default class CustomTimeRangeSelector extends React.Component {
    * @returns{JSX}
    */
   render() {
-    const { theme } = this.props;
+    const { theme, disableSelectedQuickRangeValue } = this.props;
     const {
       customRangeGranularityValue,
       applyButtonBackgroundColor,
@@ -247,8 +248,8 @@ export default class CustomTimeRangeSelector extends React.Component {
                       ? "#756e71"
                       : "#494547"
                     : customRangeGranularityValue === customRangeButton
-                    ? "#e9e8e8"
-                    : "#ffffff"
+                      ? "#e9e8e8"
+                      : "#ffffff"
               }}
               onClick={() =>
                 this.changeCustomRangeGranularity(customRangeButton)
@@ -262,6 +263,7 @@ export default class CustomTimeRangeSelector extends React.Component {
           <div style={{ float: "left", width: "50%" }}>
             <Typography style={typographyLabel}>From</Typography>
             <TimePicker
+              disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
               onChange={this.handleStartTimeChange}
               inputType={customRangeGranularityValue}
               initTime={Moment(startTime)}
@@ -272,6 +274,7 @@ export default class CustomTimeRangeSelector extends React.Component {
           <div style={{ float: "right", width: "50%" }}>
             <Typography style={typographyLabel}>To</Typography>
             <TimePicker
+              disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
               onChange={this.handleEndTimeChange}
               inputType={customRangeGranularityValue}
               initTime={Moment(endTime)}

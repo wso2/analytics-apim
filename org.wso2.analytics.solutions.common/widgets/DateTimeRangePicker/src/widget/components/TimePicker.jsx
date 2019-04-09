@@ -39,7 +39,7 @@ export default class TimePicker extends React.Component {
    * @returns{Integer}
    *
    */
-  getTimeStep = inputType => {
+  getTimeStep = (inputType) => {
     switch (inputType) {
       case "hour":
         return 3600;
@@ -57,7 +57,7 @@ export default class TimePicker extends React.Component {
    * days of the month February
    * @param(integer) year
    */
-  isLeapYear = year => {
+  isLeapYear = (year) => {
     console.log("year", year);
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   };
@@ -202,7 +202,8 @@ export default class TimePicker extends React.Component {
    * param{String,event} (property,value)
    */
   handleOnChange = (property, value) => {
-    const { inputType, onChange } = this.props;
+    const { inputType, onChange, disableSelectedQuickRangeValue } = this.props;
+    disableSelectedQuickRangeValue()
     const { state } = this;
     state[property] = value;
 
@@ -269,28 +270,28 @@ export default class TimePicker extends React.Component {
           {["year", "month", "day", "hour", "minute", "second"].indexOf(
             inputType
           ) > -1 ? (
-            <Select
-              value={year}
-              onChange={event => {
-                this.handleOnChange("year", event.target.value);
-              }}
-            >
-              {this.generateYears(inputName, startTime)}
-            </Select>
-          ) : null}
+              <Select
+                value={year}
+                onChange={event => {
+                  this.handleOnChange("year", event.target.value);
+                }}
+              >
+                {this.generateYears(inputName, startTime)}
+              </Select>
+            ) : null}
         </div>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           {["month", "day", "hour", "minute", "second"].indexOf(inputType) >
-          -1 ? (
-            <Select
-              value={month}
-              onChange={event => {
-                this.handleOnChange("month", event.target.value);
-              }}
-            >
-              {this.generateMonths(inputName, startTime)}
-            </Select>
-          ) : null}
+            -1 ? (
+              <Select
+                value={month}
+                onChange={event => {
+                  this.handleOnChange("month", event.target.value);
+                }}
+              >
+                {this.generateMonths(inputName, startTime)}
+              </Select>
+            ) : null}
         </div>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           {["day", "hour", "minute", "second"].indexOf(inputType) > -1 ? (
