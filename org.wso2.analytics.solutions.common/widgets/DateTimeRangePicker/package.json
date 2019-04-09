@@ -1,0 +1,63 @@
+{
+  "name": "WSO2-datepicker-publisher",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "author": "lahirur@wso2.com",
+  "license": "MIT",
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties"
+    ]
+  },
+  "scripts": {
+    "start": "webpack-dev-server --config ./webpack.config.dev.js --mode development --open",
+    "build": "webpack --mode production",
+    "dev": "webpack --config ./webpack.config.prod.js --mode development",
+    "production": "npm i && webpack --config ./webpack.config.prod.js --mode production",
+    "lint": "eslint"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.4",
+    "copy-webpack-plugin": "^4.5.4",
+    "css-loader": "^1.0.1",
+    "eslint": "^5.15.3",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4",
+    "node-sass": "^4.9.4",
+    "react-hot-loader": "^4.3.11",
+    "sass-loader": "^7.1.0",
+    "simple-progress-webpack-plugin": "^1.1.2",
+    "string-replace-loader": "^2.1.1",
+    "style-loader": "^0.23.1",
+    "url-loader": "^1.1.2",
+    "webpack": "^4.23.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
+  },
+  "dependencies": {
+    "@material-ui/core": "3.6.0",
+    "@material-ui/icons": "3.0.1",
+    "@wso2-dashboards/widget": "1.4.0",
+    "events": "3.0.0",
+    "moment": "2.22.2",
+    "prop-types": "15.6.2",
+    "re-resizable": "4.11.0",
+    "react": "16.4.0",
+    "react-custom-scrollbars": "4.2.1",
+    "react-dom": "16.4.0",
+    "react-jss": "8.6.1",
+    "react-vizgrammar": "0.7.37",
+    "string_decoder": "1.1.1"
+  }
+}
