@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /*
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,23 +17,23 @@
  * under the License.
  */
 
-import React from "react";
-import CustomTimeRangeSelector from "./CustomTimeRangeSelector";
-import Popover from "@material-ui/core/Popover/Popover";
-import Grid from "@material-ui/core/Grid/Grid";
-import Button from "@material-ui/core/Button/Button";
-import Typography from "@material-ui/core/Typography/Typography";
-const DateTimePopper = (props) => {
+import React from 'react';
+import CustomTimeRangeSelector from './CustomTimeRangeSelector';
+import Popover from '@material-ui/core/Popover/Popover';
+import Grid from '@material-ui/core/Grid/Grid';
+import Button from '@material-ui/core/Button/Button';
+import Typography from '@material-ui/core/Typography/Typography';
+const DateTimePopper = props => {
   const quickRangeButtons = [
-    "1 Min",
-    "15 Min",
-    "1 Hour",
-    "1 Day",
-    "7 Days",
-    "1 Month",
-    "3 Months",
-    "6 Months",
-    "1 Year"
+    '1 Min',
+    '15 Min',
+    '1 Hour',
+    '1 Day',
+    '7 Days',
+    '1 Month',
+    '3 Months',
+    '6 Months',
+    '1 Year'
   ];
   const {
     options,
@@ -51,16 +51,16 @@ const DateTimePopper = (props) => {
   } = props;
 
   const quickRanges = {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "space-evenly",
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
     marginTop: 8,
     marginRight: 17,
     marginBottom: 1,
-    borderRightStyle: "solid",
+    borderRightStyle: 'solid',
     borderRightWidth: 1,
-    borderRightColor: theme.name === "dark" ? "#111618" : "#d8d0d0",
-    backgroundColor: theme.name === "dark" ? " #333435" : "#ffffff",
+    borderRightColor: theme.name === 'dark' ? '#111618' : '#d8d0d0',
+    backgroundColor: theme.name === 'dark' ? ' #333435' : '#ffffff',
     height: 397
   };
   const customRanges = {
@@ -68,27 +68,27 @@ const DateTimePopper = (props) => {
     marginRight: 2,
     marginLeft: -17,
     height: 397,
-    backgroundColor: theme.name === "dark" ? "#333435" : "#ffffff"
+    backgroundColor: theme.name === 'dark' ? '#333435' : '#ffffff'
   };
   const RangeHeader = {
     fontSize: 14,
     padding: 0.5,
     margin: 4,
-    color: theme.name === "dark" ? "#ffffff" : "#000"
+    color: theme.name === 'dark' ? '#ffffff' : '#000'
   };
   return (
     <Popover
-      id={"popper"}
+      id={'popper'}
       open={open}
       anchorEl={anchorPopperButton}
       onClose={onClose}
       anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left"
+        vertical: 'bottom',
+        horizontal: 'left'
       }}
       transformOrigin={{
-        vertical: "top",
-        horizontal: "left"
+        vertical: 'top',
+        horizontal: 'left'
       }}
       transitionDuration="auto"
       style={{ height: 550 }}
@@ -107,13 +107,13 @@ const DateTimePopper = (props) => {
                   padding: 0,
                   fontSize: 10,
                   backgroundColor:
-                    theme.name === "dark"
+                    theme.name === 'dark'
                       ? quickRangeGranularityValue === quickRangeButton
-                        ? "#505050"
-                        : "#323435"
+                        ? '#505050'
+                        : '#323435'
                       : quickRangeGranularityValue === quickRangeButton
-                        ? "#e9e8e8"
-                        : "#ffffff"
+                      ? '#e9e8e8'
+                      : '#ffffff'
                 }}
               >
                 {quickRangeButton}
@@ -126,7 +126,7 @@ const DateTimePopper = (props) => {
             <Typography
               style={{
                 ...RangeHeader,
-                alignContent: "center",
+                alignContent: 'center',
                 marginTop: 13,
                 marginLeft: 18
               }}
@@ -161,4 +161,3 @@ const DateTimePopper = (props) => {
   );
 };
 export default DateTimePopper;
-

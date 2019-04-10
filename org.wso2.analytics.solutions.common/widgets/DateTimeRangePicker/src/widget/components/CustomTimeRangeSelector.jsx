@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /*
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,72 +17,72 @@
  * under the License.
  */
 
-import React from "react";
-import Moment from "moment";
-import TimePicker from "./TimePicker";
-import Button from "@material-ui/core/Button/Button";
-import Typography from "@material-ui/core/Typography/Typography";
+import React from 'react';
+import Moment from 'moment';
+import TimePicker from './TimePicker';
+import Button from '@material-ui/core/Button/Button';
+import Typography from '@material-ui/core/Typography/Typography';
 export default class CustomTimeRangeSelector extends React.Component {
   state = {
     invalidDateRange: false,
     customRangeGranularityValue: this.props.customRangeGranularityValue,
     startTime: this.props.startTime,
     endTime: new Date(),
-    applyButtonBackgroundColor: "#ef6c00",
-    cancelButtonBackgroundColor: "#999"
+    applyButtonBackgroundColor: '#ef6c00',
+    cancelButtonBackgroundColor: '#999'
   };
 
   /**
    * Setting the start time using the custom  ranges
    * @param{object} date
    */
-  handleStartTimeChange = (date) => {
+  handleStartTimeChange = (startTime) => {
     const { endTime } = this.state;
-    const startTime = date;
     if (Moment(startTime).isSameOrAfter(Moment(endTime))) {
       this.setState({
         invalidDateRange: true,
-        applyButtonBackgroundColor: "#999"
+        applyButtonBackgroundColor: '#999'
       });
     } else {
       this.setState({
         invalidDateRange: false,
-        applyButtonBackgroundColor: "#ef6c00",
-        startTime: date
-      });
-    }
-  };
-  /**
-   * Setting the end time using the custom  ranges
-   * @param{object} date
-   */
-  handleEndTimeChange = (date) => {
-    const { startTime } = this.state;
-    const endTime = date;
-    if (Moment(startTime).isSameOrAfter(Moment(endTime))) {
-      this.setState({
-        invalidDateRange: true,
-        applyButtonBackgroundColor: "#999"
-      });
-    } else {
-      this.setState({
-        invalidDateRange: false,
-        applyButtonBackgroundColor: "#ef6c00",
-        endTime: date
+        applyButtonBackgroundColor: '#ef6c00',
+        startTime: startTime
       });
     }
   };
 
-  /*Publishing the custom time range
-  onChangeCustom()=>handleGranularityChangeForCustom(mode, startTime, endTime, granularity)
-  mode:custom
-  granularity:second,minute,hour,day,month,year
-  */
+  /**
+   * Setting the end time using the custom  ranges
+   * @param{object} date
+   */
+  handleEndTimeChange = (endTime) => {
+    const { startTime } = this.state;
+    if (Moment(startTime).isSameOrAfter(Moment(endTime))) {
+      this.setState({
+        invalidDateRange: true,
+        applyButtonBackgroundColor: '#999'
+      });
+    } else {
+      this.setState({
+        invalidDateRange: false,
+        applyButtonBackgroundColor: '#ef6c00',
+        endTime: endTime
+      });
+    }
+  };
+
+  /**
+   * Publishing the custom time range
+   * onChangeCustom()=>handleGranularityChangeForCustom(mode, startTime, endTime, granularity)
+   * mode:custom,
+   * granularity:second,minute,hour,day,month,year
+   */
   publishCustomTimeRange = () => {
     const { handleClose, onChangeCustom } = this.props;
     const { customRangeGranularityValue, startTime, endTime } = this.state;
     handleClose();
-    onChangeCustom("custom", startTime, endTime, customRangeGranularityValue);
+    onChangeCustom('custom', startTime, endTime, customRangeGranularityValue);
   };
 
   /**
@@ -91,50 +91,17 @@ export default class CustomTimeRangeSelector extends React.Component {
    * @param{string} customGranularityValue:'second','minute','hour' etc
    */
   changeCustomRangeGranularity = (customGranularityValue) => {
-    this.props.disableSelectedQuickRangeValue()
+    this.props.disableSelectedQuickRangeValue();
     const { startTime, endTime } = this.state;
     let invalidDateRange = false;
-    let applyBtnColor = "#ef6c00";
-    switch (customGranularityValue) {
-      case "second":
-        if (Moment(startTime).isSameOrAfter(Moment(endTime), "second")) {
-          invalidDateRange = true;
-          applyBtnColor = "#999";
-        }
-        break;
-      case "minute":
-        if (Moment(startTime).isSameOrAfter(Moment(endTime), "minute")) {
-          invalidDateRange = true;
-          applyBtnColor = "#999";
-        }
-        break;
-      case "hour":
-        if (Moment(startTime).isSameOrAfter(Moment(endTime), "hour")) {
-          invalidDateRange = true;
-          applyBtnColor = "#999";
-        }
-        break;
-      case "day":
-        if (Moment(startTime).isSameOrAfter(Moment(endTime), "day")) {
-          invalidDateRange = true;
-          applyBtnColor = "#999";
-        }
-        break;
-      case "month":
-        if (Moment(startTime).isSameOrAfter(Moment(endTime), "month")) {
-          invalidDateRange = true;
-          applyBtnColor = "#999";
-        }
-        break;
-      case "year":
-        if (Moment(startTime).isSameOrAfter(Moment(endTime), "year")) {
-          invalidDateRange = true;
-          applyBtnColor = "#999";
-        }
-        break;
-      default:
-        break;
+    let applyBtnColor = '#ef6c00';
+    if (
+      Moment(startTime).isSameOrAfter(Moment(endTime), customGranularityValue)
+    ) {
+      invalidDateRange = true;
+      applyBtnColor = '#999';
     }
+
     this.setState({
       applyButtonBackgroundColor: applyBtnColor,
       invalidDateRange: invalidDateRange,
@@ -146,26 +113,28 @@ export default class CustomTimeRangeSelector extends React.Component {
    * Change the background color of the apply button when hovering the button
    * @param{string} color
    */
-  applyButtonsBgColor = (color) => {
+  setApplyButtonBgColor = (color) => {
     this.setState({
       applyButtonBackgroundColor: color
     });
   };
+
   /**
    * Change the background color of the cancel button when hovering the button
    * @param{string} color
    */
-  cancelButtonsBgColor = (color) => {
+  setCancelButtonBgColor = (color) => {
     this.setState({
       cancelButtonBackgroundColor: color
     });
   };
+
   customTimeRangeSelectorStyles = {
     customRangeContainer: {
       marginLeft: 1,
       height: 330,
-      display: "flex",
-      flexDirection: "column"
+      display: 'flex',
+      flexDirection: 'column'
     },
     customRangeButtonContainer: {
       marginLeft: 15
@@ -175,30 +144,31 @@ export default class CustomTimeRangeSelector extends React.Component {
       padding: 0.3
     },
     timePicker: {
-      flexWrap: "wrap",
-      display: "flex",
+      flexWrap: 'wrap',
+      display: 'flex',
       height: 220,
       padding: 5,
-      color: this.props.theme.name === "dark" ? "#ffffff" : "#000",
+      color: this.props.theme.name === 'dark' ? '#ffffff' : '#000',
       marginTop: 10,
       marginLeft: 20,
       marginRight: 10,
-      borderBottomStyle: "solid",
+      borderBottomStyle: 'solid',
       borderBottomWidth: 1,
       borderBottomColor:
-        this.props.theme.name === "dark" ? "#111618" : "#d8d0d0"
+        this.props.theme.name === 'dark' ? '#111618' : '#d8d0d0'
     },
     footerButtons: {
       padding: 10,
-      color: "#000",
+      color: '#000',
       marginRight: 7
     },
     typographyLabel: {
       fontSize: 12,
-      color: this.props.theme.name === "dark" ? "#ffffff" : "#000",
-      align: "center"
+      color: this.props.theme.name === 'dark' ? '#ffffff' : '#000',
+      align: 'center'
     }
   };
+
   /**
    * @returns{JSX}
    */
@@ -221,12 +191,12 @@ export default class CustomTimeRangeSelector extends React.Component {
       typographyLabel
     } = this.customTimeRangeSelectorStyles;
     const customRangeButtons = [
-      "second",
-      "minute",
-      "hour",
-      "day",
-      "month",
-      "year"
+      'second',
+      'minute',
+      'hour',
+      'day',
+      'month',
+      'year'
     ];
 
     return (
@@ -243,13 +213,13 @@ export default class CustomTimeRangeSelector extends React.Component {
                 borderTopRightRadius: index === 5 ? 6 : 0,
                 borderBottomRightRadius: index === 5 ? 6 : 0,
                 backgroundColor:
-                  theme.name === "dark"
+                  theme.name === 'dark'
                     ? customRangeGranularityValue === customRangeButton
-                      ? "#756e71"
-                      : "#494547"
+                      ? '#756e71'
+                      : '#494547'
                     : customRangeGranularityValue === customRangeButton
-                      ? "#e9e8e8"
-                      : "#ffffff"
+                    ? '#e9e8e8'
+                    : '#ffffff'
               }}
               onClick={() =>
                 this.changeCustomRangeGranularity(customRangeButton)
@@ -260,7 +230,7 @@ export default class CustomTimeRangeSelector extends React.Component {
           ))}
         </div>
         <div style={timePicker}>
-          <div style={{ float: "left", width: "50%" }}>
+          <div style={{ float: 'left', width: '50%' }}>
             <Typography style={typographyLabel}>From</Typography>
             <TimePicker
               disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
@@ -271,7 +241,7 @@ export default class CustomTimeRangeSelector extends React.Component {
               theme={theme}
             />
           </div>
-          <div style={{ float: "right", width: "50%" }}>
+          <div style={{ float: 'right', width: '50%' }}>
             <Typography style={typographyLabel}>To</Typography>
             <TimePicker
               disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
@@ -285,7 +255,7 @@ export default class CustomTimeRangeSelector extends React.Component {
           </div>
         </div>
         <div
-          style={{ display: "flex", justifyContent: "flex-end", marginTop: 15 }}
+          style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 15 }}
         >
           <Button
             size="small"
@@ -296,8 +266,8 @@ export default class CustomTimeRangeSelector extends React.Component {
               backgroundColor: cancelButtonBackgroundColor
             }}
             onClick={this.props.handleClose}
-            onMouseEnter={() => this.cancelButtonsBgColor("#bbb")}
-            onMouseLeave={() => this.cancelButtonsBgColor("#999")}
+            onMouseEnter={() => this.setCancelButtonBgColor('#bbb')}
+            onMouseLeave={() => this.setCancelButtonBgColor('#999')}
           >
             Cancel
           </Button>
@@ -311,8 +281,8 @@ export default class CustomTimeRangeSelector extends React.Component {
               backgroundColor: applyButtonBackgroundColor
             }}
             onClick={this.publishCustomTimeRange}
-            onMouseEnter={() => this.applyButtonsBgColor("#ff9034")}
-            onMouseLeave={() => this.applyButtonsBgColor("#ef6c00")}
+            onMouseEnter={() => this.setApplyButtonBgColor('#ff9034')}
+            onMouseLeave={() => this.setApplyButtonBgColor('#ef6c00')}
           >
             Apply
           </Button>
@@ -321,4 +291,3 @@ export default class CustomTimeRangeSelector extends React.Component {
     );
   }
 }
-
