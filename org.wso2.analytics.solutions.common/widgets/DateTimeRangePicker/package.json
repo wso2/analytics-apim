@@ -4,9 +4,8 @@
   "private": true,
   "license": "Apache 2.0",
   "scripts": {
-    "build": "webpack --mode production",
-    "dev": "webpack --config ./webpack.config.prod.js --mode development",
-    "production": "npm i && webpack --config ./webpack.config.prod.js --mode production",
+    "build": "webpack -p",
+    "dev": "webpack --mode development",
     "lint": "eslint"
   },
   "devDependencies": {
@@ -23,8 +22,8 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
     "react-hot-loader": "^4.3.11",
-    "simple-progress-webpack-plugin": "^1.1.2",
     "string-replace-loader": "^2.1.1",
+    "simple-progress-webpack-plugin": "^1.1.2",
     "style-loader": "^0.23.1",
     "url-loader": "^1.1.2",
     "webpack": "^4.23.1",
@@ -37,7 +36,6 @@
     "moment": "2.22.2",
     "prop-types": "15.6.2",
     "react": "16.4.0",
-    "react-custom-scrollbars": "4.2.1",
     "react-dom": "16.4.0"
   }
 }

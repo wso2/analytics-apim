@@ -58,7 +58,6 @@ class DateTimePicker extends Widget {
    * @param {String} message : Selected time range
    */
   publishTimeRange = (message) => {
-    console.log('Message', message)
     super.publish(message);
   };
 
