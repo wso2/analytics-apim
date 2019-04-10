@@ -18,7 +18,7 @@
 @App:description("Store the alert configurations of each API into two different tables from the two streams published corresponding to alert configurations done by the API creator and the subscriber.")
 
 -- Stream and table definition for the alerts configured by the API creator
-@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.creator.alert.configuration:1.0.0', @map(type = 'wso2event'))
+@source(type = 'inMemory', topic='ApiCreatorAlertConfigurationStream' )
 define stream ApiCreatorAlertConfigurationStream (
     apiName string,
     apiVersion string,
@@ -32,7 +32,7 @@ define stream ApiCreatorAlertConfigurationStream (
 define table ApiCreatorAlertConfiguration (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, thresholdResponseTime long, thresholdBackendTime long);
 
 -- Stream and table definition for the alerts configured by the API subscriber
-@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.subscriber.alert.configuration:1.0.0', @map(type = 'wso2event'))
+@source(type='inMemory' , topic='ApiSubscriberAlertConfigurationStream')
 define stream ApiSubscriberAlertConfigurationStream (
     applicationId string,
     subscriber string,
@@ -45,12 +45,14 @@ define stream ApiSubscriberAlertConfigurationStream (
 define table ApiSubAlertConf (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
 
 -- Data storing logic
+@info(name='Update or Insert ApiCreatorAlertConfiguration')
 from ApiCreatorAlertConfigurationStream
 select *
 update or insert into ApiCreatorAlertConfiguration
 set ApiCreatorAlertConfiguration.thresholdResponseTime = thresholdResponseTime, ApiCreatorAlertConfiguration.thresholdBackendTime = thresholdBackendTime
 on ApiCreatorAlertConfiguration.apiName == apiName and ApiCreatorAlertConfiguration.apiVersion == apiVersion and ApiCreatorAlertConfiguration.apiCreator == apiCreator and ApiCreatorAlertConfiguration.apiCreatorTenantDomain == apiCreatorTenantDomain;
 
+@info(name='Update or Insert ApiSubscriberAlertConfigurationStream')
 from ApiSubscriberAlertConfigurationStream
 select *
 update or insert into ApiSubAlertConf

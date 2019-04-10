@@ -17,7 +17,7 @@
 @App:name('APIM_ALERT_STAKEHOLDER')
 @App:description('Store the alert subscribers information in the database')
 
-@source(type = 'wso2event', wso2.stream.id = 'org.wso2.analytics.apim.alertStakeholderInfo:1.0.1', @map(type = 'wso2event'))
+@source(type='inMemory' , topic='AlertStakeholderInfoStream')
 define stream AlertStakeholderInfoStream (
     userId string,
     alertTypes string,
@@ -30,8 +30,8 @@ define stream AlertStakeholderInfoStream (
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 define table ApimAlertStakeholderInfo(userId string, alertTypes	string, emails	string, isSubscriber bool, isPublisher	bool, isAdmin	bool);
 
--- Data storing logic
-from AlertStakeholderInfoStream 
+@info(name='Insert or Update AlertStakeholderInfo Table')
+from AlertStakeholderInfoStream
 select userId, alertTypes, emails, isSubscriber, isPublisher, isAdmin
 update or insert into ApimAlertStakeholderInfo
 set ApimAlertStakeholderInfo.alertTypes = alertTypes, ApimAlertStakeholderInfo.emails = emails

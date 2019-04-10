@@ -17,62 +17,37 @@
 @App:name("apim_abnormal_request_pattern_alert_0")
 @App:description("Identifies the API requests wchich are outside the normal access pattern and add to AllAlertStream and AbormalRequestPatternStream")
 
-@source(type='inMemory' , topic='APIM_REQUEST')
-define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
-    
-@sink(type="inMemory", topic="APIM_EMAIL_NOTIFICATION", @map(type='passThrough'))
-define stream EmailAlertStream (type	string, message	string, alertTimestamp	string, emails	string);
+@source(type = 'inMemory' , topic = 'APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string, apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
 
-@PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-define table ApimAlertStakeholderInfo(userId string, alertTypes	string, emails	string, isSubscriber bool, isPublisher	bool, isAdmin	bool);
+define stream SuppressedRequestPatternChangedAlertStream(username string, applicationName string, applicationOwner string, tenantDomain string, transition string);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-define table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);
+@sink(type = "inMemory", topic = "RequestPatternChangedAlertStream")
+define stream RequestPatternChangedAlertStream(username string, applicationName string, applicationOwner string, tenantDomain string, message string, transition string, severity int, alertTimestamp long);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-define table ApimRequestPatternChangedAlert (username string, applicationName string, applicationOwner string, tenantDomain string, message string, severity int, alertTimestamp long);
-
-@info(name='stateStreamGenerateQuery') 
+@info(name = 'stateStreamGenerateQuery')
 from Request
-select  userTenantDomain as tenantDomain, username, str:concat(username,'@',applicationId) as appSpecificUsername,  applicationConsumerKey, applicationName, applicationOwner, str:concat(apiMethod,' ',apiContext,' ',apiResourceTemplate) as state,time:dateFormat(requestTimestamp, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp
+select userTenantDomain as tenantDomain, username, str:concat(username, '@', applicationId) as appSpecificUsername, applicationConsumerKey, applicationName, applicationOwner, str:concat(apiMethod, ' ', apiContext, ' ', apiResourceTemplate) as state, time:dateFormat(requestTimestamp, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp
 insert into StateStream;
 
-@info(name='markovChaniGenerateQuery') 
+@info(name = 'markovChaniGenerateQuery')
 from StateStream#markov:markovChain(appSpecificUsername, state, 60 min, 0.2, 500, true)
 select lastState as startState, transitionProbability, notify, state as endState, tenantDomain, username, applicationConsumerKey, applicationName, applicationOwner, requestTimestamp
 insert into TransitionProbabilityStream;
 
 @info(name = 'abnormalPatternFilterQuery')
 from TransitionProbabilityStream [ notify ]
-select username, requestTimestamp,  str:concat(startState,' to ',endState) as transition, transitionProbability, applicationConsumerKey, applicationName, applicationOwner, tenantDomain
-insert into IntermediateFraudStream;
-
-@info(name = 'detailedAlertGenerateQuery')
-from IntermediateFraudStream
-select username, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' ,' Suspicious API transition is: ',transition) as message , transition, (time:timestampInMilliseconds()) as alertTimestamp
+select username, requestTimestamp, str:concat(startState, ' to ', endState) as transition, transitionProbability, applicationConsumerKey, applicationName, applicationOwner, tenantDomain
 insert into RequestPatternChangedStreamTemp;
 
 @info(name = 'repeatedAlertIgnoreQuery')
-from RequestPatternChangedStreamTemp#window.length(1) as a left outer join RequestPatternChangedStreamTemp#window.time(10 minute) as b
-on ( a.username == b.username and a.applicationName == b.applicationName and a.applicationOwner == b.applicationOwner and a.tenantDomain == b.tenantDomain and a.message == b.message)
-select a.username, a.applicationName, a.applicationOwner, a.tenantDomain, a.message, a.transition, a.alertTimestamp
-having b.username  is null
+from RequestPatternChangedStreamTemp#window.length(1) as a left outer join SuppressedRequestPatternChangedAlertStream#window.time(10 minute) as b
+ 	on ( a.username == b.username and a.applicationName == b.applicationName and a.applicationOwner == b.applicationOwner and a.tenantDomain == b.tenantDomain and a.transition == b.transition)
+select a.username, a.applicationName, a.applicationOwner, a.tenantDomain, a.transition
+ 	having b.username is null
+insert into SuppressedRequestPatternChangedAlertStream;
+
+@info(name = 'detailedAlertGenerateQuery')
+from SuppressedRequestPatternChangedAlertStream
+select username, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' , ' Suspicious API transition is: ', transition) as message , transition, 1 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into RequestPatternChangedAlertStream;
-
-@info(name = 'commonAlertDabaseInsertQuery')
-from RequestPatternChangedAlertStream
-select 'AbnormalRequestPattern' as type, tenantDomain, str:concat('Abnormal request pattern detected by user :',username,' using application : ',applicationName, ' owned by: ',applicationOwner, ' suspicious API transition is: ',transition, '.') as message, 1 as severity, (time:timestampInMilliseconds()) as alertTimestamp
-insert into ApimAllAlert;
-
-@info(name='dbInsertQuery') 
-from RequestPatternChangedAlertStream
-select username, applicationName, applicationOwner, tenantDomain, message, 1 as severity, alertTimestamp
-insert into ApimRequestPatternChangedAlert;
-
-@info(name = 'customizeEmailMessageGenerateQuery')
-from RequestPatternChangedAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
-on ((A.applicationOwner == S.userId and true == S.isSubscriber ) or true == S.isAdmin )
-select 'AbnormalRequestPattern' as type , str:concat(A.message,  ' by user :',A.username,' using application : ',A.applicationName, ' owned by: ',A.applicationOwner, '.') as message, time:dateFormat(A.alertTimestamp,'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails
-having str:contains(S.alertTypes, 'AbnormalRequestPattern')
-insert into EmailAlertStream;
