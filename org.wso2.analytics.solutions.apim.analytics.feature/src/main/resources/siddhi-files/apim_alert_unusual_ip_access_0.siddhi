@@ -23,10 +23,10 @@ define stream Request (meta_clientType string, applicationConsumerKey string, ap
 @sink(type = 'inMemory' , topic = 'IpAccessAbnormalityAlertStream')
 define stream IpAccessAbnormalityAlertStream(type string, message string, severity int, ip string, applicationName string, applicationOwner string, username string, tenantDomain string, requestTimestamp long, alertTimestamp long);
 
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '1024', workers = '1', batch.size.max = '1024')
 define stream ApimIPAccessSummaryUpdateStream(username string, applicationConsumerKey string, ip string, lastAccessedDate long);
 
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '1024', workers = '1', batch.size.max = '1024')
 define stream ApimIPAccessAlertCountUpdateStream(username string, applicationConsumerKey string, requestCount long);
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
@@ -78,7 +78,7 @@ insert into IpAccessAbnormalityAlertStream;
 from Request
 select username, applicationConsumerKey, userIp as ip, requestTimestamp as lastAccessedDate
  	group by applicationConsumerKey, apiHostname, username
- 	output last every 10 minutes
+ 	output last every 1 minutes
 insert into ApimIPAccessSummaryUpdateStream;
 
 @info(name = 'Update/Insert ApimIPAccessSummaryUpdate')
@@ -93,7 +93,7 @@ set ApimIPAccesSummary.lastAccessedDate = lastAccessedDate, ApimIPAccessSummary.
 from Request
 select username, applicationConsumerKey, count() as requestCount
  	group by applicationConsumerKey, username
- 	output last every 10 minutes
+ 	output last every 1 minutes
 insert into ApimIPAccessAlertCountUpdateStream;
 
 @info(name = 'Update/Insert ApimIPAccessAlertCount')
