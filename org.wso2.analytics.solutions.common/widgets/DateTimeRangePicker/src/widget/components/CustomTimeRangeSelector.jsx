@@ -164,7 +164,6 @@ export default class CustomTimeRangeSelector extends React.Component {
     },
     typographyLabel: {
       fontSize: 12,
-      color: this.props.theme.name === 'dark' ? '#ffffff' : '#000',
       align: 'center'
     }
   };
@@ -218,8 +217,8 @@ export default class CustomTimeRangeSelector extends React.Component {
                       ? '#756e71'
                       : '#494547'
                     : customRangeGranularityValue === customRangeButton
-                    ? '#e9e8e8'
-                    : '#ffffff'
+                      ? '#e9e8e8'
+                      : '#ffffff'
               }}
               onClick={() =>
                 this.changeCustomRangeGranularity(customRangeButton)
@@ -231,7 +230,7 @@ export default class CustomTimeRangeSelector extends React.Component {
         </div>
         <div style={timePicker}>
           <div style={{ float: 'left', width: '50%' }}>
-            <Typography style={typographyLabel}>From</Typography>
+            <Typography style={{ ...typographyLabel, color: theme.name === 'dark' ? '#ffffff' : '#000', }}>From</Typography>
             <TimePicker
               disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
               onChange={this.handleStartTimeChange}
@@ -242,7 +241,8 @@ export default class CustomTimeRangeSelector extends React.Component {
             />
           </div>
           <div style={{ float: 'right', width: '50%' }}>
-            <Typography style={typographyLabel}>To</Typography>
+
+            <Typography style={{ ...typographyLabel, color: theme.name === 'dark' ? '#ffffff' : '#000', }}>To</Typography>
             <TimePicker
               disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
               onChange={this.handleEndTimeChange}
