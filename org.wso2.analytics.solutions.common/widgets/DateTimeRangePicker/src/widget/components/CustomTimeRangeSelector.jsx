@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /*
- * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -95,9 +95,7 @@ export default class CustomTimeRangeSelector extends React.Component {
     const { startTime, endTime } = this.state;
     let invalidDateRange = false;
     let applyBtnColor = '#ef6c00';
-    if (
-      Moment(startTime).isSameOrAfter(Moment(endTime), customGranularityValue)
-    ) {
+    if (Moment(startTime).isSameOrAfter(Moment(endTime), customGranularityValue)) {
       invalidDateRange = true;
       applyBtnColor = '#999';
     }

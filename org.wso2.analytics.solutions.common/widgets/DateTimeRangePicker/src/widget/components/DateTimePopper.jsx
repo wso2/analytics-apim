@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /*
- * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -112,8 +112,8 @@ const DateTimePopper = props => {
                         ? '#505050'
                         : '#323435'
                       : quickRangeGranularityValue === quickRangeButton
-                      ? '#e9e8e8'
-                      : '#ffffff'
+                        ? '#e9e8e8'
+                        : '#ffffff'
                 }}
               >
                 {quickRangeButton}

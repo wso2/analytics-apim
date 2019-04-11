@@ -66,7 +66,7 @@ export default class TimePicker extends React.Component {
     if (month === 1) {
       if (this.isLeapYear(year)) days = 29;
       else days = 28;
-    } else if ((month < 7 && (month + 1) % 2 === 1) ||(month > 6 && (month + 1) % 2 === 0)) {
+    } else if ((month < 7 && (month + 1) % 2 === 1) || (month > 6 && (month + 1) % 2 === 0)) {
       days = 31;
     } else {
       days = 30;
@@ -259,28 +259,28 @@ export default class TimePicker extends React.Component {
           {['year', 'month', 'day', 'hour', 'minute', 'second'].indexOf(
             inputType
           ) > -1 ? (
-            <Select
-              value={year}
-              onChange={event => {
-                this.handleOnChange('year', event.target.value);
-              }}
-            >
-              {this.generateYears(inputName, startTime)}
-            </Select>
-          ) : null}
+              <Select
+                value={year}
+                onChange={event => {
+                  this.handleOnChange('year', event.target.value);
+                }}
+              >
+                {this.generateYears(inputName, startTime)}
+              </Select>
+            ) : null}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           {['month', 'day', 'hour', 'minute', 'second'].indexOf(inputType) >
-          -1 ? (
-            <Select
-              value={month}
-              onChange={event => {
-                this.handleOnChange('month', event.target.value);
-              }}
-            >
-              {this.generateMonths(inputName, startTime)}
-            </Select>
-          ) : null}
+            -1 ? (
+              <Select
+                value={month}
+                onChange={event => {
+                  this.handleOnChange('month', event.target.value);
+                }}
+              >
+                {this.generateMonths(inputName, startTime)}
+              </Select>
+            ) : null}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           {['day', 'hour', 'minute', 'second'].indexOf(inputType) > -1 ? (
