@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-@App:name("apim_unusual_ip_access_alert_0")
+@App:name("apim_alert_unusual_ip_access_0")
 @App:description("Alerts if an access from a strange ip is detected")
 
 @source(type = 'inMemory' , topic = 'APIM_REQUEST')
