@@ -4,14 +4,8 @@
   "thumbnailURL": "",
   "configs": {
     "pubsub": {
-      "types": [
-        "publisher"
-      ],
-      "publisherWidgetOutputs": [
-        "granularity",
-        "from",
-        "to"
-      ]
+      "types": ["publisher"],
+      "publisherWidgetOutputs": ["granularity", "from", "to"]
     },
     "options": [
       {
@@ -19,10 +13,7 @@
         "title": "Header",
         "type": {
           "name": "BOOLEAN",
-          "possibleValues": [
-            true,
-            false
-          ]
+          "possibleValues": [true, false]
         },
         "defaultValue": true
       },

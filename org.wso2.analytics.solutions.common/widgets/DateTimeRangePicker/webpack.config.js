@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -15,71 +15,57 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const widgetConf = require("./resources/widgetConf.json");
+const SimpleProgressWebpackPlugin = require("simple-progress-webpack-plugin");
 
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const APP_NAME = widgetConf.id;
 
 module.exports = {
-    context: path.resolve(__dirname, './src'),
-    entry: {
-        index: './DateRangePicker.jsx',
-    },
-    output: {
-        path: path.resolve(__dirname, './dist/DateRangePicker/'),
-        filename: 'DateRangePicker.js',
-    },
-    module: {
-        loaders: [
-            {
-                test: /\.html$/,
-                use: [{ loader: 'html-loader' }],
-            },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        query: {
-                            presets: ['es2015', 'react'],
-                        },
-                    },
-                ],
-            },
-            {
-                test: /\.(png|jpg|svg|cur|gif|eot|svg|ttf|woff|woff2)$/,
-                use: ['url-loader'],
-            },
-            {
-                test: /\.jsx?$/,
-                exclude: /(node_modules)/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['es2015', 'react'],
-                },
-            },
-            {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader'],
-            },
-            {
-                test: /\.scss$/,
-                use: [{ loader: 'style-loader' }, { loader: 'css-loader' }, { loader: 'sass-loader' }],
-            },
-
-        ],
-    },
-    plugins: [
-        new CopyWebpackPlugin([
-            { from: path.resolve(__dirname, './src/resources/') },
-        ]),
-    ],
-    resolve: {
-        extensions: ['.js', '.json', '.jsx', '.scss'],
-    },
-    devServer: {
-        contentBase: path.join(__dirname, 'public'),
-        publicPath: '/dist/',
-    },
-    externals: { react: 'React' },
+  entry: "./src/widget/DateTimePicker.jsx",
+  output: {
+    path: `${__dirname}/dist/${APP_NAME}`,
+    publicPath: "/",
+    filename: `${APP_NAME}.js`
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: ["babel-loader"]
+      },
+      {
+        test: /\.html$/,
+        use: [{ loader: "html-loader" }]
+      },
+      {
+        test: /\.(png|jpg|svg|cur|gif|eot|svg|ttf|woff|woff2)$/,
+        use: ["url-loader"]
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"]
+      },
+      {
+        test: /DateTimePicker.jsx/,
+        loader: "string-replace-loader",
+        options: {
+          search: "../../mocking/Widget",
+          replace: "@wso2-dashboards/widget"
+        }
+      }
+    ]
+  },
+  resolve: {
+    extensions: ["*", ".js", ".jsx"]
+  },
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: "./resources/widgetConf.json"
+      }
+    ]),
+    new SimpleProgressWebpackPlugin()
+  ]
 };
