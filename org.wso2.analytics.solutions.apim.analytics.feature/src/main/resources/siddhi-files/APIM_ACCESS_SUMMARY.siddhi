@@ -28,7 +28,7 @@ define stream ApiUserAgentFilteredStream(apiName string, apiVersion string, apiC
 
 define stream geoTempStream(apiName string, apiVersion string,apiContext string, apiCreator string, apiCreatorTenantDomain string, username string, userTenantDomain string, country string, city string, totalCount long, requestTimestamp long);
 
-@Async(buffer.size = '131074', workers = '5', batch.size.max = '32768')
+@Async(buffer.size = '131072', workers = '5', batch.size.max = '32768')
 define stream GeoIntrim(apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, username string, userTenantDomain string, userIp string, requestTimestamp long);
 
 @Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
