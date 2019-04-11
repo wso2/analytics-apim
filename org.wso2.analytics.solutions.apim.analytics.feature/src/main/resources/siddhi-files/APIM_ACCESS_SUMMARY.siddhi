@@ -28,6 +28,9 @@ define stream ApiUserAgentFilteredStream(apiName string, apiVersion string, apiC
 
 define stream geoTempStream(apiName string, apiVersion string,apiContext string, apiCreator string, apiCreatorTenantDomain string, username string, userTenantDomain string, country string, city string, totalCount long, requestTimestamp long);
 
+@Async(buffer.size = '262144', workers = '4', batch.size.max = '4096')
+define stream GeoIntrim(apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, username string, userTenantDomain string, userIp string, requestTimestamp long);
+
 @Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
 define stream RequestInterm(apiContext string, apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, applicationOwner string, requestTimestamp long);
 
@@ -100,9 +103,14 @@ aggregate by requestTimestamp every seconds...years;
 @primaryKey('apiName', 'apiCreator', 'apiCreatorTenantDomain')
 define table ApiLastAccessSummary (apiContext string, apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, applicationOwner string,lastAccessTime long );
 
+@info(name='Add to buffer')
+from Request
+select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain, userIp, requestTimestamp
+insert into GeoIntrim;
+
 -- Queries
 @info(name='Resolve geo attributes')
-from Request
+from GeoIntrim
 select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,ifThenElse(geo:findCountryFromIP(userIp)=="", "N/A", geo:findCountryFromIP(userIp)) as country, ifThenElse(geo:findCityFromIP(userIp)=="", "N/A", geo:findCityFromIP(userIp)) as city, count() as totalCount,requestTimestamp
 insert into geoTempStream;
 

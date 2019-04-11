@@ -16,7 +16,6 @@
 
 @App:name("APIM_PERSIST_ALERTS")
 @App:description("Psersists alerts generated")
-@App:statistics(enable='true', include='*latency,*throughput')
 
 @source(type = 'inMemory' , topic = 'AbnormalBackendTimeAlertStream')
 @Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')

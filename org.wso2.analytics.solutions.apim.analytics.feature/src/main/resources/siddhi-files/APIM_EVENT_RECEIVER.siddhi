@@ -16,7 +16,6 @@
 
 @App:name("APIM_EVENT_RECEIVER")
 @App:description("Receive the streams and passes it for inmemory sinks.")
-@App:statistics(enable='true', include='*latency,*throughput')
 
 -- Kept for backward compatibility and not used in the solution
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.workflow:1.0.0',
