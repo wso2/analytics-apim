@@ -35,7 +35,7 @@ define stream SuppressedResponseTimeAlertStream(apiName string, apiVersion strin
 
 define stream SuppressedResponseCodeAlertStream(apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string);
 
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
 define stream ApimApiAvailabilityInfoUpdateStream(apiName string, apiVersion string, apiCreator string, tenantDomain string, status string);
 
 @sink(type = 'inMemory', topic = 'ApimApiHealthMonitorAlertStream')

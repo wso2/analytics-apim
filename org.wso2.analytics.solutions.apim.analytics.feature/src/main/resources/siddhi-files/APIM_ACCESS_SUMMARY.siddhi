@@ -31,7 +31,7 @@ define stream geoTempStream(apiName string, apiVersion string,apiContext string,
 @Async(buffer.size = '131072', workers = '5', batch.size.max = '32768')
 define stream GeoIntrim(apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, username string, userTenantDomain string, userIp string, requestTimestamp long);
 
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
 define stream RequestInterm(apiContext string, apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, applicationOwner string, requestTimestamp long);
 
 -- Aggregations

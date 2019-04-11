@@ -18,31 +18,31 @@
 @App:description("Psersists alerts generated")
 
 @source(type = 'inMemory' , topic = 'AbnormalBackendTimeAlertStream')
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
 define stream AbnormalBackendTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long, message string, severity int, alertTimestamp long);
 
 @source(type = 'inMemory' , topic = 'AbnormalRequestsCountAlertStream')
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
 define stream AbnormalRequestsCountAlertStream(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int, message string, severity int, alertTimestamp long);
 
 @source(type = "inMemory", topic = "RequestPatternChangedAlertStream")
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
 define stream RequestPatternChangedAlertStream(username string, applicationName string, applicationOwner string, tenantDomain string, message string, transition string, severity int, alertTimestamp long);
 
 @source(type = 'inMemory' , topic = 'AbnormalResponseTimeAlertStream')
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
 define stream AbnormalResponseTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, responseTime long, thresholdResponseTime long, message string, severity int, alertTimestamp long);
 
 @source(type = 'inMemory', topic = 'ApimApiHealthMonitorAlertStream')
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
 define stream ApiHealthMonitorAlertStream(apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
 
 @source(type = 'inMemory', topic = 'TierLimitHittingAlertStream')
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
 define stream TierLimitHittingAlertStream(subscriber string, apiCreator string, apiName string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, message string, severity int, alertTimestamp long);
 
 @source(type = 'inMemory' , topic = 'IpAccessAbnormalityAlertStream')
-@Async(buffer.size = '32768', workers = '1', batch.size.max = '1024')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
 define stream IpAccessAbnormalityAlertStream(type string, message string, severity int, ip string, applicationName string, applicationOwner string, username string, tenantDomain string, requestTimestamp long, alertTimestamp long);
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
@@ -51,7 +51,6 @@ define table ApimAllAlert (type string, tenantDomain string, message string, sev
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 define table ApimAbnormalBackendTimeAlert (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long,
  message string, severity int, alertTimestamp long);
-
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 define table ApimAbnormalReqAlert(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int, message string, severity int, alertTimestamp long);
