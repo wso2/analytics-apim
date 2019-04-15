@@ -55,6 +55,21 @@ define table ApimAbnormalBackendTimeAlert (apiName string, apiVersion string, ap
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 define table ApimAbnormalReqAlert(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int, message string, severity int, alertTimestamp long);
 
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAbnormalResponseTimeAlert( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, responseTime long,thresholdResponseTime long, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimIPAccessAbnormalityAlert (type string, message string, severity int, ip string, applicationName string, applicationOwner string, username string,tenantDomain string, requestTimestamp long, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimRequestPatternChangedAlert (username string, applicationName string, applicationOwner string, tenantDomain string, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimApiHealthMonitorAlert(apiName string,apiVersion string,apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimTierLimitHittingAlert (subscriber string, apiCreator string, apiName string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, message string, severity int, alertTimestamp long);
+
 @info(name = 'AbnormalBackendTimeAlert insert to ApimAllAlert')
 from AbnormalBackendTimeAlertStream
 select 'AbnormalBackendTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal backend time detected for http ', apiMethod, ' method of resource template:', apiResourceTemplate, ' in api:', apiName, ' of tenant domain:', apiCreatorTenantDomain, ', threshold value:', thresholdBackendTime, 'ms.') as message, severity, alertTimestamp
@@ -117,7 +132,7 @@ insert into ApimAbnormalReqAlert;
 
 @info(name = 'Insert to RequestPatternChangedAlert')
 from RequestPatternChangedAlertStream
-select *
+select username, applicationName, applicationOwner, tenantDomain, message, severity, alertTimestamp
 insert into ApimRequestPatternChangedAlert;
 
 @info(name = 'Insert to AbnormalResponseTimeAlert')
