@@ -35,15 +35,8 @@ define stream SuppressedResponseTimeAlertStream(apiName string, apiVersion strin
 
 define stream SuppressedResponseCodeAlertStream(apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string);
 
-@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
-define stream ApimApiAvailabilityInfoUpdateStream(apiName string, apiVersion string, apiCreator string, tenantDomain string, status string);
-
 @sink(type = 'inMemory', topic = 'ApimApiHealthMonitorAlertStream')
 define stream ApiHealthMonitorAlertStream(apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
-
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@primaryKey('apiName', 'apiVersion', 'tenantDomain')
-define table ApimApiAvailabilityInfo (apiName string, apiVersion string, apiCreator string , tenantDomain string, status string);
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @PrimaryKey('apiName', 'apiVersion', 'apiCreator', 'apiCreatorTenantDomain')
@@ -97,35 +90,6 @@ insert into ApiHealthMonitorAlertStream;
 from SuppressedResponseCodeAlertStream
 select apiName, apiVersion, ifThenElse(apiCreatorTenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, apiCreatorTenantDomain, 'Server error occurred continuously for 5 or more times.' as message, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into ApiHealthMonitorAlertStream;
-
-@info(name = 'Query inserts data to ApimApiAvailability')
-from ApiHealthMonitorAlertStream
-select apiName, apiVersion, apiCreator, apiCreatorTenantDomain as tenantDomain, message as status
-update or
-insert into ApimApiAvailabilityInfo
-set ApimApiAvailabilityInfo.status = status
- 	on ApimApiAvailabilityInfo.apiName == apiName and ApimApiAvailabilityInfo.apiVersion == apiVersion and ApimApiAvailabilityInfo.tenantDomain == tenantDomain;
-
-@info(name = 'Query inserting data to ApimApiAvailability when there is no alert for a defined time')
-from RequestAlertInfoStream#window.length(1) as R left outer join ApiHealthMonitorAlertStream#window.time(5 minutes) as AHM
- 	on R.apiName == AHM.apiName and R.apiVersion == AHM.apiVersion
-select R.apiName as apiName, R.apiVersion as apiVersion, R.apiCreator as apiCreator, R.apiCreatorTenantDomain as tenantDomain, "Available" as status
- 	having AHM.apiName is null
-insert into ApimApiAvailabilityInfoUpdateStreamTemp;
-
-@info(name = 'Batch insert to ApimApiAvailabilityInfo')
-from ApimApiAvailabilityInfoUpdateStreamTemp
-select *
-	group by apiName, apiVersion, apiCreator, tenantDomain
-	output last every 5 minutes
-insert into ApimApiAvailabilityInfoUpdateStream;
-
-from ApimApiAvailabilityInfoUpdateStream
-select apiName, apiVersion, ifThenElse(tenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, tenantDomain, status
-update or
-insert into ApimApiAvailabilityInfo
-set ApimApiAvailabilityInfo.status = status
- 	on ApimApiAvailabilityInfo.apiName == apiName and ApimApiAvailabilityInfo.apiVersion == apiVersion and ApimApiAvailabilityInfo.apiCreator == apiCreator and ApimApiAvailabilityInfo.tenantDomain == tenantDomain;
 
 -- Update the AlertCreatorConfig Table @ start
 @info(name = 'Load ApiCreatorAlertConfigurationInMemoryTable')
