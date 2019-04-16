@@ -51,6 +51,7 @@ public class MGWFileSourceDS {
     private static String fileRetentionDays;
     private static String fileCleanupFrequency;
     private static String workerThreadCount;
+    private static HikariDataSource dsObject;
 
     /**
      * This is the activation method of MGWFileSource service. This will be called when its references are
@@ -65,9 +66,15 @@ public class MGWFileSourceDS {
             log.debug("MGWFileSource Component is started");
         }
         initializeSystemProperties();
-        TimerTask fileCleanupTask = new MGWFileCleanUpTask();
-        Timer cleanupTimer = new Timer();
-        cleanupTimer.schedule(fileCleanupTask, 1000, Long.parseLong(fileCleanupFrequency));
+        if (dsObject != null) {
+            TimerTask fileCleanupTask = new MGWFileCleanUpTask();
+            Timer cleanupTimer = new Timer();
+            cleanupTimer.schedule(fileCleanupTask, 1000, Long.parseLong(fileCleanupFrequency));
+        } else {
+            log.warn("MGW file cleanup task is not scheduled as data source 'WSO2AM_MGW_ANALYTICS_DB' is not present. "
+                             + "Please disregard this warning if you are not utilizing API Manager Analytics "
+                             + "capabilities.");
+        }
     }
 
     /**
@@ -135,10 +142,11 @@ public class MGWFileSourceDS {
     )
     protected void onDataSourceServiceReady(DataSourceService service) {
         try {
-            HikariDataSource dsObject = (HikariDataSource) service.getDataSource("WSO2AM_MGW_ANALYTICS_DB");
+            dsObject = (HikariDataSource) service.getDataSource("WSO2AM_MGW_ANALYTICS_DB");
             MGWFileSourceDBUtil.setDataSource(dsObject);
         } catch (DataSourceException e) {
-            log.error("error occurred while fetching the data source.", e);
+            log.error("Error occurred while fetching the data source. Please disregard this warning if you are not "
+                              + "utilizing API Manager Analytics capabilities.", e);
         }
     }
 
