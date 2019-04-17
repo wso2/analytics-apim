@@ -51,7 +51,7 @@ public class MGWFileSourceDS {
     private static String fileRetentionDays;
     private static String fileCleanupFrequency;
     private static String workerThreadCount;
-    private static HikariDataSource dsObject;
+    private HikariDataSource dsObject;
 
     /**
      * This is the activation method of MGWFileSource service. This will be called when its references are
