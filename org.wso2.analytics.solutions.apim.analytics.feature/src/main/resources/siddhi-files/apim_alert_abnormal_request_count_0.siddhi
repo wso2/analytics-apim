@@ -17,19 +17,10 @@
 @App:name("apim_alert_abnormal_request_count_0")
 @App:description("Identifies the API requests with abnormal request count per minute and add to AllAlertStream and AbnormalRequestCountAlertStream")
 
-define trigger LoadInMemoryTable at 'start';
 define trigger MinTriggerEventStream at every 1 minute;
 
 -- This stream definition is only to define the Aggregation. It does not consume the actual API request.
 define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
-
-@source(type = 'inMemory' , topic = 'ApiSubscriberAlertConfigurationStream')
-define stream ApiSubscriberAlertConfigurationStream (
- applicationId string,
- subscriber string,
- apiName string,
- apiVersion string,
- thresholdRequestCountPerMin int);
 
 define stream SuppressedAbnormalRequestsCountStream(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int);
 
@@ -38,10 +29,8 @@ define stream AbnormalRequestsCountAlertStream(applicationName string, applicati
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @PrimaryKey('applicationId', 'apiName', 'apiVersion')
+@Index('applicationId', 'apiName', 'apiVersion', 'thresholdRequestCountPerMin')
 define table ApiSubAlertConf (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
-
-@PrimaryKey('applicationId', 'apiName', 'apiVersion')
-define table ApiSubAlertConfInMemory (applicationId string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
 
 -- This aggregation definition is only for retrieving data. No data is actually aggregated from this.
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
@@ -72,18 +61,13 @@ select apiName, apiVersion, applicationId, applicationName, applicationOwner, us
 insert current events into RequestsPerMinStream;
 
 @info(name = 'configurationInfoRetrieveQuery')
-from RequestsPerMinStream as R join ApiSubAlertConfInMemory as T
-	on ( R.applicationId == T.applicationId and R.apiName == T.apiName and R.apiVersion == T.apiVersion)
+from RequestsPerMinStream as R join ApiSubAlertConf as T
+	on ( R.applicationId == T.applicationId and R.apiName == T.apiName and R.apiVersion == T.apiVersion and T.thresholdRequestCountPerMin > 0 and R.requestCountPerMin > T.thresholdRequestCountPerMin )
 select R.applicationName, R.applicationOwner, R.tenantDomain, R.apiName, R.apiVersion, R.requestCountPerMin, T.thresholdRequestCountPerMin
 insert into AbnormalRequestsPerMinAlertStreamTemp;
 
-@info(name = 'FilterForAlerting')
-from AbnormalRequestsPerMinAlertStreamTemp[ requestCountPerMin > thresholdRequestCountPerMin ]
-select *
-insert into AbnormalRequestsPerMinAlertStreamTemp2;
-
 @info(name = 'Alert Suppression')
-from AbnormalRequestsPerMinAlertStreamTemp2#window.length(1) as a left outer join SuppressedAbnormalRequestsCountStream#window.time(10 minute) as b
+from AbnormalRequestsPerMinAlertStreamTemp#window.length(1) as a left outer join SuppressedAbnormalRequestsCountStream#window.time(10 minute) as b
 	on (a.applicationName == b.applicationName and a.applicationOwner == b.applicationOwner and a.tenantDomain == b.tenantDomain and
  a.apiName == b.apiName and a.apiVersion == b.apiVersion)
 select a.applicationName, a.applicationOwner, a.tenantDomain, a.apiName, a.apiVersion, a.requestCountPerMin, a.thresholdRequestCountPerMin
@@ -95,27 +79,3 @@ from SuppressedAbnormalRequestsCountStream
 select applicationName, applicationOwner, tenantDomain, apiName, apiVersion, requestCountPerMin, thresholdRequestCountPerMin, 'Abnormal request count detected during last minute.' as message , 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into AbnormalRequestsCountAlertStream;
 
--- Update the ApiSubAlertConf Table @ start
-@info(name = 'Load ApiSubAlertConfInMemory')
-from LoadInMemoryTable join ApiSubAlertConf
- 	on thresholdRequestCountPerMin > 0
-select applicationId, apiName, apiVersion, thresholdRequestCountPerMin
-update or
-insert into ApiSubAlertConfInMemory
-set ApiSubAlertConfInMemory.thresholdRequestCountPerMin = thresholdRequestCountPerMin
-	on ApiSubAlertConfInMemory.applicationId == applicationId and ApiSubAlertConfInMemory.apiName == apiName and ApiSubAlertConfInMemory.apiVersion == apiVersion;
-
--- Update ApiSubAlertConf table if receive event form APIM
-@info(name = 'Update ApiSubAlertConfInMemory')
-from ApiSubscriberAlertConfigurationStream[thresholdRequestCountPerMin > 0]
-select applicationId, apiName, apiVersion, thresholdRequestCountPerMin
-update or
-insert into ApiSubAlertConfInMemory
-set ApiSubAlertConfInMemory.thresholdRequestCountPerMin = thresholdRequestCountPerMin
-	on ApiSubAlertConfInMemory.applicationId == applicationId and ApiSubAlertConfInMemory.apiName == apiName and ApiSubAlertConfInMemory.apiVersion == apiVersion;
-
-@info(name = 'Delete ApiSubAlertConfInMemory when config is 0')
-from ApiSubscriberAlertConfigurationStream[thresholdRequestCountPerMin == 0]
-select applicationId, apiName, apiVersion, thresholdRequestCountPerMin
-delete  ApiSubAlertConfInMemory
-	on ApiSubAlertConfInMemory.applicationId == applicationId and ApiSubAlertConfInMemory.apiName == apiName and ApiSubAlertConfInMemory.apiVersion == apiVersion;

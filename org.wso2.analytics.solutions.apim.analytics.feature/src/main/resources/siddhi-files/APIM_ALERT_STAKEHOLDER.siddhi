@@ -15,25 +15,9 @@
 */
 
 @App:name('APIM_ALERT_STAKEHOLDER')
-@App:description('Store the alert subscribers information in the database')
+@App:description('Store the alert subscribers information in the database through Stroe API from APIM')
 
-@source(type='inMemory' , topic='AlertStakeholderInfoStream')
-define stream AlertStakeholderInfoStream (
-    userId string,
-    alertTypes string,
-    emails string,
-    isSubscriber bool,
-    isPublisher bool,
-    isAdmin bool);
-
-@PrimaryKey('userId','isSubscriber','isPublisher','isAdmin')
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@PrimaryKey('userId','isSubscriber','isPublisher','isAdmin')
+@index('userId', 'isPublisher', 'isAdmin' , 'alertTypes')
 define table ApimAlertStakeholderInfo(userId string, alertTypes	string, emails	string, isSubscriber bool, isPublisher	bool, isAdmin	bool);
-
-@info(name='Insert or Update AlertStakeholderInfo Table')
-from AlertStakeholderInfoStream
-select userId, alertTypes, emails, isSubscriber, isPublisher, isAdmin
-update or insert into ApimAlertStakeholderInfo
-set ApimAlertStakeholderInfo.alertTypes = alertTypes, ApimAlertStakeholderInfo.emails = emails
-on ApimAlertStakeholderInfo.userId == userId and ApimAlertStakeholderInfo.isPublisher == isSubscriber and
-    ApimAlertStakeholderInfo.isPublisher == isPublisher and ApimAlertStakeholderInfo.isAdmin == isAdmin;
