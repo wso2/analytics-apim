@@ -19,11 +19,9 @@
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @PrimaryKey('apiName', 'apiVersion','apiCreator', 'apiCreatorTenantDomain')
-@Index('apiName', 'apiVersion','apiCreator', 'apiCreatorTenantDomain', 'thresholdResponseTime')
-@Index('apiName', 'apiVersion', 'apiCreator', 'apiCreatorTenantDomain', 'thresholdBackendTime')
 define table ApiCreatorAlertConfiguration (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, thresholdResponseTime long, thresholdBackendTime long);
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @PrimaryKey('applicationId','apiName', 'apiVersion')
-@index('applicationId', 'apiName', 'apiVersion', 'thresholdRequestCountPerMin')
+@Index('applicationId', 'apiName', 'apiVersion', 'thresholdRequestCountPerMin')
 define table ApiSubAlertConf (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);

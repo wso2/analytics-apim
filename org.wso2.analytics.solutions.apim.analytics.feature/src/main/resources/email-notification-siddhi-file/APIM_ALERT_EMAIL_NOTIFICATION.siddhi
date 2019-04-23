@@ -47,7 +47,6 @@ define stream EmailNotificationStream (
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')
-@index('userId', 'isPublisher', 'isAdmin' , 'alertTypes') 
 define table ApimAlertStakeholderInfo(userId string, alertTypes string, emails string, isSubscriber bool, isPublisher bool, isAdmin bool);
 
 @info(name = 'AbnormalBackendTimeAlert customise Email body')
