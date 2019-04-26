@@ -29,6 +29,7 @@ import org.wso2.extension.siddhi.io.mgwfile.util.FileDataRetrieverUtil;
 import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -73,7 +74,13 @@ public class MGWFileDataRetriever implements Runnable {
             }
             zipInputStream = new ZipInputStream(fileContentStream);
             ZipEntry zipEntry = zipInputStream.getNextEntry();
-            if (zipEntry.getName().equals(MGWFileSourceConstants.API_USAGE_OUTPUT_FILE_NAME)) {
+            String uploadedZipFileName = zipEntry.getName();
+            if (!uploadedZipFileName.isEmpty()) {
+                File name = new File(uploadedZipFileName);
+                uploadedZipFileName = name.getName();
+            }
+
+            if (MGWFileSourceConstants.API_USAGE_OUTPUT_FILE_NAME.equals(uploadedZipFileName)) {
                 InputStream inputStream = zipInputStream;
                 inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
                 bufferedReader = new BufferedReader(inputStreamReader);
@@ -105,6 +112,9 @@ public class MGWFileDataRetriever implements Runnable {
                             getStreamSpecificEventListenerMap().get(streamId);
                     if (eventSource != null) {
                         try {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Sending events to the stream id: " + streamId);
+                            }
                             eventSource.onEvent(new Event(streamId, Long.parseLong(timeStamp),
                                     (Object[]) FileDataRetrieverUtil.createMetaData(metaData),
                                     (Object[]) FileDataRetrieverUtil.createMetaData(correlationData),
@@ -117,6 +127,13 @@ public class MGWFileDataRetriever implements Runnable {
                         log.error("Unable to find eventsource for stream id: " + streamId);
                     }
                 }
+            } else {
+                log.error(
+                        "Uploaded zip file name is: [ " + uploadedZipFileName + "], but the expected file name is: [ " +
+                        MGWFileSourceConstants.API_USAGE_OUTPUT_FILE_NAME + "]");
+                throw new MGWFileSourceException(
+                        "Error occurred since the uploaded zip file name is different from what is expected.");
+
             }
             //Update the database
             MGWFileSourceDAO.updateCompletion(infoDTO);
@@ -124,7 +141,7 @@ public class MGWFileDataRetriever implements Runnable {
         } catch (IOException e) {
             log.error("Error occurred while reading the API Usage file.", e);
         } catch (MGWFileSourceException e) {
-            log.error("Error occurred while updating the completion for the processed file.", e);
+            log.error("Error occurred while publishing events to streams", e);
         } finally {
             IOUtils.closeQuietly(inputStreamReader);
             IOUtils.closeQuietly(bufferedReader);
