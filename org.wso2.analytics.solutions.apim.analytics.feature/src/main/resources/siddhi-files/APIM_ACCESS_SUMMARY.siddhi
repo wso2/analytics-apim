@@ -92,7 +92,7 @@ aggregate by requestTimestamp every seconds...years;
 
 -- API usage execution summary
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='7 days', hours='90 days', days='1 year', months='10 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 hour', min='3 days', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiExeTime
 from Request
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, apiResourceTemplate, apiMethod, avg(responseTime) as responseTime, avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, avg(securityLatency) as securityLatency, avg(throttlingLatency) as throttlingLatency, avg(requestMedLat) as requestMedLat, avg(responseMedLat) as responseMedLat, avg(backendLatency) as backendLatency, avg(otherLatency) as otherLatency,'default' as regionalID
