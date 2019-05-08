@@ -137,13 +137,20 @@ insert into ApiUserAgentFilteredStreamExtend;
 @info(name='Batch Requests')
 from Request
 select apiContext, apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationOwner, requestTimestamp
-group by apiContext, apiCreatorTenantDomain, apiCreator
-output last every 5 minutes
-insert into RequestInterm;
+group by apiName, apiCreatorTenantDomain, apiCreator
+output last every 1 minutes
+insert into RequestInterim;
 
-@info(name='Update if latest')
-from RequestInterm
-select apiContext, apiName, apiVersion, apiCreator,apiCreatorTenantDomain, applicationOwner, requestTimestamp as lastAccessTime
+@info(name='Filter events to check latest timestamp')
+from RequestInterim as R left outer join ApiLastAccessSummary as S
+on R.apiName == S.apiName and R.apiCreatorTenantDomain == S.apiCreatorTenantDomain and R.apiCreator == S.apiCreator
+select R.apiContext, R.apiName, R.apiVersion, R.apiCreator, R.apiCreatorTenantDomain, R.applicationOwner, R.requestTimestamp as lastAccessTime
+having R.requestTimestamp >= S.lastAccessTime or S.lastAccessTime is null
+insert into ApiLastAccessUpdateStream;
+
+@info(name='Upate/Insert ApiLastAccessSummary')
+from ApiLastAccessUpdateStream
+select apiContext, apiName, apiVersion, apiCreator,apiCreatorTenantDomain, applicationOwner, lastAccessTime
 update or insert into ApiLastAccessSummary
-set ApiLastAccessSummary.lastAccessTime = lastAccessTime
-on ApiLastAccessSummary.apiName == apiName and ApiLastAccessSummary.apiCreatorTenantDomain == apiCreatorTenantDomain and ApiLastAccessSummary.apiCreator == apiCreator and ApiLastAccessSummary.lastAccessTime < lastAccessTime;
+set ApiLastAccessSummary.apiContext = apiContext, ApiLastAccessSummary.apiVersion = apiVersion, ApiLastAccessSummary.applicationOwner = applicationOwner, ApiLastAccessSummary.lastAccessTime = lastAccessTime
+on ApiLastAccessSummary.apiName == apiName and ApiLastAccessSummary.apiCreatorTenantDomain == apiCreatorTenantDomain and ApiLastAccessSummary.apiCreator == apiCreator;
