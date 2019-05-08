@@ -40,7 +40,7 @@ define stream FaultStream(
 );
 
 @store(type='rdbms', datasource='APIM_ANALYTICS_DB')
-@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiFaultyInvocationAgg
 from FaultStream
 select apiName,apiVersion,apiCreator,apiCreatorTenantDomain,apiContext,applicationConsumerKey,hostname,applicationId,applicationName,requestTimestamp,count() as totalFaultCount,'default' as regionalID
