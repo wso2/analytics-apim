@@ -47,7 +47,7 @@ insert into ApimApiAvailabilityInfoUpdateStreamTemp;
 @info(name = 'Batch insert to ApimApiAvailabilityInfo')
 from ApimApiAvailabilityInfoUpdateStreamTemp 
 select *
- 	group by apiName, apiVersion, apiCreator, tenantDomain 
+ 	group by apiName, apiVersion, tenantDomain
 output last every 1 minute 
 insert into ApimApiAvailabilityInfoUpdateStream;
 
@@ -56,4 +56,4 @@ from ApimApiAvailabilityInfoUpdateStream
 select apiName, apiVersion, ifThenElse(tenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, tenantDomain, status 
 update or insert into ApimApiAvailabilityInfo 
 set ApimApiAvailabilityInfo.status = status 
- 	on ApimApiAvailabilityInfo.apiName == apiName and ApimApiAvailabilityInfo.apiVersion == apiVersion and ApimApiAvailabilityInfo.apiCreator == apiCreator and ApimApiAvailabilityInfo.tenantDomain == tenantDomain;
+ 	on ApimApiAvailabilityInfo.apiName == apiName and ApimApiAvailabilityInfo.apiVersion == apiVersion and ApimApiAvailabilityInfo.tenantDomain == tenantDomain;
