@@ -72,6 +72,24 @@ define stream InComingRequestStream (meta_clientType string,
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0', @map(type = 'wso2event'))
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0',
 	@map(type = 'wso2event'))
+define stream InComingThrottledOutStream(
+    meta_clientType string,
+    username string,
+    userTenantDomain string,
+    apiName string,
+    apiVersion string,
+    apiContext string,
+    apiCreator string,
+    apiCreatorTenantDomain string,
+    applicationId string,
+    applicationName string,
+    subscriber string,
+    throttledOutReason string,
+    gatewayType string,
+    throttledOutTimestamp long,
+    hostname string
+);
+
 @sink(type='inMemory' , topic='ThrottledOutStream')
 define stream ThrottledOutStream(
     meta_clientType string,
@@ -160,3 +178,10 @@ define stream Request (meta_clientType string,
 from InComingRequestStream
 select  meta_clientType, applicationConsumerKey, applicationName, applicationId, applicationOwner, apiContext,apiName, apiVersion, apiResourcePath, apiResourceTemplate, ifThenElse(str:length(apiMethod)>20,str:substr(apiMethod,0,20),apiMethod) as apiMethod,ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150), apiCreator) as  apiCreator, ifThenElse(str:length(apiCreatorTenantDomain) > 150,str:substr(apiCreatorTenantDomain,0,150), apiCreatorTenantDomain) as apiCreatorTenantDomain, apiTier, ifThenElse(str:length(apiHostname)>200, str:substr(apiHostname,0,200), apiHostname) as apiHostname, ifThenElse(str:length(username) > 150,str:substr(username,0,150), username) as username, ifThenElse(str:length(userTenantDomain) > 150,str:substr(userTenantDomain,0,150), userTenantDomain) as userTenantDomain, userIp, userAgent, requestTimestamp, throttledOut, responseTime, serviceTime, backendTime, responseCacheHit, responseSize, protocol, responseCode, destination, securityLatency, throttlingLatency, requestMedLat, responseMedLat, backendLatency, otherLatency, gatewayType, label
 insert into Request;
+
+-- Truncating Throttled event stream attributes
+from InComingThrottledOutStream
+select meta_clientType, username, userTenantDomain, apiName, apiVersion, apiContext, ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150),
+ apiCreator) as  apiCreator, apiCreatorTenantDomain, applicationId, applicationName, subscriber, ifThenElse(str:length(throttledOutReason) > 30,str:substr(throttledOutReason,0,30), throttledOutReason) as  throttledOutReason,
+ gatewayType, throttledOutTimestamp, ifThenElse(str:length(hostname)>200, str:substr(hostname,0,200), hostname) as hostname
+insert into ThrottledOutStream;
