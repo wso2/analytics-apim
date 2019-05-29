@@ -53,7 +53,7 @@ begin
 
  --checks whether the response code is between 500 - 600 to identify a server error
  	@info(name = 'Abnormal response code pattern check')
- 	from every e1 = RequestAlertInfoStream[responseCode >= 500 and responseCode < 600],e2 = RequestAlertInfoStream[responseCode >= 500 and responseCode < 600],e3 = RequestAlertInfoStream[responseCode >= 500 and responseCode < 600], e4 = RequestAlertInfoStream[responseCode >= 500 and responseCode < 600],e5 = RequestAlertInfoStream[responseCode >= 500 and responseCode < 600]
+ 	from every e1 = Request[responseCode >= 500 and responseCode < 600],e2 = Request[responseCode >= 500 and responseCode < 600],e3 = Request[responseCode >= 500 and responseCode < 600], e4 = Request[responseCode >= 500 and responseCode < 600],e5 = Request[responseCode >= 500 and responseCode < 600]
  	select e1.apiName, e1.apiVersion, e1.apiContext, e1.apiCreator, e1.apiCreatorTenantDomain
  	insert into ResponseCodeAlertStream;
 
