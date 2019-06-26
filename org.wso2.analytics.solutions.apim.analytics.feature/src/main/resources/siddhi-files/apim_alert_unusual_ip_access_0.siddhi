@@ -65,13 +65,13 @@ insert into ExistingUserStream;
 --If a new ip is detected from the particular username and applicationConsumerKey Note: ip will be null if its a new ip from the user
 @info(name = 'query generates NewIPDetectedStream')
 from ExistingUserStream[ip is null]
-select "UnusualIPAccess" as type, "A request from a new IP detected." as message, 2 as severity, requestIp as ip, applicationName, applicationOwner, username, tenantDomain, requestTimestamp, (time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccess" as type, "A request from a new IP detected." as message, 2 as severity, requestIp as ip, applicationName, ifThenElse(tenantDomain == 'carbon.super', str:concat(applicationOwner, "@carbon.super"), applicationOwner) as applicationOwner, username, tenantDomain, requestTimestamp, (time:timestampInMilliseconds()) as alertTimestamp
 insert into IpAccessAbnormalityAlertStream;
 
 -- If IP is already used Check if the request for the IP is received after the threshold time gap
 @info(name = 'query generates CheckAbnormalTimeBetweenAccessStream ')
 from ExistingUserStream[(not (ip is null)) and timeBetweenAccess > 1 month]
-select "UnusualIPAccess" as type, "A request from an old IP detected." as message, 2 as severity, requestIp as ip, applicationName, applicationOwner, username, tenantDomain , requestTimestamp, (time:timestampInMilliseconds()) as alertTimestamp
+select "UnusualIPAccess" as type, "A request from an old IP detected." as message, 2 as severity, requestIp as ip, applicationName, ifThenElse(tenantDomain == 'carbon.super', str:concat(applicationOwner, "@carbon.super"), applicationOwner) as applicationOwner, username, tenantDomain , requestTimestamp, (time:timestampInMilliseconds()) as alertTimestamp
 insert into IpAccessAbnormalityAlertStream;
 
 @info(name = 'Batch Events ApimIPAccessSummaryUpdateStream')

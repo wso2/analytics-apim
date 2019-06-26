@@ -49,5 +49,5 @@ insert into SuppressedRequestPatternChangedAlertStream;
 
 @info(name = 'detailedAlertGenerateQuery')
 from SuppressedRequestPatternChangedAlertStream
-select username, applicationName, applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' , ' Suspicious API transition is: ', transition) as message , transition, 1 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select username, applicationName, ifThenElse(tenantDomain == 'carbon.super', str:concat(applicationOwner, "@carbon.super"), applicationOwner) as applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' , ' Suspicious API transition is: ', transition) as message , transition, 1 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into RequestPatternChangedAlertStream;

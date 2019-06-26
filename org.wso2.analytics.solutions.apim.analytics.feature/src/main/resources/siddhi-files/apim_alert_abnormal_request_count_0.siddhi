@@ -76,6 +76,6 @@ insert into SuppressedAbnormalRequestsCountStream;
 
 @info(name = 'Alert Templated')
 from SuppressedAbnormalRequestsCountStream
-select applicationName, applicationOwner, tenantDomain, apiName, apiVersion, requestCountPerMin, thresholdRequestCountPerMin, 'Abnormal request count detected during last minute.' as message , 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select applicationName, ifThenElse(tenantDomain == 'carbon.super', str:concat(applicationOwner, "@carbon.super"), applicationOwner) as applicationOwner, tenantDomain, apiName, apiVersion, requestCountPerMin, thresholdRequestCountPerMin, 'Abnormal request count detected during last minute.' as message , 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into AbnormalRequestsCountAlertStream;
 
