@@ -39,7 +39,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiUsage(props) {
     const {
-        themeName, width, limit, apiCreatedBy, usageData, metadata, chartConfig, apiCreatedHandleChange, limitHandleChange,
+        themeName, width, limit, apiCreatedBy, usageData1, metadata, chartConfig, apiCreatedHandleChange, limitHandleChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -91,7 +91,7 @@ export default function APIMOverallApiUsage(props) {
             margin: 'auto',
         },
     };
-    if (usageData.length === 0) {
+    if (usageData1.length === 0) {
         return (
             <div style={styles.paperWrapper}>
                 <Paper
@@ -175,14 +175,14 @@ export default function APIMOverallApiUsage(props) {
                         <VizG
                             config={chartConfig}
                             metadata={metadata}
-                            data={usageData}
+                            data={usageData1}
                             width={width}
                             theme={themeName}
                         />
                     </div>
                     <div style={styles.tableWrapper}>
                         <CustomTable
-                            data={usageData}
+                            data={usageData1}
                         />
                     </div>
                 </div>

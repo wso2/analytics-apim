@@ -123,6 +123,7 @@ class APIMOverallApiUsageWidget extends Widget {
             height: this.props.height,
             apiCreatedBy: 'all',
             usageData: null,
+            usageData1:null,
             apiIDlist: [],
             metadata: this.metadata,
             chartConfig: this.chartConfig,
@@ -340,10 +341,10 @@ class APIMOverallApiUsageWidget extends Widget {
                         }
                     });
                 });
-                usageData[counter].push(subscriptions);
+                usageData[counter][3] = subscriptions;
                 counter++;
             }
-            this.setState({ usageData });
+            this.setState({ usageData1: usageData });
             this.setQueryParam(apiCreatedBy, limit);
         }
     }
@@ -391,15 +392,15 @@ class APIMOverallApiUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, width, limit, apiCreatedBy, usageData, metadata, chartConfig,
+            localeMessages, faultyProviderConfig, width, limit, apiCreatedBy, usageData1, metadata, chartConfig,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
         const themeName = this.props.muiTheme.name;
         const ovearllUsageProps = {
-            themeName, width, limit, apiCreatedBy, usageData, metadata, chartConfig,
+            themeName, width, limit, apiCreatedBy, usageData1, metadata, chartConfig,
         };
 
-        if (!localeMessages || !usageData) {
+        if (!localeMessages || !usageData1) {
             return (<CircularProgress style={loadingIcon} />);
         }
         return (
