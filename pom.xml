@@ -1449,6 +1449,7 @@
         <siddhi.store.cassandra.version>1.0.7</siddhi.store.cassandra.version>
         <siddhi.store.redis.version>1.0.9</siddhi.store.redis.version>
         <siddhi.store.elasticsearch.version>1.0.5</siddhi.store.elasticsearch.version>
+        <siddhi.store.influxdb.version>1.0.2</siddhi.store.influxdb.version>
 
         <siddhi.script.js.version>4.0.14</siddhi.script.js.version>
 
