@@ -123,7 +123,7 @@ class APIMOverallApiUsageWidget extends Widget {
             height: this.props.height,
             apiCreatedBy: 'all',
             usageData: null,
-            usageData1:null,
+            usageData1: null,
             apiIDlist: [],
             metadata: this.metadata,
             chartConfig: this.chartConfig,
@@ -198,13 +198,13 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let apiCreatedBy = 'all';
-        let limit = 5;
-        if (queryParam.apiCreatedBy) {
-            apiCreatedBy = queryParam.apiCreatedBy;
+        let { apiCreatedBy } = queryParam;
+        let { limit } = queryParam;
+        if (!apiCreatedBy) {
+            apiCreatedBy = 'all';
         }
-        if (queryParam.limit) {
-            limit = queryParam.limit;
+        if (!limit) {
+            limit = 5;
         }
         this.setState({ apiCreatedBy, limit });
         this.setQueryParam(apiCreatedBy, limit);

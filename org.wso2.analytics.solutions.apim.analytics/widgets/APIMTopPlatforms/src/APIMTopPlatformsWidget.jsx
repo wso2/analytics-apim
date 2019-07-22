@@ -183,21 +183,21 @@ class APIMTopPlatformsWidget extends Widget {
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let apiCreatedBy = 'All';
-        let apiSelected = 'All';
-        let apiVersion = 'All';
-        let limit = 5;
-        if (queryParam.apiCreatedBy) {
-            apiCreatedBy = queryParam.apiCreatedBy;
+        let { apiCreatedBy } = queryParam;
+        let { apiSelected } = queryParam;
+        let { apiVersion } = queryParam;
+        let { limit } = queryParam;
+        if (!apiCreatedBy) {
+            apiCreatedBy = 'All';
         }
-        if (queryParam.apiSelected) {
-            apiSelected = queryParam.apiSelected;
+        if (!apiSelected) {
+            apiSelected = 'All';
         }
-        if (queryParam.apiVersion) {
-            apiVersion = queryParam.apiVersion;
+        if (!apiVersion) {
+            apiVersion = 'All';
         }
-        if (queryParam.limit) {
-            limit = queryParam.limit;
+        if (!limit) {
+            limit = 5;
         }
         this.setState({
             apiCreatedBy, apiSelected, apiVersion, limit,

@@ -129,12 +129,13 @@ export default function APIMDeveloperSignups(props) {
                 </p>
             </div>
             <button
+                type='button'
                 style={{
                     display: 'block',
                     width: '100%',
                     height: '21%',
-                    background: themeName === 'dark' ?
-                        'linear-gradient(to right, rgba(37, 38, 41, 0.75) 0%, rgba(252, 252, 252, 0) 100%)'
+                    background: themeName === 'dark'
+                        ? 'linear-gradient(to right, rgba(37, 38, 41, 0.75) 0%, rgba(252, 252, 252, 0) 100%)'
                         : '#fff',
                     border: 'none',
                     borderTop: themeName === 'dark' ? 'none' : '1.5px solid #000',

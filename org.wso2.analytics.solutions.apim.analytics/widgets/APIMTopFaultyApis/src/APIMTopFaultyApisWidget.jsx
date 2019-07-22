@@ -168,10 +168,10 @@ class APIMTopFaultyApisWidget extends Widget {
             providerConfig, timeFrom, timeTo, perValue,
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        let limit = 5;
+        let { limit } = queryParam;
 
-        if (queryParam.limit) {
-            limit = queryParam.limit;
+        if (!limit) {
+            limit = 5;
         }
 
         this.setState({ limit, faultData: null, legendData: null });

@@ -67,10 +67,10 @@ export default function APIMTopApiCreators(props) {
         },
         paper: {
             background: '#969696',
-            width:'75%',
+            width: '75%',
             padding: '4%',
             border: '1.5px solid #fff',
-            margin:'auto',
+            margin: 'auto',
             marginTop: '5%',
         },
         formWrapper: {

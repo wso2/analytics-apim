@@ -205,17 +205,17 @@ class APIMGeoInvocationsWidget extends Widget {
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let apiCreatedBy = 'All';
-        let apiSelected = '';
-        let apiVersion = '';
-        if (queryParam.apiCreatedBy) {
-            apiCreatedBy = queryParam.apiCreatedBy;
+        let { apiCreatedBy } = queryParam;
+        let { apiSelected } = queryParam;
+        let { apiVersion } = queryParam;
+        if (!apiCreatedBy) {
+            apiCreatedBy = 'All';
         }
-        if (queryParam.apiSelected) {
-            apiSelected = queryParam.apiSelected;
+        if (!apiSelected) {
+            apiSelected = '';
         }
-        if (queryParam.apiVersion) {
-            apiVersion = queryParam.apiVersion;
+        if (!apiVersion) {
+            apiVersion = '';
         }
         this.setState({ apiCreatedBy, apiSelected, apiVersion });
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
@@ -242,17 +242,17 @@ class APIMGeoInvocationsWidget extends Widget {
     handleApiListReceived(message) {
         const { data } = message;
         const queryParam = super.getGlobalState(queryParamKey);
-        let apiCreatedBy = 'All';
-        let apiSelected = data[0][1];
-        let apiVersion = data[0][2];
-        if (queryParam.apiCreatedBy) {
-            apiCreatedBy = queryParam.apiCreatedBy;
+        let { apiCreatedBy } = queryParam;
+        let { apiSelected } = queryParam;
+        let { apiVersion } = queryParam;
+        if (!apiCreatedBy) {
+            apiCreatedBy = 'All';
         }
-        if (queryParam.apiSelected) {
-            apiSelected = queryParam.apiSelected;
+        if (!apiSelected) {
+            [[, apiSelected]] = data;
         }
-        if (queryParam.apiVersion) {
-            apiVersion = queryParam.apiVersion;
+        if (!apiVersion) {
+            [[,, apiVersion]] = data;
         }
 
         if (data) {

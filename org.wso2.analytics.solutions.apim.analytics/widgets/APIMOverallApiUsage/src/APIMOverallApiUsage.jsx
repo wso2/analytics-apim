@@ -196,7 +196,7 @@ APIMOverallApiUsage.propTypes = {
     width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     apiCreatedBy: PropTypes.string.isRequired,
-    usageData: PropTypes.instanceOf(Object).isRequired,
+    usageData1: PropTypes.instanceOf(Object).isRequired,
     metadata: PropTypes.instanceOf(Object).isRequired,
     chartConfig: PropTypes.instanceOf(Object).isRequired,
     apiCreatedHandleChange: PropTypes.func.isRequired,

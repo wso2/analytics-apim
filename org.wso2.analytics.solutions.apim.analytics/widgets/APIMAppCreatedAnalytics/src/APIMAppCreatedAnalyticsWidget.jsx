@@ -192,17 +192,17 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let apiCreatedBy = 'All';
-        let appCreatedBy = 'All';
-        let subscribedTo = 'All';
-        if (queryParam.apiCreatedBy) {
-            apiCreatedBy = queryParam.apiCreatedBy;
+        let { apiCreatedBy } = queryParam;
+        let { appCreatedBy } = queryParam;
+        let { subscribedTo } = queryParam;
+        if (!apiCreatedBy) {
+            apiCreatedBy = 'All';
         }
-        if (queryParam.appCreatedBy) {
-            appCreatedBy = queryParam.appCreatedBy;
+        if (!appCreatedBy) {
+            appCreatedBy = 'All';
         }
-        if (queryParam.subscribedTo) {
-            subscribedTo = queryParam.subscribedTo;
+        if (!subscribedTo) {
+            subscribedTo = 'All';
         }
         this.setState({ apiCreatedBy, appCreatedBy, subscribedTo });
         this.setQueryParam(apiCreatedBy, appCreatedBy, subscribedTo);

@@ -187,13 +187,13 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let apiCreatedBy = 'all';
-        let subscribedTo = 'all';
-        if (queryParam.apiCreatedBy) {
-            apiCreatedBy = queryParam.apiCreatedBy;
+        let { apiCreatedBy } = queryParam;
+        let { subscribedTo } = queryParam;
+        if (!apiCreatedBy) {
+            apiCreatedBy = 'all';
         }
-        if (queryParam.subscribedTo) {
-            subscribedTo = queryParam.subscribedTo;
+        if (!subscribedTo) {
+            subscribedTo = 'all';
         }
         this.setState({ apiCreatedBy, subscribedTo });
         this.setQueryParam(apiCreatedBy, subscribedTo);

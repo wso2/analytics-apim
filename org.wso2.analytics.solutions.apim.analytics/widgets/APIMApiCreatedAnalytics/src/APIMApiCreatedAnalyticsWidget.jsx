@@ -180,10 +180,9 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const { providerConfig, timeFrom, timeTo } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const currentUser = super.getCurrentUser().username;
-        let createdBy = createdByKeys.all;
-
-        if (queryParam.createdBy) {
-            createdBy = queryParam.createdBy;
+        let { createdBy } = queryParam;
+        if (!createdBy) {
+            createdBy = createdByKeys.all;
         }
 
         this.setState({ createdBy, chartData: null, tableData: null });

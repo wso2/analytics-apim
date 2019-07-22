@@ -180,17 +180,17 @@ class APIMApiResponseWidget extends Widget {
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let apiCreatedBy = 'All';
-        let apiSelected = 'All';
-        let apiVersion = 'All';
-        if (queryParam.apiCreatedBy) {
-            apiCreatedBy = queryParam.apiCreatedBy;
+        let { apiCreatedBy } = queryParam;
+        let { apiSelected } = queryParam;
+        let { apiVersion } = queryParam;
+        if (!apiCreatedBy) {
+            apiCreatedBy = 'All';
         }
-        if (queryParam.apiSelected) {
-            apiSelected = queryParam.apiSelected;
+        if (!apiSelected) {
+            apiSelected = 'All';
         }
-        if (queryParam.apiVersion) {
-            apiVersion = queryParam.apiVersion;
+        if (!apiVersion) {
+            apiVersion = 'All';
         }
         this.setState({ apiCreatedBy, apiSelected, apiVersion });
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);

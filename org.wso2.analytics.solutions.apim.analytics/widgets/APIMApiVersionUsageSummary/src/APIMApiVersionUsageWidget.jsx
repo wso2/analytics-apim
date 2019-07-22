@@ -174,13 +174,13 @@ class APIMApiVersionUsageWidget extends Widget {
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let apiCreatedBy = 'All';
-        let limit = 5;
-        if (queryParam.apiCreatedBy) {
-            apiCreatedBy = queryParam.apiCreatedBy;
+        let { apiCreatedBy } = queryParam;
+        let { limit } = queryParam;
+        if (!apiCreatedBy) {
+            apiCreatedBy = 'All';
         }
-        if (queryParam.limit) {
-            limit = queryParam.limit;
+        if (!limit) {
+            limit = 5;
         }
         this.setState({ apiCreatedBy, limit });
         this.setQueryParam(apiCreatedBy, limit);

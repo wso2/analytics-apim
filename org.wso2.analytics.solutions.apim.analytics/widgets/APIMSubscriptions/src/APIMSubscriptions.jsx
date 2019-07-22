@@ -29,7 +29,7 @@ import SubIcon from './SubIcon';
  * @returns {ReactElement} Render the APIM Subscriptions widget body
  */
 export default function APIMSubscriptions(props) {
-    const {themeName, totalCount, weekCount} = props;
+    const { themeName, totalCount, weekCount } = props;
     const styles = {
         headingWrapper: {
             height: '10%',
@@ -97,7 +97,7 @@ export default function APIMSubscriptions(props) {
                         letterSpacing: 1.5,
                     }}
                 >
-                    <FormattedMessage id='widget.heading' defaultMessage='TOTAL SUBSCRIPTIONS'/>
+                    <FormattedMessage id='widget.heading' defaultMessage='TOTAL SUBSCRIPTIONS' />
                 </h3>
             </div>
             <div style={styles.cIconWrapper}>
@@ -130,7 +130,7 @@ export default function APIMSubscriptions(props) {
                     {' '}
                     {weekCount === '01' ? 'SUBSCRIPTION' : 'SUBSCRIPTIONS'}
                     {' '}
-                    <FormattedMessage id='within.week.text' defaultMessage='WITHIN LAST WEEK '/>
+                    <FormattedMessage id='within.week.text' defaultMessage='WITHIN LAST WEEK ' />
                     ]
                 </p>
             </div>
@@ -156,8 +156,8 @@ export default function APIMSubscriptions(props) {
                     window.location.href = './developer-statistics';
                 }}
             >
-                <FormattedMessage id='overtime.btn.text' defaultMessage='Overtime Analysis'/>
-                <PlayCircleFilled style={styles.icon}/>
+                <FormattedMessage id='overtime.btn.text' defaultMessage='Overtime Analysis' />
+                <PlayCircleFilled style={styles.icon} />
             </button>
         </div>
     );

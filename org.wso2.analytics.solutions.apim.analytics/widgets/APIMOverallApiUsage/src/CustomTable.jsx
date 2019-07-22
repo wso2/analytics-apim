@@ -196,8 +196,8 @@ class CustomTable extends React.Component {
 
         data.forEach((dataUnit) => {
             counter += 1;
-            apiname = dataUnit[0];
-            hits = dataUnit[2];
+            [apiname] = dataUnit;
+            [,, hits] = dataUnit;
             formattedData.push({ id: counter, apiname, hits });
         });
 
