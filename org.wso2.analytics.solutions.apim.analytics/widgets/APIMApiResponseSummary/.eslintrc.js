@@ -66,7 +66,7 @@ module.exports = {
         'import/no-named-as-default-member': ['off'],
         'no-underscore-dangle': 0,
         'no-restricted-syntax': ['off'],
-        'no-restricted-globals': ["off"],
+        'no-restricted-globals': ['off'],
         'no-plusplus': ['off'],
         "no-param-reassign": 0,
         'class-methods-use-this': ['off'],
@@ -84,5 +84,5 @@ module.exports = {
         'no-else-return': 'off',
         'no-unused-vars': ['error'],
     },
-    plugins: ["react"],
+    plugins: ['react'],
 };
