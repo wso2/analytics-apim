@@ -171,7 +171,8 @@ class APIMGeoInvocationsWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -228,10 +229,11 @@ class APIMGeoInvocationsWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiListReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -242,6 +244,7 @@ class APIMGeoInvocationsWidget extends Widget {
     handleApiListReceived(message) {
         const { data } = message;
         const queryParam = super.getGlobalState(queryParamKey);
+        const { id } = this.props;
         let { apiCreatedBy } = queryParam;
         let { apiSelected } = queryParam;
         let { apiVersion } = queryParam;
@@ -286,7 +289,7 @@ class APIMGeoInvocationsWidget extends Widget {
             });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
@@ -301,6 +304,7 @@ class APIMGeoInvocationsWidget extends Widget {
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         let query = dataProviderConfigs.configs.config.queryData.mainquery;
@@ -318,7 +322,7 @@ class APIMGeoInvocationsWidget extends Widget {
                 .replace('{{querystring}}', '');
         }
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -357,8 +361,9 @@ class APIMGeoInvocationsWidget extends Widget {
      * @memberof APIMGeoInvocationsWidget
      * */
     apiCreatedHandleChange(event) {
+        const { id } = this.props;
         this.setQueryParam(event.target.value, '', '');
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -369,9 +374,10 @@ class APIMGeoInvocationsWidget extends Widget {
      * */
     apiSelectedHandleChange(event) {
         const { apiCreatedBy } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, '');
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -382,9 +388,10 @@ class APIMGeoInvocationsWidget extends Widget {
      * */
     apiVersionHandleChange(event) {
         const { apiCreatedBy, apiSelected } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -395,12 +402,24 @@ class APIMGeoInvocationsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, apiVersion, geoData, apilist, versionlist,
+            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, apiCreatedBy,
+            apiSelected, apiVersion, geoData, apilist, versionlist,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const geoProps = {
-            themeName, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, apiVersion, geoData, apilist, versionlist,
+            themeName,
+            chartConfig,
+            metadata,
+            height,
+            width,
+            apiCreatedBy,
+            apiSelected,
+            apiVersion,
+            geoData,
+            apilist,
+            versionlist,
         };
 
         if (!localeMessages || !geoData) {
@@ -421,12 +440,16 @@ class APIMGeoInvocationsWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Geo Based Invocations widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Geo Based Invocations widget'
                                         />
                                     </Typography>
                                 </Paper>

@@ -75,7 +75,8 @@ export default function APIMDeveloperSignups(props) {
             width: '90%',
             height: '85%',
             margin: '5% 5%',
-            background: themeName === 'dark' ? 'linear-gradient(to right, rgba(7, 4, 51, 1) 0%, rgb(188, 39, 142) 46%, rgb(101, 42, 80) 100%)' : '#fff',
+            background: themeName === 'dark' ? 'linear-gradient(to right, rgba(7, 4, 51, 1) 0%,'
+                + ' rgb(188, 39, 142) 46%, rgb(101, 42, 80) 100%)' : '#fff',
             fontFamily: "'Open Sans', sans-serif",
         }}
         >

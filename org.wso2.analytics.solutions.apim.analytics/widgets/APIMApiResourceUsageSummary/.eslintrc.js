@@ -29,10 +29,11 @@ module.exports = {
     env: {
         browser: true,
         es6: true,
+        jest: true
     },
     extends: 'airbnb',
     rules: {
-        'max-len': ['error', 5000],
+        'max-len': ['error', 120],
         'require-jsdoc': [
             'warn',
             {
@@ -47,6 +48,7 @@ module.exports = {
             'warn',
             {
                 requireReturn: false,
+                requireReturnDescription: false,
             },
         ],
         indent: ['error', 4, { SwitchCase: 1 }],
@@ -62,14 +64,11 @@ module.exports = {
         'import/extensions': ['off'],
         'import/no-named-as-default': ['off'],
         'import/no-named-as-default-member': ['off'],
-        'no-underscore-dangle': [
-            'error',
-            {
-                allowAfterThis: true,
-            },
-        ],
+        'no-underscore-dangle': 0,
         'no-restricted-syntax': ['off'],
+        'no-restricted-globals': ["off"],
         'no-plusplus': ['off'],
+        "no-param-reassign": 0,
         'class-methods-use-this': ['off'],
         'arrow-body-style': 'off',
         'prefer-template': 'off',
@@ -85,5 +84,5 @@ module.exports = {
         'no-else-return': 'off',
         'no-unused-vars': ['error'],
     },
-    plugins: ['react'],
+    plugins: ["react"],
 };

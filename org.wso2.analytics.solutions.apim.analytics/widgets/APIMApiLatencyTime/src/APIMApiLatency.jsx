@@ -40,8 +40,10 @@ import VizG from 'react-vizgrammar';
  */
 export default function APIMApiLatency(props) {
     const {
-        themeName, queryParam, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, apiVersion, latencyData, apilist,
-        versionlist, resourceList, apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange, handleLatencyChange,
+        themeName, queryParam, chartConfig, metadata, height, width, apiCreatedBy, apiSelected,
+        apiVersion, latencyData, apilist,
+        versionlist, resourceList, apiCreatedHandleChange, apiSelectedHandleChange,
+        apiVersionHandleChange, handleLatencyChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -161,8 +163,13 @@ export default function APIMApiLatency(props) {
                                 {
                                     resourceList.map(option => (
                                         <FormControlLabel
-                                            control={
-                                                <Checkbox checked={queryParam.resSelected.includes(option.toString())} onChange={handleLatencyChange} value={option.toString()} />}
+                                            control={(
+                                                <Checkbox
+                                                    checked={queryParam.resSelected.includes(option.toString())}
+                                                    onChange={handleLatencyChange}
+                                                    value={option.toString()}
+                                                />
+                                            )}
                                             label={option}
                                         />
                                     ))

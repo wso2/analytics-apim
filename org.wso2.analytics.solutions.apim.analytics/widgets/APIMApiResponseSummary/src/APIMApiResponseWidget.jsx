@@ -382,7 +382,8 @@ class APIMApiResponseWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, width, apiCreatedBy, apiSelected, apiVersion, responseData, apilist, versionlist,
+            localeMessages, faultyProviderConfig, height, width, apiCreatedBy, apiSelected,
+            apiVersion, responseData, apilist, versionlist,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
         const themeName = this.props.muiTheme.name;
@@ -408,12 +409,16 @@ class APIMApiResponseWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Api Response Summary widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Api Response Summary widget'
                                         />
                                     </Typography>
                                 </Paper>

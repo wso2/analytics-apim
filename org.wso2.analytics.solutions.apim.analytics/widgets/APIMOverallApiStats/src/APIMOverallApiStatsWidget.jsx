@@ -128,7 +128,8 @@ class APIMOverallApiStatsWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -150,10 +151,12 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     assembleApiAvailableQuery() {
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
+        // eslint-disable-next-line max-len
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apiavailablequery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiAvailableReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiAvailableReceived, dataProviderConfigs);
     }
 
     /**
@@ -163,6 +166,7 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     handleApiAvailableReceived(message) {
         const { data } = message;
+        const { id } = this.props;
 
         if (data) {
             const legendData = [];
@@ -173,7 +177,7 @@ class APIMOverallApiStatsWidget extends Widget {
             });
             this.setState({ legendData, availableApiData: data });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleTopAPIQuery();
     }
 
@@ -183,10 +187,11 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     assembleTopAPIQuery() {
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.topapiquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleTopAPIReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleTopAPIReceived, dataProviderConfigs);
     }
 
     /**
@@ -196,11 +201,12 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     handleTopAPIReceived(message) {
         const { data } = message;
+        const { id } = this.props;
 
         if (data) {
             this.setState({ topApiIdData: data });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleAPIDataQuery();
     }
 
@@ -210,10 +216,11 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     assembleAPIDataQuery() {
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleAPIDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleAPIDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -224,6 +231,7 @@ class APIMOverallApiStatsWidget extends Widget {
     handleAPIDataReceived(message) {
         const { data } = message;
         const { topApiIdData } = this.state;
+        const { id } = this.props;
         if (data) {
             let counter = 0;
             const topApiNameData = [];
@@ -240,7 +248,7 @@ class APIMOverallApiStatsWidget extends Widget {
             });
             this.setState({ topApiNameData });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -253,7 +261,8 @@ class APIMOverallApiStatsWidget extends Widget {
             localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const overallStatsProps = {
             themeName, height, availableApiData, legendData, topApiNameData,
         };
@@ -276,12 +285,16 @@ class APIMOverallApiStatsWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Overall Api Stats widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Overall Api Stats widget'
                                         />
                                     </Typography>
                                 </Paper>

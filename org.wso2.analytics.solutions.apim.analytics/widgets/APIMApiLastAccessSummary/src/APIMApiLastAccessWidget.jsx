@@ -139,7 +139,8 @@ class APIMApiLastAccessWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -182,13 +183,14 @@ class APIMApiLastAccessWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { limit } = queryParam;
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         let query = dataProviderConfigs.configs.config.queryData.lastaccessquery;
         query = query
             .replace('{{limit}}', limit);
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiAccessReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiAccessReceived, dataProviderConfigs);
     }
 
     /**
@@ -208,12 +210,22 @@ class APIMApiLastAccessWidget extends Widget {
             data.forEach((dataUnit) => {
                 if (apiCreatedBy === createdByKeys.All) {
                     accessData.push({
-                        id: counter, apiname: dataUnit[0], version: dataUnit[1], context: dataUnit[3], subscriber: dataUnit[4], lastaccess: dataUnit[5],
+                        id: counter,
+                        apiname: dataUnit[0],
+                        version: dataUnit[1],
+                        context: dataUnit[3],
+                        subscriber: dataUnit[4],
+                        lastaccess: dataUnit[5],
                     });
                 } else if (apiCreatedBy === createdByKeys.Me) {
                     if (currentUser.username === dataUnit[2]) {
                         accessData.push({
-                            id: counter, apiname: dataUnit[0], version: dataUnit[1], context: dataUnit[3], subscriber: dataUnit[4], lastaccess: dataUnit[5],
+                            id: counter,
+                            apiname: dataUnit[0],
+                            version: dataUnit[1],
+                            context: dataUnit[3],
+                            subscriber: dataUnit[4],
+                            lastaccess: dataUnit[5],
                         });
                     }
                 }
@@ -240,9 +252,10 @@ class APIMApiLastAccessWidget extends Widget {
      * */
     handleChange(event) {
         const { apiCreatedBy } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiAccessQuery();
     }
 
@@ -253,9 +266,10 @@ class APIMApiLastAccessWidget extends Widget {
      * */
     apiCreatedHandleChange(event) {
         const { limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(event.target.value, limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiAccessQuery();
     }
 
@@ -269,7 +283,8 @@ class APIMApiLastAccessWidget extends Widget {
             localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, accessData,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const lastAccessProps = {
             themeName, height, limit, apiCreatedBy, accessData,
         };
@@ -292,12 +307,16 @@ class APIMApiLastAccessWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Api Last Access Summary widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Api Last Access Summary widget'
                                         />
                                     </Typography>
                                 </Paper>

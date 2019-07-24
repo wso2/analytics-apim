@@ -131,7 +131,8 @@ class APIMTopThrottledApisWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -169,6 +170,7 @@ class APIMTopThrottledApisWidget extends Widget {
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
+        const { id } = this.props;
 
         if (!limit) {
             limit = 5;
@@ -185,7 +187,7 @@ class APIMTopThrottledApisWidget extends Widget {
             .replace('{{per}}', perValue)
             .replace('{{limit}}', limit);
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -233,10 +235,11 @@ class APIMTopThrottledApisWidget extends Widget {
     handleChange(event) {
         const queryParam = super.getGlobalState(queryParamKey);
         const { limit } = queryParam;
+        const { id } = this.props;
 
         this.setQueryParam(event.target.value);
         this.setState({ limit });
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleQuery();
     }
 
@@ -273,12 +276,16 @@ class APIMTopThrottledApisWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Top Throttled Out Apis widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Top Throttled Out Apis widget'
                                         />
                                     </Typography>
                                 </Paper>

@@ -149,7 +149,8 @@ class APIMTopAgentsWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -212,10 +213,11 @@ class APIMTopAgentsWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiListReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -229,6 +231,7 @@ class APIMTopAgentsWidget extends Widget {
             apiCreatedBy, apiSelected, apiVersion, limit,
         } = this.state;
         const currentUser = super.getCurrentUser();
+        const { id } = this.props;
 
         if (data) {
             const apilist = ['All'];
@@ -258,7 +261,7 @@ class APIMTopAgentsWidget extends Widget {
             this.setState({ apilist, versionlist });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
@@ -273,6 +276,7 @@ class APIMTopAgentsWidget extends Widget {
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion, limit } = queryParam;
+        const { id } = this.props;
 
         const apilistSliced = apilist.slice(1);
         const last = apilist.slice(-1)[0];
@@ -307,7 +311,7 @@ class APIMTopAgentsWidget extends Widget {
                 .replace('{{api}}', apiSelected);
         }
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -362,9 +366,10 @@ class APIMTopAgentsWidget extends Widget {
      * */
     handleLimitChange(event) {
         const { apiCreatedBy, apiSelected, apiVersion } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
@@ -375,9 +380,10 @@ class APIMTopAgentsWidget extends Widget {
      * */
     apiCreatedHandleChange(event) {
         const { limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(event.target.value, 'All', 'All', limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -388,9 +394,10 @@ class APIMTopAgentsWidget extends Widget {
      * */
     apiSelectedHandleChange(event) {
         const { apiCreatedBy, limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, 'All', limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -401,9 +408,10 @@ class APIMTopAgentsWidget extends Widget {
      * */
     apiVersionHandleChange(event) {
         const { apiCreatedBy, apiSelected, limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
@@ -414,12 +422,22 @@ class APIMTopAgentsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion, legendData, agentData, apilist, versionlist,
+            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion,
+            legendData, agentData, apilist, versionlist,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
         const themeName = this.props.muiTheme.name;
         const agentsProps = {
-            themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, legendData, agentData, apilist, versionlist,
+            themeName,
+            height,
+            limit,
+            apiCreatedBy,
+            apiSelected,
+            apiVersion,
+            legendData,
+            agentData,
+            apilist,
+            versionlist,
         };
 
         if (!localeMessages || !agentData) {
@@ -440,12 +458,16 @@ class APIMTopAgentsWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Top User Agents widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Top User Agents widget'
                                         />
                                     </Typography>
                                 </Paper>

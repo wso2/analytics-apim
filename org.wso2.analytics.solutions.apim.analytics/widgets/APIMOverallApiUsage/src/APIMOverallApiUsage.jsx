@@ -39,7 +39,8 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiUsage(props) {
     const {
-        themeName, width, limit, apiCreatedBy, usageData1, metadata, chartConfig, apiCreatedHandleChange, limitHandleChange,
+        themeName, width, limit, apiCreatedBy, usageData1, metadata, chartConfig, apiCreatedHandleChange,
+        limitHandleChange,
     } = props;
     const styles = {
         headingWrapper: {

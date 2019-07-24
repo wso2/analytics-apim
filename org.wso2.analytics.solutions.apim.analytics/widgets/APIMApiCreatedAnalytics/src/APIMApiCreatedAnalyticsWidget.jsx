@@ -145,7 +145,8 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -188,6 +189,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         this.setState({ createdBy, chartData: null, tableData: null });
         this.setQueryParam(createdBy);
 
+        const { id } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         let { query } = dataProviderConfigs.configs.config.queryData;
         query = query
@@ -196,7 +198,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             .replace('{{querystring}}', createdBy === createdByKeys.me ? "AND CREATED_BY=='{{creator}}'" : '')
             .replace('{{creator}}', currentUser);
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -218,7 +220,8 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                 chartData.push({
                     x: new Date(dataUnit[3]).getTime(),
                     y: dataUnit[4] + index,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss') + '\nCOUNT:' + (dataUnit[4] + index++),
+                    label: 'CREATED_TIME:' + Moment(dataUnit[3])
+                        .format('YYYY-MMM-DD hh:mm:ss') + '\nCOUNT:' + (dataUnit[4] + index++),
                 });
                 tableData.push({
                     id: index,
@@ -264,10 +267,11 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     handleChange(event) {
         const queryParam = super.getGlobalState(queryParamKey);
         const { createdBy } = queryParam;
+        const { id } = this.props;
 
         this.setQueryParam(event.target.value);
         this.setState({ createdBy });
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleQuery();
     }
 
@@ -281,7 +285,8 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             localeMessages, faultyProviderConfig, height, createdBy, chartData, tableData, xAxisTicks, maxCount,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const apiCreatedProps = {
             themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount,
         };
@@ -304,12 +309,16 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Api Created Analytics widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Api Created Analytics widget'
                                         />
                                     </Typography>
                                 </Paper>

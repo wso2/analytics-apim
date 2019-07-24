@@ -154,7 +154,8 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -206,10 +207,11 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiListReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -221,6 +223,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         const { data } = message;
         const { apiCreatedBy, subscribedTo } = this.state;
         const currentUser = super.getCurrentUser();
+        const { id } = this.props;
 
         if (data) {
             const apilist = [['all', 'All']];
@@ -239,7 +242,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             this.setState({ apilist });
             this.setQueryParam(apiCreatedBy, subscribedTo);
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleAppListQuery();
     }
 
@@ -250,11 +253,13 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     assembleAppListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         if (providerConfig) {
             const dataProviderConfigs = cloneDeep(providerConfig);
+            // eslint-disable-next-line max-len
             dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.applistquery;
-            super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleAppListReceived, dataProviderConfigs);
+            super.getWidgetChannelManager().subscribeWidget(id, this.handleAppListReceived, dataProviderConfigs);
         }
     }
 
@@ -266,11 +271,12 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     handleAppListReceived(message) {
         const { data } = message;
         const { apiCreatedBy, subscribedTo } = this.state;
+        const { id } = this.props;
         if (data) {
             this.setState({ applist: data });
             this.setQueryParam(apiCreatedBy, subscribedTo);
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
@@ -283,6 +289,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         const {
             timeFrom, timeTo, subscribedTo, apilist, providerConfig,
         } = this.state;
+        const { id } = this.props;
 
         const apilistSliced = apilist.slice(1);
         const last = apilist.slice(-1)[0][0];
@@ -311,7 +318,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                     .replace('{{apiID}}', subscribedTo);
             }
             dataProviderConfigs.configs.config.queryData.query = query;
-            super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+            super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
         }
     }
 
@@ -337,7 +344,8 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                 chartData.push({
                     x: new Date(dataUnit[2]).getTime(),
                     y: dataUnit[3] + index,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss') + '\nCOUNT:' + (dataUnit[3] + index++),
+                    label: 'CREATED_TIME:' + Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss') + '\nCOUNT:'
+                        + (dataUnit[3] + index++),
                 });
                 for (let i = 0; i < apilist.length; i++) {
                     if (apilist[i][0] === dataUnit[0]) {
@@ -393,8 +401,9 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * @memberof APIMSubscriptionsAnalyticsWidget
      * */
     apiCreatedHandleChange(event) {
+        const { id } = this.props;
         this.setQueryParam(event.target.value, 'all');
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -405,9 +414,10 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * */
     subscribedToHandleChange(event) {
         const { apiCreatedBy } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -422,7 +432,8 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             chartData, tableData, xAxisTicks, maxCount,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const subscriptionsProps = {
             themeName,
             height,
@@ -453,12 +464,16 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Subscriptions Analytics widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Subscriptions Analytics widget'
                                         />
                                     </Typography>
                                 </Paper>

@@ -128,7 +128,8 @@ class APIMSignupsAnalyticsWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -161,6 +162,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
      * */
     assembleQuery() {
         const { providerConfig, timeFrom, timeTo } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         let { query } = dataProviderConfigs.configs.config.queryData;
@@ -168,7 +170,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
             .replace('{{timeFrom}}', Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'))
             .replace('{{timeTo}}', Moment(timeTo).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'));
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -189,7 +191,8 @@ class APIMSignupsAnalyticsWidget extends Widget {
                 chartData.push({
                     x: new Date(dataUnit[1]).getTime(),
                     y: dataUnit[2] + index,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss') + '\nCOUNT:' + (dataUnit[2] + index++),
+                    label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss')
+                        + '\nCOUNT:' + (dataUnit[2] + index++),
                 });
                 tableData.push({
                     id: index,
@@ -249,12 +252,16 @@ class APIMSignupsAnalyticsWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Signups Analytics widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Signups Analytics widget'
                                         />
                                     </Typography>
                                 </Paper>

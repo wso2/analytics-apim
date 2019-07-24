@@ -197,6 +197,7 @@ class APIMApiVersionUsageWidget extends Widget {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         let query = dataProviderConfigs.configs.config.queryData.apiusagequery;
@@ -206,7 +207,7 @@ class APIMApiVersionUsageWidget extends Widget {
             .replace('{{per}}', perValue)
             .replace('{{limit}}', limit);
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiUsageReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiUsageReceived, dataProviderConfigs);
     }
 
     /**
@@ -258,9 +259,10 @@ class APIMApiVersionUsageWidget extends Widget {
      * */
     handleChange(event) {
         const { apiCreatedBy } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiUsageQuery();
     }
 
@@ -271,9 +273,10 @@ class APIMApiVersionUsageWidget extends Widget {
      * */
     apiCreatedHandleChange(event) {
         const { limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(event.target.value, limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiUsageQuery();
     }
 
@@ -287,7 +290,8 @@ class APIMApiVersionUsageWidget extends Widget {
             localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, usageData,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const apiUsageProps = {
             themeName, height, limit, apiCreatedBy, usageData,
         };
@@ -310,12 +314,16 @@ class APIMApiVersionUsageWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Api Version Usage Summary widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Api Version Usage Summary widget'
                                         />
                                     </Typography>
                                 </Paper>

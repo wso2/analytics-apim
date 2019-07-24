@@ -148,7 +148,8 @@ class APIMTopApiUsersWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -211,10 +212,11 @@ class APIMTopApiUsersWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiListReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -228,6 +230,7 @@ class APIMTopApiUsersWidget extends Widget {
             apiCreatedBy, apiSelected, apiVersion, limit,
         } = this.state;
         const currentUser = super.getCurrentUser();
+        const { id } = this.props;
 
         if (data) {
             const apilist = ['All'];
@@ -257,7 +260,7 @@ class APIMTopApiUsersWidget extends Widget {
             this.setState({ apilist, versionlist });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
@@ -272,6 +275,7 @@ class APIMTopApiUsersWidget extends Widget {
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion, limit } = queryParam;
+        const { id } = this.props;
 
         const apilistSliced = apilist.slice(1);
         const last = apilist.slice(-1)[0];
@@ -306,7 +310,7 @@ class APIMTopApiUsersWidget extends Widget {
                 .replace('{{api}}', apiSelected);
         }
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -356,10 +360,11 @@ class APIMTopApiUsersWidget extends Widget {
      * @memberof APIMTopApiUsersWidget
      * */
     handleLimitChange(event) {
+        const { id } = this.props;
         const { apiCreatedBy, apiSelected, apiVersion } = this.state;
 
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
@@ -370,9 +375,10 @@ class APIMTopApiUsersWidget extends Widget {
      * */
     apiCreatedHandleChange(event) {
         const { limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(event.target.value, 'All', 'All', limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -383,9 +389,10 @@ class APIMTopApiUsersWidget extends Widget {
      * */
     apiSelectedHandleChange(event) {
         const { apiCreatedBy, limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, 'All', limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -396,9 +403,10 @@ class APIMTopApiUsersWidget extends Widget {
      * */
     apiVersionHandleChange(event) {
         const { apiCreatedBy, apiSelected, limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
@@ -409,7 +417,8 @@ class APIMTopApiUsersWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion, userData, apilist, versionlist,
+            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion,
+            userData, apilist, versionlist,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
         const themeName = this.props.muiTheme.name;
@@ -435,12 +444,16 @@ class APIMTopApiUsersWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Top Api Users widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Top Api Users widget'
                                         />
                                     </Typography>
                                 </Paper>

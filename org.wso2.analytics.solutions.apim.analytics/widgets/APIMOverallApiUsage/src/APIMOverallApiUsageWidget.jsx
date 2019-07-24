@@ -164,7 +164,8 @@ class APIMOverallApiUsageWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -221,6 +222,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         let query = dataProviderConfigs.configs.config.queryData.apiusagequery;
@@ -230,7 +232,7 @@ class APIMOverallApiUsageWidget extends Widget {
             .replace('{{per}}', perValue)
             .replace('{{limit}}', limit);
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiUsageReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiUsageReceived, dataProviderConfigs);
     }
 
     /**
@@ -242,6 +244,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { data } = message;
         const { apiCreatedBy, limit } = this.state;
         const currentUser = super.getCurrentUser();
+        const { id } = this.props;
 
         if (data) {
             let usageData = [];
@@ -259,7 +262,7 @@ class APIMOverallApiUsageWidget extends Widget {
             this.setState({ usageData });
             this.setQueryParam(apiCreatedBy, limit);
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -270,10 +273,11 @@ class APIMOverallApiUsageWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiListReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -284,6 +288,7 @@ class APIMOverallApiUsageWidget extends Widget {
     handleApiListReceived(message) {
         const { data } = message;
         const { usageData, apiCreatedBy, limit } = this.state;
+        const { id } = this.props;
 
         if (data) {
             const apiIDlist = [];
@@ -301,7 +306,7 @@ class APIMOverallApiUsageWidget extends Widget {
             this.setState({ apiIDlist });
             this.setQueryParam(apiCreatedBy, limit);
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiSubQuery();
     }
 
@@ -312,10 +317,11 @@ class APIMOverallApiUsageWidget extends Widget {
     assembleApiSubQuery() {
         this.resetState();
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apisubquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiSubReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiSubReceived, dataProviderConfigs);
     }
 
     /**
@@ -366,9 +372,10 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     limitHandleChange(event) {
         const { apiCreatedBy } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiUsageQuery();
     }
 
@@ -379,9 +386,10 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     apiCreatedHandleChange(event) {
         const { limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(event.target.value, limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiUsageQuery();
     }
 
@@ -395,7 +403,8 @@ class APIMOverallApiUsageWidget extends Widget {
             localeMessages, faultyProviderConfig, width, limit, apiCreatedBy, usageData1, metadata, chartConfig,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const ovearllUsageProps = {
             themeName, width, limit, apiCreatedBy, usageData1, metadata, chartConfig,
         };
@@ -418,12 +427,16 @@ class APIMOverallApiUsageWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Overall Api Usage widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Overall Api Usage widget'
                                         />
                                     </Typography>
                                 </Paper>

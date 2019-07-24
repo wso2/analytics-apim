@@ -35,8 +35,8 @@ import APIMGeoInvocationsData from './APIMGeoInvocationsData';
  */
 export default function APIMGeoInvocations(props) {
     const {
-        themeName, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, apiVersion, geoData, apilist, versionlist,
-        apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange,
+        themeName, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, apiVersion,
+        geoData, apilist, versionlist, apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange,
     } = props;
     const styles = {
         headingWrapper: {

@@ -130,7 +130,8 @@ class APIMTopAppCreatorsWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -162,12 +163,13 @@ class APIMTopAppCreatorsWidget extends Widget {
         this.setState({ limit, creatorData: [] });
         this.setQueryParam(limit);
 
+        const { id } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         let { query } = dataProviderConfigs.configs.config.queryData;
         query = query
             .replace('{{limit}}', limit);
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -213,10 +215,11 @@ class APIMTopAppCreatorsWidget extends Widget {
     handleChange(event) {
         const queryParam = super.getGlobalState(queryParamKey);
         const { limit } = queryParam;
+        const { id } = this.props;
 
         this.setQueryParam(event.target.value);
         this.setState({ limit });
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleQuery();
     }
 
@@ -230,7 +233,8 @@ class APIMTopAppCreatorsWidget extends Widget {
             localeMessages, faultyProviderConfig, height, limit, creatorData, legendData,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const appCreatorsProps = {
             themeName, height, limit, creatorData, legendData,
         };
@@ -253,12 +257,16 @@ class APIMTopAppCreatorsWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Top App Creators widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Top App Creators widget'
                                         />
                                     </Typography>
                                 </Paper>

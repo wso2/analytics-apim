@@ -140,7 +140,8 @@ class APIMApiResourceUsageWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -197,6 +198,7 @@ class APIMApiResourceUsageWidget extends Widget {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         let query = dataProviderConfigs.configs.config.queryData.apiusagequery;
@@ -206,7 +208,7 @@ class APIMApiResourceUsageWidget extends Widget {
             .replace('{{per}}', perValue)
             .replace('{{limit}}', limit);
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiUsageReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiUsageReceived, dataProviderConfigs);
     }
 
     /**
@@ -226,12 +228,22 @@ class APIMApiResourceUsageWidget extends Widget {
             data.forEach((dataUnit) => {
                 if (apiCreatedBy === createdByKeys.All) {
                     usageData.push({
-                        id: counter, apiname: dataUnit[0], version: dataUnit[1], resourcepath: dataUnit[3], method: dataUnit[4], hits: dataUnit[5],
+                        id: counter,
+                        apiname: dataUnit[0],
+                        version: dataUnit[1],
+                        resourcepath: dataUnit[3],
+                        method: dataUnit[4],
+                        hits: dataUnit[5],
                     });
                 } else if (apiCreatedBy === createdByKeys.Me) {
                     if (currentUser.username === dataUnit[2]) {
                         usageData.push({
-                            id: counter, apiname: dataUnit[0], version: dataUnit[1], resourcepath: dataUnit[3], method: dataUnit[4], hits: dataUnit[5],
+                            id: counter,
+                            apiname: dataUnit[0],
+                            version: dataUnit[1],
+                            resourcepath: dataUnit[3],
+                            method: dataUnit[4],
+                            hits: dataUnit[5],
                         });
                     }
                 }
@@ -258,9 +270,10 @@ class APIMApiResourceUsageWidget extends Widget {
      * */
     handleChange(event) {
         const { apiCreatedBy } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiUsageQuery();
     }
 
@@ -271,9 +284,10 @@ class APIMApiResourceUsageWidget extends Widget {
      * */
     apiCreatedHandleChange(event) {
         const { limit } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(event.target.value, limit);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiUsageQuery();
     }
 
@@ -287,7 +301,8 @@ class APIMApiResourceUsageWidget extends Widget {
             localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, usageData,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const resourceUsageProps = {
             themeName, height, limit, apiCreatedBy, usageData,
         };
@@ -310,12 +325,16 @@ class APIMApiResourceUsageWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Api Resource Usage Summary widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Api Resource Usage Summary widget'
                                         />
                                     </Typography>
                                 </Paper>

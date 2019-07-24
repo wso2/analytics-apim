@@ -106,7 +106,8 @@ class APIMDeveloperSignupsWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -127,10 +128,11 @@ class APIMDeveloperSignupsWidget extends Widget {
      * */
     assembletotalQuery() {
         const { providerConfig } = this.state;
+        const { id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.totalQuery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleTotalCountReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleTotalCountReceived, dataProviderConfigs);
     }
 
     /**
@@ -140,13 +142,14 @@ class APIMDeveloperSignupsWidget extends Widget {
      * */
     handleTotalCountReceived(message) {
         const { data } = message;
+        const { id } = this.props;
 
         if (data.length !== 0) {
             let [[totalCount]] = data;
             totalCount = totalCount < 10 ? ('0' + totalCount).slice(-2) : totalCount;
             this.setState({ totalCount });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleweekQuery();
     }
 
@@ -156,6 +159,7 @@ class APIMDeveloperSignupsWidget extends Widget {
      * */
     assembleweekQuery() {
         const { providerConfig } = this.state;
+        const { id } = this.props;
         const weekStart = Moment().subtract(7, 'days');
 
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -163,7 +167,7 @@ class APIMDeveloperSignupsWidget extends Widget {
         query = query
             .replace('{{weekStart}}', Moment(weekStart).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'));
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleWeekCountReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleWeekCountReceived, dataProviderConfigs);
     }
 
     /**
@@ -191,7 +195,8 @@ class APIMDeveloperSignupsWidget extends Widget {
             localeMessages, faultyProviderConf, totalCount, weekCount,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const signupsProps = { themeName, totalCount, weekCount };
 
         if (!localeMessages) {
@@ -209,12 +214,16 @@ class APIMDeveloperSignupsWidget extends Widget {
                                 style={paper}
                             >
                                 <Typography variant='h5' component='h3'>
-                                    <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                    <FormattedMessage
+                                        id='config.error.heading'
+                                        defaultMessage='Configuration Error !'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     <FormattedMessage
                                         id='config.error.body'
-                                        defaultMessage='Cannot fetch provider configuration for APIM Developer Signups widget'
+                                        defaultMessage='Cannot fetch provider configuration for APIM
+                                         Developer Signups widget'
                                     />
                                 </Typography>
                             </Paper>

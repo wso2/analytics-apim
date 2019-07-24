@@ -179,25 +179,37 @@ export default function APIMApiResponse(props) {
                             <TableBody>
                                 <TableRow>
                                     <TableCell component='th' scope='row'>
-                                        <FormattedMessage id='table.heading.totalResponse' defaultMessage='Total Response Count' />
+                                        <FormattedMessage
+                                            id='table.heading.totalResponse'
+                                            defaultMessage='Total Response Count'
+                                        />
                                     </TableCell>
                                     <TableCell align='right'>{responseData[0]}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component='th' scope='row'>
-                                        <FormattedMessage id='table.heading.2xxResponse' defaultMessage='2xx Response Count' />
+                                        <FormattedMessage
+                                            id='table.heading.2xxResponse'
+                                            defaultMessage='2xx Response Count'
+                                        />
                                     </TableCell>
                                     <TableCell align='right'>{responseData[1]}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component='th' scope='row'>
-                                        <FormattedMessage id='table.heading.4xxResponse' defaultMessage='4xx Response Count' />
+                                        <FormattedMessage
+                                            id='table.heading.4xxResponse'
+                                            defaultMessage='4xx Response Count'
+                                        />
                                     </TableCell>
                                     <TableCell align='right'>{responseData[2]}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component='th' scope='row'>
-                                        <FormattedMessage id='table.heading.5xxResponse' defaultMessage='5xx Response Count' />
+                                        <FormattedMessage
+                                            id='table.heading.5xxResponse'
+                                            defaultMessage='5xx Response Count'
+                                        />
                                     </TableCell>
                                     <TableCell align='right'>{responseData[3]}</TableCell>
                                 </TableRow>

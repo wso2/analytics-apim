@@ -273,12 +273,16 @@ class APIMTopFaultyApisWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Top Faulty Apis widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Top Faulty Apis widget'
                                         />
                                     </Typography>
                                 </Paper>

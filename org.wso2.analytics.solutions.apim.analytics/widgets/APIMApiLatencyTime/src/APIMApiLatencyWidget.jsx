@@ -144,7 +144,8 @@ class APIMApiLatencyWidget extends Widget {
         };
 
         this.metadata = {
-            names: ['responseTime', 'securityLatency', 'throttlingLatency', 'requestMedLat', 'responseMedLat', 'backendLatency', 'otherLatency', 'REQUEST_TIME'],
+            names: ['responseTime', 'securityLatency', 'throttlingLatency', 'requestMedLat',
+                'responseMedLat', 'backendLatency', 'otherLatency', 'REQUEST_TIME'],
             types: ['linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'time'],
         };
 
@@ -213,7 +214,8 @@ class APIMApiLatencyWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -351,6 +353,7 @@ class APIMApiLatencyWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
         const { providerConfig, apiFullData } = this.state;
+        const { id } = this.props;
         let apiID = 0;
 
         apiFullData.forEach((api) => {
@@ -364,7 +367,7 @@ class APIMApiLatencyWidget extends Widget {
         query = query
             .replace('{{apiID}}', apiID);
         dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleResourceReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleResourceReceived, dataProviderConfigs);
     }
 
     /**
@@ -426,7 +429,8 @@ class APIMApiLatencyWidget extends Widget {
                 .replace('{{version}}', apiVersion);
         } else if (apiSelected !== '' && apiVersion !== '') {
             query = query
-                .replace('{{querystring}}', "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND apiResourceTemplate==''")
+                .replace('{{querystring}}',
+                    "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND apiResourceTemplate==''")
                 .replace('{{api}}', apiSelected)
                 .replace('{{version}}', apiVersion);
         } else {
@@ -451,7 +455,8 @@ class APIMApiLatencyWidget extends Widget {
             } = this.state;
             const latencyData = [];
             data.forEach((dataUnit) => {
-                latencyData.push([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4], dataUnit[5], dataUnit[6], Moment(dataUnit[7]).format('YYYY-MMM-DD hh:mm:ss')]);
+                latencyData.push([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4],
+                    dataUnit[5], dataUnit[6], Moment(dataUnit[7]).format('YYYY-MMM-DD hh:mm:ss')]);
             });
             this.setState({ latencyData });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, resSelected);
@@ -541,12 +546,25 @@ class APIMApiLatencyWidget extends Widget {
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
+            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width,
+            apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
         const themeName = this.props.muiTheme.name;
         const latencyProps = {
-            themeName, queryParam, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
+            themeName,
+            queryParam,
+            chartConfig,
+            metadata,
+            height,
+            width,
+            apiCreatedBy,
+            apiSelected,
+            apiVersion,
+            latencyData,
+            apilist,
+            versionlist,
+            resourceList,
         };
 
         if (!localeMessages || !latencyData) {
@@ -567,12 +585,16 @@ class APIMApiLatencyWidget extends Widget {
                                     style={paper}
                                 >
                                     <Typography variant='h5' component='h3'>
-                                        <FormattedMessage id='config.error.heading' defaultMessage='Configuration Error !' />
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for APIM Api Latency Time widget'
+                                            defaultMessage='Cannot fetch provider configuration for
+                                             APIM Api Latency Time widget'
                                         />
                                     </Typography>
                                 </Paper>
