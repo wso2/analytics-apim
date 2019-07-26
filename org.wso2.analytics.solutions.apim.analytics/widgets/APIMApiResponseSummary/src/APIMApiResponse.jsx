@@ -115,8 +115,12 @@ export default function APIMApiResponse(props) {
                                 name='apiCreatedBy'
                                 style={styles.selectEmpty}
                             >
-                                <MenuItem value='All'>All</MenuItem>
-                                <MenuItem value='Me'>Me</MenuItem>
+                                <MenuItem value='all'>
+                                    <FormattedMessage id='all.menuItem' defaultMessage='All' />
+                                </MenuItem>
+                                <MenuItem value='me'>
+                                    <FormattedMessage id='me.menuItem' defaultMessage='Me' />
+                                </MenuItem>
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>

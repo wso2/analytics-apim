@@ -1,4 +1,5 @@
 {
+  "all.menuItem": "All",
   "config.error.body": "Cannot fetch provider configuration for APIM Api Last Access Summary widget",
   "config.error.heading": "Configuration Error !",
   "createdBy.label": "API Created By",
@@ -6,6 +7,9 @@
   "filter.label.title": "Filter By",
   "filter.search.placeholder": "Search Field",
   "limit": "Limit :",
+  "me.menuItem": "Me",
+  "nodata.error.body": "No data available for the selected options.",
+  "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
   "table.heading.version": "VERSION",
