@@ -233,7 +233,8 @@ class APIMTopApiCreatorsWidget extends Widget {
             localeMessages, faultyProviderConfig, height, limit, creatorData, legendData,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const apiCreatorsProps = {
             themeName, height, limit, creatorData, legendData,
         };

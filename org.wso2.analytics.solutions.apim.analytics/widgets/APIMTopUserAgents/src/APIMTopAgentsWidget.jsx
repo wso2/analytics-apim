@@ -426,7 +426,8 @@ class APIMTopAgentsWidget extends Widget {
             legendData, agentData, apilist, versionlist,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const agentsProps = {
             themeName,
             height,

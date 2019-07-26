@@ -180,7 +180,8 @@ export default function APIMTopAppCreators(props) {
                                 data={creatorData}
                                 x={d => d.creator}
                                 y={d => d.appcount}
-                                labels={d => `${d.creator} : ${((d.appcount / (sumBy(creatorData, o => o.appcount))) * 100).toFixed(2)}%`}
+                                labels={d => `${d.creator} : ${((d.appcount
+                                    / (sumBy(creatorData, o => o.appcount))) * 100).toFixed(2)}%`}
                             />
                             <VictoryLegend
                                 standalone={false}

@@ -180,7 +180,8 @@ export default function APIMTopThrottledApis(props) {
                                 data={throttledData}
                                 x={d => d.apiname}
                                 y={d => d.throttledcount}
-                                labels={d => `${d.apiname} : ${((d.throttledcount / (sumBy(throttledData, o => o.throttledcount))) * 100).toFixed(2)}%`}
+                                labels={d => `${d.apiname} : ${((d.throttledcount
+                                    / (sumBy(throttledData, o => o.throttledcount))) * 100).toFixed(2)}%`}
                             />
                             <VictoryLegend
                                 standalone={false}

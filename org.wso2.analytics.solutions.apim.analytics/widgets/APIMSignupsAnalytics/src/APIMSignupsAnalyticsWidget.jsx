@@ -229,7 +229,8 @@ class APIMSignupsAnalyticsWidget extends Widget {
             localeMessages, faultyProviderConfig, height, chartData, tableData, xAxisTicks, maxCount,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const signupsProps = {
             themeName, height, chartData, tableData, xAxisTicks, maxCount,
         };

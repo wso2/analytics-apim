@@ -550,7 +550,8 @@ class APIMApiLatencyWidget extends Widget {
             apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const latencyProps = {
             themeName,
             queryParam,

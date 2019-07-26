@@ -234,7 +234,8 @@ export default function APIMTopPlatforms(props) {
                             data={platformData}
                             x={d => d.platform}
                             y={d => d.reqCount}
-                            labels={d => `${d.platform} : ${((d.reqCount / (sumBy(platformData, o => o.reqCount))) * 100).toFixed(2)}%`}
+                            labels={d => `${d.platform} : ${((d.reqCount
+                                / (sumBy(platformData, o => o.reqCount))) * 100).toFixed(2)}%`}
                         />
                         <VictoryLegend
                             standalone={false}

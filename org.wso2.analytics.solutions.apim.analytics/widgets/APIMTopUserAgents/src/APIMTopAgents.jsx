@@ -234,7 +234,8 @@ export default function APIMTopAgents(props) {
                             data={agentData}
                             x={d => d.agent}
                             y={d => d.reqCount}
-                            labels={d => `${d.agent} : ${((d.reqCount / (sumBy(agentData, o => o.reqCount))) * 100).toFixed(2)}%`}
+                            labels={d => `${d.agent} : ${((d.reqCount
+                                / (sumBy(agentData, o => o.reqCount))) * 100).toFixed(2)}%`}
                         />
                         <VictoryLegend
                             standalone={false}

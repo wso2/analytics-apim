@@ -250,7 +250,8 @@ class APIMTopFaultyApisWidget extends Widget {
             localeMessages, faultyProviderConfig, height, limit, faultData, legendData,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const faultyApisProps = {
             themeName, height, limit, faultData, legendData,
         };

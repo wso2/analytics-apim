@@ -192,8 +192,6 @@ class CustomTable extends React.Component {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
 
-        const lowerCaseQuery = query.toLowerCase();
-
         data.forEach((dataUnit) => {
             counter += 1;
             [apiname] = dataUnit;
@@ -202,7 +200,7 @@ class CustomTable extends React.Component {
         });
 
         this.state.tableData = query
-            ? formattedData.filter(x => x[filterColumn].toString().toLowerCase().includes(lowerCaseQuery))
+            ? formattedData.filter(x => x[filterColumn].toString().toLowerCase().includes(query.toLowerCase()))
             : formattedData;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);

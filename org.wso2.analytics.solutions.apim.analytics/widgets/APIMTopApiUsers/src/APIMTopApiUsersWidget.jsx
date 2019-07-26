@@ -421,7 +421,8 @@ class APIMTopApiUsersWidget extends Widget {
             userData, apilist, versionlist,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const apiUsersProps = {
             themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, userData, apilist, versionlist,
         };

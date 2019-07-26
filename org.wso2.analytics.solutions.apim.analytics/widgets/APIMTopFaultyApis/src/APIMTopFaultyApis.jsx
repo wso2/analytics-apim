@@ -180,7 +180,8 @@ export default function APIMTopFaultyApis(props) {
                                 data={faultData}
                                 x={d => d.apiname}
                                 y={d => d.faultcount}
-                                labels={d => `${d.apiname} : ${((d.faultcount / (sumBy(faultData, o => o.faultcount))) * 100).toFixed(2)}%`}
+                                labels={d => `${d.apiname} : ${((d.faultcount
+                                    / (sumBy(faultData, o => o.faultcount))) * 100).toFixed(2)}%`}
                             />
                             <VictoryLegend
                                 standalone={false}

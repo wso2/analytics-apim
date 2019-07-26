@@ -180,7 +180,8 @@ export default function APIMTopSubscribers(props) {
                                 data={creatorData}
                                 x={d => d.creator}
                                 y={d => d.subcount}
-                                labels={d => `${d.creator} : ${((d.subcount / (sumBy(creatorData, o => o.subcount))) * 100).toFixed(2)}%`}
+                                labels={d => `${d.creator} : ${((d.subcount
+                                    / (sumBy(creatorData, o => o.subcount))) * 100).toFixed(2)}%`}
                             />
                             <VictoryLegend
                                 standalone={false}

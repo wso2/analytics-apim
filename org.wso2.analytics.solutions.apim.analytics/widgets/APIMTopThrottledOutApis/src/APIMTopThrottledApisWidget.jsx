@@ -253,7 +253,8 @@ class APIMTopThrottledApisWidget extends Widget {
             localeMessages, faultyProviderConfig, height, limit, throttledData, legendData,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const throttledApisProps = {
             themeName, height, limit, throttledData, legendData,
         };

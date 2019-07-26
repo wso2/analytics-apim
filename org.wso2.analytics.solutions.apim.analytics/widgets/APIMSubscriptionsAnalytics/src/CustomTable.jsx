@@ -187,7 +187,6 @@ class CustomTable extends React.Component {
         const { query, expanded, filterColumn } = this.state;
         let counter = 0;
         const dataNew = [];
-        const lowerCaseQuery = query.toLowerCase();
 
         tableData.forEach((dataUnit) => {
             counter += 1;
@@ -196,7 +195,7 @@ class CustomTable extends React.Component {
             });
         });
         this.state.data = query
-            ? dataNew.filter(x => x[filterColumn].toString().toLowerCase().includes(lowerCaseQuery))
+            ? dataNew.filter(x => x[filterColumn].toString().toLowerCase().includes(query.toLowerCase()))
             : dataNew;
         const {
             data, order, orderBy, rowsPerPage, page,

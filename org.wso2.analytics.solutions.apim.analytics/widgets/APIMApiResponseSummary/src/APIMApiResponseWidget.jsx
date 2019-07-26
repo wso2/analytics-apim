@@ -386,7 +386,8 @@ class APIMApiResponseWidget extends Widget {
             apiVersion, responseData, apilist, versionlist,
         } = this.state;
         const { loadingIcon, paper, paperWrapper } = this.styles;
-        const themeName = this.props.muiTheme.name;
+        const { muiTheme } = this.props;
+        const themeName = muiTheme.name;
         const responseProps = {
             themeName, height, width, apiCreatedBy, apiSelected, apiVersion, responseData, apilist, versionlist,
         };
