@@ -18,6 +18,7 @@
 
 package org.wso2.extension.siddhi.io.mgwfile;
 
+import io.siddhi.core.stream.input.source.SourceEventListener;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,7 +27,6 @@ import org.wso2.extension.siddhi.io.mgwfile.dao.MGWFileSourceDAO;
 import org.wso2.extension.siddhi.io.mgwfile.dto.MGWFileInfoDTO;
 import org.wso2.extension.siddhi.io.mgwfile.exception.MGWFileSourceException;
 import org.wso2.extension.siddhi.io.mgwfile.util.FileDataRetrieverUtil;
-import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -18,7 +18,7 @@
 
 package org.wso2.extension.siddhi.io.mgwfile;
 
-import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
+import io.siddhi.core.stream.input.source.SourceEventListener;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -18,6 +18,19 @@
 
 package org.wso2.extension.siddhi.io.mgwfile.source;
 
+import io.siddhi.annotation.Example;
+import io.siddhi.annotation.Extension;
+import io.siddhi.annotation.Parameter;
+import io.siddhi.annotation.util.DataType;
+import io.siddhi.core.config.SiddhiAppContext;
+import io.siddhi.core.exception.ConnectionUnavailableException;
+import io.siddhi.core.stream.ServiceDeploymentInfo;
+import io.siddhi.core.stream.input.source.Source;
+import io.siddhi.core.stream.input.source.SourceEventListener;
+import io.siddhi.core.util.config.ConfigReader;
+import io.siddhi.core.util.snapshot.state.State;
+import io.siddhi.core.util.snapshot.state.StateFactory;
+import io.siddhi.core.util.transport.OptionHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
@@ -27,18 +40,7 @@ import org.wso2.extension.siddhi.io.mgwfile.exception.MGWFileSourceException;
 import org.wso2.extension.siddhi.io.mgwfile.task.MGWFileReaderTask;
 import org.wso2.extension.siddhi.io.mgwfile.util.FileDataRetrieverUtil;
 import org.wso2.extension.siddhi.map.wso2event.source.WSO2SourceMapper;
-import org.wso2.siddhi.annotation.Example;
-import org.wso2.siddhi.annotation.Extension;
-import org.wso2.siddhi.annotation.Parameter;
-import org.wso2.siddhi.annotation.util.DataType;
-import org.wso2.siddhi.core.config.SiddhiAppContext;
-import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
-import org.wso2.siddhi.core.stream.input.source.Source;
-import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
-import org.wso2.siddhi.core.util.config.ConfigReader;
-import org.wso2.siddhi.core.util.transport.OptionHolder;
 
-import java.util.Map;
 import java.util.Timer;
 
 /**
@@ -90,6 +92,30 @@ public class MGWFileSource extends Source {
     private String streamId;
     private MGWFileReaderTask fileReaderTask;
 
+//    /**
+//     * The initialization method for {@link Source}, will be called before other methods. It used to validate
+//     * all configurations and to get initial values.
+//     * @param sourceEventListener After receiving events, the source should trigger onEvent() of this listener.
+//     *                            Listener will then pass on the events to the appropriate mappers for processing .
+//     * @param optionHolder        Option holder containing static configuration related to the {@link Source}
+//     * @param configReader        ConfigReader is used to read the {@link Source} related system configuration.
+//     * @param siddhiAppContext    the context of the {@link io.siddhi.query.api.SiddhiApp} used to get Siddhi
+//     *                            related utility functions.
+//     */
+//    @Override
+//    public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder,
+//                     String[] requestedTransportPropertyNames, ConfigReader configReader,
+//                     SiddhiAppContext siddhiAppContext) {
+//        this.sourceEventListener = sourceEventListener;
+//        this.optionHolder = optionHolder;
+//        streamId = optionHolder.validateAndGetStaticValue("wso2.stream.id", null);
+//    }
+
+    @Override
+    protected ServiceDeploymentInfo exposeServiceDeploymentInfo() {
+        return null;
+    }
+
     /**
      * The initialization method for {@link Source}, will be called before other methods. It used to validate
      * all configurations and to get initial values.
@@ -97,16 +123,17 @@ public class MGWFileSource extends Source {
      *                            Listener will then pass on the events to the appropriate mappers for processing .
      * @param optionHolder        Option holder containing static configuration related to the {@link Source}
      * @param configReader        ConfigReader is used to read the {@link Source} related system configuration.
-     * @param siddhiAppContext    the context of the {@link org.wso2.siddhi.query.api.SiddhiApp} used to get Siddhi
+     * @param siddhiAppContext    the context of the {@link io.siddhi.query.api.SiddhiApp} used to get Siddhi
      *                            related utility functions.
      */
     @Override
-    public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder,
-                     String[] requestedTransportPropertyNames, ConfigReader configReader,
-                     SiddhiAppContext siddhiAppContext) {
+    public StateFactory init(SourceEventListener sourceEventListener, OptionHolder optionHolder,
+                             String[] requestedTransportPropertyNames, ConfigReader configReader,
+                             SiddhiAppContext siddhiAppContext) {
         this.sourceEventListener = sourceEventListener;
         this.optionHolder = optionHolder;
         streamId = optionHolder.validateAndGetStaticValue("wso2.stream.id", null);
+        return null;
     }
 
     /**
@@ -128,7 +155,7 @@ public class MGWFileSource extends Source {
      * @throws ConnectionUnavailableException if it cannot connect to the source backend immediately.
      */
     @Override
-    public void connect(ConnectionCallback connectionCallback) throws ConnectionUnavailableException {
+    public void connect(ConnectionCallback connectionCallback, State stat) throws ConnectionUnavailableException {
         StreamDefinition streamDefinition = ((WSO2SourceMapper) getMapper()).getWSO2StreamDefinition();
         try {
             FileDataRetrieverUtil.addStreamDefinition(streamDefinition, streamId);
@@ -181,28 +208,5 @@ public class MGWFileSource extends Source {
             fileReaderTask.setPaused(false);
         }
     }
-
-    /**
-     * Used to collect the serializable state of the processing element, that need to be
-     * persisted for the reconstructing the element to the same state on a different point of time
-     *
-     * @return stateful objects of the processing element as a map
-     */
-    @Override
-    public Map<String, Object> currentState() {
-        return null;
-    }
-
-    /**
-     * Used to restore serialized state of the processing element, for reconstructing
-     * the element to the same state as if was on a previous point of time.
-     *
-     * @param map the stateful objects of the processing element as a map.
-     * This map will have the  same keys that is created upon calling currentState() method.
-     */
-     @Override
-     public void restoreState(Map<String, Object> map) {
-
-     }
 }
 
