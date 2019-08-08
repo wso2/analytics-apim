@@ -72,12 +72,12 @@ define table ApimTierLimitHittingAlert (subscriber string, apiCreator string, ap
 
 @info(name = 'AbnormalBackendTimeAlert insert to ApimAllAlert')
 from AbnormalBackendTimeAlertStream
-select 'AbnormalBackendTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal backend time detected for http ', apiMethod, ' method of resource template:', apiResourceTemplate, ' in api:', apiName, ' of tenant domain:', apiCreatorTenantDomain, ', threshold value:', thresholdBackendTime, 'ms.') as message, severity, alertTimestamp
+select 'AbnormalBackendTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal backend time detected for http ', apiMethod, ' method of resource template:', apiResourceTemplate, ' in api:', apiName, ' of tenant domain:', apiCreatorTenantDomain, ', threshold value:', convert(thresholdBackendTime, 'string'), 'ms.') as message, severity, alertTimestamp
 insert into ApimAllAlert;
 
 @info(name = 'AbnormalRequestsCountAlert insert to ApimAllAlert')
 from AbnormalRequestsCountAlertStream
-select 'AbnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count detected during last minute using application ', applicationName, ' owned by ', applicationOwner, ' for api :', apiName, ', abnormal requst count:', requestCountPerMin, ".") as message, severity, alertTimestamp
+select 'AbnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count detected during last minute using application ', applicationName, ' owned by ', applicationOwner, ' for api :', apiName, ', abnormal requst count:', convert(requestCountPerMin, 'string'), ".") as message, severity, alertTimestamp
 insert into ApimAllAlert;
 
 @info(name = 'RequestPatternChangedAlertStream insert to ApimAllAlert')
@@ -87,7 +87,7 @@ insert into ApimAllAlert;
 
 @info(name = 'AbnormalResponseTimeAlertStream insert to ApimAllAlert')
 from AbnormalResponseTimeAlertStream
-select 'AbnormalResponseTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal response time detected for http ', apiMethod, ' method of resource template:', apiResourceTemplate, ' in api:', apiName, ' of tenant domain:', apiCreatorTenantDomain, ', threshold value:', thresholdResponseTime, 'ms.') as message, severity, alertTimestamp
+select 'AbnormalResponseTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal response time detected for http ', apiMethod, ' method of resource template:', apiResourceTemplate, ' in api:', apiName, ' of tenant domain:', apiCreatorTenantDomain, ', threshold value:', convert(thresholdResponseTime, 'string'), 'ms.') as message, severity, alertTimestamp
 insert into ApimAllAlert;
 
 @info(name = 'TierLimitHittingAlertStream insert to ApimAllAlert')
