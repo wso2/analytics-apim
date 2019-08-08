@@ -92,25 +92,6 @@ public class MGWFileSource extends Source {
     private String streamId;
     private MGWFileReaderTask fileReaderTask;
 
-//    /**
-//     * The initialization method for {@link Source}, will be called before other methods. It used to validate
-//     * all configurations and to get initial values.
-//     * @param sourceEventListener After receiving events, the source should trigger onEvent() of this listener.
-//     *                            Listener will then pass on the events to the appropriate mappers for processing .
-//     * @param optionHolder        Option holder containing static configuration related to the {@link Source}
-//     * @param configReader        ConfigReader is used to read the {@link Source} related system configuration.
-//     * @param siddhiAppContext    the context of the {@link io.siddhi.query.api.SiddhiApp} used to get Siddhi
-//     *                            related utility functions.
-//     */
-//    @Override
-//    public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder,
-//                     String[] requestedTransportPropertyNames, ConfigReader configReader,
-//                     SiddhiAppContext siddhiAppContext) {
-//        this.sourceEventListener = sourceEventListener;
-//        this.optionHolder = optionHolder;
-//        streamId = optionHolder.validateAndGetStaticValue("wso2.stream.id", null);
-//    }
-
     @Override
     protected ServiceDeploymentInfo exposeServiceDeploymentInfo() {
         return null;
