@@ -75,7 +75,7 @@ insert into SuppressedResponseCodeAlertStream;
 
 @info(name = 'Query generates ApiHealthMonitorAlertStreamTemp with message for high response time alert')
 from SuppressedResponseTimeAlertStream
-select apiName, apiVersion, ifThenElse(apiCreatorTenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, apiCreatorTenantDomain, str:concat('Response time is higher than ' , thresholdResponseTime, ' ms continuously for 5 or more responses.') as message, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+select apiName, apiVersion, ifThenElse(apiCreatorTenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, apiCreatorTenantDomain, str:concat('Response time is higher than ' , convert(thresholdResponseTime, 'string'), ' ms continuously for 5 or more responses.') as message, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into ApiHealthMonitorAlertStream;
 
 @info(name = 'Query generates ApiHealthMonitorAlertStreamTemp with message for server error alert')
