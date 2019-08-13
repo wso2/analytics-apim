@@ -140,10 +140,10 @@ export default function APIMTopAgents(props) {
                                 name='apiCreatedBy'
                                 style={styles.selectEmpty}
                             >
-                                <MenuItem value='all'>
+                                <MenuItem value='All'>
                                     <FormattedMessage id='all.menuItem' defaultMessage='All' />
                                 </MenuItem>
-                                <MenuItem value='me'>
+                                <MenuItem value='Me'>
                                     <FormattedMessage id='me.menuItem' defaultMessage='Me' />
                                 </MenuItem>
                             </Select>
