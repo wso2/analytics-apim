@@ -50,11 +50,6 @@
         </fileSet>
 
         <fileSet>
-            <directory>carbon-home/conf/manager</directory>
-            <outputDirectory>conf/manager</outputDirectory>
-            <fileMode>644</fileMode>
-        </fileSet>
-        <fileSet>
             <directory>carbon-home/conf/worker</directory>
             <outputDirectory>conf/worker</outputDirectory>
             <fileMode>644</fileMode>
@@ -67,11 +62,6 @@
         </fileSet>
 
 
-        <fileSet>
-            <directory>carbon-home/conf/transports/manager</directory>
-            <outputDirectory>wso2/manager/conf/transports</outputDirectory>
-            <fileMode>644</fileMode>
-        </fileSet>
         <fileSet>
             <directory>carbon-home/conf/transports/worker</directory>
             <outputDirectory>wso2/worker/conf/transports</outputDirectory>
@@ -126,14 +116,6 @@
                 <exclude>**/*.releaseBackup</exclude>
                 <exclude>%regex[(?!.*utils/).*pom.xml]</exclude>
                 <exclude>**/target/**</exclude>
-            </excludes>
-            <fileMode>644</fileMode>
-        </fileSet>
-        <fileSet>
-            <directory>.</directory>
-            <outputDirectory>wso2/manager/deployment/siddhi-files</outputDirectory>
-            <excludes>
-                <exclude>*/**</exclude>
             </excludes>
             <fileMode>644</fileMode>
         </fileSet>
@@ -268,26 +250,8 @@
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>carbon-home/runtime/manager/carbon.sh</source>
-            <outputDirectory>wso2/manager/bin/</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>755</fileMode>
-        </file>
-        <file>
-            <source>carbon-home/runtime/manager/carbon.bat</source>
-            <outputDirectory>wso2/manager/bin/</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>755</fileMode>
-        </file>
-        <file>
             <source>carbon-home/conf/dashboard/log4j2.xml</source>
             <outputDirectory>conf/dashboard/</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>644</fileMode>
-        </file>
-        <file>
-            <source>carbon-home/conf/manager/log4j2.xml</source>
-            <outputDirectory>conf/manager/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
