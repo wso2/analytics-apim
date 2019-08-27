@@ -354,3 +354,21 @@ wso2.transport.http:
       keyStoreFile: "${carbon.home}/resources/security/wso2carbon.jks"
       keyStorePassword: wso2carbon
       certPass: wso2carbon
+
+## Authentication configuration
+auth.configs:
+  type: 'local'
+  userManager:
+    adminRole: admin
+    userStore:
+      users:
+        -
+          user:
+            username: admin
+            password: YWRtaW4=
+            roles: 1
+      roles:
+        -
+          role:
+            id: 1
+            displayName: admin
