@@ -357,18 +357,21 @@ wso2.transport.http:
 
 ## Authentication configuration
 auth.configs:
-  type: 'local'
+  type: custom
+  ssoEnabled: true
   userManager:
     adminRole: admin
-    userStore:
-      users:
-        -
-          user:
-            username: admin
-            password: YWRtaW4=
-            roles: 1
-      roles:
-        -
-          role:
-            id: 1
-            displayName: admin
+  properties:
+    adminServiceBaseUrl: https://localhost:9443
+    adminServiceUsername: admin
+    adminServicePassword: admin
+    kmDcrUrl: https://localhost:9443/client-registration/v0.14/register
+    kmTokenUrl: https://localhost:9443/oauth2
+    kmUsername: admin
+    kmPassword: admin
+    portalAppContext: portal
+    statusDashboardAppContext: monitoring
+    businessRulesAppContext : business-rules
+    cacheTimeout: 900
+    baseUrl: https://localhost:9643
+    grantType: authorization_code
