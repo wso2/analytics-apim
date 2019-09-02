@@ -362,6 +362,11 @@
                 <artifactId>siddhi-annotations</artifactId>
                 <version>${siddhi.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.extension.siddhi.map.wso2event</groupId>
+                <artifactId>siddhi-map-wso2event</artifactId>
+                <version>${siddhi.map.wso2event.version}</version>
+            </dependency>
 
             <!-- Dependencies for Siddhi related jars -->
             <dependency>
@@ -464,6 +469,13 @@
                 <artifactId>pax-logging-api</artifactId>
                 <version>${pax.logging.api.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.h2database.wso2</groupId>
+                <artifactId>h2-database-engine</artifactId>
+                <version>${h2.database.version}</version>
+            </dependency>
+
             <!-- Business rules as a feature-->
             <dependency>
                 <groupId>org.wso2.carbon.analytics</groupId>
@@ -635,6 +647,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.msf4j.interceptor.common</artifactId>
+                <version>${carbon.analytics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
                 <artifactId>org.wso2.carbon.analytics.auth.rest.api</artifactId>
                 <version>${carbon.analytics.version}</version>
             </dependency>
@@ -730,26 +747,220 @@
                 <version>${forgetme.tool.version}</version>
             </dependency>
 
-            <!-- Analytics solutions Common -->
+            <!-- WSO2 APIM widgets-->
             <dependency>
-                <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>org.wso2.analytics.solutions.common.widgets.date-time-range-picker</artifactId>
-                <version>${analytics.solutions.version}</version>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.feature</artifactId>
+                <version>${project.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
-                <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>org.wso2.analytics.solutions.common.feature</artifactId>
-                <version>${analytics.solutions.version}</version>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.apisubscriber.alert.config
+                </artifactId>
+                <version>${project.version}</version>
                 <type>zip</type>
             </dependency>
-
-            <!-- WSO2 APIM Analytics Solution -->
             <dependency>
-                <groupId>org.wso2.analytics.solutions</groupId>
-                <artifactId>org.wso2.analytics.solutions.apim.analytics.feature</artifactId>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.apicreator.alert.config
+                </artifactId>
+                <version>${project.version}</version>
                 <type>zip</type>
-                <version>${analytics.solutions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.apicreated
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.appcreated
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.subscriptions
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.developersignups
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.top.api.creators
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.top.app.creators
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.top.subscribers
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.stats
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.created.analytics
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.app.created.analytics
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.subscriptions.analytics
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.signups.analytics
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.top.api.users
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.version.usage.summary
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.resource.usage.summary
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.backend.usage.summary
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.last.access.summary
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.response.summary
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.usage
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.top.faulty.apis
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.top.throttled.out.apis
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.top.user.agents
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.top.platforms
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.latency.time
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.geo.based.invocations
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.date-time-range-picker
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.sp.extension.siddhi.io.mgwfile</artifactId>
+                <type>jar</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.rest.api.file</artifactId>
+                <type>jar</type>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -847,6 +1058,40 @@
                     </executions>
                 </plugin>
                 <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${maven.exec.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>npm install (initialize)</id>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <phase>initialize</phase>
+                            <configuration>
+                                <executable>${npm.executable}</executable>
+                                <arguments>
+                                    <argument>install</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>npm run dev (compile)</id>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <phase>generate-resources</phase>
+                            <configuration>
+                                <executable>${npm.executable}</executable>
+                                <arguments>
+                                    <argument>run</argument>
+                                    <argument>build</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.wso2.carbon.maven</groupId>
                     <artifactId>carbon-feature-plugin</artifactId>
                     <version>${carbon.feature.plugin.version}</version>
@@ -855,13 +1100,46 @@
         </pluginManagement>
     </build>
 
+    <profiles>
+        <profile>
+            <id>platform-windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <npm.executable>npm.cmd</npm.executable>
+            </properties>
+        </profile>
+        <profile>
+            <id>platform-unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <npm.executable>npm</npm.executable>
+            </properties>
+        </profile>
+        <profile>
+            <id>platform-default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <npm.executable>npm</npm.executable>
+            </properties>
+        </profile>
+    </profiles>
+
     <properties>
 
         <carbon.analytics.version>3.0.3</carbon.analytics.version>
         <siddhi.version>5.1.2</siddhi.version>
 
         <carbon.analytics-common.version>6.1.30</carbon.analytics-common.version>
-        <analytics.solutions.version>3.0.2-SNAPSHOT</analytics.solutions.version>
         <!-- Maven plugins -->
         <!--Bundle Plugin - Overridden from parent due to a bug in latest version related to capability providers-->
         <maven.bundle.plugin.version>2.5.4</maven.bundle.plugin.version>
@@ -958,6 +1236,8 @@
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
         <pax.logging.api.version>1.8.5</pax.logging.api.version>
         <javax.servlet.version>3.1.0</javax.servlet.version>
+
+        <h2.database.version>1.2.140.wso2v3</h2.database.version>
 
         <org.wso2.json.version>3.0.0.wso2v1</org.wso2.json.version>
         <orbit.axis2.client.version>1.6.1.wso2v5</orbit.axis2.client.version>

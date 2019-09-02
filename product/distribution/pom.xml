@@ -286,15 +286,10 @@
             <artifactId>org.wso2.carbon.permissions.rest.api.feature</artifactId>
             <type>zip</type>
         </dependency>
-        <!-- Solution Features -->
+        <!-- APIM Analytics Features -->
         <dependency>
-            <groupId>org.wso2.analytics.solutions</groupId>
-            <artifactId>org.wso2.analytics.solutions.apim.analytics.feature</artifactId>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.analytics.solutions</groupId>
-            <artifactId>org.wso2.analytics.solutions.common.feature</artifactId>
+            <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.analytics.apim.feature</artifactId>
             <type>zip</type>
         </dependency>
 
@@ -873,14 +868,10 @@
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
 
-                                <!-- Solution Features -->
+                                <!-- APIM Analytics Feature -->
                                 <feature>
-                                    <id>org.wso2.analytics.solutions.common.feature</id>
-                                    <version>${analytics.solutions.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.analytics.solutions.apim.analytics.feature</id>
-                                    <version>${analytics.solutions.version}</version>
+                                    <id>org.wso2.analytics.apim.feature</id>
+                                    <version>${project.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -940,9 +931,10 @@
                             </destination>
                             <deleteOldRuntimeFiles>true</deleteOldRuntimeFiles>
                             <features>
+                                <!-- APIM Analytics Feature -->
                                 <feature>
-                                    <id>org.wso2.analytics.solutions.apim.analytics.feature</id>
-                                    <version>${analytics.solutions.version}</version>
+                                    <id>org.wso2.analytics.apim.feature</id>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.touchpoint.feature.group</id>
@@ -1263,10 +1255,10 @@
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
 
-                                <!-- Solution Features -->
+                                <!-- APIM Analytics Feature -->
                                 <feature>
-                                    <id>org.wso2.analytics.solutions.common.feature</id>
-                                    <version>${analytics.solutions.version}</version>
+                                    <id>org.wso2.analytics.apim.feature</id>
+                                    <version>${project.version}</version>
                                 </feature>
                             </features>
                         </configuration>
