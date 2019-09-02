@@ -1,0 +1,54 @@
+/*
+    Copyright (c) 2019, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("APIM_MONETIZATION_SUMMARY")
+@App:description("Define aggregations to the request events for monetization")
+
+-- Streams
+@source(type='inMemory' , topic='APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string,
+    applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string,
+    apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string,
+    apiCreatorTenantDomain string, apiTier string, apiHostname string, username string,
+    userTenantDomain string, userIp string, userAgent string, requestTimestamp long,
+    throttledOut bool, responseTime long, serviceTime long, backendTime long,
+    responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string,
+    securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long,
+    otherLatency long, gatewayType string, label string);
+
+define stream RecordStream(apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string,
+    applicationName string, applicationId string, responseCodeBool bool, requestTimestamp long);
+
+--Monetization Aggregations
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='1 month', hours='1 month',
+    days='2 month', months='2 years'))
+define aggregation MonetizationAgg
+from RecordStream
+select apiName, apiVersion, apiCreator, apiCreatorTenantDomain,  applicationName, applicationId, count() as requestCount
+group by apiName, apiVersion , apiCreator, apiCreatorTenantDomain,applicationId 
+aggregate by requestTimestamp every seconds...years;
+
+--checks whether the response code is in 200 range, pass respinseCodeBool as true or false based on it
+from Request
+select apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationName, applicationId,
+regex:matches('2[0-9][0-9]', convert (responseCode, 'string')) as responseCodeBool, requestTimestamp
+insert into TempStream;
+
+--If responseCodeBool is true add to the stream
+from TempStream[ responseCodeBool == true ]
+select *
+insert into RecordStream;

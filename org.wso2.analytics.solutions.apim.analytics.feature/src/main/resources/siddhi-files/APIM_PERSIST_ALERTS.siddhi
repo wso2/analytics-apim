@@ -1,0 +1,141 @@
+/*
+    Copyright (c) 2019, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("APIM_PERSIST_ALERTS")
+@App:description("Psersists alerts generated")
+
+@source(type = 'inMemory' , topic = 'AbnormalBackendTimeAlertStream')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
+define stream AbnormalBackendTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long, message string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory' , topic = 'AbnormalRequestsCountAlertStream')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
+define stream AbnormalRequestsCountAlertStream(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int, message string, severity int, alertTimestamp long);
+
+@source(type = "inMemory", topic = "RequestPatternChangedAlertStream")
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
+define stream RequestPatternChangedAlertStream(username string, applicationName string, applicationOwner string, tenantDomain string, message string, transition string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory' , topic = 'AbnormalResponseTimeAlertStream')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
+define stream AbnormalResponseTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, responseTime long, thresholdResponseTime long, message string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory', topic = 'ApimApiHealthMonitorAlertStream')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
+define stream ApiHealthMonitorAlertStream(apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory', topic = 'TierLimitHittingAlertStream')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
+define stream TierLimitHittingAlertStream(subscriber string, apiCreator string, apiName string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, message string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory' , topic = 'IpAccessAbnormalityAlertStream')
+@Async(buffer.size = '256', workers = '1', batch.size.max = '256')
+define stream IpAccessAbnormalityAlertStream(type string, message string, severity int, ip string, applicationName string, applicationOwner string, username string, tenantDomain string, requestTimestamp long, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAbnormalBackendTimeAlert (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long,
+ message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAbnormalReqAlert(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimAbnormalResponseTimeAlert( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, responseTime long,thresholdResponseTime long, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimIPAccessAbnormalityAlert (type string, message string, severity int, ip string, applicationName string, applicationOwner string, username string,tenantDomain string, requestTimestamp long, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimRequestPatternChangedAlert (username string, applicationName string, applicationOwner string, tenantDomain string, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimApiHealthMonitorAlert(apiName string,apiVersion string,apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+define table ApimTierLimitHittingAlert (subscriber string, apiCreator string, apiName string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, message string, severity int, alertTimestamp long);
+
+@info(name = 'AbnormalBackendTimeAlert insert to ApimAllAlert')
+from AbnormalBackendTimeAlertStream
+select 'AbnormalBackendTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal backend time detected for http ', apiMethod, ' method of resource template:', apiResourceTemplate, ' in api:', apiName, ' of tenant domain:', apiCreatorTenantDomain, ', threshold value:', convert(thresholdBackendTime, 'string'), 'ms.') as message, severity, alertTimestamp
+insert into ApimAllAlert;
+
+@info(name = 'AbnormalRequestsCountAlert insert to ApimAllAlert')
+from AbnormalRequestsCountAlertStream
+select 'AbnormalRequestsPerMin' as type, tenantDomain, str:concat('Abnormal request count detected during last minute using application ', applicationName, ' owned by ', applicationOwner, ' for api :', apiName, ', abnormal requst count:', convert(requestCountPerMin, 'string'), ".") as message, severity, alertTimestamp
+insert into ApimAllAlert;
+
+@info(name = 'RequestPatternChangedAlertStream insert to ApimAllAlert')
+from RequestPatternChangedAlertStream
+select 'AbnormalRequestPattern' as type, tenantDomain, str:concat('Abnormal request pattern detected by user :', username, ' using application : ', applicationName, ' owned by: ', applicationOwner, ' suspicious API transition is: ', transition, '.') as message, severity, alertTimestamp
+insert into ApimAllAlert;
+
+@info(name = 'AbnormalResponseTimeAlertStream insert to ApimAllAlert')
+from AbnormalResponseTimeAlertStream
+select 'AbnormalResponseTime' as type, apiCreatorTenantDomain as tenantDomain, str:concat('Abnormal response time detected for http ', apiMethod, ' method of resource template:', apiResourceTemplate, ' in api:', apiName, ' of tenant domain:', apiCreatorTenantDomain, ', threshold value:', convert(thresholdResponseTime, 'string'), 'ms.') as message, severity, alertTimestamp
+insert into ApimAllAlert;
+
+@info(name = 'TierLimitHittingAlertStream insert to ApimAllAlert')
+from TierLimitHittingAlertStream
+select "FrequentTierLimitHitting" as type, userTenantDomain as tenantDomain, message, severity, alertTimestamp
+insert into ApimAllAlert;
+
+@info(name = 'ApiHealthMonitorAlertStream insert to ApimAllAlert')
+from ApiHealthMonitorAlertStream
+select 'ApiHealthMonitor' as type, apiCreatorTenantDomain as tenantDomain, str:concat('API:', apiName, ' ', apiVersion, '-', message) as message, severity, alertTimestamp
+insert into ApimAllAlert;
+
+@info(name = 'IpAccessAbnormalityAlertStream insert to ApimAllAlert')
+from IpAccessAbnormalityAlertStream
+select type, tenantDomain, str:concat("A request from a ", ifThenElse(str:contains(message, 'old'), 'old', 'new'), " IP (", ip, ") detected by user:" , username, " using application:", applicationName, " owned by ", applicationOwner, ".") as message, severity, alertTimestamp
+insert into ApimAllAlert;
+
+@info(name = 'Insert to IpAccessAbnormalityAlert')
+from IpAccessAbnormalityAlertStream
+select *
+insert into ApimIPAccessAbnormalityAlert;
+
+@info(name = 'Insert to ApimTierLimitHittingAlert')
+from TierLimitHittingAlertStream
+select *
+insert into ApimTierLimitHittingAlert;
+
+@info(name = 'Insert to ApimApiHealthMonitorAlert')
+from ApiHealthMonitorAlertStream
+select *
+insert into ApimApiHealthMonitorAlert;
+
+@info(name = 'Insert to AbnormalBackendTimeAlert')
+from AbnormalBackendTimeAlertStream
+select *
+insert into ApimAbnormalBackendTimeAlert;
+
+@info(name = 'Insert to AbnormalRequestsCountAlert')
+from AbnormalRequestsCountAlertStream
+select *
+insert into ApimAbnormalReqAlert;
+
+@info(name = 'Insert to RequestPatternChangedAlert')
+from RequestPatternChangedAlertStream
+select username, applicationName, applicationOwner, tenantDomain, message, severity, alertTimestamp
+insert into ApimRequestPatternChangedAlert;
+
+@info(name = 'Insert to AbnormalResponseTimeAlert')
+from AbnormalResponseTimeAlertStream
+select *
+insert into ApimAbnormalResponseTimeAlert;

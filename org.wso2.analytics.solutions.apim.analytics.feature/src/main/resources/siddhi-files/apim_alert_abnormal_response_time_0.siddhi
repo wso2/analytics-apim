@@ -1,0 +1,81 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("apim_alert_abnormal_response_time_0")
+@App:description("Identifies the API requests with abnormal response time and add to AllAlertStream and AbnormalResponseTimeAlertStream")
+
+define trigger LoadInMemoryTable at 'start';
+define trigger PeriodicTrigger at every 5 minutes;
+
+@source(type='inMemory' , topic='APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+define stream SuppressedAbnormalResponseTimeAlertStream(apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, responseTime long, thresholdResponseTime long);
+
+@sink(type='inMemory' , topic='AbnormalResponseTimeAlertStream')
+define stream AbnormalResponseTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, responseTime long, thresholdResponseTime long, message string, severity int,alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@PrimaryKey('apiName', 'apiVersion','apiCreator', 'apiCreatorTenantDomain')
+define table ApiCreatorAlertConfiguration (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, thresholdResponseTime long, thresholdBackendTime long);
+
+@PrimaryKey('apiName', 'apiVersion','apiCreator', 'apiCreatorTenantDomain')
+define table ApiCreatorAlertConfigurationInMemoryTable (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, thresholdResponseTime long);
+
+@info(name = 'creatorConfigurationInfoRetrievQuery')
+from Request as R join ApiCreatorAlertConfigurationInMemoryTable as C
+on (R.apiName == C.apiName and R.apiVersion == C.apiVersion and R.apiCreator== C.apiCreator and R.apiCreatorTenantDomain == C.apiCreatorTenantDomain)
+select R.apiName, R.apiVersion,  R.apiCreator, R.apiCreatorTenantDomain, R.apiResourceTemplate, R.apiMethod, R.responseTime, thresholdResponseTime
+insert into AbnormalResponseTimeAlertStreamTemp;
+
+@info(name='FilterForAlerting')
+from AbnormalResponseTimeAlertStreamTemp[thresholdResponseTime >0 and responseTime > thresholdResponseTime ]
+select *
+insert into AbnormalResponseTimeAlertStreamTemp2;
+
+@info(name = 'Alert Suppression')
+from AbnormalResponseTimeAlertStreamTemp2#window.length(1) as a left outer join SuppressedAbnormalResponseTimeAlertStream#window.time(10 minute) as b
+on (a.apiName == b.apiName and a.apiVersion== b.apiVersion and a.apiCreator== b.apiCreator and a.apiCreatorTenantDomain==b.apiCreatorTenantDomain and
+    a.apiResourceTemplate==b.apiResourceTemplate and a.apiMethod== b.apiMethod)
+select a.apiName, a.apiVersion, a.apiCreator, a.apiCreatorTenantDomain, a.apiResourceTemplate, a.apiMethod, a.responseTime, a.thresholdResponseTime
+having b.apiName  is null
+insert into SuppressedAbnormalResponseTimeAlertStream;
+
+from SuppressedAbnormalResponseTimeAlertStream
+select apiName, apiVersion,  ifThenElse(apiCreatorTenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, apiCreatorTenantDomain, apiResourceTemplate, apiMethod, responseTime, thresholdResponseTime ,
+    'Abnormal response time detected.' as message, 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into AbnormalResponseTimeAlertStream;
+
+@info(name='Update IntermediateStream') 
+from LoadInMemoryTable 
+select triggered_time 
+insert into InMemoryTableJoinStream;
+
+@info(name='Update IntermediateStream periodically') 
+from PeriodicTrigger  
+select triggered_time 
+insert into InMemoryTableJoinStream;
+
+-- Update the AlertCreatorConfig Table @ start
+@info(name = 'Load ApiCreatorAlertConfigurationInMemoryTable')
+from InMemoryTableJoinStream join ApiCreatorAlertConfiguration
+select apiName, apiVersion, apiCreator, apiCreatorTenantDomain, thresholdResponseTime
+update or
+insert into ApiCreatorAlertConfigurationInMemoryTable
+set ApiCreatorAlertConfiguration.thresholdResponseTime = thresholdResponseTime
+ 	on ApiCreatorAlertConfigurationInMemoryTable.apiName == apiName and ApiCreatorAlertConfigurationInMemoryTable.apiVersion == apiVersion and ApiCreatorAlertConfigurationInMemoryTable.apiCreator == apiCreator and ApiCreatorAlertConfigurationInMemoryTable.apiCreatorTenantDomain == apiCreatorTenantDomain;
+
+

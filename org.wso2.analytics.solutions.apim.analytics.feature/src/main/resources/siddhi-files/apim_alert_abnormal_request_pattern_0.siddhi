@@ -1,0 +1,53 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("apim_alert_abnormal_request_pattern_0")
+@App:description("Identifies the API requests wchich are outside the normal access pattern and add to AllAlertStream and AbormalRequestPatternStream")
+
+@source(type = 'inMemory' , topic = 'APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string, apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+define stream SuppressedRequestPatternChangedAlertStream(username string, applicationName string, applicationOwner string, tenantDomain string, transition string);
+
+@sink(type = "inMemory", topic = "RequestPatternChangedAlertStream")
+define stream RequestPatternChangedAlertStream(username string, applicationName string, applicationOwner string, tenantDomain string, message string, transition string, severity int, alertTimestamp long);
+
+@info(name = 'stateStreamGenerateQuery')
+from Request
+select userTenantDomain as tenantDomain, username, str:concat(username, '@', applicationId) as appSpecificUsername, applicationConsumerKey, applicationName, applicationOwner, str:concat(apiMethod, ' ', apiContext, ' ', apiResourceTemplate) as state, time:dateFormat(requestTimestamp, 'yyyy-MM-dd HH:mm:ss') as requestTimestamp
+insert into StateStream;
+
+@info(name = 'markovChaniGenerateQuery')
+from StateStream#markov:markovChain(appSpecificUsername, state, 60 min, 0.2, 500, true)
+select lastState as startState, transitionProbability, notify, state as endState, tenantDomain, username, applicationConsumerKey, applicationName, applicationOwner, requestTimestamp
+insert into TransitionProbabilityStream;
+
+@info(name = 'abnormalPatternFilterQuery')
+from TransitionProbabilityStream [ notify ]
+select username, requestTimestamp, str:concat(startState, ' to ', endState) as transition, transitionProbability, applicationConsumerKey, applicationName, applicationOwner, tenantDomain
+insert into RequestPatternChangedStreamTemp;
+
+@info(name = 'repeatedAlertIgnoreQuery')
+from RequestPatternChangedStreamTemp#window.length(1) as a left outer join SuppressedRequestPatternChangedAlertStream#window.time(10 minute) as b
+ 	on ( a.username == b.username and a.applicationName == b.applicationName and a.applicationOwner == b.applicationOwner and a.tenantDomain == b.tenantDomain and a.transition == b.transition)
+select a.username, a.applicationName, a.applicationOwner, a.tenantDomain, a.transition
+ 	having b.username is null
+insert into SuppressedRequestPatternChangedAlertStream;
+
+@info(name = 'detailedAlertGenerateQuery')
+from SuppressedRequestPatternChangedAlertStream
+select username, applicationName, ifThenElse(tenantDomain == 'carbon.super', str:concat(applicationOwner, "@carbon.super"), applicationOwner) as applicationOwner, tenantDomain, str:concat('Abnormal request pattern detected.' , ' Suspicious API transition is: ', transition) as message , transition, 1 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into RequestPatternChangedAlertStream;

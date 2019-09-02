@@ -1,0 +1,59 @@
+/*
+    Copyright (c) 2019, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name('APIM_API_AVAILABILITY')
+@App:description('Determines the availablity and health of an api')
+
+@source(type = 'inMemory', topic = "APIM_REQUEST")
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string, apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+@source(type = 'inMemory', topic = "ApimApiHealthMonitorAlertStream")
+define stream ApiHealthMonitorAlertStream (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
+
+@Async(buffer.size = "256", workers = "1", batch.size.max = "256")
+define stream ApimApiAvailabilityInfoUpdateStream (apiName string, apiVersion string, apiCreator string, tenantDomain string, status string);
+
+@store(type = 'rdbms', datasource = "APIM_ANALYTICS_DB")
+@primaryKey("apiName", "apiVersion", "tenantDomain")
+define table ApimApiAvailabilityInfo (apiName string, apiVersion string, apiCreator string, tenantDomain string, status string);
+
+@info(name = 'Query inserts data to ApimApiAvailability')
+from ApiHealthMonitorAlertStream 
+select apiName, apiVersion, apiCreator, apiCreatorTenantDomain as tenantDomain, message as status 
+update or 
+insert into ApimApiAvailabilityInfo for current events set ApimApiAvailabilityInfo.status = status 
+ 	on ApimApiAvailabilityInfo.apiName == apiName and ApimApiAvailabilityInfo.apiVersion == apiVersion and ApimApiAvailabilityInfo.tenantDomain == tenantDomain;
+
+@info(name = 'Query inserting data to ApimApiAvailability when there is no alert for a defined time')
+from Request#window.length(1) as R left outer join ApiHealthMonitorAlertStream#window.time(10 minutes) as AHM
+ 	on R.apiName == AHM.apiName and R.apiVersion == AHM.apiVersion 
+select R.apiName as apiName, R.apiVersion as apiVersion, R.apiCreator as apiCreator, R.apiCreatorTenantDomain as tenantDomain, "Available" as status 
+ 	having AHM.apiName is null 
+insert into ApimApiAvailabilityInfoUpdateStreamTemp;
+
+@info(name = 'Batch insert to ApimApiAvailabilityInfo')
+from ApimApiAvailabilityInfoUpdateStreamTemp 
+select *
+ 	group by apiName, apiVersion, tenantDomain
+output last every 1 minute 
+insert into ApimApiAvailabilityInfoUpdateStream;
+
+@info(name = 'Update in ApimApiAvailabilityInfo')
+from ApimApiAvailabilityInfoUpdateStream 
+select apiName, apiVersion, ifThenElse(tenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, tenantDomain, status 
+update or insert into ApimApiAvailabilityInfo 
+set ApimApiAvailabilityInfo.status = status 
+ 	on ApimApiAvailabilityInfo.apiName == apiName and ApimApiAvailabilityInfo.apiVersion == apiVersion and ApimApiAvailabilityInfo.tenantDomain == tenantDomain;

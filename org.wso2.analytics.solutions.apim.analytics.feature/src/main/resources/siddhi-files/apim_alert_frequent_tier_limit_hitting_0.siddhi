@@ -1,0 +1,100 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("apim_alert_frequent_tier_limit_hitting_0")
+@App:description("Alerts when a user or application goes beyond the subscribed quota frequently")
+
+@source(type = 'inMemory' , topic = 'ThrottledOutStream')
+define stream ThrottledOutStream(
+ meta_clientType string,
+ username string,
+ userTenantDomain string,
+ apiName string,
+ apiVersion string,
+ apiContext string,
+ apiCreator string,
+ apiCreatorTenantDomain string,
+ applicationId string,
+ applicationName string,
+ subscriber string,
+ throttledOutReason string,
+ gatewayType string,
+ throttledOutTimestamp long,
+ hostname string
+);
+
+@sink(type = 'inMemory', topic = 'TierLimitHittingAlertStream')
+define stream TierLimitHittingAlertStream(subscriber string, apiCreator string, apiName string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, message string, severity int, alertTimestamp long);
+
+define stream SuppressedTemporarySubscriberStream(apiCreator string, apiName string, apiVersion string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, subscriber string, numHits long);
+
+define stream SuppressedTemporaryUserStream(username string, apiCreator string, apiName string, apiVersion string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, subscriber string, numHits long);
+
+--checks whether total throttled out count with the throttled out reson SUBSCRIPTION_LIMIT_EXCEEDED is higer than the specified value
+@info(name = 'TemporarySubscriberStream generating Query: 10 min batch')
+from ThrottledOutStream[throttledOutReason == 'SUBSCRIPTION_LIMIT_EXCEEDED']#window.timeBatch(1 min)
+select apiCreator, apiName, apiVersion, applicationId, applicationName, apiCreatorTenantDomain, userTenantDomain, subscriber, count() as numHits
+ 	group by apiCreator, apiName, apiVersion, applicationId
+insert into TemporaryMinWindowSubscriberStream;
+
+@info(name = 'TemporarySubscriberStream generating Query')
+from TemporaryMinWindowSubscriberStream#window.time(1 hours)
+select apiCreator, apiName, apiVersion, applicationId, applicationName, apiCreatorTenantDomain, userTenantDomain, subscriber, sum(numHits) as numHits
+ 	group by apiCreator, apiName, apiVersion, applicationId
+ 	having numHits > 10
+insert into TemporarySubscriberStream;
+
+--checks whether total throttled out count with the throttled out reson APPLICATION_LIMIT_EXCEEDED is higer than the specified value
+@info(name = 'TemporaryUserStream generating Query: 10 min window')
+from ThrottledOutStream[throttledOutReason == 'APPLICATION_LIMIT_EXCEEDED']#window.timeBatch(1 min)
+select username, apiCreator, apiName, apiVersion, applicationId, applicationName,
+apiCreatorTenantDomain, userTenantDomain, subscriber, count() as numHits
+ 	group by username, apiName, apiVersion, applicationId
+insert into TemporaryMinwindowUserStream;
+
+--checks whether total throttled out count with the throttled out reson APPLICATION_LIMIT_EXCEEDED is higer than the specified value
+@info(name = 'TemporaryUserStream generating Query')
+from TemporaryMinwindowUserStream#window.time(1 hours)
+select username, apiCreator, apiName, apiVersion, applicationId, applicationName, apiCreatorTenantDomain, userTenantDomain, subscriber, sum(numHits) as numHits
+ 	group by username, apiName, apiVersion, applicationId
+ 	having numHits > 10
+insert into TemporaryUserStream;
+
+--this query ensures that the same type of alert is not generated for same apiCreator again for a time defined in #window.time(),
+@info(name = 'Query contains Suppression logic')
+from TemporarySubscriberStream#window.length(1) as a left outer join SuppressedTemporarySubscriberStream#window.time(10 minute) as b
+ 	on (a.apiCreator == b.apiCreator and a.apiVersion == b.apiVersion and a.applicationId == b.applicationId)
+select a.apiCreator, a.apiName, a.apiVersion, a.applicationId, a.applicationName, a.apiCreatorTenantDomain, a.userTenantDomain, a.subscriber, a.numHits
+ 	having b.apiCreator is null
+insert into SuppressedTemporarySubscriberStream ;
+
+--this query ensures that the same type of alert is not generated for same user again for a time defined in #window.time()
+@info(name = 'Alert Suppression')
+from TemporaryUserStream#window.length(1) as a left outer join SuppressedTemporaryUserStream#window.time(10 minute) as b
+ 	on (a.username == b.username and a.apiVersion == b.apiVersion and a.applicationId == b.applicationId)
+select a.username, a.apiCreator, a.apiName, a.apiVersion, a.applicationId, a.applicationName, a.apiCreatorTenantDomain, a.userTenantDomain, a.subscriber, a.numHits
+ 	having b.username is null
+insert into SuppressedTemporaryUserStream;
+
+@info(name = 'Query generates TierLimitHittingAlertStream')
+from SuppressedTemporarySubscriberStream
+select ifThenElse(userTenantDomain == 'carbon.super', str:concat(subscriber, "@carbon.super"), subscriber) as subscriber, ifThenElse(apiCreatorTenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, apiName, applicationId, applicationName, apiCreatorTenantDomain, userTenantDomain, str:concat(applicationName, " Application frequently goes beyond the allocated quota when accessing ", apiName, ' ', apiVersion) as message, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into TierLimitHittingAlertStream;
+
+@info(name = 'Query generates TierLimitHittingAlertStream from supressedUserStream')
+from SuppressedTemporaryUserStream
+select ifThenElse(userTenantDomain == 'carbon.super', str:concat(subscriber, "@carbon.super"), subscriber) as subscriber, ifThenElse(apiCreatorTenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, apiName, applicationId, applicationName, apiCreatorTenantDomain, userTenantDomain, str:concat("User ", username, " frequently crosses the limit set.") as message, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into TierLimitHittingAlertStream;
