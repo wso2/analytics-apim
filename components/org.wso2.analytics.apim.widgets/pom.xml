@@ -58,6 +58,7 @@
         <module>APIMTopPlatforms</module>
         <module>APIMApiLatencyTime</module>
         <module>APIMGeoBasedInvocations</module>
+        <module>DateTimeRangePicker</module>
     </modules>
 
 </project>
