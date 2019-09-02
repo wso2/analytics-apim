@@ -18,7 +18,7 @@
         <groupId>org.wso2.analytics.solutions</groupId>
         <artifactId>org.wso2.analytics.solutions.apim.analytics</artifactId>
         <version>1.0.49-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>org.wso2.analytics.apim.rest.api.file</artifactId>
