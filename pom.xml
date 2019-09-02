@@ -1058,6 +1058,20 @@
                     </executions>
                 </plugin>
                 <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven.clean.plugin.version}</version>
+                    <configuration>
+                        <filesets>
+                            <fileset>
+                                <directory>${project.basedir}/node_modules</directory>
+                            </fileset>
+                            <fileset>
+                                <directory>${project.basedir}/dist</directory>
+                            </fileset>
+                        </filesets>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${maven.exec.plugin.version}</version>
@@ -1187,6 +1201,7 @@
         <carbon.dashboards.version>4.0.69</carbon.dashboards.version>
         <carbon.uis.version>1.0.3</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
+        <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 
         <!-- json dependencies -->
         <gson.version>2.8.5</gson.version>
