@@ -23,11 +23,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
-    <name>WSO2 Analytics Solutions - Apim Analytics Solution</name>
+    <name>WSO2 Apim Analytics Features</name>
     <artifactId>analytics-apim-features</artifactId>
     <modules>
         <module>org.wso2.analytics.apim.feature</module>
-        <module></module>
     </modules>
 
 </project>

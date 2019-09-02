@@ -163,6 +163,11 @@
             <artifactId>org.wso2.analytics.apim.widgets.apim.geo.based.invocations</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.analytics.apim.widgets.date-time-range-picker</artifactId>
+            <type>zip</type>
+        </dependency>
 
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
@@ -466,6 +471,17 @@
                                     </outputDirectory>
                                     <includes>APIMGeoBasedInvocations/**</includes>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.wso2.analytics.apim</groupId>
+                                    <artifactId>org.wso2.analytics.apim.widgets.date-time-range-picker
+                                    </artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    </outputDirectory>
+                                    <includes>DateRangePicker/**</includes>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -525,7 +541,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <propertyFile>..//org.wso2.analytics.apim.feature/etc/feature.properties</propertyFile>
+                            <propertyFile>../org.wso2.analytics.apim.feature/etc/feature.properties</propertyFile>
                             <adviceFileContents>
                                 <advice>
                                     <name>org.wso2.carbon.p2.category.type</name>
@@ -563,7 +579,7 @@
                 <directory>${project.build.directory}/target</directory>
             </resource>
             <resource>
-                <directory>..//org.wso2.analytics.apim.feature//src/main/resources</directory>
+                <directory>../org.wso2.analytics.apim.feature/src/main/resources</directory>
             </resource>
         </resources>
     </build>
