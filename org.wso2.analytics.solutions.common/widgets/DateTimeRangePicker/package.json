@@ -1,0 +1,41 @@
+{
+  "name": "date-range-picker",
+  "version": "0.2.0",
+  "private": true,
+  "license": "Apache 2.0",
+  "scripts": {
+    "build": "webpack -p",
+    "dev": "webpack --mode development",
+    "lint": "eslint"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.4",
+    "copy-webpack-plugin": "^4.5.4",
+    "css-loader": "^1.0.1",
+    "eslint": "^5.15.3",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4",
+    "react-hot-loader": "^4.3.11",
+    "string-replace-loader": "^2.1.1",
+    "simple-progress-webpack-plugin": "^1.1.2",
+    "style-loader": "^0.23.1",
+    "url-loader": "^1.1.2",
+    "webpack": "^4.23.1",
+    "webpack-cli": "^3.1.2"
+  },
+  "dependencies": {
+    "@material-ui/core": "3.6.0",
+    "@material-ui/icons": "3.0.1",
+    "@wso2-dashboards/widget": "1.4.0",
+    "moment": "2.22.2",
+    "prop-types": "15.6.2",
+    "react": "16.4.0",
+    "react-dom": "16.4.0"
+  }
+}
