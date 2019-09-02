@@ -20,17 +20,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.wso2.analytics.solutions.common.widgets.date-time-range-picker</artifactId>
+    <artifactId>org.wso2.analytics.apim.widgets.date-time-range-picker</artifactId>
     <packaging>pom</packaging>
 
     <name>WSO2 SP Solutions - Common - Widgets - Date Time Range Picker</name>
     <url>http://wso2.org</url>
 
     <parent>
-        <groupId>org.wso2.analytics.solutions</groupId>
-        <artifactId>org.wso2.analytics.solutions.common.widgets</artifactId>
-        <version>1.0.49-SNAPSHOT</version>
-        <relativePath>../../../org.wso2.analytics.solutions.common/widgets/pom.xml</relativePath>
+        <groupId>org.wso2.analytics.apim</groupId>
+        <artifactId>org.wso2.analytics.apim.widgets</artifactId>
+        <version>3.0.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <build>

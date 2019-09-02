@@ -15,9 +15,9 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.wso2.analytics.solutions</groupId>
-        <artifactId>org.wso2.analytics.solutions.apim.analytics</artifactId>
-        <version>1.0.49-SNAPSHOT</version>
+        <groupId>org.wso2.analytics.apim</groupId>
+        <artifactId>analytics-apim-components</artifactId>
+        <version>3.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -84,7 +84,7 @@
             <artifactId>swagger-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.analytics.solutions</groupId>
+            <groupId>org.wso2.analytics.apim</groupId>
             <artifactId>org.wso2.sp.extension.siddhi.io.mgwfile</artifactId>
             <type>jar</type>
         </dependency>

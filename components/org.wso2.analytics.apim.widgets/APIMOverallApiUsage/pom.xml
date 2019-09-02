@@ -19,13 +19,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.wso2.analytics.solutions</groupId>
-        <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets</artifactId>
-        <version>1.0.49-SNAPSHOT</version>
+        <groupId>org.wso2.analytics.apim</groupId>
+        <artifactId>org.wso2.analytics.apim.widgets</artifactId>
+        <version>3.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.analytics.solutions.apim.analytics.widgets.apim.overall.api.usage</artifactId>
+    <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.usage</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Analytics Solutions - Widgets - APIM Analytics - Overall Api Usage </name>
     <url>http://wso2.org</url>
