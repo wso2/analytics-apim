@@ -1,0 +1,36 @@
+{
+  "name": "APIM Top App Creators",
+  "id": "APIMTopAppCreators",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMTopAppCreatorsSiddhi') @primaryKey('APPLICATION_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_APPLICATION(APPLICATION_ID int,NAME string,SUBSCRIBER_ID int,APPLICATION_TIER string,CALLBACK_URL string,DESCRIPTION string,APPLICATION_STATUS string,GROUP_ID string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string,UUID string,TOKEN_TYPE string);",
+          "queryData": {
+            "query": "from AM_APPLICATION select CREATED_BY,count(APPLICATION_ID) AS count group by CREATED_BY order by count desc limit {{limit}};"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}

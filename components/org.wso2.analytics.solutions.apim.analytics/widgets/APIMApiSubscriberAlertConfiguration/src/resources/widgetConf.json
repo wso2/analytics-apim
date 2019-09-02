@@ -1,0 +1,30 @@
+{
+    "name": "APIMApiSubscriberAlertConfiguration",
+    "id": "APIMApiSubscriberAlertConfiguration",
+    "thumbnailURL": "",
+    "configs": {
+    	"pubsub": {
+      		"types": ["publisher"]
+    	},
+      
+    
+    "providerConfig" : {
+        "configs": {
+            "type": "SiddhiStoreDataProvider",
+            "config": {
+                "siddhiApp": "@App:name('Subscriber_AlertConf')  @PrimaryKey('applicationId','apiName', 'apiVersion') @store(type=\"rdbms\" , datasource=\"APIM_ANALYTICS_DB\") define table ApiSubscriberAlertConfiguration (applicationId string,apiName string, apiVersion string, thresholdRequestCountPerMin int);",
+                "queryData": {
+                    "query": "from ApiSubscriberAlertConfiguration select applicationId ,apiName , apiVersion , thresholdRequestCountPerMin;",
+                    "queryInsert" : "select '{{applicationId}}' as applicationId,'{{apiName}}' as apiName, '{{apiVersion}}' as apiVersion,{{tRequestCount}} as thresholdRequestCountPerMin update or insert into ApiSubscriberAlertConfiguration set ApiSubscriberAlertConfiguration.thresholdRequestCountPerMin = thresholdRequestCountPerMin on ApiSubscriberAlertConfiguration.applicationId == applicationId and ApiSubscriberAlertConfiguration.apiName == apiName and ApiSubscriberAlertConfiguration.apiVersion == apiVersion",
+                    "queryDelete" : "delete ApiSubscriberAlertConfiguration on ApiSubscriberAlertConfiguration.applicationId == '{{applicationId}}' and ApiSubscriberAlertConfiguration.apiName == '{{apiName}}' and ApiSubscriberAlertConfiguration.apiVersion == '{{apiVersion}}'"
+                    
+                },
+                "publishingInterval": 60
+            }
+        }   
+      
+      }
+     
+	}
+}
+
