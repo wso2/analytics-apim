@@ -1155,8 +1155,6 @@
 
         <carbon.analytics-common.version>6.1.30</carbon.analytics-common.version>
         <!-- Maven plugins -->
-        <!--Bundle Plugin - Overridden from parent due to a bug in latest version related to capability providers-->
-        <maven.bundle.plugin.version>2.5.4</maven.bundle.plugin.version>
         <maven.findbugsplugin.version.exclude>findbugs-exclude.xml</maven.findbugsplugin.version.exclude>
 
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
