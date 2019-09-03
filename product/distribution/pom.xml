@@ -1254,12 +1254,6 @@
                                     <id>org.wso2.carbon.data.provider.feature.group</id>
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
-
-                                <!-- APIM Analytics Feature -->
-                                <feature>
-                                    <id>org.wso2.analytics.apim.feature</id>
-                                    <version>${project.version}</version>
-                                </feature>
                             </features>
                         </configuration>
                     </execution>
