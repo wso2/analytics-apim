@@ -370,7 +370,6 @@ auth.configs:
     kmUsername: admin
     kmPassword: admin
     portalAppContext: portal
-    statusDashboardAppContext: monitoring
     businessRulesAppContext : business-rules
     cacheTimeout: 900
     baseUrl: https://localhost:9643
