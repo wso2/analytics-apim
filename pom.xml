@@ -1218,6 +1218,7 @@
         <siddhi.execution.time.version>5.0.3</siddhi.execution.time.version>
         <siddhi.execution.markov.version>5.0.0</siddhi.execution.markov.version>
         <siddhi.execution.geo.version>5.0.0</siddhi.execution.geo.version>
+        <siddhi.execution.regex.version>5.0.5</siddhi.execution.regex.version>
         <siddhi.execution.env.version>2.0.0</siddhi.execution.env.version>
         <siddhi.io.wso2event.version>5.0.0</siddhi.io.wso2event.version>
         <siddhi.map.json.version>5.0.3</siddhi.map.json.version>
