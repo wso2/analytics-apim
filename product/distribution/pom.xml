@@ -242,11 +242,6 @@
             <artifactId>org.wso2.carbon.dashboards.portal.feature</artifactId>
             <type>zip</type>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.dashboards.samples</groupId>
-            <artifactId>org.wso2.carbon.dashboards.samples.feature</artifactId>
-            <type>zip</type>
-        </dependency>
         <!--Carbon UI Server-->
         <dependency>
             <groupId>org.wso2.carbon.uiserver</groupId>
@@ -566,10 +561,6 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.dashboards.portal.feature</id>
-                                    <version>${carbon.dashboards.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.dashboards.samples.feature</id>
                                     <version>${carbon.dashboards.version}</version>
                                 </feature>
 
@@ -919,10 +910,6 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.dashboards.portal.feature.group</id>
-                                    <version>${carbon.dashboards.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.dashboards.samples.feature</id>
                                     <version>${carbon.dashboards.version}</version>
                                 </feature>
 
