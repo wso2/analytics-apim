@@ -300,19 +300,6 @@
                 <type>zip</type>
             </dependency>
 
-            <!-- Business Rules Templates Editor related -->
-            <dependency>
-                <groupId>org.wso2.carbon.analytics</groupId>
-                <artifactId>org.wso2.carbon.business.rules.templates.editor.core</artifactId>
-                <version>${carbon.analytics.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.analytics</groupId>
-                <artifactId>org.wso2.carbon.business.rules.templates.editor.core.feature</artifactId>
-                <version>${carbon.analytics.version}</version>
-                <type>zip</type>
-            </dependency>
-
             <dependency>
                 <groupId>org.wso2.carbon.analytics</groupId>
                 <artifactId>org.wso2.carbon.streaming.integrator.common.feature</artifactId>
