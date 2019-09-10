@@ -191,6 +191,13 @@
             <outputDirectory>wso2/dashboard/deployment/web-ui-apps/policies</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+
+        <!-- Copying the in-place update tools-->
+        <fileSet>
+            <directory>carbon-home/updates/in-place/</directory>
+            <outputDirectory>bin/</outputDirectory>
+            <fileMode>744</fileMode>
+        </fileSet>
     </fileSets>
     <files>
         <file>
