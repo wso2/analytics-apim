@@ -1,0 +1,18 @@
+{
+  "config.error.body": "Cannot fetch provider configuration for APIM Application Api Usage widget",
+  "config.error.heading": "Configuration Error !",
+  "createdBy.label": "API Created By",
+  "filter.column.menu.heading": "Filter By",
+  "filter.label.title": "Filter By",
+  "filter.value.placeholder": "Filter Value",
+  "limit": "Limit :",
+  "menuItem.all": "All",
+  "menuItem.me": "Me",
+  "noData.error.body": "No data available for the selected options",
+  "sort.label.title": "Sort",
+  "table.heading.apiName": "API NAME",
+  "table.heading.applicationName": "APPLICATION NAME",
+  "table.heading.version": "VERSION",
+  "table.heading.usage": "USAGE",
+  "widget.heading": "APPLICATION API USAGE"
+}
