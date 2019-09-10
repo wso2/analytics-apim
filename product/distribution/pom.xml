@@ -161,6 +161,11 @@
             <artifactId>org.wso2.carbon.business.rules.core.feature</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics</groupId>
+            <artifactId>org.wso2.carbon.business.rules.web.feature</artifactId>
+            <type>zip</type>
+        </dependency>
 
         <dependency>
             <groupId>org.wso2.carbon.analytics</groupId>
@@ -494,6 +499,10 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.business.rules.core.feature</id>
+                                    <version>${carbon.analytics.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.business.rules.web.feature</id>
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
                                 <feature>
@@ -958,6 +967,10 @@
                                 <!-- Business rules -->
                                 <feature>
                                     <id>org.wso2.carbon.business.rules.core.feature.group</id>
+                                    <version>${carbon.analytics.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.business.rules.web.feature.group</id>
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
 
