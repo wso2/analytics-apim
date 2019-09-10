@@ -1,0 +1,105 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("apim_alert_unusual_ip_access_0")
+@App:description("Alerts if an access from a strange ip is detected")
+
+@source(type = 'inMemory' , topic = 'APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string, apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+@sink(type = 'inMemory' , topic = 'IpAccessAbnormalityAlertStream')
+define stream IpAccessAbnormalityAlertStream(type string, message string, severity int, ip string, applicationName string, applicationOwner string, username string, tenantDomain string, requestTimestamp long, alertTimestamp long);
+
+@Async(buffer.size = '1024', workers = '1', batch.size.max = '1024')
+define stream ApimIPAccessSummaryUpdateStream(username string, applicationConsumerKey string, ip string, lastAccessedDate long);
+
+@Async(buffer.size = '1024', workers = '1', batch.size.max = '1024')
+define stream ApimIPAccessAlertCountUpdateStream(username string, applicationConsumerKey string, requestCount long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@PrimaryKey('applicationConsumerKey', 'ip')
+@index('applicationConsumerKey', 'ip', 'username')
+define table ApimIPAccessSummary (username string, applicationConsumerKey string, ip string, lastAccessedDate long) ;
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@PrimaryKey('applicationConsumerKey', 'username')
+define table ApimIPAccessAlertCount (username string, applicationConsumerKey string, requestCount long);
+
+@info(name = 'Query generates TempStream')
+from Request
+select applicationConsumerKey, applicationOwner, applicationName, username, userTenantDomain, userIp, requestTimestamp
+ 	group by applicationConsumerKey, username, userIp
+ 	output last every 1 minute
+insert into RequestBufferStream;
+
+@info(name='Join with ApimIPAccessAlertCount')
+from RequestBufferStream#window.length(1) as R join ApimIPAccessAlertCount as T
+ 	on (R.applicationConsumerKey == T.applicationConsumerKey and R.username == T.username)
+select R.applicationConsumerKey, R.applicationOwner, R.applicationName, R.username, R.userTenantDomain, R.userIp as ip, requestCount, requestTimestamp
+insert into TempStream;
+
+@info(name='Filterout new users')
+from TempStream[requestCount > 100]
+select applicationConsumerKey, applicationOwner, applicationName, username, userTenantDomain, ip, requestTimestamp
+insert into TempStream2;
+
+@info(name = 'Query generates ExistingUserStream')
+from TempStream2 as ts left outer join ApimIPAccessSummary as iaac
+ 	on ts.username == iaac.username and ts.applicationConsumerKey == iaac.applicationConsumerKey and ts.ip == iaac.ip
+select ts.applicationConsumerKey, ts.applicationName , ts.applicationOwner, ts.username, ts.userTenantDomain as tenantDomain, ts.ip as requestIp, iaac.ip as ip, ts.requestTimestamp, (requestTimestamp - lastAccessedDate) as timeBetweenAccess
+insert into ExistingUserStream;
+
+--If a new ip is detected from the particular username and applicationConsumerKey Note: ip will be null if its a new ip from the user
+@info(name = 'query generates NewIPDetectedStream')
+from ExistingUserStream[ip is null]
+select "UnusualIPAccess" as type, "A request from a new IP detected." as message, 2 as severity, requestIp as ip, applicationName, ifThenElse(tenantDomain == 'carbon.super', str:concat(applicationOwner, "@carbon.super"), applicationOwner) as applicationOwner, username, tenantDomain, requestTimestamp, (time:timestampInMilliseconds()) as alertTimestamp
+insert into IpAccessAbnormalityAlertStream;
+
+-- If IP is already used Check if the request for the IP is received after the threshold time gap
+@info(name = 'query generates CheckAbnormalTimeBetweenAccessStream ')
+from ExistingUserStream[(not (ip is null)) and timeBetweenAccess > 1 month]
+select "UnusualIPAccess" as type, "A request from an old IP detected." as message, 2 as severity, requestIp as ip, applicationName, ifThenElse(tenantDomain == 'carbon.super', str:concat(applicationOwner, "@carbon.super"), applicationOwner) as applicationOwner, username, tenantDomain , requestTimestamp, (time:timestampInMilliseconds()) as alertTimestamp
+insert into IpAccessAbnormalityAlertStream;
+
+@info(name = 'Batch Events ApimIPAccessSummaryUpdateStream')
+from Request
+select username, applicationConsumerKey, userIp as ip, requestTimestamp as lastAccessedDate
+ 	group by applicationConsumerKey, apiHostname, username
+ 	output last every 1 minutes
+insert into ApimIPAccessSummaryUpdateStream;
+
+@info(name = 'Update/Insert ApimIPAccessSummaryUpdate')
+from ApimIPAccessSummaryUpdateStream
+select *
+update or
+insert into ApimIPAccessSummary
+set ApimIPAccesSummary.lastAccessedDate = lastAccessedDate, ApimIPAccessSummary.username = username
+ 	on ApimIPAccessSummary.applicationConsumerKey == applicationConsumerKey and ApimIPAccessSummary.ip == ip;
+
+@info(name = 'Batch Events ApimIPAccessAlertCountUpdateStream')
+from Request
+select username, applicationConsumerKey, count() as requestCount
+ 	group by applicationConsumerKey, username
+ 	output last every 1 minutes
+insert into ApimIPAccessAlertCountUpdateStream;
+
+@info(name = 'Update/Insert ApimIPAccessAlertCount')
+from ApimIPAccessAlertCountUpdateStream
+select *
+update or
+insert into ApimIPAccessAlertCount
+set ApimIPAccessAlertCount.requestCount = ApimIPAccessAlertCount.requestCount + requestCount
+ 	on ApimIPAccessAlertCount.applicationConsumerKey == applicationConsumerKey and ApimIPAccessAlertCount.username == username;

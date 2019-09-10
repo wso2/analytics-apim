@@ -1,0 +1,18 @@
+{
+  "all.menuItem": "All",
+  "api.createdBy.label": "API Created By",
+  "config.error.body": "Cannot fetch provider configuration for APIM Overall Api Usage widget",
+  "config.error.heading": "Configuration Error !",
+  "filter.column.menu.heading": "Column Name",
+  "filter.label.title": "Filter By",
+  "filter.search.placeholder": "Search Field",
+  "limit.label": "Limit :",
+  "me.menuItem": "Me",
+  "nodata.error.body": "No data available for the selected options",
+  "nodata.error.heading": "No Data Available !",
+  "sort.label.title": "Sort",
+  "table.heading.apiname": "API NAME",
+  "table.heading.hits": "HITS ",
+  "table.main.heading": "OVERALL API USAGE (ALL VERSIONS) :",
+  "widget.heading": "OVERALL API USAGE"
+}

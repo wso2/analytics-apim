@@ -1,0 +1,19 @@
+{
+  "all.menuItem": "All",
+  "apiName.label": "API Name",
+  "apiVersion.label": "API Version",
+  "config.error.body": "Cannot fetch provider configuration for APIM Top Api Users widget",
+  "config.error.heading": "Configuration Error !",
+  "createdBy.label": "API Created By",
+  "filter.column.menu.heading": "Column Name",
+  "filter.label.title": "Filter By",
+  "filter.search.placeholder": "Search Field",
+  "limit": "Limit :",
+  "me.menuItem": "Me",
+  "nodata.error.body": "No data available for the selected options.",
+  "nodata.error.heading": "No Data Available !",
+  "sort.label.title": "Sort",
+  "table.heading.apiCalls": "API CALLS",
+  "table.heading.user": "USERNAME",
+  "widget.heading": "TOP API USERS"
+}

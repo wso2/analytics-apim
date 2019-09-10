@@ -1,0 +1,18 @@
+{
+  "all.menuItem": "All",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Backend Usage Summary widget",
+  "config.error.heading": "Configuration Error !",
+  "createdBy.label": "API Created By",
+  "filter.column.menu.heading": "Column Name",
+  "filter.label.title": "Filter By",
+  "filter.search.placeholder": "Search Field",
+  "limit": "Limit :",
+  "me.menuItem": "Me",
+  "sort.label.title": "Sort",
+  "table.heading.apiname": "API NAME",
+  "table.heading.version": "VERSION",
+  "table.heading.context": "CONTEXT",
+  "table.heading.destination": "DESTINATION ADDRESS",
+  "table.heading.hits": "HITS",
+  "widget.heading": "API BACKEND USAGE SUMMARY"
+}

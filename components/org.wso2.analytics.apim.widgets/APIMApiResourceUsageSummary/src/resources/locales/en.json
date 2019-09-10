@@ -1,0 +1,20 @@
+{
+  "all.menuItem": "All",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Resource Usage Summary widget",
+  "config.error.heading": "Configuration Error !",
+  "createdBy.label": "API Created By",
+  "filter.column.menu.heading": "Column Name",
+  "filter.label.title": "Filter By",
+  "filter.search.placeholder": "Search Field",
+  "limit": "Limit :",
+  "me.menuItem": "Me",
+  "nodata.error.body": "No data available for the selected options",
+  "nodata.error.heading": "No Data Available !",
+  "sort.label.title": "Sort",
+  "table.heading.apiname": "API NAME",
+  "table.heading.version": "VERSION",
+  "table.heading.resourcepath": "RESOURCE PATH",
+  "table.heading.method": "API METHOD",
+  "table.heading.hits": "HITS",
+  "widget.heading": "API RESOURCE USAGE SUMMARY"
+}

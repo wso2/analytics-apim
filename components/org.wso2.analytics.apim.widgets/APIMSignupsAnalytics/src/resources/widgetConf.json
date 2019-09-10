@@ -1,0 +1,36 @@
+{
+  "name": "APIM Signups Analytics",
+  "id": "APIMSignupsAnalytics",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMSignupsAnalyticsSiddhi') @primaryKey('SUBSCRIBER_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_SUBSCRIBER(SUBSCRIBER_ID int,USER_ID string,TENANT_ID int,EMAIL_ADDRESS string,DATE_SUBSCRIBED string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string);",
+          "queryData": {
+            "query": "from AM_SUBSCRIBER on CREATED_TIME>='{{timeFrom}}' AND CREATED_TIME<='{{timeTo}}' select USER_ID,CREATED_TIME,count(USER_ID) AS count group by CREATED_TIME;"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}

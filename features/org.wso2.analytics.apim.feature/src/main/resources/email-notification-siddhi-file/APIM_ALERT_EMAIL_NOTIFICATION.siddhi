@@ -1,0 +1,99 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("APIM_ALERT_EMAIL_NOTIFICATION")
+@App:description('Send email to all the subscribers of a particular alert') 
+
+@source(type = "inMemory", topic = "AbnormalBackendTimeAlertStream")
+define stream AbnormalBackendTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long, message string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory' , topic = 'AbnormalRequestsCountAlertStream')
+define stream AbnormalRequestsCountAlertStream(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int, message string, severity int, alertTimestamp long);
+
+@source(type = "inMemory", topic = "RequestPatternChangedAlertStream")
+define stream RequestPatternChangedAlertStream(username string, applicationName string, applicationOwner string, tenantDomain string, message string, transition string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory' , topic = 'AbnormalResponseTimeAlertStream')
+define stream AbnormalResponseTimeAlertStream( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, responseTime long, thresholdResponseTime long, message string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory', topic = 'ApimApiHealthMonitorAlertStream')
+define stream ApiHealthMonitorAlertStream(apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory', topic = 'TierLimitHittingAlertStream')
+define stream TierLimitHittingAlertStream(subscriber string, apiCreator string, apiName string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, message string, severity int, alertTimestamp long);
+
+@source(type = 'inMemory' , topic = 'IpAccessAbnormalityAlertStream')
+define stream IpAccessAbnormalityAlertStream(type string, message string, severity int, ip string, applicationName string, applicationOwner string, username string, tenantDomain string, requestTimestamp long, alertTimestamp long);
+
+@sink(type='email', content.type="text/html", @map(type ='text', @payload('<strong>Message:</strong>{{message}} <br><br> <strong>Type:</strong>{{type}} <br><br> <strong>AlertTimestamp:</strong>{{alertTimestamp}}')),subject='Alerts from WSO2 APIM Analytics',to='{{emails}}')
+define stream EmailNotificationStream (
+ type string,
+ message string,
+ alertTimestamp string,
+ emails string);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@PrimaryKey('userId', 'isSubscriber', 'isPublisher', 'isAdmin')
+define table ApimAlertStakeholderInfo(userId string, alertTypes string, emails string, isSubscriber bool, isPublisher bool, isAdmin bool);
+
+@info(name = 'AbnormalBackendTimeAlert customise Email body')
+from AbnormalBackendTimeAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
+	on str:contains(S.alertTypes, 'AbnormalBackendTime') and ((A.apiCreator == S.userId and true == S.isPublisher ) or true == S.isAdmin )
+select 'AbnormalBackendTime' as type , str:concat('Abnormal backend time detected for http ', A.apiMethod, ' method of resource template:', A.apiResourceTemplate, ' in api:', A.apiName, ' of tenant domain:', A.apiCreatorTenantDomain, ', threshold value:', A.thresholdBackendTime, 'ms.') as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.apiCreatorTenantDomain as tenantDomain, S.userId as alertStakeholderUserid
+insert into EmailAlertStream;
+
+@info(name = 'AbnormalRequestsCountAlertStream customise Email body')
+from AbnormalRequestsCountAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
+	on str:contains(S.alertTypes, 'AbnormalRequestsPerMin') and ((A.applicationOwner == S.userId and true == S.isSubscriber ) or true == S.isAdmin )
+select 'AbnormalRequestsPerMin' as type , str:concat('Abnormal request count detected during last minute using application ', A.applicationName, ' owned by ', A.applicationOwner, ' for api :', A.apiName, ', abnormal request count:', A.requestCountPerMin, ".") as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.tenantDomain, S.userId as alertStakeholderUserid
+insert into EmailAlertStream;
+
+@info(name = 'RequestPatternChangedAlertStream customise Email body')
+from RequestPatternChangedAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
+	on str:contains(S.alertTypes, 'AbnormalRequestPattern') and ((A.applicationOwner == S.userId and true == S.isSubscriber ) or true == S.isAdmin )
+select 'AbnormalRequestPattern' as type , str:concat(A.message, ' by user :', A.username, ' using application : ', A.applicationName, ' owned by: ', A.applicationOwner, '.') as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails,  A.tenantDomain, S.userId as alertStakeholderUserid
+insert into EmailAlertStream;
+
+@info(name = 'AbnormalResponseTimeAlertStream customise Email body')
+from AbnormalResponseTimeAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
+	on str:contains(S.alertTypes, 'AbnormalResponseTime') and ((A.apiCreator == S.userId and true == S.isPublisher ) or true == S.isAdmin)
+select 'AbnormalResponseTime' as type , str:concat('Abnormal response time detected for http ', A.apiMethod, ' method of resource template:', A.apiResourceTemplate, ' in api:', A.apiName, ' of tenant domain:', A.apiCreatorTenantDomain, ', threshold value:', A.thresholdResponseTime, 'ms.') as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.apiCreatorTenantDomain as tenantDomain, S.userId as alertStakeholderUserid
+insert into EmailAlertStream;
+
+@info(name = 'ApiHealthMonitorAlertStream customise Email body')
+from ApiHealthMonitorAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
+	on str:contains(S.alertTypes, 'ApiHealthMonitor') and ((A.apiCreator == S.userId and true == S.isPublisher ) or true == S.isAdmin )
+select 'ApiHealthMonitor' as type, str:concat('API:', apiName, ' ', apiVersion, '-', message) as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.apiCreatorTenantDomain as tenantDomain, S.userId as alertStakeholderUserid
+insert into EmailAlertStream;
+
+@info(name = 'TierLimitHittingAlertStream customise Email body')
+from TierLimitHittingAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
+	on str:contains(S.alertTypes, 'FrequentTierLimitHitting') and ((A.subscriber == S.userId and true == S.isSubscriber ) or true == S.isAdmin )
+select 'FrequentTierLimitHitting' as type ,
+ifThenElse(str:contains(A.message, 'Application frequently goes beyond the allocated quota'), str:concat("The application ", A.applicationName, " owned by ", A.subscriber, " frequently goes beyond the allocated quota when accessing the ", A.apiName, " API."),
+str:concat(A.message , " Using the ", A.applicationName, " application owned by ", A.subscriber, ".")) as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.apiCreatorTenantDomain as tenantDomain, S.userId as alertStakeholderUserid
+insert into EmailAlertStream;
+
+@info(name = 'IpAccessAbnormalityAlertStream customise Email body')
+from IpAccessAbnormalityAlertStream#window.length(1) AS A join ApimAlertStakeholderInfo as S
+	on str:contains(S.alertTypes, 'UnusualIPAccess') and ((A.applicationOwner == S.userId and true == S.isSubscriber ) or true == S.isAdmin )
+select 'UnusualIPAccess' as type , str:concat("A request from a ", ifThenElse(str:contains(message, 'old'), 'old', 'new'), " IP (", ip, ") detected by user:" , A.username, " using application:", applicationName, " owned by ", applicationOwner, ".") as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.tenantDomain, S.userId as alertStakeholderUserid
+insert into EmailAlertStream;
+
+@info(name = 'Insert to Email Sink')
+from EmailAlertStream[tenantDomain == str:substr(alertStakeholderUserid,"^.*@(.*)",1)]
+select type, message, alertTimestamp, emails
+insert into EmailNotificationStream;

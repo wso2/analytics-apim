@@ -1,0 +1,36 @@
+{
+  "name": "APIM Top Faulty Apis",
+  "id": "APIMTopFaultyApis",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMTopFaultyApisSiddhi') define stream FaultStream(meta_clientType string,applicationConsumerKey string,apiName string,apiVersion string,apiContext string,apiResourcePath string,apiMethod string,apiCreator string,username string,userTenantDomain string,apiCreatorTenantDomain string,hostname string,applicationId string,applicationName string,protocol string,errorCode string,errorMessage string,requestTimestamp long); @store(type='rdbms', datasource='APIM_ANALYTICS_DB') @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years')) define aggregation ApiFaultyInvocationAgg from FaultStream select apiName,apiVersion,apiCreator,apiCreatorTenantDomain,apiContext,applicationConsumerKey,hostname,applicationId,applicationName,requestTimestamp,count() as totalFaultCount,'default' as regionalID group by apiContext,applicationId,hostname aggregate by requestTimestamp every seconds...year;",
+          "queryData": {
+            "query": "from ApiFaultyInvocationAgg within {{from}}L, {{to}}L per \"{{per}}s\" select apiName,apiVersion,apiCreator,apiContext,sum(totalFaultCount) as FaultCount group by apiName,apiVersion,apiCreator,apiContext order by FaultCount desc limit {{limit}};"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}

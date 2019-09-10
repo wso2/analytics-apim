@@ -1,0 +1,37 @@
+{
+  "name": "APIM Api Response Summary",
+  "id": "APIMApiResponseSummary",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMApiResponseSummarysiddhi') @primaryKey('API_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API(API_ID int,API_PROVIDER string,API_NAME string,API_VERSION string,CONTEXT string,CONTEXT_TEMPLATE string,API_TIER string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string); define stream responseTempStream(apiName string, apiVersion string, apiCreator string, responseCode int, Fivexx int, Fourxx int, Twoxx int, requestTimestamp long); @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB') @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years')) define aggregation ApiResponseSummary from responseTempStream select apiName, apiVersion, apiCreator, count() as totalResponseCount, sum(Fivexx) as FivexxCount, sum(Fourxx) as FourxxCount, sum(Twoxx) as TwoxxCount group by apiName, apiVersion, apiCreator aggregate by requestTimestamp every seconds...years;",
+          "queryData": {
+            "apilistquery": "from AM_API select API_NAME,API_VERSION,CREATED_BY;",
+            "mainquery": "from ApiResponseSummary {{querystring}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select apiName,apiVersion,apiCreator,sum(totalResponseCount) as TotalResponseCount,sum(TwoxxCount) as TwoxxCount,sum(FourxxCount) as FourxxCount,sum(FivexxCount) as FivexxCount;"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}

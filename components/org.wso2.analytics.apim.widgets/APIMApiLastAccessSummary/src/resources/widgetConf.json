@@ -1,0 +1,36 @@
+{
+  "name": "APIM Api Last Access Summary",
+  "id": "APIMApiLastAccessSummary",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMApiLastAccessSummarySiddhi') define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string); @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB') @primaryKey('apiName', 'apiCreator', 'apiCreatorTenantDomain') define table ApiLastAccessSummary (apiContext string, apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, applicationOwner string,lastAccessTime long ); from Request as R left outer join ApiLastAccessSummary as S on R.apiName == S.apiName and R.apiCreatorTenantDomain == S.apiCreatorTenantDomain and R.apiCreator == S.apiCreator select R.apiContext, R.apiName, R.apiVersion, R.apiCreator, R.apiCreatorTenantDomain, R.applicationOwner, R.requestTimestamp as lastAccessTime having R.requestTimestamp >= S.lastAccessTime or S.lastAccessTime is null insert into ApiLastAccessStream; from ApiLastAccessStream select apiContext, apiName, apiVersion, apiCreator,apiCreatorTenantDomain, applicationOwner, lastAccessTime update or insert into ApiLastAccessSummary set ApiLastAccessSummary.apiContext = apiContext, ApiLastAccessSummary.apiVersion = apiVersion, ApiLastAccessSummary.applicationOwner = applicationOwner, ApiLastAccessSummary.lastAccessTime = lastAccessTime on ApiLastAccessSummary.apiName == apiName and ApiLastAccessSummary.apiCreatorTenantDomain == apiCreatorTenantDomain and ApiLastAccessSummary.apiCreator == apiCreator;",
+          "queryData": {
+            "lastaccessquery": "from ApiLastAccessSummary select apiName,apiVersion,apiCreator,apiContext,applicationOwner,lastAccessTime order by lastAccessTime desc limit {{limit}};"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}

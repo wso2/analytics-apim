@@ -1,0 +1,36 @@
+{
+  "name": "APIM Api Created Analytics",
+  "id": "APIMApiCreatedAnalytics",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMApiCreatedAnalyticsSiddhi') @primaryKey('API_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API(API_ID int,API_PROVIDER string,API_NAME string,API_VERSION string,CONTEXT string,CONTEXT_TEMPLATE string,API_TIER string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string);",
+          "queryData": {
+            "query": "from AM_API on CREATED_TIME>='{{timeFrom}}' AND CREATED_TIME<='{{timeTo}}' {{querystring}} select API_ID,API_NAME,API_VERSION,CREATED_TIME,count(API_ID) AS count group by CREATED_TIME order by CREATED_TIME asc;"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}

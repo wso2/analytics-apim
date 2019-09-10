@@ -1,0 +1,187 @@
+/*
+    Copyright (c) 2019, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("APIM_EVENT_RECEIVER")
+@App:description("Receive the streams and passes it for inmemory sinks.")
+
+-- Kept for backward compatibility and not used in the solution
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.workflow:1.0.0',
+	@map(type = 'wso2event'))
+define stream workflowStream(
+    workflowReference string,
+    workflowStatus string,
+    tenantDomain string,
+    workflowType string,
+    createdTime long,
+    updatedTime long
+);
+
+@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.0.0', @map(type = 'wso2event'))
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.0.0', @map(type = 'wso2event'))
+define stream InComingRequestStream (meta_clientType string,
+    applicationConsumerKey string,
+    applicationName string,
+    applicationId string,
+    applicationOwner string,
+    apiContext string,
+    apiName string,
+    apiVersion string,
+    apiResourcePath string,
+    apiResourceTemplate string,
+    apiMethod string,
+    apiCreator string,
+    apiCreatorTenantDomain string,
+    apiTier string,
+    apiHostname string,
+    username string,
+    userTenantDomain string,
+    userIp string,
+    userAgent string,
+    requestTimestamp long,
+    throttledOut bool,
+    responseTime long,
+    serviceTime long,
+    backendTime long,
+    responseCacheHit bool,
+    responseSize long,
+    protocol string,
+    responseCode int,
+    destination string,
+    securityLatency long,
+    throttlingLatency long,
+    requestMedLat long,
+    responseMedLat long,
+    backendLatency long,
+    otherLatency long,
+    gatewayType string,
+    label string);
+
+@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0', @map(type = 'wso2event'))
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0',
+	@map(type = 'wso2event'))
+define stream InComingThrottledOutStream(
+    meta_clientType string,
+    username string,
+    userTenantDomain string,
+    apiName string,
+    apiVersion string,
+    apiContext string,
+    apiCreator string,
+    apiCreatorTenantDomain string,
+    applicationId string,
+    applicationName string,
+    subscriber string,
+    throttledOutReason string,
+    gatewayType string,
+    throttledOutTimestamp long,
+    hostname string
+);
+
+@sink(type='inMemory' , topic='ThrottledOutStream')
+define stream ThrottledOutStream(
+    meta_clientType string,
+    username string,
+    userTenantDomain string,
+    apiName string,
+    apiVersion string,
+    apiContext string,
+    apiCreator string,
+    apiCreatorTenantDomain string,
+    applicationId string,
+    applicationName string,
+    subscriber string,
+    throttledOutReason string,
+    gatewayType string,
+    throttledOutTimestamp long,
+    hostname string
+);
+
+@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0', @map(type = 'wso2event'))
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0',
+	@map(type = 'wso2event'))
+@sink(type='inMemory', topic='FaultStream')
+define stream FaultStream(
+    meta_clientType string,
+    applicationConsumerKey string,
+    apiName string,
+    apiVersion string,
+    apiContext string,
+    apiResourcePath string,
+    apiMethod string,
+    apiCreator string,
+    username string,
+    userTenantDomain string,
+    apiCreatorTenantDomain string,
+    hostname string,
+    applicationId string,
+    applicationName string,
+    protocol string,
+    errorCode string,
+    errorMessage string,
+    requestTimestamp long
+);
+
+@sink(type='inMemory' , topic='APIM_REQUEST')
+define stream Request (meta_clientType string,
+    applicationConsumerKey string,
+    applicationName string,
+    applicationId string,
+    applicationOwner string,
+    apiContext string,
+    apiName string,
+    apiVersion string,
+    apiResourcePath string,
+    apiResourceTemplate string,
+    apiMethod string,
+    apiCreator string,
+    apiCreatorTenantDomain string,
+    apiTier string,
+    apiHostname string,
+    username string,
+    userTenantDomain string,
+    userIp string,
+    userAgent string,
+    requestTimestamp long,
+    throttledOut bool,
+    responseTime long,
+    serviceTime long,
+    backendTime long,
+    responseCacheHit bool,
+    responseSize long,
+    protocol string,
+    responseCode int,
+    destination string,
+    securityLatency long,
+    throttlingLatency long,
+    requestMedLat long,
+    responseMedLat long,
+    backendLatency long,
+    otherLatency long,
+    gatewayType string,
+    label string);
+
+-- Insert the recieving request events into a in memory stream. This was changed due to an error when connecting to Mysql RDBMS when UTF8 character set is used (https://github.com/wso2/analytics-solutions/issues/182).
+@info(name='Trim the event values') 
+from InComingRequestStream
+select  meta_clientType, applicationConsumerKey, applicationName, applicationId, applicationOwner, apiContext,apiName, apiVersion, apiResourcePath, apiResourceTemplate, ifThenElse(str:length(apiMethod)>20,str:substr(apiMethod,0,20),apiMethod) as apiMethod,ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150), apiCreator) as  apiCreator, ifThenElse(str:length(apiCreatorTenantDomain) > 150,str:substr(apiCreatorTenantDomain,0,150), apiCreatorTenantDomain) as apiCreatorTenantDomain, apiTier, ifThenElse(str:length(apiHostname)>200, str:substr(apiHostname,0,200), apiHostname) as apiHostname, ifThenElse(str:length(username) > 150,str:substr(username,0,150), username) as username, ifThenElse(str:length(userTenantDomain) > 150,str:substr(userTenantDomain,0,150), userTenantDomain) as userTenantDomain, userIp, userAgent, requestTimestamp, throttledOut, responseTime, serviceTime, backendTime, responseCacheHit, responseSize, protocol, responseCode, destination, securityLatency, throttlingLatency, requestMedLat, responseMedLat, backendLatency, otherLatency, gatewayType, label
+insert into Request;
+
+-- Truncating Throttled event stream attributes
+from InComingThrottledOutStream
+select meta_clientType, username, userTenantDomain, apiName, apiVersion, apiContext, ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150),
+ apiCreator) as  apiCreator, apiCreatorTenantDomain, applicationId, applicationName, subscriber, ifThenElse(str:length(throttledOutReason) > 30,str:substr(throttledOutReason,0,30), throttledOutReason) as  throttledOutReason,
+ gatewayType, throttledOutTimestamp, ifThenElse(str:length(hostname)>200, str:substr(hostname,0,200), hostname) as hostname
+insert into ThrottledOutStream;

@@ -1,0 +1,81 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("apim_alert_abnormal_request_count_0")
+@App:description("Identifies the API requests with abnormal request count per minute and add to AllAlertStream and AbnormalRequestCountAlertStream")
+
+define trigger MinTriggerEventStream at every 1 minute;
+
+-- This stream definition is only to define the Aggregation. It does not consume the actual API request.
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+define stream SuppressedAbnormalRequestsCountStream(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int);
+
+@sink(type = 'inMemory' , topic = 'AbnormalRequestsCountAlertStream')
+define stream AbnormalRequestsCountAlertStream(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int, message string, severity int, alertTimestamp long);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@PrimaryKey('applicationId', 'apiName', 'apiVersion')
+@Index('applicationId', 'apiName', 'apiVersion', 'thresholdRequestCountPerMin')
+define table ApiSubAlertConf (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
+
+-- This aggregation definition is only for retrieving data. No data is actually aggregated from this.
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@purge(enable = 'false')
+define aggregation ApiUserPerAppAgg
+from Request
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain, count() as totalRequestCount, gatewayType, label, 'default' as regionalID
+	group by apiContext, apiHostname, applicationId, username, userTenantDomain
+	aggregate by requestTimestamp every seconds...years;
+
+-- Generate a event every one minute. The time period within which the abnormal request count should be considered is substracted from the current timestamp.
+@info(name = 'Get past 5 minutes timestamp')
+from MinTriggerEventStream
+select triggered_time as currentTimestamp, (triggered_time - 5*60*1000) as endTimestamp, coordination:isLeader() as isLeader
+insert into LeaderAwarePeriodicalTriggerStream;
+
+@info(name = 'Leaders Trigger')
+from LeaderAwarePeriodicalTriggerStream[isLeader == true]
+select currentTimestamp, endTimestamp
+insert into LeadersPeriodicalTriggerStream;
+
+@info(name = 'requestsPerMinCountingQuery')
+from LeadersPeriodicalTriggerStream as T join ApiUserPerAppAgg as A
+within T.endTimestamp, T.currentTimestamp
+ per "minutes"
+select apiName, apiVersion, applicationId, applicationName, applicationOwner, userTenantDomain as tenantDomain, totalRequestCount as requestCountPerMin, gatewayType, label
+	group by applicationId, apiContext, apiCreator, apiCreatorTenantDomain
+insert current events into RequestsPerMinStream;
+
+@info(name = 'configurationInfoRetrieveQuery')
+from RequestsPerMinStream as R join ApiSubAlertConf as T
+	on ( R.applicationId == T.applicationId and R.apiName == T.apiName and R.apiVersion == T.apiVersion and T.thresholdRequestCountPerMin > 0 and R.requestCountPerMin > T.thresholdRequestCountPerMin )
+select R.applicationName, R.applicationOwner, R.tenantDomain, R.apiName, R.apiVersion, R.requestCountPerMin, T.thresholdRequestCountPerMin
+insert into AbnormalRequestsPerMinAlertStreamTemp;
+
+@info(name = 'Alert Suppression')
+from AbnormalRequestsPerMinAlertStreamTemp#window.length(1) as a left outer join SuppressedAbnormalRequestsCountStream#window.time(10 minute) as b
+	on (a.applicationName == b.applicationName and a.applicationOwner == b.applicationOwner and a.tenantDomain == b.tenantDomain and
+ a.apiName == b.apiName and a.apiVersion == b.apiVersion)
+select a.applicationName, a.applicationOwner, a.tenantDomain, a.apiName, a.apiVersion, a.requestCountPerMin, a.thresholdRequestCountPerMin
+	having b.apiName is null
+insert into SuppressedAbnormalRequestsCountStream;
+
+@info(name = 'Alert Templated')
+from SuppressedAbnormalRequestsCountStream
+select applicationName, ifThenElse(tenantDomain == 'carbon.super', str:concat(applicationOwner, "@carbon.super"), applicationOwner) as applicationOwner, tenantDomain, apiName, apiVersion, requestCountPerMin, thresholdRequestCountPerMin, 'Abnormal request count detected during last minute.' as message , 2 as severity, (time:timestampInMilliseconds()) as alertTimestamp
+insert into AbnormalRequestsCountAlertStream;
+

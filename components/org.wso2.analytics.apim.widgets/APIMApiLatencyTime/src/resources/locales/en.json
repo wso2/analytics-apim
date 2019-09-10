@@ -1,0 +1,11 @@
+{
+  "all.menuItem": "All",
+  "apiName.label": "API Name",
+  "apiVersion.label": "API Version",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Latency Time widget",
+  "config.error.heading": "Configuration Error !",
+  "createdBy.label": "API Created By",
+  "me.menuItem": "Me",
+  "resources.label": "Resources",
+  "widget.heading": "API LATENCY TIME"
+}

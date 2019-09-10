@@ -1,0 +1,15 @@
+{
+  "back.btn": "BACK",
+  "config.error.body": "Cannot fetch provider configuration for APIM Signups Analytics widget",
+  "config.error.heading": "Configuration Error !",
+  "filter.column.menu.heading": "Column Name",
+  "filter.label.title": "Filter By",
+  "filter.search.placeholder": "Search Field",
+  "nodata.error.body": "No data available for the selected options.",
+  "nodata.error.heading": "No Data Available !",
+  "sort.label.title": "Sort",
+  "table.heading": "SIGNED UP TIMES",
+  "table.heading.developer": "DEVELOPER",
+  "table.heading.signeduptime": "SIGNED UP TIME",
+  "widget.heading": "DEVELOPER SIGNUPS OVER TIME"
+}

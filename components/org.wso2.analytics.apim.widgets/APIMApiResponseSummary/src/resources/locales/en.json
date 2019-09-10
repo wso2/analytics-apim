@@ -1,0 +1,15 @@
+{
+  "all.menuItem": "All",
+  "apiName.label": "API Name",
+  "apiVersion.label": "API Version",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Response Summary widget",
+  "config.error.heading": "Configuration Error !",
+  "createdBy.label": "API Created By",
+  "me.menuItem": "Me",
+  "table.heading.totalResponse": "Total Response Count",
+  "table.heading.2xxResponse": "2xx Response Count",
+  "table.heading.4xxResponse": "4xx Response Count",
+  "table.heading.5xxResponse": "5xx Response Count",
+  "table.heading.other": "Other",
+  "widget.heading": "API RESPONSE SUMMARY"
+}

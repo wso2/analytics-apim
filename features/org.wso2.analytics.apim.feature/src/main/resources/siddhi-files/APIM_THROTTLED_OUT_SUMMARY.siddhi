@@ -1,0 +1,71 @@
+/*
+    Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("APIM_THROTTLED_OUT_SUMMARY")
+@App:description("Defines aggregations for api throttled out stream")
+
+@source(type='inMemory' , topic='ThrottledOutStream')
+define stream ThrottledOutStream(
+    meta_clientType string,
+    username string,
+    userTenantDomain string,
+    apiName string,
+    apiVersion string,
+    apiContext string,
+    apiCreator string,
+    apiCreatorTenantDomain string,
+    applicationId string,
+    applicationName string,
+    subscriber string,
+    throttledOutReason string,
+    gatewayType string,
+    throttledOutTimestamp long,
+    hostname string
+);
+
+@source(type='inMemory' , topic='APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+define stream reqCountTempStream(apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, applicationName string, successCount int, throttleCount int, timestamp long);
+
+@store(type='rdbms', datasource='APIM_ANALYTICS_DB')
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+define aggregation ApiThrottledOutAgg
+from ThrottledOutStream
+select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,applicationId,applicationName,subscriber,count() as throttledOutCount,throttledOutReason,gatewayType,hostname,'default' as regionalID
+group by apiContext,applicationId,throttledOutReason,hostname
+aggregate by throttledOutTimestamp every seconds...year;
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "apiVersion:100, apiCreator:150, apiCreatorTenantDomain:150" )
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+define aggregation APIM_ReqCountAgg
+from reqCountTempStream
+select apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationName, sum(successCount) as successCount, sum(throttleCount) as throttleCount,'default' as regionalID
+group by apiName, apiVersion, apiCreator, apiCreatorTenantDomain, applicationName
+aggregate by timestamp every seconds...year;
+
+from ThrottledOutStream left outer join Request
+select ThrottledOutStream.apiName as apiName, ThrottledOutStream.apiVersion as apiVersion, ThrottledOutStream.apiCreator as apiCreator, ThrottledOutStream.apiCreatorTenantDomain as apiCreatorTenantDomain, ThrottledOutStream.applicationName as applicationName, 0 as successCount, 1 as throttleCount, ThrottledOutStream.throttledOutTimestamp as timestamp
+insert into reqCountTempStreamInterm;
+
+from Request left outer join ThrottledOutStream
+select Request.apiName as apiName, Request.apiVersion as apiVersion , Request.apiCreator as apiCreator, Request.apiCreatorTenantDomain as apiCreatorTenantDomain, Request.applicationName as applicationName, 1 as successCount, 0 as throttleCount, Request.requestTimestamp as timestamp
+insert into reqCountTempStreamInterm;
+
+-- This was added as a fix to an error when connecting to Mysql RDBMS when UTF8 character set is used (https://github.com/wso2/analytics-solutions/issues/182).
+from reqCountTempStreamInterm
+select apiName, ifThenElse(str:length(apiVersion)>100,str:substr(apiVersion,0,100), apiVersion) as apiVersion, ifThenElse(str:length(apiCreator)>150, str:substr(apiCreator,0,150), apiCreator) as apiCreator, ifThenElse(str:length(apiCreatorTenantDomain)>150, str:substr(apiCreatorTenantDomain,0,150), apiCreatorTenantDomain) as apiCreatorTenantDomain, applicationName, successCount, throttleCount,timestamp
+insert into reqCountTempStream;

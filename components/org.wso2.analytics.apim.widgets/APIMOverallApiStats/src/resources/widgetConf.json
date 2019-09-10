@@ -1,0 +1,38 @@
+{
+  "name": "APIM Overall Api Stats",
+  "id": "APIMOverallApiStats",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMOverallApiStatsSiddhi') @store(type='rdbms' , datasource='APIM_ANALYTICS_DB') define table ApimApiAvailabilityInfo(apiName string,apiVersion string,apiCreator string,tenantDomain string,status string); @primaryKey('API_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API(API_ID int,API_PROVIDER string,API_NAME string,API_VERSION string,CONTEXT string,CONTEXT_TEMPLATE string,API_TIER string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string); @primaryKey('RATING_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API_RATINGS(RATING_ID int,API_ID int,RATING int,SUBSCRIBER_ID int); @primaryKey('EVENT_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API_LC_EVENT(EVENT_ID int,API_ID int,PREVIOUS_STATE string,NEW_STATE string,USER_ID string,TENANT_ID int,EVENT_DATE string);",
+          "queryData": {
+            "apiavailablequery": "from ApimApiAvailabilityInfo select status,count(apiName) as count group by status;",
+            "topapiquery": "from AM_API_RATINGS select API_ID,sum(RATING) as sum group by API_ID order by sum desc;",
+            "apilistquery":"from AM_API select API_ID,API_NAME,API_VERSION,CREATED_BY;"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}
