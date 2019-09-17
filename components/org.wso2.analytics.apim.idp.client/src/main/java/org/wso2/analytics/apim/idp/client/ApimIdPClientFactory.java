@@ -152,6 +152,10 @@ public class ApimIdPClientFactory implements IdPClientFactory {
                 ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_PASSWORD);
         String adminServiceBaseUrl = properties.getOrDefault(ApimIdPClientConstants.ADMIN_SERVICE_BASE_URL,
                 ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_BASE_URL);
+        String adminScopeName = properties.getOrDefault(ApimIdPClientConstants.ADMIN_SCOPE,
+                ApimIdPClientConstants.DEFAULT_ADMIN_SCOPE);
+        String allScopes = properties.getOrDefault(ApimIdPClientConstants.ALL_SCOPES,
+                ApimIdPClientConstants.DEFAULT_ALL_SCOPES);
 
         String dcrEndpoint = properties.getOrDefault(ApimIdPClientConstants.KM_DCR_URL,
                 ApimIdPClientConstants.DEFAULT_KM_DCR_URL);
@@ -214,13 +218,27 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         try {
             cacheTimeout = Integer.parseInt(properties.getOrDefault(ApimIdPClientConstants.CACHE_TIMEOUT,
                     ApimIdPClientConstants.DEFAULT_CACHE_TIMEOUT));
+        } catch (NumberFormatException e) {
+            String error = "Cache timeout overriding property '" +
+                    properties.get(ApimIdPClientConstants.CACHE_TIMEOUT) + "' is invalid.";
+            LOG.error(error);
+            throw new IdPClientException(error, e);
+        }
+        try {
             connectionTimeout = Integer.parseInt(properties.getOrDefault(ApimIdPClientConstants.CONNECTION_TIMEOUT,
                     ApimIdPClientConstants.DEFAULT_CONNECTION_TIMEOUT));
+        } catch (NumberFormatException e) {
+            String error = "Connection timeout overriding property '" +
+                    properties.get(ApimIdPClientConstants.CONNECTION_TIMEOUT) + "' is invalid.";
+            LOG.error(error);
+            throw new IdPClientException(error, e);
+        }
+        try {
             readTimeout = Integer.parseInt(properties.getOrDefault(ApimIdPClientConstants.READ_TIMEOUT,
                     ApimIdPClientConstants.DEFAULT_READ_TIMEOUT));
         } catch (NumberFormatException e) {
-            String error = "Cache timeout overriding property '" + //TODO: different errors
-                    properties.get(ApimIdPClientConstants.CACHE_TIMEOUT) + "' is invalid.";
+            String error = "Read timeout overriding property '" +
+                    properties.get(ApimIdPClientConstants.READ_TIMEOUT) + "' is invalid.";
             LOG.error(error);
             throw new IdPClientException(error, e);
         }
@@ -231,8 +249,6 @@ public class ApimIdPClientFactory implements IdPClientFactory {
                 this.analyticsHttpClientBuilderService, kmTokenUrl + ApimIdPClientConstants.TOKEN_POSTFIX,
                 kmTokenUrl + ApimIdPClientConstants.REVOKE_POSTFIX, introspectUrl,
                 kmUsername, kmPassword, connectionTimeout, readTimeout);
-
-        String adminRoleDisplayName = idPClientConfiguration.getUserManager().getAdminRole();
 
         String targetURIForRedirection = properties.getOrDefault(ApimIdPClientConstants.EXTERNAL_SSO_LOGOUT_URL,
                             ApimIdPClientConstants.DEFAULT_EXTERNAL_SSO_LOGOUT_URL);
@@ -251,19 +267,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
             LOG.error(error);
             throw new IdPClientException(error, e);
         }
-
-        RemoteUserStoreManagerServiceClient remoteUserStoreManagerServiceClient;
         OAuthAdminServiceClient oAuthAdminServiceClient;
-
-        try {
-            remoteUserStoreManagerServiceClient
-                    = new RemoteUserStoreManagerServiceClient(adminServiceBaseUrl, session);
-        } catch (AxisFault axisFault) {
-            String error = "Error occurred while creating Remote User Store Manager Service Client.";
-            LOG.error(error);
-            throw new IdPClientException(error, axisFault.getCause());
-        }
-
         try {
             oAuthAdminServiceClient
                     = new OAuthAdminServiceClient(adminServiceBaseUrl, session);
@@ -274,8 +278,8 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         }
 
         return new ApimIdPClient(baseUrl, kmTokenUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType,
-                adminRoleDisplayName, oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub,
+                adminScopeName, allScopes, oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub,
                 keyManagerServiceStubs, idPClientConfiguration.isSsoEnabled(), targetURIForRedirection,
-                remoteUserStoreManagerServiceClient, oAuthAdminServiceClient);
+                oAuthAdminServiceClient);
     }
 }

@@ -27,6 +27,8 @@ public class ApimIdPClientConstants {
     public static final String ADMIN_SERVICE_USERNAME = "adminServiceUsername";
     public static final String ADMIN_SERVICE_PASSWORD = "adminServicePassword";
     public static final String ADMIN_SERVICE_BASE_URL = "adminServiceBaseUrl";
+    public static final String ADMIN_SCOPE = "adminScope";
+    public static final String ALL_SCOPES = "allScopes";
     public static final String BASE_URL = "baseUrl";
     public static final String GRANT_TYPE = "grantType";
     public static final String KM_TOKEN_URL = "kmTokenUrl";
@@ -49,6 +51,11 @@ public class ApimIdPClientConstants {
 
     public static final String DEFAULT_ADMIN_SERVICE_USERNAME = "admin";
     public static final String DEFAULT_ADMIN_SERVICE_PASSWORD = "admin";
+    public static final String DEFAULT_ADMIN_SCOPE = "apim_analytics:admin";
+    public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin " +
+            "apim_analytics:publisher_owner apim_analytics:publisher_editor apim_analytics:publisher_viewer " +
+            "apim_analytics:subscriber_owner apim_analytics:subscriber_editor apim_analytics:subscriber_viewer " +
+            "apim_analytics:everyone openid";
     public static final String DEFAULT_ADMIN_SERVICE_BASE_URL = "https://localhost:9443";
     public static final String DEFAULT_BASE_URL = "https://localhost:9643";
     public static final String DEFAULT_KM_TOKEN_URL = "https://localhost:9443/oauth2";

@@ -56,7 +56,7 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BA
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE_END;
 
 /**
- * Implementation class for custom IdP based on OAuth2.
+ * Implementation class for Apim IdP based on OAuth2.
  */
 public class ApimIdPClient extends ExternalIdPClient {
 
@@ -68,29 +68,29 @@ public class ApimIdPClient extends ExternalIdPClient {
     private String authorizeEndpoint;
     private String grantType;
     private String baseUrl;
-    private String adminRoleDisplayName;
+    private String adminScopeName;
+    private String allScopes;
     private Cache<String, ExternalSession> tokenCache;
     private boolean isSSOEnabled;
     private String ssoLogoutURL;
-    private RemoteUserStoreManagerServiceClient remoteUserStoreManagerServiceClient;
     private OAuthAdminServiceClient oAuthAdminServiceClient;
 
     // Here the user given context are mapped to the OAuthApp Info.
     private Map<String, OAuthApplicationInfo> oAuthAppInfoMap;
 
-    public ApimIdPClient(String baseUrl, String authorizeEndpoint, String grantType, String adminRoleDisplayName,
-                         Map<String, OAuthApplicationInfo> oAuthAppInfoMap, int cacheTimeout, String kmUserName,
-                         DCRMServiceStub dcrmServiceStub, OAuth2ServiceStubs oAuth2ServiceStubs,
+    public ApimIdPClient(String baseUrl, String authorizeEndpoint, String grantType, String adminScopeName,
+                         String allScopes, Map<String, OAuthApplicationInfo> oAuthAppInfoMap, int cacheTimeout,
+                         String kmUserName, DCRMServiceStub dcrmServiceStub, OAuth2ServiceStubs oAuth2ServiceStubs,
                          boolean isSSOEnabled, String ssoLogoutURL,
-                         RemoteUserStoreManagerServiceClient remoteUserStoreManagerServiceClient,
                          OAuthAdminServiceClient oAuthAdminServiceClient) {
-        super(baseUrl, authorizeEndpoint, grantType, null, adminRoleDisplayName, oAuthAppInfoMap,
+        super(baseUrl, authorizeEndpoint, grantType, null, adminScopeName, oAuthAppInfoMap,
                 cacheTimeout, null, dcrmServiceStub, oAuth2ServiceStubs, null, null, isSSOEnabled, ssoLogoutURL);
         this.baseUrl = baseUrl;
         this.authorizeEndpoint = authorizeEndpoint;
         this.grantType = grantType;
         this.oAuthAppInfoMap = oAuthAppInfoMap;
-        this.adminRoleDisplayName = adminRoleDisplayName;
+        this.adminScopeName = adminScopeName;
+        this.allScopes = allScopes;
         this.kmUserName = kmUserName;
         this.dcrmServiceStub = dcrmServiceStub;
         this.oAuth2ServiceStubs = oAuth2ServiceStubs;
@@ -99,7 +99,6 @@ public class ApimIdPClient extends ExternalIdPClient {
                 .build();
         this.isSSOEnabled = isSSOEnabled;
         this.ssoLogoutURL = ssoLogoutURL;
-        this.remoteUserStoreManagerServiceClient = remoteUserStoreManagerServiceClient;
         this.oAuthAdminServiceClient = oAuthAdminServiceClient;
     }
 
@@ -121,22 +120,27 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
     }
 
+    /*
+    * NOTE: For this apim idp client we have treated scopes as roles. So, whenever roles are requested, instead of roles
+    *  we provide corresponding scopes. These scopes are read from the tenant-conf.json file in api manager product.
+    * https://github.com/wso2/carbon-apimgt/blob/master/components/apimgt/org.wso2.carbon.apimgt.impl/src/main/
+    * resources/tenant/tenant-conf.json
+    * This move taken due to roadblocks occurred when getting user roles in multi-tenancy scenario.
+    * */
     @Override
     public List<Role> getAllRoles() throws IdPClientException {
-        ArrayList<Role> roles = new ArrayList<>();
-        roles.add(new Role("openid", "openid"));
-        roles.add(new Role("apim:api_view", "apim:api_view"));
-        roles.add(new Role("apim:api_create", "apim:api_create"));
-        roles.add(new Role("apim:api_delete", "apim:api_delete"));
-        roles.add(new Role("apim:api_publish", "apim:api_publish"));
-        roles.add(new Role("apim:subscribe", "apim:subscribe"));
-        roles.add(new Role("apim:tier_manage", "apim:tier_manage"));
-        return roles;
+        String[] scopeList = this.allScopes.split(" ");
+        return getRolesFromArray(scopeList);
     }
 
     @Override
     public Role getAdminRole() throws IdPClientException {
-        return new Role("apim:tier_manage", "apim:tier_manage");
+        if (this.adminScopeName == null) {
+            String error = "Error occurred while getting the admin scope name.";
+            LOG.error(error);
+            throw new IdPClientException(error);
+        }
+        return new Role(this.adminScopeName, this.adminScopeName);
     }
 
     @Override
@@ -154,61 +158,37 @@ public class ApimIdPClient extends ExternalIdPClient {
             throw new IdPClientException(error);
         }
         String token = session.getAccessToken();
-        Response response = oAuth2ServiceStubs.getIntrospectionServiceStub()
-                .introspectAccessToken(token);
-
-        if (response == null) {
-            String error = "Error occurred while authenticating token '" + token + "'. Response is null.";
-            LOG.error(error);
-            throw new IdPClientException(error);
-        }
+        OAuth2IntrospectionResponse introspectResponse;
         try {
-            if (response.status() == 200) {  //200 - OK
-                OAuth2IntrospectionResponse introspectResponse = (OAuth2IntrospectionResponse) new GsonDecoder()
-                        .decode(response, OAuth2IntrospectionResponse.class);
-                if (introspectResponse.isActive()) {
-                    String scopes = introspectResponse.getScope();
-                    String[] scopeList = scopes.split(" ");
-                    ArrayList<Role> roles = getRolesFromArray(scopeList);
-                    Map<String, String> properties = new HashMap<>();
-                    return new User(name, properties, roles);
-                } else {
-                    throw new IdPClientException("The token is not active");
-                }
-            } else if (response.status() == 400) {  //400 - Known Error
-                try {
-                    DCRError error = (DCRError) new GsonDecoder().decode(response, DCRError.class);
-                    throw new IdPClientException("Error occurred while introspecting the token. Error: " +
-                            error.getErrorCode() + ". Error Description: " + error.getErrorDescription() +
-                            ". Status Code: " + response.status());
-                } catch (IOException e) {
-                    throw new IdPClientException("Error occurred while parsing the Introspection error message.", e);
-                }
-            } else {  //Unknown Error
-                throw new IdPClientException("Error occurred while authenticating. Error: '" +
-                        response.body().toString() + "'. Status Code: '" + response.status() + "'.");
-            }
-        } catch (IOException e) {
-            throw new IdPClientException("Error occurred while parsing the authentication response.", e);
+            introspectResponse = getIntrospectResponse(token);
+        } catch (AuthenticationException e) {
+            LOG.error(e.getMessage());
+            throw new IdPClientException(e.getMessage());
         }
+        String scopes = introspectResponse.getScope();
+        String[] scopeList = scopes.split(" ");
+        ArrayList<Role> roles = getRolesFromArray(scopeList);
+        Map<String, String> properties = new HashMap<>();
+        return new User(name, properties, roles);
     }
 
     /**
-     * This method returns a list of Roles from a given String array role.
-     * @param roleNames String array which contains role names
-     * @return Array List of roles
+     * This method returns a list of Roles from a given String array which contains scopes. Please note that we consider
+     * scopes as roles in this idp client.
+     * @param scopes String array which contains scope names
+     * @return Array List of scopes as roles
      * @throws IdPClientException thrown when the node list is empty.
      */
-    private ArrayList<Role> getRolesFromArray(String[] roleNames) throws IdPClientException {
-        if (roleNames.length == 0) {
-            String error = "Cannot get roles from the list as the role list is empty.";
+    private ArrayList<Role> getRolesFromArray(String[] scopes) throws IdPClientException {
+        if (scopes.length == 0) {
+            String error = "Cannot get roles from the list as the scope list is empty.";
             LOG.error(error);
             throw new IdPClientException(error);
         }
         ArrayList<Role> roles = new ArrayList<>();
         Role newRole;
-        for (int i = 0; i < roleNames.length; i++) {
-            newRole = new Role(roleNames[i], roleNames[i]);
+        for (String scope : scopes) {
+            newRole = new Role(scope, scope);
             roles.add(newRole);
         }
         return roles;
@@ -227,8 +207,8 @@ public class ApimIdPClient extends ExternalIdPClient {
             if (oAuthApps == null) {
                 return false;
             }
-            for (int i = 0; i < oAuthApps.length; i++) {
-                if (oAuthApps[i].getApplicationName().equalsIgnoreCase(oAuthAppName)) {
+            for (OAuthConsumerAppDTO oAuthApp : oAuthApps) {
+                if (oAuthApp.getApplicationName().equalsIgnoreCase(oAuthAppName)) {
                     return true;
                 }
             }
@@ -277,14 +257,11 @@ public class ApimIdPClient extends ExternalIdPClient {
         String oAuthAppContext = properties.get(IdPClientConstants.APP_NAME);
 
         //Checking if these are the frontend-if not use sp
-        if (!this.oAuthAppInfoMap.keySet().contains(oAuthAppContext)) {
+        if (!this.oAuthAppInfoMap.containsKey(oAuthAppContext)) {
             oAuthAppContext = ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT;
         }
 
         String username = properties.get(IdPClientConstants.USERNAME);
-        String scopes = "openid apim:api_view apim:api_create apim:api_delete apim:api_publish apim:subscribe" +
-                " apim:tier_manage";
-
         if (IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE.equals(grantType)) {
             String callbackUrl = properties.get(IdPClientConstants.CALLBACK_URL);
             returnProperties.put(IdPClientConstants.LOGIN_STATUS, IdPClientConstants.LoginStatus.LOGIN_REDIRECTION);
@@ -292,7 +269,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             returnProperties.put(IdPClientConstants.REDIRECTION_URL, this.authorizeEndpoint);
             returnProperties.put(IdPClientConstants.CALLBACK_URL, this.baseUrl +
                     ApimIdPClientConstants.CALLBACK_URL + callbackUrl);
-            returnProperties.put(IdPClientConstants.SCOPE, scopes);
+            returnProperties.put(IdPClientConstants.SCOPE, this.allScopes);
             return returnProperties;
         } else if (IdPClientConstants.PASSWORD_GRANT_TYPE.equals(grantType)) {
             response = oAuth2ServiceStubs.getTokenServiceStub().generatePasswordGrantAccessToken(
@@ -357,7 +334,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         String token = properties.get(IdPClientConstants.ACCESS_TOKEN);
         String oAuthAppContext = properties.getOrDefault(IdPClientConstants.APP_NAME,
                 ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT);
-        if (!this.oAuthAppInfoMap.keySet().contains(oAuthAppContext)) {
+        if (!this.oAuthAppInfoMap.containsKey(oAuthAppContext)) {
             oAuthAppContext = ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT;
         }
         tokenCache.invalidate(token);
@@ -388,7 +365,7 @@ public class ApimIdPClient extends ExternalIdPClient {
     public Map<String, String> authCodeLogin(String appContext, String code) throws IdPClientException {
         Map<String, String> returnProperties = new HashMap<>();
         String oAuthAppContext = appContext.split("/\\|?")[0];
-        if (!this.oAuthAppInfoMap.keySet().contains(oAuthAppContext)) {
+        if (!this.oAuthAppInfoMap.containsKey(oAuthAppContext)) {
             oAuthAppContext = ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT;
         }
         OAuthApplicationInfo oAuthApplicationInfo = this.oAuthAppInfoMap.get(oAuthAppContext);
@@ -463,9 +440,22 @@ public class ApimIdPClient extends ExternalIdPClient {
         if (session != null) {
             return session.getUserName();
         }
+        OAuth2IntrospectionResponse introspectResponse = getIntrospectResponse(token);
+        String username = introspectResponse.getUsername();
+        tokenCache.put(username, new ExternalSession(username, token));
+        return username;
+    }
 
-        Response response = oAuth2ServiceStubs.getIntrospectionServiceStub()
-                .introspectAccessToken(token);
+    /**
+     * This method returns response got from the introspection if the introspection is active.
+     * @param token  token which needs to be introspected
+     * @throws IdPClientException thrown when an error occurred when performing introspect
+     * @throws AuthenticationException thrown when the token is not active
+     * @return the introspect response
+     */
+    private OAuth2IntrospectionResponse getIntrospectResponse(String token) throws IdPClientException,
+            AuthenticationException {
+        Response response = oAuth2ServiceStubs.getIntrospectionServiceStub().introspectAccessToken(token);
 
         if (response == null) {
             String error = "Error occurred while authenticating token '" + token + "'. Response is null.";
@@ -477,27 +467,35 @@ public class ApimIdPClient extends ExternalIdPClient {
                 OAuth2IntrospectionResponse introspectResponse = (OAuth2IntrospectionResponse) new GsonDecoder()
                         .decode(response, OAuth2IntrospectionResponse.class);
                 if (introspectResponse.isActive()) {
-                    String username = introspectResponse.getUsername();
-                    tokenCache.put(username, new ExternalSession(username, token));
-                    return username;
+                    return introspectResponse;
                 } else {
-                    throw new AuthenticationException("The token is not active");
+                    String error = "The token is not active.";
+                    LOG.error(error);
+                    throw new AuthenticationException(error);
                 }
             } else if (response.status() == 400) {  //400 - Known Error
                 try {
                     DCRError error = (DCRError) new GsonDecoder().decode(response, DCRError.class);
-                    throw new IdPClientException("Error occurred while introspecting the token. Error: " +
-                            error.getErrorCode() + ". Error Description: " + error.getErrorDescription() +
-                            ". Status Code: " + response.status());
+                    String errorString = "Error occurred while introspecting the token. Error: " + error.getErrorCode()
+                            + ". Error Description: " + error.getErrorDescription() + ". Status Code: "
+                            + response.status();
+                    LOG.error(errorString);
+                    throw new IdPClientException(errorString);
                 } catch (IOException e) {
-                    throw new IdPClientException("Error occurred while parsing the Introspection error message.", e);
+                    String error = "Error occurred while parsing the Introspection error message.";
+                    LOG.error(error, e);
+                    throw new IdPClientException(error, e);
                 }
             } else {  //Unknown Error
-                throw new IdPClientException("Error occurred while authenticating. Error: '" +
-                        response.body().toString() + "'. Status Code: '" + response.status() + "'.");
+                String error = "Error occurred while authenticating. Error: '" + response.body().toString()
+                        + "'. Status Code: '" + response.status() + "'.";
+                LOG.error(error);
+                throw new IdPClientException(error);
             }
         } catch (IOException e) {
-            throw new IdPClientException("Error occurred while parsing the authentication response.", e);
+            String error = "Error occurred while parsing the authentication response.";
+            LOG.error(error, e);
+            throw new IdPClientException(error, e);
         }
     }
 
@@ -523,7 +521,7 @@ public class ApimIdPClient extends ExternalIdPClient {
 
         String grantType =
                 IdPClientConstants.PASSWORD_GRANT_TYPE + " " + IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE + " " +
-                        IdPClientConstants.REFRESH_GRANT_TYPE; //TODO: check here; if sso then surely auth code
+                        IdPClientConstants.REFRESH_GRANT_TYPE;
         String callBackUrl;
         String postLogoutRedirectUrl = this.baseUrl + FORWARD_SLASH + appContext;
         if (clientName.equals(ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT)) {
