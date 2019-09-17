@@ -30,6 +30,7 @@
         <module>org.wso2.sp.extension.siddhi.io.mgwfile</module>
         <module>org.wso2.analytics.apim.rest.api.file</module>
         <module>org.wso2.analytics.apim.widgets</module>
+        <module>org.wso2.analytics.apim.idp.client</module>
     </modules>
 
 </project>
