@@ -39,6 +39,7 @@
         <module>APIMDeveloperSignups</module>
         <module>APIMTopApiCreators</module>
         <module>APIMTopAppCreators</module>
+        <module>APIMTopAppUsers</module>
         <module>APIMTopSubscribers</module>
         <module>APIMOverallApiStats</module>
         <module>APIMApiCreatedAnalytics</module>
