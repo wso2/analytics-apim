@@ -86,14 +86,6 @@
             <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity.user.ws</groupId>
-            <artifactId>org.wso2.carbon.um.ws.api.stub</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
-            <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
             <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
         </dependency>
@@ -109,7 +101,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <basedir>${project.build.outputDirectory}/org/wso2/carbon/analytics/idp/client</basedir>
+                    <basedir>${project.build.outputDirectory}/org/wso2/analytics/apim/idp/client</basedir>
                 </configuration>
             </plugin>
             <plugin>
@@ -140,9 +132,6 @@
         </import.package>
         <dynamic.import.package>*</dynamic.import.package>
         <carbon.component>
-            startup.listener;
-            componentName="apim-idp-service";
-            requiredService="org.wso2.carbon.analytics.idp.client.core.spi.IdPClientFactory",
             osgi.service;
             objectClass="org.wso2.carbon.analytics.idp.client.core.spi.IdPClientFactory";
             serviceCount="1"

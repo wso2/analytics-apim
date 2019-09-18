@@ -70,6 +70,10 @@
                                     <version>${carbon.analytics-common.version}</version>
                                 </bundle>
                                 <bundle>
+                                    <symbolicName>org.wso2.analytics.apim.idp.client</symbolicName>
+                                    <version>${project.version}</version>
+                                </bundle>
+                                <bundle>
                                     <symbolicName>axis2</symbolicName>
                                     <version>${org.apache.axis2.wso2.version}</version>
                                 </bundle>
@@ -124,10 +128,6 @@
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.authenticator.stub</symbolicName>
                                     <version>${org.wso2.carbon.4x.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.wso2.carbon.um.ws.api.stub</symbolicName>
-                                    <version>${org.wso2.carbon.identity.user.ws.version}</version>
                                 </bundle>
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.identity.oauth.stub</symbolicName>
