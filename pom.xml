@@ -959,6 +959,13 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.registered.app.users
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
                 <artifactId>org.wso2.analytics.apim.widgets.apim.top.faulty.apis
                 </artifactId>
                 <version>${project.version}</version>
