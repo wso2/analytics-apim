@@ -54,6 +54,7 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.FORWARD_
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.POST_LOGOUT_REDIRECT_URI_PHRASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE_END;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SPACE;
 
 /**
  * Implementation class for Apim IdP based on OAuth2.
@@ -162,11 +163,12 @@ public class ApimIdPClient extends ExternalIdPClient {
         try {
             introspectResponse = getIntrospectResponse(token);
         } catch (AuthenticationException e) {
-            LOG.error(e.getMessage());
-            throw new IdPClientException(e.getMessage());
+            // If there is an Authentication error that means the token is inactive. So there is no user available and
+            // hence, returns null. This null is handled in the getUserRoles() method in Super class(ExternalIdPClient).
+            return null;
         }
         String scopes = introspectResponse.getScope();
-        String[] scopeList = scopes.split(" ");
+        String[] scopeList = scopes.split(SPACE);
         ArrayList<Role> roles = getRolesFromArray(scopeList);
         Map<String, String> properties = new HashMap<>();
         return new User(name, properties, roles);
@@ -470,7 +472,6 @@ public class ApimIdPClient extends ExternalIdPClient {
                     return introspectResponse;
                 } else {
                     String error = "The token is not active.";
-                    LOG.error(error);
                     throw new AuthenticationException(error);
                 }
             } else if (response.status() == 400) {  //400 - Known Error

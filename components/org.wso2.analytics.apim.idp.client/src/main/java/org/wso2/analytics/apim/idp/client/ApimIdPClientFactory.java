@@ -47,10 +47,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Factory for Custom IdPClient.
+ * Factory for APIM IdPClient.
  */
 @Component(
-        name = "CustomIdPClientFactory",
+        name = "org.wso2.analytics.apim.idp.client.ApimIdPClientFactory",
         immediate = true
 )
 public class ApimIdPClientFactory implements IdPClientFactory {
@@ -61,12 +61,12 @@ public class ApimIdPClientFactory implements IdPClientFactory {
 
     @Activate
     protected void activate(BundleContext bundleContext) {
-        LOG.debug("External IDP client factory activated.");
+        LOG.debug("APIM IDP client factory activated.");
     }
 
     @Deactivate
     protected void deactivate(BundleContext bundleContext) {
-        LOG.debug("External IDP client factory deactivated.");
+        LOG.debug("APIM IDP client factory deactivated.");
     }
 
     /**

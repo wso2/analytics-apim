@@ -90,6 +90,7 @@ public class ApimIdPClientConstants {
     public static final String FORWARD_SLASH = "/";
     public static final String REGEX_BASE = ".*|";
     public static final String REGEX_BASE_END = ")";
+    public static final String SPACE = " ";
 
     public static final String REVOKE_POSTFIX = "/revoke";
     public static final String TOKEN_POSTFIX = "/token";
