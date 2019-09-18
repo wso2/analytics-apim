@@ -910,6 +910,13 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.faulty.invocation.per.app
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
                 <artifactId>org.wso2.analytics.apim.widgets.apim.subscriptions.analytics
                 </artifactId>
                 <version>${project.version}</version>

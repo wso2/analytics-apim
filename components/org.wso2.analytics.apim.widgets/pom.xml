@@ -45,6 +45,7 @@
         <module>APIMRegisteredAppUsers</module>
         <module>APIMApiCreatedAnalytics</module>
         <module>APIMAppCreatedAnalytics</module>
+        <module>APIMFaultyPerApp</module>
         <module>APIMAppApiUsage</module>
         <module>APIMAppResourceUsage</module>
         <module>APIMSubscriptionsAnalytics</module>
