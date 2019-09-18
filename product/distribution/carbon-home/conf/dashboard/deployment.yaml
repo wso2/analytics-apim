@@ -357,3 +357,8 @@ auth.configs:
     cacheTimeout: 900
     baseUrl: https://localhost:9643
     grantType: authorization_code
+
+wso2.dashboard:
+  roles:
+    creators:
+      - apim_analytics:admin
