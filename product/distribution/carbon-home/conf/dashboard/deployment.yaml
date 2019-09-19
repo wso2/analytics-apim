@@ -344,7 +344,7 @@ auth.configs:
   ssoEnabled: true
   properties:
     adminScope: apim_analytics:admin
-    allScopes: apim_analytics:admin apim_analytics:publisher_owner apim_analytics:publisher_editor apim_analytics:publisher_viewer apim_analytics:subscriber_owner apim_analytics:subscriber_editor apim_analytics:subscriber_viewer apim_analytics:everyone openid
+    allScopes: apim_analytics:admin apim_analytics:creator apim_analytics:publisher_owner apim_analytics:publisher_editor apim_analytics:publisher_viewer apim_analytics:subscriber_owner apim_analytics:subscriber_editor apim_analytics:subscriber_viewer apim_analytics:everyone openid
     adminServiceBaseUrl: https://localhost:9443
     adminServiceUsername: admin
     adminServicePassword: admin
@@ -362,3 +362,4 @@ wso2.dashboard:
   roles:
     creators:
       - apim_analytics:admin
+      - apim_analytics:creator
