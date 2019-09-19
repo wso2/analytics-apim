@@ -38,7 +38,7 @@ define table ApiCreatorAlertConfiguration (apiName string, apiVersion string, ap
 define table ApiCreatorAlertConfigurationInMemoryTable (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, thresholdResponseTime long);
 
 @info(name = 'creatorConfigurationInfoRetrievQuery')
-from Request as R join ApiCreatorAlertConfigurationInMemoryTable as C
+from Request as R left outer join ApiCreatorAlertConfigurationInMemoryTable as C
  	on(R.apiName == C.apiName and R.apiVersion == C.apiVersion and R.apiCreator == C.apiCreator and R.apiCreatorTenantDomain == C.apiCreatorTenantDomain )
 select R.apiContext, R.apiName, R.apiVersion, R.apiResourceTemplate, R.apiMethod, R.apiCreator, R.apiCreatorTenantDomain, R.requestTimestamp, R.responseTime, R.backendTime, C.thresholdResponseTime, R.responseCode
 insert into RequestAlertInfoStream;
@@ -46,8 +46,11 @@ insert into RequestAlertInfoStream;
 partition with (apiContext of RequestAlertInfoStream)
 begin
  -- checks whether the response time is higher than the threshold response time continously for 5 times
+ 	from RequestAlertInfoStream[not thresholdResponseTime is null]
+ 	select *
+ 	insert into temp;
  	@info(name = 'Abnormal response time pattern check')
- 	from every e1 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e2 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e3 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime], e4 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e5 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime]
+ 	from every e1 = temp[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e2 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e3 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime], e4 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e5 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime]
  	select e1.apiName, e1.apiVersion, e1.apiContext, e1.apiCreator, e1.apiCreatorTenantDomain, e1.thresholdResponseTime
  	insert into ResponseTimeAlertStream;
 
