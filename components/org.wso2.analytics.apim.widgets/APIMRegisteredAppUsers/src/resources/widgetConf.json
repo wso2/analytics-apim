@@ -1,0 +1,37 @@
+{
+  "name": "APIM Registered App Users",
+  "id": "APIMRegisteredAppUsers",
+  "thumbnailURL": "",
+  "configs": {
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMRegisteredAppUsersSiddhi') @primaryKey('APPLICATION_ID') @store(type='rdbms' , datasource='AM_DB') define table AM_APPLICATION(APPLICATION_ID int,NAME string,SUBSCRIBER_ID int,APPLICATION_TIER string,CALLBACK_URL string,DESCRIPTION string,APPLICATION_STATUS string,GROUP_ID string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string,UUID string,TOKEN_TYPE string); @primaryKey('APPLICATION_ID','KEY_TYPE') @store(type='rdbms' , datasource='AM_DB') define table AM_APPLICATION_KEY_MAPPING(APPLICATION_ID int,CONSUMER_KEY string,KEY_TYPE string,STATE string,CREATE_MODE string); @primaryKey('TOKEN_ID') @store(type='rdbms' , datasource='AM_DB') define table IDN_OAUTH2_ACCESS_TOKEN(TOKEN_ID string,ACCESS_TOKEN string,REFRESH_TOKEN string,CONSUMER_KEY_ID int,AUTHZ_USER string,TENANT_ID int,USER_DOMAIN string,USER_TYPE string,GRANT_TYPE string,TIME_CREATED string,REFRESH_TOKEN_TIME_CREATED string,VALIDITY_PERIOD int,REFRESH_TOKEN_VALIDITY_PERIOD int,TOKEN_SCOPE_HASH string,TOKEN_STATE string,TOKEN_STATE_ID string,SUBJECT_IDENTIFIER string,ACCESS_TOKEN_HASH string,REFRESH_TOKEN_HASH string); @primaryKey('ID') @store(type='rdbms' , datasource='AM_DB') define table IDN_OAUTH_CONSUMER_APPS(ID int,CONSUMER_KEY string,CONSUMER_SECRET string,USERNAME string,TENANT_ID int,USER_DOMAIN string,APP_NAME string,OAUTH_VERSION string,CALLBACK_URL string,GRANT_TYPES string,PKCE_MANDATORY string,PKCE_SUPPORT_PLAIN string,APP_STATE string,USER_ACCESS_TOKEN_EXPIRE_TIME int,APP_ACCESS_TOKEN_EXPIRE_TIME int,REFRESH_TOKEN_EXPIRE_TIME int,ID_TOKEN_EXPIRE_TIME int);",
+          "queryData": {
+            "appCountQuery": "from AM_APPLICATION on CREATED_BY=='{{appOwner}}' select count(APPLICATION_ID) AS COUNT;",
+            "applicationQuery": "from AM_APPLICATION on CREATED_BY=='{{appOwner}}' select APPLICATION_ID,NAME;",
+            "appKeyMapQuery": "from AM_APPLICATION_KEY_MAPPING on {{query}} select APPLICATION_ID,CONSUMER_KEY;",
+            "consumerAppsQuery": "from IDN_OAUTH_CONSUMER_APPS on {{query}} select CONSUMER_KEY,ID;",
+            "accessTokenQuery": "from IDN_OAUTH2_ACCESS_TOKEN on {{query}} select CONSUMER_KEY_ID,AUTHZ_USER;"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}
