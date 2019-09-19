@@ -43,6 +43,7 @@
         <module>APIMOverallApiStats</module>
         <module>APIMApiCreatedAnalytics</module>
         <module>APIMAppCreatedAnalytics</module>
+        <module>APIMAppApiUsage</module>
         <module>APIMSubscriptionsAnalytics</module>
         <module>APIMSignupsAnalytics</module>
         <module>APIMTopApiUsers</module>
