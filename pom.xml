@@ -1353,7 +1353,9 @@
         <siddhi.execution.regex.version>5.0.5</siddhi.execution.regex.version>
         <siddhi.execution.env.version>2.0.0</siddhi.execution.env.version>
         <siddhi.io.wso2event.version>5.0.0</siddhi.io.wso2event.version>
+        <siddhi.io.email.version>2.0.2</siddhi.io.email.version>
         <siddhi.map.json.version>5.0.3</siddhi.map.json.version>
+        <siddhi.map.text.version>2.0.2</siddhi.map.text.version>
         <siddhi.map.wso2event.version>5.0.1</siddhi.map.wso2event.version>
         <siddhi.store.rdbms.version>6.0.3</siddhi.store.rdbms.version>
         <carbon.coordination.version>2.1.1</carbon.coordination.version>

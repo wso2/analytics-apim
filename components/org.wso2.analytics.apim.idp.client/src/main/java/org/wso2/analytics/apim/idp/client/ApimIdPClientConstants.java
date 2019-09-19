@@ -52,7 +52,7 @@ public class ApimIdPClientConstants {
     public static final String DEFAULT_ADMIN_SERVICE_USERNAME = "admin";
     public static final String DEFAULT_ADMIN_SERVICE_PASSWORD = "admin";
     public static final String DEFAULT_ADMIN_SCOPE = "apim_analytics:admin";
-    public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin " +
+    public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin apim_analytics:creator " +
             "apim_analytics:publisher_owner apim_analytics:publisher_editor apim_analytics:publisher_viewer " +
             "apim_analytics:subscriber_owner apim_analytics:subscriber_editor apim_analytics:subscriber_viewer " +
             "apim_analytics:everyone openid";

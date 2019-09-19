@@ -299,6 +299,23 @@ wso2.datasources:
         validationTimeout: 30000
         isAutoCommit: false
 
+#   # Sample datasource used in API Manager
+#  - name: AM_DB
+#    description: Main datasource used by API Manager
+#    jndiConfig:
+#      name: jdbc/AM_DB
+#    definition:
+#      type: RDBMS
+#      configuration:
+#        jdbcUrl: 'jdbc:mysql://localhost:3306/WSO2AM_DB?useSSL=false'
+#        username: wso2carbon
+#        password: wso2carbon
+#        driverClassName: com.mysql.jdbc.Driver
+#        maxPoolSize: 10
+#        idleTimeout: 60000
+#        connectionTestQuery: SELECT 1
+#        validationTimeout: 30000
+#        isAutoCommit: false
 
 wso2.business.rules.manager:
   datasource: BUSINESS_RULES_DB
@@ -344,7 +361,7 @@ auth.configs:
   ssoEnabled: true
   properties:
     adminScope: apim_analytics:admin
-    allScopes: apim_analytics:admin apim_analytics:publisher_owner apim_analytics:publisher_editor apim_analytics:publisher_viewer apim_analytics:subscriber_owner apim_analytics:subscriber_editor apim_analytics:subscriber_viewer apim_analytics:everyone openid
+    allScopes: apim_analytics:admin apim_analytics:creator apim_analytics:publisher_owner apim_analytics:publisher_editor apim_analytics:publisher_viewer apim_analytics:subscriber_owner apim_analytics:subscriber_editor apim_analytics:subscriber_viewer apim_analytics:everyone openid
     adminServiceBaseUrl: https://localhost:9443
     adminServiceUsername: admin
     adminServicePassword: admin
@@ -362,3 +379,4 @@ wso2.dashboard:
   roles:
     creators:
       - apim_analytics:admin
+      - apim_analytics:creator
