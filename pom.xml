@@ -284,6 +284,12 @@
                 <version>${carbon.analytics.version}</version>
                 <type>zip</type>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.siddhi.parser.service.feature</artifactId>
+                <version>${carbon.analytics.version}</version>
+                <type>zip</type>
+            </dependency>
 
             <dependency>
                 <groupId>org.wso2.carbon.analytics</groupId>
@@ -593,9 +599,20 @@
 
             <!-- Authentication feature -->
             <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.idp.client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
                 <artifactId>org.wso2.carbon.analytics.idp.client</artifactId>
                 <version>${carbon.analytics-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.idp.client.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
@@ -672,6 +689,104 @@
                 <artifactId>org.wso2.carbon.streaming.integrator.statistics.feature</artifactId>
                 <version>${carbon.analytics.version}</version>
                 <type>zip</type>
+            </dependency>
+
+            <!-- Apim Analytics Idp client related dependencies -->
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-core</artifactId>
+                <version>${feign.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-gson</artifactId>
+                <version>${feign.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.axis2.wso2</groupId>
+                <artifactId>axis2</artifactId>
+                <version>${org.apache.axis2.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.axiom.wso2</groupId>
+                <artifactId>axiom</artifactId>
+                <version>${org.apache.ws.commons.axiom.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.wsdl4j</groupId>
+                <artifactId>wsdl4j.wso2</artifactId>
+                <version>${org.wso2.wsdl4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-saaj_1.3_spec</artifactId>
+                <version>${org.wso2.orbit.org.apache.geronimo.specs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${org.wso2.orbit.javax.mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.tomcat</groupId>
+                <artifactId>tomcat-servlet-api</artifactId>
+                <version>${org.wso2.orbit.org.apache.tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.framework.exporter</artifactId>
+                <version>${org.wso2.carbon.4x.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.neethi</groupId>
+                <artifactId>neethi</artifactId>
+                <version>${org.wso2.orbit.org.apache.neethi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.schema.wso2</groupId>
+                <artifactId>XmlSchema</artifactId>
+                <version>${org.apache.ws.commons.schema.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.securevault</groupId>
+                <artifactId>org.wso2.securevault</artifactId>
+                <version>${org.wso2.securevault.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${org.wso2.orbit.commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.wso2</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${org.apache.httpcomponents.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>${org.wso2.orbit.commons-httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
+                <version>${org.wso2.carbon.4x.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
+                <version>${org.wso2.carbon.identity.inbound.auth.oauth2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.secvault</groupId>
+                <artifactId>org.wso2.carbon.secvault</artifactId>
+                <version>${carbon.secvault.version}</version>
+            </dependency>
+            <!-- Datasources -->
+            <dependency>
+                <groupId>org.wso2.carbon.datasources</groupId>
+                <artifactId>org.wso2.carbon.datasource.core</artifactId>
+                <version>${carbon.datasources.version}</version>
             </dependency>
 
             <!-- Forget me tool -->
@@ -1084,10 +1199,10 @@
 
     <properties>
 
-        <carbon.analytics.version>3.0.3</carbon.analytics.version>
-        <siddhi.version>5.1.2</siddhi.version>
+        <carbon.analytics.version>3.0.7</carbon.analytics.version>
+        <siddhi.version>5.1.3</siddhi.version>
 
-        <carbon.analytics-common.version>6.1.30</carbon.analytics-common.version>
+        <carbon.analytics-common.version>6.1.32</carbon.analytics-common.version>
         <!-- Maven plugins -->
         <maven.findbugsplugin.version.exclude>findbugs-exclude.xml</maven.findbugsplugin.version.exclude>
 
@@ -1114,13 +1229,14 @@
         <carbon.deployment.version>5.2.1</carbon.deployment.version>
 
         <carbon.datasources.version>1.1.4</carbon.datasources.version>
+        <org.wso2.carbon.datasource.version.range>[1.0.0, 2.0.0)</org.wso2.carbon.datasource.version.range>
         <carbon.metrics.version>2.3.8</carbon.metrics.version>
         <carbon.jndi.version>1.0.5</carbon.jndi.version>
 
         <carbon.cache.version>1.1.3</carbon.cache.version>
         <carbon.touchpoint.version>1.1.1</carbon.touchpoint.version>
         <carbon.utils.version>2.0.8</carbon.utils.version>
-        <carbon.config.version>2.1.12</carbon.config.version>
+        <carbon.config.version>2.1.14</carbon.config.version>
         <carbon.config.version.range>[2.1.5, 3.0.0)</carbon.config.version.range>
         <carbon.securevault.version>5.0.13</carbon.securevault.version>
 
@@ -1130,7 +1246,7 @@
 
         <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.0.69</carbon.dashboards.version>
+        <carbon.dashboards.version>4.0.70</carbon.dashboards.version>
         <carbon.uis.version>1.0.3</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
@@ -1206,6 +1322,26 @@
         <siddhi.map.wso2event.version>5.0.1</siddhi.map.wso2event.version>
         <siddhi.store.rdbms.version>6.0.3</siddhi.store.rdbms.version>
         <carbon.coordination.version>2.1.1</carbon.coordination.version>
+
+        <!--Apim Analytics Idp client related -->
+        <feign.version>9.5.0</feign.version>
+        <org.apache.axis2.wso2.version>1.6.1-wso2v37</org.apache.axis2.wso2.version>
+        <org.apache.ws.commons.axiom.wso2.version>1.2.11-wso2v16</org.apache.ws.commons.axiom.wso2.version>
+        <org.apache.ws.commons.schema.wso2.version>1.4.7-wso2v7</org.apache.ws.commons.schema.wso2.version>
+        <org.wso2.orbit.org.apache.neethi.version>2.0.4.wso2v5</org.wso2.orbit.org.apache.neethi.version>
+        <org.wso2.wsdl4j.version>1.6.3.wso2v3</org.wso2.wsdl4j.version>
+        <org.wso2.orbit.org.apache.geronimo.specs.version>1.0.1.wso2v2
+        </org.wso2.orbit.org.apache.geronimo.specs.version>
+        <org.wso2.orbit.javax.mail.version>1.4.1.wso2v1</org.wso2.orbit.javax.mail.version>
+        <org.wso2.orbit.org.apache.tomcat.version>9.0.24.wso2v1</org.wso2.orbit.org.apache.tomcat.version>
+        <org.wso2.carbon.4x.version>4.4.40</org.wso2.carbon.4x.version>
+        <org.wso2.securevault.version>1.1.3</org.wso2.securevault.version>
+        <org.wso2.orbit.commons-codec.version>1.12.0.wso2v1</org.wso2.orbit.commons-codec.version>
+        <org.apache.httpcomponents.wso2.version>4.3.3.wso2v1</org.apache.httpcomponents.wso2.version>
+        <org.wso2.orbit.commons-httpclient.version>3.1.0.wso2v6</org.wso2.orbit.commons-httpclient.version>
+        <org.wso2.carbon.identity.inbound.auth.oauth2.version>6.2.7
+        </org.wso2.carbon.identity.inbound.auth.oauth2.version>
+        <carbon.secvault.version>5.0.13</carbon.secvault.version>
 
         <!--Integration Test Framework Versions -->
         <testng.version>6.9.10</testng.version>

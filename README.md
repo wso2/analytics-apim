@@ -5,7 +5,7 @@
 
 | Branch | Build Status |
 | :------------ |:-------------
-| 2.x | [![Build Status](https://wso2.org/jenkins/job/analytics-products/job/analytics-apim_2.x/badge/icon)](https://wso2.org/jenkins/view/analytics/job/analytics-products/job/analytics-apim_2.x/) |
+| master| [![Build Status](https://wso2.org/jenkins/view/analytics/job/analytics-products/job/analytics-apim/badge/icon)](https://wso2.org/jenkins/view/analytics/job/analytics-products/job/analytics-apim_2.x/) |
 
 [<img src="https://cdn.sstatic.net/Sites/stackoverflow/company/img/logos/so/so-logo.svg" width="120">](https://stackoverflow.com/tags/wso2-am/)
 

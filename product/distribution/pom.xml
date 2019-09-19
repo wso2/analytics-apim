@@ -202,6 +202,11 @@
             <artifactId>org.wso2.carbon.analytics.idp.client.feature</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.analytics.apim.idp.client.feature</artifactId>
+            <type>zip</type>
+        </dependency>
 
         <dependency>
             <groupId>org.wso2.carbon.analytics</groupId>
@@ -280,6 +285,13 @@
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
             <artifactId>org.wso2.analytics.apim.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+
+        <!-- Siddhi operator related features-->
+        <dependency>
+            <groupId>org.wso2.carbon.analytics</groupId>
+            <artifactId>org.wso2.siddhi.parser.service.feature</artifactId>
             <type>zip</type>
         </dependency>
 
@@ -529,7 +541,10 @@
                                     <id>org.wso2.carbon.analytics.idp.client.feature</id>
                                     <version>${carbon.analytics-common.version}</version>
                                 </feature>
-
+                                <feature>
+                                    <id>org.wso2.analytics.apim.idp.client.feature</id>
+                                    <version>${project.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.analytics.auth.rest.api.feature</id>
                                     <version>${carbon.analytics.version}</version>
@@ -607,6 +622,12 @@
                                 <feature>
                                     <id>org.wso2.analytics.apim.feature</id>
                                     <version>${project.version}</version>
+                                </feature>
+
+                                <!-- Siddhi operator-->
+                                <feature>
+                                    <id>org.wso2.siddhi.parser.service.feature</id>
+                                    <version>${carbon.analytics.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -775,6 +796,10 @@
                                     <id>org.wso2.carbon.analytics.idp.client.feature.group</id>
                                     <version>${carbon.analytics-common.version}</version>
                                 </feature>
+                                <feature>
+                                    <id>org.wso2.analytics.apim.idp.client.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>
 
                                 <!-- Databridge feature -->
                                 <feature>
@@ -819,6 +844,12 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.permissions.rest.api.feature</id>
+                                    <version>${carbon.analytics.version}</version>
+                                </feature>
+
+                                <!--Siddhi operator-->
+                                <feature>
+                                    <id>org.wso2.siddhi.parser.service.feature</id>
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
                             </features>
@@ -928,6 +959,10 @@
                                     <version>${carbon.analytics-common.version}</version>
                                 </feature>
                                 <feature>
+                                    <id>org.wso2.analytics.apim.idp.client.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>
+                                <feature>
                                     <id>org.wso2.carbon.analytics.msf4j.interceptor.common.feature.group</id>
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
@@ -983,6 +1018,12 @@
                                 <!-- Data Provider feature -->
                                 <feature>
                                     <id>org.wso2.carbon.data.provider.feature.group</id>
+                                    <version>${carbon.analytics.version}</version>
+                                </feature>
+
+                                <!--Siddhi operator-->
+                                <feature>
+                                    <id>org.wso2.siddhi.parser.service.feature</id>
                                     <version>${carbon.analytics.version}</version>
                                 </feature>
                             </features>
