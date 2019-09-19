@@ -45,6 +45,7 @@
         <module>APIMApiCreatedAnalytics</module>
         <module>APIMAppCreatedAnalytics</module>
         <module>APIMAppApiUsage</module>
+        <module>APIMAppResourceUsage</module>
         <module>APIMSubscriptionsAnalytics</module>
         <module>APIMSignupsAnalytics</module>
         <module>APIMTopApiUsers</module>

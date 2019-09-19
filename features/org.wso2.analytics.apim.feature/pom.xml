@@ -100,6 +100,11 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.analytics.apim.widgets.apim.app.resource.usage</artifactId>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.analytics.apim</groupId>
             <artifactId>org.wso2.analytics.apim.widgets.apim.subscriptions.analytics</artifactId>
             <type>zip</type>
         </dependency>
@@ -350,6 +355,16 @@
                                     <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMAppApiUsage/**</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.wso2.analytics.apim</groupId>
+                                    <artifactId>org.wso2.analytics.apim.widgets.apim.app.resource.usage</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    </outputDirectory>
+                                    <includes>APIMAppResourceUsage/**</includes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.wso2.analytics.apim</groupId>
