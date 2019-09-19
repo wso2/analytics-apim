@@ -1,0 +1,290 @@
+{
+  "dashboard": {
+    "url": "apimstore",
+    "owner": "admin",
+    "name": "APIM Store",
+    "description": "Dashboard for APIM Store statistics",
+    "landingPage": "analytics",
+    "parentId": "0",
+    "content": {
+      "properties": {},
+      "pages": [
+        {
+          "id": "analytics",
+          "name": "Analytics",
+          "content": [
+            {
+              "type": "row",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "column",
+                  "isClosable": true,
+                  "title": "",
+                  "width": 70.86419753086419,
+                  "content": [
+                    {
+                      "type": "row",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 47.092894624875896,
+                      "content": [
+                        {
+                          "type": "stack",
+                          "isClosable": true,
+                          "title": "",
+                          "width": 51.35608048993876,
+                          "height": 47.092894624875896,
+                          "content": [
+                            {
+                              "title": "[APIM Faulty Per App]",
+                              "type": "component",
+                              "component": "APIMFaultyPerApp",
+                              "props": {
+                                "id": "6e24c4c8-840b-49ea-989f-66a78e5c836b",
+                                "configs": {
+                                  "pubsub": {
+                                    "types": [
+                                      "subscriber"
+                                    ],
+                                    "publishers": [
+                                      "80cd04bd-accb-49fb-b199-cfeef69b79dd"
+                                    ]
+                                  },
+                                  "isGenerated": false,
+                                  "options": {
+                                    "header": true
+                                  }
+                                },
+                                "widgetID": "APIMFaultyPerApp"
+                              },
+                              "isClosable": false,
+                              "header": {
+                                "show": true
+                              },
+                              "componentName": "lm-react-component"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "stack",
+                          "isClosable": true,
+                          "title": "",
+                          "width": 48.64391951006124,
+                          "content": [
+                            {
+                              "title": "[APIM Top App Users]",
+                              "type": "component",
+                              "component": "APIMTopAppUsers",
+                              "props": {
+                                "id": "c857adaa-cf47-4a77-9d65-d68791d80330",
+                                "configs": {
+                                  "pubsub": {
+                                    "types": [
+                                      "subscriber"
+                                    ],
+                                    "publishers": [
+                                      "80cd04bd-accb-49fb-b199-cfeef69b79dd"
+                                    ]
+                                  },
+                                  "isGenerated": false,
+                                  "options": {
+                                    "header": true
+                                  }
+                                },
+                                "widgetID": "APIMTopAppUsers"
+                              },
+                              "isClosable": false,
+                              "header": {
+                                "show": true
+                              },
+                              "componentName": "lm-react-component"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 52.9071053751241,
+                      "content": [
+                        {
+                          "type": "stack",
+                          "isClosable": true,
+                          "title": "",
+                          "width": 51.35608048993876,
+                          "height": 52.3696682464455,
+                          "content": [
+                            {
+                              "title": "[APIM Registered App Users]",
+                              "type": "component",
+                              "component": "APIMRegisteredAppUsers",
+                              "props": {
+                                "id": "ad40c906-39bd-4095-ad81-6912d8b6dc8f",
+                                "configs": {
+                                  "isGenerated": false,
+                                  "options": {
+                                    "header": true
+                                  }
+                                },
+                                "widgetID": "APIMRegisteredAppUsers"
+                              },
+                              "isClosable": false,
+                              "header": {
+                                "show": true
+                              },
+                              "componentName": "lm-react-component"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "stack",
+                          "isClosable": true,
+                          "title": "",
+                          "width": 48.64391951006124,
+                          "content": [
+                            {
+                              "title": "[APIM App Resource Usage]",
+                              "type": "component",
+                              "component": "APIMAppResourceUsage",
+                              "props": {
+                                "id": "e5c58cb0-c14c-4656-95fb-dee361f2857b",
+                                "configs": {
+                                  "pubsub": {
+                                    "types": [
+                                      "subscriber"
+                                    ],
+                                    "publishers": [
+                                      "80cd04bd-accb-49fb-b199-cfeef69b79dd"
+                                    ]
+                                  },
+                                  "isGenerated": false,
+                                  "options": {
+                                    "header": true
+                                  }
+                                },
+                                "widgetID": "APIMAppResourceUsage"
+                              },
+                              "isClosable": false,
+                              "header": {
+                                "show": true
+                              },
+                              "componentName": "lm-react-component"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "column",
+                  "isClosable": true,
+                  "title": "",
+                  "width": 29.135802469135808,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 33.03162090399518,
+                      "height": 17.180094786729857,
+                      "content": [
+                        {
+                          "title": "[Date Time Range]",
+                          "type": "component",
+                          "component": "DateRangePicker",
+                          "props": {
+                            "id": "80cd04bd-accb-49fb-b199-cfeef69b79dd",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "granularity",
+                                  "from",
+                                  "to"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "defaultValue": "3 Months",
+                                "availableGranularities": "From Second",
+                                "autoSyncInterval": "10"
+                              }
+                            },
+                            "widgetID": "DateRangePicker"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 82.81990521327013,
+                      "content": [
+                        {
+                          "title": "[APIM Application Api Usage]",
+                          "type": "component",
+                          "component": "APIMAppApiUsage",
+                          "props": {
+                            "id": "4506ced7-8fa6-41ef-b985-3fd9da8d5d9b",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "80cd04bd-accb-49fb-b199-cfeef69b79dd"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true
+                              }
+                            },
+                            "widgetID": "APIMAppApiUsage"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "hasOwnerPermission": false,
+    "hasDesignerPermission": false,
+    "hasViewerPermission": false
+  },
+  "widgets": {
+    "generated": [],
+    "custom": [
+      "APIMFaultyPerApp",
+      "DateRangePicker",
+      "APIMTopAppUsers",
+      "APIMAppResourceUsage",
+      "APIMRegisteredAppUsers",
+      "APIMAppApiUsage"
+    ]
+  }
+}
