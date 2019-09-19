@@ -356,11 +356,15 @@ class APIMAppApiUsageWidget extends Widget {
      * */
     applicationSelectedHandleChange(event) {
         this.setState({ inProgress: true });
-        const { limit } = this.state;
+        let { limit } = this.state;
         const { id } = this.props;
 
+        if (!limit) {
+            limit = 5;
+        }
+
         this.setQueryParam(event.target.value, limit);
-        this.setState({ applicationSelected: event.target.value });
+        this.setState({ applicationSelected: event.target.value, limit });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -402,18 +406,11 @@ class APIMAppApiUsageWidget extends Widget {
 
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
-                <MuiThemeProvider
-                    theme={themeName === 'dark' ? darkTheme : lightTheme}
-                >
+                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConfig ? (
-                            <div
-                                style={paperWrapper}
-                            >
-                                <Paper
-                                    elevation={1}
-                                    style={paper}
-                                >
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
                                     <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='config.error.heading'

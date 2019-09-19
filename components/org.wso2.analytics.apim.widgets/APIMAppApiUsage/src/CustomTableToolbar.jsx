@@ -63,9 +63,6 @@ const styles = theme => ({
         marginTop: '60px',
         minWidth: theme.spacing.unit * 55,
     },
-    div: {
-        display: 'flex',
-    },
 });
 
 /**
@@ -98,7 +95,7 @@ function CustomTableToolbar(props) {
                 </Tooltip>
             </div>
             <Collapse in={expanded} timeout='auto' unmountOnExit className={classes.collapsef}>
-                <div style={styles.div}>
+                <div style={{ display: 'flex' }}>
                     <TextField
                         id='column-select'
                         select
