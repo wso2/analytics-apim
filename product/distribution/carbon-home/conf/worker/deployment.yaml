@@ -475,6 +475,10 @@ auth.configs:
            id: 1
            displayName: admin
 
+  # Configuration to enable apim alerts
+#analytics.solutions:
+#  APIM-alerts.enabled: true
+
 
   # Sample of deployment.config for Two node HA
 #deployment.config:
