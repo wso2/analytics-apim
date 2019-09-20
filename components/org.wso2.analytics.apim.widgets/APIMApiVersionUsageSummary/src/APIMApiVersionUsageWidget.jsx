@@ -18,16 +18,16 @@
  */
 
 import React from 'react';
-import Widget from '@wso2-dashboards/widget';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import cloneDeep from 'lodash/cloneDeep';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Axios from 'axios';
 import {
     defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
+import Axios from 'axios';
+import cloneDeep from 'lodash/cloneDeep';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Widget from '@wso2-dashboards/widget';
 import APIMApiVersionUsage from './APIMApiVersionUsage';
 
 const darkTheme = createMuiTheme({
@@ -101,6 +101,12 @@ class APIMApiVersionUsageWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            inProgress: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: this.props.height,
+            },
         };
 
         this.state = {
@@ -111,6 +117,14 @@ class APIMApiVersionUsageWidget extends Widget {
             usageData: null,
             localeMessages: null,
         };
+
+        // This will re-size the widget when the glContainer's width is changed.
+        if (this.props.glContainer !== undefined) {
+            this.props.glContainer.on('resize', () => this.setState({
+                width: this.props.glContainer.width,
+                height: this.props.glContainer.height,
+            }));
+        }
 
         this.handleChange = this.handleChange.bind(this);
         this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
@@ -289,7 +303,9 @@ class APIMApiVersionUsageWidget extends Widget {
         const {
             localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, usageData,
         } = this.state;
-        const { loadingIcon, paper, paperWrapper } = this.styles;
+        const {
+            loadingIcon, paper, paperWrapper, inProgress,
+        } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
@@ -297,22 +313,19 @@ class APIMApiVersionUsageWidget extends Widget {
         };
 
         if (!localeMessages || !usageData) {
-            return (<CircularProgress style={loadingIcon} />);
+            return (
+                <div style={inProgress}>
+                    <CircularProgress style={loadingIcon} />
+                </div>
+            );
         }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
-                <MuiThemeProvider
-                    theme={themeName === 'dark' ? darkTheme : lightTheme}
-                >
+                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConfig ? (
-                            <div
-                                style={paperWrapper}
-                            >
-                                <Paper
-                                    elevation={1}
-                                    style={paper}
-                                >
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
                                     <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='config.error.heading'
@@ -322,8 +335,8 @@ class APIMApiVersionUsageWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for
-                                             APIM Api Version Usage Summary widget'
+                                            defaultMessage={'Cannot fetch provider configuration forAPIM Api '
+                                            + 'Version Usage Summary widget'}
                                         />
                                     </Typography>
                                 </Paper>

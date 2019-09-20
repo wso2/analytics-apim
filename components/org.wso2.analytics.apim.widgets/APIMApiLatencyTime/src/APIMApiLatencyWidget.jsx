@@ -18,17 +18,17 @@
  */
 
 import React from 'react';
-import Widget from '@wso2-dashboards/widget';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import cloneDeep from 'lodash/cloneDeep';
-import Moment from 'moment';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Axios from 'axios';
 import {
     defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
+import Axios from 'axios';
+import cloneDeep from 'lodash/cloneDeep';
+import Moment from 'moment';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Widget from '@wso2-dashboards/widget';
 import APIMApiLatency from './APIMApiLatency';
 
 const darkTheme = createMuiTheme({
@@ -161,6 +161,12 @@ class APIMApiLatencyWidget extends Widget {
                 display: 'flex',
                 flexWrap: 'wrap',
             },
+            inProgress: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: this.props.height,
+            },
         };
 
         this.state = {
@@ -178,6 +184,14 @@ class APIMApiLatencyWidget extends Widget {
             metadata: this.metadata,
             chartConfig: this.chartConfig,
         };
+
+        // This will re-size the widget when the glContainer's width is changed.
+        if (this.props.glContainer !== undefined) {
+            this.props.glContainer.on('resize', () => this.setState({
+                width: this.props.glContainer.width,
+                height: this.props.glContainer.height,
+            }));
+        }
 
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleApiListReceived = this.handleApiListReceived.bind(this);
@@ -549,7 +563,9 @@ class APIMApiLatencyWidget extends Widget {
             localeMessages, faultyProviderConfig, chartConfig, metadata, height, width,
             apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
         } = this.state;
-        const { loadingIcon, paper, paperWrapper } = this.styles;
+        const {
+            loadingIcon, paper, paperWrapper, inProgress,
+        } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const latencyProps = {
@@ -569,18 +585,18 @@ class APIMApiLatencyWidget extends Widget {
         };
 
         if (!localeMessages || !latencyData) {
-            return (<CircularProgress style={loadingIcon} />);
+            return (
+                <div style={inProgress}>
+                    <CircularProgress style={loadingIcon} />
+                </div>
+            );
         }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
-                <MuiThemeProvider
-                    theme={themeName === 'dark' ? darkTheme : lightTheme}
-                >
+                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConfig ? (
-                            <div
-                                style={paperWrapper}
-                            >
+                            <div style={paperWrapper}>
                                 <Paper
                                     elevation={1}
                                     style={paper}
@@ -594,8 +610,8 @@ class APIMApiLatencyWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for
-                                             APIM Api Latency Time widget'
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Api Latency Time widget'}
                                         />
                                     </Typography>
                                 </Paper>

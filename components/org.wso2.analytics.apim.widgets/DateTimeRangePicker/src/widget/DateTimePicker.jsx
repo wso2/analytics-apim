@@ -47,7 +47,8 @@ class DateTimePicker extends Widget {
     if (this.props.glContainer != undefined) {
       this.props.glContainer.on('resize', () =>
         this.setState({
-          width: this.props.glContainer.width
+          width: this.props.glContainer.width,
+          height: this.props.glContainer.height,
         })
       );
     }
