@@ -48,9 +48,9 @@ begin
  -- checks whether the response time is higher than the threshold response time continously for 5 times
  	from RequestAlertInfoStream[not thresholdResponseTime is null]
  	select *
- 	insert into temp;
+ 	insert into TempStream;
  	@info(name = 'Abnormal response time pattern check')
- 	from every e1 = temp[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e2 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e3 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime], e4 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e5 = RequestAlertInfoStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime]
+ 	from every e1 = TempStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e2 = TempStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e3 = TempStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime], e4 = TempStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime],e5 = TempStream[thresholdResponseTime >0 and responseTime > thresholdResponseTime]
  	select e1.apiName, e1.apiVersion, e1.apiContext, e1.apiCreator, e1.apiCreatorTenantDomain, e1.thresholdResponseTime
  	insert into ResponseTimeAlertStream;
 
