@@ -28,7 +28,7 @@
     <groupId>org.wso2.analytics.apim</groupId>
     <artifactId>analytics-apim</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-alpha2-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>WSO2 Analytics for API Manager - Aggregator Module</name>
     <description>WSO2 Analytics for API Manager</description>
     <url>http://wso2.com/products/api-manager</url>
