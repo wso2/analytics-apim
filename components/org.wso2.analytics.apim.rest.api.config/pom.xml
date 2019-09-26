@@ -24,7 +24,7 @@
     <artifactId>org.wso2.analytics.apim.rest.api.config</artifactId>
     <packaging>bundle</packaging>
     <modelVersion>4.0.0</modelVersion>
-    <name>Store REST API</name>
+    <name>Config REST API</name>
 
     <build>
         <plugins>
