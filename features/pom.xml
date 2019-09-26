@@ -25,9 +25,11 @@
     <packaging>pom</packaging>
     <name>WSO2 Apim Analytics Features</name>
     <artifactId>analytics-apim-features</artifactId>
+
     <modules>
         <module>org.wso2.analytics.apim.feature</module>
         <module>org.wso2.analytics.apim.idp.client.feature</module>
+        <module>org.wso2.analytics.apim.rest.api.config.feature</module>
     </modules>
 
 </project>
