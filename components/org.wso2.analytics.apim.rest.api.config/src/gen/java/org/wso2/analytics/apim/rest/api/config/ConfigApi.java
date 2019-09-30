@@ -4,6 +4,7 @@ package org.wso2.analytics.apim.rest.api.config;
 import io.swagger.annotations.ApiParam;
 
 import org.wso2.analytics.apim.rest.api.config.dto.ErrorDTO;
+import org.wso2.analytics.apim.rest.api.config.dto.ServerUrlListDTO;
 import org.wso2.analytics.apim.rest.api.config.factories.ConfigApiServiceFactory;
 
 import org.wso2.msf4j.Microservice;
@@ -46,17 +47,17 @@ public class ConfigApi implements Microservice  {
 
     
     @GET
-    @Path("/getServerURL")
+    @Path("/getServerUrls")
     @Consumes({ "application/json" })
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Retrieve the Server url ", notes = "Retrieve the Server url from the dashboard deployment.yaml ", response = void.class, tags={  })
+    @io.swagger.annotations.ApiOperation(value = "Retrieve the Server urls ", notes = "Retrieve the Server urls from the deployment.yaml ", response = ServerUrlListDTO.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok. REST API url successfully retrieved. ", response = void.class),
+        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok. REST API url successfully retrieved. ", response = ServerUrlListDTO.class),
         
-        @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request. Invalid request or validation error. ", response = void.class) })
-    public Response configGetServerURLGet( @Context Request request)
+        @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request. Invalid request or validation error. ", response = ServerUrlListDTO.class) })
+    public Response configGetServerUrlsGet( @Context Request request)
     throws NotFoundException {
         
-        return delegate.configGetServerURLGet(request);
+        return delegate.configGetServerUrlsGet(request);
     }
 }

@@ -374,6 +374,8 @@ auth.configs:
     cacheTimeout: 900
     baseUrl: https://localhost:9643
     grantType: authorization_code
+    publisherUrl: https://localhost:9443
+    #storeUrl: https://localhost:9443
 
 wso2.dashboard:
   roles:

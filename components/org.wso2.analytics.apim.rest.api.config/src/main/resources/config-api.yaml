@@ -54,24 +54,26 @@ produces:
   - application/json
 
 ######################################################
-# The resource API to retrieve the server URL from the deployment yaml
+# The resource API to retrieve the server URLs from the deployment yaml
 ######################################################
 paths:
-  /config/getServerURL:
+  /config/getServerUrls:
 
 #-----------------------------------------------------
-# Retrieve server URL from the deployment yaml
+# Retrieve server URLs from the deployment yaml
 #-----------------------------------------------------
     get:
       summary: |
-        Retrieve the Server url
+        Retrieve the Server urls
       description: |
-        Retrieve the Server url from the deployment.yaml
+        Retrieve the Server urls from the deployment.yaml
       responses:
         200:
           description: |
             Ok.
             REST API url successfully retrieved.
+          schema:
+            $ref: '#/definitions/ServerUrlList'
         400:
           description: |
             Bad Request.
@@ -83,6 +85,20 @@ paths:
 # The resources used by some of the APIs above within the message body
 ######################################################
 definitions:
+
+#-----------------------------------------------------
+# The Server URL List resource
+#-----------------------------------------------------
+  ServerUrlList:
+    title: Server URL List
+    properties:
+      storeUrl:
+        type: string
+      publisherUrl:
+        type: string
+    example:
+      storeUrl: https://localhost:9443
+      publisherUrl: https://localhost:9443
 
 #-----------------------------------------------------
 # The Error resource
