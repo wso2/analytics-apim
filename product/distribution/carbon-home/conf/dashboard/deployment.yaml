@@ -365,7 +365,7 @@ auth.configs:
     adminServiceBaseUrl: https://localhost:9443
     adminServiceUsername: admin
     adminServicePassword: admin
-    kmDcrUrl: https://localhost:9443/client-registration/v0.14/register
+    kmDcrUrl: https://localhost:9443/client-registration/v0.15/register
     kmTokenUrl: https://localhost:9443/oauth2
     kmUsername: admin
     kmPassword: admin
