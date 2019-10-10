@@ -26,7 +26,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <propertyFile>../org.wso2.analytics.apim.idp.client.feature/etc/feature.properties</propertyFile>
+                            <propertyFile>../org.wso2.analytics.apim.rest.api.config.feature/etc/feature.properties</propertyFile>
                             <adviceFileContents>
                                 <advice>
                                     <name>org.wso2.carbon.p2.category.type</name>
