@@ -1374,6 +1374,14 @@
         <siddhi.io.grpc.version>1.0.3</siddhi.io.grpc.version>
         <carbon.coordination.version>2.1.1</carbon.coordination.version>
 
+        <!-- Java 11 related dependencies -->
+        <javax.annotation.version>1.3.2</javax.annotation.version>
+        <org.wso2.orbit.javax.xml.bind.version>2.3.1.wso2v1</org.wso2.orbit.javax.xml.bind.version>
+        <com.sun.xml.bind.version>2.4.0-b180830.0438</com.sun.xml.bind.version>
+        <org.apache.geronimo.spec.version>1.1</org.apache.geronimo.spec.version>
+        <com.sun.istack.version>3.0.8</com.sun.istack.version>
+        <com.sun.activation.version>1.2.0</com.sun.activation.version>
+
         <!--Apim Analytics Idp client related -->
         <feign.version>9.5.0</feign.version>
         <org.apache.axis2.wso2.version>1.6.1-wso2v37</org.apache.axis2.wso2.version>
