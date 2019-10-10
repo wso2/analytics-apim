@@ -1,5 +1,23 @@
+/*
+ * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.wso2.analytics.apim.rest.api.proxy.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import feign.gson.GsonDecoder;
 import org.wso2.analytics.apim.rest.api.proxy.APIMServiceStubs;
 import org.wso2.analytics.apim.rest.api.proxy.ApimApiService;
@@ -14,13 +32,16 @@ import org.wso2.msf4j.Request;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import javax.ws.rs.core.Response;
 
 /**
  * Proxy service for APIM REST APIs
  */
 public class ApimApiServiceImpl extends ApimApiService {
-    private static final String AM_COOKIE_P2 = "AM_TOKEN_P2=";
+    private static final String DASHBOARD_USER = "DASHBOARD_USER=";
+    private static final String AM_COOKIE_P1 = "SDID";
+    private static final String AM_COOKIE_P2 = "HID=";
     private static final String ENDPOINT = "{serverUrl}/api/am/{serverName}/v1.0";
     private static final String PUBLISHER = "publisher";
     private static final String STORE = "store";
@@ -41,33 +62,18 @@ public class ApimApiServiceImpl extends ApimApiService {
                 String publisherEndpoint = ENDPOINT.replace("{serverUrl}", publisherUrl)
                         .replace("{serverName}", PUBLISHER);
                 APIMServiceStubs serviceStubs = new APIMServiceStubs(publisherEndpoint, null);
-                String cookies = request.getHeader("Cookie");
-                String authHeader = request.getHeader("Authorization");
+                String authToken = getAccessToken(request.getHeader("Cookie"));
+                feign.Response response = serviceStubs.getPublisherServiceStub().getApis(authToken);
+                APIListDTO apisDetails = (APIListDTO) new GsonDecoder().decode(response, APIListDTO.class);
 
-                if (cookies != null) {
-                    String[] cookieArray =  cookies.split(";");
-                    String[] accessTokenCookie = Arrays.stream(cookieArray)
-                            .filter(header -> header.contains(AM_COOKIE_P2)).toArray(String[]::new);
-
-                    if (accessTokenCookie != null && accessTokenCookie.length > 0 && authHeader != null) {
-                        String authToken = authHeader.replace("Bearer ", "") +
-                                accessTokenCookie[0].replace(AM_COOKIE_P2, "");
-                        feign.Response response = serviceStubs.getPublisherServiceStub().getApis(authToken);
-                        APIListDTO apisDetails = (APIListDTO) new GsonDecoder().decode(response, APIListDTO.class);
-
-                        if (response.status() == 401) {
-                            return Response.status(response.status()).entity("Unauthorized user").build();
-                        }
-                        return Response.status(response.status()).entity(apisDetails).build();
-                    }
+                if (response.status() == 401) {
+                    return Response.status(response.status()).entity("Unauthorized user").build();
                 }
+                return Response.status(response.status()).entity(apisDetails).build();
             } else {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Unable to find Publisher server URL.").build();
             }
-
-            return Response.ok().entity(null).build();
-
         } catch (ConfigurationException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error occurred while retrieving Publisher server URL: " + e.getMessage()).build();
@@ -94,33 +100,19 @@ public class ApimApiServiceImpl extends ApimApiService {
                 String storeEndpoint = ENDPOINT.replace("{serverUrl}", storeUrl)
                         .replace("{serverName}", STORE);
                 APIMServiceStubs serviceStubs = new APIMServiceStubs(null, storeEndpoint);
-                String cookies = request.getHeader("Cookie");
-                String authHeader = request.getHeader("Authorization");
+                String authToken = getAccessToken(request.getHeader("Cookie"));
+                feign.Response response = serviceStubs.getStoreServiceStub().getApplications(authToken);
+                ApplicationListDTO appDetails =
+                        (ApplicationListDTO) new GsonDecoder().decode(response, ApplicationListDTO.class);
 
-                if (cookies != null) {
-                    String[] cookieArray =  cookies.split(";");
-                    String[] accessTokenCookie = Arrays.stream(cookieArray)
-                            .filter(header -> header.contains(AM_COOKIE_P2)).toArray(String[]::new);
-
-                    if (accessTokenCookie != null && accessTokenCookie.length > 0 && authHeader != null) {
-                        String authToken = authHeader.replace("Bearer ", "") +
-                                accessTokenCookie[0].replace(AM_COOKIE_P2, "");
-                        feign.Response response = serviceStubs.getStoreServiceStub().getApplications(authToken);
-                        ApplicationListDTO appDetails =
-                                (ApplicationListDTO) new GsonDecoder().decode(response, ApplicationListDTO.class);
-
-                        if (response.status() == 401) {
-                            return Response.status(response.status()).entity("Unauthorized user").build();
-                        }
-                        return Response.status(response.status()).entity(appDetails).build();                    }
+                if (response.status() == 401) {
+                    return Response.status(response.status()).entity("Unauthorized user").build();
                 }
+                return Response.status(response.status()).entity(appDetails).build();
             } else {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Unable to find Developer Prtal server URL.").build();
             }
-
-            return Response.ok().entity(null).build();
-
         } catch (ConfigurationException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error occurred while retrieving Publisher server URL: " + e.getMessage()).build();
@@ -158,4 +150,32 @@ public class ApimApiServiceImpl extends ApimApiService {
         }
         return null;
     }
+
+    /**
+     * Construct the access token from cookies
+     *
+     * @param cookies cookies string received with the request
+     * @return the access token
+     */
+    private String getAccessToken(String cookies) {
+        List<String> cookieList = Arrays.asList(cookies.split(";"));
+        String accessTokenP1 = "";
+        String accessTokenP2 = "";
+
+        for (String cookie : cookieList) {
+            if (cookie.contains(DASHBOARD_USER)) {
+                String userDTO = cookie.replace(DASHBOARD_USER, "");
+                JsonObject jsonUserDto = new Gson().fromJson(userDTO, JsonObject.class);
+                JsonElement element = jsonUserDto.get(AM_COOKIE_P1);
+                if (element != null) {
+                    accessTokenP1 = element.getAsString();
+                }
+            } else if (cookie.contains(AM_COOKIE_P2)) {
+                accessTokenP2 = cookie.replace(AM_COOKIE_P2, "");
+            }
+        }
+
+        return accessTokenP1 + accessTokenP2;
+    }
+
 }

@@ -28,7 +28,7 @@ import org.wso2.carbon.config.provider.ConfigProvider;
  * Service component to get Carbon Config Provider OSGi service.
  */
 @Component(
-        name = "ServiceComponentConfigProvider",
+        name = "ApimProxyServiceComponent",
         service = ServiceComponent.class,
         immediate = true
 )
