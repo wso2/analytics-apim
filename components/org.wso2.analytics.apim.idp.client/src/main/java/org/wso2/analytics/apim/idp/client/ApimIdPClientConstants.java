@@ -63,7 +63,7 @@ public class ApimIdPClientConstants {
     public static final String DEFAULT_KM_USERNAME = "admin";
     public static final String DEFAULT_KM_PASSWORD = "admin";
     public static final String DEFAULT_SP_APP_CONTEXT = "sp";
-    public static final String DEFAULT_PORTAL_APP_CONTEXT = "portal";
+    public static final String DEFAULT_PORTAL_APP_CONTEXT = "analytics-dashboard";
     public static final String DEFAULT_BR_DB_APP_CONTEXT = "business-rules";
     public static final String DEFAULT_CACHE_TIMEOUT = "900";
     public static final String DEFAULT_CONNECTION_TIMEOUT = "10000";
@@ -73,14 +73,12 @@ public class ApimIdPClientConstants {
     public static final String POST_LOGOUT_REDIRECT_URI_PHRASE = "&post_logout_redirect_uri=";
 
     public static final String AUTHENTICATION_ADMIN_SERVICE_ENDPOINT_POSTFIX = "/services/AuthenticationAdmin";
-    public static final String REMOTE_USER_STORE_MANAGER_SERVICE_ENDPOINT_POSTFIX
-            = "/services/RemoteUserStoreManagerService";
     public static final String OAUTH_ADMIN_SERVICE_ENDPOINT_POSTFIX = "/services/OAuthAdminService";
 
     public static final String REDIRECT_URL = "Redirect_Url";
 
     public static final String SP_APP_NAME = "sp";
-    public static final String PORTAL_APP_NAME = "sp_portal";
+    public static final String PORTAL_APP_NAME = "sp_analytics_dashboard";
     public static final String BR_DB_APP_NAME = "sp_business_rules";
 
     public static final String INTROSPECTION_URL = "introspectionUrl";
