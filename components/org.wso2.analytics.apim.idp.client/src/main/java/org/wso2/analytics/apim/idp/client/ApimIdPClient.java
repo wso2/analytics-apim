@@ -64,6 +64,8 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SPACE;
 public class ApimIdPClient extends ExternalIdPClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClient.class);
+    private static final String OAUTH_CONSUMER_KEY = "oauthConsumerKey";
+    private static final String OAUTH_CONSUMER_SECRET_KEY = "oauthConsumerSecret";
 
     private DCRMServiceStub dcrmServiceStub;
     private OAuth2ServiceStubs oAuth2ServiceStubs;
@@ -110,7 +112,6 @@ public class ApimIdPClient extends ExternalIdPClient {
                 .build();
         this.isSSOEnabled = isSSOEnabled;
         this.ssoLogoutURL = ssoLogoutURL;
-        this.oAuthAdminServiceClient = oAuthAdminServiceClient;
     }
 
     @Override
@@ -145,16 +146,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         for (Map.Entry<String, OAuthApplicationInfo> entry : this.oAuthAppInfoMap.entrySet()) {
             String appContext = entry.getKey();
             OAuthApplicationInfo oAuthApp = entry.getValue();
-
-            String clientId = oAuthApp.getClientId();
-            String clientSecret = oAuthApp.getClientSecret();
             String clientName = oAuthApp.getClientName();
-            if (clientId != null && clientSecret != null) {
-                OAuthApplicationInfo newOAuthApp = new OAuthApplicationInfo(clientName, clientId, clientSecret);
-                this.oAuthAppInfoMap.replace(appContext, newOAuthApp);
-            } else {
-                registerApplication(appContext, clientName, kmUserName);
-            }
+            initialiseApplication(appContext, clientName, kmUserName);
         }
     }
 
@@ -270,8 +263,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         Map<String, String> oAuthAppDataMap = new HashMap<>();
         try {
             OAuthConsumerAppDTO oAuthApp = this.oAuthAdminServiceClient.getOAuthApplicationDataByAppName(oAuthAppName);
-            oAuthAppDataMap.put("oauthConsumerKey", oAuthApp.getOauthConsumerKey());
-            oAuthAppDataMap.put("oauthConsumerSecret", oAuthApp.getOauthConsumerSecret());
+            oAuthAppDataMap.put(OAUTH_CONSUMER_KEY, oAuthApp.getOauthConsumerKey());
+            oAuthAppDataMap.put(OAUTH_CONSUMER_SECRET_KEY, oAuthApp.getOauthConsumerSecret());
         } catch (RemoteException | OAuthAdminServiceIdentityOAuthAdminException e) {
             String error = "Error occurred while getting the OAuth application data for the application name:"
                     + oAuthAppName;
@@ -546,12 +539,12 @@ public class ApimIdPClient extends ExternalIdPClient {
      * @throws IdPClientException thrown when an error occurred when sending the DCR call or retrieving application
      * data using OAuthAdminService service
      */
-    private void registerApplication(String appContext, String clientName, String kmUserName)
+    private synchronized void initialiseApplication(String appContext, String clientName, String kmUserName)
             throws IdPClientException {
         if (isOAuthApplicationExists(kmUserName + "_" + clientName)) {
             Map<String, String> oAuthAppDataMap = getOAuthApplicationData(kmUserName + "_" + clientName);
             OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo(
-                    clientName, oAuthAppDataMap.get("oauthConsumerKey"), oAuthAppDataMap.get("oauthConsumerSecret")
+                    clientName, oAuthAppDataMap.get(OAUTH_CONSUMER_KEY), oAuthAppDataMap.get(OAUTH_CONSUMER_SECRET_KEY)
             );
             this.oAuthAppInfoMap.replace(appContext, oAuthApplicationInfo);
             return;
