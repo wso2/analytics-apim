@@ -31,6 +31,7 @@ import org.wso2.msf4j.Request;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.ws.rs.core.Response;
@@ -64,12 +65,15 @@ public class ApimApiServiceImpl extends ApimApiService {
                 APIMServiceStubs serviceStubs = new APIMServiceStubs(publisherEndpoint, null);
                 String authToken = getAccessToken(request.getHeader("Cookie"));
                 feign.Response response = serviceStubs.getPublisherServiceStub().getApis(authToken);
-                APIListDTO apisDetails = (APIListDTO) new GsonDecoder().decode(response, APIListDTO.class);
 
-                if (response.status() == 401) {
-                    return Response.status(response.status()).entity("Unauthorized user").build();
+                if (response.status() == 200) {
+                    APIListDTO apisDetails = (APIListDTO) new GsonDecoder().decode(response, APIListDTO.class);
+                    return Response.status(response.status()).entity(apisDetails).build();
                 }
-                return Response.status(response.status()).entity(apisDetails).build();
+
+                HashMap<String, String> responseDetails =
+                        (HashMap<String, String>) new GsonDecoder().decode(response, HashMap.class);
+                return Response.status(response.status()).entity(responseDetails.get("description")).build();
             } else {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Unable to find Publisher server URL.").build();
@@ -79,8 +83,7 @@ public class ApimApiServiceImpl extends ApimApiService {
                     .entity("Error occurred while retrieving Publisher server URL: " + e.getMessage()).build();
         } catch (IOException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error occurred while processing server response: " + e.getMessage())
-                    .build();
+                    .entity("Error occurred while processing server response: " + e.getMessage()).build();
         }
     }
 
@@ -102,24 +105,26 @@ public class ApimApiServiceImpl extends ApimApiService {
                 APIMServiceStubs serviceStubs = new APIMServiceStubs(null, storeEndpoint);
                 String authToken = getAccessToken(request.getHeader("Cookie"));
                 feign.Response response = serviceStubs.getStoreServiceStub().getApplications(authToken);
-                ApplicationListDTO appDetails =
-                        (ApplicationListDTO) new GsonDecoder().decode(response, ApplicationListDTO.class);
 
-                if (response.status() == 401) {
-                    return Response.status(response.status()).entity("Unauthorized user").build();
+                if (response.status() == 200) {
+                    ApplicationListDTO appDetails =
+                            (ApplicationListDTO) new GsonDecoder().decode(response, ApplicationListDTO.class);
+                    return Response.status(response.status()).entity(appDetails).build();
                 }
-                return Response.status(response.status()).entity(appDetails).build();
+
+                HashMap<String, String> responseDetails =
+                        (HashMap<String, String>) new GsonDecoder().decode(response, HashMap.class);
+                return Response.status(response.status()).entity(responseDetails.get("description")).build();
             } else {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Unable to find Developer Prtal server URL.").build();
+                        .entity("Unable to find Developer Portal server URL.").build();
             }
         } catch (ConfigurationException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error occurred while retrieving Publisher server URL: " + e.getMessage()).build();
+                    .entity("Error occurred while retrieving Developer Portal server URL: " + e.getMessage()).build();
         } catch (IOException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error occurred while processing server response: " + e.getMessage())
-                    .build();
+                    .entity("Error occurred while processing server response: " + e.getMessage()).build();
         }
     }
 
@@ -171,7 +176,7 @@ public class ApimApiServiceImpl extends ApimApiService {
                     accessTokenP1 = element.getAsString();
                 }
             } else if (cookie.contains(AM_COOKIE_P2)) {
-                accessTokenP2 = cookie.replace(AM_COOKIE_P2, "");
+                accessTokenP2 = cookie.replace(AM_COOKIE_P2, "").trim();
             }
         }
 
