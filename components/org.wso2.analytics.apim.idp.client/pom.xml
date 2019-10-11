@@ -121,12 +121,8 @@
             org.wso2.carbon.analytics.idp.client.*,
             com.google.common.*,
             feign.*,
-            feign.gson.*;version="${feign.version}",
-            org.json.simple.*,
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
-            org.wso2.carbon.config.*;version="${carbon.config.version.range}",
             org.wso2.carbon.datasource.core.*;version="${org.wso2.carbon.datasource.version.range}",
-            org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
             org.wso2.carbon.secvault.*;version="${carbon.secvault.version}",
             *;resolution:=optional
         </import.package>

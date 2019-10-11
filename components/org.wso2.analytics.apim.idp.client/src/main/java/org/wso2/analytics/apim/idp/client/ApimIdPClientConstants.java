@@ -59,7 +59,7 @@ public class ApimIdPClientConstants {
     public static final String DEFAULT_ADMIN_SERVICE_BASE_URL = "https://localhost:9443";
     public static final String DEFAULT_BASE_URL = "https://localhost:9643";
     public static final String DEFAULT_KM_TOKEN_URL = "https://localhost:9443/oauth2";
-    public static final String DEFAULT_KM_DCR_URL = "https://localhost:9443/client-registration/v0.14/register";
+    public static final String DEFAULT_KM_DCR_URL = "https://localhost:9443/client-registration/v0.15/register";
     public static final String DEFAULT_KM_USERNAME = "admin";
     public static final String DEFAULT_KM_PASSWORD = "admin";
     public static final String DEFAULT_SP_APP_CONTEXT = "sp";
