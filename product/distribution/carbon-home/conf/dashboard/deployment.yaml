@@ -361,7 +361,7 @@ data.provider.configs:
 
 ## Additional APIs that needs to be added to the server.
 ## Should be provided as a key value pairs { API context path: Microservice implementation class }
-## The configured APIs will be available as https://{host}:{port}/portal/{API_context_path}
+## The configured APIs will be available as https://{host}:{port}/analytics-dashboard/{API_context_path}
 additional.apis:
   /apis/analytics/v1.0/apim: org.wso2.analytics.apim.rest.api.proxy.ApimApi
 
