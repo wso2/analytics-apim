@@ -18,16 +18,16 @@
  */
 
 import React from 'react';
-import Widget from '@wso2-dashboards/widget';
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import cloneDeep from 'lodash/cloneDeep';
-import Axios from 'axios';
 import {
     defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
+import Axios from 'axios';
+import cloneDeep from 'lodash/cloneDeep';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Widget from '@wso2-dashboards/widget';
 import APIMOverallApiStats from './APIMOverallApiStats';
 
 const darkTheme = createMuiTheme({
@@ -97,7 +97,21 @@ class APIMOverallApiStatsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            inProgress: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: this.props.height,
+            },
         };
+
+        // This will re-size the widget when the glContainer's width is changed.
+        if (this.props.glContainer !== undefined) {
+            this.props.glContainer.on('resize', () => this.setState({
+                width: this.props.glContainer.width,
+                height: this.props.glContainer.height,
+            }));
+        }
 
         this.assembleApiAvailableQuery = this.assembleApiAvailableQuery.bind(this);
         this.assembleAPIDataQuery = this.assembleAPIDataQuery.bind(this);
@@ -260,7 +274,9 @@ class APIMOverallApiStatsWidget extends Widget {
         const {
             localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData,
         } = this.state;
-        const { loadingIcon, paper, paperWrapper } = this.styles;
+        const {
+            loadingIcon, paper, paperWrapper, inProgress,
+        } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const overallStatsProps = {
@@ -268,22 +284,19 @@ class APIMOverallApiStatsWidget extends Widget {
         };
 
         if (!localeMessages) {
-            return (<CircularProgress style={loadingIcon} />);
+            return (
+                <div style={inProgress}>
+                    <CircularProgress style={loadingIcon} />
+                </div>
+            );
         }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 {
                     faultyProviderConfig ? (
-                        <MuiThemeProvider
-                            theme={themeName === 'dark' ? darkTheme : lightTheme}
-                        >
-                            <div
-                                style={paperWrapper}
-                            >
-                                <Paper
-                                    elevation={1}
-                                    style={paper}
-                                >
+                        <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
                                     <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='config.error.heading'
@@ -293,8 +306,8 @@ class APIMOverallApiStatsWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for
-                                             APIM Overall Api Stats widget'
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Overall Api Stats widget'}
                                         />
                                     </Typography>
                                 </Paper>

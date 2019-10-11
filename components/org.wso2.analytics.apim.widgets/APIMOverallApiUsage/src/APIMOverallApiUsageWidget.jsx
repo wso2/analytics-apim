@@ -116,6 +116,12 @@ class APIMOverallApiUsageWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            inProgress: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: this.props.height,
+            },
         };
 
         this.state = {
@@ -130,6 +136,14 @@ class APIMOverallApiUsageWidget extends Widget {
             limit: 0,
             localeMessages: null,
         };
+
+        // This will re-size the widget when the glContainer's width is changed.
+        if (this.props.glContainer !== undefined) {
+            this.props.glContainer.on('resize', () => this.setState({
+                width: this.props.glContainer.width,
+                height: this.props.glContainer.height,
+            }));
+        }
 
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
@@ -402,7 +416,9 @@ class APIMOverallApiUsageWidget extends Widget {
         const {
             localeMessages, faultyProviderConfig, width, limit, apiCreatedBy, usageData1, metadata, chartConfig,
         } = this.state;
-        const { loadingIcon, paper, paperWrapper } = this.styles;
+        const {
+            loadingIcon, paper, paperWrapper, inProgress
+        } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const ovearllUsageProps = {
@@ -410,22 +426,19 @@ class APIMOverallApiUsageWidget extends Widget {
         };
 
         if (!localeMessages || !usageData1) {
-            return (<CircularProgress style={loadingIcon} />);
+            return (
+                <div style={inProgress}>
+                    <CircularProgress style={loadingIcon} />
+                </div>
+            );
         }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
-                <MuiThemeProvider
-                    theme={themeName === 'dark' ? darkTheme : lightTheme}
-                >
+                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConfig ? (
-                            <div
-                                style={paperWrapper}
-                            >
-                                <Paper
-                                    elevation={1}
-                                    style={paper}
-                                >
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
                                     <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='config.error.heading'
@@ -435,8 +448,8 @@ class APIMOverallApiUsageWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage='Cannot fetch provider configuration for
-                                             APIM Overall Api Usage widget'
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Overall Api Usage widget'}
                                         />
                                     </Typography>
                                 </Paper>

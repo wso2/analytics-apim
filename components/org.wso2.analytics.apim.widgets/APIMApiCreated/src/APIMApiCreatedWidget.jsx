@@ -18,17 +18,36 @@
  */
 
 import React from 'react';
-import Widget from '@wso2-dashboards/widget';
-import Moment from 'moment';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import cloneDeep from 'lodash/cloneDeep';
-import Axios from 'axios';
 import {
     defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
+import Axios from 'axios';
+import cloneDeep from 'lodash/cloneDeep';
+import Moment from 'moment';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Widget from '@wso2-dashboards/widget';
 import APIMApiCreated from './APIMApiCreated';
+
+const darkTheme = createMuiTheme({
+    palette: {
+        type: 'dark',
+    },
+    typography: {
+        useNextVariants: true,
+    },
+});
+
+const lightTheme = createMuiTheme({
+    palette: {
+        type: 'light',
+    },
+    typography: {
+        useNextVariants: true,
+    },
+});
 
 /**
  * Language
@@ -77,7 +96,21 @@ class APIMApiCreatedWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            inProgress: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: this.props.height,
+            },
         };
+
+        // This will re-size the widget when the glContainer's width is changed.
+        if (this.props.glContainer !== undefined) {
+            this.props.glContainer.on('resize', () => this.setState({
+                width: this.props.glContainer.width,
+                height: this.props.glContainer.height,
+            }));
+        }
 
         this.assembleweekQuery = this.assembleweekQuery.bind(this);
         this.assembletotalQuery = this.assembletotalQuery.bind(this);
@@ -194,43 +227,47 @@ class APIMApiCreatedWidget extends Widget {
         const {
             localeMessages, faultyProviderConf, totalCount, weekCount,
         } = this.state;
-        const { loadingIcon, paper, paperWrapper } = this.styles;
+        const {
+            loadingIcon, paper, paperWrapper, inProgress,
+        } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatedProps = { themeName, totalCount, weekCount };
 
         if (!localeMessages) {
-            return (<CircularProgress style={loadingIcon} />);
+            return (
+                <div style={inProgress}>
+                    <CircularProgress style={loadingIcon} />
+                </div>
+            );
         }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
-                {
-                    faultyProviderConf ? (
-                        <div
-                            style={paperWrapper}
-                        >
-                            <Paper
-                                elevation={1}
-                                style={paper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage
-                                        id='config.error.heading'
-                                        defaultMessage='Configuration Error !'
-                                    />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='config.error.body'
-                                        defaultMessage='Cannot fetch provider configuration for APIM Api Created widget'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                    ) : (
-                        <APIMApiCreated {...apiCreatedProps} />
-                    )
-                }
+                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                    {
+                        faultyProviderConf ? (
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='config.error.body'
+                                            defaultMessage={'Cannot fetch provider configuration for APIM Api '
+                                            + 'Created widget'}
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <APIMApiCreated {...apiCreatedProps} />
+                        )
+                    }
+                </MuiThemeProvider>
             </IntlProvider>
         );
     }
