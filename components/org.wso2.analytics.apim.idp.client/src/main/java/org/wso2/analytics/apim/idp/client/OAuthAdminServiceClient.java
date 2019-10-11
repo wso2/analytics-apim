@@ -20,11 +20,15 @@ package org.wso2.analytics.apim.idp.client;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
+import org.apache.commons.httpclient.Header;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceIdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Base64;
 
 import static org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTH_ADMIN_SERVICE_ENDPOINT_POSTFIX;
@@ -35,13 +39,21 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTH_AD
 public class OAuthAdminServiceClient {
   private OAuthAdminServiceStub oAuthAdminServiceStub;
 
-  public OAuthAdminServiceClient(String adminServiceBaseUrl, String sessionCookie) throws AxisFault {
+  public OAuthAdminServiceClient(String adminServiceBaseUrl, String adminServiceUsername, String adminServicePassword,
+                                 String sessionCookie) throws AxisFault {
     String endPoint = adminServiceBaseUrl + OAUTH_ADMIN_SERVICE_ENDPOINT_POSTFIX;
     oAuthAdminServiceStub = new OAuthAdminServiceStub(endPoint);
 
     ServiceClient serviceClient = oAuthAdminServiceStub._getServiceClient();
     Options option = serviceClient.getOptions();
-    option.setManageSession(true); 
+    option.setManageSession(true);
+    String userNamePassword = adminServiceUsername + ":" + adminServicePassword;
+    String encodedString = Base64.getEncoder().encodeToString(userNamePassword.getBytes(StandardCharsets.UTF_8));
+    String authorizationHeader = "Basic " + encodedString;
+    ArrayList<Header> headers = new ArrayList<>();
+    Header authHeader = new Header("Authorization", authorizationHeader);
+    headers.add(authHeader);
+    option.setProperty("HTTP_HEADERS", headers);
     option.setProperty(COOKIE_STRING, sessionCookie);
   } 
    
