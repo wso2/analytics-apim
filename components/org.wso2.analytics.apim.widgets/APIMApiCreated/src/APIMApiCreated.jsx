@@ -37,12 +37,12 @@ export default function APIMApiCreated(props) {
             paddingTop: '15px',
             width: '90%',
         },
-        cIconWrapper: {
+        iconWrapper: {
             float: 'left',
             width: '40%',
             height: '62%',
         },
-        cIcon: {
+        icon: {
             display: 'block',
             margin: 'auto',
             marginTop: '25%',
@@ -69,7 +69,7 @@ export default function APIMApiCreated(props) {
             letterSpacing: 1.5,
             fontSize: 'small',
         },
-        icon: {
+        playIcon: {
             position: 'absolute',
             bottom: '13%',
             right: '8%',
@@ -100,12 +100,12 @@ export default function APIMApiCreated(props) {
                     <FormattedMessage id='widget.heading' defaultMessage='TOTAL API COUNT' />
                 </h3>
             </div>
-            <div style={styles.cIconWrapper}>
+            <div style={styles.iconWrapper}>
                 <ApiIcon
                     strokeColor={themeName === 'dark' ? '#fff' : '#2571a7'}
                     width='50%'
                     height='50%'
-                    style={styles.cIcon}
+                    style={styles.icon}
                 />
             </div>
             <div style={styles.dataWrapper}>
@@ -125,11 +125,7 @@ export default function APIMApiCreated(props) {
                 </h3>
                 <p style={styles.weekCount}>
                     [
-                    {' '}
-                    {weekCount}
-                    {' '}
-                    {weekCount === '01' ? 'API' : 'APIS'}
-                    {' '}
+                    {' '} {weekCount} {' '} {weekCount === '01' ? 'API' : 'APIS'} {' '}
                     <FormattedMessage id='within.week.text' defaultMessage='WITHIN LAST WEEK ' />
                     ]
                 </p>
@@ -153,11 +149,11 @@ export default function APIMApiCreated(props) {
                     cursor: 'pointer',
                 }}
                 onClick={() => {
-                    window.location.href = './api-app-statistics';
+                    window.location.href = './api-app-stats';
                 }}
             >
                 <FormattedMessage id='overtime.btn.text' defaultMessage='Overtime Analysis' />
-                <PlayCircleFilled style={styles.icon} />
+                <PlayCircleFilled style={styles.playIcon} />
             </button>
         </div>
     );

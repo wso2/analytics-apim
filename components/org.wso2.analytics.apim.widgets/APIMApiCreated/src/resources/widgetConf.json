@@ -8,14 +8,19 @@
     },
     "providerConfig" : {
       "configs" : {
-        "type" : "SiddhiStoreDataProvider",
+        "type" : "RDBMSStreamingDataProvider",
         "config" : {
-          "siddhiApp" : "@App:name('APIMApiCreatedSiddhi') @primaryKey('API_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API(API_ID int,API_PROVIDER string,API_NAME string,API_VERSION string,CONTEXT string,CONTEXT_TEMPLATE string,API_TIER string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string);",
+          "datasourceName": "AM_DB",
           "queryData" : {
-            "totalQuery": "from AM_API select count(API_ID) as totalCount",
-            "weekQuery" : "from AM_API on CREATED_TIME >= '{{weekStart}}' select count(API_ID) as weekCount;"
+            "totalQuery": "select COUNT(API_ID) as count from AM_API where CONTEXT {{context_condition}} group by API_ID",
+            "weekQuery" : "select COUNT(API_ID) as count from AM_API where CONTEXT {{context_condition}} and CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}' group by API_ID"
           },
-          "publishingInterval" : 60
+          "tableName": "AM_API",
+          "incrementalColumn": "API_ID",
+          "publishingLimit": 2147483647,
+          "purgingInterval": 6,
+          "purgingLimit": 6,
+          "isPurgingEnable": false
         }
       }
     },
