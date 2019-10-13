@@ -480,7 +480,7 @@ class APIMTopAgentsWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage{'Cannot fetch provider configuration for APIM'
+                                            defaultMessage={'Cannot fetch provider configuration for APIM'
                                             + ' Top User Agents widget'}
                                         />
                                     </Typography>
