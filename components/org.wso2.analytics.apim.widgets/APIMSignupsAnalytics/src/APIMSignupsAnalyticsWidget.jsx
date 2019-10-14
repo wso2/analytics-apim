@@ -181,8 +181,8 @@ class APIMSignupsAnalyticsWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'),
-            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS')
+            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss')
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -196,23 +196,23 @@ class APIMSignupsAnalyticsWidget extends Widget {
     handleDataReceived(message) {
         const { data } = message;
 
-        if (data.length !== 0) {
+        if (data && data.length > 0) {
             const xAxisTicks = [];
             const chartData = [];
             const tableData = [];
-            let index = 0;
+            let signups = 0;
 
             data.forEach((dataUnit) => {
+                signups += dataUnit[2];
                 chartData.push({
                     x: new Date(dataUnit[1]).getTime(),
-                    y: dataUnit[2] + index,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss')
-                        + '\nCOUNT:' + (dataUnit[2] + index++),
+                    y: signups,
+                    label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss A')
+                        + '\nCOUNT:' + signups,
                 });
                 tableData.push({
-                    id: index,
-                    developer: dataUnit[0].toString(),
-                    signeduptime: Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss'),
+                    developer: dataUnit[0],
+                    signeduptime: Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss A'),
                 });
             });
 

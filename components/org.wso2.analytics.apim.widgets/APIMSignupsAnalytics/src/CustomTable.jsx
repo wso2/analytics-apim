@@ -18,10 +18,12 @@
  */
 
 import React from 'react';
+import Moment from 'moment';
 import PropTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
@@ -37,10 +39,23 @@ import CustomTableToolbar from './CustomTableToolbar';
  * @return {number}
  * */
 function desc(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
+    let tempa = a[orderBy];
+    let tempb = b[orderBy];
+
+    if (typeof (tempa) === 'string') {
+        if (Moment(tempa).isValid()) {
+            tempa = Moment(tempa).valueOf();
+            tempb = Moment(tempb).valueOf();
+        } else {
+            tempa = tempa.toLowerCase();
+            tempb = tempb.toLowerCase();
+        }
+    }
+
+    if (tempb < tempa) {
         return -1;
     }
-    if (b[orderBy] > a[orderBy]) {
+    if (tempb > tempa) {
         return 1;
     }
     return 0;
@@ -236,34 +251,38 @@ class CustomTable extends React.Component {
                                 </TableRow>
                             )}
                         </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
+                                    colSpan={3}
+                                    count={tableData.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    backIconButtonProps={{
+                                        'aria-label': 'Previous Page',
+                                    }}
+                                    nextIconButtonProps={{
+                                        'aria-label': 'Next Page',
+                                    }}
+                                    onChangePage={this.handleChangePage}
+                                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                                    classes={{
+                                        root: classes.paginationRoot,
+                                        toolbar: classes.paginationToolbar,
+                                        caption: classes.paginationCaption,
+                                        selectRoot: classes.paginationSelectRoot,
+                                        select: classes.paginationSelect,
+                                        selectIcon: classes.paginationSelectIcon,
+                                        input: classes.paginationInput,
+                                        menuItem: classes.paginationMenuItem,
+                                        actions: classes.paginationActions,
+                                    }}
+                                />
+                            </TableRow>
+                        </TableFooter>
                     </Table>
                 </div>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
-                    component='div'
-                    count={tableData.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    backIconButtonProps={{
-                        'aria-label': 'Previous Page',
-                    }}
-                    nextIconButtonProps={{
-                        'aria-label': 'Next Page',
-                    }}
-                    onChangePage={this.handleChangePage}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                    classes={{
-                        root: classes.paginationRoot,
-                        toolbar: classes.paginationToolbar,
-                        caption: classes.paginationCaption,
-                        selectRoot: classes.paginationSelectRoot,
-                        select: classes.paginationSelect,
-                        selectIcon: classes.paginationSelectIcon,
-                        input: classes.paginationInput,
-                        menuItem: classes.paginationMenuItem,
-                        actions: classes.paginationActions,
-                    }}
-                />
             </Paper>
         );
     }
