@@ -252,7 +252,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiCreated/**</includes>
                                 </artifactItem>
@@ -262,7 +262,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMAppCreated/**</includes>
                                 </artifactItem>
@@ -272,7 +272,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMSubscriptions/**</includes>
                                 </artifactItem>
@@ -282,7 +282,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMDeveloperSignups/**</includes>
                                 </artifactItem>
@@ -292,7 +292,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopApiCreators/**</includes>
                                 </artifactItem>
@@ -302,7 +302,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopAppCreators/**</includes>
                                 </artifactItem>
@@ -312,7 +312,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopAppUsers/**</includes>
                                 </artifactItem>
@@ -322,7 +322,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopSubscribers/**</includes>
                                 </artifactItem>
@@ -332,7 +332,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMOverallApiStats/**</includes>
                                 </artifactItem>
@@ -342,7 +342,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiCreatedAnalytics/**</includes>
                                 </artifactItem>
@@ -352,7 +352,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMAppCreatedAnalytics/**</includes>
                                 </artifactItem>
@@ -362,7 +362,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMAppApiUsage/**</includes>
                                 </artifactItem>
@@ -372,7 +372,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMAppResourceUsage/**</includes>
                                 </artifactItem>
@@ -382,7 +382,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMFaultyPerApp/**</includes>
                                 </artifactItem>
@@ -392,7 +392,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMSubscriptionsAnalytics/**</includes>
                                 </artifactItem>
@@ -402,7 +402,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMSignupsAnalytics/**</includes>
                                 </artifactItem>
@@ -412,7 +412,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopApiUsers/**</includes>
                                 </artifactItem>
@@ -422,7 +422,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiVersionUsageSummary/**</includes>
                                 </artifactItem>
@@ -432,7 +432,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiResourceUsageSummary/**</includes>
                                 </artifactItem>
@@ -442,7 +442,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiBackendUsageSummary/**</includes>
                                 </artifactItem>
@@ -452,7 +452,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiLastAccessSummary/**</includes>
                                 </artifactItem>
@@ -462,7 +462,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiResponseSummary/**</includes>
                                 </artifactItem>
@@ -472,7 +472,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMOverallApiUsage/**</includes>
                                 </artifactItem>
@@ -482,7 +482,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMRegisteredAppUsers/**</includes>
                                 </artifactItem>
@@ -492,7 +492,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopFaultyApis/**</includes>
                                 </artifactItem>
@@ -502,7 +502,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopThrottledOutApis/**</includes>
                                 </artifactItem>
@@ -512,7 +512,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopUserAgents/**</includes>
                                 </artifactItem>
@@ -522,7 +522,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMTopPlatforms/**</includes>
                                 </artifactItem>
@@ -532,7 +532,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiLatencyTime/**</includes>
                                 </artifactItem>
@@ -542,7 +542,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMGeoBasedInvocations/**</includes>
                                 </artifactItem>
@@ -553,7 +553,7 @@
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/portal/extensions/widgets/
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>DateRangePicker/**</includes>
                                 </artifactItem>
