@@ -355,6 +355,10 @@ wso2.transport.http:
       keyStorePassword: wso2carbon
       certPass: wso2carbon
 
+## Dashboard data provider authorization
+data.provider.configs:
+  authorizingClass: org.wso2.carbon.dashboards.core.DashboardDataProviderAuthorizer
+
 ## Authentication configuration
 auth.configs:
   type: apim
