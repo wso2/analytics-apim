@@ -116,6 +116,9 @@ function CustomTableToolbar(props) {
                         <MenuItem value='apiname'>
                             <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
                         </MenuItem>
+                        <MenuItem value='apiVersion'>
+                            <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
+                        </MenuItem>
                         <MenuItem value='createdtime'>
                             <FormattedMessage id='table.heading.createdtime' defaultMessage='CREATED TIME' />
                         </MenuItem>
