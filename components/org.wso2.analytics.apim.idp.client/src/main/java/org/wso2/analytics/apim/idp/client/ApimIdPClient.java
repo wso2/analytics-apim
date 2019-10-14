@@ -22,6 +22,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import feign.Response;
 import feign.gson.GsonDecoder;
+import org.apache.axis2.AxisFault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.analytics.apim.idp.client.dto.DCRClientInfo;
@@ -39,6 +40,7 @@ import org.wso2.carbon.analytics.idp.client.external.impl.DCRMServiceStub;
 import org.wso2.carbon.analytics.idp.client.external.impl.OAuth2ServiceStubs;
 import org.wso2.carbon.analytics.idp.client.external.models.ExternalSession;
 import org.wso2.carbon.analytics.idp.client.external.models.OAuthApplicationInfo;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceIdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
@@ -62,12 +64,18 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SPACE;
 public class ApimIdPClient extends ExternalIdPClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClient.class);
+    private static final String OAUTH_CONSUMER_KEY = "oauthConsumerKey";
+    private static final String OAUTH_CONSUMER_SECRET_KEY = "oauthConsumerSecret";
 
     private DCRMServiceStub dcrmServiceStub;
     private OAuth2ServiceStubs oAuth2ServiceStubs;
     private String kmUserName;
     private String authorizeEndpoint;
     private String grantType;
+    private String adminServiceBaseUrl;
+    private String adminServiceUsername;
+    private String adminServicePassword;
+    private String uriHost;
     private String baseUrl;
     private String adminScopeName;
     private String allScopes;
@@ -79,13 +87,17 @@ public class ApimIdPClient extends ExternalIdPClient {
     // Here the user given context are mapped to the OAuthApp Info.
     private Map<String, OAuthApplicationInfo> oAuthAppInfoMap;
 
-    public ApimIdPClient(String baseUrl, String authorizeEndpoint, String grantType, String adminScopeName,
-                         String allScopes, Map<String, OAuthApplicationInfo> oAuthAppInfoMap, int cacheTimeout,
-                         String kmUserName, DCRMServiceStub dcrmServiceStub, OAuth2ServiceStubs oAuth2ServiceStubs,
-                         boolean isSSOEnabled, String ssoLogoutURL,
-                         OAuthAdminServiceClient oAuthAdminServiceClient) {
+    public ApimIdPClient(String adminServiceBaseUrl, String adminServiceUsername, String adminServicePassword,
+                         String uriHost, String baseUrl, String authorizeEndpoint, String grantType,
+                         String adminScopeName, String allScopes, Map<String, OAuthApplicationInfo> oAuthAppInfoMap,
+                         int cacheTimeout, String kmUserName, DCRMServiceStub dcrmServiceStub,
+                         OAuth2ServiceStubs oAuth2ServiceStubs, boolean isSSOEnabled, String ssoLogoutURL) {
         super(baseUrl, authorizeEndpoint, grantType, null, adminScopeName, oAuthAppInfoMap,
                 cacheTimeout, null, dcrmServiceStub, oAuth2ServiceStubs, null, null, isSSOEnabled, ssoLogoutURL);
+        this.adminServiceBaseUrl = adminServiceBaseUrl;
+        this.adminServiceUsername = adminServiceUsername;
+        this.adminServicePassword = adminServicePassword;
+        this.uriHost = uriHost;
         this.baseUrl = baseUrl;
         this.authorizeEndpoint = authorizeEndpoint;
         this.grantType = grantType;
@@ -100,24 +112,42 @@ public class ApimIdPClient extends ExternalIdPClient {
                 .build();
         this.isSSOEnabled = isSSOEnabled;
         this.ssoLogoutURL = ssoLogoutURL;
-        this.oAuthAdminServiceClient = oAuthAdminServiceClient;
     }
 
     @Override
     public void init(String kmUserName) throws IdPClientException {
+        /*
+        * Service clients are created inside init (which is called in login method) in order to prevent error logs
+        * printed when the dashboard runtime started without starting APIM server.
+        * */
+        LoginAdminServiceClient login;
+        String session;
+        try {
+            login = new LoginAdminServiceClient(this.adminServiceBaseUrl);
+            session = login.authenticate(this.adminServiceUsername, this.adminServicePassword, this.uriHost);
+        } catch (AxisFault axisFault) {
+            String error = "Error occurred while creating Login admin Service Client.";
+            LOG.error(error);
+            throw new IdPClientException(error, axisFault.getCause());
+        } catch (RemoteException | LoginAuthenticationExceptionException e) {
+            String error = "Error occurred while authenticating admin user using Login admin Service Client.";
+            LOG.error(error);
+            throw new IdPClientException(error, e);
+        }
+        try {
+            this.oAuthAdminServiceClient = new OAuthAdminServiceClient(this.adminServiceBaseUrl,
+                    this.adminServiceUsername, this.adminServicePassword, session);
+        } catch (AxisFault axisFault) {
+            String error = "Error occurred while creating OAuth Admin Service Client.";
+            LOG.error(error);
+            throw new IdPClientException(error, axisFault.getCause());
+        }
+
         for (Map.Entry<String, OAuthApplicationInfo> entry : this.oAuthAppInfoMap.entrySet()) {
             String appContext = entry.getKey();
             OAuthApplicationInfo oAuthApp = entry.getValue();
-
-            String clientId = oAuthApp.getClientId();
-            String clientSecret = oAuthApp.getClientSecret();
             String clientName = oAuthApp.getClientName();
-            if (clientId != null && clientSecret != null) {
-                OAuthApplicationInfo newOAuthApp = new OAuthApplicationInfo(clientName, clientId, clientSecret);
-                this.oAuthAppInfoMap.replace(appContext, newOAuthApp);
-            } else {
-                registerApplication(appContext, clientName, kmUserName);
-            }
+            initialiseApplication(appContext, clientName, kmUserName);
         }
     }
 
@@ -233,8 +263,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         Map<String, String> oAuthAppDataMap = new HashMap<>();
         try {
             OAuthConsumerAppDTO oAuthApp = this.oAuthAdminServiceClient.getOAuthApplicationDataByAppName(oAuthAppName);
-            oAuthAppDataMap.put("oauthConsumerKey", oAuthApp.getOauthConsumerKey());
-            oAuthAppDataMap.put("oauthConsumerSecret", oAuthApp.getOauthConsumerSecret());
+            oAuthAppDataMap.put(OAUTH_CONSUMER_KEY, oAuthApp.getOauthConsumerKey());
+            oAuthAppDataMap.put(OAUTH_CONSUMER_SECRET_KEY, oAuthApp.getOauthConsumerSecret());
         } catch (RemoteException | OAuthAdminServiceIdentityOAuthAdminException e) {
             String error = "Error occurred while getting the OAuth application data for the application name:"
                     + oAuthAppName;
@@ -509,12 +539,12 @@ public class ApimIdPClient extends ExternalIdPClient {
      * @throws IdPClientException thrown when an error occurred when sending the DCR call or retrieving application
      * data using OAuthAdminService service
      */
-    private void registerApplication(String appContext, String clientName, String kmUserName)
+    private synchronized void initialiseApplication(String appContext, String clientName, String kmUserName)
             throws IdPClientException {
         if (isOAuthApplicationExists(kmUserName + "_" + clientName)) {
             Map<String, String> oAuthAppDataMap = getOAuthApplicationData(kmUserName + "_" + clientName);
             OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo(
-                    clientName, oAuthAppDataMap.get("oauthConsumerKey"), oAuthAppDataMap.get("oauthConsumerSecret")
+                    clientName, oAuthAppDataMap.get(OAUTH_CONSUMER_KEY), oAuthAppDataMap.get(OAUTH_CONSUMER_SECRET_KEY)
             );
             this.oAuthAppInfoMap.replace(appContext, oAuthApplicationInfo);
             return;

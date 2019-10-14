@@ -17,7 +17,6 @@
  */
 package org.wso2.analytics.apim.idp.client;
 
-import org.apache.axis2.AxisFault;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -36,13 +35,11 @@ import org.wso2.carbon.analytics.idp.client.core.utils.config.IdPClientConfigura
 import org.wso2.carbon.analytics.idp.client.external.impl.DCRMServiceStub;
 import org.wso2.carbon.analytics.idp.client.external.impl.OAuth2ServiceStubs;
 import org.wso2.carbon.analytics.idp.client.external.models.OAuthApplicationInfo;
-import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.secvault.SecretRepository;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -253,33 +250,9 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         String targetURIForRedirection = properties.getOrDefault(ApimIdPClientConstants.EXTERNAL_SSO_LOGOUT_URL,
                             ApimIdPClientConstants.DEFAULT_EXTERNAL_SSO_LOGOUT_URL);
 
-        LoginAdminServiceClient login;
-        String session;
-        try {
-            login = new LoginAdminServiceClient(adminServiceBaseUrl);
-            session = login.authenticate(adminServiceUsername, adminServicePassword, uriHost);
-        } catch (AxisFault axisFault) {
-            String error = "Error occurred while creating Login admin Service Client.";
-            LOG.error(error);
-            throw new IdPClientException(error, axisFault.getCause());
-        } catch (RemoteException | LoginAuthenticationExceptionException e) {
-            String error = "Error occurred while authenticating admin user using Login admin Service Client.";
-            LOG.error(error);
-            throw new IdPClientException(error, e);
-        }
-        OAuthAdminServiceClient oAuthAdminServiceClient;
-        try {
-            oAuthAdminServiceClient
-                    = new OAuthAdminServiceClient(adminServiceBaseUrl, session);
-        } catch (AxisFault axisFault) {
-            String error = "Error occurred while creating OAuth Admin Service Client.";
-            LOG.error(error);
-            throw new IdPClientException(error, axisFault.getCause());
-        }
-
-        return new ApimIdPClient(baseUrl, kmTokenUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType,
-                adminScopeName, allScopes, oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub,
-                keyManagerServiceStubs, idPClientConfiguration.isSsoEnabled(), targetURIForRedirection,
-                oAuthAdminServiceClient);
+        return new ApimIdPClient(adminServiceBaseUrl, adminServiceUsername, adminServicePassword, uriHost, baseUrl,
+                kmTokenUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType, adminScopeName, allScopes,
+                oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub, keyManagerServiceStubs,
+                idPClientConfiguration.isSsoEnabled(), targetURIForRedirection);
     }
 }
