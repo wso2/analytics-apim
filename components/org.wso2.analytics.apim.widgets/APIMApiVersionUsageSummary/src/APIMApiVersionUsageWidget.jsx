@@ -212,16 +212,18 @@ class APIMApiVersionUsageWidget extends Widget {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.apiusagequery;
-        query = query
-            .replace('{{from}}', timeFrom)
-            .replace('{{to}}', timeTo)
-            .replace('{{per}}', perValue)
-            .replace('{{limit}}', limit);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiUsageReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{from}}': timeFrom,
+            '{{to}}': timeTo,
+            '{{per}}': perValue,
+            '{{limit}}': limit
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
     }
 
     /**

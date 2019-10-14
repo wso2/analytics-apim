@@ -292,10 +292,12 @@ class APIMApiLatencyWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiListReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(this.props.id, widgetName, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -368,6 +370,7 @@ class APIMApiLatencyWidget extends Widget {
         const { apiSelected, apiVersion } = queryParam;
         const { providerConfig, apiFullData } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         let apiID = 0;
 
         apiFullData.forEach((api) => {
@@ -377,11 +380,12 @@ class APIMApiLatencyWidget extends Widget {
         });
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.resourcequery;
-        query = query
-            .replace('{{apiID}}', apiID);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleResourceReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'resourcequery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{apiID}}': apiID
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleResourceReceived, dataProviderConfigs);
     }
 
     /**
@@ -430,29 +434,37 @@ class APIMApiLatencyWidget extends Widget {
         });
         this.setState({ latencyData: null });
 
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.mainquery;
-        query = query
-            .replace('{{timeFrom}}', timeFrom)
-            .replace('{{timeTo}}', timeTo)
-            .replace('{{per}}', perValue);
+        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
         if (apiSelected !== '' && apiVersion !== '' && resSelected.length !== 0) {
-            query = query
-                .replace('{{querystring}}', "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND (" + text + ')')
-                .replace('{{api}}', apiSelected)
-                .replace('{{version}}', apiVersion);
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{per}}': perValue,
+                '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND (" + text + ')',
+                '{{api}}': apiSelected,
+                '{{version}}': apiVersion
+            };
         } else if (apiSelected !== '' && apiVersion !== '') {
-            query = query
-                .replace('{{querystring}}',
-                    "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND apiResourceTemplate==''")
-                .replace('{{api}}', apiSelected)
-                .replace('{{version}}', apiVersion);
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{per}}': perValue,
+                '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND apiResourceTemplate==''",
+                '{{api}}': apiSelected,
+                '{{version}}': apiVersion
+            };
         } else {
-            query = query
-                .replace('{{querystring}}', "on apiResourceTemplate==''");
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{per}}': perValue,
+                '{{querystring}}': "on apiResourceTemplate==''"
+            };
         }
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager()
+            .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**

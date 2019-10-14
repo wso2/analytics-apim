@@ -177,14 +177,16 @@ class APIMSignupsAnalyticsWidget extends Widget {
     assembleQuery() {
         const { providerConfig, timeFrom, timeTo } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let { query } = dataProviderConfigs.configs.config.queryData;
-        query = query
-            .replace('{{timeFrom}}', Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'))
-            .replace('{{timeTo}}', Moment(timeTo).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'));
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'query';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'),
+            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS')
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**

@@ -162,10 +162,12 @@ class APIMSubscriptionsWidget extends Widget {
     assembletotalQuery() {
         const { providerConfig } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.totalQuery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleTotalCountReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'totalQuery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleTotalCountReceived, dataProviderConfigs);
     }
 
     /**
@@ -193,14 +195,16 @@ class APIMSubscriptionsWidget extends Widget {
     assembleweekQuery() {
         const { providerConfig } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const weekStart = Moment().subtract(7, 'days');
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.weekQuery;
-        query = query
-            .replace('{{weekStart}}', Moment(weekStart).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'));
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleWeekCountReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'weekQuery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{weekStart}}': Moment(weekStart).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS')
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleWeekCountReceived, dataProviderConfigs);
     }
 
     /**

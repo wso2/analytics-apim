@@ -217,10 +217,12 @@ class APIMApiResponseWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleApiListReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(this.props.id, widgetName, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -288,28 +290,37 @@ class APIMApiResponseWidget extends Widget {
             }
         });
 
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.mainquery;
-        query = query
-            .replace('{{timeFrom}}', timeFrom)
-            .replace('{{timeTo}}', timeTo)
-            .replace('{{per}}', perValue);
+        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
 
         if (apiSelected === 'All' && apiVersion === 'All') {
-            query = query
-                .replace('{{querystring}}', 'on (' + text + ')');
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{per}}': perValue,
+                '{{querystring}}': 'on (' + text + ')'
+            };
         } else if (apiSelected !== 'All' && apiVersion !== 'All') {
-            query = query
-                .replace('{{querystring}}', "on apiName=='{{api}}' AND apiVersion=='{{version}}'")
-                .replace('{{api}}', apiSelected)
-                .replace('{{version}}', apiVersion);
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{per}}': perValue,
+                '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}'",
+                '{{api}}': apiSelected,
+                '{{version}}': apiVersion
+            };
         } else {
-            query = query
-                .replace('{{querystring}}', "on apiName=='{{api}}'")
-                .replace('{{api}}', apiSelected);
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{per}}': perValue,
+                '{{querystring}}': "on apiName=='{{api}}'",
+                '{{api}}': apiSelected
+            };
         }
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager()
+            .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**

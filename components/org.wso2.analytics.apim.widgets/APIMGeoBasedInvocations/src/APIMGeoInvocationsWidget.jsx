@@ -244,10 +244,12 @@ class APIMGeoInvocationsWidget extends Widget {
         this.resetState();
         const { providerConfig } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiListReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -319,24 +321,29 @@ class APIMGeoInvocationsWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.mainquery;
-        query = query
-            .replace('{{timeFrom}}', timeFrom)
-            .replace('{{timeTo}}', timeTo)
-            .replace('{{per}}', perValue);
+        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
         if (apiSelected !== '' && apiVersion !== '') {
-            query = query
-                .replace('{{querystring}}', "on apiName=='{{api}}' AND apiVersion=='{{version}}'")
-                .replace('{{api}}', apiSelected)
-                .replace('{{version}}', apiVersion);
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{per}}': perValue,
+                '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}'",
+                '{{api}}': apiSelected,
+                '{{version}}': apiVersion
+            };
         } else {
-            query = query
-                .replace('{{querystring}}', '');
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{per}}': perValue,
+                '{{querystring}}': ''
+            };
         }
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**

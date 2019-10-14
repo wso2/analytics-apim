@@ -231,10 +231,12 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         this.resetState();
         const { providerConfig } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.sublistquery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleSubListReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'sublistquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleSubListReceived, dataProviderConfigs);
     }
 
     /**
@@ -267,10 +269,12 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         this.resetState();
         const { providerConfig } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiListReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -313,6 +317,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         this.resetState();
 
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const { providerConfig, apilist } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { subscribedTo } = queryParam;
@@ -329,17 +334,19 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         });
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.subscriptionsquery;
+        dataProviderConfigs.configs.config.queryData.queryName = 'subscriptionsquery';
         if (subscribedTo === 'All') {
-            query = query
-                .replace('{{querystring}}', 'on (' + text + ')');
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{querystring}}': 'on (' + text + ')'
+            };
         } else {
-            query = query
-                .replace('{{querystring}}', "on API_ID=='{{api}}'")
-                .replace('{{api}}', subscribedTo);
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{querystring}}': "on API_ID=='{{api}}'",
+                '{{api}}': subscribedTo
+            };
         }
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleSubscriptionsReceived, dataProviderConfigs);
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleSubscriptionsReceived, dataProviderConfigs);
     }
 
     /**
@@ -385,30 +392,40 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             }
         });
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.mainquery;
-        query = query
-            .replace('{{timeFrom}}', Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'))
-            .replace('{{timeTo}}', Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'));
+        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
         if (appCreatedBy === 'All' && text === '') {
-            query = query
-                .replace('{{querystring}}', "AND APPLICATION_ID=='0'");
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+                '{{querystring}}': "AND APPLICATION_ID=='0'"
+            };
         } else if (appCreatedBy !== 'All' && text !== '') {
-            query = query
-                .replace('{{querystring}}', "AND (APPLICATION_ID=='{{appList}}') AND CREATED_BY=='{{creator}}'")
-                .replace('{{appList}}', text)
-                .replace('{{creator}}', appCreatedBy);
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+                '{{querystring}}': "AND (APPLICATION_ID=='{{appList}}') AND CREATED_BY=='{{creator}}'",
+                '{{appList}}': text,
+                '{{creator}}': appCreatedBy
+            };
         } else if (appCreatedBy !== 'All') {
-            query = query
-                .replace('{{querystring}}', "AND APPLICATION_ID=='0' AND CREATED_BY=='{{creator}}'")
-                .replace('{{creator}}', appCreatedBy);
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+                '{{querystring}}': "AND APPLICATION_ID=='0' AND CREATED_BY=='{{creator}}'",
+                '{{creator}}': appCreatedBy
+            };
         } else {
-            query = query
-                .replace('{{querystring}}', "AND (APPLICATION_ID=='{{appList}}')")
-                .replace('{{appList}}', text);
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+                '{{querystring}}': "AND (APPLICATION_ID=='{{appList}}')",
+                '{{appList}}': text
+            };
         }
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**

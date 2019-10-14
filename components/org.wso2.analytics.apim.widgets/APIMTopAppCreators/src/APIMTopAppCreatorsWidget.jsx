@@ -178,12 +178,13 @@ class APIMTopAppCreatorsWidget extends Widget {
         this.setQueryParam(limit);
 
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let { query } = dataProviderConfigs.configs.config.queryData;
-        query = query
-            .replace('{{limit}}', limit);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'query';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{limit}}': limit
+        };
+        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**

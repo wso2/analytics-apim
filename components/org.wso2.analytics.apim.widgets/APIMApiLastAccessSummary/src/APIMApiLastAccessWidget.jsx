@@ -198,13 +198,15 @@ class APIMApiLastAccessWidget extends Widget {
         const { limit } = queryParam;
         const { providerConfig } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.lastaccessquery;
-        query = query
-            .replace('{{limit}}', limit);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiAccessReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'lastaccessquery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{limit}}': limit
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiAccessReceived, dataProviderConfigs);
     }
 
     /**

@@ -199,8 +199,8 @@ class APIMRegisteredAppUsersWidget extends Widget {
     assembleAppCountQuery() {
         const { providerConfig } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.appCountQuery;
         let { username } = super.getCurrentUser();
 
         // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
@@ -209,9 +209,12 @@ class APIMRegisteredAppUsersWidget extends Widget {
             username = username.replace('@carbon.super', '');
         }
 
-        query = query.replace('{{appOwner}}', username);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleAppCountDataReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'appCountQuery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{appOwner}}': username
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleAppCountDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -238,8 +241,8 @@ class APIMRegisteredAppUsersWidget extends Widget {
     assembleAppQuery() {
         const { providerConfig } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.applicationQuery;
         let { username } = super.getCurrentUser();
 
         // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
@@ -248,9 +251,12 @@ class APIMRegisteredAppUsersWidget extends Widget {
             username = username.replace('@carbon.super', '');
         }
 
-        query = query.replace('{{appOwner}}', username);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleAppDataReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'applicationQuery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{appOwner}}': username
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleAppDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -285,15 +291,18 @@ class APIMRegisteredAppUsersWidget extends Widget {
     assembleAppKeyMapQuery() {
         const { providerConfig, applicationList } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.appKeyMapQuery;
 
         if (applicationList) {
             const appIdList = applicationList.map((app) => { return app.appId; });
             const appIdListQuery = 'APPLICATION_ID==\'' + appIdList.join('\' or APPLICATION_ID==\'') + '\'';
-            query = query.replace('{{query}}', appIdListQuery);
-            dataProviderConfigs.configs.config.queryData.query = query;
-            super.getWidgetChannelManager().subscribeWidget(id, this.handleAppKeyDataReceived, dataProviderConfigs);
+            dataProviderConfigs.configs.config.queryData.queryName = 'appKeyMapQuery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{query}}': appIdListQuery
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleAppKeyDataReceived, dataProviderConfigs);
         } else {
             this.setState({ inProgress: false });
         }
@@ -330,15 +339,17 @@ class APIMRegisteredAppUsersWidget extends Widget {
     assembleConsumerAppsQuery() {
         const { providerConfig, appKeyMapList } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.consumerAppsQuery;
 
         if (appKeyMapList) {
             const appKeyList = appKeyMapList.map((app) => { return app.consumerKey; });
             const appKeyListQuery = 'CONSUMER_KEY==\'' + appKeyList.join('\' or CONSUMER_KEY==\'') + '\'';
-            query = query.replace('{{query}}', appKeyListQuery);
-            dataProviderConfigs.configs.config.queryData.query = query;
-            super.getWidgetChannelManager().subscribeWidget(id,
+            dataProviderConfigs.configs.config.queryData.queryName = 'consumerAppsQuery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{query}}': appKeyListQuery
+            };
+            super.getWidgetChannelManager().subscribeWidget(id, widgetName,
                 this.handleConsumerAppsDataReceived, dataProviderConfigs);
         } else {
             this.setState({ inProgress: false });
@@ -376,16 +387,18 @@ class APIMRegisteredAppUsersWidget extends Widget {
     assembleAppAccessQuery() {
         const { providerConfig, consumerKeyMapList } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.accessTokenQuery;
 
         if (consumerKeyMapList) {
             const consumerKeyList = consumerKeyMapList.map((app) => { return app.consumerKeyId; });
             const consumerKeyListQuery = 'CONSUMER_KEY_ID==\''
                 + consumerKeyList.join('\' or CONSUMER_KEY_ID==\'') + '\'';
-            query = query.replace('{{query}}', consumerKeyListQuery);
-            dataProviderConfigs.configs.config.queryData.query = query;
-            super.getWidgetChannelManager().subscribeWidget(id,
+            dataProviderConfigs.configs.config.queryData.queryName = 'accessTokenQuery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{query}}': consumerKeyListQuery
+            };
+            super.getWidgetChannelManager().subscribeWidget(id, widgetName,
                 this.handleAppAccessDataReceived, dataProviderConfigs);
         } else {
             this.setState({ inProgress: false });

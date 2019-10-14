@@ -198,8 +198,8 @@ class APIMAppResourceUsageWidget extends Widget {
     assembleAppQuery() {
         const { providerConfig } = this.state;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.applicationQuery;
         let { username } = super.getCurrentUser();
 
         // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
@@ -208,9 +208,12 @@ class APIMAppResourceUsageWidget extends Widget {
             username = username.replace('@carbon.super', '');
         }
 
-        query = query.replace('{{appOwner}}', username);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleAppDataReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'applicationQuery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{appOwner}}': username
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleAppDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -276,17 +279,18 @@ class APIMAppResourceUsageWidget extends Widget {
 
         if (applicationSelected && limit) {
             const { id } = this.props;
+            const widgetName = this.props.widgetID;
             const dataProviderConfigs = cloneDeep(providerConfig);
-            let query = dataProviderConfigs.configs.config.queryData.resourceUsageQuery;
-
-            query = query
-                .replace('{{applicationId}}', applicationSelected)
-                .replace('{{from}}', timeFrom)
-                .replace('{{to}}', timeTo)
-                .replace('{{per}}', perValue)
-                .replace('{{limit}}', limit);
-            dataProviderConfigs.configs.config.queryData.query = query;
-            super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+            dataProviderConfigs.configs.config.queryData.queryName = 'resourceUsageQuery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{applicationId}}': applicationSelected,
+                '{{from}}': timeFrom,
+                '{{to}}': timeTo,
+                '{{per}}': perValue,
+                '{{limit}}': limit
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
             this.setState({ inProgress: false });
         }

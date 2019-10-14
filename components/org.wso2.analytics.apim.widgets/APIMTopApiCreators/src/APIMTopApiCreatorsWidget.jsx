@@ -170,6 +170,7 @@ class APIMTopApiCreatorsWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
         const { id } = this.props;
+        const widgetName = this.props.widgetID;
 
         if (!limit) {
             limit = 5;
@@ -179,11 +180,12 @@ class APIMTopApiCreatorsWidget extends Widget {
         this.setQueryParam(limit);
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let { query } = dataProviderConfigs.configs.config.queryData;
-        query = query
-            .replace('{{limit}}', limit);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'query';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{limit}}': limit
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
