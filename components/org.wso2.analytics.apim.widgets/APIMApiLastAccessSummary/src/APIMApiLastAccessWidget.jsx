@@ -197,8 +197,7 @@ class APIMApiLastAccessWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { limit } = queryParam;
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'lastaccessquery';

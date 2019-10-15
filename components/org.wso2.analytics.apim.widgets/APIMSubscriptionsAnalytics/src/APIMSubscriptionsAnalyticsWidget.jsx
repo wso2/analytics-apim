@@ -215,8 +215,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
@@ -263,8 +262,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     assembleAppListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         if (providerConfig) {
             const dataProviderConfigs = cloneDeep(providerConfig);
@@ -300,8 +298,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         const {
             timeFrom, timeTo, subscribedTo, apilist, providerConfig,
         } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const apilistSliced = apilist.slice(1);
         const last = apilist.slice(-1)[0][0];

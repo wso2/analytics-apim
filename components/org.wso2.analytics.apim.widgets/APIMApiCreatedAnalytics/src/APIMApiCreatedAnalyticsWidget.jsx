@@ -203,8 +203,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         this.setState({ createdBy, chartData: null, tableData: null });
         this.setQueryParam(createdBy);
 
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
         dataProviderConfigs.configs.config.queryData.queryValues = {

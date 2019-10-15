@@ -292,7 +292,7 @@ class APIMApiLatencyWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const widgetName = this.props.widgetID;
+        const { widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
@@ -369,8 +369,7 @@ class APIMApiLatencyWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
         const { providerConfig, apiFullData } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         let apiID = 0;
 
         apiFullData.forEach((api) => {
@@ -434,7 +433,7 @@ class APIMApiLatencyWidget extends Widget {
         });
         this.setState({ latencyData: null });
 
-        const widgetName = this.props.widgetID;
+        const { widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
         if (apiSelected !== '' && apiVersion !== '' && resSelected.length !== 0) {

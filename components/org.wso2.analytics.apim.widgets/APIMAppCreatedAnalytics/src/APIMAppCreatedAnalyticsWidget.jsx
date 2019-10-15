@@ -230,8 +230,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     assembleSubListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'sublistquery';
@@ -268,8 +267,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
@@ -316,8 +314,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     assembleSubscriptionsQuery() {
         this.resetState();
 
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const { providerConfig, apilist } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { subscribedTo } = queryParam;
@@ -391,8 +388,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
                 text += app;
             }
         });
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
         if (appCreatedBy === 'All' && text === '') {

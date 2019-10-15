@@ -161,8 +161,7 @@ class APIMDeveloperSignupsWidget extends Widget {
      * */
     assembletotalQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'totalQuery';
@@ -194,8 +193,7 @@ class APIMDeveloperSignupsWidget extends Widget {
      * */
     assembleweekQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const weekStart = Moment().subtract(7, 'days');
 
         const dataProviderConfigs = cloneDeep(providerConfig);

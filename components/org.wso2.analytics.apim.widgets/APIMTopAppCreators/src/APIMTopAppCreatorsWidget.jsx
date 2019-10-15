@@ -177,8 +177,7 @@ class APIMTopAppCreatorsWidget extends Widget {
         this.setState({ limit, creatorData: [] });
         this.setQueryParam(limit);
 
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
         dataProviderConfigs.configs.config.queryData.queryValues = {

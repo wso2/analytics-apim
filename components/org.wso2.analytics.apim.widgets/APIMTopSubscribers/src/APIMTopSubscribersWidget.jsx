@@ -169,8 +169,7 @@ class APIMTopSubscribersWidget extends Widget {
         const { providerConfig } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         if (!limit) {
             limit = 5;

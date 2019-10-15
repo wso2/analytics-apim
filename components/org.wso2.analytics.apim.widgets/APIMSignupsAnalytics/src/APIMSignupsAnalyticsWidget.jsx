@@ -176,8 +176,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
      * */
     assembleQuery() {
         const { providerConfig, timeFrom, timeTo } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'query';

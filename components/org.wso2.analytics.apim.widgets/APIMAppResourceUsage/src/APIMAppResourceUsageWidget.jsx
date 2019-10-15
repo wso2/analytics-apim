@@ -197,8 +197,7 @@ class APIMAppResourceUsageWidget extends Widget {
      * */
     assembleAppQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         let { username } = super.getCurrentUser();
 
@@ -278,8 +277,7 @@ class APIMAppResourceUsageWidget extends Widget {
         const { applicationSelected, limit } = queryParam;
 
         if (applicationSelected && limit) {
-            const { id } = this.props;
-            const widgetName = this.props.widgetID;
+            const { id, widgetID: widgetName } = this.props;
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'resourceUsageQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {

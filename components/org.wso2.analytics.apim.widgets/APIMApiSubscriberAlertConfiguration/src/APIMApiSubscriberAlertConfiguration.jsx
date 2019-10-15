@@ -143,7 +143,7 @@ class APIMApiSubscriberAlertConfiguration extends Widget {
        let apiName = this.state.apiName;
        let apiVersion = this.state.apiVersion;
        let tRequestCount = parseInt(this.state.tRequestCount);
-       const widgetName = this.props.widgetID;
+       const { widgetID: widgetName } = this.props;
        
        if (applicationId != null && apiName != null && apiVersion != null && tRequestCount != null){
             if (tRequestCount == 0) {

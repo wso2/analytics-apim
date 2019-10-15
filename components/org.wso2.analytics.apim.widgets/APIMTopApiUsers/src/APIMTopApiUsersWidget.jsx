@@ -226,8 +226,7 @@ class APIMTopApiUsersWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
@@ -291,8 +290,7 @@ class APIMTopApiUsersWidget extends Widget {
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion, limit } = queryParam;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const apilistSliced = apilist.slice(1);
         const last = apilist.slice(-1)[0];

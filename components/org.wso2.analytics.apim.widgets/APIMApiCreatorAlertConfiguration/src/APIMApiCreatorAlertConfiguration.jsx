@@ -155,7 +155,7 @@ class APIMApiCreatorAlertConfiguration extends Widget {
        let tenantDomain=this.state.tenantDomain;
        let tResponseTime=parseInt(this.state.tResponseTime);
        let tBackendTime=parseInt(this.state.tBackendTime);
-       const widgetName = this.props.widgetID;
+       const { widgetID: widgetName } = this.props;
        if(apiName != null && apiVersion != null && apiCreator != null && tenantDomain != null && tResponseTime != null && tBackendTime != null){ 
             if(tResponseTime == 0 && tBackendTime == 0){
                 dataProviderConfigs.configs.config.queryData.queryName = 'queryDelete';

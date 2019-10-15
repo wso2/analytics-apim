@@ -183,6 +183,7 @@ class APIMTopFaultyApisWidget extends Widget {
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
+        const { widgetID: widgetName } = this.props;
 
         if (!limit) {
             limit = 5;
@@ -200,7 +201,7 @@ class APIMTopFaultyApisWidget extends Widget {
             '{{limit}}': limit
         };
         super.getWidgetChannelManager()
-            .subscribeWidget(this.props.id, this.props.widgetID, this.handleDataReceived, dataProviderConfigs);
+            .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**

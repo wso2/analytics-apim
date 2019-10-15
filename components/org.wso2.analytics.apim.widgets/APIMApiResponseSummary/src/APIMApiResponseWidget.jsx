@@ -217,7 +217,7 @@ class APIMApiResponseWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const widgetName = this.props.widgetID;
+        const { widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
@@ -290,7 +290,7 @@ class APIMApiResponseWidget extends Widget {
             }
         });
 
-        const widgetName = this.props.widgetID;
+        const { widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
 

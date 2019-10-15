@@ -198,8 +198,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
      * */
     assembleAppCountQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         let { username } = super.getCurrentUser();
 
@@ -240,8 +239,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
      * */
     assembleAppQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         let { username } = super.getCurrentUser();
 
@@ -290,8 +288,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
      * */
     assembleAppKeyMapQuery() {
         const { providerConfig, applicationList } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
 
         if (applicationList) {
@@ -338,8 +335,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
      * */
     assembleConsumerAppsQuery() {
         const { providerConfig, appKeyMapList } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
 
         if (appKeyMapList) {
@@ -386,8 +382,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
      * */
     assembleAppAccessQuery() {
         const { providerConfig, consumerKeyMapList } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
 
         if (consumerKeyMapList) {

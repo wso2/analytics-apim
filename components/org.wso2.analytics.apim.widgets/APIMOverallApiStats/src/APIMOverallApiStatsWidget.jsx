@@ -165,8 +165,7 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     assembleApiAvailableQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apiavailablequery';
@@ -202,8 +201,7 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     assembleTopAPIQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
@@ -233,8 +231,7 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     assembleAPIDataQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
-        const widgetName = this.props.widgetID;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
