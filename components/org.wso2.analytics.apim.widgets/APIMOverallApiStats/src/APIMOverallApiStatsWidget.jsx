@@ -165,12 +165,12 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     assembleApiAvailableQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        // eslint-disable-next-line max-len
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apiavailablequery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiAvailableReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apiavailablequery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiAvailableReceived, dataProviderConfigs);
     }
 
     /**
@@ -201,11 +201,12 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     assembleTopAPIQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.topapiquery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleTopAPIReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleTopAPIReceived, dataProviderConfigs);
     }
 
     /**
@@ -230,11 +231,12 @@ class APIMOverallApiStatsWidget extends Widget {
      * */
     assembleAPIDataQuery() {
         const { providerConfig } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleAPIDataReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleAPIDataReceived, dataProviderConfigs);
     }
 
     /**

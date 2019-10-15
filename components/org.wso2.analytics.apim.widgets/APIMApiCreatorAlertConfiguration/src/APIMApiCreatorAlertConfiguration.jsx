@@ -110,7 +110,9 @@ class APIMApiCreatorAlertConfiguration extends Widget {
     componentDidMount() {
         super.getWidgetConfiguration(this.props.widgetID)
             .then((message) => {
-                super.getWidgetChannelManager().subscribeWidget(this.props.id,this.handleDataReceived, message.data.configs.providerConfig);
+                super.getWidgetChannelManager()
+                    .subscribeWidget(this.props.id, this.props.widgetID, this.handleDataReceived,
+                        message.data.configs.providerConfig);
                 console.info(message.data.configs.providerConfig);
                 this.setState({
                     dataProviderConf : message.data.configs.providerConfig
@@ -149,30 +151,34 @@ class APIMApiCreatorAlertConfiguration extends Widget {
 
        let apiName=this.state.apiName;
        let apiVersion=this.state.apiVersion;
-       let apiCreator=this.state.apiCreator
+       let apiCreator=this.state.apiCreator;
        let tenantDomain=this.state.tenantDomain;
        let tResponseTime=parseInt(this.state.tResponseTime);
        let tBackendTime=parseInt(this.state.tBackendTime);
+       const { widgetID: widgetName } = this.props;
        if(apiName != null && apiVersion != null && apiCreator != null && tenantDomain != null && tResponseTime != null && tBackendTime != null){ 
             if(tResponseTime == 0 && tBackendTime == 0){
-                query = dataProviderConfigs.configs.config.queryData.queryDelete;
-                query = query
-                .replace('{{apiName}}',this.state.apiName)
-                .replace('{{apiVersion}}',this.state.apiVersion)
+                dataProviderConfigs.configs.config.queryData.queryName = 'queryDelete';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{apiName}}': this.state.apiName,
+                    '{{apiVersion}}': this.state.apiVersion
+                };
             }
             else{
-                query = dataProviderConfigs.configs.config.queryData.queryInsert;
-                query = query
-                .replace('{{apiName}}',apiName)
-                .replace('{{apiVersion}}',apiVersion)
-                .replace('{{apiCreator}}',apiCreator)
-                .replace('{{apiCreatorTenantDomain}}',tenantDomain)
-                .replace('{{tResponseTime}}',tResponseTime)
-                .replace('{{tBackendTime}}',tBackendTime);
+                dataProviderConfigs.configs.config.queryData.queryName = 'queryInsert';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{apiName}}': apiName,
+                    '{{apiVersion}}': apiVersion,
+                    '{{apiCreator}}': apiCreator,
+                    '{{apiCreatorTenantDomain}}': tenantDomain,
+                    '{{tResponseTime}}': tResponseTime,
+                    '{{tBackendTime}}': tBackendTime
+                };
             }
         
             dataProviderConfigs.configs.config.queryData.query=query;
-            super.getWidgetChannelManager().subscribeWidget(this.props.id+"insert",this.handleDataManaged,dataProviderConfigs);
+            super.getWidgetChannelManager()
+                .subscribeWidget(this.props.id+"insert", widgetName, this.handleDataManaged, dataProviderConfigs);
         } 
     }
 

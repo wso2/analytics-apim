@@ -183,6 +183,7 @@ class APIMTopFaultyApisWidget extends Widget {
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
+        const { widgetID: widgetName } = this.props;
 
         if (!limit) {
             limit = 5;
@@ -192,14 +193,15 @@ class APIMTopFaultyApisWidget extends Widget {
         this.setQueryParam(limit);
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let { query } = dataProviderConfigs.configs.config.queryData;
-        query = query
-            .replace('{{from}}', timeFrom)
-            .replace('{{to}}', timeTo)
-            .replace('{{per}}', perValue)
-            .replace('{{limit}}', limit);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'query';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{from}}': timeFrom,
+            '{{to}}': timeTo,
+            '{{per}}': perValue,
+            '{{limit}}': limit
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**

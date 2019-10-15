@@ -203,16 +203,16 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         this.setState({ createdBy, chartData: null, tableData: null });
         this.setQueryParam(createdBy);
 
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let { query } = dataProviderConfigs.configs.config.queryData;
-        query = query
-            .replace('{{timeFrom}}', Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'))
-            .replace('{{timeTo}}', Moment(timeTo).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'))
-            .replace('{{querystring}}', createdBy === createdByKeys.me ? "AND CREATED_BY=='{{creator}}'" : '')
-            .replace('{{creator}}', currentUser);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'query';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'),
+            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'),
+            '{{querystring}}': createdBy === createdByKeys.me ? "AND CREATED_BY=='{{creator}}'" : '',
+            '{{creator}}': currentUser
+        };
+        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**

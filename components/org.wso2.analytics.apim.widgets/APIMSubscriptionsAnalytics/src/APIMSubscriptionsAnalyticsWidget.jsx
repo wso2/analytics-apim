@@ -215,11 +215,12 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiListReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -261,13 +262,13 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     assembleAppListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
 
         if (providerConfig) {
             const dataProviderConfigs = cloneDeep(providerConfig);
-            // eslint-disable-next-line max-len
-            dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.applistquery;
-            super.getWidgetChannelManager().subscribeWidget(id, this.handleAppListReceived, dataProviderConfigs);
+            dataProviderConfigs.configs.config.queryData.queryName = 'applistquery';
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleAppListReceived, dataProviderConfigs);
         }
     }
 
@@ -297,7 +298,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         const {
             timeFrom, timeTo, subscribedTo, apilist, providerConfig,
         } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
 
         const apilistSliced = apilist.slice(1);
         const last = apilist.slice(-1)[0][0];
@@ -312,21 +313,25 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
 
         if (providerConfig) {
             const dataProviderConfigs = cloneDeep(providerConfig);
-            let query = dataProviderConfigs.configs.config.queryData.mainquery;
-            query = query
-                .replace('{{timeFrom}}', Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'))
-                .replace('{{timeTo}}', Moment(timeTo).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'));
+            dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
+
             if (subscribedTo === 'all') {
-                query = query
-                    .replace('{{querystring}}', "AND (API_ID=='{{apilist}}')")
-                    .replace('{{apilist}}', text);
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'),
+                    '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'),
+                    '{{querystring}}': "AND (API_ID=='{{apilist}}')",
+                    '{{apilist}}': text
+                };
             } else {
-                query = query
-                    .replace('{{querystring}}', "AND API_ID=='{{apiID}}'")
-                    .replace('{{apiID}}', subscribedTo);
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'),
+                    '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS'),
+                    '{{querystring}}': "AND API_ID=='{{apiID}}'",
+                    '{{apiID}}': subscribedTo
+                };
             }
-            dataProviderConfigs.configs.config.queryData.query = query;
-            super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         }
     }
 

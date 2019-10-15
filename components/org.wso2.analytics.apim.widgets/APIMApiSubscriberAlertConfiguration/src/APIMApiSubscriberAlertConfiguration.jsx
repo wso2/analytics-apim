@@ -103,7 +103,9 @@ class APIMApiSubscriberAlertConfiguration extends Widget {
     componentDidMount() {
         super.getWidgetConfiguration(this.props.widgetID)
             .then((message) => {
-            super.getWidgetChannelManager().subscribeWidget(this.props.id, this.handleDataReceived, message.data.configs.providerConfig);
+            super.getWidgetChannelManager()
+                .subscribeWidget(this.props.id, this.props.widgetID, this.handleDataReceived,
+                    message.data.configs.providerConfig);
             this.setState({
                     dataProviderConf : message.data.configs.providerConfig
                 }); 
@@ -141,26 +143,30 @@ class APIMApiSubscriberAlertConfiguration extends Widget {
        let apiName = this.state.apiName;
        let apiVersion = this.state.apiVersion;
        let tRequestCount = parseInt(this.state.tRequestCount);
+       const { widgetID: widgetName } = this.props;
        
-       if(applicationId != null && apiName != null && apiVersion != null && tRequestCount != null){  
-            if(tRequestCount == 0){
-                query = dataProviderConfigs.configs.config.queryData.queryDelete;
-                query = query
-                .replace('{{applicationId}}',applicationId)
-                .replace('{{apiName}}',apiName)
-                .replace('{{apiVersion}}',apiVersion)
+       if (applicationId != null && apiName != null && apiVersion != null && tRequestCount != null){
+            if (tRequestCount == 0) {
+                dataProviderConfigs.configs.config.queryData.queryName = 'queryDelete';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{applicationId}}': applicationId,
+                    '{{apiName}}': apiName,
+                    '{{apiVersion}}': apiVersion
+                };
             }
-            else{
-                query = dataProviderConfigs.configs.config.queryData.queryInsert;
-                query = query
-                .replace('{{applicationId}}',applicationId)
-                .replace('{{apiName}}',apiName)
-                .replace('{{apiVersion}}',apiVersion)
-                .replace('{{tRequestCount}}',tRequestCount);
+            else {
+                dataProviderConfigs.configs.config.queryData.queryName = 'queryInsert';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{applicationId}}': applicationId,
+                    '{{apiName}}': apiName,
+                    '{{apiVersion}}': apiVersion,
+                    '{{tRequestCount}}': tRequestCount
+                };
             }
         }
         dataProviderConfigs.configs.config.queryData.query=query;
-        super.getWidgetChannelManager().subscribeWidget(this.props.id+"manage",this.handleDataManaged,dataProviderConfigs);
+        super.getWidgetChannelManager()
+            .subscribeWidget(this.props.id+"manage", widgetName, this.handleDataManaged, dataProviderConfigs);
     }
 
     render() {

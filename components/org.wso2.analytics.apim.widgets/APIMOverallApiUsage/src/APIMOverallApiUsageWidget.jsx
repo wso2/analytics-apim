@@ -236,17 +236,18 @@ class APIMOverallApiUsageWidget extends Widget {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.apiusagequery;
-        query = query
-            .replace('{{from}}', timeFrom)
-            .replace('{{to}}', timeTo)
-            .replace('{{per}}', perValue)
-            .replace('{{limit}}', limit);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiUsageReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{from}}': timeFrom,
+            '{{to}}': timeTo,
+            '{{per}}': perValue,
+            '{{limit}}': limit
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
     }
 
     /**
@@ -287,11 +288,12 @@ class APIMOverallApiUsageWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apilistquery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiListReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -331,11 +333,12 @@ class APIMOverallApiUsageWidget extends Widget {
     assembleApiSubQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.query = dataProviderConfigs.configs.config.queryData.apisubquery;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleApiSubReceived, dataProviderConfigs);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apisubquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiSubReceived, dataProviderConfigs);
     }
 
     /**
