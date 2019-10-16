@@ -95,6 +95,9 @@ public class ApimIdPClientConstants {
     public static final String INTROSPECT_POSTFIX = "/introspect";
     public static final String AUTHORIZE_POSTFIX = "/authorize";
 
+    public static final String OAUTH_CONSUMER_KEY = "oauthConsumerKey";
+    public static final String OAUTH_CONSUMER_SECRET_KEY = "oauthConsumerSecret";
+
     private ApimIdPClientConstants() {
     }
 }

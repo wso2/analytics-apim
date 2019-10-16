@@ -53,6 +53,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.FORWARD_SLASH;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTH_CONSUMER_KEY;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTH_CONSUMER_SECRET_KEY;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.POST_LOGOUT_REDIRECT_URI_PHRASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE_END;
@@ -64,8 +66,6 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SPACE;
 public class ApimIdPClient extends ExternalIdPClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClient.class);
-    private static final String OAUTH_CONSUMER_KEY = "oauthConsumerKey";
-    private static final String OAUTH_CONSUMER_SECRET_KEY = "oauthConsumerSecret";
 
     private DCRMServiceStub dcrmServiceStub;
     private OAuth2ServiceStubs oAuth2ServiceStubs;
