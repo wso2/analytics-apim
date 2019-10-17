@@ -196,7 +196,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         let { apiCreatedBy, subscribedTo } = queryParam;
         let { apilist } = this.state;
-        if (!apiCreatedBy) {
+        if (!apiCreatedBy || !['All', 'Me'].includes(apiCreatedBy)) {
             apiCreatedBy = 'All';
         }
         if (!subscribedTo || (apilist.length > 0 && !apilist.includes(subscribedTo))) {
