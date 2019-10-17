@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -36,7 +37,7 @@ import APIMSubscriptionsData from './APIMSubscriptionsData';
 export default function APIMSubscriptionsAnalytics(props) {
     const {
         themeName, height, apiCreatedBy, subscribedTo, apilist, chartData, tableData,
-        xAxisTicks, maxCount, apiCreatedHandleChange, subscribedToHandleChange,
+        xAxisTicks, maxCount, apiCreatedHandleChange, subscribedToHandleChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -60,6 +61,16 @@ export default function APIMSubscriptionsAnalytics(props) {
         },
         selectEmpty: {
             marginTop: 10,
+        },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: height,
         },
     };
     const subDataProps = {
@@ -104,10 +115,10 @@ export default function APIMSubscriptionsAnalytics(props) {
                                 name='apiCreatedBy'
                                 style={styles.selectEmpty}
                             >
-                                <MenuItem value='all'>
+                                <MenuItem value='All'>
                                     <FormattedMessage id='all.menuItem' defaultMessage='All' />
                                 </MenuItem>
-                                <MenuItem value='me'>
+                                <MenuItem value='Me'>
                                     <FormattedMessage id='me.menuItem' defaultMessage='Me' />
                                 </MenuItem>
                             </Select>
@@ -126,8 +137,8 @@ export default function APIMSubscriptionsAnalytics(props) {
                             >
                                 {
                                     apilist.map(option => (
-                                        <MenuItem key={option} value={option[0]}>
-                                            {option[1]}
+                                        <MenuItem key={option} value={option}>
+                                            {option}
                                         </MenuItem>
                                     ))
                                 }
@@ -135,7 +146,14 @@ export default function APIMSubscriptionsAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                <APIMSubscriptionsData {...subDataProps} />
+                { ((!chartData && !tableData) || inProgress) ?
+                    (
+                        <div style={styles.loading}>
+                            <CircularProgress style={styles.loadingIcon} />
+                        </div>
+                    )
+                    : <APIMSubscriptionsData {...subDataProps} />
+                }
             </div>
         </Scrollbars>
     );
