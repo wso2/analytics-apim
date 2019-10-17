@@ -38,7 +38,8 @@ import CustomTableToolbar from './CustomTableToolbar';
  * @param {string} orderBy - column to sort table
  * @return {number}
  * */
-function desc(a, b, orderBy) {  let tempa = a[orderBy];
+function desc(a, b, orderBy) {
+    let tempa = a[orderBy];
     let tempb = b[orderBy];
 
     if (typeof (tempa) === 'string') {
@@ -233,7 +234,6 @@ class CustomTable extends React.Component {
                                         <TableRow
                                             hover
                                             tabIndex={-1}
-                                            key={n.id}
                                         >
                                             <TableCell component='th' scope='row'>
                                                 {n.appname}

@@ -385,7 +385,6 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
                         + '\nCOUNT:' + appCount,
                 });
                 tableData.push({
-                    id: appCount,
                     appname: dataUnit[2] + ' (' + dataUnit[3] + ')',
                     createdtime: Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss'),
                 });
