@@ -202,7 +202,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         let { createdBy } = queryParam;
 
-        if (!createdBy || (createdBy !== createdByKeys.all && createdBy !== createdByKeys.me)) {
+        if (!createdBy || !(createdBy in createdByKeys)) {
             createdBy = createdByKeys.all;
             this.setState({ createdBy });
             this.setQueryParam(createdBy);
