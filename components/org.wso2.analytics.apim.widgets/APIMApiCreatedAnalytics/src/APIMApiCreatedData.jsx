@@ -112,7 +112,7 @@ export default function APIMApiCreatedData(props) {
                                 tickValues={xAxisTicks}
                                 tickFormat={
                                     (x) => {
-                                        return Moment(x).format('YY/MM/DD hh:mm');
+                                        return Moment(x).format('YY/MM/DD HH:mm');
                                     }
                                 }
                                 tickLabelComponent={(
