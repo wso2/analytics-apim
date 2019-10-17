@@ -25,7 +25,6 @@ import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -90,10 +89,6 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -102,12 +97,6 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            loading: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -122,6 +111,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             xAxisTicks: null,
             maxCount: 0,
             localeMessages: null,
+            username: null,
             inProgress: false,
         };
 
@@ -138,12 +128,14 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.getUsername = this.getUsername.bind(this);
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
         this.loadLocale(locale);
+        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -178,6 +170,19 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     }
 
     /**
+     * Get username of the logged in user
+     */
+    getUsername() {
+        let { username } = super.getCurrentUser();
+        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
+        // are saved without tenant suffix
+        if (username.split('@').length === 2) {
+            username = username.replace('@carbon.super', '');
+        }
+        this.setState({ username })
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMApiCreatedAnalyticsWidget
      * */
@@ -197,17 +202,10 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         let { createdBy } = queryParam;
 
-        if (!createdBy) {
+        if (!createdBy || (createdBy !== createdByKeys.all && createdBy !== createdByKeys.me)) {
             createdBy = createdByKeys.all;
-        }
-        this.setState({ createdBy, chartData: null, tableData: null });
-        this.setQueryParam(createdBy);
-
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
+            this.setState({ createdBy });
+            this.setQueryParam(createdBy);
         }
 
         const { id, widgetID: widgetName } = this.props;
@@ -247,7 +245,6 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                         .format('YYYY-MMM-DD hh:mm:ss A') + '\nCOUNT:' + apiCount,
                 });
                 tableData.push({
-                    id: dataUnit[0],
                     apiname: dataUnit[1] + ' (' + dataUnit[5] + ')',
                     apiVersion: dataUnit[2],
                     createdtime: Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss A'),
@@ -310,21 +307,14 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             inProgress
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, loading,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatedProps = {
-            themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount,
+            themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount, inProgress,
         };
 
-        if (!localeMessages || !chartData || !tableData ||  inProgress) {
-            return (
-                <div style={loading}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
