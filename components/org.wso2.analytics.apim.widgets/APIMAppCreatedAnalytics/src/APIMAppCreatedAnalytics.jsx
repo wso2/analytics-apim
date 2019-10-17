@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -36,7 +37,7 @@ import APIMAppCreatedData from './APIMAppCreatedData';
 export default function APIMAppCreatedAnalytics(props) {
     const {
         themeName, height, apiCreatedBy, appCreatedBy, subscribedTo, apilist, sublist, chartData, tableData,
-        xAxisTicks, maxCount, apiCreatedHandleChange, appCreatedHandleChange, subscribedToHandleChange,
+        xAxisTicks, maxCount, apiCreatedHandleChange, appCreatedHandleChange, subscribedToHandleChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -61,14 +62,22 @@ export default function APIMAppCreatedAnalytics(props) {
         selectEmpty: {
             marginTop: 10,
         },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: height,
+        },
     };
     const createdDataProps = {
         themeName, chartData, tableData, xAxisTicks, maxCount,
     };
     return (
-        <Scrollbars
-            style={{ height }}
-        >
+        <Scrollbars style={{ height }}>
             <div
                 style={{
                     background: themeName === 'dark' ? '#0e1e33' : '#fff',
@@ -127,8 +136,7 @@ export default function APIMAppCreatedAnalytics(props) {
                                 {
                                     sublist.map(option => (
                                         <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
+                                            {option}</MenuItem>
                                     ))
                                 }
                             </Select>
@@ -147,8 +155,8 @@ export default function APIMAppCreatedAnalytics(props) {
                             >
                                 {
                                     apilist.map(option => (
-                                        <MenuItem key={option} value={option[0]}>
-                                            {option[1]}
+                                        <MenuItem key={option} value={option}>
+                                            {option}
                                         </MenuItem>
                                     ))
                                 }
@@ -156,8 +164,14 @@ export default function APIMAppCreatedAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                <APIMAppCreatedData {...createdDataProps} />
-            </div>
+                {!chartData || !tableData || inProgress ?
+                    <div style={styles.loading}>
+                        <CircularProgress style={styles.loadingIcon}/>
+                    </div>
+                    :
+                    <APIMAppCreatedData {...createdDataProps} />
+                }
+             </div>
         </Scrollbars>
     );
 }

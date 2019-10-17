@@ -80,6 +80,7 @@ class APIMAppCreatedWidget extends Widget {
             totalCount: 0,
             weekCount: 0,
             localeMessages: null,
+            refreshInterval: 60000,
         };
 
         this.styles = {
@@ -112,23 +113,30 @@ class APIMAppCreatedWidget extends Widget {
             }));
         }
 
-        this.assembleweekQuery = this.assembleweekQuery.bind(this);
-        this.assembletotalQuery = this.assembletotalQuery.bind(this);
+        this.assembleWeekQuery = this.assembleWeekQuery.bind(this);
+        this.assembleTotalQuery = this.assembleTotalQuery.bind(this);
         this.handleWeekCountReceived = this.handleWeekCountReceived.bind(this);
         this.handleTotalCountReceived = this.handleTotalCountReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
     }
 
     componentDidMount() {
-        const { widgetID } = this.props;
+        const { widgetID, id } = this.props;
+        const { refreshInterval } = this.state;
         const locale = languageWithoutRegionCode || language;
         this.loadLocale(locale);
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
+                // set an interval to periodically retrieve data
+                const refreshApplicationList = () => {
+                    super.getWidgetChannelManager().unsubscribeWidget(id);
+                    this.assembleTotalQuery();
+                };
+                setInterval(refreshApplicationList, refreshInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembletotalQuery);
+                }, this.assembleTotalQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -159,7 +167,7 @@ class APIMAppCreatedWidget extends Widget {
      * Formats the siddhi query
      * @memberof APIMAppCreatedWidget
      * */
-    assembletotalQuery() {
+    assembleTotalQuery() {
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -170,7 +178,7 @@ class APIMAppCreatedWidget extends Widget {
     }
 
     /**
-     * Formats data received from assembletotalQuery
+     * Formats data received from assembleTotalQuery
      * @param {object} message - data retrieved
      * @memberof APIMAppCreatedWidget
      * */
@@ -178,20 +186,18 @@ class APIMAppCreatedWidget extends Widget {
         const { data } = message;
         const { id } = this.props;
 
-        if (data.length !== 0) {
-            let [[totalCount]] = data;
-            totalCount = totalCount < 10 ? ('0' + totalCount).slice(-2) : totalCount;
-            this.setState({ totalCount });
+        if (data && data.length !== 0) {
+            this.setState({ totalCount: data.length < 10 ? ('0' + data.length) : data.length });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleweekQuery();
+        this.assembleWeekQuery();
     }
 
     /**
      * Formats the siddhi query using selected options
      * @memberof APIMAppCreatedWidget
      * */
-    assembleweekQuery() {
+    assembleWeekQuery() {
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
         const weekStart = Moment().subtract(7, 'days');
@@ -199,24 +205,23 @@ class APIMAppCreatedWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'weekQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{weekStart}}': Moment(weekStart).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS')
+            '{{weekStart}}': Moment(weekStart).format('YYYY-MM-DD HH:mm:ss'),
+            '{{weekEnd}}': Moment().format('YYYY-MM-DD HH:mm:ss')
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleWeekCountReceived, dataProviderConfigs);
     }
 
     /**
-     * Formats data received from assembleweekQuery
+     * Formats data received from assembleWeekQuery
      * @param {object} message - data retrieved
      * @memberof APIMAppCreatedWidget
      * */
     handleWeekCountReceived(message) {
         const { data } = message;
 
-        if (data.length !== 0) {
-            let [[weekCount]] = data;
-            weekCount = weekCount < 10 ? ('0' + weekCount).slice(-2) : weekCount;
-            this.setState({ weekCount });
+        if (data && data.length !== 0) {
+            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length });
         }
     }
 
