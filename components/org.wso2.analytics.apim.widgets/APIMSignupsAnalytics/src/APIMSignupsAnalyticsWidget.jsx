@@ -207,12 +207,12 @@ class APIMSignupsAnalyticsWidget extends Widget {
                 chartData.push({
                     x: new Date(dataUnit[1]).getTime(),
                     y: signups,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss A')
+                    label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss')
                         + '\nCOUNT:' + signups,
                 });
                 tableData.push({
                     developer: dataUnit[0],
-                    signeduptime: Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss A'),
+                    signeduptime: Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss'),
                 });
             });
 
