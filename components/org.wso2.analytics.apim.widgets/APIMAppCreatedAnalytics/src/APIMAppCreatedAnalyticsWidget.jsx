@@ -289,7 +289,6 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         const { id, widgetID: widgetName  } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         let config = dataProviderConfigs.configs.config;
-        let query = config.queryData.apilistquery;
 
         config.tableName = 'AM_API';
         config.incrementalColumn = 'API_ID';
@@ -335,7 +334,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         const {
             providerConfig, timeFrom, timeTo, username, sublist, apiCreatedBy, appCreatedBy, subscribedTo
         } = this.state;
-        const { id } = this.props;
+        const { id, widgetID: widgetName  } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         let config = dataProviderConfigs.configs.config;
         config.queryData.queryName = 'mainquery';
@@ -357,7 +356,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss')
         };
         dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
