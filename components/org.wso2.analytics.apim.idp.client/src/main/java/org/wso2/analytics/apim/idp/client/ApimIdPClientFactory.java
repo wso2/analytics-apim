@@ -35,7 +35,10 @@ import org.wso2.carbon.analytics.idp.client.core.utils.config.IdPClientConfigura
 import org.wso2.carbon.analytics.idp.client.external.impl.DCRMServiceStub;
 import org.wso2.carbon.analytics.idp.client.external.impl.OAuth2ServiceStubs;
 import org.wso2.carbon.analytics.idp.client.external.models.OAuthApplicationInfo;
+import org.wso2.carbon.config.ConfigurationException;
+import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
+import org.wso2.carbon.kernel.config.model.CarbonConfiguration;
 import org.wso2.carbon.secvault.SecretRepository;
 import org.wso2.carbon.utils.StringUtils;
 
@@ -55,6 +58,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClientFactory.class);
     private DataSourceService dataSourceService;
     private SecretRepository secretRepository;
+    private boolean isHostnameVerifierEnabled;
     private AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService;
 
     @Activate
@@ -133,6 +137,27 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         LOG.debug("@Reference(unbind) AnalyticsHttpClientBuilderService at '{}'",
                 AnalyticsHttpClientBuilderService.class.getName());
         this.analyticsHttpClientBuilderService = null;
+    }
+
+    @Reference(
+            name = "carbon.config.provider",
+            service = ConfigProvider.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterConfigProvider"
+    )
+    protected void registerConfigProvider(ConfigProvider configProvider) {
+        CarbonConfiguration carbonConfiguration;
+        try {
+            carbonConfiguration = configProvider.getConfigurationObject(CarbonConfiguration.class);
+            this.isHostnameVerifierEnabled = carbonConfiguration.isHostnameVerificationEnabled();
+        } catch (ConfigurationException e) {
+            LOG.error("Error occurred while initializing ApimIdPClientFactory: " + e.getMessage(), e);
+        }
+    }
+
+    protected void unregisterConfigProvider(ConfigProvider configProvider) {
+        // Nothing to do
     }
 
     @Override
@@ -262,6 +287,6 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         return new ApimIdPClient(adminServiceBaseUrl, adminServiceUsername, adminServicePassword, uriHost, baseUrl,
                 kmTokenUrlForRedirectUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType, adminScopeName,
                 allScopes, oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub, keyManagerServiceStubs,
-                idPClientConfiguration.isSsoEnabled(), targetURIForRedirection);
+                idPClientConfiguration.isSsoEnabled(), targetURIForRedirection, this.isHostnameVerifierEnabled);
     }
 }

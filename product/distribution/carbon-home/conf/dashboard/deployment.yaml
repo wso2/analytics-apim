@@ -21,6 +21,8 @@ wso2.carbon:
   id: wso2-am-analytics
     # server name
   name: WSO2 API Manager Analytics Server
+    # enable/disable hostname verifier
+  hostnameVerificationEnabled: true
     # ports used by this server
   ports:
       # port offset
