@@ -621,18 +621,24 @@
                 <type>zip</type>
             </dependency>
 
-            <!-- Config API related -->
+            <!-- APIM proxy API related -->
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.rest.api.config</artifactId>
+                <artifactId>org.wso2.analytics.apim.rest.api.proxy</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.rest.api.config.feature</artifactId>
+                <artifactId>org.wso2.analytics.apim.rest.api.proxy.feature</artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>
             </dependency>
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-okhttp</artifactId>
+                <version>${feign.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>

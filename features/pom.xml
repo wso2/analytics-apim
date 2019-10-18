@@ -29,7 +29,7 @@
     <modules>
         <module>org.wso2.analytics.apim.feature</module>
         <module>org.wso2.analytics.apim.idp.client.feature</module>
-        <module>org.wso2.analytics.apim.rest.api.config.feature</module>
+        <module>org.wso2.analytics.apim.rest.api.proxy.feature</module>
     </modules>
 
 </project>
