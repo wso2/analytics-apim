@@ -143,9 +143,9 @@ public class ApimIdPClientFactory implements IdPClientFactory {
     public IdPClient getIdPClient(IdPClientConfiguration idPClientConfiguration)
             throws IdPClientException {
         Map<String, String> properties = idPClientConfiguration.getProperties();
-        String adminServiceUsername = properties.getOrDefault(ApimIdPClientConstants.ADMIN_SERVICE_USERNAME,
+        String adminServiceUsername = properties.getOrDefault(ApimIdPClientConstants.ADMIN_USERNAME,
                 ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_USERNAME);
-        String adminServicePassword = properties.getOrDefault(ApimIdPClientConstants.ADMIN_SERVICE_PASSWORD,
+        String adminServicePassword = properties.getOrDefault(ApimIdPClientConstants.ADMIN_PASSWORD,
                 ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_PASSWORD);
         String adminServiceBaseUrl = properties.getOrDefault(ApimIdPClientConstants.ADMIN_SERVICE_BASE_URL,
                 ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_BASE_URL);

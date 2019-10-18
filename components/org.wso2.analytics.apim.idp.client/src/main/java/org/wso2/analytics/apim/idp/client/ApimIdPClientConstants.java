@@ -24,8 +24,8 @@ public class ApimIdPClientConstants {
 
     public static final String EXTERNAL_IDP_CLIENT_TYPE = "apim";
 
-    public static final String ADMIN_SERVICE_USERNAME = "adminServiceUsername";
-    public static final String ADMIN_SERVICE_PASSWORD = "adminServicePassword";
+    public static final String ADMIN_USERNAME = "adminUsername";
+    public static final String ADMIN_PASSWORD = "adminPassword";
     public static final String ADMIN_SERVICE_BASE_URL = "adminServiceBaseUrl";
     public static final String ADMIN_SCOPE = "adminScope";
     public static final String ALL_SCOPES = "allScopes";
