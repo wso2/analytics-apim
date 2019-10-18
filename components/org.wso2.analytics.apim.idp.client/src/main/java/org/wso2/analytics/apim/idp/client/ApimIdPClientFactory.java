@@ -195,6 +195,12 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         oAuthAppInfoMap.put(portalAppContext, portalOAuthApp);
         oAuthAppInfoMap.put(businessAppContext, businessOAuthApp);
 
+        if (adminServiceBaseUrl == null || adminServiceBaseUrl.isEmpty()) {
+            String error = "Admin service base url cannot be empty. Please provide an admin service base url in the " +
+                    "deployment.yaml file.";
+            LOG.error(error);
+            throw new IdPClientException(error);
+        }
         URI uri;
         try {
             uri = new URI(adminServiceBaseUrl);
