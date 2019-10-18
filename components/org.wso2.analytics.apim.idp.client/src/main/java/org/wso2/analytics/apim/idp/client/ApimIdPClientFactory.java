@@ -37,6 +37,7 @@ import org.wso2.carbon.analytics.idp.client.external.impl.OAuth2ServiceStubs;
 import org.wso2.carbon.analytics.idp.client.external.models.OAuthApplicationInfo;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.secvault.SecretRepository;
+import org.wso2.carbon.utils.StringUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -195,7 +196,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         oAuthAppInfoMap.put(portalAppContext, portalOAuthApp);
         oAuthAppInfoMap.put(businessAppContext, businessOAuthApp);
 
-        if (adminServiceBaseUrl == null || adminServiceBaseUrl.isEmpty()) {
+        if (StringUtils.isNullOrEmpty(adminServiceBaseUrl)) {
             String error = "Admin service base url cannot be empty. Please provide an admin service base url in the " +
                     "deployment.yaml file.";
             LOG.error(error);
