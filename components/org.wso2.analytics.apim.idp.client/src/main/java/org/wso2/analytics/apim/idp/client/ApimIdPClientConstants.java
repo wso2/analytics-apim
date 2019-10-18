@@ -51,11 +51,10 @@ public class ApimIdPClientConstants {
 
     public static final String DEFAULT_ADMIN_SERVICE_USERNAME = "admin";
     public static final String DEFAULT_ADMIN_SERVICE_PASSWORD = "admin";
-    public static final String DEFAULT_ADMIN_SCOPE = "apim_analytics:admin";
-    public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin apim_analytics:creator " +
-            "apim_analytics:publisher_owner apim_analytics:publisher_editor apim_analytics:publisher_viewer " +
-            "apim_analytics:subscriber_owner apim_analytics:subscriber_editor apim_analytics:subscriber_viewer " +
-            "apim_analytics:everyone openid";
+    public static final String DEFAULT_ADMIN_SCOPE = "apim_analytics:admin_carbon.super";
+    public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin apim_analytics:product_manager " +
+            "apim_analytics:api_developer apim_analytics:app_developer apim_analytics:devops_engineer " +
+            "apim_analytics:everyone";
     public static final String DEFAULT_ADMIN_SERVICE_BASE_URL = "https://localhost:9443";
     public static final String DEFAULT_BASE_URL = "https://localhost:9643";
     public static final String DEFAULT_KM_TOKEN_URL = "https://localhost:9443/oauth2";
