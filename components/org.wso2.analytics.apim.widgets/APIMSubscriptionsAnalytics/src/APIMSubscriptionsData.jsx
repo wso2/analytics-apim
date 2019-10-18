@@ -202,17 +202,18 @@ export default function APIMSubscriptionsData(props) {
                     <CustomTable
                         tableData={tableData}
                     />
-                    <Button
-                        variant='contained'
-                        color='secondary'
-                        style={styles.button}
-                        onClick={() => {
-                            window.location.href = './overview';
-                        }}
-                    >
-                        <ArrowBack />
-                        <FormattedMessage id='back.btn' defaultMessage='BACK' />
-                    </Button>
+                    {/*todo make route path configurable using widgetconf*/}
+                    {/*<Button*/}
+                        {/*variant='contained'*/}
+                        {/*color='secondary'*/}
+                        {/*style={styles.button}*/}
+                        {/*onClick={() => {*/}
+                            {/*window.location.href = './overview';*/}
+                        {/*}}*/}
+                    {/*>*/}
+                        {/*<ArrowBack />*/}
+                        {/*<FormattedMessage id='back.btn' defaultMessage='BACK' />*/}
+                    {/*</Button>*/}
                 </div>
             </div>
         );

@@ -8,15 +8,19 @@
     },
     "providerConfig" : {
       "configs": {
-        "type": "SiddhiStoreDataProvider",
+        "type": "RDBMSStreamingDataProvider",
         "config": {
-          "siddhiApp": "@App:name('APIMSubscriptionsAnalyticsSiddhi') @primaryKey('API_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API(API_ID int,API_PROVIDER string,API_NAME string,API_VERSION string,CONTEXT string,CONTEXT_TEMPLATE string,API_TIER string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string); @primaryKey('APPLICATION_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_APPLICATION(APPLICATION_ID int,NAME string,SUBSCRIBER_ID int,APPLICATION_TIER string,CALLBACK_URL string,DESCRIPTION string,APPLICATION_STATUS string,GROUP_ID string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string,UUID string,TOKEN_TYPE string); @primaryKey('SUBSCRIPTION_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_SUBSCRIPTION(SUBSCRIPTION_ID int,TIER_ID string,API_ID int,LAST_ACCESSED string,APPLICATION_ID int,SUB_STATUS string,SUBS_CREATE_STATE string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string,UUID string);",
+          "datasourceName": "AM_DB",
           "queryData": {
-            "apilistquery":"from AM_API select API_ID,API_NAME,API_VERSION,CREATED_BY;",
-            "applistquery":"from AM_APPLICATION select APPLICATION_ID,NAME;",
-            "mainquery": "from AM_SUBSCRIPTION on CREATED_TIME>='{{timeFrom}}' AND CREATED_TIME<='{{timeTo}}' {{querystring}} select API_ID,APPLICATION_ID,CREATED_TIME,count(SUBSCRIPTION_ID) AS count group by CREATED_TIME;"
+            "apilistquery":"select API_NAME from AM_API where CONTEXT {{contextCondition}}",
+            "mainquery": "select count(subc.SUBSCRIPTION_ID), subc.CREATED_TIME, api.API_NAME, api.CREATED_BY, app.NAME, app.CREATED_BY from AM_API api, AM_APPLICATION app, AM_SUBSCRIPTION subc where api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID AND api.CONTEXT {{contextCondition}} {{providerCondition}} {{apiName}} AND subc.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by subc.CREATED_TIME, subc.SUBSCRIPTION_ID"
           },
-          "publishingInterval": 60
+          "tableName": "{{tableName}}",
+          "incrementalColumn": "{{incrementalColumn}}",
+          "publishingLimit": 2147483647,
+          "publishingInterval": 2147483647,
+          "isPurgingEnable": false
+
         }
       }
     },
