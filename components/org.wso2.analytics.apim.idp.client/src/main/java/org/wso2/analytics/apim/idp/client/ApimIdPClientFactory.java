@@ -155,6 +155,8 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         String allScopes = properties.getOrDefault(ApimIdPClientConstants.ALL_SCOPES,
                 ApimIdPClientConstants.DEFAULT_ALL_SCOPES);
 
+        String kmTokenUrlForRedirectUrl = properties.getOrDefault(ApimIdPClientConstants.KM_TOKEN_URL_FOR_REDIRECTION,
+                ApimIdPClientConstants.DEFAULT_KM_TOKEN_URL_FOR_REDIRECTION);
         String dcrEndpoint = properties.getOrDefault(ApimIdPClientConstants.KM_DCR_URL,
                 ApimIdPClientConstants.DEFAULT_KM_DCR_URL);
         String kmUsername = properties.getOrDefault(ApimIdPClientConstants.KM_USERNAME,
@@ -258,8 +260,8 @@ public class ApimIdPClientFactory implements IdPClientFactory {
                             ApimIdPClientConstants.DEFAULT_EXTERNAL_SSO_LOGOUT_URL);
 
         return new ApimIdPClient(adminServiceBaseUrl, adminServiceUsername, adminServicePassword, uriHost, baseUrl,
-                kmTokenUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType, adminScopeName, allScopes,
-                oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub, keyManagerServiceStubs,
+                kmTokenUrlForRedirectUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType, adminScopeName,
+                allScopes, oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub, keyManagerServiceStubs,
                 idPClientConfiguration.isSsoEnabled(), targetURIForRedirection);
     }
 }
