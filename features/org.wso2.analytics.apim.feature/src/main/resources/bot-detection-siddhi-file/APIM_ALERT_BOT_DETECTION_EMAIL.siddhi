@@ -1,0 +1,35 @@
+/*
+    Copyright (c) 2019, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name("APIM_ALERT_BOT_DETECTION_EMAIL")
+@App:description("Identifies the bot detection")
+
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.botDetectionData.request.stream:1.0.0', @map(type = 'wso2event'))
+define stream BotDetectionStream(request_time long, message_id string, http_method string, headers string, message_body string, client_ip string);
+
+@sink(type='email', content.type="text/html", @map(type ='text', @payload('<strong>Message ID:</strong>{{message_id}} <br><br> <strong>Http method:</strong>{{http_method}} <br><br><strong>Headers:</strong>{{headers}} <br><br> <strong>Message Body:</strong>{{message_body}} <br><br> <strong>Client IP:</strong>{{client_ip}}')),subject='Bot detection alert from WSO2 APIM Analytics',to='{{subscriber_address}}')
+define stream EmailNotificationStream (request_time long, message_id string, http_method string, headers string, message_body string, client_ip string, subscriber_address string);
+
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@PrimaryKey('message_id')
+define table AM_BOT_DATA (request_time long, message_id string, http_method string, headers string, message_body string, client_ip string);
+
+@store(type = 'rdbms', datasource = 'AM_DB')
+@PrimaryKey('uuid')
+define table AM_NOTIFICATION_SUBSCRIBER(uuid string, category string, notification_method string, subscriber_address string);
+from BotDetectionStream select * insert into AM_BOT_DATA;
+from BotDetectionStream as B join AM_NOTIFICATION_SUBSCRIBER as E select B.request_time, B.message_id, B.http_method, B.headers, B.message_body, B.client_ip, E.subscriber_address
+insert into EmailNotificationStream;
