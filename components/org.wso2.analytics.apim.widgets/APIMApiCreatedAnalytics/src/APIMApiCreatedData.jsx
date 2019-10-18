@@ -112,7 +112,7 @@ export default function APIMApiCreatedData(props) {
                                 tickValues={xAxisTicks}
                                 tickFormat={
                                     (x) => {
-                                        return Moment(x).format('YY/MM/DD hh:mm');
+                                        return Moment(x).format('YY/MM/DD HH:mm');
                                     }
                                 }
                                 tickLabelComponent={(
@@ -202,17 +202,18 @@ export default function APIMApiCreatedData(props) {
                     <CustomTable
                         data={tableData}
                     />
-                    <Button
-                        variant='contained'
-                        color='secondary'
-                        style={styles.button}
-                        onClick={() => {
-                            window.location.href = './overview';
-                        }}
-                    >
-                        <ArrowBack />
-                        <FormattedMessage id='back.btn' defaultMessage='BACK' />
-                    </Button>
+                    {/*todo provide config in widget.conf to specify route path*/}
+                    {/*<Button*/}
+                        {/*variant='contained'*/}
+                        {/*color='secondary'*/}
+                        {/*style={styles.button}*/}
+                        {/*onClick={() => {*/}
+                            {/*window.location.href = './overview';*/}
+                        {/*}}*/}
+                    {/*>*/}
+                        {/*<ArrowBack />*/}
+                        {/*<FormattedMessage id='back.btn' defaultMessage='BACK' />*/}
+                    {/*</Button>*/}
                 </div>
             </div>
         );

@@ -11,6 +11,7 @@
   "sort.label.title": "Sort",
   "table.heading": "API CREATION TIMES",
   "table.heading.apiname": "API NAME",
+  "table.heading.apiVersion": "API VERSION",
   "table.heading.createdtime": "CREATED TIME",
   "widget.heading": "APIS CREATED OVER TIME"
 }

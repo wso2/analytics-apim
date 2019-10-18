@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -35,7 +36,7 @@ import APIMApiCreatedData from './APIMApiCreatedData';
  */
 export default function APIMApiCreatedAnalytics(props) {
     const {
-        themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount, handleChange,
+        themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount, handleChange, inProgress
     } = props;
     const styles = {
         headingWrapper: {
@@ -59,6 +60,16 @@ export default function APIMApiCreatedAnalytics(props) {
         },
         selectEmpty: {
             marginTop: 10,
+        },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: this.props.height,
         },
     };
     const createdDataProps = {
@@ -113,7 +124,15 @@ export default function APIMApiCreatedAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                <APIMApiCreatedData {...createdDataProps} />
+                { !chartData || !tableData ||  inProgress ?
+                    (
+                        <div style={styles.loading}>
+                            <CircularProgress style={styles.loadingIcon} />
+                        </div>
+                    )
+                    : <APIMApiCreatedData {...createdDataProps} />
+                }
+
             </div>
         </Scrollbars>
     );
