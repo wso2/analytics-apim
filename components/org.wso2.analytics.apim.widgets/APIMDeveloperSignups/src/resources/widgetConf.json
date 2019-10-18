@@ -8,14 +8,17 @@
     },
     "providerConfig" : {
       "configs" : {
-        "type" : "SiddhiStoreDataProvider",
+        "type" : "RDBMSStreamingDataProvider",
         "config" : {
-          "siddhiApp" : "@App:name('APIMDeveloperSignupsSiddhi') @primaryKey('SUBSCRIBER_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_SUBSCRIBER(SUBSCRIBER_ID int,USER_ID string,TENANT_ID int,EMAIL_ADDRESS string,DATE_SUBSCRIBED string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string);",
+          "datasourceName": "AM_DB",
           "queryData" : {
-            "totalQuery": "from AM_SUBSCRIBER select count(SUBSCRIBER_ID) as totalCount",
-            "weekQuery" : "from AM_SUBSCRIBER on CREATED_TIME >= '{{weekStart}}' select count(SUBSCRIBER_ID) as weekCount;"
+            "totalQuery" : "select count(SUBSCRIBER_ID) as count from AM_SUBSCRIBER where TENANT_ID={{tenantId}} group by SUBSCRIBER_ID",
+            "weekQuery" : "select count(SUBSCRIBER_ID) as count from AM_SUBSCRIBER where TENANT_ID={{tenantId}} and CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}' group by SUBSCRIBER_ID"
           },
-          "publishingInterval" : 60
+          "tableName": "AM_SUBSCRIBER",
+          "incrementalColumn": "SUBSCRIBER_ID",
+          "publishingLimit": 2147483647,
+          "isPurgingEnable": false
         }
       }
     },
