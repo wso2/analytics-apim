@@ -89,6 +89,7 @@ public class ApimIdPClientConstants {
     public static final String REGEX_BASE = ".*|";
     public static final String REGEX_BASE_END = ")";
     public static final String SPACE = " ";
+    public static final String AT = "@";
 
     public static final String REVOKE_POSTFIX = "/revoke";
     public static final String TOKEN_POSTFIX = "/token";
@@ -97,6 +98,12 @@ public class ApimIdPClientConstants {
 
     public static final String OAUTH_CONSUMER_KEY = "oauthConsumerKey";
     public static final String OAUTH_CONSUMER_SECRET_KEY = "oauthConsumerSecret";
+    public static final String ANY_TENANT_DOMAIN_SCOPE_POSTFIX = "_any";
+    public static final String UNDERSCORE = "_";
+
+    public static final String SUPER_TENANT_DOMAIN = "carbon.super";
+
+    public static final String OPEN_ID_SCOPE = "openid";
 
     private ApimIdPClientConstants() {
     }
