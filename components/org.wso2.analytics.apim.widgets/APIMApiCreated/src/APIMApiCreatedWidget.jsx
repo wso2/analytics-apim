@@ -80,6 +80,7 @@ class APIMApiCreatedWidget extends Widget {
             totalCount: 0,
             weekCount: 0,
             localeMessages: null,
+            refreshInterval: 60000, // 1min
         };
 
         this.styles = {
@@ -120,12 +121,19 @@ class APIMApiCreatedWidget extends Widget {
     }
 
     componentDidMount() {
-        const { widgetID } = this.props;
+        const { widgetID, id } = this.props;
+        const { refreshInterval } = this.state;
         const locale = languageWithoutRegionCode || language;
         this.loadLocale(locale);
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
+                // set an interval to periodically retrieve data
+                const refresh = () => {
+                    super.getWidgetChannelManager().unsubscribeWidget(id);
+                    this.assembletotalQuery();
+                };
+                setInterval(refresh, refreshInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
                 }, this.assembletotalQuery);
@@ -179,9 +187,7 @@ class APIMApiCreatedWidget extends Widget {
         const { id } = this.props;
 
         if (data.length !== 0) {
-            let [[totalCount]] = data;
-            totalCount = totalCount < 10 ? ('0' + totalCount).slice(-2) : totalCount;
-            this.setState({ totalCount });
+            this.setState({ totalCount:  data.length < 10 ? ('0' + data.length) : data.length });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleweekQuery();
@@ -199,7 +205,8 @@ class APIMApiCreatedWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'weekQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{weekStart}}': Moment(weekStart).format('YYYY-MM-DD HH:mm:ss.SSSSSSSSS')
+            '{{weekStart}}': Moment(weekStart).format('YYYY-MM-DD HH:mm:ss'),
+            '{{weekEnd}}': Moment().format('YYYY-MM-DD HH:mm:ss')
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleWeekCountReceived, dataProviderConfigs);
@@ -214,9 +221,7 @@ class APIMApiCreatedWidget extends Widget {
         const { data } = message;
 
         if (data.length !== 0) {
-            let [[weekCount]] = data;
-            weekCount = weekCount < 10 ? ('0' + weekCount).slice(-2) : weekCount;
-            this.setState({ weekCount });
+            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length });
         }
     }
 
