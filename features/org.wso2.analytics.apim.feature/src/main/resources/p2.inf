@@ -34,6 +34,8 @@ org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/featur
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim_${feature.version}/wso2/worker/database/,target:${installFolder}/../../wso2/worker/database/,overwrite:true);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../resources/);\
 org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim_${feature.version}/email-notification-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
+org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim_${feature.version}/bot-detection-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
+org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim_${feature.version}/monetization-summary-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/resources/dashboards/);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/deployment/);\

@@ -52,13 +52,13 @@ define table ApimAlertStakeholderInfo(userId string, alertTypes string, emails s
 @info(name = 'AbnormalBackendTimeAlert customise Email body')
 from AbnormalBackendTimeAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
 	on str:contains(S.alertTypes, 'AbnormalBackendTime') and ((A.apiCreator == S.userId and true == S.isPublisher ) or true == S.isAdmin )
-select 'AbnormalBackendTime' as type , str:concat('Abnormal backend time detected for http ', A.apiMethod, ' method of resource template:', A.apiResourceTemplate, ' in api:', A.apiName, ' of tenant domain:', A.apiCreatorTenantDomain, ', threshold value:', A.thresholdBackendTime, 'ms.') as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.apiCreatorTenantDomain as tenantDomain, S.userId as alertStakeholderUserid
+select 'AbnormalBackendTime' as type , str:concat('Abnormal backend time detected for http ', A.apiMethod, ' method of resource template:', A.apiResourceTemplate, ' in api:', A.apiName, ' of tenant domain:', A.apiCreatorTenantDomain, ', threshold value:', convert(A.thresholdBackendTime,'string'), 'ms.') as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.apiCreatorTenantDomain as tenantDomain, S.userId as alertStakeholderUserid
 insert into EmailAlertStream;
 
 @info(name = 'AbnormalRequestsCountAlertStream customise Email body')
 from AbnormalRequestsCountAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
 	on str:contains(S.alertTypes, 'AbnormalRequestsPerMin') and ((A.applicationOwner == S.userId and true == S.isSubscriber ) or true == S.isAdmin )
-select 'AbnormalRequestsPerMin' as type , str:concat('Abnormal request count detected during last minute using application ', A.applicationName, ' owned by ', A.applicationOwner, ' for api :', A.apiName, ', abnormal request count:', A.requestCountPerMin, ".") as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.tenantDomain, S.userId as alertStakeholderUserid
+select 'AbnormalRequestsPerMin' as type , str:concat('Abnormal request count detected during last minute using application ', A.applicationName, ' owned by ', A.applicationOwner, ' for api :', A.apiName, ', abnormal request count:', convert(A.requestCountPerMin, 'string'), ".") as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.tenantDomain, S.userId as alertStakeholderUserid
 insert into EmailAlertStream;
 
 @info(name = 'RequestPatternChangedAlertStream customise Email body')
@@ -70,7 +70,7 @@ insert into EmailAlertStream;
 @info(name = 'AbnormalResponseTimeAlertStream customise Email body')
 from AbnormalResponseTimeAlertStream#window.length(1) as A join ApimAlertStakeholderInfo as S
 	on str:contains(S.alertTypes, 'AbnormalResponseTime') and ((A.apiCreator == S.userId and true == S.isPublisher ) or true == S.isAdmin)
-select 'AbnormalResponseTime' as type , str:concat('Abnormal response time detected for http ', A.apiMethod, ' method of resource template:', A.apiResourceTemplate, ' in api:', A.apiName, ' of tenant domain:', A.apiCreatorTenantDomain, ', threshold value:', A.thresholdResponseTime, 'ms.') as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.apiCreatorTenantDomain as tenantDomain, S.userId as alertStakeholderUserid
+select 'AbnormalResponseTime' as type , str:concat('Abnormal response time detected for http ', A.apiMethod, ' method of resource template:', A.apiResourceTemplate, ' in api:', A.apiName, ' of tenant domain:', A.apiCreatorTenantDomain, ', threshold value:', convert(A.thresholdResponseTime, 'string'), 'ms.') as message, time:dateFormat(A.alertTimestamp, 'yyyy-MM-dd HH:mm:ss') as alertTimestamp, S.emails, A.apiCreatorTenantDomain as tenantDomain, S.userId as alertStakeholderUserid
 insert into EmailAlertStream;
 
 @info(name = 'ApiHealthMonitorAlertStream customise Email body')
