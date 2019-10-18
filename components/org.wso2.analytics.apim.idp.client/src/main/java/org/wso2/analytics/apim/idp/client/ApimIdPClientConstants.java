@@ -24,8 +24,8 @@ public class ApimIdPClientConstants {
 
     public static final String EXTERNAL_IDP_CLIENT_TYPE = "apim";
 
-    public static final String ADMIN_SERVICE_USERNAME = "adminServiceUsername";
-    public static final String ADMIN_SERVICE_PASSWORD = "adminServicePassword";
+    public static final String ADMIN_USERNAME = "adminUsername";
+    public static final String ADMIN_PASSWORD = "adminPassword";
     public static final String ADMIN_SERVICE_BASE_URL = "adminServiceBaseUrl";
     public static final String ADMIN_SCOPE = "adminScope";
     public static final String ALL_SCOPES = "allScopes";
@@ -51,11 +51,10 @@ public class ApimIdPClientConstants {
 
     public static final String DEFAULT_ADMIN_SERVICE_USERNAME = "admin";
     public static final String DEFAULT_ADMIN_SERVICE_PASSWORD = "admin";
-    public static final String DEFAULT_ADMIN_SCOPE = "apim_analytics:admin";
-    public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin apim_analytics:creator " +
-            "apim_analytics:publisher_owner apim_analytics:publisher_editor apim_analytics:publisher_viewer " +
-            "apim_analytics:subscriber_owner apim_analytics:subscriber_editor apim_analytics:subscriber_viewer " +
-            "apim_analytics:everyone openid";
+    public static final String DEFAULT_ADMIN_SCOPE = "apim_analytics:admin_carbon.super";
+    public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin apim_analytics:product_manager " +
+            "apim_analytics:api_developer apim_analytics:app_developer apim_analytics:devops_engineer " +
+            "apim_analytics:everyone";
     public static final String DEFAULT_ADMIN_SERVICE_BASE_URL = "https://localhost:9443";
     public static final String DEFAULT_BASE_URL = "https://localhost:9643";
     public static final String DEFAULT_KM_TOKEN_URL = "https://localhost:9443/oauth2";
@@ -89,11 +88,21 @@ public class ApimIdPClientConstants {
     public static final String REGEX_BASE = ".*|";
     public static final String REGEX_BASE_END = ")";
     public static final String SPACE = " ";
+    public static final String AT = "@";
 
     public static final String REVOKE_POSTFIX = "/revoke";
     public static final String TOKEN_POSTFIX = "/token";
     public static final String INTROSPECT_POSTFIX = "/introspect";
     public static final String AUTHORIZE_POSTFIX = "/authorize";
+
+    public static final String OAUTH_CONSUMER_KEY = "oauthConsumerKey";
+    public static final String OAUTH_CONSUMER_SECRET_KEY = "oauthConsumerSecret";
+    public static final String ANY_TENANT_DOMAIN_SCOPE_POSTFIX = "_any";
+    public static final String UNDERSCORE = "_";
+
+    public static final String SUPER_TENANT_DOMAIN = "carbon.super";
+
+    public static final String OPEN_ID_SCOPE = "openid";
 
     private ApimIdPClientConstants() {
     }

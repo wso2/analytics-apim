@@ -52,11 +52,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.ANY_TENANT_DOMAIN_SCOPE_POSTFIX;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.AT;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.FORWARD_SLASH;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTH_CONSUMER_KEY;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTH_CONSUMER_SECRET_KEY;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OPEN_ID_SCOPE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.POST_LOGOUT_REDIRECT_URI_PHRASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE_END;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SPACE;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SUPER_TENANT_DOMAIN;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.UNDERSCORE;
 
 /**
  * Implementation class for Apim IdP based on OAuth2.
@@ -64,8 +71,6 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SPACE;
 public class ApimIdPClient extends ExternalIdPClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClient.class);
-    private static final String OAUTH_CONSUMER_KEY = "oauthConsumerKey";
-    private static final String OAUTH_CONSUMER_SECRET_KEY = "oauthConsumerSecret";
 
     private DCRMServiceStub dcrmServiceStub;
     private OAuth2ServiceStubs oAuth2ServiceStubs;
@@ -159,9 +164,28 @@ public class ApimIdPClient extends ExternalIdPClient {
     * This move taken due to roadblocks occurred when getting user roles in multi-tenancy scenario.
     * */
     @Override
+    public List<Role> getAllRolesOfTenant(String username) throws IdPClientException {
+        String tenantDomain = extractTenantDomainFromUserName(username);
+        String[] scopeList = this.allScopes.split(SPACE);
+        ArrayList<String> newScopes = new ArrayList<>();
+        for (String scope: scopeList) {
+            if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE)) {
+                newScopes.add(scope + ANY_TENANT_DOMAIN_SCOPE_POSTFIX);
+                newScopes.add(scope + UNDERSCORE + tenantDomain);
+            }
+        }
+        return getRolesFromArray(newScopes.toArray(new String[0]));
+    }
+
+    @Override
     public List<Role> getAllRoles() throws IdPClientException {
-        String[] scopeList = this.allScopes.split(" ");
-        return getRolesFromArray(scopeList);
+        /*
+        * This method will be only called via the updateDashboardRoles method in carbon-dashboard repo's
+        * DashboardImporter class. This updateDashboardRoles is executed only when a dashboard is imported in the
+        * dashboard startup. As in the startup level, there will be no user logged in, a tenant specific roles cannot be
+        * retrieved. So that, super tenant specific scopes are returned.
+        * */
+        return getAllRolesOfTenant(this.adminServiceUsername + AT + SUPER_TENANT_DOMAIN);
     }
 
     @Override
@@ -197,11 +221,43 @@ public class ApimIdPClient extends ExternalIdPClient {
             // hence, returns null. This null is handled in the getUserRoles() method in Super class(ExternalIdPClient).
             return null;
         }
+        String tenantDomain = extractTenantDomainFromUserName(name);
         String scopes = introspectResponse.getScope();
         String[] scopeList = scopes.split(SPACE);
-        ArrayList<Role> roles = getRolesFromArray(scopeList);
+        ArrayList<String> newScopes = new ArrayList<>();
+        for (String scope: scopeList) {
+            if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE)) {
+                newScopes.add(scope + ANY_TENANT_DOMAIN_SCOPE_POSTFIX);
+                newScopes.add(scope + UNDERSCORE + tenantDomain);
+            }
+        }
+        ArrayList<Role> roles = getRolesFromArray(newScopes.toArray(new String[0]));
         Map<String, String> properties = new HashMap<>();
         return new User(name, properties, roles);
+    }
+
+    /**
+     * This method returns a tenant domain of the user. For example if the username is "admin@carbon.super" tenant
+     * domain will be returned as "carbon.super".
+     * @param username String array which contains scope names
+     * @return Tenant domain of the user
+     * @throws IdPClientException thrown when the username is empty or when an error occurred when retrieve the tenant
+     * domain.
+     */
+    private String extractTenantDomainFromUserName(String username) throws IdPClientException {
+        if (username == null || username.isEmpty()) {
+            String error = "Username cannot be empty.";
+            LOG.error(error);
+            throw new IdPClientException(error);
+        }
+        String[] usernameSections = username.split(AT);
+        String tenantDomain = usernameSections[usernameSections.length - 1];
+        if (tenantDomain == null) {
+            String error = "Cannot get the tenant domain from the given username: " + username;
+            LOG.error(error);
+            throw new IdPClientException(error);
+        }
+        return tenantDomain;
     }
 
     /**
@@ -551,8 +607,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
 
         String grantType =
-                IdPClientConstants.PASSWORD_GRANT_TYPE + " " + IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE + " " +
-                        IdPClientConstants.REFRESH_GRANT_TYPE;
+                IdPClientConstants.PASSWORD_GRANT_TYPE + SPACE + IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE +
+                        SPACE + IdPClientConstants.REFRESH_GRANT_TYPE;
         String callBackUrl;
         String postLogoutRedirectUrl = this.baseUrl + FORWARD_SLASH + appContext;
         if (clientName.equals(ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT)) {

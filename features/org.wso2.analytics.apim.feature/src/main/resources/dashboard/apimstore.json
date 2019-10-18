@@ -286,5 +286,16 @@
       "APIMRegisteredAppUsers",
       "APIMAppApiUsage"
     ]
+  },
+  "permissions": {
+    "viewers": [
+      "apim_analytics:admin_any"
+    ],
+    "owners": [
+      "apim_analytics:admin_carbon.super"
+    ],
+    "editors": [
+      "apim_analytics:admin_carbon.super"
+    ]
   }
 }
