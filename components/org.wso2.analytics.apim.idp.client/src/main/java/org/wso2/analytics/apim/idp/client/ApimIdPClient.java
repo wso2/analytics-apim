@@ -607,8 +607,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
 
         String grantType =
-                IdPClientConstants.PASSWORD_GRANT_TYPE + " " + IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE + " " +
-                        IdPClientConstants.REFRESH_GRANT_TYPE;
+                IdPClientConstants.PASSWORD_GRANT_TYPE + SPACE + IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE +
+                        SPACE + IdPClientConstants.REFRESH_GRANT_TYPE;
         String callBackUrl;
         String postLogoutRedirectUrl = this.baseUrl + FORWARD_SLASH + appContext;
         if (clientName.equals(ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT)) {
