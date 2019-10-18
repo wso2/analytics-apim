@@ -112,7 +112,7 @@ export default function APIMAppCreatedData(props) {
                                 tickValues={xAxisTicks}
                                 tickFormat={
                                     (x) => {
-                                        return Moment(x).format('YY/MM/DD hh:mm');
+                                        return Moment(x).format('YY/MM/DD HH:mm');
                                     }
                                 }
                                 tickLabelComponent={(
@@ -202,17 +202,18 @@ export default function APIMAppCreatedData(props) {
                     <CustomTable
                         data={tableData}
                     />
-                    <Button
-                        variant='contained'
-                        color='secondary'
-                        style={styles.button}
-                        onClick={() => {
-                            window.location.href = './overview';
-                        }}
-                    >
-                        <ArrowBack />
-                        <FormattedMessage id='back.btn' defaultMessage='BACK' />
-                    </Button>
+                    {/*todo make route path configurable using widgetconf*/}
+                    {/*<Button*/}
+                        {/*variant='contained'*/}
+                        {/*color='secondary'*/}
+                        {/*style={styles.button}*/}
+                        {/*onClick={() => {*/}
+                            {/*window.location.href = './overview';*/}
+                        {/*}}*/}
+                    {/*>*/}
+                        {/*<ArrowBack />*/}
+                        {/*<FormattedMessage id='back.btn' defaultMessage='BACK' />*/}
+                    {/*</Button>*/}
                 </div>
             </div>
         );
