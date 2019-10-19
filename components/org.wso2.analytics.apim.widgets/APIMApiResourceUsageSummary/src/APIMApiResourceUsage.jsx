@@ -78,44 +78,24 @@ export default function APIMApiResourceUsage(props) {
             marginTop: 10,
         },
     };
-    if (usageData.length === 0) {
-        return (
-            <div style={styles.paperWrapper}>
-                <Paper
-                    elevation={1}
-                    style={styles.paper}
-                >
-                    <Typography variant='h5' component='h3'>
-                        <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                    </Typography>
-                    <Typography component='p'>
-                        <FormattedMessage
-                            id='nodata.error.body'
-                            defaultMessage='No data available for the selected options.'
-                        />
-                    </Typography>
-                </Paper>
-            </div>
-        );
-    }
     return (
-        <Scrollbars
-            style={{ height }}
-        >
-            <div style={{
-                padding: '5% 5%',
-            }}
+        <Scrollbars style={{ height }}>
+            <div
+                style={{
+                    padding: '5% 5%',
+                }}
             >
                 <div style={styles.headingWrapper}>
-                    <h3 style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        marginTop: 0,
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
+                    <h3
+                        style={{
+                            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+                            paddingBottom: '10px',
+                            margin: 'auto',
+                            marginTop: 0,
+                            textAlign: 'left',
+                            fontWeight: 'normal',
+                            letterSpacing: 1.5,
+                        }}
                     >
                         <FormattedMessage id='widget.heading' defaultMessage='API RESOURCE USAGE SUMMARY' />
                     </h3>
@@ -156,9 +136,23 @@ export default function APIMApiResourceUsage(props) {
                         />
                     </form>
                 </div>
-                <CustomTable
-                    data={usageData}
-                />
+                {usageData.length === 0 ? (
+                    <div style={styles.paperWrapper}>
+                        <Paper elevation={1} style={styles.paper}>
+                            <Typography variant='h5' component='h3'>
+                                <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
+                            </Typography>
+                            <Typography component='p'>
+                                <FormattedMessage
+                                    id='nodata.error.body'
+                                    defaultMessage='No data available for the selected options.'
+                                />
+                            </Typography>
+                        </Paper>
+                    </div>
+                ) : (
+                    <CustomTable data={usageData} />
+                )}
             </div>
         </Scrollbars>
     );
