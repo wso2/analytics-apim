@@ -84,26 +84,6 @@ export default function APIMTopPlatforms(props) {
             height: '80%',
         },
     };
-    if (platformData.length === 0) {
-        return (
-            <div style={styles.paperWrapper}>
-                <Paper
-                    elevation={1}
-                    style={styles.paper}
-                >
-                    <Typography variant='h5' component='h3'>
-                        <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                    </Typography>
-                    <Typography component='p'>
-                        <FormattedMessage
-                            id='nodata.error.body'
-                            defaultMessage='No data available for the selected options.'
-                        />
-                    </Typography>
-                </Paper>
-            </div>
-        );
-    }
     return (
         <Scrollbars
             style={{ height }}
@@ -208,52 +188,71 @@ export default function APIMTopPlatforms(props) {
                         />
                     </form>
                 </div>
-                <div style={styles.dataWrapper}>
-                    <svg viewBox='-100 -20 1000 800'>
-                        <VictoryPie
-                            labelComponent={(
-                                <VictoryTooltip
-                                    orientation='right'
-                                    pointerLength={0}
-                                    cornerRadius={2}
-                                    flyoutStyle={{
-                                        fill: '#000',
-                                        fillOpacity: '0.5',
-                                        strokeWidth: 1,
-                                    }}
-                                    style={{ fill: '#fff', fontSize: 25 }}
-                                />
-                            )}
-                            width={500}
-                            height={500}
-                            standalone={false}
-                            padding={{
-                                left: 50, bottom: 50, top: 50, right: 50,
-                            }}
-                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
-                            data={platformData}
-                            x={d => d.platform}
-                            y={d => d.reqCount}
-                            labels={d => `${d.platform} : ${((d.reqCount
-                                / (sumBy(platformData, o => o.reqCount))) * 100).toFixed(2)}%`}
-                        />
-                        <VictoryLegend
-                            standalone={false}
-                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
-                            x={500}
-                            y={20}
-                            gutter={20}
-                            rowGutter={{ top: 0, bottom: -10 }}
-                            style={{
-                                labels: {
-                                    fill: '#9e9e9e',
-                                    fontSize: 25,
-                                },
-                            }}
-                            data={legendData}
-                        />
-                    </svg>
-                </div>
+                {dataObject.length === 0 ? (
+                        <div style={styles.paperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={styles.paper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !'/>
+                                </Typography>
+                                <Typography component='p'>
+                                    <FormattedMessage
+                                        id='nodata.error.body'
+                                        defaultMessage='No data available for the selected options.'
+                                    />
+                                </Typography>
+                            </Paper>
+                        </div>
+                    ) :
+                    <div style={styles.dataWrapper}>
+                        <svg viewBox='-100 -20 1000 800'>
+                            <VictoryPie
+                                labelComponent={(
+                                    <VictoryTooltip
+                                        orientation='right'
+                                        pointerLength={0}
+                                        cornerRadius={2}
+                                        flyoutStyle={{
+                                            fill: '#000',
+                                            fillOpacity: '0.5',
+                                            strokeWidth: 1,
+                                        }}
+                                        style={{fill: '#fff', fontSize: 25}}
+                                    />
+                                )}
+                                width={500}
+                                height={500}
+                                standalone={false}
+                                padding={{
+                                    left: 50, bottom: 50, top: 50, right: 50,
+                                }}
+                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                data={platformData}
+                                x={d => d.platform}
+                                y={d => d.reqCount}
+                                labels={d => `${d.platform} : ${((d.reqCount
+                                    / (sumBy(platformData, o => o.reqCount))) * 100).toFixed(2)}%`}
+                            />
+                            <VictoryLegend
+                                standalone={false}
+                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                x={500}
+                                y={20}
+                                gutter={20}
+                                rowGutter={{top: 0, bottom: -10}}
+                                style={{
+                                    labels: {
+                                        fill: '#9e9e9e',
+                                        fontSize: 25,
+                                    },
+                                }}
+                                data={legendData}
+                            />
+                        </svg>
+                    </div>
+                }
             </div>
         </Scrollbars>
     );
