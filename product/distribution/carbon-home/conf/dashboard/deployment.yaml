@@ -373,7 +373,7 @@ auth.configs:
   ssoEnabled: true
   properties:
     adminScope: apim_analytics:admin_carbon.super
-    allScopes: apim_analytics:admin apim_analytics:product_manager apim_analytics:api_developer apim_analytics:app_developer apim_analytics:devops_engineer apim_analytics:everyone openid
+    allScopes: apim_analytics:admin apim_analytics:product_manager apim_analytics:api_developer apim_analytics:app_developer apim_analytics:devops_engineer apim_analytics:analytics_viewer apim_analytics:everyone openid
     adminServiceBaseUrl: https://localhost:9443
     adminUsername: admin
     adminPassword: admin
