@@ -69,7 +69,7 @@ export default function APIMApiCreatedAnalytics(props) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            height: this.props.height,
+            height: height,
         },
     };
     const createdDataProps = {
