@@ -145,11 +145,6 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
-            <artifactId>org.wso2.analytics.apim.widgets.apim.api.response.summary</artifactId>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.analytics.apim</groupId>
             <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.usage</artifactId>
             <type>zip</type>
         </dependency>
@@ -455,16 +450,6 @@
                                     <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
                                     <includes>APIMApiLastAccessSummary/**</includes>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.wso2.analytics.apim</groupId>
-                                    <artifactId>org.wso2.analytics.apim.widgets.apim.api.response.summary</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
-                                    </outputDirectory>
-                                    <includes>APIMApiResponseSummary/**</includes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.wso2.analytics.apim</groupId>

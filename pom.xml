@@ -985,13 +985,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.widgets.apim.api.response.summary
-                </artifactId>
-                <version>${project.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.analytics.apim</groupId>
                 <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.usage
                 </artifactId>
                 <version>${project.version}</version>
@@ -1300,7 +1293,7 @@
 
         <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.0</carbon.dashboards.version>
+        <carbon.dashboards.version>4.1.1</carbon.dashboards.version>
         <carbon.uis.version>1.0.3</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
@@ -1424,7 +1417,7 @@
 
         <!--Performance Testing Versions-->
         <HdrHistogram.version>2.1.9</HdrHistogram.version>
-        <jacoco.maven.version>0.7.8</jacoco.maven.version>
+        <jacoco.maven.version>0.7.9</jacoco.maven.version>
         <wso2.log4j.version>1.2.17.wso2v1</wso2.log4j.version>
 
         <!-- Forget me tool -->

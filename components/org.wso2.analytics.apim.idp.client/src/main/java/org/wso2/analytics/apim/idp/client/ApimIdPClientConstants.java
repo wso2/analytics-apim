@@ -32,6 +32,7 @@ public class ApimIdPClientConstants {
     public static final String BASE_URL = "baseUrl";
     public static final String GRANT_TYPE = "grantType";
     public static final String KM_TOKEN_URL = "kmTokenUrl";
+    public static final String KM_TOKEN_URL_FOR_REDIRECTION = "kmTokenUrlForRedirection";
     public static final String KM_DCR_URL = "kmDcrUrl";
     public static final String KM_USERNAME = "kmUsername";
     public static final String KM_PASSWORD = "kmPassword";
@@ -54,10 +55,11 @@ public class ApimIdPClientConstants {
     public static final String DEFAULT_ADMIN_SCOPE = "apim_analytics:admin_carbon.super";
     public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin apim_analytics:product_manager " +
             "apim_analytics:api_developer apim_analytics:app_developer apim_analytics:devops_engineer " +
-            "apim_analytics:everyone";
+            "apim_analytics:analytics_viewer apim_analytics:everyone";
     public static final String DEFAULT_ADMIN_SERVICE_BASE_URL = "https://localhost:9443";
     public static final String DEFAULT_BASE_URL = "https://localhost:9643";
     public static final String DEFAULT_KM_TOKEN_URL = "https://localhost:9443/oauth2";
+    public static final String DEFAULT_KM_TOKEN_URL_FOR_REDIRECTION = "https://localhost:9443/oauth2";
     public static final String DEFAULT_KM_DCR_URL = "https://localhost:9443/client-registration/v0.15/register";
     public static final String DEFAULT_KM_USERNAME = "admin";
     public static final String DEFAULT_KM_PASSWORD = "admin";

@@ -21,6 +21,8 @@ wso2.carbon:
   id: wso2-am-analytics
     # server name
   name: WSO2 API Manager Analytics Server
+    # enable/disable hostname verifier
+  hostnameVerificationEnabled: true
     # ports used by this server
   ports:
       # port offset
@@ -299,23 +301,23 @@ wso2.datasources:
         validationTimeout: 30000
         isAutoCommit: false
 
-#   # Sample datasource used in API Manager
-#  - name: AM_DB
-#    description: Main datasource used by API Manager
-#    jndiConfig:
-#      name: jdbc/AM_DB
-#    definition:
-#      type: RDBMS
-#      configuration:
-#        jdbcUrl: 'jdbc:mysql://localhost:3306/WSO2AM_DB?useSSL=false'
-#        username: wso2carbon
-#        password: wso2carbon
-#        driverClassName: com.mysql.jdbc.Driver
-#        maxPoolSize: 10
-#        idleTimeout: 60000
-#        connectionTestQuery: SELECT 1
-#        validationTimeout: 30000
-#        isAutoCommit: false
+   #Main datasource used in API Manager
+  - name: AM_DB
+    description: Main datasource used by API Manager
+    jndiConfig:
+      name: jdbc/AM_DB
+    definition:
+      type: RDBMS
+      configuration:
+        jdbcUrl: "jdbc:h2:${sys:carbon.home}/../wso2am-3.0.0/repository/database/WSO2AM_DB;AUTO_SERVER=TRUE"
+        username: wso2carbon
+        password: wso2carbon
+        driverClassName: org.h2.Driver
+        maxPoolSize: 10
+        idleTimeout: 60000
+        connectionTestQuery: SELECT 1
+        validationTimeout: 30000
+        isAutoCommit: false
 
 wso2.business.rules.manager:
   datasource: BUSINESS_RULES_DB
@@ -371,11 +373,12 @@ auth.configs:
   ssoEnabled: true
   properties:
     adminScope: apim_analytics:admin_carbon.super
-    allScopes: apim_analytics:admin apim_analytics:product_manager apim_analytics:api_developer apim_analytics:app_developer apim_analytics:devops_engineer apim_analytics:everyone openid
+    allScopes: apim_analytics:admin apim_analytics:product_manager apim_analytics:api_developer apim_analytics:app_developer apim_analytics:devops_engineer apim_analytics:analytics_viewer apim_analytics:everyone openid
     adminServiceBaseUrl: https://localhost:9443
     adminUsername: admin
     adminPassword: admin
     kmDcrUrl: https://localhost:9443/client-registration/v0.15/register
+    kmTokenUrlForRedirection: https://localhost:9443/oauth2
     kmTokenUrl: https://localhost:9443/oauth2
     kmUsername: admin
     kmPassword: admin

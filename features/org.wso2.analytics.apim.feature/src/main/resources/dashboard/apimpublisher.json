@@ -1024,94 +1024,50 @@
           "name": "API Proxy Performance",
           "content": [
             {
-              "type": "row",
+              "type": "column",
               "isClosable": true,
               "title": "",
               "content": [
                 {
-                  "type": "column",
+                  "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "width": 53.979238754325266,
+                  "height": 13.097949886104784,
+                  "width": 100,
                   "content": [
                     {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "height": 7.858769931662871,
-                      "content": [
-                        {
-                          "title": "[Date Time Range]",
-                          "type": "component",
-                          "component": "DateRangePicker",
-                          "props": {
-                            "id": "2855180e-b423-4e5f-8078-9a770b9018bd",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "publisher"
-                                ],
-                                "publisherWidgetOutputs": [
-                                  "granularity",
-                                  "from",
-                                  "to"
-                                ],
-                                "publishers": []
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": false,
-                                "defaultValue": "3 Months",
-                                "availableGranularities": "From Second",
-                                "autoSyncInterval": "10"
-                              }
-                            },
-                            "widgetID": "DateRangePicker"
+                      "title": "[Date Time Range]",
+                      "type": "component",
+                      "component": "DateRangePicker",
+                      "props": {
+                        "id": "2855180e-b423-4e5f-8078-9a770b9018bd",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "granularity",
+                              "from",
+                              "to"
+                            ],
+                            "publishers": []
                           },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "height": 92.14123006833714,
-                      "width": 100,
-                      "content": [
-                        {
-                          "title": "[APIM Api Response Summary]",
-                          "type": "component",
-                          "component": "APIMApiResponseSummary",
-                          "props": {
-                            "id": "574c2b3d-036e-4fe4-a62e-cc2d02bc11d2",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": [
-                                  "2855180e-b423-4e5f-8078-9a770b9018bd"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true
-                              }
-                            },
-                            "widgetID": "APIMApiResponseSummary"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
+                          "isGenerated": false,
+                          "options": {
+                            "header": false,
+                            "defaultValue": "3 Months",
+                            "availableGranularities": "From Second",
+                            "autoSyncInterval": "10"
+                          }
+                        },
+                        "widgetID": "DateRangePicker"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
                     }
                   ]
                 },
@@ -1119,7 +1075,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "width": 46.020761245674734,
+                  "height": 86.90205011389521,
                   "content": [
                     {
                       "title": "[APIM Api Latency Time]",
@@ -1405,7 +1361,6 @@
       "DateRangePicker",
       "APIMApiLatencyTime",
       "APIMDeveloperSignups",
-      "APIMApiResponseSummary",
       "APIMOverallApiUsage",
       "APIMTopAppCreators",
       "APIMAppCreatedAnalytics",

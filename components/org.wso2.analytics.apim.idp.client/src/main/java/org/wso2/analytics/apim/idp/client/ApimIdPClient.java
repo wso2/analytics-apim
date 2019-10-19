@@ -87,6 +87,7 @@ public class ApimIdPClient extends ExternalIdPClient {
     private Cache<String, ExternalSession> tokenCache;
     private boolean isSSOEnabled;
     private String ssoLogoutURL;
+    private boolean isHostnameVerifierEnabled;
     private OAuthAdminServiceClient oAuthAdminServiceClient;
 
     // Here the user given context are mapped to the OAuthApp Info.
@@ -96,7 +97,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                          String uriHost, String baseUrl, String authorizeEndpoint, String grantType,
                          String adminScopeName, String allScopes, Map<String, OAuthApplicationInfo> oAuthAppInfoMap,
                          int cacheTimeout, String kmUserName, DCRMServiceStub dcrmServiceStub,
-                         OAuth2ServiceStubs oAuth2ServiceStubs, boolean isSSOEnabled, String ssoLogoutURL) {
+                         OAuth2ServiceStubs oAuth2ServiceStubs, boolean isSSOEnabled, String ssoLogoutURL,
+                         boolean isHostnameVerifierEnabled) {
         super(baseUrl, authorizeEndpoint, grantType, null, adminScopeName, oAuthAppInfoMap,
                 cacheTimeout, null, dcrmServiceStub, oAuth2ServiceStubs, null, null, isSSOEnabled, ssoLogoutURL);
         this.adminServiceBaseUrl = adminServiceBaseUrl;
@@ -117,10 +119,14 @@ public class ApimIdPClient extends ExternalIdPClient {
                 .build();
         this.isSSOEnabled = isSSOEnabled;
         this.ssoLogoutURL = ssoLogoutURL;
+        this.isHostnameVerifierEnabled = isHostnameVerifierEnabled;
     }
 
     @Override
     public void init(String kmUserName) throws IdPClientException {
+        if (!isHostnameVerifierEnabled) {
+            System.setProperty("httpclient.hostnameVerifier", "AllowAll");
+        }
         /*
         * Service clients are created inside init (which is called in login method) in order to prevent error logs
         * printed when the dashboard runtime started without starting APIM server.

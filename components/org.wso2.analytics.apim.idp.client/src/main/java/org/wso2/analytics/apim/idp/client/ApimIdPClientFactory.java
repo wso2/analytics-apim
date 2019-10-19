@@ -35,8 +35,12 @@ import org.wso2.carbon.analytics.idp.client.core.utils.config.IdPClientConfigura
 import org.wso2.carbon.analytics.idp.client.external.impl.DCRMServiceStub;
 import org.wso2.carbon.analytics.idp.client.external.impl.OAuth2ServiceStubs;
 import org.wso2.carbon.analytics.idp.client.external.models.OAuthApplicationInfo;
+import org.wso2.carbon.config.ConfigurationException;
+import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
+import org.wso2.carbon.kernel.config.model.CarbonConfiguration;
 import org.wso2.carbon.secvault.SecretRepository;
+import org.wso2.carbon.utils.StringUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,6 +58,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClientFactory.class);
     private DataSourceService dataSourceService;
     private SecretRepository secretRepository;
+    private boolean isHostnameVerifierEnabled;
     private AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService;
 
     @Activate
@@ -134,6 +139,27 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         this.analyticsHttpClientBuilderService = null;
     }
 
+    @Reference(
+            name = "carbon.config.provider",
+            service = ConfigProvider.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterConfigProvider"
+    )
+    protected void registerConfigProvider(ConfigProvider configProvider) {
+        CarbonConfiguration carbonConfiguration;
+        try {
+            carbonConfiguration = configProvider.getConfigurationObject(CarbonConfiguration.class);
+            this.isHostnameVerifierEnabled = carbonConfiguration.isHostnameVerificationEnabled();
+        } catch (ConfigurationException e) {
+            LOG.error("Error occurred while initializing ApimIdPClientFactory: " + e.getMessage(), e);
+        }
+    }
+
+    protected void unregisterConfigProvider(ConfigProvider configProvider) {
+        // Nothing to do
+    }
+
     @Override
     public String getType() {
         return ApimIdPClientConstants.EXTERNAL_IDP_CLIENT_TYPE;
@@ -154,6 +180,8 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         String allScopes = properties.getOrDefault(ApimIdPClientConstants.ALL_SCOPES,
                 ApimIdPClientConstants.DEFAULT_ALL_SCOPES);
 
+        String kmTokenUrlForRedirectUrl = properties.getOrDefault(ApimIdPClientConstants.KM_TOKEN_URL_FOR_REDIRECTION,
+                ApimIdPClientConstants.DEFAULT_KM_TOKEN_URL_FOR_REDIRECTION);
         String dcrEndpoint = properties.getOrDefault(ApimIdPClientConstants.KM_DCR_URL,
                 ApimIdPClientConstants.DEFAULT_KM_DCR_URL);
         String kmUsername = properties.getOrDefault(ApimIdPClientConstants.KM_USERNAME,
@@ -195,7 +223,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         oAuthAppInfoMap.put(portalAppContext, portalOAuthApp);
         oAuthAppInfoMap.put(businessAppContext, businessOAuthApp);
 
-        if (adminServiceBaseUrl == null || adminServiceBaseUrl.isEmpty()) {
+        if (StringUtils.isNullOrEmpty(adminServiceBaseUrl)) {
             String error = "Admin service base url cannot be empty. Please provide an admin service base url in the " +
                     "deployment.yaml file.";
             LOG.error(error);
@@ -257,8 +285,8 @@ public class ApimIdPClientFactory implements IdPClientFactory {
                             ApimIdPClientConstants.DEFAULT_EXTERNAL_SSO_LOGOUT_URL);
 
         return new ApimIdPClient(adminServiceBaseUrl, adminServiceUsername, adminServicePassword, uriHost, baseUrl,
-                kmTokenUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType, adminScopeName, allScopes,
-                oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub, keyManagerServiceStubs,
-                idPClientConfiguration.isSsoEnabled(), targetURIForRedirection);
+                kmTokenUrlForRedirectUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType, adminScopeName,
+                allScopes, oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub, keyManagerServiceStubs,
+                idPClientConfiguration.isSsoEnabled(), targetURIForRedirection, this.isHostnameVerifierEnabled);
     }
 }
