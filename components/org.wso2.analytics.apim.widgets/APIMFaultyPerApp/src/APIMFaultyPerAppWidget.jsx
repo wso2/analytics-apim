@@ -120,6 +120,7 @@ class APIMFaultyPerAppWidget extends Widget {
             height: this.props.height,
             faultyProviderConfig: false,
             limit: 5,
+            applicationUUIDMap: [],
             applicationList: [],
             applicationSelected: null,
             usageData: [],
@@ -144,6 +145,8 @@ class APIMFaultyPerAppWidget extends Widget {
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.getApplicationIds = this.getApplicationIds.bind(this);
+        this.handleAppIdDataReceived = this.handleAppIdDataReceived.bind(this);
     }
 
     componentDidMount() {
@@ -211,23 +214,11 @@ class APIMFaultyPerAppWidget extends Widget {
      * @memberof APIMFaultyPerAppWidget
      * */
     assembleAppQuery() {
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        let { username } = super.getCurrentUser();
-
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-
-        dataProviderConfigs.configs.config.queryData.queryName = 'applicationQuery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{appOwner}}': username
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleAppDataReceived, dataProviderConfigs);
+        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/applications`)
+            .then((response) => {
+                this.handleAppDataReceived(response.data);
+            })
+            .catch(error => console.error(error));
     }
 
     /**
@@ -235,9 +226,49 @@ class APIMFaultyPerAppWidget extends Widget {
      * @param {object} message - data retrieved
      * @memberof APIMFaultyPerAppWidget
      * */
-    handleAppDataReceived(message) {
+    handleAppDataReceived(data) {
+        const { list } = data;
+
+        if (list) {
+            const applicationUUIDMap = {};
+            list.map((dataUnit) => {
+                applicationUUIDMap[dataUnit.applicationId] = {
+                    appName: dataUnit.name + ' (' + dataUnit.owner + ')',
+                    appOwner: dataUnit.owner,
+                };
+            });
+            this.setState({applicationUUIDMap}, this.getApplicationIds);
+        }
+    }
+
+    /**
+     * Retrieve API Id from API UUID
+     */
+    getApplicationIds() {
+        const { applicationUUIDMap, providerConfig } = this.state;
+
+        if (providerConfig) {
+            const { id, widgetID: widgetName } = this.props;
+            const dataProviderConfigs = cloneDeep(providerConfig);
+
+            dataProviderConfigs.configs.config.queryData.queryName = 'applicationQuery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{applicationUUID}}': 'UUID==\'' + Object.keys(applicationUUIDMap).join('\' OR UUID==\'') + '\''
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleAppIdDataReceived, dataProviderConfigs);
+        }
+    }
+
+    /**
+     * Formats data retrieved from assembleAppQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMAppResourceUsageWidget
+     * */
+    handleAppIdDataReceived(message) {
         const { data } = message;
         const { id } = this.props;
+        const { applicationUUIDMap } = this.state;
 
         if (data) {
             const queryParam = super.getGlobalState(queryParamKey);
@@ -246,18 +277,19 @@ class APIMFaultyPerAppWidget extends Widget {
                 limit = 5;
             }
             const applicationList = data.map((dataUnit) => {
-                return {
-                    appId: dataUnit[0],
-                    appName: dataUnit[1],
-                };
+                const app = applicationUUIDMap[dataUnit[1]];
+                app.appId = dataUnit[0];
+                return app;
             });
             applicationList.sort(sortFunction);
+            applicationList.unshift({
+                appId: 'All',
+                appName: 'All',
+            });
 
             if (!applicationSelected
                 || !applicationList.some(application => application.appId === applicationSelected)) {
-                if (applicationList.length > 0) {
-                    applicationSelected = applicationList[0].appId;
-                }
+                applicationSelected = 'All';
             }
             this.setQueryParam(applicationSelected, limit);
             super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -271,7 +303,7 @@ class APIMFaultyPerAppWidget extends Widget {
      * */
     assembleMainQuery() {
         const {
-            timeFrom, timeTo, perValue, providerConfig,
+            timeFrom, timeTo, perValue, providerConfig, applicationList,
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { applicationSelected, limit } = queryParam;
@@ -279,9 +311,19 @@ class APIMFaultyPerAppWidget extends Widget {
         if (applicationSelected && limit) {
             const { id, widgetID: widgetName } = this.props;
             const dataProviderConfigs = cloneDeep(providerConfig);
+            const applicationIds = applicationList.map(app => { return app.appId; });
+            let applicationCondition;
+
+            if (applicationSelected === 'All') {
+                applicationCondition = 'applicationId==\'' + applicationIds.join('\' OR applicationId==\'') + '\'';
+                applicationCondition = applicationCondition.replace('applicationId==\'All\' OR ', '');
+            } else {
+                applicationCondition = 'applicationId==\'' + applicationSelected + '\'';
+            }
+
             dataProviderConfigs.configs.config.queryData.queryName = 'faultyQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{applicationId}}': applicationSelected,
+                '{{application}}': applicationCondition,
                 '{{from}}': timeFrom,
                 '{{to}}': timeTo,
                 '{{per}}': perValue,
