@@ -80,26 +80,6 @@ export default function APIMTopApiUsers(props) {
             marginTop: 10,
         },
     };
-    if (userData.length === 0) {
-        return (
-            <div style={styles.paperWrapper}>
-                <Paper
-                    elevation={1}
-                    style={styles.paper}
-                >
-                    <Typography variant='h5' component='h3'>
-                        <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                    </Typography>
-                    <Typography component='p'>
-                        <FormattedMessage
-                            id='nodata.error.body'
-                            defaultMessage='No data available for the selected options.'
-                        />
-                    </Typography>
-                </Paper>
-            </div>
-        );
-    }
     return (
         <Scrollbars
             style={{ height }}
@@ -204,9 +184,28 @@ export default function APIMTopApiUsers(props) {
                         />
                     </form>
                 </div>
-                <CustomTable
-                    data={userData}
-                />
+                {userData.length === 0 ? (
+                    <div style={styles.paperWrapper}>
+                        <Paper
+                            elevation={1}
+                            style={styles.paper}
+                        >
+                            <Typography variant='h5' component='h3'>
+                                <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
+                            </Typography>
+                            <Typography component='p'>
+                                <FormattedMessage
+                                    id='nodata.error.body'
+                                    defaultMessage='No data available for the selected options.'
+                                />
+                            </Typography>
+                        </Paper>
+                    </div>
+                ) :
+                    <CustomTable
+                        data={userData}
+                    />
+                }
             </div>
         </Scrollbars>
     );

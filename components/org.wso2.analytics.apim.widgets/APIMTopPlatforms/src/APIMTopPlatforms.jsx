@@ -188,7 +188,7 @@ export default function APIMTopPlatforms(props) {
                         />
                     </form>
                 </div>
-                {dataObject.length === 0 ? (
+                {platformData.length === 0 ? (
                         <div style={styles.paperWrapper}>
                             <Paper
                                 elevation={1}
