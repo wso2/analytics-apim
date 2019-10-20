@@ -567,6 +567,9 @@ public class ApimIdPClient extends ExternalIdPClient {
                     return introspectResponse;
                 } else {
                     String error = "The token is not active.";
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug(error + " Response: " + introspectResponse.toString());
+                    }
                     throw new AuthenticationException(error);
                 }
             } else if (response.status() == 400) {  //400 - Known Error
