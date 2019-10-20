@@ -1358,18 +1358,18 @@
         <project.scm.id>scm-server</project.scm.id>
 
         <!--Siddhi Extension Versions-->
-        <siddhi.execution.string.version>5.0.4</siddhi.execution.string.version>
-        <siddhi.execution.time.version>5.0.3</siddhi.execution.time.version>
-        <siddhi.execution.markov.version>5.0.0</siddhi.execution.markov.version>
+        <siddhi.execution.string.version>5.0.5</siddhi.execution.string.version>
+        <siddhi.execution.time.version>5.0.4</siddhi.execution.time.version>
+        <siddhi.execution.markov.version>5.0.1</siddhi.execution.markov.version>
         <siddhi.execution.geo.version>5.0.0</siddhi.execution.geo.version>
         <siddhi.execution.regex.version>5.0.5</siddhi.execution.regex.version>
         <siddhi.execution.env.version>2.0.0</siddhi.execution.env.version>
         <siddhi.io.wso2event.version>5.0.0</siddhi.io.wso2event.version>
-        <siddhi.io.email.version>2.0.2</siddhi.io.email.version>
-        <siddhi.map.json.version>5.0.3</siddhi.map.json.version>
-        <siddhi.map.text.version>2.0.2</siddhi.map.text.version>
+        <siddhi.io.email.version>2.0.3</siddhi.io.email.version>
+        <siddhi.map.json.version>5.0.4</siddhi.map.json.version>
+        <siddhi.map.text.version>2.0.4</siddhi.map.text.version>
         <siddhi.map.wso2event.version>5.0.1</siddhi.map.wso2event.version>
-        <siddhi.store.rdbms.version>6.0.3</siddhi.store.rdbms.version>
+        <siddhi.store.rdbms.version>6.0.4</siddhi.store.rdbms.version>
         <siddhi.io.grpc.version>1.0.3</siddhi.io.grpc.version>
         <carbon.coordination.version>2.1.1</carbon.coordination.version>
 
