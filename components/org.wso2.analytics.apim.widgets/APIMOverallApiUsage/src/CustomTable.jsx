@@ -185,18 +185,15 @@ class CustomTable extends React.Component {
     render() {
         const { data, classes } = this.props;
         let counter = 0;
-        const formattedData = [];
+        // const formattedData = [];
         let apiname = '';
         let hits = 0;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
 
-        data.forEach((dataUnit) => {
-            counter += 1;
-            [apiname] = dataUnit;
-            [,, hits] = dataUnit;
-            formattedData.push({ id: counter, apiname, hits });
+        const formattedData = data.map((dataUnit) => {
+            return { apiname: dataUnit[0] + ' (' + dataUnit[1] + ')', hits: dataUnit[2] };
         });
 
         this.state.tableData = query
@@ -230,7 +227,6 @@ class CustomTable extends React.Component {
                                         <TableRow
                                             hover
                                             tabIndex={-1}
-                                            key={n.id}
                                         >
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}
