@@ -96,6 +96,7 @@ export default function APIMFaultyPerApp(props) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            height,
         },
     };
 

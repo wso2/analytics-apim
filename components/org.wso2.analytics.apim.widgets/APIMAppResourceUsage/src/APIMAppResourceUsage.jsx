@@ -99,6 +99,7 @@ export default function APIMAppResourceUsage(props) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            height,
         },
     };
 
