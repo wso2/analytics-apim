@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.ANY_TENANT_DOMAIN_SCOPE_POSTFIX;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.API_VIEW_SCOPE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.AT;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.FORWARD_SLASH;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTH_CONSUMER_KEY;
@@ -62,6 +63,7 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.POST_LOG
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE_END;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SPACE;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SUBSCRIBE_SCOPE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SUPER_TENANT_DOMAIN;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.UNDERSCORE;
 
@@ -175,7 +177,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         String[] scopeList = this.allScopes.split(SPACE);
         ArrayList<String> newScopes = new ArrayList<>();
         for (String scope: scopeList) {
-            if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE)) {
+            if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE) && !scope.equalsIgnoreCase(API_VIEW_SCOPE)
+                    && !scope.equalsIgnoreCase(SUBSCRIBE_SCOPE)) {
                 newScopes.add(scope + ANY_TENANT_DOMAIN_SCOPE_POSTFIX);
                 newScopes.add(scope + UNDERSCORE + tenantDomain);
             }

@@ -105,6 +105,8 @@ public class ApimIdPClientConstants {
     public static final String SUPER_TENANT_DOMAIN = "carbon.super";
 
     public static final String OPEN_ID_SCOPE = "openid";
+    public static final String API_VIEW_SCOPE = "apim:api_view";
+    public static final String SUBSCRIBE_SCOPE = "apim:subscribe";
 
     private ApimIdPClientConstants() {
     }
