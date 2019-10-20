@@ -119,6 +119,7 @@ class APIMAppApiUsageWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             limit: 5,
+            applicationUUIDMap: [],
             applicationList: [],
             applicationSelected: null,
             usageData: [],
@@ -140,10 +141,12 @@ class APIMAppApiUsageWidget extends Widget {
         this.applicationSelectedHandleChange = this.applicationSelectedHandleChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
         this.assembleAppQuery = this.assembleAppQuery.bind(this);
+        this.handleAppIdDataReceived = this.handleAppIdDataReceived.bind(this);
         this.handleAppDataReceived = this.handleAppDataReceived.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.getApplicationIds = this.getApplicationIds.bind(this);
     }
 
     componentDidMount() {
@@ -211,33 +214,61 @@ class APIMAppApiUsageWidget extends Widget {
      * @memberof APIMAppApiUsageWidget
      * */
     assembleAppQuery() {
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        let { username } = super.getCurrentUser();
-
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-
-        dataProviderConfigs.configs.config.queryData.queryName = 'applicationQuery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{appOwner}}': username
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleAppDataReceived, dataProviderConfigs);
+        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/applications`)
+            .then((response) => {
+                this.handleAppDataReceived(response.data);
+            })
+            .catch(error => console.error(error));
     }
 
     /**
-     * Formats data retrieved from assembleAppQuery
+     * Formats applciations data retrieved from APIM server
+     * @param {object} data - data retrieved
+     * @memberof APIMAppApiUsageWidget
+     * */
+    handleAppDataReceived(data) {
+        const { list } = data;
+
+        if (list) {
+            const applicationUUIDMap = {};
+            list.map((dataUnit) => {
+                applicationUUIDMap[dataUnit.applicationId] = {
+                    appName: dataUnit.name + ' (' + dataUnit.owner + ')',
+                    appOwner: dataUnit.owner,
+                };
+            });
+            this.setState({ applicationUUIDMap }, this.getApplicationIds);
+        }
+    }
+
+    /**
+     * Retrieve API Id from API UUID
+     */
+    getApplicationIds() {
+        const { applicationUUIDMap, providerConfig } = this.state;
+
+        if (providerConfig) {
+            const { id, widgetID: widgetName } = this.props;
+            const dataProviderConfigs = cloneDeep(providerConfig);
+
+            dataProviderConfigs.configs.config.queryData.queryName = 'applicationQuery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{applicationUUID}}': 'UUID==\'' + Object.keys(applicationUUIDMap).join('\' or UUID==\'') + '\''
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleAppIdDataReceived, dataProviderConfigs);
+        }
+    }
+
+    /**
+     * Formats data retrieved from applicationUUIDMap
      * @param {object} message - data retrieved
      * @memberof APIMAppApiUsageWidget
      * */
-    handleAppDataReceived(message) {
+    handleAppIdDataReceived(message) {
         const { data } = message;
         const { id } = this.props;
+        const { applicationUUIDMap } = this.state;
 
         if (data) {
             const queryParam = super.getGlobalState(queryParamKey);
@@ -246,18 +277,19 @@ class APIMAppApiUsageWidget extends Widget {
                 limit = 5;
             }
             const applicationList = data.map((dataUnit) => {
-                return {
-                    appId: dataUnit[0],
-                    appName: dataUnit[1],
-                };
+                const app = applicationUUIDMap[dataUnit[1]];
+                app.appId = dataUnit[0];
+                return app;
             });
             applicationList.sort(sortFunction);
+            applicationList.unshift({
+                appId: 'All',
+                appName: 'All',
+            });
 
             if (!applicationSelected
                     || !applicationList.some(application => application.appId === applicationSelected)) {
-                if (applicationList.length > 0) {
-                    applicationSelected = applicationList[0].appId;
-                }
+                applicationSelected = 'All';
             }
             this.setQueryParam(applicationSelected, limit);
             super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -271,18 +303,27 @@ class APIMAppApiUsageWidget extends Widget {
      * */
     assembleMainQuery() {
         const {
-            timeFrom, timeTo, perValue, providerConfig,
+            timeFrom, timeTo, perValue, providerConfig, applicationList,
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { applicationSelected, limit } = queryParam;
 
-        if (applicationSelected && limit) {
+        if (applicationSelected && limit && providerConfig) {
             const { id, widgetID: widgetName } = this.props;
             const dataProviderConfigs = cloneDeep(providerConfig);
+            const applicationIds = applicationList.map(app => { return app.appId; });
+            let applicationCondition;
+
+            if (applicationSelected === 'All') {
+                applicationCondition = 'applicationId==\'' + applicationIds.join('\' OR applicationId==\'') + '\'';
+                applicationCondition = applicationCondition.replace('applicationId==\'All\' OR ', '');
+            } else {
+                applicationCondition = 'applicationId==\'' + applicationSelected + '\'';
+            }
 
             dataProviderConfigs.configs.config.queryData.queryName = 'apiUsageQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{applicationId}}': applicationSelected,
+                '{{application}}': applicationCondition,
                 '{{from}}': timeFrom,
                 '{{to}}': timeTo,
                 '{{per}}': perValue,

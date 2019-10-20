@@ -293,7 +293,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
 
         if (applicationList) {
             const appIdList = applicationList.map((app) => { return app.appId; });
-            const appIdListQuery = 'APPLICATION_ID==\'' + appIdList.join('\' or APPLICATION_ID==\'') + '\'';
+            const appIdListQuery = 'APPLICATION_ID==' + appIdList.join(' or APPLICATION_ID==');
             dataProviderConfigs.configs.config.queryData.queryName = 'appKeyMapQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{query}}': appIdListQuery
@@ -387,8 +387,8 @@ class APIMRegisteredAppUsersWidget extends Widget {
 
         if (consumerKeyMapList) {
             const consumerKeyList = consumerKeyMapList.map((app) => { return app.consumerKeyId; });
-            const consumerKeyListQuery = 'CONSUMER_KEY_ID==\''
-                + consumerKeyList.join('\' or CONSUMER_KEY_ID==\'') + '\'';
+            const consumerKeyListQuery = 'CONSUMER_KEY_ID=='
+                + consumerKeyList.join(' or CONSUMER_KEY_ID==');
             dataProviderConfigs.configs.config.queryData.queryName = 'accessTokenQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{query}}': consumerKeyListQuery
