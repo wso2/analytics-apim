@@ -29,6 +29,7 @@ define stream workflowStream(
     updatedTime long
 );
 
+@source(ref='grpcSource', enable.ssl="TRUE" , @map(type='json'))
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.0.0', @map(type = 'wso2event'))
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.0.0', @map(type = 'wso2event'))
 define stream InComingRequestStream (meta_clientType string,
@@ -69,6 +70,7 @@ define stream InComingRequestStream (meta_clientType string,
     gatewayType string,
     label string);
 
+@source(ref='grpcSource', enable.ssl="TRUE" , @map(type='json'))
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0', @map(type = 'wso2event'))
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0',
 	@map(type = 'wso2event'))
@@ -109,6 +111,7 @@ define stream ThrottledOutStream(
     hostname string
 );
 
+@source(ref='grpcSource', enable.ssl="TRUE" , @map(type='json'))
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0', @map(type = 'wso2event'))
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0',
 	@map(type = 'wso2event'))

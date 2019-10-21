@@ -458,10 +458,10 @@ siddhi:
         namespace: 'source'
         properties:
           keyStoreFile : ${sys:carbon.home}/resources/security/wso2carbon.jks
-          keyStorePassword : ${sec:wso2.apim.analytics.password}
+          keyStorePassword : wso2carbon
           keyStoreAlgorithm : SunX509
           trustStoreFile : ${sys:carbon.home}/resources/security/client-truststore.jks
-          trustStorePassword : ${sec:wso2.apim.analytics.password}
+          trustStorePassword : wso2carbon
           trustStoreAlgorithm : SunX509
 
   # Cluster Configuration
