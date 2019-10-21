@@ -442,6 +442,12 @@ wso2.datasources:
           validationTimeout: 30000
 
 siddhi:
+  refs:
+    - ref:
+        name: 'grpcSource'
+        type: 'grpc'
+        properties:
+          receiver.url : grpc://localhost:9806/org.wso2.grpc.EventService/consume
   extensions:
     -
       extension:
@@ -463,6 +469,18 @@ siddhi:
           cacheSize: 10000
           isPersistInDatabase: true
           datasource: GEO_LOCATION_DATA
+   #Enabling GRPC Service with an Extension
+    -
+      extension:
+        name: 'grpc'
+        namespace: 'source'
+        properties:
+          keyStoreFile : ${sys:carbon.home}/resources/security/wso2carbon.jks
+          keyStorePassword : wso2carbon
+          keyStoreAlgorithm : SunX509
+          trustStoreFile : ${sys:carbon.home}/resources/security/client-truststore.jks
+          trustStorePassword : wso2carbon
+          trustStoreAlgorithm : SunX509
 
   # Cluster Configuration
 cluster.config:
