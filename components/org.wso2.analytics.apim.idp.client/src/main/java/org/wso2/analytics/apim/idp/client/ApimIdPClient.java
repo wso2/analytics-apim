@@ -235,7 +235,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         String[] scopeList = scopes.split(SPACE);
         ArrayList<String> newScopes = new ArrayList<>();
         for (String scope: scopeList) {
-            if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE)) {
+            if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE) && !scope.equalsIgnoreCase(API_VIEW_SCOPE)
+                    && !scope.equalsIgnoreCase(SUBSCRIBE_SCOPE)) {
                 newScopes.add(scope + ANY_TENANT_DOMAIN_SCOPE_POSTFIX);
                 newScopes.add(scope + UNDERSCORE + tenantDomain);
             }
