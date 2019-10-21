@@ -320,5 +320,12 @@
             <destName>config.json</destName>
             <fileMode>644</fileMode>
         </file>
+
+        <!--Dashboard web component locale file-->
+        <file>
+            <source>src/dashboard/en.json</source>
+            <outputDirectory>wso2/dashboard/deployment/web-ui-apps/analytics-dashboard/public/locales</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
     </files>
 </assembly>
