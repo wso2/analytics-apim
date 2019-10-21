@@ -23,7 +23,6 @@ import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Axios from 'axios';
 import {
     defineMessages, IntlProvider, FormattedMessage,
@@ -103,10 +102,6 @@ class APIMOverallApiUsageWidget extends Widget {
         };
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -116,12 +111,6 @@ class APIMOverallApiUsageWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
-            },
         };
 
         this.state = {
@@ -130,11 +119,13 @@ class APIMOverallApiUsageWidget extends Widget {
             apiCreatedBy: 'all',
             usageData: null,
             usageData1: null,
-            apiIDlist: [],
+            apiIdMap: {},
+            apiProviderList: [],
             metadata: this.metadata,
             chartConfig: this.chartConfig,
             limit: 0,
             localeMessages: null,
+            inProgress: false,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -156,12 +147,16 @@ class APIMOverallApiUsageWidget extends Widget {
         this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.resetState = this.resetState.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.getUsername = this.getUsername.bind(this);
+        this.assembleApiIdQuery = this.assembleApiIdQuery.bind(this);
+        this.handleApiIdReceived = this.handleApiIdReceived.bind(this);
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
         this.loadLocale(locale);
+        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -196,6 +191,19 @@ class APIMOverallApiUsageWidget extends Widget {
     }
 
     /**
+     * Get username of the logged in user
+     */
+    getUsername() {
+        let { username } = super.getCurrentUser();
+        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
+        // are saved without tenant suffix
+        if (username.split('@').length === 2) {
+            username = username.replace('@carbon.super', '');
+        }
+        this.setState({ username })
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMOverallApiUsageWidget
      * */
@@ -215,10 +223,10 @@ class APIMOverallApiUsageWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         let { apiCreatedBy } = queryParam;
         let { limit } = queryParam;
-        if (!apiCreatedBy) {
+        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
             apiCreatedBy = 'all';
         }
-        if (!limit) {
+        if (!limit || limit < 0) {
             limit = 5;
         }
         this.setState({ apiCreatedBy, limit });
@@ -232,15 +240,17 @@ class APIMOverallApiUsageWidget extends Widget {
     assembleApiUsageQuery() {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
-        const { limit } = queryParam;
+        const { limit, apiCreatedBy } = queryParam;
         const {
-            timeFrom, timeTo, perValue, providerConfig,
+            timeFrom, timeTo, perValue, providerConfig, username,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{apiCreator}}': apiCreatedBy !== 'all' ? 'AND apiCreator==\'{{username}}\'' : '',
+            '{{username}}': username,
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
@@ -257,70 +267,92 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     handleApiUsageReceived(message) {
         const { data } = message;
-        const { apiCreatedBy, limit } = this.state;
-        const currentUser = super.getCurrentUser();
         const { id } = this.props;
 
         if (data) {
-            let usageData = [];
-
-            if (apiCreatedBy === createdByKeys.all) {
-                usageData = data;
-            } else if (apiCreatedBy === createdByKeys.me) {
-                data.forEach((dataUnit) => {
-                    if (currentUser.username === dataUnit[1]) {
-                        usageData.push(dataUnit);
-                    }
-                });
-            }
-
+            const usageData = data.map(dataUnit => {
+                return {
+                    apiname: dataUnit[0],
+                    provider: dataUnit[1],
+                    hits: dataUnit[2]
+                }
+            });
             this.setState({ usageData });
-            this.setQueryParam(apiCreatedBy, limit);
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
     /**
-     * Formats the siddhi query - apilistquery
+     * REtrieve API list from APIM server
      * @memberof APIMOverallApiUsageWidget
      * */
     assembleApiListQuery() {
-        this.resetState();
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
+        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
+            .then((response) => {
+                this.handleApiListReceived(response.data);
+            })
+            .catch(error => console.error(error));
     }
 
     /**
      * Formats data retrieved from assembleApiListQuery
+     * @param {object} data - data retrieved
+     * @memberof APIMOverallApiUsageWidget
+     * */
+    handleApiListReceived(data) {
+        const { list } = data;
+        const { id } = this.props;
+
+        if (list) {
+            const apiProviderList = list.map (dataUnit =>
+                { return [dataUnit.name, dataUnit.provider]; }
+            );
+            this.setState({ apiProviderList });
+        }
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+        this.assembleApiIdQuery();
+    }
+
+    /**
+     * Formats the siddhi query - apiidquery
+     * @memberof APIMOverallApiUsageWidget
+     * */
+    assembleApiIdQuery() {
+        this.resetState();
+        const { providerConfig, apiProviderList } = this.state;
+        const { id, widgetID: widgetName } = this.props;
+
+        if (apiProviderList) {
+            let apiCondition = apiProviderList.map(data => {
+                return '(API_NAME==\'' + data[0] + '\' AND API_PROVIDER==\''+ data[1] + '\')';
+            });
+            apiCondition = apiCondition.join(' OR ');
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{apiCondition}}': apiCondition
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false  });
+        }
+    }
+
+    /**
+     * Formats data retrieved from assembleApiIdQuery
      * @param {object} message - data retrieved
      * @memberof APIMOverallApiUsageWidget
      * */
-    handleApiListReceived(message) {
+    handleApiIdReceived(message) {
         const { data } = message;
-        const { usageData, apiCreatedBy, limit } = this.state;
         const { id } = this.props;
 
         if (data) {
-            const apiIDlist = [];
-
-            usageData.forEach((usageUnit) => {
-                const api = [];
-                data.forEach((dataUnit) => {
-                    if (usageUnit[0] === dataUnit[1]) {
-                        api.push(dataUnit[0]);
-                    }
-                });
-                apiIDlist.push(api);
-            });
-
-            this.setState({ apiIDlist });
-            this.setQueryParam(apiCreatedBy, limit);
+            const apiIdMap = {};
+            data.map(api => { apiIdMap[api[0]]= { apiname: api[1], creator: api[2] }; });
+            this.setState({ apiIdMap });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiSubQuery();
@@ -332,13 +364,22 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     assembleApiSubQuery() {
         this.resetState();
-        const { providerConfig } = this.state;
+        const { providerConfig, apiIdMap } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apisubquery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiSubReceived, dataProviderConfigs);
+        if (apiIdMap) {
+            let apiIds = Object.keys(apiIdMap).map(id => { return 'API_ID==' + id });
+            apiIds = apiIds.join(' OR ');
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'apisubquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{apiList}}' : apiIds
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleApiSubReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false  });
+        }
     }
 
     /**
@@ -351,24 +392,19 @@ class APIMOverallApiUsageWidget extends Widget {
 
         if (data) {
             const {
-                usageData, apiIDlist, apiCreatedBy, limit,
+                usageData, apiIdMap,
             } = this.state;
-            let counter = 0;
 
-            for (const api of apiIDlist) {
-                let subscriptions = 0;
-                api.forEach((apiID) => {
-                    data.forEach((dataUnit) => {
-                        if (apiID === dataUnit[0]) {
-                            subscriptions += dataUnit[1];
-                        }
-                    });
-                });
-                usageData[counter][3] = subscriptions;
-                counter++;
-            }
-            this.setState({ usageData1: usageData });
-            this.setQueryParam(apiCreatedBy, limit);
+            const usageData1 = [];
+            data.map(dataUnit => {
+                const { apiname, creator } = apiIdMap[dataUnit[0]];
+                const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator);
+
+                if (hits.length > 0) {
+                    usageData1.push([hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1]]);
+                }
+            });
+            this.setState({ usageData1, inProgress: false  });
         }
     }
 
@@ -392,6 +428,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value);
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiUsageQuery();
     }
@@ -406,6 +443,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(event.target.value, limit);
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiUsageQuery();
     }
@@ -417,24 +455,18 @@ class APIMOverallApiUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, width, limit, apiCreatedBy, usageData1, metadata, chartConfig,
+            localeMessages, faultyProviderConfig, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig,
+            inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress
+            paper, paperWrapper
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const ovearllUsageProps = {
-            themeName, width, limit, apiCreatedBy, usageData1, metadata, chartConfig,
+            themeName, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig, inProgress,
         };
 
-        if (!localeMessages || !usageData1) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>

@@ -19,6 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -123,6 +124,11 @@ const styles = theme => ({
     paginationActions: {
         marginLeft: 0,
     },
+    inProgress: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });
 
 /**
@@ -183,7 +189,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, loadingTopApis } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -204,45 +210,45 @@ class CustomTable extends React.Component {
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
                 />
-                <div className={classes.tableWrapper}>
-                    <Table className={classes.table} aria-labelledby='tableTitle'>
-                        <CustomTableHead
-                            order={order}
-                            orderBy={orderBy}
-                            onRequestSort={this.handleRequestSort}
-                        />
-                        <TableBody>
-                            {stableSort(tableData, getSorting(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((n) => {
-                                    return (
-                                        <TableRow
-                                            hover
-                                            tabIndex={-1}
-                                            key={n.id}
-                                        >
-                                            <TableCell component='th' scope='row'>
-                                                {n.apiname}
-                                            </TableCell>
-                                            <TableCell
-                                                numeric
-                                                style={{
-                                                    paddingRight: '10%',
-                                                }}
+                { loadingTopApis ? (
+                    <div className={classes.inProgress} style={{ height: rowsPerPage * 49 }}>
+                        <CircularProgress />
+                    </div>
+                ) : (
+                    <div className={classes.tableWrapper}>
+                        <Table className={classes.table} aria-labelledby='tableTitle'>
+                            <CustomTableHead
+                                order={order}
+                                orderBy={orderBy}
+                                onRequestSort={this.handleRequestSort}
+                            />
+                            <TableBody>
+                                {stableSort(tableData, getSorting(order, orderBy))
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((n) => {
+                                        return (
+                                            <TableRow
+                                                hover
+                                                tabIndex={-1}
                                             >
-                                                {n.ratings}
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 49 * emptyRows }}>
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
+                                                <TableCell component='th' scope='row'>
+                                                    {n.apiname}
+                                                </TableCell>
+                                                <TableCell numeric>
+                                                    {n.ratings}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                {emptyRows > 0 && (
+                                    <TableRow style={{ height: 49 * emptyRows }}>
+                                        <TableCell colSpan={6} />
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                )}
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
                     component='div'

@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -39,8 +40,8 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiUsage(props) {
     const {
-        themeName, width, limit, apiCreatedBy, usageData1, metadata, chartConfig, apiCreatedHandleChange,
-        limitHandleChange,
+        themeName, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig, apiCreatedHandleChange,
+        limitHandleChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -91,27 +92,18 @@ export default function APIMOverallApiUsage(props) {
             height: '30%',
             margin: 'auto',
         },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
+        },
     };
-    if (usageData1.length === 0) {
-        return (
-            <div style={styles.paperWrapper}>
-                <Paper
-                    elevation={1}
-                    style={styles.paper}
-                >
-                    <Typography variant='h5' component='h3'>
-                        <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                    </Typography>
-                    <Typography component='p'>
-                        <FormattedMessage
-                            id='nodata.error.body'
-                            defaultMessage='No data available for the selected options.'
-                        />
-                    </Typography>
-                </Paper>
-            </div>
-        );
-    }
+
     return (
         <Scrollbars
             style={{ height: '100%' }}
@@ -171,22 +163,54 @@ export default function APIMOverallApiUsage(props) {
                         />
                     </form>
                 </div>
-                <div style={styles.dataWrapper}>
-                    <div style={styles.chartWrapper}>
-                        <VizG
-                            config={chartConfig}
-                            metadata={metadata}
-                            data={usageData1}
-                            width={width}
-                            theme={themeName}
-                        />
+                { !usageData1 || inProgress ? (
+                    <div style={styles.loading}>
+                        <CircularProgress style={styles.loadingIcon} />
                     </div>
-                    <div style={styles.tableWrapper}>
-                        <CustomTable
-                            data={usageData1}
-                        />
-                    </div>
-                </div>
+                    ) : (
+                        <div>
+                            {
+                                usageData1.length === 0 ? (
+                                    <div style={styles.paperWrapper}>
+                                        <Paper
+                                            elevation={1}
+                                            style={styles.paper}
+                                        >
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='nodata.error.heading'
+                                                    defaultMessage='No Data Available !' />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='nodata.error.body'
+                                                    defaultMessage='No data available for the selected options.'
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <div style={styles.dataWrapper}>
+                                        <div style={styles.chartWrapper}>
+                                            <VizG
+                                                config={chartConfig}
+                                                metadata={metadata}
+                                                data={usageData1}
+                                                width={width}
+                                                theme={themeName}
+                                            />
+                                        </div>
+                                        <div style={styles.tableWrapper}>
+                                            <CustomTable
+                                                data={usageData1}
+                                            />
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )
+                }
             </div>
         </Scrollbars>
     );

@@ -20,8 +20,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
 import sumBy from 'lodash/sumBy';
 
@@ -33,41 +31,13 @@ import sumBy from 'lodash/sumBy';
 export default function ApiAvailability(props) {
     const { availableApiData, legendData } = props;
     const styles = {
-        dataWrapper: {
-            height: '75%',
-        },
-        paper: {
-            padding: '4%',
-            border: '1px solid #fff',
-            height: '10%',
-            marginTop: '5%',
-        },
         chartTitle: {
             height: '15%',
             display: 'flex',
             marginRight: 'auto',
         },
     };
-    if (availableApiData.length === 0) {
-        return (
-            <div style={styles.dataWrapper}>
-                <Paper
-                    elevation={1}
-                    style={styles.paper}
-                >
-                    <Typography variant='h5' component='h3'>
-                        <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                    </Typography>
-                    <Typography component='p'>
-                        <FormattedMessage
-                            id='nodata.error.body'
-                            defaultMessage='No matching data available for the selected options.'
-                        />
-                    </Typography>
-                </Paper>
-            </div>
-        );
-    }
+
     return (
         <div>
             <div style={styles.chartTitle}>
