@@ -291,7 +291,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
 
-        if (applicationList) {
+        if (applicationList && applicationList.length > 0) {
             const appIdList = applicationList.map((app) => { return app.appId; });
             const appIdListQuery = 'APPLICATION_ID==' + appIdList.join(' or APPLICATION_ID==');
             dataProviderConfigs.configs.config.queryData.queryName = 'appKeyMapQuery';
@@ -338,7 +338,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
 
-        if (appKeyMapList) {
+        if (appKeyMapList && appKeyMapList.length > 0) {
             const appKeyList = appKeyMapList.map((app) => { return app.consumerKey; });
             const appKeyListQuery = 'CONSUMER_KEY==\'' + appKeyList.join('\' or CONSUMER_KEY==\'') + '\'';
             dataProviderConfigs.configs.config.queryData.queryName = 'consumerAppsQuery';
@@ -385,7 +385,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
 
-        if (consumerKeyMapList) {
+        if (consumerKeyMapList && consumerKeyMapList.length > 0) {
             const consumerKeyList = consumerKeyMapList.map((app) => { return app.consumerKeyId; });
             const consumerKeyListQuery = 'CONSUMER_KEY_ID=='
                 + consumerKeyList.join(' or CONSUMER_KEY_ID==');
@@ -436,7 +436,8 @@ class APIMRegisteredAppUsersWidget extends Widget {
         const usageData = [];
         const legendData = [];
 
-        applicationList.map((app) => {
+        if (applicationList) {
+            applicationList.map((app) => {
             const consumerKeysList = appKeyMapList.filter((appKey) => { return appKey.appId === app.appId; });
             if (consumerKeysList.length > 0) {
                 const consumerKeys = consumerKeysList.map((key) => { return key.consumerKey; });
@@ -452,7 +453,8 @@ class APIMRegisteredAppUsersWidget extends Widget {
                 legendData.push({ name: app.appName });
             }
             return null;
-        });
+            });
+        }
         this.setState({ usageData, legendData, inProgress: false });
     }
 

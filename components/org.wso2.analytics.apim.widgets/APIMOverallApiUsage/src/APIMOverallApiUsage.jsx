@@ -105,14 +105,8 @@ export default function APIMOverallApiUsage(props) {
     };
 
     return (
-        <Scrollbars
-            style={{ height: '100%' }}
-        >
-            <div
-                style={{
-                    padding: '5% 5%',
-                }}
-            >
+        <Scrollbars style={{ height: '100%' }}>
+            <div style={{ padding: '5% 5%' }}>
                 <div style={styles.headingWrapper}>
                     <div style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -163,14 +157,14 @@ export default function APIMOverallApiUsage(props) {
                         />
                     </form>
                 </div>
-                { !usageData1 || inProgress ? (
+                { inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
                     ) : (
                         <div>
                             {
-                                usageData1.length === 0 ? (
+                                !usageData1 || usageData1.length === 0 ? (
                                     <div style={styles.paperWrapper}>
                                         <Paper
                                             elevation={1}
