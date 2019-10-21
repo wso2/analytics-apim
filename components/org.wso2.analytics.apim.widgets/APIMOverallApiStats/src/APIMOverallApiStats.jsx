@@ -21,27 +21,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import CustomTable from './CustomTable';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import ApiAvailability from './ApiAvailability';
-
-const darkTheme = createMuiTheme({
-    palette: {
-        type: 'dark',
-    },
-    typography: {
-        useNextVariants: true,
-    },
-});
-
-const lightTheme = createMuiTheme({
-    palette: {
-        type: 'light',
-    },
-    typography: {
-        useNextVariants: true,
-    },
-});
 
 /**
  * React Component for Overall Api Stats widget body
@@ -50,7 +34,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMOverallApiStats(props) {
     const {
-        themeName, height, availableApiData, legendData, topApiNameData,
+        themeName, height, availableApiData, legendData, topApiNameData, loadingTopApis,
     } = props;
     const styles = {
         headingWrapper: {
@@ -58,51 +42,100 @@ export default function APIMOverallApiStats(props) {
             margin: 'auto',
             width: '90%',
         },
+        dataWrapper: {
+            height: '75%',
+            paddingTop: 35,
+            margin: 'auto',
+            width: '90%',
+        },
+        paper: {
+            padding: '4%',
+            border: '1px solid #fff',
+            height: '10%',
+            marginTop: '5%',
+        },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        inProgress: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
+        },
     };
     const availabilityProps = { availableApiData, legendData };
 
     return (
-        <MuiThemeProvider
-            theme={themeName === 'dark' ? darkTheme : lightTheme}
-        >
-            <Scrollbars
-                style={{ height }}
+        <Scrollbars style={{ height }}>
+            <div style={{
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                width: '80%',
+                margin: '5% auto',
+                padding: '10% 5%',
+            }}
             >
-                <div style={{
-                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                    width: '80%',
-                    margin: '5% auto',
-                    padding: '10% 5%',
-                }}
-                >
-                    <div style={styles.headingWrapper}>
-                        <h3 style={{
-                            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                            paddingBottom: '10px',
-                            margin: 'auto',
-                            textAlign: 'left',
-                            fontWeight: 'normal',
-                            letterSpacing: 1.5,
-                        }}
-                        >
-                            <FormattedMessage id='widget.heading' defaultMessage='OVERALL API STATS' />
-                        </h3>
-                    </div>
-                    <div>
-                        <div style={{
-                            marginTop: '10%',
-                            marginBottom: '10%',
-                            background: themeName === 'dark' ? '#162638' : '#f7f7f7',
-                            padding: '5%',
-                        }}
-                        >
-                            <ApiAvailability {...availabilityProps} />
-                        </div>
-                        <CustomTable data={topApiNameData} />
-                    </div>
+                <div style={styles.headingWrapper}>
+                    <h3 style={{
+                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+                        paddingBottom: '10px',
+                        margin: 'auto',
+                        textAlign: 'left',
+                        fontWeight: 'normal',
+                        letterSpacing: 1.5,
+                    }}
+                    >
+                        <FormattedMessage id='widget.heading' defaultMessage='OVERALL API STATS' />
+                    </h3>
                 </div>
-            </Scrollbars>
-        </MuiThemeProvider>
+                <div>
+                    { !availableApiData ? (
+                        <div style={styles.inProgress}>
+                            <CircularProgress style={styles.loadingIcon} />
+                        </div>
+                    ) : (
+                        <div>
+                            { availableApiData.length === 0 ?
+                                (
+                                    <div style={styles.dataWrapper}>
+                                        <Paper
+                                            elevation={1}
+                                            style={styles.paper}
+                                        >
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage id='nodata.error.heading'
+                                                                  defaultMessage='No Data Available !' />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='nodata.error.body'
+                                                    defaultMessage={'No matching data available for the ' +
+                                                    'selected options.'}
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <div style={{
+                                            marginTop: '5%',
+                                            marginBottom: '5%',
+                                            background: themeName === 'dark' ? '#162638' : '#f7f7f7',
+                                            padding: '5%',
+                                        }}
+                                        >
+                                            <ApiAvailability {...availabilityProps} />
+                                        </div>
+                                        <CustomTable data={topApiNameData} loadingTopApis={loadingTopApis} />
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )}
+                </div>
+            </div>
+        </Scrollbars>
     );
 }
 
