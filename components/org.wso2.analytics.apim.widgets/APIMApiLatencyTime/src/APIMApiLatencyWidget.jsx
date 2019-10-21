@@ -25,7 +25,6 @@ import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Widget from '@wso2-dashboards/widget';
@@ -161,12 +160,6 @@ class APIMApiLatencyWidget extends Widget {
                 display: 'flex',
                 flexWrap: 'wrap',
             },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
-            },
         };
 
         this.state = {
@@ -181,6 +174,7 @@ class APIMApiLatencyWidget extends Widget {
             apiFullData: [],
             resourceList: [],
             resSelected: [],
+            inProgress: true,
             metadata: this.metadata,
             chartConfig: this.chartConfig,
         };
@@ -307,23 +301,9 @@ class APIMApiLatencyWidget extends Widget {
      * */
     handleApiListReceived(message) {
         const { data } = message;
+        const { id } = this.props;
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy } = queryParam;
-        let { apiSelected } = queryParam;
-        let { apiVersion } = queryParam;
-        let { resSelected } = queryParam;
-        if (!apiCreatedBy) {
-            apiCreatedBy = 'All';
-        }
-        if (!apiSelected) {
-            [[, apiSelected]] = data;
-        }
-        if (!apiVersion) {
-            [[,, apiVersion]] = data;
-        }
-        if (!resSelected) {
-            resSelected = [];
-        }
+        let { apiCreatedBy, apiSelected, apiVersion, resSelected } = queryParam;
 
         if (data) {
             const currentUser = super.getCurrentUser();
@@ -356,7 +336,7 @@ class APIMApiLatencyWidget extends Widget {
             });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, resSelected);
         }
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleResourceQuery();
     }
 
@@ -372,19 +352,23 @@ class APIMApiLatencyWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         let apiID = 0;
 
-        apiFullData.forEach((api) => {
-            if (apiSelected === api[1] && apiVersion === api[2]) {
-                [apiID] = api;
-            }
-        });
+        if (apiFullData && apiFullData.length > 0) {
+            apiFullData.forEach((api) => {
+                if (apiSelected === api[1] && apiVersion === api[2]) {
+                    [apiID] = api;
+                }
+            });
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'resourcequery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{apiID}}': apiID
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleResourceReceived, dataProviderConfigs);
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'resourcequery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{apiID}}': apiID
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleResourceReceived, dataProviderConfigs);
+        } else {
+            this.setState( { inProgress: false });
+        }
     }
 
     /**
@@ -420,50 +404,55 @@ class APIMApiLatencyWidget extends Widget {
             providerConfig, timeFrom, timeTo, perValue, resSelected, apiSelected, apiVersion,
         } = this.state;
         const last = resSelected.slice(-1).toString();
-        let text = "(apiResourceTemplate=='";
-        resSelected.forEach((res) => {
-            const resFormat = res.split('(');
-            const resource = resFormat[resFormat.length - 2].replace(' ', '');
-            const method = resFormat[resFormat.length - 1].replace(')', '');
-            if (res !== last) {
-                text += resource + "' AND apiMethod=='" + method + "') OR (apiResourceTemplate=='";
-            } else {
-                text += resource + "' AND apiMethod=='" + method + "')";
-            }
-        });
-        this.setState({ latencyData: null });
 
-        const { widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-        if (apiSelected !== '' && apiVersion !== '' && resSelected.length !== 0) {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND (" + text + ')',
-                '{{api}}': apiSelected,
-                '{{version}}': apiVersion
-            };
-        } else if (apiSelected !== '' && apiVersion !== '') {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND apiResourceTemplate==''",
-                '{{api}}': apiSelected,
-                '{{version}}': apiVersion
-            };
+        if (resSelected && resSelected.length > 0) {
+            let text = "(apiResourceTemplate=='";
+            resSelected.forEach((res) => {
+                const resFormat = res.split('(');
+                const resource = resFormat[resFormat.length - 2].replace(' ', '');
+                const method = resFormat[resFormat.length - 1].replace(')', '');
+                if (res !== last) {
+                    text += resource + "' AND apiMethod=='" + method + "') OR (apiResourceTemplate=='";
+                } else {
+                    text += resource + "' AND apiMethod=='" + method + "')";
+                }
+            });
+            this.setState({ latencyData: null });
+
+            const { widgetID: widgetName } = this.props;
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
+            if (apiSelected !== '' && apiVersion !== '' && resSelected.length !== 0) {
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND (" + text + ')',
+                    '{{api}}': apiSelected,
+                    '{{version}}': apiVersion
+                };
+            } else if (apiSelected !== '' && apiVersion !== '') {
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}' AND apiResourceTemplate==''",
+                    '{{api}}': apiSelected,
+                    '{{version}}': apiVersion
+                };
+            } else {
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{querystring}}': "on apiResourceTemplate==''"
+                };
+            }
+            super.getWidgetChannelManager()
+                .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{querystring}}': "on apiResourceTemplate==''"
-            };
+            this.setState( { inProgress: false });
         }
-        super.getWidgetChannelManager()
-            .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -483,7 +472,7 @@ class APIMApiLatencyWidget extends Widget {
                 latencyData.push([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4],
                     dataUnit[5], dataUnit[6], Moment(dataUnit[7]).format('YYYY-MMM-DD hh:mm:ss')]);
             });
-            this.setState({ latencyData });
+            this.setState({ latencyData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, resSelected);
         }
     }
@@ -511,8 +500,10 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     apiCreatedHandleChange(event) {
+        const { id } = this.props;
         this.setQueryParam(event.target.value, '', '', []);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        this.setState( { inProgress: true });
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -523,9 +514,11 @@ class APIMApiLatencyWidget extends Widget {
      * */
     apiSelectedHandleChange(event) {
         const { apiCreatedBy } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, '', []);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        this.setState( { inProgress: true });
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -536,9 +529,11 @@ class APIMApiLatencyWidget extends Widget {
      * */
     apiVersionHandleChange(event) {
         const { apiCreatedBy, apiSelected } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, []);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        this.setState( { inProgress: true });
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleResourceQuery();
     }
 
@@ -557,7 +552,7 @@ class APIMApiLatencyWidget extends Widget {
         } else {
             resSelected.push(event.target.value);
         }
-        this.setState({ resSelected });
+        this.setState({ resSelected, inProgress: true });
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, resSelected);
         super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
         this.assembleMainQuery();
@@ -571,11 +566,11 @@ class APIMApiLatencyWidget extends Widget {
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width,
+            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress,
             apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -593,15 +588,9 @@ class APIMApiLatencyWidget extends Widget {
             apilist,
             versionlist,
             resourceList,
+            inProgress,
         };
 
-        if (!localeMessages || !latencyData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
