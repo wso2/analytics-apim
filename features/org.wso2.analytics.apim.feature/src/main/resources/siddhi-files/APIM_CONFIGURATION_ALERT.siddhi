@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-@App:name("APIM_ALERT_CONFIGURATION")
+@App:name("APIM_CONFIGURATION_ALERT")
 @App:description("Store the alert configurations of each API into two different tables through Store API from APIM.")
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
