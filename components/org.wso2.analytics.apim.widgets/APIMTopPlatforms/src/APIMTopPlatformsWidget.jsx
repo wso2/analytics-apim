@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -101,12 +100,6 @@ class APIMTopPlatformsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
-            },
         };
 
         this.state = {
@@ -116,11 +109,12 @@ class APIMTopPlatformsWidget extends Widget {
             apiCreatedBy: 'All',
             apiSelected: 'All',
             apiVersion: 'All',
-            versionlist: null,
-            apilist: null,
+            versionlist: [],
+            apilist: [],
             legendData: null,
             platformData: null,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -293,49 +287,53 @@ class APIMTopPlatformsWidget extends Widget {
         const { apiSelected, apiVersion, limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
 
-        const apilistSliced = apilist.slice(1);
-        const last = apilist.slice(-1)[0];
-        let text = "apiName=='";
-        apilistSliced.forEach((api) => {
-            if (api !== last) {
-                text += api + "' or apiName=='";
-            } else {
-                text += api + "' ";
-            }
-        });
+        if (apilist && apilist.length > 1) {
+            const apilistSliced = apilist.slice(1);
+            const last = apilist.slice(-1)[0];
+            let text = "apiName=='";
+            apilistSliced.forEach((api) => {
+                if (api !== last) {
+                    text += api + "' or apiName=='";
+                } else {
+                    text += api + "'";
+                }
+            });
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-        if (apiSelected === 'All' && apiVersion === 'All') {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{limit}}': limit,
-                '{{querystring}}': 'on (' + text + ')'
-            };
-        } else if (apiSelected !== 'All' && apiVersion !== 'All') {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{limit}}': limit,
-                '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}'",
-                '{{api}}': apiSelected,
-                '{{version}}': apiVersion
-            };
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
+            if (apiSelected === 'All' && apiVersion === 'All') {
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                    '{{querystring}}': 'on (' + text + ')'
+                };
+            } else if (apiSelected !== 'All' && apiVersion !== 'All') {
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                    '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}'",
+                    '{{api}}': apiSelected,
+                    '{{version}}': apiVersion
+                };
+            } else {
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                    '{{querystring}}': "on apiName=='{{api}}'",
+                    '{{api}}': apiSelected
+                };
+            }
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{limit}}': limit,
-                '{{querystring}}': "on apiName=='{{api}}'",
-                '{{api}}': apiSelected
-            };
+            this.setState( { inProgress: false });
         }
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -393,6 +391,7 @@ class APIMTopPlatformsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, event.target.value);
+        this.setState( { inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -407,6 +406,7 @@ class APIMTopPlatformsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(event.target.value, 'All', 'All', limit);
+        this.setState( { inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -421,6 +421,7 @@ class APIMTopPlatformsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, 'All', limit);
+        this.setState( { inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -435,6 +436,7 @@ class APIMTopPlatformsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, limit);
+        this.setState( { inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -446,11 +448,11 @@ class APIMTopPlatformsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion,
+            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion, inProgress,
             legendData, platformData, apilist, versionlist,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -465,15 +467,9 @@ class APIMTopPlatformsWidget extends Widget {
             platformData,
             apilist,
             versionlist,
+            inProgress,
         };
 
-        if (!localeMessages || !platformData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
