@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -88,10 +87,6 @@ class APIMTopAgentsWidget extends Widget {
     constructor(props) {
         super(props);
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -100,12 +95,6 @@ class APIMTopAgentsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -116,11 +105,12 @@ class APIMTopAgentsWidget extends Widget {
             apiCreatedBy: 'All',
             apiSelected: 'All',
             apiVersion: 'All',
-            versionlist: null,
-            apilist: null,
+            versionlist: [],
+            apilist: [],
             legendData: null,
             agentData: null,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -293,50 +283,54 @@ class APIMTopAgentsWidget extends Widget {
         const { apiSelected, apiVersion, limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
 
-        const apilistSliced = apilist.slice(1);
-        const last = apilist.slice(-1)[0];
-        let text = "apiName=='";
-        apilistSliced.forEach((api) => {
-            if (api !== last) {
-                text += api + "' or apiName=='";
+        if (apilist && apilist.length > 1) {
+            const apilistSliced = apilist.slice(1);
+            const last = apilist.slice(-1)[0];
+            let text = "apiName=='";
+            apilistSliced.forEach((api) => {
+                if (api !== last) {
+                    text += api + "' or apiName=='";
+                } else {
+                    text += api + "' ";
+                }
+            });
+
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
+
+            if (apiSelected === 'All' && apiVersion === 'All') {
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                    '{{querystring}}': 'on (' + text + ')'
+                };
+            } else if (apiSelected !== 'All' && apiVersion !== 'All') {
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                    '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}'",
+                    '{{api}}': apiSelected,
+                    '{{version}}': apiVersion
+                };
             } else {
-                text += api + "' ";
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                    '{{querystring}}': "on apiName=='{{api}}'",
+                    '{{api}}': apiSelected
+                };
             }
-        });
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-
-        if (apiSelected === 'All' && apiVersion === 'All') {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{limit}}': limit,
-                '{{querystring}}': 'on (' + text + ')'
-            };
-        } else if (apiSelected !== 'All' && apiVersion !== 'All') {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{limit}}': limit,
-                '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}'",
-                '{{api}}': apiSelected,
-                '{{version}}': apiVersion
-            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{limit}}': limit,
-                '{{querystring}}': "on apiName=='{{api}}'",
-                '{{api}}': apiSelected
-            };
+            this.setState( { inProgress: false });
         }
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -362,8 +356,10 @@ class APIMTopAgentsWidget extends Widget {
                 agentData.push({ id: counter, agent: dataUnit[0], reqCount: dataUnit[1] });
             });
 
-            this.setState({ legendData, agentData });
+            this.setState({ legendData, agentData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
+        } else {
+            this.setState( { inProgress: false });
         }
     }
 
@@ -394,6 +390,7 @@ class APIMTopAgentsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, event.target.value);
+        this.setState( { inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -408,6 +405,7 @@ class APIMTopAgentsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(event.target.value, 'All', 'All', limit);
+        this.setState( { inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -422,6 +420,7 @@ class APIMTopAgentsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, 'All', limit);
+        this.setState( { inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -436,6 +435,7 @@ class APIMTopAgentsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, limit);
+        this.setState( { inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -447,11 +447,11 @@ class APIMTopAgentsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion,
+            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion, inProgress,
             legendData, agentData, apilist, versionlist,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -466,15 +466,9 @@ class APIMTopAgentsWidget extends Widget {
             agentData,
             apilist,
             versionlist,
+            inProgress,
         };
 
-        if (!localeMessages || !agentData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
