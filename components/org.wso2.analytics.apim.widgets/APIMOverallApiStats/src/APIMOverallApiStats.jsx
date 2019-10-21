@@ -48,10 +48,15 @@ export default function APIMOverallApiStats(props) {
             margin: 'auto',
             width: '90%',
         },
+        paperWrapper: {
+            height: '75%',
+        },
         paper: {
+            background: '#969696',
+            width: '75%',
             padding: '4%',
-            border: '1px solid #fff',
-            height: '10%',
+            border: '1.5px solid #fff',
+            margin: 'auto',
             marginTop: '5%',
         },
         loadingIcon: {
@@ -64,23 +69,23 @@ export default function APIMOverallApiStats(props) {
             justifyContent: 'center',
             height,
         },
+        divWrapper: {
+            width: '90%',
+            height: '10%',
+            margin: 'auto',
+        },
     };
     const availabilityProps = { availableApiData, legendData };
 
     return (
         <Scrollbars style={{ height }}>
-            <div style={{
-                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                width: '80%',
-                margin: '5% auto',
-                padding: '10% 5%',
-            }}
-            >
+            <div style={{ padding: '5% 5%' }}>
                 <div style={styles.headingWrapper}>
                     <h3 style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
                         paddingBottom: '10px',
                         margin: 'auto',
+                        marginTop: 0,
                         textAlign: 'left',
                         fontWeight: 'normal',
                         letterSpacing: 1.5,

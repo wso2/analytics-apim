@@ -323,7 +323,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { providerConfig, apiProviderList } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apiProviderList) {
+        if (apiProviderList && apiProviderList.length > 0) {
             let apiCondition = apiProviderList.map(data => {
                 return '(API_NAME==\'' + data[0] + '\' AND API_PROVIDER==\''+ data[1] + '\')';
             });
@@ -367,7 +367,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { providerConfig, apiIdMap } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apiIdMap) {
+        if (apiIdMap && apiIdMap.length > 0) {
             let apiIds = Object.keys(apiIdMap).map(id => { return 'API_ID==' + id });
             apiIds = apiIds.join(' OR ');
             const dataProviderConfigs = cloneDeep(providerConfig);
