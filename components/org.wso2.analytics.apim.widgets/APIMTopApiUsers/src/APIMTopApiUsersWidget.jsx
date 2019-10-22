@@ -217,12 +217,13 @@ class APIMTopApiUsersWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
+        const { id, widgetID: widgetName, apiCreatedBy, username } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{contextContainsCondition}}' : this.getContext()
+            '{{contextContainsCondition}}' : this.getContext(),
+            '{{createdBy}}' : apiCreatedBy !== 'All' ? 'AND CREATED_BY==\'' + username + '\'' : ''
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
@@ -259,7 +260,7 @@ class APIMTopApiUsersWidget extends Widget {
     handleApiListReceived(message) {
         const { data } = message;
         const {
-            apiCreatedBy, apiSelected, apiVersion, limit, username
+            apiCreatedBy, apiSelected, apiVersion, limit,
         } = this.state;
         const { id } = this.props;
 
@@ -267,29 +268,16 @@ class APIMTopApiUsersWidget extends Widget {
             const apilist = [];
             const versionlist = ['All'];
 
-            if (apiCreatedBy === createdByKeys.All) {
-                data.forEach((dataUnit) => {
-                    if (!apilist.includes(dataUnit[0])) {
-                        apilist.push(dataUnit[0]);
-                    }
-                    if (apiSelected === dataUnit[0]) {
-                        versionlist.push(dataUnit[1]);
-                    }
-                });
-            } else if (apiCreatedBy === createdByKeys.Me) {
-                data.forEach((dataUnit) => {
-                    if (username === dataUnit[2]) {
-                        if (!apilist.includes(dataUnit[0])) {
-                            apilist.push(dataUnit[0]);
-                        }
-                        if (apiSelected === dataUnit[0]) {
-                            versionlist.push(dataUnit[1]);
-                        }
-                    }
-                });
-            }
+            data.forEach((dataUnit) => {
+                if (!apilist.includes(dataUnit[0])) {
+                    apilist.push(dataUnit[0]);
+                }
+                if (apiSelected === dataUnit[0]) {
+                    versionlist.push(dataUnit[1]);
+                }
+            });
             apilist.sort();
-            apilist.unshift('All')
+            apilist.unshift('All');
             this.setState({ apilist, versionlist });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         }
@@ -311,48 +299,28 @@ class APIMTopApiUsersWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         if (apilist && apilist.length > 1) {
-            const apilistSliced = apilist.slice(1);
-            const last = apilist.slice(-1)[0];
-            let text = "apiName=='";
-            apilistSliced.forEach((api) => {
-                if (api !== last) {
-                    text += api + "' or apiName=='";
-                } else {
-                    text += api + "' ";
-                }
-            });
-
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
 
+            let query;
             if (apiSelected === 'All' && apiVersion === 'All') {
-                dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{from}}': timeFrom,
-                    '{{to}}': timeTo,
-                    '{{per}}': perValue,
-                    '{{limit}}': limit,
-                    '{{querystring}}': 'AND (' + text + ')'
-                };
+                let apis = apilist.slice(1).map (api => { return 'apiName==\'' + api + '\''} );
+                apis = apis.join(' OR ');
+                query = 'AND (' + apis + ')';
             } else if (apiSelected !== 'All' && apiVersion !== 'All') {
-                dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{from}}': timeFrom,
-                    '{{to}}': timeTo,
-                    '{{per}}': perValue,
-                    '{{limit}}': limit,
-                    '{{querystring}}': "AND apiName=='{{api}}' AND apiVersion=='{{version}}'",
-                    '{{api}}': apiSelected,
-                    '{{version}}': apiVersion
-                };
+                query = 'AND apiName==\'' + apiSelected + '\' AND apiVersion==\'' + apiVersion + '\'';
+
             } else {
-                dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{from}}': timeFrom,
-                    '{{to}}': timeTo,
-                    '{{per}}': perValue,
-                    '{{limit}}': limit,
-                    '{{querystring}}': "AND apiName=='{{api}}'",
-                    '{{api}}': apiSelected
-                };
+                query = 'AND apiName==\'' + apiSelected + '\''
             }
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{createdBy}}': timeFrom,
+                '{{from}}': timeFrom,
+                '{{to}}': timeTo,
+                '{{per}}': perValue,
+                '{{limit}}': limit,
+                '{{querystring}}': query
+            };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
