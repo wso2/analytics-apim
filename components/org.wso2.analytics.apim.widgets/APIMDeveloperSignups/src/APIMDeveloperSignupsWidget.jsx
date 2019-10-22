@@ -81,6 +81,7 @@ class APIMDeveloperSignupsWidget extends Widget {
             weekCount: 0,
             localeMessages: null,
             refreshInterval: 60000,
+            refreshIntervalId: null,
         };
 
         this.styles = {
@@ -133,9 +134,10 @@ class APIMDeveloperSignupsWidget extends Widget {
                     super.getWidgetChannelManager().unsubscribeWidget(id);
                     this.assembleTotalQuery();
                 };
-                setInterval(refresh, refreshInterval);
+                const refreshIntervalId = setInterval(refresh, refreshInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
+                    refreshIntervalId
                 }, this.assembleTotalQuery);
             })
             .catch((error) => {
@@ -148,6 +150,11 @@ class APIMDeveloperSignupsWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
+        const { refreshIntervalId } = this.state;
+        clearInterval(refreshIntervalId);
+        this.setState({
+            refreshIntervalId: null
+        });
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 

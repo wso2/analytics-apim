@@ -80,6 +80,7 @@ class APIMSubscriptionsWidget extends Widget {
             totalCount: 0,
             weekCount: 0,
             localeMessages: null,
+            refreshIntervalId: null,
             refreshInterval: 60000, // refresh in 1 min
         };
 
@@ -133,9 +134,10 @@ class APIMSubscriptionsWidget extends Widget {
                     super.getWidgetChannelManager().unsubscribeWidget(id);
                     this.assembleTotalQuery();
                 };
-                setInterval(refresh, refreshInterval);
+                const refreshIntervalId = setInterval(refresh, refreshInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
+                    refreshIntervalId
                 }, this.assembleTotalQuery);
             })
             .catch((error) => {
@@ -148,6 +150,11 @@ class APIMSubscriptionsWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
+        const { refreshIntervalId } = this.state;
+        clearInterval(refreshIntervalId);
+        this.setState({
+            refreshIntervalId: null
+        });
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
