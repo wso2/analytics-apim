@@ -229,7 +229,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const { data } = message;
         const { createdBy } = this.state;
 
-        if (data.length !== 0) {
+        if (data && data.length !== 0) {
             const xAxisTicks = [];
             const chartData = [];
             const tableData = [];
