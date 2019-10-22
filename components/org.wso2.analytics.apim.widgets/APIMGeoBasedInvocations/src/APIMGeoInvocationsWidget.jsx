@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -106,15 +105,11 @@ class APIMGeoInvocationsWidget extends Widget {
         };
 
         this.metadata = {
-            names: ['Country', 'count'],
-            types: ['ordinal', 'linear'],
+            names: ['count', 'Country'],
+            types: ['linear','ordinal'],
         };
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -123,12 +118,6 @@ class APIMGeoInvocationsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -141,6 +130,7 @@ class APIMGeoInvocationsWidget extends Widget {
             versionlist: null,
             apilist: null,
             geoData: null,
+            inProgress: true,
             metadata: this.metadata,
             chartConfig: this.chartConfig,
         };
@@ -329,7 +319,7 @@ class APIMGeoInvocationsWidget extends Widget {
                 '{{timeFrom}}': timeFrom,
                 '{{timeTo}}': timeTo,
                 '{{per}}': perValue,
-                '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}'",
+                '{{querystring}}': "AND apiName=='{{api}}' AND apiVersion=='{{version}}'",
                 '{{api}}': apiSelected,
                 '{{version}}': apiVersion
             };
@@ -355,8 +345,10 @@ class APIMGeoInvocationsWidget extends Widget {
 
         if (data) {
             const { apiCreatedBy, apiSelected, apiVersion } = this.state;
-            this.setState({ geoData: data });
+            this.setState({ geoData: data, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -383,6 +375,7 @@ class APIMGeoInvocationsWidget extends Widget {
     apiCreatedHandleChange(event) {
         const { id } = this.props;
         this.setQueryParam(event.target.value, '', '');
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -397,6 +390,7 @@ class APIMGeoInvocationsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, '');
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -411,6 +405,7 @@ class APIMGeoInvocationsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value);
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -422,10 +417,10 @@ class APIMGeoInvocationsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, apiCreatedBy,
+            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, apiCreatedBy, inProgress,
             apiSelected, apiVersion, geoData, apilist, versionlist,
         } = this.state;
-        const { loadingIcon, paper, paperWrapper, inProgress } = this.styles;
+        const { paper, paperWrapper } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const geoProps = {
@@ -440,15 +435,9 @@ class APIMGeoInvocationsWidget extends Widget {
             geoData,
             apilist,
             versionlist,
+            inProgress,
         };
 
-        if (!localeMessages || !geoData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
