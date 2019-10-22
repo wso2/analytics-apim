@@ -367,7 +367,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { providerConfig, apiIdMap } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apiIdMap && apiIdMap.length > 0) {
+        if (apiIdMap && Object.keys(apiIdMap).length > 0) {
             let apiIds = Object.keys(apiIdMap).map(id => { return 'API_ID==' + id });
             apiIds = apiIds.join(' OR ');
             const dataProviderConfigs = cloneDeep(providerConfig);
