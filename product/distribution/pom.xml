@@ -409,6 +409,12 @@
                                     <version>${siddhi.io.email.version}</version>
                                     <type>jar</type>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>io.siddhi.extension.map.json</groupId>
+                                    <artifactId>siddhi-map-json</artifactId>
+                                    <version>${siddhi.map.json.version}</version>
+                                    <type>jar</type>
+                                </artifactItem>
                                 <!--Store Extensions-->
                                 <artifactItem>
                                     <groupId>io.siddhi.extension.store.rdbms</groupId>
