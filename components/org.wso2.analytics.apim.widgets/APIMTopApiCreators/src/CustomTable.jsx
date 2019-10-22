@@ -224,12 +224,7 @@ class CustomTable extends React.Component {
                                             <TableCell component='th' scope='row'>
                                                 {n.creator}
                                             </TableCell>
-                                            <TableCell
-                                                numeric
-                                                style={{
-                                                    paddingRight: '10%',
-                                                }}
-                                            >
+                                            <TableCell numeric >
                                                 {n.apicount}
                                             </TableCell>
                                         </TableRow>

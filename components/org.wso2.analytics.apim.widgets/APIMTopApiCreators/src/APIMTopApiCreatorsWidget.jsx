@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -80,10 +79,6 @@ class APIMTopApiCreatorsWidget extends Widget {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -92,12 +87,6 @@ class APIMTopApiCreatorsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -108,6 +97,7 @@ class APIMTopApiCreatorsWidget extends Widget {
             legendData: [],
             limit: 0,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -122,8 +112,18 @@ class APIMTopApiCreatorsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.getContext = this.getContext.bind(this);
     }
 
+    getContext() {
+        let { username } = super.getCurrentUser();
+        const usernameParts = username.split('@');
+        if (username.includes('@carbon.super')) {
+            return 'NOT(str:contains(CONTEXT,\'/t/\'))';
+        } else {
+            return '(str:contains(CONTEXT,\'/t/' +  usernameParts[usernameParts.length -1] + '\'))';
+        }
+    }
     componentDidMount() {
         const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
@@ -171,7 +171,7 @@ class APIMTopApiCreatorsWidget extends Widget {
         let { limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
 
-        if (!limit) {
+        if (!limit || limit < 0) {
             limit = 5;
         }
 
@@ -181,7 +181,8 @@ class APIMTopApiCreatorsWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{limit}}': limit
+            '{{limit}}': limit,
+            '{{contextContainsCondition}}': this.getContext(),
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -208,7 +209,7 @@ class APIMTopApiCreatorsWidget extends Widget {
                 creatorData.push({ id: counter, creator: dataUnit[0], apicount: dataUnit[1] });
             });
 
-            this.setState({ legendData, creatorData });
+            this.setState({ legendData, creatorData, inProgress: false });
             this.setQueryParam(limit);
         }
     }
@@ -228,14 +229,17 @@ class APIMTopApiCreatorsWidget extends Widget {
      * @memberof APIMTopApiCreatorsWidget
      * */
     handleChange(event) {
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { limit } = queryParam;
         const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(event.target.value);
-        this.setState({ limit });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleQuery();
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
@@ -245,24 +249,17 @@ class APIMTopApiCreatorsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData,
+            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatorsProps = {
-            themeName, height, limit, creatorData, legendData,
+            themeName, height, limit, creatorData, legendData, inProgress,
         };
 
-        if (!localeMessages) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 {
