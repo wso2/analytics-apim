@@ -196,6 +196,7 @@ class APIMTopApiUsersWidget extends Widget {
         }
         if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
             apiSelected = 'All';
+            apiVersion = 'All';
         }
         if (!apiVersion || (versionlist && !versionlist.includes(apiVersion))) {
             apiVersion = 'All';

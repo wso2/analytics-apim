@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -80,10 +79,6 @@ class APIMTopAppCreatorsWidget extends Widget {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -93,21 +88,17 @@ class APIMTopAppCreatorsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
-            },
         };
 
         this.state = {
             width: this.props.width,
             height: this.props.height,
+            subscribers: [],
             creatorData: [],
             legendData: [],
-            limit: 0,
+            limit: 5,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -119,9 +110,11 @@ class APIMTopAppCreatorsWidget extends Widget {
         }
 
         this.assembleQuery = this.assembleQuery.bind(this);
+        this.assembleSubscriberQuery = this.assembleSubscriberQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleSubscriberDataReceived = this.handleSubscriberDataReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount() {
@@ -133,7 +126,7 @@ class APIMTopAppCreatorsWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleQuery);
+                }, this.assembleSubscriberQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -162,29 +155,65 @@ class APIMTopAppCreatorsWidget extends Widget {
     }
 
     /**
-     * Formats the siddhi query using selected options
+     * Retrieves subscribers
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    assembleSubscriberQuery() {
+        const { providerConfig } = this.state;
+        const { id, widgetID: widgetName } = this.props;
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'subscriberQuery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleSubscriberDataReceived, dataProviderConfigs);
+    }
+
+    /**
+     * Formats data retrieved and loads to the widget
+     * @param {object} message - data retrieved
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    handleSubscriberDataReceived(message) {
+        const { data } = message;
+        const { id } = this.props;
+
+        if (data) {
+            const subscribers = data.map(dataUnit => { return dataUnit[0]; });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ subscribers }, this.assembleQuery);
+        } else {
+            this.setState({ inProgress: false });
+        }
+    }
+
+    /**
+     * Retrieves applications for subscribers
      * @memberof APIMTopAppCreatorsWidget
      * */
     assembleQuery() {
-        const { providerConfig } = this.state;
+        const { providerConfig, subscribers } = this.state;
+        const { id, widgetID: widgetName } = this.props;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
 
-        if (!limit) {
+        if (!limit || limit < 0) {
             limit = 5;
         }
-
-        this.setState({ limit, creatorData: [] });
-        this.setQueryParam(limit);
-
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{limit}}': limit
-        };
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        if (subscribers && subscribers.length > 0) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            let subs = subscribers.map(sub => { return 'SUBSCRIBER_ID==' + sub; });
+            subs = subs.join(' OR ');
+            dataProviderConfigs.configs.config.queryData.queryName = 'appQuery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{subscriberId}}': subs,
+                '{{limit}}': limit
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false });
+        }
     }
+
 
     /**
      * Formats data retrieved and loads to the widget
@@ -193,22 +222,20 @@ class APIMTopAppCreatorsWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const { limit } = this.state;
 
         if (data) {
-            const creatorData = [];
             const legendData = [];
-            let counter = 0;
+            const creatorData = [];
+
             data.forEach((dataUnit) => {
-                counter += 1;
                 if (!legendData.includes({ name: dataUnit[0] })) {
                     legendData.push({ name: dataUnit[0] });
                 }
-                creatorData.push({ id: counter, creator: dataUnit[0], appcount: dataUnit[1] });
+                creatorData.push({ creator: dataUnit[0], appcount: dataUnit[1] });
             });
-
-            this.setState({ legendData, creatorData });
-            this.setQueryParam(limit);
+            this.setState({ legendData, creatorData, inProgress: false });
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -227,14 +254,17 @@ class APIMTopAppCreatorsWidget extends Widget {
      * @memberof APIMTopAppCreatorsWidget
      * */
     handleChange(event) {
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { limit } = queryParam;
         const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(event.target.value);
-        this.setState({ limit });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleQuery();
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
@@ -244,24 +274,17 @@ class APIMTopAppCreatorsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData,
+            localeMessages, faultyProviderConfig, height, creatorData, legendData, inProgress, limit,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const appCreatorsProps = {
-            themeName, height, limit, creatorData, legendData,
+            themeName, height, creatorData, legendData, inProgress, limit,
         };
 
-        if (!localeMessages) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 {
