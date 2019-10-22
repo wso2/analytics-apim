@@ -411,11 +411,16 @@ class APIMTopApiUsersWidget extends Widget {
     handleLimitChange(event) {
         const { id } = this.props;
         const { apiCreatedBy, apiSelected, apiVersion } = this.state;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, event.target.value);
-        this.setState( { inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
+        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleMainQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
