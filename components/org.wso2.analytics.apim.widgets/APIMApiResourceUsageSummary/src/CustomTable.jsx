@@ -37,10 +37,18 @@ import CustomTableToolbar from './CustomTableToolbar';
  * @return {number}
  * */
 function desc(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
+    let tempa = a[orderBy];
+    let tempb = b[orderBy];
+
+    if (typeof (tempa) === 'string') {
+        tempa = tempa.toLowerCase();
+        tempb = tempb.toLowerCase();
+    }
+
+    if (tempb < tempa) {
         return -1;
     }
-    if (b[orderBy] > a[orderBy]) {
+    if (tempb > tempa) {
         return 1;
     }
     return 0;
@@ -219,7 +227,6 @@ class CustomTable extends React.Component {
                                         <TableRow
                                             hover
                                             tabIndex={-1}
-                                            key={n.id}
                                         >
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}

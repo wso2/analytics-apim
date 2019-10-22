@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -88,10 +87,6 @@ class APIMApiResourceUsageWidget extends Widget {
     constructor(props) {
         super(props);
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -100,12 +95,6 @@ class APIMApiResourceUsageWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -116,6 +105,7 @@ class APIMApiResourceUsageWidget extends Widget {
             limit: 0,
             usageData: null,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -132,12 +122,14 @@ class APIMApiResourceUsageWidget extends Widget {
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.getUsername = this.getUsername.bind(this);
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
         this.loadLocale(locale);
+        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -172,6 +164,19 @@ class APIMApiResourceUsageWidget extends Widget {
     }
 
     /**
+     * Get username of the logged in user
+     */
+    getUsername() {
+        let { username } = super.getCurrentUser();
+        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
+        // are saved without tenant suffix
+        if (username.split('@').length === 2) {
+            username = username.replace('@carbon.super', '');
+        }
+        this.setState({ username })
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMApiResourceUsageWidget
      * */
@@ -191,10 +196,10 @@ class APIMApiResourceUsageWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         let { apiCreatedBy } = queryParam;
         let { limit } = queryParam;
-        if (!apiCreatedBy) {
+        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
             apiCreatedBy = 'All';
         }
-        if (!limit) {
+        if (!limit || limit < 0) {
             limit = 5;
         }
         this.setState({ apiCreatedBy, limit });
@@ -208,15 +213,16 @@ class APIMApiResourceUsageWidget extends Widget {
     assembleApiUsageQuery() {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
-        const { limit } = queryParam;
+        const { limit, apiCreatedBy } = queryParam;
         const {
-            timeFrom, timeTo, perValue, providerConfig,
+            timeFrom, timeTo, perValue, providerConfig, username,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{creator}}': apiCreatedBy !== 'All' ? 'AND apiCreator==\'' + username + '\'' : '',
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
@@ -233,38 +239,20 @@ class APIMApiResourceUsageWidget extends Widget {
      * */
     handleApiUsageReceived(message) {
         const { data } = message;
-        const currentUser = super.getCurrentUser();
         const { apiCreatedBy, limit } = this.state;
 
         if (data) {
-            const usageData = [];
-            const counter = 0;
-
-            data.forEach((dataUnit) => {
-                if (apiCreatedBy === createdByKeys.All) {
-                    usageData.push({
-                        id: counter,
-                        apiname: dataUnit[0],
-                        version: dataUnit[1],
-                        resourcepath: dataUnit[3],
-                        method: dataUnit[4],
-                        hits: dataUnit[5],
-                    });
-                } else if (apiCreatedBy === createdByKeys.Me) {
-                    if (currentUser.username === dataUnit[2]) {
-                        usageData.push({
-                            id: counter,
-                            apiname: dataUnit[0],
-                            version: dataUnit[1],
-                            resourcepath: dataUnit[3],
-                            method: dataUnit[4],
-                            hits: dataUnit[5],
-                        });
-                    }
-                }
-            });
-            this.setState({ usageData });
+            const usageData = data.map(dataUnit => { return {
+                    apiname: dataUnit[0] + ' (' + dataUnit[2] + ')',
+                    version: dataUnit[1],
+                    resourcepath: dataUnit[3],
+                    method: dataUnit[4],
+                    hits: dataUnit[5],
+                }; });
+            this.setState({ usageData, inProgress: false });
             this.setQueryParam(apiCreatedBy, limit);
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -286,10 +274,16 @@ class APIMApiResourceUsageWidget extends Widget {
     handleChange(event) {
         const { apiCreatedBy } = this.state;
         const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(apiCreatedBy, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiUsageQuery();
+        this.setQueryParam(apiCreatedBy, parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleApiUsageQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
@@ -302,6 +296,7 @@ class APIMApiResourceUsageWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(event.target.value, limit);
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiUsageQuery();
     }
@@ -313,24 +308,17 @@ class APIMApiResourceUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, usageData,
+            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, usageData, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const resourceUsageProps = {
-            themeName, height, limit, apiCreatedBy, usageData,
+            themeName, height, limit, apiCreatedBy, usageData, inProgress,
         };
 
-        if (!localeMessages || !usageData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>

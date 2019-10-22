@@ -253,6 +253,8 @@ class APIMApiBackendUsageWidget extends Widget {
             });
             this.setState({ usageData, inProgress: false });
             this.setQueryParam(apiCreatedBy, limit);
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
