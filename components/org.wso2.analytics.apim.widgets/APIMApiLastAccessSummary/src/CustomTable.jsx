@@ -220,7 +220,6 @@ class CustomTable extends React.Component {
                                         <TableRow
                                             hover
                                             tabIndex={-1}
-                                            key={n.id}
                                         >
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}
