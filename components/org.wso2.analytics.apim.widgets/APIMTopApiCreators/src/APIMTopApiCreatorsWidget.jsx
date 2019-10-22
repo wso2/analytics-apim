@@ -112,18 +112,8 @@ class APIMTopApiCreatorsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
-        this.getContext = this.getContext.bind(this);
     }
 
-    getContext() {
-        let { username } = super.getCurrentUser();
-        const usernameParts = username.split('@');
-        if (username.includes('@carbon.super')) {
-            return 'NOT(str:contains(CONTEXT,\'/t/\'))';
-        } else {
-            return '(str:contains(CONTEXT,\'/t/' +  usernameParts[usernameParts.length -1] + '\'))';
-        }
-    }
     componentDidMount() {
         const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
@@ -181,8 +171,7 @@ class APIMTopApiCreatorsWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{limit}}': limit,
-            '{{contextContainsCondition}}': this.getContext(),
+            '{{limit}}': limit
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
