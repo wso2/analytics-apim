@@ -44,7 +44,7 @@ const styles = theme => ({
     textField: {
         marginLeft: theme.spacing.unit,
         marginRight: theme.spacing.unit,
-        width: '50%',
+        width: '40%',
         marginTop: 0,
     },
     actions: {
@@ -58,6 +58,7 @@ const styles = theme => ({
         marginLeft: 'auto',
     },
     collapsef: {
+        display: 'flex',
         marginLeft: 'auto',
         marginRight: 0,
         marginTop: '60px',
