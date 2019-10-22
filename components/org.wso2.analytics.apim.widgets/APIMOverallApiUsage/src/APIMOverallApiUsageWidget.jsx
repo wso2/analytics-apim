@@ -336,7 +336,7 @@ class APIMOverallApiUsageWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false  });
+            this.setState({ usageData1: [], inProgress: false  });
         }
     }
 
@@ -378,7 +378,7 @@ class APIMOverallApiUsageWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiSubReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false  });
+            this.setState({ usageData1: [], inProgress: false  });
         }
     }
 
@@ -405,6 +405,8 @@ class APIMOverallApiUsageWidget extends Widget {
                 }
             });
             this.setState({ usageData1, inProgress: false  });
+        } else {
+            this.setState({ usageData1: [], inProgress: false  });
         }
     }
 
