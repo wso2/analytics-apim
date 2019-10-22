@@ -24,7 +24,6 @@ import {
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -80,10 +79,6 @@ class APIMTopFaultyApisWidget extends Widget {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -92,12 +87,6 @@ class APIMTopFaultyApisWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -108,6 +97,7 @@ class APIMTopFaultyApisWidget extends Widget {
             legendData: null,
             limit: 0,
             localeMessages: null,
+            inProgress: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -185,7 +175,7 @@ class APIMTopFaultyApisWidget extends Widget {
         let { limit } = queryParam;
         const { widgetID: widgetName } = this.props;
 
-        if (!limit) {
+        if (!limit || limit < 0) {
             limit = 5;
         }
 
@@ -227,8 +217,10 @@ class APIMTopFaultyApisWidget extends Widget {
                 faultData.push({ id: counter, apiname: apiName, faultcount: dataUnit[4] });
             });
 
-            this.setState({ legendData, faultData });
+            this.setState({ legendData, faultData, inProgress: false });
             this.setQueryParam(limit);
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -247,13 +239,17 @@ class APIMTopFaultyApisWidget extends Widget {
      * @memberof APIMTopFaultyApisWidget
      * */
     handleChange(event) {
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { limit } = queryParam;
+        const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(event.target.value);
-        this.setState({ limit });
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
-        this.assembleQuery();
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
@@ -263,24 +259,17 @@ class APIMTopFaultyApisWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, faultData, legendData,
+            localeMessages, faultyProviderConfig, height, limit, faultData, legendData, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const faultyApisProps = {
-            themeName, height, limit, faultData, legendData,
-        };
+            themeName, height, limit, faultData, legendData, inProgress,
+            };
 
-        if (!localeMessages || !faultData || !legendData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 {
