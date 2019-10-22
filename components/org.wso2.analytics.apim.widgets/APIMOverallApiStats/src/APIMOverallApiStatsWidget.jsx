@@ -206,6 +206,8 @@ class APIMOverallApiStatsWidget extends Widget {
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleTopAPIReceived, dataProviderConfigs);
+        } else {
+            this.setState({ loadingTopApis: false, topApiNameData: [] })
         }
     }
 
@@ -281,6 +283,8 @@ class APIMOverallApiStatsWidget extends Widget {
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleAPIDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ loadingTopApis: false, topApiNameData: [] })
         }
     }
 

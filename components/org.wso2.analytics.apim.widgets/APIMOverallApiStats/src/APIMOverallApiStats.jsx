@@ -101,7 +101,7 @@ export default function APIMOverallApiStats(props) {
                         </div>
                     ) : (
                         <div>
-                            { availableApiData.length === 0 ?
+                            { availableApiData.length === 0 || topApiNameData.length === 0 ?
                                 (
                                     <div style={styles.dataWrapper}>
                                         <Paper

@@ -45,7 +45,7 @@ export default function APIMApiLatency(props) {
     const {
         themeName, queryParam, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, inProgress,
         apiVersion, latencyData, apilist, versionlist, resourceList, apiCreatedHandleChange, apiSelectedHandleChange,
-        apiVersionHandleChange, handleLatencyChange,
+        apiVersionHandleChange, apiResourceHandleChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -193,7 +193,7 @@ export default function APIMApiLatency(props) {
                                             control={(
                                                 <Checkbox
                                                     checked={queryParam.resSelected.includes(option.toString())}
-                                                    onChange={handleLatencyChange}
+                                                    onChange={apiResourceHandleChange}
                                                     value={option.toString()}
                                                 />
                                             )}
@@ -265,5 +265,5 @@ APIMApiLatency.propTypes = {
     apiCreatedHandleChange: PropTypes.func.isRequired,
     apiSelectedHandleChange: PropTypes.func.isRequired,
     apiVersionHandleChange: PropTypes.func.isRequired,
-    handleLatencyChange: PropTypes.func.isRequired,
+    apiResourceHandleChange: PropTypes.func.isRequired,
 };
