@@ -130,12 +130,15 @@ class APIMTopApiUsersWidget extends Widget {
         this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.getUsername = this.getUsername.bind(this);
+        this.getContext = this.getContext.bind(this);
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
         this.loadLocale(locale);
+        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -186,21 +189,19 @@ class APIMTopApiUsersWidget extends Widget {
      * @memberof APIMTopApiUsersWidget
      * */
     resetState() {
+        const { apilist, versionlist } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy } = queryParam;
-        let { apiSelected } = queryParam;
-        let { apiVersion } = queryParam;
-        let { limit } = queryParam;
+        let { apiCreatedBy, apiSelected, apiVersion, limit } = queryParam;
         if (!apiCreatedBy) {
             apiCreatedBy = 'All';
         }
-        if (!apiSelected) {
+        if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
             apiSelected = 'All';
         }
-        if (!apiVersion) {
+        if (!apiVersion || (versionlist && !versionlist.includes(apiVersion))) {
             apiVersion = 'All';
         }
-        if (!limit) {
+        if (!limit || limit < 0) {
             limit = 5;
         }
         this.setState({
@@ -220,8 +221,34 @@ class APIMTopApiUsersWidget extends Widget {
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{contextContainsCondition}}' : this.getContext()
+        };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
+    }
+
+    /**
+     * Get username of the logged in user
+     */
+    getUsername() {
+        let { username } = super.getCurrentUser();
+        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
+        // are saved without tenant suffix
+        if (username.split('@').length === 2) {
+            username = username.replace('@carbon.super', '');
+        }
+        this.setState({ username })
+    }
+
+    getContext() {
+        let { username } = super.getCurrentUser();
+        const usernameParts = username.split('@');
+        if (username.includes('@carbon.super')) {
+            return 'NOT(str:contains(CONTEXT,\'/t/\'))';
+        } else {
+            return '(str:contains(CONTEXT,\'/t/' +  usernameParts[usernameParts.length -1] + '\'))';
+        }
     }
 
     /**
@@ -232,13 +259,12 @@ class APIMTopApiUsersWidget extends Widget {
     handleApiListReceived(message) {
         const { data } = message;
         const {
-            apiCreatedBy, apiSelected, apiVersion, limit,
+            apiCreatedBy, apiSelected, apiVersion, limit, username
         } = this.state;
-        const currentUser = super.getCurrentUser();
         const { id } = this.props;
 
         if (data) {
-            const apilist = ['All'];
+            const apilist = [];
             const versionlist = ['All'];
 
             if (apiCreatedBy === createdByKeys.All) {
@@ -252,7 +278,7 @@ class APIMTopApiUsersWidget extends Widget {
                 });
             } else if (apiCreatedBy === createdByKeys.Me) {
                 data.forEach((dataUnit) => {
-                    if (currentUser.username === dataUnit[2]) {
+                    if (username === dataUnit[2]) {
                         if (!apilist.includes(dataUnit[0])) {
                             apilist.push(dataUnit[0]);
                         }
@@ -262,6 +288,8 @@ class APIMTopApiUsersWidget extends Widget {
                     }
                 });
             }
+            apilist.sort();
+            apilist.unshift('All')
             this.setState({ apilist, versionlist });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         }
@@ -303,7 +331,7 @@ class APIMTopApiUsersWidget extends Widget {
                     '{{to}}': timeTo,
                     '{{per}}': perValue,
                     '{{limit}}': limit,
-                    '{{querystring}}': 'on (' + text + ')'
+                    '{{querystring}}': 'AND (' + text + ')'
                 };
             } else if (apiSelected !== 'All' && apiVersion !== 'All') {
                 dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -311,7 +339,7 @@ class APIMTopApiUsersWidget extends Widget {
                     '{{to}}': timeTo,
                     '{{per}}': perValue,
                     '{{limit}}': limit,
-                    '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}'",
+                    '{{querystring}}': "AND apiName=='{{api}}' AND apiVersion=='{{version}}'",
                     '{{api}}': apiSelected,
                     '{{version}}': apiVersion
                 };
@@ -321,7 +349,7 @@ class APIMTopApiUsersWidget extends Widget {
                     '{{to}}': timeTo,
                     '{{per}}': perValue,
                     '{{limit}}': limit,
-                    '{{querystring}}': "on apiName=='{{api}}'",
+                    '{{querystring}}': "AND apiName=='{{api}}'",
                     '{{api}}': apiSelected
                 };
             }
@@ -351,7 +379,7 @@ class APIMTopApiUsersWidget extends Widget {
                 userData.push({ id: counter, user: dataUnit[0], apiCalls: dataUnit[1] });
             });
 
-            this.setState({ userData });
+            this.setState({ userData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         } else {
             this.setState( { inProgress: false });
