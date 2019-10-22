@@ -81,6 +81,7 @@ class APIMApiCreatedWidget extends Widget {
             weekCount: 0,
             localeMessages: null,
             refreshInterval: 60000, // 1min
+            refreshIntervalId: null, // 1min
         };
 
         this.styles = {
@@ -133,9 +134,10 @@ class APIMApiCreatedWidget extends Widget {
                     super.getWidgetChannelManager().unsubscribeWidget(id);
                     this.assembletotalQuery();
                 };
-                setInterval(refresh, refreshInterval);
+                const refreshIntervalId = setInterval(refresh, refreshInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
+                    refreshIntervalId,
                 }, this.assembletotalQuery);
             })
             .catch((error) => {
@@ -148,6 +150,11 @@ class APIMApiCreatedWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
+        const { refreshIntervalId } = this.state;
+        clearInterval(refreshIntervalId);
+        this.setState({
+            refreshIntervalId: null
+        });
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
