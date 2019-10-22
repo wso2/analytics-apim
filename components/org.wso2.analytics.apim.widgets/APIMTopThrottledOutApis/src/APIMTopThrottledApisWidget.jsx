@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -80,10 +79,6 @@ class APIMTopThrottledApisWidget extends Widget {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -92,12 +87,6 @@ class APIMTopThrottledApisWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -108,6 +97,7 @@ class APIMTopThrottledApisWidget extends Widget {
             legendData: null,
             limit: 0,
             localeMessages: null,
+            inProgress: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -186,11 +176,11 @@ class APIMTopThrottledApisWidget extends Widget {
         let { limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
 
-        if (!limit) {
+        if (!limit || limit < 0) {
             limit = 5;
         }
 
-        this.setState({ limit, throttledData: null, legendData: null });
+        this.setState({ limit });
         this.setQueryParam(limit);
 
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -228,8 +218,10 @@ class APIMTopThrottledApisWidget extends Widget {
                 throttledData.push({ id: counter, apiname: apiName, throttledcount: dataUnit[4] });
             });
 
-            this.setState({ legendData, throttledData });
+            this.setState({ legendData, throttledData, inProgress: false });
             this.setQueryParam(limit);
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -248,14 +240,17 @@ class APIMTopThrottledApisWidget extends Widget {
      * @memberof APIMTopThrottledApisWidget
      * */
     handleChange(event) {
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { limit } = queryParam;
         const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(event.target.value);
-        this.setState({ limit });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleQuery();
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
@@ -265,24 +260,17 @@ class APIMTopThrottledApisWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, throttledData, legendData,
+            localeMessages, faultyProviderConfig, height, limit, throttledData, legendData, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const throttledApisProps = {
-            themeName, height, limit, throttledData, legendData,
+            themeName, height, limit, throttledData, legendData, inProgress,
         };
 
-        if (!localeMessages || !throttledData || !legendData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 {

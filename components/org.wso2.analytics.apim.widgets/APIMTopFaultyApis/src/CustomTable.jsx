@@ -224,12 +224,7 @@ class CustomTable extends React.Component {
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}
                                             </TableCell>
-                                            <TableCell
-                                                numeric
-                                                style={{
-                                                    paddingRight: '10%',
-                                                }}
-                                            >
+                                            <TableCell numeric>
                                                 {n.faultcount}
                                             </TableCell>
                                         </TableRow>

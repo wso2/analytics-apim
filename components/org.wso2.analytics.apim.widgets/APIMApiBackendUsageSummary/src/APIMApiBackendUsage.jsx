@@ -149,7 +149,7 @@ export default function APIMApiBackendUsage(props) {
                     </div>
                 ) : (
                     <div>
-                        { !usageData && usageData.length === 0 ? (
+                        { !usageData || usageData.length === 0 ? (
                             <div style={styles.paperWrapper}>
                                 <Paper
                                     elevation={1}

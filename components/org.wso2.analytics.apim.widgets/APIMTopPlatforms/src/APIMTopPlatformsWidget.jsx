@@ -240,7 +240,12 @@ class APIMTopPlatformsWidget extends Widget {
             apiCreatedBy, apiSelected, apiVersion, limit,
         } = this.state;
         const { id } = this.props;
-        const currentUser = super.getCurrentUser();
+        let { username } = super.getCurrentUser();
+        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
+        // are saved without tenant suffix
+        if (username.split('@').length === 2) {
+            username = username.replace('@carbon.super', '');
+        }
 
         if (data) {
             const apilist = ['All'];
@@ -257,7 +262,7 @@ class APIMTopPlatformsWidget extends Widget {
                 });
             } else if (apiCreatedBy === createdByKeys.Me) {
                 data.forEach((dataUnit) => {
-                    if (currentUser.username === dataUnit[2]) {
+                    if (username === dataUnit[2]) {
                         if (!apilist.includes(dataUnit[0])) {
                             apilist.push(dataUnit[0]);
                         }
@@ -307,7 +312,7 @@ class APIMTopPlatformsWidget extends Widget {
                     '{{timeTo}}': timeTo,
                     '{{per}}': perValue,
                     '{{limit}}': limit,
-                    '{{querystring}}': 'on (' + text + ')'
+                    '{{querystring}}': 'AND (' + text + ')'
                 };
             } else if (apiSelected !== 'All' && apiVersion !== 'All') {
                 dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -315,7 +320,7 @@ class APIMTopPlatformsWidget extends Widget {
                     '{{timeTo}}': timeTo,
                     '{{per}}': perValue,
                     '{{limit}}': limit,
-                    '{{querystring}}': "on apiName=='{{api}}' AND apiVersion=='{{version}}'",
+                    '{{querystring}}': "AND apiName=='{{api}}' AND apiVersion=='{{version}}'",
                     '{{api}}': apiSelected,
                     '{{version}}': apiVersion
                 };
@@ -325,7 +330,7 @@ class APIMTopPlatformsWidget extends Widget {
                     '{{timeTo}}': timeTo,
                     '{{per}}': perValue,
                     '{{limit}}': limit,
-                    '{{querystring}}': "on apiName=='{{api}}'",
+                    '{{querystring}}': "AND apiName=='{{api}}'",
                     '{{api}}': apiSelected
                 };
             }
@@ -359,8 +364,10 @@ class APIMTopPlatformsWidget extends Widget {
                 platformData.push({ id: counter, platform: dataUnit[0], reqCount: dataUnit[1] });
             });
 
-            this.setState({ legendData, platformData });
+            this.setState({ legendData, platformData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -389,11 +396,16 @@ class APIMTopPlatformsWidget extends Widget {
     handleLimitChange(event) {
         const { apiCreatedBy, apiSelected, apiVersion } = this.state;
         const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, event.target.value);
-        this.setState( { inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
+        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleMainQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
