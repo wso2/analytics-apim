@@ -131,7 +131,6 @@ class APIMTopApiUsersWidget extends Widget {
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
         this.getUsername = this.getUsername.bind(this);
-        this.getContext = this.getContext.bind(this);
     }
 
     componentDidMount() {
@@ -224,7 +223,6 @@ class APIMTopApiUsersWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{contextContainsCondition}}' : this.getContext(),
             '{{createdBy}}' : apiCreatedBy !== 'All' ? 'AND CREATED_BY==\'' + username + '\'' : ''
         };
         super.getWidgetChannelManager()
@@ -242,16 +240,6 @@ class APIMTopApiUsersWidget extends Widget {
             username = username.replace('@carbon.super', '');
         }
         this.setState({ username })
-    }
-
-    getContext() {
-        let { username } = super.getCurrentUser();
-        const usernameParts = username.split('@');
-        if (username.includes('@carbon.super')) {
-            return 'NOT(str:contains(CONTEXT,\'/t/\'))';
-        } else {
-            return '(str:contains(CONTEXT,\'/t/' +  usernameParts[usernameParts.length -1] + '\'))';
-        }
     }
 
     /**
