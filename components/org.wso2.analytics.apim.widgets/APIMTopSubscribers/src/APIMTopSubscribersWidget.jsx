@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -80,10 +79,6 @@ class APIMTopSubscribersWidget extends Widget {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -93,12 +88,6 @@ class APIMTopSubscribersWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
-            },
         };
 
         this.state = {
@@ -106,6 +95,8 @@ class APIMTopSubscribersWidget extends Widget {
             height: this.props.height,
             creatorData: [],
             legendData: [],
+            applications: [],
+            subscribers: [],
             limit: 0,
             localeMessages: null,
         };
@@ -122,6 +113,10 @@ class APIMTopSubscribersWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.assembleSubscriberQuery = this.assembleSubscriberQuery.bind(this);
+        this.handleSubscriberDataReceived = this.handleSubscriberDataReceived.bind(this);
+        this.assembleApplicationQuery = this.assembleApplicationQuery.bind(this);
+        this.handleApplicationDataReceived = this.handleApplicationDataReceived.bind(this);
     }
 
     componentDidMount() {
@@ -133,7 +128,7 @@ class APIMTopSubscribersWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleQuery);
+                }, this.assembleSubscriberQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -162,11 +157,82 @@ class APIMTopSubscribersWidget extends Widget {
     }
 
     /**
+     * Formats the siddhi query to retrieve subscribers
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    assembleSubscriberQuery() {
+        const { providerConfig } = this.state;
+        const { id, widgetID: widgetName } = this.props;
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'subscriberquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleSubscriberDataReceived, dataProviderConfigs);
+    }
+
+    /**
+     * Formats data retrieved and loads to the widget
+     * @param {object} message - data retrieved
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    handleSubscriberDataReceived(message) {
+        const { data } = message;
+        const { id } = this.props;
+
+        if (data) {
+            const subscribers = data.map(dataUnit => { return dataUnit[0]; });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ subscribers }, this.assembleApplicationQuery);
+        } else {
+            this.setState({ inProgress: false });
+        }
+    }
+
+    /**
+     * Formats the siddhi query to retrieve application id
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    assembleApplicationQuery() {
+        const { providerConfig, subscribers } = this.state;
+        const { id, widgetID: widgetName } = this.props;
+        if (subscribers && subscribers.length > 0) {
+            let subs = subscribers.map(sub => { return 'SUBSCRIBER_ID==' + sub; });
+            subs = subs.join(' OR ');
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'applicationquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{subscriberId}}': subs
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleApplicationDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false });
+        }
+    }
+
+    /**
+     * Formats data retrieved and loads to the widget
+     * @param {object} message - data retrieved
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    handleApplicationDataReceived(message) {
+        const { data } = message;
+        const { id } = this.props;
+
+        if (data) {
+            const applications = data.map(dataUnit => { return dataUnit[0]; });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ applications }, this.assembleQuery);
+        } else {
+            this.setState({ inProgress: false });
+        }
+    }
+
+    /**
      * Formats the siddhi query using selected options
      * @memberof APIMTopSubscribersWidget
      * */
     assembleQuery() {
-        const { providerConfig } = this.state;
+        const { providerConfig, applications } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
@@ -177,14 +243,20 @@ class APIMTopSubscribersWidget extends Widget {
 
         this.setState({ limit, creatorData: [] });
         this.setQueryParam(limit);
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{limit}}': limit
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        if (applications && applications.length > 0) {
+            let apps = applications.map(app => { return 'APPLICATION_ID==' + app; });
+            apps = apps.join(' OR ');
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'subscriptionquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{limit}}': limit,
+                '{{applicationId}}': apps
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false });
+        }
     }
 
     /**
@@ -208,8 +280,10 @@ class APIMTopSubscribersWidget extends Widget {
                 creatorData.push({ id: counter, creator: dataUnit[0], subcount: dataUnit[1] });
             });
 
-            this.setState({ legendData, creatorData });
+            this.setState({ legendData, creatorData, inProgress: false });
             this.setQueryParam(limit);
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -228,14 +302,17 @@ class APIMTopSubscribersWidget extends Widget {
      * @memberof APIMTopSubscribersWidget
      * */
     handleChange(event) {
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { limit } = queryParam;
         const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(event.target.value);
-        this.setState({ limit });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleQuery();
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
@@ -245,29 +322,22 @@ class APIMTopSubscribersWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData,
+            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const subscribersProps = {
-            themeName, height, limit, creatorData, legendData,
+            themeName, height, limit, creatorData, legendData, inProgress,
         };
 
-        if (!localeMessages) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                 {
                     faultyProviderConfig ? (
-                        <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                             <div style={paperWrapper}>
                                 <Paper elevation={1} style={paper}>
                                     <Typography variant='h5' component='h3'>
@@ -285,11 +355,11 @@ class APIMTopSubscribersWidget extends Widget {
                                     </Typography>
                                 </Paper>
                             </div>
-                        </MuiThemeProvider>
                     ) : (
                         <APIMTopSubscribers {...subscribersProps} handleChange={this.handleChange} />
                     )
                 }
+                </MuiThemeProvider>
             </IntlProvider>
         );
     }
