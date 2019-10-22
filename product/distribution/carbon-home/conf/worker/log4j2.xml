@@ -46,5 +46,9 @@
             <AppenderRef ref="CARBON_CONSOLE"/>
             <AppenderRef ref="CARBON_LOGFILE"/>
         </Root>
+        <Logger name="io.siddhi.core.query.input.stream.join.JoinProcessor" level="ERROR">
+            <AppenderRef ref="CARBON_CONSOLE" />
+            <AppenderRef ref="CARBON_LOGFILE"/>
+        </Logger>
     </Loggers>
 </Configuration>
