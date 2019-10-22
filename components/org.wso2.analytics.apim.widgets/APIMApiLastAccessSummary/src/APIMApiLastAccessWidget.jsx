@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -88,10 +87,6 @@ class APIMApiLastAccessWidget extends Widget {
     constructor(props) {
         super(props);
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -100,12 +95,6 @@ class APIMApiLastAccessWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -131,12 +120,14 @@ class APIMApiLastAccessWidget extends Widget {
         this.assembleApiAccessQuery = this.assembleApiAccessQuery.bind(this);
         this.handleApiAccessReceived = this.handleApiAccessReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.getUsername = this.getUsername.bind(this);
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
         this.loadLocale(locale);
+        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -171,17 +162,30 @@ class APIMApiLastAccessWidget extends Widget {
     }
 
     /**
+     * Get username of the logged in user
+     */
+    getUsername() {
+        let { username } = super.getCurrentUser();
+        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
+        // are saved without tenant suffix
+        if (username.split('@').length === 2) {
+            username = username.replace('@carbon.super', '');
+        }
+        this.setState({ username })
+    }
+
+
+    /**
      * Reset the state according to queryParam
      * @memberof APIMApiLastAccessWidget
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy } = queryParam;
-        let { limit } = queryParam;
+        let { apiCreatedBy, limit } = queryParam;
         if (!apiCreatedBy) {
             apiCreatedBy = 'All';
         }
-        if (!limit) {
+        if (!limit || limit < 0) {
             limit = 5;
         }
         this.setState({ apiCreatedBy, limit });
@@ -195,14 +199,15 @@ class APIMApiLastAccessWidget extends Widget {
     assembleApiAccessQuery() {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
-        const { limit } = queryParam;
-        const { providerConfig } = this.state;
+        const { limit, apiCreatedBy } = queryParam;
+        const { providerConfig, username } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'lastaccessquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{limit}}': limit
+            '{{limit}}': limit,
+            '{{apiCreator}}': apiCreatedBy !== 'All' ? 'AND apiCreator==\'' + username + '\'' : ''
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiAccessReceived, dataProviderConfigs);
@@ -215,38 +220,20 @@ class APIMApiLastAccessWidget extends Widget {
      * */
     handleApiAccessReceived(message) {
         const { data } = message;
-        const currentUser = super.getCurrentUser();
-        const { apiCreatedBy, limit } = this.state;
 
         if (data) {
-            const accessData = [];
-            const counter = 0;
-
-            data.forEach((dataUnit) => {
-                if (apiCreatedBy === createdByKeys.All) {
-                    accessData.push({
-                        id: counter,
-                        apiname: dataUnit[0],
-                        version: dataUnit[1],
-                        context: dataUnit[3],
-                        subscriber: dataUnit[4],
-                        lastaccess: dataUnit[5],
-                    });
-                } else if (apiCreatedBy === createdByKeys.Me) {
-                    if (currentUser.username === dataUnit[2]) {
-                        accessData.push({
-                            id: counter,
-                            apiname: dataUnit[0],
-                            version: dataUnit[1],
-                            context: dataUnit[3],
-                            subscriber: dataUnit[4],
-                            lastaccess: dataUnit[5],
-                        });
-                    }
+            const accessData = data.map(dataUnit => {
+                return {
+                    apiname: dataUnit[0] + ' (' + dataUnit[2] + ')',
+                    version: dataUnit[1],
+                    context: dataUnit[3],
+                    subscriber: dataUnit[4],
+                    lastaccess: dataUnit[5],
                 }
             });
-            this.setState({ accessData });
-            this.setQueryParam(apiCreatedBy, limit);
+            this.setState({ accessData, inProgress: false });
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -266,12 +253,19 @@ class APIMApiLastAccessWidget extends Widget {
      * @memberof APIMApiLastAccessWidget
      * */
     handleChange(event) {
-        const { apiCreatedBy } = this.state;
+        const queryParam = super.getGlobalState(queryParamKey);
+        let { apiCreatedBy } = queryParam;
         const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(apiCreatedBy, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiAccessQuery();
+        this.setQueryParam(apiCreatedBy, parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleApiAccessQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
@@ -295,24 +289,17 @@ class APIMApiLastAccessWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, accessData,
+            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, accessData, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const lastAccessProps = {
-            themeName, height, limit, apiCreatedBy, accessData,
+            themeName, height, limit, apiCreatedBy, accessData, inProgress,
         };
 
-        if (!localeMessages || !accessData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
