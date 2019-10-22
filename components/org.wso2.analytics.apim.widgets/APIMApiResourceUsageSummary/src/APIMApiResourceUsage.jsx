@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -38,7 +39,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMApiResourceUsage(props) {
     const {
-        themeName, height, limit, apiCreatedBy, usageData, apiCreatedHandleChange, handleChange,
+        themeName, height, limit, apiCreatedBy, usageData, apiCreatedHandleChange, handleChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -77,27 +78,18 @@ export default function APIMApiResourceUsage(props) {
         selectEmpty: {
             marginTop: 10,
         },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
+        },
     };
-    if (usageData.length === 0) {
-        return (
-            <div style={styles.paperWrapper}>
-                <Paper
-                    elevation={1}
-                    style={styles.paper}
-                >
-                    <Typography variant='h5' component='h3'>
-                        <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                    </Typography>
-                    <Typography component='p'>
-                        <FormattedMessage
-                            id='nodata.error.body'
-                            defaultMessage='No data available for the selected options.'
-                        />
-                    </Typography>
-                </Paper>
-            </div>
-        );
-    }
+
     return (
         <Scrollbars
             style={{ height }}
@@ -156,9 +148,36 @@ export default function APIMApiResourceUsage(props) {
                         />
                     </form>
                 </div>
-                <CustomTable
-                    data={usageData}
-                />
+                { inProgress ? (
+                    <div style={styles.loading}>
+                        <CircularProgress style={styles.loadingIcon} />
+                    </div>
+                ) : (
+                    <div>
+                        { !usageData || usageData.length === 0 ? (
+                            <div style={styles.paperWrapper}>
+                                <Paper
+                                    elevation={1}
+                                    style={styles.paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='nodata.error.heading'
+                                            defaultMessage='No Data Available !' />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options.'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) :(
+                            <CustomTable data={usageData}/>
+                        )}
+                    </div>
+                )}
             </div>
         </Scrollbars>
     );
