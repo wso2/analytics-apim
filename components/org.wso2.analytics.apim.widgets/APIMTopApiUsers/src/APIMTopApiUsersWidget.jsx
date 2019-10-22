@@ -216,8 +216,10 @@ class APIMTopApiUsersWidget extends Widget {
      * */
     assembleApiListQuery() {
         this.resetState();
+        const queryParam = super.getGlobalState(queryParamKey);
+        const { apiCreatedBy } = queryParam;
         const { providerConfig } = this.state;
-        const { id, widgetID: widgetName, apiCreatedBy, username } = this.props;
+        const { id, widgetID: widgetName, username } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
