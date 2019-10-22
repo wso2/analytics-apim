@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -54,7 +55,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopAppCreators(props) {
     const {
-        themeName, height, limit, creatorData, legendData, handleChange,
+        themeName, height, creatorData, legendData, handleChange, limit, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -90,27 +91,18 @@ export default function APIMTopAppCreators(props) {
             marginRight: 8,
             width: 200,
         },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
+        },
     };
-    if (creatorData.length === 0) {
-        return (
-            <div style={styles.paperWrapper}>
-                <Paper
-                    elevation={1}
-                    style={styles.paper}
-                >
-                    <Typography variant='h5' component='h3'>
-                        <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                    </Typography>
-                    <Typography component='p'>
-                        <FormattedMessage
-                            id='nodata.error.body'
-                            defaultMessage='No data available for the selected options.'
-                        />
-                    </Typography>
-                </Paper>
-            </div>
-        );
-    }
+
     return (
         <MuiThemeProvider
             theme={themeName === 'dark' ? darkTheme : lightTheme}
@@ -155,53 +147,83 @@ export default function APIMTopAppCreators(props) {
                         </form>
                     </div>
                     <div>
-                        <svg viewBox='0 0 700 500'>
-                            <VictoryPie
-                                labelComponent={(
-                                    <VictoryTooltip
-                                        orientation='right'
-                                        pointerLength={0}
-                                        cornerRadius={2}
-                                        flyoutStyle={{
-                                            fill: '#000',
-                                            fillOpacity: '0.5',
-                                            strokeWidth: 1,
-                                        }}
-                                        style={{ fill: '#fff', fontSize: 25 }}
-                                    />
+                        { inProgress ? (
+                            <div style={styles.loading}>
+                                <CircularProgress style={styles.loadingIcon} />
+                            </div>
+                        ) : (
+                            <div>
+                                { !creatorData || creatorData.length === 0 ? (
+                                    <div style={styles.paperWrapper}>
+                                        <Paper
+                                            elevation={1}
+                                            style={styles.paper}
+                                        >
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='nodata.error.heading'
+                                                    defaultMessage='No Data Available !' />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='nodata.error.body'
+                                                    defaultMessage='No data available for the selected options.'
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <div>
+
+                                        <svg viewBox='0 0 700 500'>
+                                            <VictoryPie
+                                                labelComponent={(
+                                                    <VictoryTooltip
+                                                        orientation='right'
+                                                        pointerLength={0}
+                                                        cornerRadius={2}
+                                                        flyoutStyle={{
+                                                            fill: '#000',
+                                                            fillOpacity: '0.5',
+                                                            strokeWidth: 1,
+                                                        }}
+                                                        style={{ fill: '#fff', fontSize: 25 }}
+                                                    />
+                                                )}
+                                                width={500}
+                                                height={500}
+                                                standalone={false}
+                                                padding={{
+                                                    left: 50, bottom: 50, top: 50, right: 50,
+                                                }}
+                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                                data={creatorData}
+                                                x={d => d.creator}
+                                                y={d => d.appcount}
+                                                labels={d => `${d.creator} : ${((d.appcount
+                                                    / (sumBy(creatorData, o => o.appcount))) * 100).toFixed(2)}%`}
+                                            />
+                                            <VictoryLegend
+                                                standalone={false}
+                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                                x={500}
+                                                y={20}
+                                                gutter={20}
+                                                rowGutter={{ top: 0, bottom: -10 }}
+                                                style={{
+                                                    labels: {
+                                                        fill: '#9e9e9e',
+                                                        fontSize: 25,
+                                                    },
+                                                }}
+                                                data={legendData}
+                                            />
+                                        </svg>
+                                        <CustomTable data={creatorData}/>
+                                    </div>
                                 )}
-                                width={500}
-                                height={500}
-                                standalone={false}
-                                padding={{
-                                    left: 50, bottom: 50, top: 50, right: 50,
-                                }}
-                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
-                                data={creatorData}
-                                x={d => d.creator}
-                                y={d => d.appcount}
-                                labels={d => `${d.creator} : ${((d.appcount
-                                    / (sumBy(creatorData, o => o.appcount))) * 100).toFixed(2)}%`}
-                            />
-                            <VictoryLegend
-                                standalone={false}
-                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
-                                x={500}
-                                y={20}
-                                gutter={20}
-                                rowGutter={{ top: 0, bottom: -10 }}
-                                style={{
-                                    labels: {
-                                        fill: '#9e9e9e',
-                                        fontSize: 25,
-                                    },
-                                }}
-                                data={legendData}
-                            />
-                        </svg>
-                        <CustomTable
-                            data={creatorData}
-                        />
+                            </div>
+                        )}
                     </div>
                 </div>
             </Scrollbars>
@@ -215,5 +237,4 @@ APIMTopAppCreators.propTypes = {
     limit: PropTypes.string.isRequired,
     creatorData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
-    handleChange: PropTypes.func.isRequired,
 };
