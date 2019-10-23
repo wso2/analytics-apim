@@ -149,7 +149,7 @@ export default function APIMRegisteredAppUsers(props) {
                                             standalone={false}
                                             colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
                                                 '#ffe2ff']}
-                                            x={500}
+                                            x={450}
                                             y={20}
                                             gutter={20}
                                             rowGutter={styles.rowGutter}
