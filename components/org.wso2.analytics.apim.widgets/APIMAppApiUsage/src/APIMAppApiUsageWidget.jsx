@@ -355,7 +355,7 @@ class APIMAppApiUsageWidget extends Widget {
         if (data) {
             const usageData = data.map((dataUnit) => {
                 return {
-                    apiName: dataUnit[0] + ' (' + dataUnit[2] + ')',
+                    apiName: dataUnit[0] + ' (' + dataUnit[2].replace('-AT-', '@') + ')',
                     version: dataUnit[1],
                     hits: dataUnit[3],
                 };

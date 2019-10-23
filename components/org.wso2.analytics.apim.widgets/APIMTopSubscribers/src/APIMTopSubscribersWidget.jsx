@@ -275,9 +275,9 @@ class APIMTopSubscribersWidget extends Widget {
             data.forEach((dataUnit) => {
                 counter += 1;
                 if (!legendData.includes({ name: dataUnit[0] })) {
-                    legendData.push({ name: dataUnit[0] });
+                    legendData.push({ name: dataUnit[0].replace('-AT-', '@') });
                 }
-                creatorData.push({ id: counter, creator: dataUnit[0], subcount: dataUnit[1] });
+                creatorData.push({ id: counter, creator: dataUnit[0].replace('-AT-', '@'), subcount: dataUnit[1] });
             });
 
             this.setState({ legendData, creatorData, inProgress: false });
