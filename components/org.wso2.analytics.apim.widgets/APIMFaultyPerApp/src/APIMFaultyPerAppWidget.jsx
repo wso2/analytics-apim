@@ -228,6 +228,7 @@ class APIMFaultyPerAppWidget extends Widget {
      * */
     handleAppDataReceived(data) {
         const { list } = data;
+        const { id } = this.props;
 
         if (list) {
             const applicationUUIDMap = {};
