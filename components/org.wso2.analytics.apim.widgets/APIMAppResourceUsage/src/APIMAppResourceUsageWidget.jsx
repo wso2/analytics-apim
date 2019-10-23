@@ -222,6 +222,7 @@ class APIMAppResourceUsageWidget extends Widget {
                     appOwner: dataUnit.owner,
                 };
             });
+            const { id } = this.props;
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ applicationUUIDMap }, this.getApplicationIds);
         } else {
