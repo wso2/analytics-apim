@@ -327,7 +327,7 @@ class APIMTopAgentsWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState( { inProgress: false });
+            this.setState({ inProgress: false, agentData: [] });
         }
     }
 
@@ -358,7 +358,7 @@ class APIMTopAgentsWidget extends Widget {
             this.setState({ legendData, agentData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         } else {
-            this.setState( { inProgress: false });
+            this.setState({ inProgress: false, agentData: [] });
         }
     }
 

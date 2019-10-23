@@ -231,6 +231,8 @@ class APIMSignupsAnalyticsWidget extends Widget {
             this.setState({
                 chartData, tableData, xAxisTicks, maxCount,
             });
+        } else {
+            this.setState({ inProgress: false, chartData: [], tableData: [] });
         }
     }
 

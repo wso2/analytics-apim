@@ -238,6 +238,8 @@ class APIMTopAppUsersWidget extends Widget {
                 };
             });
             this.setState({ applicationUUIDMap }, this.getApplicationIds);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -257,6 +259,8 @@ class APIMTopAppUsersWidget extends Widget {
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleAppIdDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -294,6 +298,8 @@ class APIMTopAppUsersWidget extends Widget {
             this.setQueryParam(applicationSelected, limit);
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ applicationList, applicationSelected, limit }, this.assembleMainQuery);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -332,7 +338,7 @@ class APIMTopAppUsersWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -355,6 +361,8 @@ class APIMTopAppUsersWidget extends Widget {
                 return { name: dataUnit.username };
             });
             this.setState({ usageData, legendData, inProgress: false });
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 

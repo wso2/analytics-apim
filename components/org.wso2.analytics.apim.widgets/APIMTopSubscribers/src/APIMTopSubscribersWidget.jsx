@@ -183,7 +183,7 @@ class APIMTopSubscribersWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ subscribers }, this.assembleApplicationQuery);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, creatorData: [] });
         }
     }
 
@@ -205,7 +205,7 @@ class APIMTopSubscribersWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApplicationDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, creatorData: [] });
         }
     }
 
@@ -223,7 +223,7 @@ class APIMTopSubscribersWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ applications }, this.assembleQuery);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, creatorData: [] });
         }
     }
 
@@ -255,7 +255,7 @@ class APIMTopSubscribersWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, creatorData: [] });
         }
     }
 
@@ -283,7 +283,7 @@ class APIMTopSubscribersWidget extends Widget {
             this.setState({ legendData, creatorData, inProgress: false });
             this.setQueryParam(limit);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, creatorData: [] });
         }
     }
 

@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -42,7 +43,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 export default function APIMApiResponse(props) {
     const {
         themeName, height, width, apiCreatedBy, apiSelected, apiVersion, responseData, apilist, versionlist,
-        apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange,
+        apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -77,6 +78,27 @@ export default function APIMApiResponse(props) {
         },
         tableData: {
             minWidth: 200,
+        },
+        paperWrapper: {
+            height: '75%',
+        },
+        paper: {
+            background: '#969696',
+            width: '75%',
+            padding: '4%',
+            border: '1.5px solid #fff',
+            margin: 'auto',
+            marginTop: '5%',
+        },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: this.props.height,
         },
     };
     return (
@@ -167,67 +189,96 @@ export default function APIMApiResponse(props) {
                         </FormControl>
                     </form>
                 </div>
-                <div style={styles.dataWrapper}>
-                    <Paper style={{
-                        width: '80%', margin: 'auto', backgroundColor: themeName === 'dark' ? '#162638' : '#fff',
-                    }}
-                    >
-                        <Toolbar>
-                            <div style={styles.toolBar}>
-                                <Typography variant='h6' id='tableTitle'>
-                                    <FormattedMessage id='widget.heading' defaultMessage='API RESPONSE SUMMARY' />
-                                </Typography>
+                { inProgress ? (
+                    <div style={styles.loading}>
+                        <CircularProgress style={styles.loadingIcon} />
+                    </div>
+                ) : (
+                    <div>
+                        { !responseData || responseData.length === 0 ? (
+                                <div style={styles.paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={styles.paper}
+                                    >
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage
+                                                id='nodata.error.heading'
+                                                defaultMessage='No Data Available !' />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='nodata.error.body'
+                                                defaultMessage='No data available for the selected options.'
+                                            />
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                            <div style={styles.dataWrapper}>
+                                <Paper style={{
+                                    width: '80%', margin: 'auto', backgroundColor: themeName === 'dark' ? '#162638' : '#fff',
+                                }}
+                                >
+                                    <Toolbar>
+                                        <div style={styles.toolBar}>
+                                            <Typography variant='h6' id='tableTitle'>
+                                                <FormattedMessage id='widget.heading' defaultMessage='API RESPONSE SUMMARY' />
+                                            </Typography>
+                                        </div>
+                                    </Toolbar>
+                                    <Table style={styles.tableData}>
+                                        <TableBody>
+                                            <TableRow>
+                                                <TableCell component='th' scope='row'>
+                                                    <FormattedMessage
+                                                        id='table.heading.totalResponse'
+                                                        defaultMessage='Total Response Count'
+                                                    />
+                                                </TableCell>
+                                                <TableCell align='right'>{responseData[0]}</TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell component='th' scope='row'>
+                                                    <FormattedMessage
+                                                        id='table.heading.2xxResponse'
+                                                        defaultMessage='2xx Response Count'
+                                                    />
+                                                </TableCell>
+                                                <TableCell align='right'>{responseData[1]}</TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell component='th' scope='row'>
+                                                    <FormattedMessage
+                                                        id='table.heading.4xxResponse'
+                                                        defaultMessage='4xx Response Count'
+                                                    />
+                                                </TableCell>
+                                                <TableCell align='right'>{responseData[2]}</TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell component='th' scope='row'>
+                                                    <FormattedMessage
+                                                        id='table.heading.5xxResponse'
+                                                        defaultMessage='5xx Response Count'
+                                                    />
+                                                </TableCell>
+                                                <TableCell align='right'>{responseData[3]}</TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell component='th' scope='row'>
+                                                    Other
+                                                    <FormattedMessage id='table.heading.other' defaultMessage='Other' />
+                                                </TableCell>
+                                                <TableCell align='right'>{responseData[4]}</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </Paper>
                             </div>
-                        </Toolbar>
-                        <Table style={styles.tableData}>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell component='th' scope='row'>
-                                        <FormattedMessage
-                                            id='table.heading.totalResponse'
-                                            defaultMessage='Total Response Count'
-                                        />
-                                    </TableCell>
-                                    <TableCell align='right'>{responseData[0]}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell component='th' scope='row'>
-                                        <FormattedMessage
-                                            id='table.heading.2xxResponse'
-                                            defaultMessage='2xx Response Count'
-                                        />
-                                    </TableCell>
-                                    <TableCell align='right'>{responseData[1]}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell component='th' scope='row'>
-                                        <FormattedMessage
-                                            id='table.heading.4xxResponse'
-                                            defaultMessage='4xx Response Count'
-                                        />
-                                    </TableCell>
-                                    <TableCell align='right'>{responseData[2]}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell component='th' scope='row'>
-                                        <FormattedMessage
-                                            id='table.heading.5xxResponse'
-                                            defaultMessage='5xx Response Count'
-                                        />
-                                    </TableCell>
-                                    <TableCell align='right'>{responseData[3]}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell component='th' scope='row'>
-                                        Other
-                                        <FormattedMessage id='table.heading.other' defaultMessage='Other' />
-                                    </TableCell>
-                                    <TableCell align='right'>{responseData[4]}</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </Paper>
-                </div>
+                            )}
+                    </div>
+                )}
             </div>
         </Scrollbars>
     );

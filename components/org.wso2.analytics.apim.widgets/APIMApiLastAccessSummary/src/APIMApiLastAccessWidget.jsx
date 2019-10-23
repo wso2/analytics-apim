@@ -233,7 +233,7 @@ class APIMApiLastAccessWidget extends Widget {
             });
             this.setState({ accessData, inProgress: false });
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, accessData: [] });
         }
     }
 

@@ -200,6 +200,8 @@ class APIMTopApiCreatorsWidget extends Widget {
 
             this.setState({ legendData, creatorData, inProgress: false });
             this.setQueryParam(limit);
+        } else {
+            this.setState({ inProgress: false, creatorData: [] });
         }
     }
 
