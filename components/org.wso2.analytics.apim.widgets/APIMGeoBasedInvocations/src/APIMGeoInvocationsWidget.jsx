@@ -127,8 +127,8 @@ class APIMGeoInvocationsWidget extends Widget {
             apiCreatedBy: 'All',
             apiSelected: '',
             apiVersion: '',
-            versionlist: null,
-            apilist: null,
+            versionlist: [],
+            apilist: [],
             geoData: null,
             inProgress: true,
             metadata: this.metadata,
@@ -256,17 +256,18 @@ class APIMGeoInvocationsWidget extends Widget {
         if (!apiCreatedBy) {
             apiCreatedBy = 'All';
         }
-        if (!apiSelected) {
-            [[, apiSelected]] = data;
-        }
-        if (!apiVersion) {
-            [[,, apiVersion]] = data;
-        }
 
-        if (data) {
+        if (data && data.length > 0) {
             const currentUser = super.getCurrentUser();
             const apilist = [];
             const versionlist = [];
+
+            if (!apiSelected) {
+                [[, apiSelected]] = data;
+            }
+            if (!apiVersion) {
+                [[,, apiVersion]] = data;
+            }
 
             if (apiCreatedBy === createdByKeys.All) {
                 data.forEach((dataUnit) => {

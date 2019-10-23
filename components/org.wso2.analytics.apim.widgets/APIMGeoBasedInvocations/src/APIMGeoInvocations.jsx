@@ -24,6 +24,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import VizG from 'react-vizgrammar';
+import { Scrollbars } from 'react-custom-scrollbars';
+import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
 
 /**
  * React Component for APIM Geo Based Invocations widget data
@@ -32,7 +38,8 @@ import VizG from 'react-vizgrammar';
  */
 export default function APIMGeoInvocations(props) {
     const {
-        themeName, chartConfig, metadata, width, geoData, inProgress, height
+        themeName, chartConfig, metadata, width, geoData, inProgress, height, apiCreatedBy, apiSelected,
+        apiVersion, apilist, versionlist, apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange
     } = props;
     const styles = {
         paperWrapper: {
@@ -59,47 +66,159 @@ export default function APIMGeoInvocations(props) {
             justifyContent: 'center',
             height,
         },
+        headingWrapper: {
+            height: '10%',
+            margin: 'auto',
+            width: '100%',
+        },
+        formWrapper: {
+            width: '100%',
+            height: '10%',
+            margin: 'auto',
+        },
+        form: {
+            display: 'flex',
+            flexWrap: 'wrap',
+        },
+        formControl: {
+            margin: '2%',
+            marginLeft: 0,
+            minWidth: 120,
+        },
+        selectEmpty: {
+            marginTop: 10,
+        },
     };
 
     return (
-        <div>
-            { inProgress ? (
-                <div style={styles.loading}>
-                    <CircularProgress style={styles.loadingIcon} />
+        <Scrollbars
+            style={{ height }}
+        >
+            <div
+                style={{
+                    padding: '5%',
+                }}
+            >
+                <div style={styles.headingWrapper}>
+                    <div style={{
+                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+                        paddingBottom: '10px',
+                        margin: 'auto',
+                        marginTop: 0,
+                        textAlign: 'left',
+                        fontWeight: 'normal',
+                        letterSpacing: 1.5,
+                    }}
+                    >
+                        <FormattedMessage id='widget.heading' defaultMessage='GEO LOCATION BASED INVOCATIONS' />
+                    </div>
                 </div>
-            ) : (
-                <div>
-                    { !geoData || geoData.length === 0 ? (
-                        <div style={styles.paperWrapper}>
-                            <Paper
-                                elevation={1}
-                                style={styles.paper}
+                <div style={styles.formWrapper}>
+                    <form style={styles.form}>
+                        <FormControl style={styles.formControl}>
+                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
+                                <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
+                            </InputLabel>
+                            <Select
+                                value={apiCreatedBy}
+                                onChange={apiCreatedHandleChange}
+                                input={<Input name='apiCreatedBy' id='api-createdBy-label-placeholder' />}
+                                displayEmpty
+                                name='apiCreatedBy'
+                                style={styles.selectEmpty}
                             >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='nodata.error.body'
-                                        defaultMessage='No data available for the selected options.'
-                                    />
-                                </Typography>
-                            </Paper>
+                                <MenuItem value='All'>
+                                    <FormattedMessage id='all.menuItem' defaultMessage='All' />
+                                </MenuItem>
+                                <MenuItem value='Me'>
+                                    <FormattedMessage id='me.menuItem' defaultMessage='Me' />
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
+                        <FormControl style={styles.formControl}>
+                            <InputLabel shrink htmlFor='apiSelected-label-placeholder'>
+                                <FormattedMessage id='apiName.label' defaultMessage='API Name' />
+                            </InputLabel>
+                            <Select
+                                value={apiSelected}
+                                onChange={apiSelectedHandleChange}
+                                input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
+                                displayEmpty
+                                name='apiSelected'
+                                style={styles.selectEmpty}
+                            >
+                                {
+                                    apilist.map(option => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))
+                                }
+                            </Select>
+                        </FormControl>
+                        <FormControl style={styles.formControl}>
+                            <InputLabel shrink htmlFor='apiVersion-label-placeholder'>
+                                <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
+                            </InputLabel>
+                            <Select
+                                value={apiVersion}
+                                onChange={apiVersionHandleChange}
+                                input={<Input name='apiVersion' id='apiVersion-label-placeholder' />}
+                                displayEmpty
+                                name='apiVersion'
+                                style={styles.selectEmpty}
+                            >
+                                {
+                                    versionlist.map(option => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))
+                                }
+                            </Select>
+                        </FormControl>
+                    </form>
+                </div>
+                <div>
+                    { inProgress ? (
+                        <div style={styles.loading}>
+                            <CircularProgress style={styles.loadingIcon} />
                         </div>
                     ) : (
-                        <div style={styles.dataWrapper}>
-                            <VizG
-                                config={chartConfig}
-                                metadata={metadata}
-                                data={geoData}
-                                width={width}
-                                theme={themeName}
-                            />
+                        <div>
+                            { !geoData || geoData.length === 0 ? (
+                                <div style={styles.paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={styles.paper}
+                                    >
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='nodata.error.body'
+                                                defaultMessage='No data available for the selected options.'
+                                            />
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <div style={styles.dataWrapper}>
+                                    <VizG
+                                        config={chartConfig}
+                                        metadata={metadata}
+                                        data={geoData}
+                                        width={width}
+                                        theme={themeName}
+                                    />
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
-            )}
-        </div>
+            </div>
+        </Scrollbars>
     );
 }
 
