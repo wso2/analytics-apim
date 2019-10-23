@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -88,10 +87,6 @@ class APIMApiResponseWidget extends Widget {
     constructor(props) {
         super(props);
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -100,12 +95,6 @@ class APIMApiResponseWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -119,6 +108,7 @@ class APIMApiResponseWidget extends Widget {
             apilist: [],
             responseData: [],
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -194,16 +184,17 @@ class APIMApiResponseWidget extends Widget {
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy } = queryParam;
-        let { apiSelected } = queryParam;
-        let { apiVersion } = queryParam;
+        let { apiCreatedBy, apiSelected, apiVersion } = queryParam;
+        const { apilist, versionlist } = this.state;
+
         if (!apiCreatedBy) {
             apiCreatedBy = 'All';
         }
-        if (!apiSelected) {
+        if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
             apiSelected = 'All';
+            apiVersion = 'All';
         }
-        if (!apiVersion) {
+        if (!apiVersion || (versionlist && !versionlist.includes(apiVersion))) {
             apiVersion = 'All';
         }
         this.setState({ apiCreatedBy, apiSelected, apiVersion });
@@ -217,12 +208,12 @@ class APIMApiResponseWidget extends Widget {
     assembleApiListQuery() {
         this.resetState();
         const { providerConfig } = this.state;
-        const { widgetID: widgetName } = this.props;
+        const { widgetID: widgetName, id } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
         super.getWidgetChannelManager()
-            .subscribeWidget(this.props.id, widgetName, this.handleApiListReceived, dataProviderConfigs);
+            .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -279,27 +270,18 @@ class APIMApiResponseWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
 
-        const apilistSliced = apilist.slice(1);
-        const last = apilist.slice(-1)[0];
-        let text = "apiName=='";
-        apilistSliced.forEach((api) => {
-            if (api !== last) {
-                text += api + "' or apiName=='";
-            } else {
-                text += api + "' ";
-            }
-        });
-
         const { widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
 
         if (apiSelected === 'All' && apiVersion === 'All') {
+            let apis =  apilist.slice(1).map(api => { return 'apiName==\'' + api + '\''; });
+            apis = apis.join(' OR ');
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{timeFrom}}': timeFrom,
                 '{{timeTo}}': timeTo,
                 '{{per}}': perValue,
-                '{{querystring}}': 'on (' + text + ')'
+                '{{querystring}}': 'on (' + apis + ')'
             };
         } else if (apiSelected !== 'All' && apiVersion !== 'All') {
             dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -343,8 +325,10 @@ class APIMApiResponseWidget extends Widget {
                 responseData.push(0, 0, 0, 0, 0);
             }
 
-            this.setState({ responseData });
+            this.setState({ responseData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
+        } else {
+            this.setState({ responseData:[], inProgress: false });
         }
     }
 
@@ -369,8 +353,10 @@ class APIMApiResponseWidget extends Widget {
      * @memberof APIMApiResponseWidget
      * */
     apiCreatedHandleChange(event) {
+        const { id } = this.props;
         this.setQueryParam(event.target.value, 'All', 'All');
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+        this.setState({ inProgress: true });
         this.assembleApiListQuery();
     }
 
@@ -381,9 +367,11 @@ class APIMApiResponseWidget extends Widget {
      * */
     apiSelectedHandleChange(event) {
         const { apiCreatedBy } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, 'All');
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        this.setState({ inProgress: true });
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
 
@@ -394,9 +382,11 @@ class APIMApiResponseWidget extends Widget {
      * */
     apiVersionHandleChange(event) {
         const { apiCreatedBy, apiSelected } = this.state;
+        const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        this.setState({ inProgress: true });
+        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
@@ -407,25 +397,19 @@ class APIMApiResponseWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, width, apiCreatedBy, apiSelected,
+            localeMessages, faultyProviderConfig, height, width, apiCreatedBy, apiSelected, inProgress,
             apiVersion, responseData, apilist, versionlist,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper,inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const responseProps = {
             themeName, height, width, apiCreatedBy, apiSelected, apiVersion, responseData, apilist, versionlist,
+            inProgress,
         };
 
-        if (!localeMessages) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
