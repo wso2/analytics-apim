@@ -368,7 +368,7 @@ class APIMApiLatencyWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgres: false, latencyData: [] });
+            this.setState({ inProgress: false, latencyData: [] });
         }
     }
 
