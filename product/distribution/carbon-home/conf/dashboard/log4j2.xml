@@ -46,5 +46,9 @@
             <AppenderRef ref="CARBON_CONSOLE"/>
             <AppenderRef ref="CARBON_LOGFILE"/>
         </Root>
+        <Logger name="org.apache.axiom.util.stax.dialect.StAXDialectDetector" level="ERROR">
+            <AppenderRef ref="CARBON_CONSOLE" />
+            <AppenderRef ref="CARBON_LOGFILE"/>
+        </Logger>
     </Loggers>
 </Configuration>
