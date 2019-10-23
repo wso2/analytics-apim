@@ -266,6 +266,8 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             this.setState({
                 chartData, tableData, xAxisTicks, maxCount, inProgress: false
             });
+        } else {
+            this.setState({ inProgress: true });
         }
 
         this.setQueryParam(createdBy);
