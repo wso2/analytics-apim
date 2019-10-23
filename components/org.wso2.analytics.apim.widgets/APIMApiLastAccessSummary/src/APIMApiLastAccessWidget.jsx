@@ -1,4 +1,4 @@
-/*
+x/*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
@@ -105,6 +105,7 @@ class APIMApiLastAccessWidget extends Widget {
             limit: 0,
             accessData: null,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.

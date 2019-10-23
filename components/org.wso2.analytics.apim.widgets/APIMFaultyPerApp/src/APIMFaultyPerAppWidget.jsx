@@ -125,7 +125,7 @@ class APIMFaultyPerAppWidget extends Widget {
             applicationSelected: null,
             usageData: [],
             localeMessages: null,
-            inProgress: false,
+            inProgress: true,
             refreshAppListInterval: 1800000, // 30 mins
         };
 

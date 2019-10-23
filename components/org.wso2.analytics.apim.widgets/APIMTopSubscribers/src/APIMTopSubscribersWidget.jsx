@@ -99,6 +99,7 @@ class APIMTopSubscribersWidget extends Widget {
             subscribers: [],
             limit: 0,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.

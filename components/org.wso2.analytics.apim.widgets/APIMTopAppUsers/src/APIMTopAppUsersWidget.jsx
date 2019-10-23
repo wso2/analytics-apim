@@ -125,7 +125,7 @@ class APIMTopAppUsersWidget extends Widget {
             usageData: [],
             legendData: [],
             localeMessages: null,
-            inProgress: false,
+            inProgress: true,
             refreshAppListInterval: 1600000,
         };
 

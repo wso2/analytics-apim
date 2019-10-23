@@ -125,7 +125,7 @@ class APIMAppApiUsageWidget extends Widget {
             usageData: [],
             legendData: [],
             localeMessages: null,
-            inProgress: false,
+            inProgress: true,
             refreshAppListInterval: 1800000, // 30 mins
         };
 

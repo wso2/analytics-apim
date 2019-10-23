@@ -112,7 +112,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             maxCount: 0,
             localeMessages: null,
             username: null,
-            inProgress: false,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.

@@ -105,6 +105,7 @@ class APIMApiVersionUsageWidget extends Widget {
             limit: 0,
             usageData: null,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
