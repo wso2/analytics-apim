@@ -113,7 +113,7 @@ function CustomTableToolbar(props) {
                         margin='normal'
                     >
                         <MenuItem value='creator'>
-                            <FormattedMessage id='table.heading.creator' defaultMessage='CREATOR' />
+                            <FormattedMessage id='table.heading.creator' defaultMessage='PROVIDER' />
                         </MenuItem>
                         <MenuItem value='subcount'>
                             <FormattedMessage id='table.heading.subcount' defaultMessage='SUB COUNT' />
