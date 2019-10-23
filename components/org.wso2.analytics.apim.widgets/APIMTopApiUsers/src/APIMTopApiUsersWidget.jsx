@@ -315,7 +315,7 @@ class APIMTopApiUsersWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState( { inProgress: false });
+            this.setState({ inProgress: false, userData: [] });
         }
     }
 
@@ -341,7 +341,7 @@ class APIMTopApiUsersWidget extends Widget {
             this.setState({ userData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         } else {
-            this.setState( { inProgress: false });
+            this.setState( { inProgress: false, userData: [] });
         }
     }
 

@@ -220,7 +220,7 @@ class APIMTopFaultyApisWidget extends Widget {
             this.setState({ legendData, faultData, inProgress: false });
             this.setQueryParam(limit);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, faultData: [] });
         }
     }
 

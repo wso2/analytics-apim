@@ -347,8 +347,8 @@ class APIMGeoInvocationsWidget extends Widget {
             const { apiCreatedBy, apiSelected, apiVersion } = this.state;
             this.setState({ geoData: data, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
-        } else {
-            this.setState({ inProgress: false });
+        }  else {
+            this.setState({ inProgress: false, geoData: [] });
         }
     }
 

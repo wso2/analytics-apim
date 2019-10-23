@@ -222,7 +222,10 @@ class APIMAppResourceUsageWidget extends Widget {
                     appOwner: dataUnit.owner,
                 };
             });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ applicationUUIDMap }, this.getApplicationIds);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -242,6 +245,8 @@ class APIMAppResourceUsageWidget extends Widget {
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleAppIdDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -279,6 +284,8 @@ class APIMAppResourceUsageWidget extends Widget {
             this.setQueryParam(applicationSelected, limit);
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ applicationList, applicationSelected, limit }, this.assembleMainQuery);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -332,7 +339,7 @@ class APIMAppResourceUsageWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -354,6 +361,8 @@ class APIMAppResourceUsageWidget extends Widget {
                 };
             });
             this.setState({ usageData, inProgress: false });
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 

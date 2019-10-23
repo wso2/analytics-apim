@@ -337,7 +337,7 @@ class APIMTopPlatformsWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState( { inProgress: false });
+            this.setState({ inProgress: false, platformData: [] });
         }
     }
 
@@ -367,7 +367,7 @@ class APIMTopPlatformsWidget extends Widget {
             this.setState({ legendData, platformData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, platformData: [] });
         }
     }
 

@@ -511,6 +511,8 @@ class APIMApiLatencyWidget extends Widget {
             });
             this.setState({ latencyData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, resSelected);
+        } else {
+            this.setState({ inProgress: false, latencyData: [] });
         }
     }
 

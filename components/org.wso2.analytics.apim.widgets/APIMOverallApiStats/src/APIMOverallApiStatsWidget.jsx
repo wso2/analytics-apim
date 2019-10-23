@@ -229,6 +229,8 @@ class APIMOverallApiStatsWidget extends Widget {
                 };
             });
             this.setState({ topApiNameData, loadingTopApis: false });
+        } else {
+            this.setState({ topApiNameData: [], loadingTopApis: false });
         }
     }
 

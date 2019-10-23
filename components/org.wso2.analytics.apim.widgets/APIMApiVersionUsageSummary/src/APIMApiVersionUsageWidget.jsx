@@ -249,7 +249,7 @@ class APIMApiVersionUsageWidget extends Widget {
             this.setState({ usageData, inProgress: false });
             this.setQueryParam(apiCreatedBy, limit);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 

@@ -170,7 +170,7 @@ export default function APIMAppResourceUsage(props) {
                         </div>
                     ) : (
                         <div>
-                            { usageData.length > 0 ? (
+                            { usageData && usageData.length > 0 ? (
                                 <CustomTable
                                     data={usageData}
                                     inProgress={inProgress}

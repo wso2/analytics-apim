@@ -229,7 +229,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleAppQuery();
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -278,7 +278,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ applicationList }, this.assembleAppKeyMapQuery);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -301,7 +301,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleAppKeyDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -325,7 +325,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ appKeyMapList }, this.assembleConsumerAppsQuery);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -348,7 +348,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             super.getWidgetChannelManager().subscribeWidget(id, widgetName,
                 this.handleConsumerAppsDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -372,7 +372,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ consumerKeyMapList }, this.assembleAppAccessQuery);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -396,7 +396,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             super.getWidgetChannelManager().subscribeWidget(id, widgetName,
                 this.handleAppAccessDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -420,7 +420,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ appAccessList }, this.deriveAppUserData);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 

@@ -221,7 +221,7 @@ class APIMTopThrottledApisWidget extends Widget {
             this.setState({ legendData, throttledData, inProgress: false });
             this.setQueryParam(limit);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, throttledData: [] });
         }
     }
 

@@ -275,6 +275,8 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             };
             dataProviderConfigs.configs.config = config;
             super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ chartData: [], tableData: [], inProgress: false});
         }
     }
 

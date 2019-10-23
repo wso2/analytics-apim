@@ -181,7 +181,7 @@ class APIMTopAppCreatorsWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ subscribers }, this.assembleQuery);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, creatorData: [] });
         }
     }
 
@@ -210,7 +210,7 @@ class APIMTopAppCreatorsWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, creatorData: [] });
         }
     }
 
@@ -235,7 +235,7 @@ class APIMTopAppCreatorsWidget extends Widget {
             });
             this.setState({ legendData, creatorData, inProgress: false });
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, creatorData: [] });
         }
     }
 
