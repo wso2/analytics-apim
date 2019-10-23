@@ -279,9 +279,8 @@ class APIMApiLatencyWidget extends Widget {
         let {
             apiCreatedBy, apiSelected, apiVersion, resSelected
         } = queryParam;
-        const { versionlist, apilist, versionMap, resourceList } = this.state;
-        let resourcesList = [...resourceList];
-        let vesions = [...versionlist];
+        const { apilist, versionMap } = this.state;
+        let vesions;
         let vesionsMap = { ...versionMap };
 
         if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
@@ -304,13 +303,6 @@ class APIMApiLatencyWidget extends Widget {
                 apiVersion = '';
             }
         }
-        // if (!resSelected || resSelected.length === 0) {
-        //     if (resourcesList.length > 0) {
-        //         resSelected.push(resourcesList[0]);
-        //     } else {
-        //         resSelected = [];
-        //     }
-        // }
         if (!resSelected) {
             resSelected = [];
         }
@@ -396,6 +388,7 @@ class APIMApiLatencyWidget extends Widget {
             const versionMap = {};
             data.forEach((dataUnit) => {
                 apilist.push(dataUnit[1]);
+                // retrieve all entries for the api and get the api versions list
                 const versions = data.filter(d => d[1] === dataUnit[1]);
                 const versionlist = versions.map(ver => { return ver[2]; });
                 versionMap[dataUnit[1]] = versionlist;
