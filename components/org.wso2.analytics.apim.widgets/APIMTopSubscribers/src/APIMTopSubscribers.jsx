@@ -127,7 +127,7 @@ export default function APIMTopSubscribers(props) {
                             letterSpacing: 1.5,
                         }}
                         >
-                            <FormattedMessage id='widget.heading' defaultMessage='TOP SUBSCRIBERS PER API CREATOR' />
+                            <FormattedMessage id='widget.heading' defaultMessage='TOP SUBSCRIBERS PER API PROVIDER' />
                         </h3>
                     </div>
                     <div style={styles.formWrapper}>
