@@ -442,7 +442,7 @@ class APIMAppApiUsageWidget extends Widget {
             applicationList, inProgress, proxyError,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, loading,
+            loadingIcon, paper, paperWrapper, loading, proxyPaper, proxyPaperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -460,10 +460,10 @@ class APIMAppApiUsageWidget extends Widget {
 
         if (proxyError) {
             return (
-                <div style={styles.proxyPaperWrapper}>
+                <div style={proxyPaperWrapper}>
                     <Paper
                         elevation={1}
-                        style={styles.proxyPaper}
+                        style={proxyPaper}
                     >
                         <Typography variant='h5' component='h3'>
                             <FormattedMessage

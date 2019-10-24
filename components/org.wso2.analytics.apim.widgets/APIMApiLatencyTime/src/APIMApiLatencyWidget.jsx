@@ -631,7 +631,7 @@ class APIMApiLatencyWidget extends Widget {
             apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
         } = this.state;
         const {
-            paper, paperWrapper,
+            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -654,10 +654,10 @@ class APIMApiLatencyWidget extends Widget {
 
         if (proxyError) {
             return (
-                <div style={styles.proxyPaperWrapper}>
+                <div style={proxyPaperWrapper}>
                     <Paper
                         elevation={1}
-                        style={styles.proxyPaper}
+                        style={proxyPaper}
                     >
                         <Typography variant='h5' component='h3'>
                             <FormattedMessage
