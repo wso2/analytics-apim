@@ -73,7 +73,7 @@ function CustomTableToolbar(props) {
             <div className={classes.root}>
                 <div className={classes.title}>
                     <Typography variant='h6' id='tableTitle'>
-                        <FormattedMessage id='widget.heading' defaultMessage='TOP SUBSCRIBERS' />
+                        <FormattedMessage id='widget.heading' defaultMessage='TOP SUBSCRIPTIONS PER API PROVIDER' />
                     </Typography>
                 </div>
                 <div className={classes.actions}>
