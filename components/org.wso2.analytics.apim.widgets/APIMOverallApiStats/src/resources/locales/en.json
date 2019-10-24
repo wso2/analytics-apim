@@ -1,6 +1,5 @@
 {
-  "apim.server.error.body" : "Error occurred when retrieving API list from APIM Publisher",
-  "apim.server.error.heading" : "APIM Server Connection Error !",
+  "apim.server.error.heading" : "Error !",
   "chart.heading": "API AVAILABILITY :",
   "config.error.body": "Cannot fetch provider configuration for APIM Overall Api Stats widget",
   "config.error.heading": "Configuration Error !",

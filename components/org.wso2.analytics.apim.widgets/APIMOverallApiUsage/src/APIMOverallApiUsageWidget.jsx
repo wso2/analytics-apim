@@ -137,7 +137,7 @@ class APIMOverallApiUsageWidget extends Widget {
             limit: 0,
             localeMessages: null,
             inProgress: true,
-            proxyError: false,
+            proxyError: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -302,11 +302,13 @@ class APIMOverallApiUsageWidget extends Widget {
     assembleApiListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
-                this.setState({ proxyError: false });
+                this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
             .catch(error => {
-                this.setState({ proxyError: true });
+                const errorDisplay = error.response.data;
+                errorDisplay.split(':').splice(1).join('').trim();
+                this.setState({ proxyError: errorDisplay });
                 console.error(error);
             });
     }
@@ -495,13 +497,10 @@ class APIMOverallApiUsageWidget extends Widget {
                         <Typography variant='h5' component='h3'>
                             <FormattedMessage
                                 id='apim.server.error.heading'
-                                defaultMessage='APIM Server Connection Error!' />
+                                defaultMessage='Error!' />
                         </Typography>
                         <Typography component='p'>
-                            <FormattedMessage
-                                id='apim.server.error.body'
-                                defaultMessage='Error occurred when retrieving API list from APIM Publisher'
-                            />
+                            { proxyError }
                         </Typography>
                     </Paper>
                 </div>

@@ -137,7 +137,7 @@ class APIMAppApiUsageWidget extends Widget {
             legendData: [],
             localeMessages: null,
             inProgress: true,
-            proxyError: true,
+            proxyError: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -224,7 +224,9 @@ class APIMAppApiUsageWidget extends Widget {
                 this.handleAppDataReceived(response.data);
             })
             .catch(error => {
-                this.setState({ proxyError: true });
+                const errorDisplay = error.response.data;
+                errorDisplay.split(':').splice(1).join('').trim();
+                this.setState({ proxyError: errorDisplay });
                 console.error(error);
             });
     }
@@ -468,13 +470,10 @@ class APIMAppApiUsageWidget extends Widget {
                         <Typography variant='h5' component='h3'>
                             <FormattedMessage
                                 id='apim.server.error.heading'
-                                defaultMessage='APIM Server Connection Error!' />
+                                defaultMessage='Error!' />
                         </Typography>
                         <Typography component='p'>
-                            <FormattedMessage
-                                id='apim.server.error.body'
-                                defaultMessage='Error occurred when retrieving API list from APIM Publisher'
-                            />
+                            { proxyError }
                         </Typography>
                     </Paper>
                 </div>
