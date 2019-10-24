@@ -8,6 +8,7 @@
   "filter.search.placeholder": "Search Field",
   "limit.label": "Limit :",
   "me.menuItem": "Me",
+  "apim.server.error.heading" : "Error !",
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",

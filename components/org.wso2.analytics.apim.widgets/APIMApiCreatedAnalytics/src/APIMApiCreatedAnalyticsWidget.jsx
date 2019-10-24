@@ -288,12 +288,10 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      * @memberof APIMApiCreatedAnalyticsWidget
      * */
     handleChange(event) {
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { createdBy } = queryParam;
         const { id } = this.props;
 
         this.setQueryParam(event.target.value);
-        this.setState({ createdBy, inProgress: true });
+        this.setState({ createdBy: event.target.value, inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleQuery();
     }

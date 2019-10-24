@@ -69,8 +69,11 @@ public class ApimApiServiceImpl extends ApimApiService {
 
                 if (response.status() == 200) {
                     APIListDTO apisDetails = (APIListDTO) new GsonDecoder().decode(response, APIListDTO.class);
-                    return Response.status(response.status()).entity(apisDetails).build();
+                    int status = response.status();
+                    response.close();
+                    return Response.status(status).entity(apisDetails).build();
                 }
+                response.close();
                 util.handleInternalServerError("Unable to retrieve API list.");
             } else {
                 util.handleBadRequest("Unable to find Publisher server URL.");
@@ -105,8 +108,11 @@ public class ApimApiServiceImpl extends ApimApiService {
                 if (response.status() == 200) {
                     ApplicationListDTO appDetails =
                             (ApplicationListDTO) new GsonDecoder().decode(response, ApplicationListDTO.class);
-                    return Response.status(response.status()).entity(appDetails).build();
+                    int status = response.status();
+                    response.close();
+                    return Response.status(status).entity(appDetails).build();
                 }
+                response.close();
                 util.handleInternalServerError("Unable to retrieve Application list.");
             } else {
                 util.handleBadRequest("Unable to find Developer Portal server URL.");

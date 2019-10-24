@@ -111,6 +111,17 @@ class APIMOverallApiUsageWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
+            },
         };
 
         this.state = {
@@ -126,6 +137,7 @@ class APIMOverallApiUsageWidget extends Widget {
             limit: 0,
             localeMessages: null,
             inProgress: true,
+            proxyError: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -290,9 +302,17 @@ class APIMOverallApiUsageWidget extends Widget {
     assembleApiListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
+                this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, inProgress: false });
+                }
+                console.error(error);
+            });
     }
 
     /**
@@ -458,10 +478,10 @@ class APIMOverallApiUsageWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig,
-            inProgress,
+            inProgress, proxyError,
         } = this.state;
         const {
-            paper, paperWrapper
+            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -472,33 +492,53 @@ class APIMOverallApiUsageWidget extends Widget {
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Overall Api Usage widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMOverallApiUsage
-                                {...ovearllUsageProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
-                                limitHandleChange={this.limitHandleChange}
-                            />
-                        )
-                    }
+                    { proxyError ? (
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
+                    ) : (
+                        <div>
+                            {
+                                faultyProviderConfig ? (
+                                    <div style={paperWrapper}>
+                                        <Paper elevation={1} style={paper}>
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='config.error.heading'
+                                                    defaultMessage='Configuration Error !'
+                                                />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='config.error.body'
+                                                    defaultMessage={'Cannot fetch provider configuration for APIM '
+                                                    + 'Overall Api Usage widget'}
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <APIMOverallApiUsage
+                                        {...ovearllUsageProps}
+                                        apiCreatedHandleChange={this.apiCreatedHandleChange}
+                                        limitHandleChange={this.limitHandleChange}
+                                    />
+                                )
+                            }
+                        </div>
+                    )}
                 </MuiThemeProvider>
             </IntlProvider>
         );
