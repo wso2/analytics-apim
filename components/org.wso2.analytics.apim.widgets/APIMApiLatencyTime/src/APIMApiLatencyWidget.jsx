@@ -345,9 +345,11 @@ class APIMApiLatencyWidget extends Widget {
             })
             .catch(error => {
                 console.error(error);
-                let proxyError = error.response.data;
-                proxyError = proxyError.split(':').splice(1).join('').trim();
-                this.setState({ proxyError });
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, inProgress: false });
+                }
             });
     }
 

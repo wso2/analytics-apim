@@ -256,10 +256,12 @@ class APIMOverallApiStatsWidget extends Widget {
                 this.setState({ proxyError: null });
                 this.handleAPIListReceived(response.data);
             })
-            .catch(error => {
-                let proxyError = error.response.data;
-                proxyError = proxyError.split(':').splice(1).join('').trim();
-                this.setState({ proxyError });
+            .catch((error) => {
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, loadingTopApis: false });
+                }
                 console.error(error);
             });
     }

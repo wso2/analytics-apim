@@ -224,9 +224,11 @@ class APIMTopAppUsersWidget extends Widget {
                 this.handleAppDataReceived(response.data);
             })
             .catch(error => {
-                let proxyError = error.response.data;
-                proxyError = proxyError.split(':').splice(1).join('').trim();
-                this.setState({ proxyError });
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, inProgress: false });
+                }
                 console.error(error);
             });
     }
