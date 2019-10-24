@@ -137,7 +137,6 @@ class APIMAppResourceUsageWidget extends Widget {
             usageData: [],
             localeMessages: null,
             inProgress: true,
-            refreshAppListInterval: 1800000, // 30 mins
             proxyError: false,
         };
 
@@ -162,19 +161,12 @@ class APIMAppResourceUsageWidget extends Widget {
     }
 
     componentDidMount() {
-        const { widgetID, id } = this.props;
-        const { refreshAppListInterval } = this.state;
+        const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
 
         this.loadLocale(locale);
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
-                // set an interval to periodically retrieve the application list
-                const refreshApplicationList = () => {
-                    super.getWidgetChannelManager().unsubscribeWidget(id);
-                    this.assembleAppQuery();
-                };
-                setInterval(refreshApplicationList, refreshAppListInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
                 }, () => super.subscribe(this.handlePublisherParameters));

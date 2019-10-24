@@ -137,8 +137,7 @@ class APIMAppApiUsageWidget extends Widget {
             legendData: [],
             localeMessages: null,
             inProgress: true,
-            refreshAppListInterval: 1800000, // 30 mins
-            proxyError: true, // 30 mins
+            proxyError: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -162,19 +161,12 @@ class APIMAppApiUsageWidget extends Widget {
     }
 
     componentDidMount() {
-        const { widgetID, id } = this.props;
-        const { refreshAppListInterval } = this.state;
+        const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
 
         this.loadLocale(locale);
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
-                // set an interval to periodically retrieve the application list
-                const refreshApplicationList = () => {
-                    super.getWidgetChannelManager().unsubscribeWidget(id);
-                    this.assembleAppQuery();
-                };
-                setInterval(refreshApplicationList, refreshAppListInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
                 }, () => super.subscribe(this.handlePublisherParameters));
