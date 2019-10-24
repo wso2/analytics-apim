@@ -1,4 +1,6 @@
 {
+  "apim.server.error.body" : "Error occurred when retrieving Application list from APIM Developer Portal",
+  "apim.server.error.heading" : "APIM Server Connection Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Top Application Users widget",
   "config.error.heading": "Configuration Error !",
   "filter.column.menu.heading": "Filter By",

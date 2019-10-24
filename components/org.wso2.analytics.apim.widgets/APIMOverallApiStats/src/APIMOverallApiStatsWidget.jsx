@@ -82,6 +82,7 @@ class APIMOverallApiStatsWidget extends Widget {
             apiProviderList: [],
             localeMessages: null,
             loadingTopApis: true,
+            proxyError: false,
         };
 
         this.styles = {
@@ -93,6 +94,17 @@ class APIMOverallApiStatsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
+            },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
             },
         };
 
@@ -241,9 +253,13 @@ class APIMOverallApiStatsWidget extends Widget {
     assembleAPIListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
+                this.setState({ proxyError: false });
                 this.handleAPIListReceived(response.data);
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                this.setState({ proxyError: true });
+                console.error(error);
+            });
     }
 
     /**
@@ -315,6 +331,7 @@ class APIMOverallApiStatsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData, loadingTopApis,
+            proxyError,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -324,6 +341,29 @@ class APIMOverallApiStatsWidget extends Widget {
         const overallStatsProps = {
             themeName, height, availableApiData, legendData, topApiNameData, loadingTopApis,
         };
+
+        if (proxyError) {
+            return (
+                <div style={styles.proxyPaperWrapper}>
+                    <Paper
+                        elevation={1}
+                        style={styles.proxyPaper}
+                    >
+                        <Typography variant='h5' component='h3'>
+                            <FormattedMessage
+                                id='apim.server.error.heading'
+                                defaultMessage='APIM Server Connection Error!' />
+                        </Typography>
+                        <Typography component='p'>
+                            <FormattedMessage
+                                id='apim.server.error.body'
+                                defaultMessage='Error occurred when retrieving API list from APIM Publisher'
+                            />
+                        </Typography>
+                    </Paper>
+                </div>
+            );
+        }
 
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>

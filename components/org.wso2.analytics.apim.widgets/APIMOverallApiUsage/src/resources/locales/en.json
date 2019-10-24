@@ -8,6 +8,8 @@
   "filter.search.placeholder": "Search Field",
   "limit.label": "Limit :",
   "me.menuItem": "Me",
+  "apim.server.error.body" : "Error occurred when retrieving API list from APIM Publisher",
+  "apim.server.error.heading" : "APIM Server Connection Error !",
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",

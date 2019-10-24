@@ -113,6 +113,17 @@ class APIMAppResourceUsageWidget extends Widget {
                 alignItems: 'center',
                 justifyContent: 'center',
             },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
+            },
         };
 
         this.state = {
@@ -127,6 +138,7 @@ class APIMAppResourceUsageWidget extends Widget {
             localeMessages: null,
             inProgress: true,
             refreshAppListInterval: 1800000, // 30 mins
+            proxyError: false,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -201,9 +213,13 @@ class APIMAppResourceUsageWidget extends Widget {
     assembleAppQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/applications`)
             .then((response) => {
+                this.setState({ proxyError: false });
                 this.handleAppDataReceived(response.data);
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                this.setState({ proxyError: true });
+                console.error(error);
+            });
     }
 
     /**
@@ -429,7 +445,7 @@ class APIMAppResourceUsageWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, limit, applicationSelected, usageData, applicationList,
-            inProgress,
+            inProgress, proxyError,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
@@ -445,6 +461,29 @@ class APIMAppResourceUsageWidget extends Widget {
             usageData,
             inProgress,
         };
+
+        if (proxyError) {
+            return (
+                <div style={styles.proxyPaperWrapper}>
+                    <Paper
+                        elevation={1}
+                        style={styles.proxyPaper}
+                    >
+                        <Typography variant='h5' component='h3'>
+                            <FormattedMessage
+                                id='apim.server.error.heading'
+                                defaultMessage='APIM Server Connection Error!' />
+                        </Typography>
+                        <Typography component='p'>
+                            <FormattedMessage
+                                id='apim.server.error.body'
+                                defaultMessage='Error occurred when retrieving Application list from APIM Publisher'
+                            />
+                        </Typography>
+                    </Paper>
+                </div>
+            );
+        }
 
         if (!localeMessages || !usageData) {
             return (

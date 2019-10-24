@@ -111,6 +111,17 @@ class APIMOverallApiUsageWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
+            },
         };
 
         this.state = {
@@ -126,6 +137,7 @@ class APIMOverallApiUsageWidget extends Widget {
             limit: 0,
             localeMessages: null,
             inProgress: true,
+            proxyError: false,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -290,9 +302,13 @@ class APIMOverallApiUsageWidget extends Widget {
     assembleApiListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
+                this.setState({ proxyError: false });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                this.setState({ proxyError: true });
+                console.error(error);
+            });
     }
 
     /**
@@ -458,7 +474,7 @@ class APIMOverallApiUsageWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig,
-            inProgress,
+            inProgress, proxyError,
         } = this.state;
         const {
             paper, paperWrapper
@@ -468,6 +484,29 @@ class APIMOverallApiUsageWidget extends Widget {
         const ovearllUsageProps = {
             themeName, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig, inProgress,
         };
+
+        if (proxyError) {
+            return (
+                <div style={styles.proxyPaperWrapper}>
+                    <Paper
+                        elevation={1}
+                        style={styles.proxyPaper}
+                    >
+                        <Typography variant='h5' component='h3'>
+                            <FormattedMessage
+                                id='apim.server.error.heading'
+                                defaultMessage='APIM Server Connection Error!' />
+                        </Typography>
+                        <Typography component='p'>
+                            <FormattedMessage
+                                id='apim.server.error.body'
+                                defaultMessage='Error occurred when retrieving API list from APIM Publisher'
+                            />
+                        </Typography>
+                    </Paper>
+                </div>
+            );
+        }
 
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
