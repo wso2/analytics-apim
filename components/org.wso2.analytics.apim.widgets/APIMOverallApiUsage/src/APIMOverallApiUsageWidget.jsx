@@ -489,10 +489,10 @@ class APIMOverallApiUsageWidget extends Widget {
             themeName, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig, inProgress,
         };
 
-        return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
-                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    { proxyError ? (
+        if (proxyError) {
+            return (
+                <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                         <div style={proxyPaperWrapper}>
                             <Paper
                                 elevation={1}
@@ -508,37 +508,41 @@ class APIMOverallApiUsageWidget extends Widget {
                                 </Typography>
                             </Paper>
                         </div>
-                    ) : (
-                        <div>
-                            {
-                                faultyProviderConfig ? (
-                                    <div style={paperWrapper}>
-                                        <Paper elevation={1} style={paper}>
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='config.error.heading'
-                                                    defaultMessage='Configuration Error !'
-                                                />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='config.error.body'
-                                                    defaultMessage={'Cannot fetch provider configuration for APIM '
-                                                    + 'Overall Api Usage widget'}
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <APIMOverallApiUsage
-                                        {...ovearllUsageProps}
-                                        apiCreatedHandleChange={this.apiCreatedHandleChange}
-                                        limitHandleChange={this.limitHandleChange}
-                                    />
-                                )
-                            }
-                        </div>
-                    )}
+                    </MuiThemeProvider>
+                </IntlProvider>
+            );
+        }
+
+        return (
+            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                    {
+                        faultyProviderConfig ? (
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='config.error.body'
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Overall Api Usage widget'}
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <APIMOverallApiUsage
+                                {...ovearllUsageProps}
+                                apiCreatedHandleChange={this.apiCreatedHandleChange}
+                                limitHandleChange={this.limitHandleChange}
+                            />
+                        )
+                    }
                 </MuiThemeProvider>
             </IntlProvider>
         );
