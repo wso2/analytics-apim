@@ -289,7 +289,8 @@
   },
   "permissions": {
     "viewers": [
-      "apim_analytics:admin_any"
+      "apim_analytics:admin_any",
+      "apim_analytics:app_developer_any"
     ],
     "owners": [
       "apim_analytics:admin_carbon.super"
