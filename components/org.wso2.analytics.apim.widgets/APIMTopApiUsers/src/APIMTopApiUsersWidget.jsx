@@ -218,8 +218,8 @@ class APIMTopApiUsersWidget extends Widget {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiCreatedBy } = queryParam;
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName, username } = this.props;
+        const { providerConfig, username } = this.state;
+        const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
@@ -305,7 +305,6 @@ class APIMTopApiUsersWidget extends Widget {
                 query = 'AND apiName==\'' + apiSelected + '\''
             }
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{createdBy}}': timeFrom,
                 '{{from}}': timeFrom,
                 '{{to}}': timeTo,
                 '{{per}}': perValue,
