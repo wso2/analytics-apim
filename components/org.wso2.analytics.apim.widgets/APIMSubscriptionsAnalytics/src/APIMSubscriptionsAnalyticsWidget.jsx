@@ -254,8 +254,10 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * */
     assembleMainQuery() {
         this.resetState();
+        const queryParam = super.getGlobalState(queryParamKey);
+        let { apiCreatedBy, subscribedTo } = queryParam;
         const {
-            timeFrom, timeTo, subscribedTo, providerConfig, apiCreatedBy, username,
+            timeFrom, timeTo, providerConfig, username,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
