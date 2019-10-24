@@ -224,9 +224,9 @@ class APIMAppApiUsageWidget extends Widget {
                 this.handleAppDataReceived(response.data);
             })
             .catch(error => {
-                const errorDisplay = error.response.data;
-                errorDisplay.split(':').splice(1).join('').trim();
-                this.setState({ proxyError: errorDisplay });
+                let proxyError = error.response.data;
+                proxyError = proxyError.split(':').splice(1).join('').trim();
+                this.setState({ proxyError });
                 console.error(error);
             });
     }
@@ -460,26 +460,6 @@ class APIMAppApiUsageWidget extends Widget {
             inProgress,
         };
 
-        if (proxyError) {
-            return (
-                <div style={proxyPaperWrapper}>
-                    <Paper
-                        elevation={1}
-                        style={proxyPaper}
-                    >
-                        <Typography variant='h5' component='h3'>
-                            <FormattedMessage
-                                id='apim.server.error.heading'
-                                defaultMessage='Error!' />
-                        </Typography>
-                        <Typography component='p'>
-                            { proxyError }
-                        </Typography>
-                    </Paper>
-                </div>
-            );
-        }
-
         if (!localeMessages || !usageData) {
             return (
                 <div style={loading}>
@@ -491,33 +471,53 @@ class APIMAppApiUsageWidget extends Widget {
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM'
-                                            + ' Application Usage widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMAppApiUsage
-                                {...apiUsageProps}
-                                applicationSelectedHandleChange={this.applicationSelectedHandleChange}
-                                handleLimitChange={this.handleLimitChange}
-                            />
-                        )
-                    }
+                    { proxyError ? (
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
+                    ) : (
+                        <div>
+                            {
+                                faultyProviderConfig ? (
+                                    <div style={paperWrapper}>
+                                        <Paper elevation={1} style={paper}>
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='config.error.heading'
+                                                    defaultMessage='Configuration Error !'
+                                                />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='config.error.body'
+                                                    defaultMessage={'Cannot fetch provider configuration for APIM'
+                                                    + ' Application Usage widget'}
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <APIMAppApiUsage
+                                        {...apiUsageProps}
+                                        applicationSelectedHandleChange={this.applicationSelectedHandleChange}
+                                        handleLimitChange={this.handleLimitChange}
+                                    />
+                                )
+                            }
+                        </div>
+                    )}
                 </MuiThemeProvider>
             </IntlProvider>
         );

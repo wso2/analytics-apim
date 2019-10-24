@@ -306,9 +306,9 @@ class APIMOverallApiUsageWidget extends Widget {
                 this.handleApiListReceived(response.data);
             })
             .catch(error => {
-                const errorDisplay = error.response.data;
-                errorDisplay.split(':').splice(1).join('').trim();
-                this.setState({ proxyError: errorDisplay });
+                let proxyError = error.response.data;
+                proxyError = proxyError.split(':').splice(1).join('').trim();
+                this.setState({ proxyError });
                 console.error(error);
             });
     }
@@ -487,56 +487,56 @@ class APIMOverallApiUsageWidget extends Widget {
             themeName, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig, inProgress,
         };
 
-        if (proxyError) {
-            return (
-                <div style={proxyPaperWrapper}>
-                    <Paper
-                        elevation={1}
-                        style={proxyPaper}
-                    >
-                        <Typography variant='h5' component='h3'>
-                            <FormattedMessage
-                                id='apim.server.error.heading'
-                                defaultMessage='Error!' />
-                        </Typography>
-                        <Typography component='p'>
-                            { proxyError }
-                        </Typography>
-                    </Paper>
-                </div>
-            );
-        }
-
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Overall Api Usage widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMOverallApiUsage
-                                {...ovearllUsageProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
-                                limitHandleChange={this.limitHandleChange}
-                            />
-                        )
-                    }
+                    { proxyError ? (
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
+                    ) : (
+                        <div>
+                            {
+                                faultyProviderConfig ? (
+                                    <div style={paperWrapper}>
+                                        <Paper elevation={1} style={paper}>
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='config.error.heading'
+                                                    defaultMessage='Configuration Error !'
+                                                />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='config.error.body'
+                                                    defaultMessage={'Cannot fetch provider configuration for APIM '
+                                                    + 'Overall Api Usage widget'}
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <APIMOverallApiUsage
+                                        {...ovearllUsageProps}
+                                        apiCreatedHandleChange={this.apiCreatedHandleChange}
+                                        limitHandleChange={this.limitHandleChange}
+                                    />
+                                )
+                            }
+                        </div>
+                    )}
                 </MuiThemeProvider>
             </IntlProvider>
         );

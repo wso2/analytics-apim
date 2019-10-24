@@ -345,9 +345,9 @@ class APIMApiLatencyWidget extends Widget {
             })
             .catch(error => {
                 console.error(error);
-                const errorDisplay = error.response.data;
-                errorDisplay.split(':').splice(1).join('').trim();
-                this.setState({ proxyError: errorDisplay });
+                let proxyError = error.response.data;
+                proxyError = proxyError.split(':').splice(1).join('').trim();
+                this.setState({ proxyError });
             });
     }
 
@@ -654,61 +654,61 @@ class APIMApiLatencyWidget extends Widget {
             inProgress,
         };
 
-        if (proxyError) {
-            return (
-                <div style={proxyPaperWrapper}>
-                    <Paper
-                        elevation={1}
-                        style={proxyPaper}
-                    >
-                        <Typography variant='h5' component='h3'>
-                            <FormattedMessage
-                                id='apim.server.error.heading'
-                                defaultMessage='Error!' />
-                        </Typography>
-                        <Typography component='p'>
-                            { proxyError }
-                        </Typography>
-                    </Paper>
-                </div>
-            );
-        }
-
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper
-                                    elevation={1}
-                                    style={paper}
-                                >
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Api Latency Time widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMApiLatency
-                                {...latencyProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
-                                apiSelectedHandleChange={this.apiSelectedHandleChange}
-                                apiVersionHandleChange={this.apiVersionHandleChange}
-                                apiResourceHandleChange={this.apiResourceHandleChange}
-                            />
-                        )
-                    }
+                    { proxyError ? (
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
+                    ) : (
+                        <div>
+                            {
+                                faultyProviderConfig ? (
+                                    <div style={paperWrapper}>
+                                        <Paper
+                                            elevation={1}
+                                            style={paper}
+                                        >
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='config.error.heading'
+                                                    defaultMessage='Configuration Error !'
+                                                />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='config.error.body'
+                                                    defaultMessage={'Cannot fetch provider configuration for APIM '
+                                                    + 'Api Latency Time widget'}
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <APIMApiLatency
+                                        {...latencyProps}
+                                        apiCreatedHandleChange={this.apiCreatedHandleChange}
+                                        apiSelectedHandleChange={this.apiSelectedHandleChange}
+                                        apiVersionHandleChange={this.apiVersionHandleChange}
+                                        apiResourceHandleChange={this.apiResourceHandleChange}
+                                    />
+                                )
+                            }
+                        </div>
+                    )}
                 </MuiThemeProvider>
             </IntlProvider>
         );
