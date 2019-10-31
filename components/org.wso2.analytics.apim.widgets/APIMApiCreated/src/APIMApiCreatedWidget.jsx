@@ -81,7 +81,8 @@ class APIMApiCreatedWidget extends Widget {
             weekCount: 0,
             messages: null,
             refreshInterval: 60000, // 1min
-            refreshIntervalId: null, // 1min
+            refreshIntervalId: null,
+            inProgress: true,
         };
 
         this.styles = {
@@ -98,7 +99,7 @@ class APIMApiCreatedWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
+            loading: {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -237,7 +238,7 @@ class APIMApiCreatedWidget extends Widget {
         const { data } = message;
 
         if (data.length !== 0) {
-            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length });
+            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length, inProgress: false });
         }
     }
 
@@ -248,15 +249,22 @@ class APIMApiCreatedWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, totalCount, weekCount,
+            messages, faultyProviderConf, totalCount, weekCount, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatedProps = { themeName, totalCount, weekCount };
 
+        if (inProgress) {
+            return (
+                <div style={loading}>
+                    <CircularProgress style={loadingIcon} />
+                </div>
+            );
+        }
         return (
             <IntlProvider locale={language} messages={messages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>

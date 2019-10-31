@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import APIMSignupsData from './APIMSignupsData';
 
 /**
@@ -30,7 +31,7 @@ import APIMSignupsData from './APIMSignupsData';
  */
 export default function APIMSignupsAnalytics(props) {
     const {
-        themeName, height, chartData, tableData, xAxisTicks, maxCount,
+        themeName, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -38,6 +39,16 @@ export default function APIMSignupsAnalytics(props) {
             margin: 'auto',
             width: '97%',
             marginBottom: '5%',
+        },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
         },
     };
     const signedDataProps = {
@@ -68,7 +79,13 @@ export default function APIMSignupsAnalytics(props) {
                         <FormattedMessage id='widget.heading' defaultMessage='DEVELOPER SIGNUPS OVER TIME' />
                     </div>
                 </div>
-                <APIMSignupsData {...signedDataProps} />
+                { inProgress ? (
+                    <div style={styles.loading}>
+                        <CircularProgress style={styles.loadingIcon} />
+                    </div>
+                ) : (
+                    <APIMSignupsData {...signedDataProps} />
+                )}
             </div>
         </Scrollbars>
     );

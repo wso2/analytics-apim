@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -88,10 +87,6 @@ class APIMRegisteredAppUsersWidget extends Widget {
     constructor(props) {
         super(props);
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -100,12 +95,6 @@ class APIMRegisteredAppUsersWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            loading: {
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
             },
         };
 
@@ -475,7 +464,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             localeMessages, faultyProviderConfig, height, width, usageData, inProgress, legendData,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, loading,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -487,14 +476,6 @@ class APIMRegisteredAppUsersWidget extends Widget {
             legendData,
             inProgress,
         };
-
-        if (!localeMessages || !usageData) {
-            return (
-                <div style={loading}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
 
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>

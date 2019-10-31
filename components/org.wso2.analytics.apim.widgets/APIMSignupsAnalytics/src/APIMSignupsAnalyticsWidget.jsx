@@ -25,7 +25,6 @@ import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -75,10 +74,6 @@ class APIMSignupsAnalyticsWidget extends Widget {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -87,12 +82,6 @@ class APIMSignupsAnalyticsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -106,6 +95,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
             xAxisTicks: null,
             maxCount: 0,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -229,7 +219,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
             }
 
             this.setState({
-                chartData, tableData, xAxisTicks, maxCount,
+                chartData, tableData, xAxisTicks, maxCount, inProgress: false,
             });
         } else {
             this.setState({ inProgress: false, chartData: [], tableData: [] });
@@ -243,24 +233,17 @@ class APIMSignupsAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, chartData, tableData, xAxisTicks, maxCount,
+            localeMessages, faultyProviderConfig, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress
+            paper, paperWrapper
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const signupsProps = {
-            themeName, height, chartData, tableData, xAxisTicks, maxCount,
+            themeName, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
         };
 
-        if (!localeMessages || !chartData || !tableData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>

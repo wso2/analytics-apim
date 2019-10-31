@@ -82,6 +82,7 @@ class APIMAppCreatedWidget extends Widget {
             localeMessages: null,
             refreshIntervalId: null,
             refreshInterval: 60000,
+            inProgress: true,
         };
 
         this.styles = {
@@ -98,7 +99,7 @@ class APIMAppCreatedWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
+            loading: {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -228,7 +229,7 @@ class APIMAppCreatedWidget extends Widget {
         const { data } = message;
 
         if (data && data.length !== 0) {
-            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length });
+            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length, inProgress: false });
         }
     }
 
@@ -239,18 +240,18 @@ class APIMAppCreatedWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConf, totalCount, weekCount,
+            localeMessages, faultyProviderConf, totalCount, weekCount, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const appCreatedProps = { themeName, totalCount, weekCount };
 
-        if (!localeMessages) {
+        if (inProgress) {
             return (
-                <div style={inProgress}>
+                <div style={loading}>
                     <CircularProgress style={loadingIcon} />
                 </div>
             );
