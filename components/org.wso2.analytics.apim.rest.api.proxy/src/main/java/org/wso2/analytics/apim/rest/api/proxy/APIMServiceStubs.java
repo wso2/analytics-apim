@@ -15,6 +15,7 @@
  */
 package org.wso2.analytics.apim.rest.api.proxy;
 
+import feign.Client;
 import feign.Feign;
 import feign.Headers;
 import feign.Param;
@@ -23,6 +24,8 @@ import feign.Response;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import feign.okhttp.OkHttpClient;
+import org.wso2.analytics.apim.rest.api.proxy.internal.ServiceHolder;
+import org.wso2.carbon.kernel.config.model.CarbonConfiguration;
 
 /**
  * This is the stub class for APIM Publisher and Store REST APIs
@@ -31,6 +34,21 @@ public class APIMServiceStubs {
 
     private String publisherEndpoint;
     private String storeEndpoint;
+
+
+    /**
+     * Get a new OkHttpClient instance
+     *
+     * @return a OkHttpClient instance
+     */
+    public Client newOkHttpClientInstance() {
+        CarbonConfiguration carbonConfiguration = ServiceHolder.getInstance().getCarbonConfiguration();
+        if (!carbonConfiguration.isHostnameVerificationEnabled()) {
+            return new OkHttpClient.Default(null, (hostName, sslSession) -> true);
+        } else {
+            return new OkHttpClient.Default(null, null);
+        }
+    }
 
     /**
      * Constructor
@@ -72,7 +90,7 @@ public class APIMServiceStubs {
         return Feign.builder()
                 .encoder(new GsonEncoder())
                 .decoder(new GsonDecoder())
-                .client(new OkHttpClient())
+                .client(newOkHttpClientInstance())
                 .target(APIMServiceStubs.PublisherServiceStub.class, publisherEndpoint);
     }
 
@@ -106,7 +124,7 @@ public class APIMServiceStubs {
         return Feign.builder()
                 .encoder(new GsonEncoder())
                 .decoder(new GsonDecoder())
-                .client(new OkHttpClient())
+                .client(newOkHttpClientInstance())
                 .target(APIMServiceStubs.StoreServiceStub.class, storeEndpoint);
     }
 }

@@ -16,15 +16,20 @@
 package org.wso2.analytics.apim.rest.api.proxy.internal;
 
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.config.ConfigurationException;
 import org.wso2.carbon.config.provider.ConfigProvider;
+import org.wso2.carbon.kernel.config.model.CarbonConfiguration;
 
 /**
  *  Service Holder class for this component
  */
 public class ServiceHolder {
     private static ServiceHolder instance = new ServiceHolder();
+    private final Log log = LogFactory.getLog(ServiceHolder.class);
     private ConfigProvider configProvider;
-
+    private CarbonConfiguration carbonConfiguration;
     private ServiceHolder() {
     }
 
@@ -47,12 +52,26 @@ public class ServiceHolder {
     }
 
     /**
+     * Return the CarbonConfiguration object
+     *
+     * @return the CarbonConfiguration object
+     */
+    public CarbonConfiguration getCarbonConfiguration() {
+        return carbonConfiguration;
+    }
+
+    /**
      * Set the configProvider object
      *
      * @param configProvider configProvider object
      */
     public void setConfigProvider(ConfigProvider configProvider) {
-        this.configProvider = configProvider;
+        try {
+            this.carbonConfiguration = configProvider.getConfigurationObject(CarbonConfiguration.class);
+            this.configProvider = configProvider;
+        }  catch (ConfigurationException e) {
+            log.error("Error occurred while initializing service holder for carbon configuration : " + e.getMessage(), e);
+        }
     }
 
 }
