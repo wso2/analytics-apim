@@ -177,7 +177,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        const { refreshIntervalId } = this.props;
+        const { refreshIntervalId } = this.state;
         clearInterval(refreshIntervalId);
         this.setState({
             refreshIntervalId: null
