@@ -278,6 +278,7 @@ class APIMApiLastAccessWidget extends Widget {
         const { limit } = this.state;
         const { id } = this.props;
 
+        this.setState({ inProgress: true });
         this.setQueryParam(event.target.value, limit);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiAccessQuery();
