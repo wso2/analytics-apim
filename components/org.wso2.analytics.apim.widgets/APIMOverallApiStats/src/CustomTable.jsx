@@ -19,6 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -137,6 +138,12 @@ const styles = theme => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    noDataMessage: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#888888',
+    },
 });
 
 /**
@@ -223,38 +230,54 @@ class CustomTable extends React.Component {
                         <CircularProgress />
                     </div>
                 ) : (
-                    <div className={classes.tableWrapper}>
-                        <Table className={classes.table} aria-labelledby='tableTitle'>
-                            <CustomTableHead
-                                order={order}
-                                orderBy={orderBy}
-                                onRequestSort={this.handleRequestSort}
-                            />
-                            <TableBody>
-                                {stableSort(tableData, getSorting(order, orderBy))
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((n) => {
-                                        return (
-                                            <TableRow
-                                                hover
-                                                tabIndex={-1}
-                                            >
-                                                <TableCell component='th' scope='row'>
-                                                    {n.apiname}
-                                                </TableCell>
-                                                <TableCell numeric>
-                                                    {n.ratings}
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                                {emptyRows > 0 && (
-                                    <TableRow style={{ height: 49 * emptyRows }}>
-                                        <TableCell colSpan={6} />
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
+                    <div>
+                        {
+                            tableData.length > 0 ? (
+                                <div className={classes.tableWrapper}>
+                                    <Table className={classes.table} aria-labelledby='tableTitle'>
+                                        <CustomTableHead
+                                            order={order}
+                                            orderBy={orderBy}
+                                            onRequestSort={this.handleRequestSort}
+                                        />
+                                        <TableBody>
+                                            {stableSort(tableData, getSorting(order, orderBy))
+                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                                .map((n) => {
+                                                    return (
+                                                        <TableRow
+                                                            hover
+                                                            tabIndex={-1}
+                                                        >
+                                                            <TableCell component='th' scope='row'>
+                                                                {n.apiname}
+                                                            </TableCell>
+                                                            <TableCell numeric>
+                                                                {n.ratings}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                            {emptyRows > 0 && (
+                                                <TableRow style={{ height: 49 * emptyRows }}>
+                                                    <TableCell colSpan={6} />
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            ) : (
+                                <div
+                                    className={classes.noDataMessage}
+                                    style={{ height: (rowsPerPage + 1) * 49 }}
+                                >
+                                    <FormattedMessage
+                                        id='nodata.error.body'
+                                        defaultMessage='No data available for the selected options.'
+                                    />
+                                </div>
+                            )
+                        }
                     </div>
                 )}
                 <TablePagination

@@ -148,7 +148,7 @@ export default function APIMTopFaultyApis(props) {
                     </div>
                     <div>
                         { inProgress ? (
-                            <div style={styles.inProgress}>
+                            <div style={styles.loading}>
                                 <CircularProgress style={styles.loadingIcon} />
                             </div>
                         ) : (

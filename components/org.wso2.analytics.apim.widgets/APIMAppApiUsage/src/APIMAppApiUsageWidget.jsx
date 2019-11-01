@@ -113,6 +113,17 @@ class APIMAppApiUsageWidget extends Widget {
                 alignItems: 'center',
                 justifyContent: 'center',
             },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
+            },
         };
 
         this.state = {
@@ -126,7 +137,7 @@ class APIMAppApiUsageWidget extends Widget {
             legendData: [],
             localeMessages: null,
             inProgress: true,
-            refreshAppListInterval: 1800000, // 30 mins
+            proxyError: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -150,19 +161,12 @@ class APIMAppApiUsageWidget extends Widget {
     }
 
     componentDidMount() {
-        const { widgetID, id } = this.props;
-        const { refreshAppListInterval } = this.state;
+        const { widgetID } = this.props;
         const locale = languageWithoutRegionCode || language;
 
         this.loadLocale(locale);
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
-                // set an interval to periodically retrieve the application list
-                const refreshApplicationList = () => {
-                    super.getWidgetChannelManager().unsubscribeWidget(id);
-                    this.assembleAppQuery();
-                };
-                setInterval(refreshApplicationList, refreshAppListInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
                 }, () => super.subscribe(this.handlePublisherParameters));
@@ -216,9 +220,17 @@ class APIMAppApiUsageWidget extends Widget {
     assembleAppQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/applications`)
             .then((response) => {
+                this.setState({ proxyError: false });
                 this.handleAppDataReceived(response.data);
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, inProgress: false });
+                }
+                console.error(error);
+            });
     }
 
     /**
@@ -431,10 +443,10 @@ class APIMAppApiUsageWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, width, limit, applicationSelected, usageData, legendData,
-            applicationList, inProgress,
+            applicationList, inProgress, proxyError,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, loading,
+            loadingIcon, paper, paperWrapper, loading, proxyPaper, proxyPaperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -461,33 +473,53 @@ class APIMAppApiUsageWidget extends Widget {
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM'
-                                            + ' Application Usage widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMAppApiUsage
-                                {...apiUsageProps}
-                                applicationSelectedHandleChange={this.applicationSelectedHandleChange}
-                                handleLimitChange={this.handleLimitChange}
-                            />
-                        )
-                    }
+                    { proxyError ? (
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
+                    ) : (
+                        <div>
+                            {
+                                faultyProviderConfig ? (
+                                    <div style={paperWrapper}>
+                                        <Paper elevation={1} style={paper}>
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='config.error.heading'
+                                                    defaultMessage='Configuration Error !'
+                                                />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='config.error.body'
+                                                    defaultMessage={'Cannot fetch provider configuration for APIM'
+                                                    + ' Application Usage widget'}
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <APIMAppApiUsage
+                                        {...apiUsageProps}
+                                        applicationSelectedHandleChange={this.applicationSelectedHandleChange}
+                                        handleLimitChange={this.handleLimitChange}
+                                    />
+                                )
+                            }
+                        </div>
+                    )}
                 </MuiThemeProvider>
             </IntlProvider>
         );

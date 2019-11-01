@@ -351,7 +351,7 @@ class APIMTopSubscribersWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Top Subscribers widget'}
+                                            + 'Top Subscriptions widget'}
                                         />
                                     </Typography>
                                 </Paper>
