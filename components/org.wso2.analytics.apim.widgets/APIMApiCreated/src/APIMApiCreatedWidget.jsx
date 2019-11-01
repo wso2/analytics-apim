@@ -124,7 +124,7 @@ class APIMApiCreatedWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch(() => {
+            this.loadLocale().catch((error) => {
                 // TODO: Show error message.
             });
         });
@@ -133,7 +133,6 @@ class APIMApiCreatedWidget extends Widget {
     componentDidMount() {
         const { widgetID, id } = this.props;
         const { refreshInterval } = this.state;
-        const locale = languageWithoutRegionCode || language;
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -166,6 +165,10 @@ class APIMApiCreatedWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
+    /**
+     * Load locale file.
+     * @memberof APIMApiCreatedWidget
+     */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
