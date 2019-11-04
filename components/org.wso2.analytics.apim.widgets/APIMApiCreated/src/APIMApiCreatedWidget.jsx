@@ -19,7 +19,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    addLocaleData, defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -79,7 +79,7 @@ class APIMApiCreatedWidget extends Widget {
             height: this.props.height,
             totalCount: 0,
             weekCount: 0,
-            localeMessages: null,
+            messages: null,
             refreshInterval: 60000, // 1min
             refreshIntervalId: null, // 1min
         };
@@ -118,14 +118,21 @@ class APIMApiCreatedWidget extends Widget {
         this.assembletotalQuery = this.assembletotalQuery.bind(this);
         this.handleWeekCountReceived = this.handleWeekCountReceived.bind(this);
         this.handleTotalCountReceived = this.handleTotalCountReceived.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch(() => {
+                // TODO: Show error message.
+            });
+        });
     }
 
     componentDidMount() {
         const { widgetID, id } = this.props;
         const { refreshInterval } = this.state;
         const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -158,16 +165,18 @@ class APIMApiCreatedWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
-    /**
-     * Load locale file.
-     * @memberof APIMApiCreatedWidget
-     */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMApiCreated/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiCreated/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ messages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     /**
@@ -239,7 +248,7 @@ class APIMApiCreatedWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConf, totalCount, weekCount,
+            messages, faultyProviderConf, totalCount, weekCount,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, inProgress,
@@ -248,15 +257,8 @@ class APIMApiCreatedWidget extends Widget {
         const themeName = muiTheme.name;
         const apiCreatedProps = { themeName, totalCount, weekCount };
 
-        if (!localeMessages) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={messages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
