@@ -45,8 +45,8 @@ define stream reqCountTempStream(apiName string, apiVersion string, apiCreator s
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiThrottledOutAgg
 from ThrottledOutStream
-select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,applicationId,applicationName,subscriber,count() as throttledOutCount,throttledOutReason,gatewayType,hostname,'default' as regionalID
-group by apiContext,applicationId,throttledOutReason,hostname
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, username, userTenantDomain, applicationId, applicationName, subscriber,count() as throttledOutCount, throttledOutReason, gatewayType, hostname, 'default' as regionalID
+group by apiContext, applicationId, throttledOutReason, hostname
 aggregate by throttledOutTimestamp every seconds...year;
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "apiVersion:100, apiCreator:150, apiCreatorTenantDomain:150" )

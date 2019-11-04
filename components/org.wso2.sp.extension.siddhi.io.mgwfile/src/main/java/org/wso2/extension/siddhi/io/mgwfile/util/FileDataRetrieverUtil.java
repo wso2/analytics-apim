@@ -49,7 +49,6 @@ public class FileDataRetrieverUtil {
         }
     }
 
-
     public static Object createMetaData(String str) {
         if (str.isEmpty() || "null".equals(str)) {
             return null;
