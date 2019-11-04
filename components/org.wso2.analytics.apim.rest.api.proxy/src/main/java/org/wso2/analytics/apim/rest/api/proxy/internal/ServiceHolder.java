@@ -30,6 +30,7 @@ public class ServiceHolder {
     private final Log log = LogFactory.getLog(ServiceHolder.class);
     private ConfigProvider configProvider;
     private CarbonConfiguration carbonConfiguration;
+
     private ServiceHolder() {
     }
 
@@ -67,10 +68,15 @@ public class ServiceHolder {
      */
     public void setConfigProvider(ConfigProvider configProvider) {
         try {
-            this.carbonConfiguration = configProvider.getConfigurationObject(CarbonConfiguration.class);
             this.configProvider = configProvider;
+            if (configProvider != null) {
+                this.carbonConfiguration = configProvider.getConfigurationObject(CarbonConfiguration.class);
+            } else {
+                this.carbonConfiguration = null;
+            }
         }  catch (ConfigurationException e) {
-            log.error("Error occurred while initializing service holder for carbon configuration : " + e.getMessage(), e);
+            log.error("Error occurred while initializing service holder for carbon configuration : "
+                            + e.getMessage(), e);
         }
     }
 
