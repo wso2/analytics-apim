@@ -26,6 +26,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.analytics.apim.idp.client.token.TokenDataMapCleaner;
 import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderService;
 import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 import org.wso2.carbon.analytics.idp.client.core.exception.IdPClientException;
@@ -64,6 +65,10 @@ public class ApimIdPClientFactory implements IdPClientFactory {
     @Activate
     protected void activate(BundleContext bundleContext) {
         LOG.debug("APIM IDP client factory activated.");
+
+        // Start tokenData map cleaner.
+        TokenDataMapCleaner tokenDataMapCleaner = new TokenDataMapCleaner();
+        tokenDataMapCleaner.startTokenDataMapCleaner();
     }
 
     @Deactivate

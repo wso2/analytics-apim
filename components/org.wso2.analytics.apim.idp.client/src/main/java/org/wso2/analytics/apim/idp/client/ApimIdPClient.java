@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.wso2.analytics.apim.idp.client.dto.DCRClientInfo;
 import org.wso2.analytics.apim.idp.client.dto.DCRClientResponse;
 import org.wso2.analytics.apim.idp.client.dto.DCRError;
+import org.wso2.analytics.apim.idp.client.token.TokenData;
+import org.wso2.analytics.apim.idp.client.token.TokenDataHolder;
 import org.wso2.carbon.analytics.idp.client.core.exception.AuthenticationException;
 import org.wso2.carbon.analytics.idp.client.core.exception.IdPClientException;
 import org.wso2.carbon.analytics.idp.client.core.models.Role;
@@ -209,29 +211,14 @@ public class ApimIdPClient extends ExternalIdPClient {
 
     @Override
     public User getUser(String name) throws IdPClientException {
-        ExternalSession session = null;
-        for (ExternalSession externalSession : tokenCache.asMap().values()) {
-            if (externalSession.getUserName().equalsIgnoreCase(name)) {
-                session = externalSession;
-                break;
-            }
-        }
-        if (session == null) {
-            String error = "Error occurred while getting the user.";
+        String tenantDomain = extractTenantDomainFromUserName(name);
+        TokenData tokenData = TokenDataHolder.getInstance().getTokenMap().get(name);
+        if (tokenData == null) {
+            String error = "Cannot find the token data for the user: " + name + " in the token data map.";
             LOG.error(error);
             throw new IdPClientException(error);
         }
-        String token = session.getAccessToken();
-        OAuth2IntrospectionResponse introspectResponse;
-        try {
-            introspectResponse = getIntrospectResponse(token);
-        } catch (AuthenticationException e) {
-            // If there is an Authentication error that means the token is inactive. So there is no user available and
-            // hence, returns null. This null is handled in the getUserRoles() method in Super class(ExternalIdPClient).
-            return null;
-        }
-        String tenantDomain = extractTenantDomainFromUserName(name);
-        String scopes = introspectResponse.getScope();
+        String scopes = tokenData.getScopes();
         String[] scopeList = scopes.split(SPACE);
         ArrayList<String> newScopes = new ArrayList<>();
         for (String scope: scopeList) {
@@ -394,6 +381,8 @@ public class ApimIdPClient extends ExternalIdPClient {
             try {
                 OAuth2TokenInfo oAuth2TokenInfo = (OAuth2TokenInfo) new GsonDecoder().decode(response,
                         OAuth2TokenInfo.class);
+                long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+                long tokenValidityPeriod = currentTimeInSeconds + oAuth2TokenInfo.getExpiresIn();
                 returnProperties.put(IdPClientConstants.LOGIN_STATUS, IdPClientConstants.LoginStatus.LOGIN_SUCCESS);
                 returnProperties.put(IdPClientConstants.USERNAME, username);
                 returnProperties.put(IdPClientConstants.ACCESS_TOKEN, oAuth2TokenInfo.getAccessToken());
@@ -403,6 +392,12 @@ public class ApimIdPClient extends ExternalIdPClient {
                 if (IdPClientConstants.PASSWORD_GRANT_TYPE.equals(grantType)) {
                     tokenCache.put(oAuth2TokenInfo.getAccessToken(),
                             new ExternalSession(username, oAuth2TokenInfo.getAccessToken()));
+                    TokenData tokenData = new TokenData(
+                            oAuth2TokenInfo.getAccessToken(),
+                            oAuth2TokenInfo.getScope(),
+                            tokenValidityPeriod
+                    );
+                    TokenDataHolder.getInstance().addTokenDataToMap(username, tokenData);
                 }
                 return returnProperties;
             } catch (IOException e) {
@@ -434,6 +429,15 @@ public class ApimIdPClient extends ExternalIdPClient {
                 ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT);
         if (!this.oAuthAppInfoMap.containsKey(oAuthAppContext)) {
             oAuthAppContext = ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT;
+        }
+        ExternalSession session = tokenCache.getIfPresent(token);
+        String username;
+        if (session == null) {
+            LOG.info("Token is not available in the Token Cache. Hence, username cannot be retrieved. " +
+                    "Token in the token data map will be deleted via the Token Data Map Cleaner Task.");
+        } else {
+            username = session.getUserName();
+            TokenDataHolder.getInstance().removeTokenDataFromMap(username);
         }
         tokenCache.invalidate(token);
         oAuth2ServiceStubs.getRevokeServiceStub().revokeAccessToken(
@@ -483,6 +487,8 @@ public class ApimIdPClient extends ExternalIdPClient {
             try {
                 OAuth2TokenInfo oAuth2TokenInfo = (OAuth2TokenInfo) new GsonDecoder().decode(response,
                         OAuth2TokenInfo.class);
+                long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+                long tokenValidityPeriod = currentTimeInSeconds + oAuth2TokenInfo.getExpiresIn();
                 returnProperties.put(IdPClientConstants.LOGIN_STATUS, IdPClientConstants.LoginStatus.LOGIN_SUCCESS);
                 returnProperties.put(IdPClientConstants.ACCESS_TOKEN, oAuth2TokenInfo.getAccessToken());
                 returnProperties.put(IdPClientConstants.REFRESH_TOKEN, oAuth2TokenInfo.getRefreshToken());
@@ -509,6 +515,12 @@ public class ApimIdPClient extends ExternalIdPClient {
                 if (authUser != null) {
                     tokenCache.put(oAuth2TokenInfo.getAccessToken(),
                             new ExternalSession(authUser, oAuth2TokenInfo.getAccessToken()));
+                    TokenData tokenData = new TokenData(
+                            oAuth2TokenInfo.getAccessToken(),
+                            oAuth2TokenInfo.getScope(),
+                            tokenValidityPeriod
+                    );
+                    TokenDataHolder.getInstance().addTokenDataToMap(authUser, tokenData);
                 }
                 return returnProperties;
             } catch (IOException e) {
@@ -540,7 +552,9 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
         OAuth2IntrospectionResponse introspectResponse = getIntrospectResponse(token);
         String username = introspectResponse.getUsername();
-        tokenCache.put(username, new ExternalSession(username, token));
+        tokenCache.put(token, new ExternalSession(username, token));
+        TokenData tokenData = new TokenData(token, introspectResponse.getScope(), introspectResponse.getExp());
+        TokenDataHolder.getInstance().addTokenDataToMap(username, tokenData);
         return username;
     }
 
