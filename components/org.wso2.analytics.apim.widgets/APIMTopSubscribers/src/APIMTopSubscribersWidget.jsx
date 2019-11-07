@@ -99,6 +99,7 @@ class APIMTopSubscribersWidget extends Widget {
             subscribers: [],
             limit: 0,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -275,9 +276,9 @@ class APIMTopSubscribersWidget extends Widget {
             data.forEach((dataUnit) => {
                 counter += 1;
                 if (!legendData.includes({ name: dataUnit[0] })) {
-                    legendData.push({ name: dataUnit[0] });
+                    legendData.push({ name: dataUnit[0].replace('-AT-', '@') });
                 }
-                creatorData.push({ id: counter, creator: dataUnit[0], subcount: dataUnit[1] });
+                creatorData.push({ id: counter, creator: dataUnit[0].replace('-AT-', '@'), subcount: dataUnit[1] });
             });
 
             this.setState({ legendData, creatorData, inProgress: false });
@@ -350,7 +351,7 @@ class APIMTopSubscribersWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Top Subscribers widget'}
+                                            + 'Top Subscriptions widget'}
                                         />
                                     </Typography>
                                 </Paper>

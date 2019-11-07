@@ -82,6 +82,7 @@ class APIMOverallApiStatsWidget extends Widget {
             apiProviderList: [],
             localeMessages: null,
             loadingTopApis: true,
+            proxyError: null,
         };
 
         this.styles = {
@@ -93,6 +94,17 @@ class APIMOverallApiStatsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
+            },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
             },
         };
 
@@ -196,7 +208,7 @@ class APIMOverallApiStatsWidget extends Widget {
         const { providerConfig, apiIdMap } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apiIdMap && apiIdMap.length > 0) {
+        if (apiIdMap && Object.keys(apiIdMap).length > 0) {
             let apiIds = Object.keys(apiIdMap).map(id => { return 'API_ID==' + id });
             apiIds = apiIds.join(' OR ');
             const dataProviderConfigs = cloneDeep(providerConfig);
@@ -241,9 +253,17 @@ class APIMOverallApiStatsWidget extends Widget {
     assembleAPIListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
+                this.setState({ proxyError: null });
                 this.handleAPIListReceived(response.data);
             })
-            .catch(error => console.error(error));
+            .catch((error) => {
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, loadingTopApis: false });
+                }
+                console.error(error);
+            });
     }
 
     /**
@@ -315,9 +335,10 @@ class APIMOverallApiStatsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData, loadingTopApis,
+            proxyError,
         } = this.state;
         const {
-            paper, paperWrapper,
+            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -328,29 +349,50 @@ class APIMOverallApiStatsWidget extends Widget {
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                {
-                    faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Overall Api Stats widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
+                    { proxyError ? (
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
                     ) : (
-                        <APIMOverallApiStats {...overallStatsProps} />
-                    )
-                }
+                        <div>
+                            {
+                                faultyProviderConfig ? (
+                                    <div style={paperWrapper}>
+                                        <Paper elevation={1} style={paper}>
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='config.error.heading'
+                                                    defaultMessage='Configuration Error !'
+                                                />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='config.error.body'
+                                                    defaultMessage={'Cannot fetch provider configuration for APIM '
+                                                    + 'Overall Api Stats widget'}
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <APIMOverallApiStats {...overallStatsProps} />
+                                )
+                            }
+                        </div>
+                    )}
+
                 </MuiThemeProvider>
             </IntlProvider>
         );

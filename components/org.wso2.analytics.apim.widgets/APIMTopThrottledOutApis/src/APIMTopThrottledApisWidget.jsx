@@ -97,7 +97,7 @@ class APIMTopThrottledApisWidget extends Widget {
             legendData: null,
             limit: 0,
             localeMessages: null,
-            inProgress: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.

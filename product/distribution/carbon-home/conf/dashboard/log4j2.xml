@@ -46,5 +46,13 @@
             <AppenderRef ref="CARBON_CONSOLE"/>
             <AppenderRef ref="CARBON_LOGFILE"/>
         </Root>
+        <Logger name="org.apache.axiom.util.stax.dialect.StAXDialectDetector" level="ERROR">
+            <AppenderRef ref="CARBON_CONSOLE" />
+            <AppenderRef ref="CARBON_LOGFILE"/>
+        </Logger>
+        <Logger name="org.wso2.transport.http.netty.contractimpl.listener.SslHandshakeCompletionHandlerForServer" level="FATAL">
+            <AppenderRef ref="CARBON_CONSOLE" />
+            <AppenderRef ref="CARBON_LOGFILE"/>
+        </Logger>
     </Loggers>
 </Configuration>

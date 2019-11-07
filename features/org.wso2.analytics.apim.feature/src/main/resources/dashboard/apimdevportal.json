@@ -1,9 +1,9 @@
 {
   "dashboard": {
-    "url": "apimstore",
+    "url": "apimdevportal",
     "owner": "admin",
-    "name": "APIM Store",
-    "description": "Dashboard for APIM Store statistics",
+    "name": "APIM Developer Portal ",
+    "description": "Dashboard for APIM Developer statistics",
     "landingPage": "analytics",
     "parentId": "0",
     "content": {
@@ -289,7 +289,8 @@
   },
   "permissions": {
     "viewers": [
-      "apim_analytics:admin_any"
+      "apim_analytics:admin_any",
+      "apim_analytics:app_developer_any"
     ],
     "owners": [
       "apim_analytics:admin_carbon.super"

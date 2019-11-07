@@ -9,6 +9,6 @@
   "nodata.error.body": "No data available for the selected options.",
   "sort.label.title": "Sort",
   "table.heading.subcount": "SUB COUNT",
-  "table.heading.creator": "CREATOR",
-  "widget.heading": "TOP SUBSCRIBERS"
+  "table.heading.creator": "PROVIDER",
+  "widget.heading": "TOP SUBSCRIPTIONS PER API PROVIDER"
 }

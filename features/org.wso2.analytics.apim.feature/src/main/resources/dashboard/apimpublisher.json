@@ -1378,7 +1378,9 @@
   },
   "permissions": {
     "viewers": [
-      "apim_analytics:admin_any"
+      "apim_analytics:admin_any",
+      "apim_analytics:analytics_viewer_any",
+      "apim_analytics:api_developer_any"
     ],
     "owners": [
       "apim_analytics:admin_carbon.super"

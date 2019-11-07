@@ -111,6 +111,17 @@ class APIMOverallApiUsageWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
+            },
         };
 
         this.state = {
@@ -125,7 +136,8 @@ class APIMOverallApiUsageWidget extends Widget {
             chartConfig: this.chartConfig,
             limit: 0,
             localeMessages: null,
-            inProgress: false,
+            inProgress: true,
+            proxyError: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -290,9 +302,17 @@ class APIMOverallApiUsageWidget extends Widget {
     assembleApiListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
+                this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, inProgress: false });
+                }
+                console.error(error);
+            });
     }
 
     /**
@@ -458,16 +478,40 @@ class APIMOverallApiUsageWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig,
-            inProgress,
+            inProgress, proxyError,
         } = this.state;
         const {
-            paper, paperWrapper
+            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const ovearllUsageProps = {
             themeName, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig, inProgress,
         };
+
+        if (proxyError) {
+            return (
+                <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
+                    </MuiThemeProvider>
+                </IntlProvider>
+            );
+        }
 
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>

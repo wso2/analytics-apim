@@ -104,6 +104,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             xAxisTicks: null,
             maxCount: 0,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -253,8 +254,10 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * */
     assembleMainQuery() {
         this.resetState();
+        const queryParam = super.getGlobalState(queryParamKey);
+        let { apiCreatedBy, subscribedTo } = queryParam;
         const {
-            timeFrom, timeTo, subscribedTo, providerConfig, apiCreatedBy, username,
+            timeFrom, timeTo, providerConfig, username,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -295,7 +298,6 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             const xAxisTicks = [];
             const chartData = [];
             const tableData = [];
-            let index = 0;
             let count = 0;
 
             data.reverse();
@@ -303,7 +305,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                 count += dataUnit[0];
                 chartData.push({
                     x: new Date(dataUnit[1]).getTime(),
-                    y: dataUnit[3] + index,
+                    y: count,
                     label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss') + '\nCOUNT:' + count,
                 });
 

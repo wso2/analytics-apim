@@ -127,7 +127,7 @@ export default function APIMTopSubscribers(props) {
                             letterSpacing: 1.5,
                         }}
                         >
-                            <FormattedMessage id='widget.heading' defaultMessage='TOP SUBSCRIBERS' />
+                            <FormattedMessage id='widget.heading' defaultMessage='TOP SUBSCRIPTIONS PER API PROVIDER' />
                         </h3>
                     </div>
                     <div style={styles.formWrapper}>
@@ -203,7 +203,7 @@ export default function APIMTopSubscribers(props) {
                                             <VictoryLegend
                                                 standalone={false}
                                                 colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
-                                                x={500}
+                                                x={450}
                                                 y={20}
                                                 gutter={20}
                                                 rowGutter={{ top: 0, bottom: -10 }}

@@ -93,37 +93,37 @@ class APIMApiLatencyWidget extends Widget {
             charts: [
                 {
                     type: 'line',
-                    y: 'responseTime',
+                    y: 'Response Time',
                     fill: '#4555bb',
                 },
                 {
                     type: 'line',
-                    y: 'securityLatency',
+                    y: 'Security',
                     fill: '#bb3a1c',
                 },
                 {
                     type: 'line',
-                    y: 'throttlingLatency',
+                    y: 'Throttling',
                     fill: '#aabb2e',
                 },
                 {
                     type: 'line',
-                    y: 'requestMedLat',
+                    y: 'Request Mediation',
                     fill: '#33bbb5',
                 },
                 {
                     type: 'line',
-                    y: 'responseMedLat',
+                    y: 'Response Mediation',
                     fill: '#b420bb',
                 },
                 {
                     type: 'line',
-                    y: 'backendLatency',
+                    y: 'Backend',
                     fill: '#bbb2b9',
                 },
                 {
                     type: 'line',
-                    y: 'otherLatency',
+                    y: 'Other',
                     fill: '#bb780f',
                 },
             ],
@@ -143,8 +143,8 @@ class APIMApiLatencyWidget extends Widget {
         };
 
         this.metadata = {
-            names: ['responseTime', 'securityLatency', 'throttlingLatency', 'requestMedLat',
-                'responseMedLat', 'backendLatency', 'otherLatency', 'REQUEST_TIME'],
+            names: ['Response Time', 'Security', 'Throttling', 'Request Mediation',
+                'Response Mediation', 'Backend', 'Other', 'REQUEST_TIME'],
             types: ['linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'time'],
         };
 
@@ -159,6 +159,26 @@ class APIMApiLatencyWidget extends Widget {
             form: {
                 display: 'flex',
                 flexWrap: 'wrap',
+            },
+            paper: {
+                padding: '5%',
+                border: '2px solid #4555BB',
+            },
+            paperWrapper: {
+                margin: 'auto',
+                width: '50%',
+                marginTop: '20%',
+            },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
             },
         };
 
@@ -179,6 +199,7 @@ class APIMApiLatencyWidget extends Widget {
             inProgress: true,
             metadata: this.metadata,
             chartConfig: this.chartConfig,
+            proxyError: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -279,9 +300,8 @@ class APIMApiLatencyWidget extends Widget {
         let {
             apiCreatedBy, apiSelected, apiVersion, resSelected
         } = queryParam;
-        const { versionlist, apilist, versionMap, resourceList } = this.state;
-        let resourcesList = [...resourceList];
-        let vesions = [...versionlist];
+        const { apilist, versionMap } = this.state;
+        let vesions;
         let vesionsMap = { ...versionMap };
 
         if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
@@ -304,13 +324,6 @@ class APIMApiLatencyWidget extends Widget {
                 apiVersion = '';
             }
         }
-        // if (!resSelected || resSelected.length === 0) {
-        //     if (resourcesList.length > 0) {
-        //         resSelected.push(resourcesList[0]);
-        //     } else {
-        //         resSelected = [];
-        //     }
-        // }
         if (!resSelected) {
             resSelected = [];
         }
@@ -327,9 +340,17 @@ class APIMApiLatencyWidget extends Widget {
     assembleApiListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
+                this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                console.error(error);
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, inProgress: false });
+                }
+            });
     }
 
     /**
@@ -353,7 +374,9 @@ class APIMApiLatencyWidget extends Widget {
      * */
     assembleApiIdQuery() {
         this.resetState();
-        const { providerConfig, apiDataList, apiCreatedBy, username } = this.state;
+        const queryParam = super.getGlobalState(queryParamKey);
+        const { apiCreatedBy } = queryParam;
+        const { providerConfig, apiDataList, username } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         if (apiDataList && apiDataList.length > 0) {
@@ -376,7 +399,7 @@ class APIMApiLatencyWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgres: false, latencyData: [] });
+            this.setState({ inProgress: false, latencyData: [] });
         }
     }
 
@@ -396,6 +419,7 @@ class APIMApiLatencyWidget extends Widget {
             const versionMap = {};
             data.forEach((dataUnit) => {
                 apilist.push(dataUnit[1]);
+                // retrieve all entries for the api and get the api versions list
                 const versions = data.filter(d => d[1] === dataUnit[1]);
                 const versionlist = versions.map(ver => { return ver[2]; });
                 versionMap[dataUnit[1]] = versionlist;
@@ -414,7 +438,9 @@ class APIMApiLatencyWidget extends Widget {
      * */
     assembleResourceQuery() {
         this.resetState();
-        const { providerConfig, apiFullData, apiSelected, apiVersion } = this.state;
+        const queryParam = super.getGlobalState(queryParamKey);
+        const { apiSelected, apiVersion } = queryParam;
+        const { providerConfig, apiFullData } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         if (apiFullData && apiFullData.length > 0) {
@@ -462,8 +488,10 @@ class APIMApiLatencyWidget extends Widget {
      * */
     assembleMainQuery() {
         this.resetState();
+        const queryParam = super.getGlobalState(queryParamKey);
+        let { apiSelected, apiVersion } = queryParam;
         const {
-            providerConfig, timeFrom, timeTo, perValue, resSelected, apiSelected, apiVersion,
+            providerConfig, timeFrom, timeTo, perValue, resSelected,
         } = this.state;
         const { widgetID: widgetName, id } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -555,7 +583,7 @@ class APIMApiLatencyWidget extends Widget {
         const { id } = this.props;
         this.setQueryParam(apiCreatedBy, event.target.value, '', []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ apiSelected: event.target.value, versionlist: [], inProgress: true },
+        this.setState({ apiSelected: event.target.value, versionlist: [], resourceList: [], inProgress: true },
             this.assembleResourceQuery);
         }
 
@@ -603,11 +631,11 @@ class APIMApiLatencyWidget extends Widget {
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress,
+            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, proxyError,
             apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
         } = this.state;
         const {
-            paper, paperWrapper,
+            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -631,38 +659,58 @@ class APIMApiLatencyWidget extends Widget {
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper
-                                    elevation={1}
-                                    style={paper}
-                                >
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Api Latency Time widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMApiLatency
-                                {...latencyProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
-                                apiSelectedHandleChange={this.apiSelectedHandleChange}
-                                apiVersionHandleChange={this.apiVersionHandleChange}
-                                apiResourceHandleChange={this.apiResourceHandleChange}
-                            />
-                        )
-                    }
+                    { proxyError ? (
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
+                    ) : (
+                        <div>
+                            {
+                                faultyProviderConfig ? (
+                                    <div style={paperWrapper}>
+                                        <Paper
+                                            elevation={1}
+                                            style={paper}
+                                        >
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='config.error.heading'
+                                                    defaultMessage='Configuration Error !'
+                                                />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='config.error.body'
+                                                    defaultMessage={'Cannot fetch provider configuration for APIM '
+                                                    + 'Api Latency Time widget'}
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <APIMApiLatency
+                                        {...latencyProps}
+                                        apiCreatedHandleChange={this.apiCreatedHandleChange}
+                                        apiSelectedHandleChange={this.apiSelectedHandleChange}
+                                        apiVersionHandleChange={this.apiVersionHandleChange}
+                                        apiResourceHandleChange={this.apiResourceHandleChange}
+                                    />
+                                )
+                            }
+                        </div>
+                    )}
                 </MuiThemeProvider>
             </IntlProvider>
         );

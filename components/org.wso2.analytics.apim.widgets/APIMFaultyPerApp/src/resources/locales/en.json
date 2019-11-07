@@ -1,4 +1,5 @@
 {
+  "apim.server.error.heading" : "Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Faulty Invocations Per Application widget",
   "config.error.heading": "Configuration Error !",
   "filter.column.menu.heading": "Filter By",

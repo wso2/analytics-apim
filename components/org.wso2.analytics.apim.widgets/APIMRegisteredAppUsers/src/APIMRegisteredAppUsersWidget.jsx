@@ -120,8 +120,9 @@ class APIMRegisteredAppUsersWidget extends Widget {
             usageData: [],
             legendData: [],
             localeMessages: null,
-            inProgress: false,
-            refreshAppListInterval: 1800000, // 30 mins
+            inProgress: true,
+            refreshAppListInterval: 60000, // 10 mins
+            refreshIntervalId: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -159,10 +160,11 @@ class APIMRegisteredAppUsersWidget extends Widget {
                     super.getWidgetChannelManager().unsubscribeWidget(id);
                     this.assembleAppCountQuery();
                 };
-                setInterval(refreshApplicationList, refreshAppListInterval);
+                const refreshIntervalId = setInterval(refreshApplicationList, refreshAppListInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
                     inProgress: true,
+                    refreshIntervalId,
                 }, this.assembleAppCountQuery);
             })
             .catch((error) => {
@@ -175,6 +177,11 @@ class APIMRegisteredAppUsersWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
+        const { refreshIntervalId } = this.state;
+        clearInterval(refreshIntervalId);
+        this.setState({
+            refreshIntervalId: null
+        });
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 

@@ -105,6 +105,7 @@ class APIMApiLastAccessWidget extends Widget {
             limit: 0,
             accessData: null,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.

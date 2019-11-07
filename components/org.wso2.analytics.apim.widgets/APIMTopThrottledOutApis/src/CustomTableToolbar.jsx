@@ -33,13 +33,12 @@ import { withStyles } from '@material-ui/core/styles';
 const styles = theme => ({
     root: {
         paddingRight: theme.spacing.unit,
+        display: 'flex',
+        justifyContent: 'space-between',
+        width: '100%',
     },
     title: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
         marginTop: '20px',
-        marginLeft: '20px',
     },
     textField: {
         marginLeft: theme.spacing.unit,
@@ -51,20 +50,13 @@ const styles = theme => ({
         width: 150,
     },
     actions: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
         marginTop: '10px',
-        marginRight: '10px',
     },
     expand: {
         marginLeft: 'auto',
     },
     collapsef: {
-        display: 'flex',
-        marginLeft: 'auto',
         marginRight: 0,
-        marginTop: '60px',
     },
 });
 
@@ -77,25 +69,25 @@ function CustomTableToolbar(props) {
     } = props;
 
     return (
-        <Toolbar
-            className={classes.root}
-        >
-            <div className={classes.title}>
-                <Typography variant='h6' id='tableTitle'>
-                    <FormattedMessage id='widget.heading' defaultMessage='TOP THROTTLED OUT APIS' />
-                </Typography>
-            </div>
-            <div className={classes.actions}>
-                <Tooltip title={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}>
-                    <IconButton
-                        className={classes.expand}
-                        onClick={handleExpandClick}
-                        aria-expanded={expanded}
-                        aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
-                    >
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
+        <Toolbar style={{ display: 'block' }}>
+            <div className={classes.root}>
+                <div className={classes.title}>
+                    <Typography variant='h6' id='tableTitle'>
+                        <FormattedMessage id='widget.heading' defaultMessage='TOP THROTTLED OUT APIS' />
+                    </Typography>
+                </div>
+                <div className={classes.actions}>
+                    <Tooltip title={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}>
+                        <IconButton
+                            className={classes.expand}
+                            onClick={handleExpandClick}
+                            aria-expanded={expanded}
+                            aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
+                        >
+                            <FilterListIcon />
+                        </IconButton>
+                    </Tooltip>
+                </div>
             </div>
             <Collapse in={expanded} timeout='auto' unmountOnExit className={classes.collapsef}>
                 <div>
@@ -103,6 +95,13 @@ function CustomTableToolbar(props) {
                         id='column-select'
                         select
                         label={<FormattedMessage id='filter.column.menu.heading' defaultMessage='Column Name' />}
+                        InputLabelProps={{
+                            style: {
+                                whiteSpace: 'nowrap',
+                                overflow: 'Hidden',
+                                textOverflow: 'ellipsis',
+                            },
+                        }}
                         className={classes.textField}
                         value={filterColumn}
                         onChange={handleColumnSelect}
@@ -123,6 +122,13 @@ function CustomTableToolbar(props) {
                     <TextField
                         id='query-search'
                         label={<FormattedMessage id='filter.search.placeholder' defaultMessage='Search Field' />}
+                        InputLabelProps={{
+                            style: {
+                                whiteSpace: 'nowrap',
+                                overflow: 'Hidden',
+                                textOverflow: 'ellipsis',
+                            },
+                        }}
                         type='search'
                         value={query}
                         className={classes.textField}

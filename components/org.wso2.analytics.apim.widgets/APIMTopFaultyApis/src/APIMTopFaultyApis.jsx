@@ -148,7 +148,7 @@ export default function APIMTopFaultyApis(props) {
                     </div>
                     <div>
                         { inProgress ? (
-                            <div style={styles.inProgress}>
+                            <div style={styles.loading}>
                                 <CircularProgress style={styles.loadingIcon} />
                             </div>
                         ) : (
@@ -203,7 +203,7 @@ export default function APIMTopFaultyApis(props) {
                                             <VictoryLegend
                                                 standalone={false}
                                                 colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
-                                                x={500}
+                                                x={450}
                                                 y={20}
                                                 gutter={20}
                                                 rowGutter={{ top: 0, bottom: -10 }}
