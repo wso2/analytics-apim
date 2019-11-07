@@ -19,7 +19,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -145,15 +145,21 @@ class APIMAppApiUsageWidget extends Widget {
         this.handleAppDataReceived = this.handleAppDataReceived.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
         this.getApplicationIds = this.getApplicationIds.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch((error) => {
+                // TODO: Show error message.
+            });
+        });
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
 
-        this.loadLocale(locale);
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 this.setState({
@@ -179,12 +185,18 @@ class APIMAppApiUsageWidget extends Widget {
      * @param {string} locale Locale name
      * @memberof APIMAppApiUsageWidget
      */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMAppApiUsage/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMAppApiUsage/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     /**
@@ -452,7 +464,7 @@ class APIMAppApiUsageWidget extends Widget {
         };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     { proxyError ? (
                         <div style={proxyPaperWrapper}>

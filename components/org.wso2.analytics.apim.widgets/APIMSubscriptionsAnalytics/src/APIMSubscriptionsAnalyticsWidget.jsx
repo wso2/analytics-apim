@@ -19,7 +19,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -123,14 +123,20 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.subscribedToHandleChange = this.subscribedToHandleChange.bind(this);
         this.resetState = this.resetState.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
         this.getUsername = this.getUsername.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch((error) => {
+                // TODO: Show error message.
+            });
+        });
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
         this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
@@ -157,14 +163,19 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * @param {string} locale Locale name
      * @memberof APIMSubscriptionsAnalyticsWidget
      */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMSubscriptionsAnalytics/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMSubscriptionsAnalytics/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
-
     /**
      * Get username of the logged in user
      */
@@ -406,7 +417,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConfig ? (

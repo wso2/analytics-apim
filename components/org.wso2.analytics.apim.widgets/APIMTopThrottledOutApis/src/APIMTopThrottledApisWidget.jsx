@@ -19,7 +19,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -112,13 +112,19 @@ class APIMTopThrottledApisWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch((error) => {
+                // TODO: Show error message.
+            });
+        });
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -144,12 +150,18 @@ class APIMTopThrottledApisWidget extends Widget {
      * @param {string} locale Locale name
      * @memberof APIMTopThrottledApisWidget
      */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMTopThrottledOutApis/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMTopThrottledOutApis/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     /**
@@ -272,7 +284,7 @@ class APIMTopThrottledApisWidget extends Widget {
         };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 {
                     faultyProviderConfig ? (
                         <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>

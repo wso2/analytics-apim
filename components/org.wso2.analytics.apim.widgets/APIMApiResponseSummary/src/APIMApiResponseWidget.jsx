@@ -132,8 +132,6 @@ class APIMApiResponseWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {

@@ -117,7 +117,10 @@ export default function APIMDeveloperSignups(props) {
                 >
                     {totalCount}
                 </h1>
-                <h3 style={styles.typeText}>{totalCount === '01' ? 'SIGNUP' : 'SIGNUPS'}</h3>
+                <h3 style={styles.typeText}>{totalCount === '01' ?
+                    <FormattedMessage id='signup' defaultMessage='SIGNUP' /> :
+                    <FormattedMessage id='signups' defaultMessage='SIGNUPS' />}
+                </h3>
                 <p style={styles.weekCount}>
                     [
                     {' '}

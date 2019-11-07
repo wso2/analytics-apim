@@ -1,4 +1,6 @@
 {
+  "app": "APP",
+  "apps": "APPS",
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM App Created widget",
   "overtime.btn.text": "Overtime Analysis",

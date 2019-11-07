@@ -121,7 +121,9 @@ export default function APIMApiCreated(props) {
                     {totalCount}
                 </h1>
                 <h3 style={styles.typeText}>
-                    {totalCount === '01' ? 'API' : 'APIS'}
+                    {totalCount === '01' ?
+                        <FormattedMessage id='api' defaultMessage='API' /> :
+                        <FormattedMessage id='apis' defaultMessage='APIS' /> }
                 </h3>
                 <p style={styles.weekCount}>
                     [
