@@ -82,7 +82,7 @@ function CustomTableToolbar(props) {
         >
             <div className={classes.title}>
                 <Typography variant='h6' id='tableTitle'>
-                    <FormattedMessage id='widget.heading' defaultMessage='TOP API CREATORS' />
+                    {/* <FormattedMessage id='widget.heading' defaultMessage='TOP SUBSCRIBERS' /> */}
                 </Typography>
             </div>
             <div className={classes.actions}>
@@ -116,8 +116,8 @@ function CustomTableToolbar(props) {
                         <MenuItem value='creator'>
                             <FormattedMessage id='table.heading.creator' defaultMessage='CREATOR' />
                         </MenuItem>
-                        <MenuItem value='apicount'>
-                            <FormattedMessage id='table.heading.apicount' defaultMessage='API COUNT' />
+                        <MenuItem value='subcount'>
+                            <FormattedMessage id='table.heading.subcount' defaultMessage='SUB COUNT' />
                         </MenuItem>
                     </TextField>
                     <TextField
