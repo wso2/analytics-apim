@@ -16,8 +16,6 @@ jobs:
         java: [11, 1.8]
     steps:
       - uses: actions/checkout@v1
-        with:
-          ref: master
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
