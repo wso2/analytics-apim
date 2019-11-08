@@ -17,13 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - uses: actions/cache@v1
-        with:
-          path: ~/.m2/repository
-          key: ${{ matrix.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ matrix.os }}-maven-
-
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
