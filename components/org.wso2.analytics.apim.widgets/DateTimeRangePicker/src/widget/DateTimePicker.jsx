@@ -340,7 +340,8 @@ class DateTimePicker extends Widget {
         granularityMode: GRANULARITY_MODE,
         granularityValue: granularity,
         startTime: Moment(startAndEndTime.startTime).toDate(),
-        endTime: Moment(startAndEndTime.endTime).toDate()
+        endTime: Moment(startAndEndTime.endTime).toDate(),
+        quickRangeGranularityValue: null
       });
     } else {
       this.handleGranularityChangeForQuick(this.getDefaultTimeRange());
@@ -393,7 +394,8 @@ class DateTimePicker extends Widget {
             granularityMode: timeRange,
             granularityValue: granularity,
             startTime: startTimeAndDefaultGranularity.startTime,
-            endTime: new Date()
+            endTime: new Date(),
+            quickRangeGranularityValue: this.getTimeRangeName(range)
           });
           this.setRefreshInterval();
         } else {
