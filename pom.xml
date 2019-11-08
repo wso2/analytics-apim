@@ -1094,7 +1094,7 @@
                         <xmlOutput>true</xmlOutput>
                         <findbugsXmlOutputDirectory>${project.build.directory}/findbugs
                         </findbugsXmlOutputDirectory>
-                        <excludeFilterFile>${maven.findbugsplugin.version.exclude}</excludeFilterFile>
+                        <excludeFilterFile>${maven.findbugsplugin.exclude}</excludeFilterFile>
                         <!--Exclude generated sources-->
                     </configuration>
                     <version>${maven.findbugsplugin.version}</version>
@@ -1251,7 +1251,8 @@
 
         <carbon.analytics-common.version>6.1.36</carbon.analytics-common.version>
         <!-- Maven plugins -->
-        <maven.findbugsplugin.version.exclude>findbugs-exclude.xml</maven.findbugsplugin.version.exclude>
+        <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
+        <maven.findbugsplugin.exclude>findbugs-exclude.xml</maven.findbugsplugin.exclude>
 
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <carbon.feature.plugin.version>3.1.3</carbon.feature.plugin.version>
