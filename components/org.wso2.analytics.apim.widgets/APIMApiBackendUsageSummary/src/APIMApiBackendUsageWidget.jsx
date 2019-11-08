@@ -175,7 +175,6 @@ class APIMApiBackendUsageWidget extends Widget {
         });
     }
 
-
     /**
      * Get username of the logged in user
      */

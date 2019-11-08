@@ -165,6 +165,7 @@ class APIMTopAppCreatorsWidget extends Widget {
                 .catch(error => reject(error));
         });
     }
+
     /**
      * Retrieves subscribers
      * @memberof APIMTopAppCreatorsWidget
