@@ -121,7 +121,9 @@ export default function APIMSubscriptions(props) {
                     {totalCount}
                 </h1>
                 <h3 style={styles.typeText}>
-                    {totalCount === '01' ? 'SUBSCRIPTION' : 'SUBSCRIPTIONS'}
+                    {totalCount === '01' ?
+                    <FormattedMessage id='subscription' defaultMessage='SUBSCRIPTION' /> :
+                    <FormattedMessage id='subscriptions' defaultMessage='SUBSCRIPTIONS' />}
                 </h3>
                 <p style={styles.weekCount}>
                     [

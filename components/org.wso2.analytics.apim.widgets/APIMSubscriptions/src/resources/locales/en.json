@@ -1,4 +1,6 @@
 {
+  "subscription": "SUBSCRIPTION",
+  "subscriptions": "SUBSCRIPTIONS",
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Subscriptions widget",
   "overtime.btn.text": "Overtime Analysis",

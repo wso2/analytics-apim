@@ -6,7 +6,7 @@
   "filter.column.menu.heading": "Column Name",
   "filter.label.title": "Filter By",
   "filter.search.placeholder": "Search Field",
-  "limit.label": "Limit :",
+  "limit": "Limit :",
   "me.menuItem": "Me",
   "apim.server.error.heading" : "Error !",
   "nodata.error.body": "No data available for the selected options",

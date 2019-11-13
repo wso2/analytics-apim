@@ -19,7 +19,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -120,14 +120,43 @@ class APIMApiLastAccessWidget extends Widget {
         this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.assembleApiAccessQuery = this.assembleApiAccessQuery.bind(this);
         this.handleApiAccessReceived = this.handleApiAccessReceived.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
         this.getUsername = this.getUsername.bind(this);
+    }
+
+    /**
+     * Initialize i18n.
+     */
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch(() => {
+                // TODO: Show error message.
+            });
+        });
+    }
+
+    /**
+     * Load locale file.
+     *
+     * @param {string} locale Locale name
+     * @returns {Promise} Promise
+     */
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiLastAccessSummary/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
         this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
@@ -147,19 +176,6 @@ class APIMApiLastAccessWidget extends Widget {
     componentWillUnmount() {
         const { id } = this.props;
         super.getWidgetChannelManager().unsubscribeWidget(id);
-    }
-
-    /**
-     * Load locale file.
-     * @param {string} locale Locale name
-     * @memberof APIMApiLastAccessWidget
-     */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMApiLastAccessSummary/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
     }
 
     /**
@@ -278,6 +294,7 @@ class APIMApiLastAccessWidget extends Widget {
         const { limit } = this.state;
         const { id } = this.props;
 
+        this.setState({ inProgress: true });
         this.setQueryParam(event.target.value, limit);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiAccessQuery();
@@ -302,7 +319,7 @@ class APIMApiLastAccessWidget extends Widget {
         };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConfig ? (

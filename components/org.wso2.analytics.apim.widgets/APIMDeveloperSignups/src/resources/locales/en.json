@@ -1,4 +1,6 @@
 {
+  "signup": "SIGNUP",
+  "signups": "SIGNUPS",
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Developer Signups widget",
   "overtime.btn.text": "Overtime Analysis",

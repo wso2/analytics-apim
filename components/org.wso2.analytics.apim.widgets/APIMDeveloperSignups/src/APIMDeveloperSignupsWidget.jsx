@@ -26,7 +26,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import cloneDeep from 'lodash/cloneDeep';
 import Axios from 'axios';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Widget from '@wso2-dashboards/widget';
 import APIMDeveloperSignups from './APIMDeveloperSignups';
@@ -82,6 +82,7 @@ class APIMDeveloperSignupsWidget extends Widget {
             localeMessages: null,
             refreshInterval: 60000,
             refreshIntervalId: null,
+            inProgress: true,
         };
 
         this.styles = {
@@ -98,7 +99,7 @@ class APIMDeveloperSignupsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
+            loading: {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -118,14 +119,20 @@ class APIMDeveloperSignupsWidget extends Widget {
         this.assembleTotalQuery = this.assembleTotalQuery.bind(this);
         this.handleWeekCountReceived = this.handleWeekCountReceived.bind(this);
         this.handleTotalCountReceived = this.handleTotalCountReceived.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch((error) => {
+                // TODO: Show error message.
+            });
+        });
     }
 
     componentDidMount() {
         const { widgetID, id } = this.props;
         const { refreshInterval } = this.state;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -162,12 +169,18 @@ class APIMDeveloperSignupsWidget extends Widget {
      * Load locale file.
      * @memberof APIMDeveloperSignupsWidget
      */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMDeveloperSignups/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMDeveloperSignups/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     /**
@@ -228,7 +241,7 @@ class APIMDeveloperSignupsWidget extends Widget {
         const { data } = message;
 
         if (data) {
-            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length });
+            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length, inProgress: false });
         }
     }
 
@@ -239,24 +252,24 @@ class APIMDeveloperSignupsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConf, totalCount, weekCount,
+            localeMessages, faultyProviderConf, totalCount, weekCount, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const signupsProps = { themeName, totalCount, weekCount };
 
-        if (!localeMessages) {
+        if (inProgress) {
             return (
-                <div style={inProgress}>
+                <div style={loading}>
                     <CircularProgress style={loadingIcon} />
                 </div>
             );
         }
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
