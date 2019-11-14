@@ -206,7 +206,7 @@ class APIMApiCreatedWidget extends Widget {
         const { data } = message;
         const { id } = this.props;
 
-        if (data.length !== 0) {
+        if (data) {
             this.setState({ totalCount:  data.length < 10 ? ('0' + data.length) : data.length });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -240,8 +240,10 @@ class APIMApiCreatedWidget extends Widget {
     handleWeekCountReceived(message) {
         const { data } = message;
 
-        if (data.length !== 0) {
+        if (data) {
             this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length, inProgress: false });
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 

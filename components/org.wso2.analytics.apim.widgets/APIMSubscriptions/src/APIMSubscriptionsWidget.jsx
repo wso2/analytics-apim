@@ -208,7 +208,7 @@ class APIMSubscriptionsWidget extends Widget {
         const { data } = message;
         const { id } = this.props;
 
-        if (data && data.length !== 0) {
+        if (data) {
             this.setState({ totalCount: data.length < 10 ? ('0' + data.length) : data.length });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -242,8 +242,10 @@ class APIMSubscriptionsWidget extends Widget {
     handleWeekCountReceived(message) {
         const { data } = message;
 
-        if (data && data.length !== 0) {
+        if (data) {
             this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length, inProgress: false });
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
