@@ -80,7 +80,12 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
-            <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.stats</artifactId>
+            <artifactId>org.wso2.analytics.apim.widgets.apim.api.ratings</artifactId>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.analytics.apim.widgets.apim.api.availability</artifactId>
             <type>zip</type>
         </dependency>
         <dependency>
@@ -323,13 +328,23 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.wso2.analytics.apim</groupId>
-                                    <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.stats</artifactId>
+                                    <artifactId>org.wso2.analytics.apim.widgets.apim.api.ratings</artifactId>
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
                                     </outputDirectory>
-                                    <includes>APIMOverallApiStats/**</includes>
+                                    <includes>APIMApiRatings/**</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.wso2.analytics.apim</groupId>
+                                    <artifactId>org.wso2.analytics.apim.widgets.apim.api.availability</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/target/analytics-dashboard/extensions/widgets/
+                                    </outputDirectory>
+                                    <includes>APIMApiAvailability/**</includes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.wso2.analytics.apim</groupId>

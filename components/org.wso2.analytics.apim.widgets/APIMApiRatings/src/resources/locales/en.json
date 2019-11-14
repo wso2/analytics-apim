@@ -1,7 +1,6 @@
 {
   "apim.server.error.heading" : "Error !",
-  "chart.heading": "API AVAILABILITY :",
-  "config.error.body": "Cannot fetch provider configuration for APIM Overall Api Stats widget",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Ratings widget",
   "config.error.heading": "Configuration Error !",
   "filter.column.menu.heading": "Column Name",
   "filter.label.title": "Filter By",
@@ -10,7 +9,7 @@
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
-  "table.heading.ratings": "RATINGS",
+  "table.heading.ratings": "RATING",
   "table.main.heading": "TOP RATED APIS :",
-  "widget.heading": "OVERALL API STATS"
+  "widget.heading": "API RATINGS"
 }

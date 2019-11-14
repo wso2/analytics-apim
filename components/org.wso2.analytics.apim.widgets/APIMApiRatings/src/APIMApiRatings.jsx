@@ -25,16 +25,15 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import CustomTable from './CustomTable';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import ApiAvailability from './ApiAvailability';
 
 /**
- * React Component for Overall Api Stats widget body
+ * React Component for Api Ratings widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Overall Api Stats widget body
+ * @returns {ReactElement} Render the Api Ratings widget body
  */
-export default function APIMOverallApiStats(props) {
+export default function APIMApiRatings(props) {
     const {
-        themeName, height, availableApiData, legendData, topApiNameData, loadingTopApis,
+        themeName, height, topApiNameData, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -63,7 +62,7 @@ export default function APIMOverallApiStats(props) {
             margin: 'auto',
             display: 'block',
         },
-        inProgress: {
+        loading: {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -75,7 +74,6 @@ export default function APIMOverallApiStats(props) {
             margin: 'auto',
         },
     };
-    const availabilityProps = { availableApiData, legendData };
 
     return (
         <Scrollbars style={{ height }}>
@@ -91,17 +89,17 @@ export default function APIMOverallApiStats(props) {
                         letterSpacing: 1.5,
                     }}
                     >
-                        <FormattedMessage id='widget.heading' defaultMessage='OVERALL API STATS' />
+                        <FormattedMessage id='widget.heading' defaultMessage='API RATINGS' />
                     </h3>
                 </div>
                 <div>
-                    { !availableApiData ? (
-                        <div style={styles.inProgress}>
+                    { inProgress ? (
+                        <div style={styles.loading}>
                             <CircularProgress style={styles.loadingIcon} />
                         </div>
                     ) : (
                         <div>
-                            { availableApiData.length === 0 && topApiNameData.length === 0 ?
+                            { topApiNameData.length === 0 ?
                                 (
                                     <div style={styles.dataWrapper}>
                                         <Paper
@@ -123,16 +121,9 @@ export default function APIMOverallApiStats(props) {
                                     </div>
                                 ) : (
                                     <div>
-                                        <div style={{
-                                            marginTop: '5%',
-                                            marginBottom: '5%',
-                                            background: themeName === 'dark' ? '#162638' : '#f7f7f7',
-                                            padding: '5%',
-                                        }}
-                                        >
-                                            <ApiAvailability {...availabilityProps} />
+                                        <div style={{ marginTop: '5%' }}>
+                                            <CustomTable data={topApiNameData} loadingTopApis={inProgress} />
                                         </div>
-                                        <CustomTable data={topApiNameData} loadingTopApis={loadingTopApis} />
                                     </div>
                                 )
                             }
@@ -144,10 +135,9 @@ export default function APIMOverallApiStats(props) {
     );
 }
 
-APIMOverallApiStats.propTypes = {
+APIMApiRatings.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     availableApiData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
-    topApiNameData: PropTypes.instanceOf(Object).isRequired,
 };
