@@ -164,7 +164,7 @@ export default function APIMAppCreatedAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                {!chartData || !tableData || inProgress ?
+                { inProgress ?
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon}/>
                     </div>
