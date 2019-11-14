@@ -894,7 +894,14 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.stats
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.ratings
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.availability
                 </artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>
