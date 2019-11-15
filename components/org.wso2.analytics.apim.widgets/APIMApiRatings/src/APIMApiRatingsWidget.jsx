@@ -77,7 +77,7 @@ class APIMApiRatingsWidget extends Widget {
             height: this.props.height,
             topApiIdData: [],
             topApiNameData: [],
-            apiProviderList: [],
+            apiDataList: [],
             localeMessages: null,
             inProgress: true,
             proxyError: null,
@@ -210,10 +210,7 @@ class APIMApiRatingsWidget extends Widget {
         const { list } = data;
         const { id } = this.props;
         if (list) {
-            const apiProviderList = list.map (dataUnit =>
-                { return [dataUnit.name, dataUnit.provider]; }
-            );
-            this.setState({ apiProviderList });
+            this.setState({ apiDataList: list });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleAPIDataQuery()
@@ -224,12 +221,13 @@ class APIMApiRatingsWidget extends Widget {
      * @memberof APIMApiRatingsWidget
      * */
     assembleAPIDataQuery() {
-        const { providerConfig, apiProviderList } = this.state;
+        const { providerConfig, apiDataList } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apiProviderList && apiProviderList.length > 0) {
-            let apiCondition = apiProviderList.map(data => {
-                return '(API_NAME==\'' + data[0] + '\' AND API_PROVIDER==\''+ data[1] + '\')';
+        if (apiDataList && apiDataList.length > 0) {
+            let apiCondition = apiDataList.map(api => {
+                return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
+                    + '\' AND API_PROVIDER==\'' + api.provider + '\')';
             });
             apiCondition = apiCondition.join(' OR ');
 
