@@ -308,7 +308,7 @@ class APIMOverallApiUsageWidget extends Widget {
     }
 
     /**
-     * REtrieve API list from APIM server
+     * Retrieve API list from APIM server
      * @memberof APIMOverallApiUsageWidget
      * */
     assembleApiListQuery() {

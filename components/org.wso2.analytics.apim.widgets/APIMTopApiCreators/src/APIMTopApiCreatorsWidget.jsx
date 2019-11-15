@@ -88,16 +88,29 @@ class APIMTopApiCreatorsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
+            },
         };
 
         this.state = {
             width: this.props.width,
             height: this.props.height,
+            apiDataList: [],
             creatorData: [],
             legendData: [],
             limit: 0,
             localeMessages: null,
             inProgress: true,
+            proxyError: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -111,6 +124,8 @@ class APIMTopApiCreatorsWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
+        this.handleApiListReceived = this.handleApiListReceived.bind(this);
     }
 
     componentWillMount() {
@@ -129,7 +144,7 @@ class APIMTopApiCreatorsWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleQuery);
+                }, this.assembleApiListQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -164,11 +179,47 @@ class APIMTopApiCreatorsWidget extends Widget {
     }
 
     /**
+     * Retrieve API list from APIM server
+     * @memberof APIMOverallApiUsageWidget
+     * */
+    assembleApiListQuery() {
+        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
+            .then((response) => {
+                this.setState({ proxyError: null });
+                this.handleApiListReceived(response.data);
+            })
+            .catch(error => {
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, inProgress: false });
+                }
+                console.error(error);
+            });
+    }
+
+    /**
+     * Formats data retrieved from assembleApiListQuery
+     * @param {object} data - data retrieved
+     * @memberof APIMOverallApiUsageWidget
+     * */
+    handleApiListReceived(data) {
+        const { list } = data;
+        const { id } = this.props;
+
+        if (list) {
+            this.setState({ apiDataList: list });
+        }
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+        this.assembleQuery();
+    }
+
+    /**
      * Formats the siddhi query using selected options
      * @memberof APIMTopApiCreatorsWidget
      * */
     assembleQuery() {
-        const { providerConfig } = this.state;
+        const { providerConfig, apiDataList } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
@@ -180,13 +231,24 @@ class APIMTopApiCreatorsWidget extends Widget {
         this.setState({ limit, creatorData: [] });
         this.setQueryParam(limit);
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{limit}}': limit
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        if (apiDataList && apiDataList.length > 0) {
+            let apiCondition = apiDataList.map(api => {
+                return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
+                    + '\' AND API_PROVIDER==\'' + api.provider + '\')';
+            });
+            apiCondition = apiCondition.join(' OR ');
+
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'query';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{apiCondition}}': apiCondition,
+                '{{limit}}': limit
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ creatorData: [], inProgress: false  });
+        }
     }
 
     /**
@@ -252,16 +314,40 @@ class APIMTopApiCreatorsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress,
+            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress, proxyError,
         } = this.state;
         const {
-            paper, paperWrapper,
+            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatorsProps = {
             themeName, height, limit, creatorData, legendData, inProgress,
         };
+
+        if (proxyError) {
+            return (
+                <IntlProvider locale={language} messages={localeMessages}>
+                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
+                    </MuiThemeProvider>
+                </IntlProvider>
+            );
+        }
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
