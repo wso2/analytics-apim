@@ -131,7 +131,7 @@ class APIMOverallApiUsageWidget extends Widget {
             usageData: null,
             usageData1: null,
             apiIdMap: {},
-            apiProviderList: [],
+            apiDataList: [],
             metadata: this.metadata,
             chartConfig: this.chartConfig,
             limit: 0,
@@ -337,10 +337,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id } = this.props;
 
         if (list) {
-            const apiProviderList = list.map (dataUnit =>
-                { return [dataUnit.name, dataUnit.provider]; }
-            );
-            this.setState({ apiProviderList });
+            this.setState({ apiDataList: list });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiIdQuery();
@@ -352,14 +349,16 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     assembleApiIdQuery() {
         this.resetState();
-        const { providerConfig, apiProviderList } = this.state;
+        const { providerConfig, apiDataList } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apiProviderList && apiProviderList.length > 0) {
-            let apiCondition = apiProviderList.map(data => {
-                return '(API_NAME==\'' + data[0] + '\' AND API_PROVIDER==\''+ data[1] + '\')';
+        if (apiDataList && apiDataList.length > 0) {
+            let apiCondition = apiDataList.map(api => {
+                return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
+                    + '\' AND API_PROVIDER==\'' + api.provider + '\')';
             });
             apiCondition = apiCondition.join(' OR ');
+
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -461,10 +460,16 @@ class APIMOverallApiUsageWidget extends Widget {
         const { apiCreatedBy } = this.state;
         const { id } = this.props;
 
-        this.setQueryParam(apiCreatedBy, event.target.value);
-        this.setState({ inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiUsageQuery();
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(apiCreatedBy, parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleApiUsageQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     /**
