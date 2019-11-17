@@ -18,7 +18,8 @@
     "scripts": {
         "build": "webpack -p",
         "clean": "rimraf dist",
-        "dev": "NODE_ENV=development webpack -d --config webpack.config.js --watch --progress"
+        "dev": "NODE_ENV=development webpack -d --config webpack.config.js --watch --progress",
+        "preinstall": "cd ../CommonLib && npm ci"
     },
     "devDependencies": {
         "@babel/core": "^7.0.0",
