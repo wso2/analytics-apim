@@ -24,35 +24,42 @@ define stream Request (meta_clientType string, applicationConsumerKey string, ap
 define stream ApiHealthMonitorAlertStream (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
 
 @Async(buffer.size = "256", workers = "1", batch.size.max = "256")
-define stream ApimApiAvailabilityInfoUpdateStream (apiName string, apiVersion string, apiCreator string, tenantDomain string, status string);
+define stream ApimApiAvailabilityInfoUpdateStreamFinal (apiName string, apiVersion string, apiCreator string, tenantDomain string, status string);
 
 @store(type = 'rdbms', datasource = "APIM_ANALYTICS_DB")
 @primaryKey("apiName", "apiVersion", "tenantDomain")
 define table ApimApiAvailabilityInfo (apiName string, apiVersion string, apiCreator string, tenantDomain string, status string);
 
 @info(name = 'Query inserts data to ApimApiAvailability')
-from ApiHealthMonitorAlertStream 
-select apiName, apiVersion, apiCreator, apiCreatorTenantDomain as tenantDomain, message as status 
-update or 
-insert into ApimApiAvailabilityInfo for current events set ApimApiAvailabilityInfo.status = status 
+from ApiHealthMonitorAlertStream
+select apiName, apiVersion, apiCreator, apiCreatorTenantDomain as tenantDomain, message as status
+update or
+insert into ApimApiAvailabilityInfo set ApimApiAvailabilityInfo.status = status
  	on ApimApiAvailabilityInfo.apiName == apiName and ApimApiAvailabilityInfo.apiVersion == apiVersion and ApimApiAvailabilityInfo.tenantDomain == tenantDomain;
 
 @info(name = 'Query inserting data to ApimApiAvailability when there is no alert for a defined time')
 from Request#window.length(1) as R left outer join ApiHealthMonitorAlertStream#window.time(10 minutes) as AHM
- 	on R.apiName == AHM.apiName and R.apiVersion == AHM.apiVersion 
-select R.apiName as apiName, R.apiVersion as apiVersion, R.apiCreator as apiCreator, R.apiCreatorTenantDomain as tenantDomain, "Available" as status 
- 	having AHM.apiName is null 
+ 	on R.apiName == AHM.apiName and R.apiVersion == AHM.apiVersion and R.apiCreatorTenantDomain == AHM.apiCreatorTenantDomain
+select R.apiName as apiName, R.apiVersion as apiVersion, R.apiCreator as apiCreator, R.apiCreatorTenantDomain as tenantDomain, "Available" as status
+ 	having AHM.apiName is null
 insert into ApimApiAvailabilityInfoUpdateStreamTemp;
 
 @info(name = 'Batch insert to ApimApiAvailabilityInfo')
-from ApimApiAvailabilityInfoUpdateStreamTemp 
+from ApimApiAvailabilityInfoUpdateStreamTemp
 select *
  	group by apiName, apiVersion, tenantDomain
-output last every 1 minute 
-insert into ApimApiAvailabilityInfoUpdateStream;
+output last every 1 minute
+insert into ApimApiAvailabilityInfoThrottledStream;
+
+/* Check whether an alert has been generated within the last minute while rate limitting. Proceed only if no alerts generated */
+from ApimApiAvailabilityInfoThrottledStream as A left outer join ApiHealthMonitorAlertStream#window.time(1 minutes) as AHM
+    on A.apiName == AHM.apiName and A.apiVersion == AHM.apiVersion and A.tenantDomain == AHM.apiCreatorTenantDomain
+select A.apiName as apiName, A.apiVersion as apiVersion, A.apiCreator as apiCreator, A.tenantDomain, "Available" as status
+ 	having AHM.apiName is null
+insert into ApimApiAvailabilityInfoUpdateStreamFinal;
 
 @info(name = 'Update in ApimApiAvailabilityInfo')
-from ApimApiAvailabilityInfoUpdateStream 
+from ApimApiAvailabilityInfoUpdateStreamFinal
 select apiName, apiVersion, ifThenElse(tenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, tenantDomain, status 
 update or insert into ApimApiAvailabilityInfo 
 set ApimApiAvailabilityInfo.status = status 
