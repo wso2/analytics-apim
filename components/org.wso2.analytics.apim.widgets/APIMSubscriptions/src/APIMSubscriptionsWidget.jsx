@@ -19,7 +19,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -82,6 +82,7 @@ class APIMSubscriptionsWidget extends Widget {
             localeMessages: null,
             refreshIntervalId: null,
             refreshInterval: 60000, // refresh in 1 min
+            inProgress: true,
         };
 
         this.styles = {
@@ -98,7 +99,7 @@ class APIMSubscriptionsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
+            loading: {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -118,7 +119,15 @@ class APIMSubscriptionsWidget extends Widget {
         this.assembleTotalQuery = this.assembleTotalQuery.bind(this);
         this.handleWeekCountReceived = this.handleWeekCountReceived.bind(this);
         this.handleTotalCountReceived = this.handleTotalCountReceived.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch((error) => {
+                // TODO: Show error message.
+            });
+        });
     }
 
     componentDidMount() {
@@ -162,12 +171,18 @@ class APIMSubscriptionsWidget extends Widget {
      * Load locale file.
      * @memberof APIMSubscriptionsWidget
      */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMSubscriptions/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMSubscriptions/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     /**
@@ -193,7 +208,7 @@ class APIMSubscriptionsWidget extends Widget {
         const { data } = message;
         const { id } = this.props;
 
-        if (data && data.length !== 0) {
+        if (data) {
             this.setState({ totalCount: data.length < 10 ? ('0' + data.length) : data.length });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -227,8 +242,10 @@ class APIMSubscriptionsWidget extends Widget {
     handleWeekCountReceived(message) {
         const { data } = message;
 
-        if (data && data.length !== 0) {
-            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length });
+        if (data) {
+            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length, inProgress: false });
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -239,24 +256,24 @@ class APIMSubscriptionsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConf, totalCount, weekCount,
+            localeMessages, faultyProviderConf, totalCount, weekCount, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const subscriptionsProps = { themeName, totalCount, weekCount };
 
-        if (!localeMessages) {
+        if (inProgress) {
             return (
-                <div style={inProgress}>
+                <div style={loading}>
                     <CircularProgress style={loadingIcon} />
                 </div>
             );
         }
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (

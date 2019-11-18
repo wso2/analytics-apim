@@ -115,7 +115,7 @@ function CustomTableToolbar(props) {
                             <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
                         </MenuItem>
                         <MenuItem value='ratings'>
-                            <FormattedMessage id='table.heading.ratings' defaultMessage='RATINGS' />
+                            <FormattedMessage id='table.heading.ratings' defaultMessage='RATING' />
                         </MenuItem>
                     </TextField>
                     <TextField

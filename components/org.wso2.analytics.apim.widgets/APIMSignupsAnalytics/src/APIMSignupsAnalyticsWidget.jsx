@@ -19,13 +19,12 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -75,10 +74,6 @@ class APIMSignupsAnalyticsWidget extends Widget {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -87,12 +82,6 @@ class APIMSignupsAnalyticsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -106,6 +95,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
             xAxisTicks: null,
             maxCount: 0,
             localeMessages: null,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -119,13 +109,19 @@ class APIMSignupsAnalyticsWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch((error) => {
+                // TODO: Show error message.
+            });
+        });
     }
 
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -151,12 +147,18 @@ class APIMSignupsAnalyticsWidget extends Widget {
      * @param {string} locale Locale name
      * @memberof APIMSignupsAnalyticsWidget
      */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMSignupsAnalytics/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMSignupsAnalytics/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     /**
@@ -229,7 +231,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
             }
 
             this.setState({
-                chartData, tableData, xAxisTicks, maxCount,
+                chartData, tableData, xAxisTicks, maxCount, inProgress: false,
             });
         } else {
             this.setState({ inProgress: false, chartData: [], tableData: [] });
@@ -243,26 +245,19 @@ class APIMSignupsAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, chartData, tableData, xAxisTicks, maxCount,
+            localeMessages, faultyProviderConfig, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress
+            paper, paperWrapper
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const signupsProps = {
-            themeName, height, chartData, tableData, xAxisTicks, maxCount,
+            themeName, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
         };
 
-        if (!localeMessages || !chartData || !tableData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConfig ? (

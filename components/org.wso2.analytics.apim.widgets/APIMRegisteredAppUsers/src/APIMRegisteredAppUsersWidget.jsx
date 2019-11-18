@@ -19,12 +19,11 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -88,10 +87,6 @@ class APIMRegisteredAppUsersWidget extends Widget {
     constructor(props) {
         super(props);
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -100,12 +95,6 @@ class APIMRegisteredAppUsersWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            loading: {
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
             },
         };
 
@@ -144,15 +133,21 @@ class APIMRegisteredAppUsersWidget extends Widget {
         this.assembleAppAccessQuery = this.assembleAppAccessQuery.bind(this);
         this.handleAppAccessDataReceived = this.handleAppAccessDataReceived.bind(this);
         this.deriveAppUserData = this.deriveAppUserData.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch((error) => {
+                // TODO: Show error message.
+            });
+        });
     }
 
     componentDidMount() {
         const { widgetID, id } = this.props;
         const { refreshAppListInterval } = this.state;
-        const locale = languageWithoutRegionCode || language;
 
-        this.loadLocale(locale);
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 // set an interval to periodically retrieve the application list
@@ -191,12 +186,18 @@ class APIMRegisteredAppUsersWidget extends Widget {
      * @param {string} locale Locale name
      * @memberof APIMRegisteredAppUsersWidget
      */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMRegisteredAppUsers/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMRegisteredAppUsers/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     /**
@@ -475,7 +476,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             localeMessages, faultyProviderConfig, height, width, usageData, inProgress, legendData,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, loading,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -488,16 +489,8 @@ class APIMRegisteredAppUsersWidget extends Widget {
             inProgress,
         };
 
-        if (!localeMessages || !usageData) {
-            return (
-                <div style={loading}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
-
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConfig ? (

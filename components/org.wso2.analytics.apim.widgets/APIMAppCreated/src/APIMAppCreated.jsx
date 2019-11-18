@@ -121,7 +121,9 @@ export default function APIMAppCreated(props) {
                     {totalCount}
                 </h1>
                 <h3 style={styles.typeText}>
-                    {totalCount === '01' ? 'APP' : 'APPS'}
+                    {totalCount === '01' ?
+                        <FormattedMessage id='app' defaultMessage='APP' /> :
+                        <FormattedMessage id='apps' defaultMessage='APPS' />}
                 </h3>
                 <p style={styles.weekCount}>
                     [

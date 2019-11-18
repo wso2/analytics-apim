@@ -19,7 +19,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -27,7 +27,7 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Widget from '@wso2-dashboards/widget';
-import APIMOverallApiStats from './APIMOverallApiStats';
+import APIMApiRatings from './APIMApiRatings';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -59,15 +59,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Overall Api Stats
- * @class APIMOverallApiStatsWidget
+ * Create React Component for APIM Api Ratings
+ * @class APIMApiRatingsWidget
  * @extends {Widget}
  */
-class APIMOverallApiStatsWidget extends Widget {
+class APIMApiRatingsWidget extends Widget {
     /**
-     * Creates an instance of APIMOverallApiStatsWidget.
+     * Creates an instance of APIMApiRatingsWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMOverallApiStatsWidget
+     * @memberof APIMApiRatingsWidget
      */
     constructor(props) {
         super(props);
@@ -75,14 +75,13 @@ class APIMOverallApiStatsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            availableApiData: null,
-            legendData: [],
             topApiIdData: [],
             topApiNameData: [],
             apiProviderList: [],
             localeMessages: null,
-            loadingTopApis: true,
+            inProgress: true,
             proxyError: null,
+            refreshInterval: 60000, // 1min
         };
 
         this.styles = {
@@ -116,27 +115,35 @@ class APIMOverallApiStatsWidget extends Widget {
             }));
         }
 
-        this.assembleApiAvailableQuery = this.assembleApiAvailableQuery.bind(this);
         this.assembleAPIDataQuery = this.assembleAPIDataQuery.bind(this);
         this.assembleTopAPIQuery = this.assembleTopAPIQuery.bind(this);
-        this.handleApiAvailableReceived = this.handleApiAvailableReceived.bind(this);
         this.handleAPIDataReceived = this.handleAPIDataReceived.bind(this);
         this.handleTopAPIReceived = this.handleTopAPIReceived.bind(this);
-        this.loadLocale = this.loadLocale.bind(this);
         this.assembleAPIListQuery = this.assembleAPIListQuery.bind(this);
         this.handleAPIListReceived = this.handleAPIListReceived.bind(this);
     }
 
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch((error) => {
+                // TODO: Show error message.
+            });
+        });
+    }
+
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
+        const { refreshInterval } = this.state;
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
+                // set an interval to periodically retrieve data
+                const refreshIntervalId = setInterval(this.assembleAPIListQuery, refreshInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleApiAvailableQuery);
+                    refreshIntervalId,
+                }, this.assembleAPIListQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -148,107 +155,35 @@ class APIMOverallApiStatsWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
+        const { refreshIntervalId } = this.state;
+
+        clearInterval(refreshIntervalId);
+        this.setState({ refreshIntervalId: null });
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
      * Load locale file.
      * @param {string} locale Locale name
-     * @memberof APIMOverallApiStatsWidget
+     * @memberof APIMApiRatingsWidget
      */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMOverallApiStats/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
-    }
-
-    /**
-     * Formats the siddhi query - apiavailablequery
-     * @memberof APIMOverallApiStatsWidget
-     * */
-    assembleApiAvailableQuery() {
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apiavailablequery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiAvailableReceived, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data received from assembleApiAvailableQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMOverallApiStatsWidget
-     * */
-    handleApiAvailableReceived(message) {
-        const { data } = message;
-        const { id } = this.props;
-
-        if (data) {
-            const legendData = [];
-            data.forEach((dataUnit) => {
-                if (!legendData.includes({ name: dataUnit[0] })) {
-                    legendData.push({ name: dataUnit[0] });
-                }
-            });
-            this.setState({ legendData, availableApiData: data });
-        }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleAPIListQuery();
-    }
-
-    /**
-     * Formats the siddhi query - topapiquery
-     * @memberof APIMOverallApiStatsWidget
-     * */
-    assembleTopAPIQuery() {
-        const { providerConfig, apiIdMap } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-
-        if (apiIdMap && Object.keys(apiIdMap).length > 0) {
-            let apiIds = Object.keys(apiIdMap).map(id => { return 'API_ID==' + id });
-            apiIds = apiIds.join(' OR ');
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiList}}': apiIds
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleTopAPIReceived, dataProviderConfigs);
-        } else {
-            this.setState({ loadingTopApis: false, topApiNameData: [] })
-        }
-    }
-
-    /**
-     * Formats data received from assembleTopAPIQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMOverallApiStatsWidget
-     * */
-    handleTopAPIReceived(message) {
-        const { data } = message;
-
-        if (data) {
-            const { apiIdMap } = this.state;
-            const topApiNameData = data.map(dataUnit => {
-                const api = apiIdMap[dataUnit[0]];
-                return {
-                    apiname: api[1] + ' (' + api[3] + ')',
-                    ratings: dataUnit[1],
-                };
-            });
-            this.setState({ topApiNameData, loadingTopApis: false });
-        } else {
-            this.setState({ topApiNameData: [], loadingTopApis: false });
-        }
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiRatings/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     /**
      * Get API list from publisher
-     * @memberof APIMOverallApiStatsWidget
+     * @memberof APIMApiRatingsWidget
      * */
     assembleAPIListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
@@ -260,7 +195,7 @@ class APIMOverallApiStatsWidget extends Widget {
                 if (error.response && error.response.data) {
                     let proxyError = error.response.data;
                     proxyError = proxyError.split(':').splice(1).join('').trim();
-                    this.setState({ proxyError, loadingTopApis: false });
+                    this.setState({ proxyError, inProgress: false });
                 }
                 console.error(error);
             });
@@ -269,7 +204,7 @@ class APIMOverallApiStatsWidget extends Widget {
     /**
      * Formats data received from assembleAPIDataQuery
      * @param {object} data - data retrieved
-     * @memberof APIMOverallApiStatsWidget
+     * @memberof APIMApiRatingsWidget
      * */
     handleAPIListReceived(data) {
         const { list } = data;
@@ -286,7 +221,7 @@ class APIMOverallApiStatsWidget extends Widget {
 
     /**
      * Formats the siddhi query - apilistquery
-     * @memberof APIMOverallApiStatsWidget
+     * @memberof APIMApiRatingsWidget
      * */
     assembleAPIDataQuery() {
         const { providerConfig, apiProviderList } = this.state;
@@ -306,14 +241,14 @@ class APIMOverallApiStatsWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleAPIDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ loadingTopApis: false, topApiNameData: [] })
+            this.setState({ inProgress: false, topApiNameData: [] })
         }
     }
 
     /**
      * Formats data received from assembleAPIDataQuery
      * @param {object} message - data retrieved
-     * @memberof APIMOverallApiStatsWidget
+     * @memberof APIMApiRatingsWidget
      * */
     handleAPIDataReceived(message) {
         const { data } = message;
@@ -328,13 +263,59 @@ class APIMOverallApiStatsWidget extends Widget {
     }
 
     /**
+     * Formats the siddhi query - topapiquery
+     * @memberof APIMApiRatingsWidget
+     * */
+    assembleTopAPIQuery() {
+        const { providerConfig, apiIdMap } = this.state;
+        const { id, widgetID: widgetName } = this.props;
+
+        if (apiIdMap && Object.keys(apiIdMap).length > 0) {
+            let apiIds = Object.keys(apiIdMap).map(id => { return 'API_ID==' + id });
+            apiIds = apiIds.join(' OR ');
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{apiList}}': apiIds
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleTopAPIReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, topApiNameData: [] })
+        }
+    }
+
+    /**
+     * Formats data received from assembleTopAPIQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMApiRatingsWidget
+     * */
+    handleTopAPIReceived(message) {
+        const { data } = message;
+
+        if (data) {
+            const { apiIdMap } = this.state;
+            const topApiNameData = data.map(dataUnit => {
+                const api = apiIdMap[dataUnit[0]];
+                return {
+                    apiname: api[1] + ' (' + api[3] + ')',
+                    ratings: dataUnit[1],
+                };
+            });
+            this.setState({ topApiNameData, inProgress: false });
+        } else {
+            this.setState({ topApiNameData: [], inProgress: false });
+        }
+    }
+
+    /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Overall Api Stats widget
-     * @memberof APIMOverallApiStatsWidget
+     * @returns {ReactElement} Render the APIM Api Ratings widget
+     * @memberof APIMApiRatingsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData, loadingTopApis,
+            localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData, inProgress,
             proxyError,
         } = this.state;
         const {
@@ -342,12 +323,12 @@ class APIMOverallApiStatsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const overallStatsProps = {
-            themeName, height, availableApiData, legendData, topApiNameData, loadingTopApis,
+        const apiRatingProps = {
+            themeName, height, availableApiData, legendData, topApiNameData, inProgress,
         };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     { proxyError ? (
                         <div style={proxyPaperWrapper}>
@@ -381,13 +362,13 @@ class APIMOverallApiStatsWidget extends Widget {
                                                 <FormattedMessage
                                                     id='config.error.body'
                                                     defaultMessage={'Cannot fetch provider configuration for APIM '
-                                                    + 'Overall Api Stats widget'}
+                                                    + 'Api Ratings widget'}
                                                 />
                                             </Typography>
                                         </Paper>
                                     </div>
                                 ) : (
-                                    <APIMOverallApiStats {...overallStatsProps} />
+                                    <APIMApiRatings {...apiRatingProps} />
                                 )
                             }
                         </div>
@@ -399,4 +380,4 @@ class APIMOverallApiStatsWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMOverallApiStats', APIMOverallApiStatsWidget);
+global.dashboard.registerWidget('APIMApiRatings', APIMApiRatingsWidget);

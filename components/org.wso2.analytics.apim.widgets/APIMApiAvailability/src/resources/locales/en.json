@@ -1,0 +1,10 @@
+{
+  "apim.server.error.heading" : "Error !",
+  "chart.heading": "API AVAILABILITY :",
+  "chart.helper.text": "Please note that API availability is accurately shown only when alerts are enabled. If alerts are disabled, the chart will show 100% availability.",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Availability widget",
+  "config.error.heading": "Configuration Error !",
+  "nodata.error.body": "No data available for the selected options",
+  "nodata.error.heading": "No Data Available !",
+  "widget.heading": "API AVAILABILITY"
+}

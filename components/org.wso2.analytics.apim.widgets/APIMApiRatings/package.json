@@ -1,5 +1,5 @@
 {
-    "name": "apim-overall-api-stats",
+    "name": "apim-api-ratings",
     "version": "1.0.0",
     "private": true,
     "dependencies": {

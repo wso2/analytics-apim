@@ -39,7 +39,8 @@
         <module>APIMTopAppCreators</module>
         <module>APIMTopAppUsers</module>
         <module>APIMTopSubscribers</module>
-        <module>APIMOverallApiStats</module>
+        <module>APIMApiRatings</module>
+        <module>APIMApiAvailability</module>
         <module>APIMRegisteredAppUsers</module>
         <module>APIMApiCreatedAnalytics</module>
         <module>APIMAppCreatedAnalytics</module>

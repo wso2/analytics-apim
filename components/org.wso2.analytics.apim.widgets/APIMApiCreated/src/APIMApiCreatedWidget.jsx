@@ -81,7 +81,8 @@ class APIMApiCreatedWidget extends Widget {
             weekCount: 0,
             messages: null,
             refreshInterval: 60000, // 1min
-            refreshIntervalId: null, // 1min
+            refreshIntervalId: null,
+            inProgress: true,
         };
 
         this.styles = {
@@ -98,7 +99,7 @@ class APIMApiCreatedWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
+            loading: {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -123,7 +124,7 @@ class APIMApiCreatedWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch(() => {
+            this.loadLocale().catch((error) => {
                 // TODO: Show error message.
             });
         });
@@ -132,7 +133,6 @@ class APIMApiCreatedWidget extends Widget {
     componentDidMount() {
         const { widgetID, id } = this.props;
         const { refreshInterval } = this.state;
-        const locale = languageWithoutRegionCode || language;
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -165,6 +165,10 @@ class APIMApiCreatedWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
+    /**
+     * Load locale file.
+     * @memberof APIMApiCreatedWidget
+     */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -202,7 +206,7 @@ class APIMApiCreatedWidget extends Widget {
         const { data } = message;
         const { id } = this.props;
 
-        if (data.length !== 0) {
+        if (data) {
             this.setState({ totalCount:  data.length < 10 ? ('0' + data.length) : data.length });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -236,8 +240,10 @@ class APIMApiCreatedWidget extends Widget {
     handleWeekCountReceived(message) {
         const { data } = message;
 
-        if (data.length !== 0) {
-            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length });
+        if (data) {
+            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length, inProgress: false });
+        } else {
+            this.setState({ inProgress: false });
         }
     }
 
@@ -248,15 +254,22 @@ class APIMApiCreatedWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, totalCount, weekCount,
+            messages, faultyProviderConf, totalCount, weekCount, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatedProps = { themeName, totalCount, weekCount };
 
+        if (inProgress) {
+            return (
+                <div style={loading}>
+                    <CircularProgress style={loadingIcon} />
+                </div>
+            );
+        }
         return (
             <IntlProvider locale={language} messages={messages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>

@@ -25,9 +25,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.stats</artifactId>
+    <artifactId>org.wso2.analytics.apim.widgets.apim.api.ratings</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Analytics Solutions - Widgets - APIM Analytics - Overall Api Stats </name>
+    <name>WSO2 Analytics Solutions - Widgets - APIM Analytics - Api Ratings </name>
     <url>http://wso2.org</url>
 
     <build>

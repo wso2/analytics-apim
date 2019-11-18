@@ -1,0 +1,36 @@
+{
+  "name": "APIM Api Availability",
+  "id": "APIMApiAvailability",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMApiAvailabilitySiddhi') @store(type='rdbms' , datasource='APIM_ANALYTICS_DB') define table ApimApiAvailabilityInfo(apiName string,apiVersion string,apiCreator string,tenantDomain string,status string);",
+          "queryData": {
+            "apiavailablequery": "from ApimApiAvailabilityInfo on tenantDomain=='{{tenantDomain}}' select status,count(apiName) as count group by status;"
+          },
+          "publishingInterval": 60
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}

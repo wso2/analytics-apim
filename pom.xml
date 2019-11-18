@@ -824,20 +824,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.widgets.apim.apisubscriber.alert.config
-                </artifactId>
-                <version>${project.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.widgets.apim.apicreator.alert.config
-                </artifactId>
-                <version>${project.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.analytics.apim</groupId>
                 <artifactId>org.wso2.analytics.apim.widgets.apim.apicreated
                 </artifactId>
                 <version>${project.version}</version>
@@ -894,7 +880,14 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.widgets.apim.overall.api.stats
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.ratings
+                </artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.widgets.apim.api.availability
                 </artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>
@@ -1094,7 +1087,7 @@
                         <xmlOutput>true</xmlOutput>
                         <findbugsXmlOutputDirectory>${project.build.directory}/findbugs
                         </findbugsXmlOutputDirectory>
-                        <excludeFilterFile>${maven.findbugsplugin.version.exclude}</excludeFilterFile>
+                        <excludeFilterFile>${maven.findbugsplugin.exclude}</excludeFilterFile>
                         <!--Exclude generated sources-->
                     </configuration>
                     <version>${maven.findbugsplugin.version}</version>
@@ -1251,7 +1244,8 @@
 
         <carbon.analytics-common.version>6.1.36</carbon.analytics-common.version>
         <!-- Maven plugins -->
-        <maven.findbugsplugin.version.exclude>findbugs-exclude.xml</maven.findbugsplugin.version.exclude>
+        <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
+        <maven.findbugsplugin.exclude>findbugs-exclude.xml</maven.findbugsplugin.exclude>
 
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <carbon.feature.plugin.version>3.1.3</carbon.feature.plugin.version>
@@ -1293,7 +1287,7 @@
 
         <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.4</carbon.dashboards.version>
+        <carbon.dashboards.version>4.1.5</carbon.dashboards.version>
         <carbon.uis.version>1.0.3</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>

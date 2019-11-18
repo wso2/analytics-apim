@@ -5,7 +5,7 @@
   "license": "Apache 2.0",
   "scripts": {
     "build": "webpack -p",
-    "dev": "webpack --mode development",
+    "dev": "NODE_ENV=development webpack -d --config webpack.config.js --watch --progress",
     "lint": "eslint"
   },
   "devDependencies": {
