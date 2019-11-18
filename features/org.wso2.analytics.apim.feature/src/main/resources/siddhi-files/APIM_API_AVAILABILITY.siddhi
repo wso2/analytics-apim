@@ -39,7 +39,7 @@ insert into ApimApiAvailabilityInfo set ApimApiAvailabilityInfo.status = status
 
 @info(name = 'Query inserting data to ApimApiAvailability when there is no alert for a defined time')
 from Request#window.length(1) as R left outer join ApiHealthMonitorAlertStream#window.time(10 minutes) as AHM
- 	on R.apiName == AHM.apiName and R.apiVersion == AHM.apiVersion
+ 	on R.apiName == AHM.apiName and R.apiVersion == AHM.apiVersion and R.apiCreatorTenantDomain == AHM.apiCreatorTenantDomain
 select R.apiName as apiName, R.apiVersion as apiVersion, R.apiCreator as apiCreator, R.apiCreatorTenantDomain as tenantDomain, "Available" as status
  	having AHM.apiName is null
 insert into ApimApiAvailabilityInfoUpdateStreamTemp;
@@ -53,7 +53,7 @@ insert into ApimApiAvailabilityInfoThrottledStream;
 
 /* Check whether an alert has been generated within the last minute while rate limitting. Proceed only if no alerts generated */
 from ApimApiAvailabilityInfoThrottledStream as A left outer join ApiHealthMonitorAlertStream#window.time(1 minutes) as AHM
-    on A.apiName == AHM.apiName and A.apiVersion == AHM.apiVersion
+    on A.apiName == AHM.apiName and A.apiVersion == AHM.apiVersion and A.tenantDomain == AHM.apiCreatorTenantDomain
 select A.apiName as apiName, A.apiVersion as apiVersion, A.apiCreator as apiCreator, A.tenantDomain, "Available" as status
  	having AHM.apiName is null
 insert into ApimApiAvailabilityInfoUpdateStreamFinal;
