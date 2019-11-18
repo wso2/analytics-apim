@@ -11,19 +11,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest, macOS-latest]
         node: ['10.x']
-        java: [11, 1.8]
+        java: [1.8]
     steps:
       - uses: actions/checkout@v1
-        with:
-          ref: master
+
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
+
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
+
       - name: Build with Maven
         run: mvn clean install
