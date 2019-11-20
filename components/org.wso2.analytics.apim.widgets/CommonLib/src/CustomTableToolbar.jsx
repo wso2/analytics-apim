@@ -69,25 +69,25 @@ function CustomTableToolbar(props) {
     } = props;
 
     return (
-        <Toolbar
-            className={classes.root}
-        >
-            <div className={classes.title}>
-                <Typography variant='h6' id='tableTitle'>
-                    <FormattedMessage id='widget.heading' defaultMessage={title} />
-                </Typography>
-            </div>
-            <div className={classes.actions}>
-                <Tooltip title={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}>
-                    <IconButton
-                        className={classes.expand}
-                        onClick={handleExpandClick}
-                        aria-expanded={expanded}
-                        aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
-                    >
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
+        <Toolbar style={{ display: 'block' }}>
+            <div className={classes.root}>
+                <div className={classes.title}>
+                    <Typography variant='h6' id='tableTitle'>
+                        <FormattedMessage id='widget.heading' defaultMessage={title} />
+                    </Typography>
+                </div>
+                <div className={classes.actions}>
+                    <Tooltip title={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}>
+                        <IconButton
+                            className={classes.expand}
+                            onClick={handleExpandClick}
+                            aria-expanded={expanded}
+                            aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
+                        >
+                            <FilterListIcon />
+                        </IconButton>
+                    </Tooltip>
+                </div>
             </div>
             <Collapse in={expanded} timeout='auto' unmountOnExit className={classes.collapsef}>
                 <div>
