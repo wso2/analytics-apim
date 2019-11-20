@@ -211,19 +211,17 @@ class CustomTable extends React.Component {
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
-        const menuItems = (
-            <React.Fragment>
-                <MenuItem value='apiname'>
-                    <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
-                </MenuItem>
-                <MenuItem value='apiVersion'>
-                    <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
-                </MenuItem>
-                <MenuItem value='createdtime'>
-                    <FormattedMessage id='table.heading.createdtime' defaultMessage='CREATED TIME' />
-                </MenuItem>
-            </React.Fragment>
-        );
+        const menuItems = [
+            <MenuItem value='apiname'>
+                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='apiVersion'>
+                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
+            </MenuItem>,
+            <MenuItem value='createdtime'>
+                <FormattedMessage id='table.heading.createdtime' defaultMessage='CREATED TIME' />
+            </MenuItem>,
+        ];
 
         return (
             <Paper className={classes.root}>

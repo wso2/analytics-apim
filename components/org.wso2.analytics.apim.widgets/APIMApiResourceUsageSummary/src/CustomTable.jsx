@@ -203,25 +203,23 @@ class CustomTable extends React.Component {
             : data;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-        const menuItems = (
-            <React.Fragment>
-                <MenuItem value='apiname'>
-                    <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
-                </MenuItem>
-                <MenuItem value='version'>
-                    <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
-                </MenuItem>
-                <MenuItem value='resourcepath'>
-                    <FormattedMessage id='table.heading.resourcepath' defaultMessage='RESOURCE PATH' />
-                </MenuItem>
-                <MenuItem value='method'>
-                    <FormattedMessage id='table.heading.method' defaultMessage='METHOD' />
-                </MenuItem>
-                <MenuItem value='hits'>
-                    <FormattedMessage id='table.heading.hits' defaultMessage='HITS' />
-                </MenuItem>
-            </React.Fragment>
-        );
+        const menuItems = [
+            <MenuItem value='apiname'>
+                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='version'>
+                <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
+            </MenuItem>,
+            <MenuItem value='resourcepath'>
+                <FormattedMessage id='table.heading.resourcepath' defaultMessage='RESOURCE PATH' />
+            </MenuItem>,
+            <MenuItem value='method'>
+                <FormattedMessage id='table.heading.method' defaultMessage='METHOD' />
+            </MenuItem>,
+            <MenuItem value='hits'>
+                <FormattedMessage id='table.heading.hits' defaultMessage='HITS' />
+            </MenuItem>,
+        ];
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar

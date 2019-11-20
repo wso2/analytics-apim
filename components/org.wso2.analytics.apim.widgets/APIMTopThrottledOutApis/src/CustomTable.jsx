@@ -204,16 +204,14 @@ class CustomTable extends React.Component {
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
-        const menuItems = (
-            <React.Fragment>
-                <MenuItem value='apiname'>
-                    <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
-                </MenuItem>
-                <MenuItem value='throttledcount'>
-                    <FormattedMessage id='table.heading.throttledcount' defaultMessage='THROTTLED OUT COUNT' />
-                </MenuItem>
-            </React.Fragment>
-        );
+        const menuItems = [
+            <MenuItem value='apiname'>
+                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='throttledcount'>
+                <FormattedMessage id='table.heading.throttledcount' defaultMessage='THROTTLED OUT COUNT' />
+            </MenuItem>,
+        ];
 
         return (
             <Paper className={classes.root}>

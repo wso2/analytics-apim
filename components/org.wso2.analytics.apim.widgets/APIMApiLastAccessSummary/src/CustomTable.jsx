@@ -209,25 +209,23 @@ class CustomTable extends React.Component {
             : data;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-        const menuItems = (
-            <React.Fragment>
-                <MenuItem value='apiname'>
-                    <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
-                </MenuItem>
-                <MenuItem value='version'>
-                    <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
-                </MenuItem>
-                <MenuItem value='context'>
-                    <FormattedMessage id='table.heading.context' defaultMessage='CONTEXT' />
-                </MenuItem>
-                <MenuItem value='subscriber'>
-                    <FormattedMessage id='table.heading.subscriber' defaultMessage='SUBSCRIBER' />
-                </MenuItem>
-                <MenuItem value='lastaccess'>
-                    <FormattedMessage id='table.heading.lastaccess' defaultMessage='LAST ACCESS TIME' />
-                </MenuItem>
-            </React.Fragment>
-        );
+        const menuItems = [
+            <MenuItem value='apiname'>
+                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='version'>
+                <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
+            </MenuItem>,
+            <MenuItem value='context'>
+                <FormattedMessage id='table.heading.context' defaultMessage='CONTEXT' />
+            </MenuItem>,
+            <MenuItem value='subscriber'>
+                <FormattedMessage id='table.heading.subscriber' defaultMessage='SUBSCRIBER' />
+            </MenuItem>,
+            <MenuItem value='lastaccess'>
+                <FormattedMessage id='table.heading.lastaccess' defaultMessage='LAST ACCESS TIME' />
+            </MenuItem>,
+        ];
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar

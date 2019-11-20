@@ -203,16 +203,14 @@ class CustomTable extends React.Component {
             : data;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-        const menuItems = (
-            <React.Fragment>
-                <MenuItem value='creator'>
-                    <FormattedMessage id='table.heading.creator' defaultMessage='CREATOR' />
-                </MenuItem>
-                <MenuItem value='apicount'>
-                    <FormattedMessage id='table.heading.apicount' defaultMessage='API COUNT' />
-                </MenuItem>
-            </React.Fragment>
-        );
+        const menuItems = [
+            <MenuItem value='creator'>
+                <FormattedMessage id='table.heading.creator' defaultMessage='CREATOR' />
+            </MenuItem>,
+            <MenuItem value='apicount'>
+                <FormattedMessage id='table.heading.apicount' defaultMessage='API COUNT' />
+            </MenuItem>,
+        ];
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar
