@@ -65,7 +65,7 @@ const styles = theme => ({
  */
 function CustomTableToolbar(props) {
     const {
-        classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, query,
+        classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, query, title, menuItems
     } = props;
 
     return (
@@ -74,7 +74,7 @@ function CustomTableToolbar(props) {
         >
             <div className={classes.title}>
                 <Typography variant='h6' id='tableTitle'>
-                    {/* <FormattedMessage id='widget.heading' defaultMessage='TOP SUBSCRIBERS' /> */}
+                    <FormattedMessage id='widget.heading' defaultMessage={title} />
                 </Typography>
             </div>
             <div className={classes.actions}>
@@ -112,12 +112,7 @@ function CustomTableToolbar(props) {
                         }}
                         margin='normal'
                     >
-                        <MenuItem value='creator'>
-                            <FormattedMessage id='table.heading.creator' defaultMessage='CREATOR' />
-                        </MenuItem>
-                        <MenuItem value='subcount'>
-                            <FormattedMessage id='table.heading.subcount' defaultMessage='SUB COUNT' />
-                        </MenuItem>
+                        { menuItems }
                     </TextField>
                     <TextField
                         id='query-search'

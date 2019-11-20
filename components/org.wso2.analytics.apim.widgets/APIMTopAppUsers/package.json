@@ -7,6 +7,7 @@
     "@material-ui/icons": "^3.0.2",
     "@wso2-dashboards/widget": "^1.4.0",
     "axios": "^0.16.2",
+    "common-lib": "file:../CommonLib",
     "lodash": "^4.17.11",
     "react": "^16.7.0",
     "react-custom-scrollbars": "^4.2.1",

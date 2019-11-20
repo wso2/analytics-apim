@@ -19,6 +19,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
+import MenuItem from '@material-ui/core/MenuItem';
 import { CustomTableToolbar } from 'common-lib';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -201,7 +203,16 @@ class CustomTable extends React.Component {
             : data;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-
+        const menuItems = (
+            <React.Fragment>
+                <MenuItem value='creator'>
+                    <FormattedMessage id='table.heading.creator' defaultMessage='CREATOR' />
+                </MenuItem>
+                <MenuItem value='apicount'>
+                    <FormattedMessage id='table.heading.apicount' defaultMessage='API COUNT' />
+                </MenuItem>
+            </React.Fragment>
+        );
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar
@@ -211,6 +222,8 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title='TOP API CREATORS'
+                    menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>

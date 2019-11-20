@@ -20,6 +20,9 @@
 import React from 'react';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
+import MenuItem from '@material-ui/core/MenuItem';
+import { CustomTableToolbar } from 'common-lib';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -29,7 +32,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
-import CustomTableToolbar from './CustomTableToolbar';
 
 /**
  * Compare two values and return the result
@@ -209,6 +211,17 @@ class CustomTable extends React.Component {
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
+        const menuItems = (
+            <React.Fragment>
+                <MenuItem value='developer'>
+                    <FormattedMessage id='table.heading.developer' defaultMessage='DEVELOPER' />
+                </MenuItem>
+                <MenuItem value='signeduptime'>
+                    <FormattedMessage id='table.heading.signeduptime' defaultMessage='SIGNED UP TIME' />
+                </MenuItem>
+            </React.Fragment>
+        );
+
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar
@@ -218,6 +231,8 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title='SIGNED UP TIMES'
+                    menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>

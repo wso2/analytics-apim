@@ -19,6 +19,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
+import MenuItem from '@material-ui/core/MenuItem';
+import { CustomTableToolbar } from 'common-lib';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -27,7 +30,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
-import CustomTableToolbar from './CustomTableToolbar';
 
 /**
  * Compare two values and return the result
@@ -202,6 +204,20 @@ class CustomTable extends React.Component {
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
+        const menuItems = (
+            <React.Fragment>
+                <MenuItem value='apiname'>
+                    <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+                </MenuItem>
+                <MenuItem value='version'>
+                    <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
+                </MenuItem>
+                <MenuItem value='hits'>
+                    <FormattedMessage id='table.heading.hits' defaultMessage='HITS' />
+                </MenuItem>
+            </React.Fragment>
+        );
+
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar
@@ -211,6 +227,8 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title='API VERSION USAGE SUMMARY'
+                    menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
