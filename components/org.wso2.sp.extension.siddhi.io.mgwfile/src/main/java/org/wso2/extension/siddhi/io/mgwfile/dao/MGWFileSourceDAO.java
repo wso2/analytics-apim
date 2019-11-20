@@ -37,14 +37,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This class contains methods DB access for FileEventAdapter
+ * This class contains methods DB access for FileEventAdapter.
  */
 public class MGWFileSourceDAO {
 
     private static final Log log = LogFactory.getLog(MGWFileSourceDAO.class);
 
     /**
-     * Adds a record into the database with uploaded file's information
+     * Adds a record into the database with uploaded file's information.
      *
      * @param dto                 Uploaded File Information represented by {@link MGWFileInfoDTO}
      * @param uploadedInputStream Input stream with the uploaded file content
@@ -161,7 +161,7 @@ public class MGWFileSourceDAO {
     }
 
     /**
-     * Updates the completion of processing a uploaded usage file
+     * Updates the completion of processing a uploaded usage file.
      *
      * @param dto Processed file represented by {@link MGWFileInfoDTO}
      * @throws MGWFileSourceException if there is an error while getting a connection or executing the query
@@ -187,7 +187,7 @@ public class MGWFileSourceDAO {
     }
 
     /**
-     * Get the content of the file based on the file information
+     * Get the content of the file based on the file information.
      *
      * @param dto Processed file represented by {@link MGWFileInfoDTO}
      * @return InputStream with the content of the file of null if there is no content
@@ -229,7 +229,7 @@ public class MGWFileSourceDAO {
     }
 
     /**
-     * Delete obsolete usage records in the dbG
+     * Delete obsolete usage records in the dbG.
      *
      * @param lastKeptDate up to which files should be retained
      * @throws MGWFileSourceException

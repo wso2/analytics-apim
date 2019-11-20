@@ -28,7 +28,7 @@ import org.wso2.analytics.apim.rest.api.proxy.internal.ServiceHolder;
 import org.wso2.carbon.kernel.config.model.CarbonConfiguration;
 
 /**
- * This is the stub class for APIM Publisher and Store REST APIs
+ * This is the stub class for APIM Publisher and Store REST APIs.
  */
 public class APIMServiceStubs {
 
@@ -37,7 +37,7 @@ public class APIMServiceStubs {
 
 
     /**
-     * Get a new OkHttpClient instance
+     * Get a new OkHttpClient instance.
      *
      * @return a OkHttpClient instance
      */
@@ -51,7 +51,7 @@ public class APIMServiceStubs {
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param publisherEndpoint Publisher REST API endpoint
      * @param storeEndpoint     Store REST API endpoint
@@ -62,7 +62,7 @@ public class APIMServiceStubs {
     }
 
     /**
-     * This interface is for APIM Publisher REST API stub
+     * This interface is for APIM Publisher REST API stub.
      */
     public interface PublisherServiceStub {
 
@@ -71,7 +71,7 @@ public class APIMServiceStubs {
         Response getApis(@Param("auth_token") String authToken, @Param("offset") int offset, @Param("limit") int limit);
 
         /**
-         * Get list of APIs
+         * Get list of APIs.
          *
          * @param authToken access token
          * @return the list of APIs
@@ -82,7 +82,7 @@ public class APIMServiceStubs {
     }
 
     /**
-     * Create and return APIM Publisher REST API service stub
+     * Create and return APIM Publisher REST API service stub.
      *
      * @return Publisher REST API service stub
      */
@@ -95,7 +95,7 @@ public class APIMServiceStubs {
     }
 
     /**
-     * This interface is for APIM Store REST API stub
+     * This interface is for APIM Store REST API stub.
      */
     public interface StoreServiceStub {
 
@@ -105,7 +105,7 @@ public class APIMServiceStubs {
                                  @Param("limit") int limit);
 
         /**
-         * Get list of Applications
+         * Get list of Applications.
          *
          * @param authToken access token
          * @return the list of Applications
@@ -116,7 +116,7 @@ public class APIMServiceStubs {
     }
 
     /**
-     * Create and return APIM Store REST API service stub
+     * Create and return APIM Store REST API service stub.
      *
      * @return Store REST API service stub
      */

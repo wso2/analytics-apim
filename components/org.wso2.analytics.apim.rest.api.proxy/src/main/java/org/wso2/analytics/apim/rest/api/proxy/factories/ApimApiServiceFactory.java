@@ -19,13 +19,13 @@ import org.wso2.analytics.apim.rest.api.proxy.ApimApiService;
 import org.wso2.analytics.apim.rest.api.proxy.impl.ApimApiServiceImpl;
 
 /**
- * Factory class for ApimApiService
+ * Factory class for ApimApiService.
  */
 public class ApimApiServiceFactory {
     private static final ApimApiService service = new ApimApiServiceImpl();
 
     /**
-     * Get ApimApiService instance
+     * Get ApimApiService instance.
      *
      * @return ApimApiService instance
      */

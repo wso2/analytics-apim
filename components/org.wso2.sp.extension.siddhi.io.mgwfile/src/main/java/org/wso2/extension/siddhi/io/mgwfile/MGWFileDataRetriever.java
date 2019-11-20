@@ -39,7 +39,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * This class publishes events to streams, which are read from the uploaded usage file
+ * This class publishes events to streams, which are read from the uploaded usage file.
  */
 public class MGWFileDataRetriever implements Runnable {
 

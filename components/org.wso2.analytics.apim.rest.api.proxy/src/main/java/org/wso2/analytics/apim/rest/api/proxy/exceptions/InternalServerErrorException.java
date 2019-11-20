@@ -21,7 +21,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 /**
- * Internal server exception
+ * Internal server exception.
  */
 public class InternalServerErrorException extends WebApplicationException {
     private static final String APPLICATION_JSON = "application/json";

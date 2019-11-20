@@ -18,7 +18,7 @@
 package org.wso2.extension.siddhi.io.mgwfile;
 
 /**
- *  MGWFile EventSource specific constatnts class
+ *  MGWFile EventSource specific constatnts class.
  */
 public class MGWFileSourceConstants {
 

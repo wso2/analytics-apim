@@ -19,14 +19,14 @@
 package org.wso2.extension.siddhi.io.mgwfile.dto;
 
 /**
- * This class represents an uploaded file
+ * This class represents an uploaded file.
  */
 public class MGWFileInfoDTO {
     private String fileName;
     private long timeStamp;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param fileName  name of the file
      * @param timeStamp Timestamp of the file creation
@@ -37,7 +37,7 @@ public class MGWFileInfoDTO {
     }
 
     /**
-     * Get the file name set by a constructor
+     * Get the file name set by a constructor.
      * @return String name of the file
      */
     public String getFileName() {
@@ -46,7 +46,7 @@ public class MGWFileInfoDTO {
 
     /**
      *
-     * Get the time stamp set by a constructor
+     * Get the time stamp set by a constructor.
      * @return long Timestamp of the file creation
      */
     public long getTimeStamp() {

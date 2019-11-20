@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 /**
- *  Util class for DAO layer
+ *  Util class for DAO layer.
  */
 public class MGWFileSourceDBUtil {
 
@@ -37,7 +37,7 @@ public class MGWFileSourceDBUtil {
     private static volatile DataSource dataSource = null;
 
     /**
-     * Utility method to get a new database connection
+     * Utility method to get a new database connection.
      *
      * @return Connection
      * @throws SQLException if failed to get Connection
@@ -63,7 +63,7 @@ public class MGWFileSourceDBUtil {
     }
 
     /**
-     * Close Connection
+     * Close Connection.
      * @param dbConnection Connection
      */
     private static void closeConnection(Connection dbConnection) {
@@ -78,7 +78,7 @@ public class MGWFileSourceDBUtil {
     }
 
     /**
-     * Close ResultSet
+     * Close ResultSet.
      * @param resultSet ResultSet
      */
     private static void closeResultSet(ResultSet resultSet) {
@@ -93,7 +93,7 @@ public class MGWFileSourceDBUtil {
     }
 
     /**
-     * Close PreparedStatement
+     * Close PreparedStatement.
      * @param preparedStatement PreparedStatement
      */
     public static void closeStatement(PreparedStatement preparedStatement) {

@@ -37,7 +37,7 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 
 /**
- * Proxy service for APIM REST APIs
+ * Proxy service for APIM REST APIs.
  */
 public class ApimApiServiceImpl extends ApimApiService {
     private static final String DASHBOARD_USER = "DASHBOARD_USER=";
@@ -49,7 +49,7 @@ public class ApimApiServiceImpl extends ApimApiService {
     private final Util util = new Util();
 
     /**
-     * Retrieve the list of APIs from APIM Publisher
+     * Retrieve the list of APIs from APIM Publisher.
      *
      * @param request request to retrieve APIs list
      * @return list of APIs
@@ -87,7 +87,7 @@ public class ApimApiServiceImpl extends ApimApiService {
     }
 
     /**
-     * Retrieve the list of applications from APIM Store
+     * Retrieve the list of applications from APIM Store.
      *
      * @param request request to retrieve applications list
      * @return the list of applications
@@ -126,7 +126,7 @@ public class ApimApiServiceImpl extends ApimApiService {
     }
 
     /**
-     * Retrieve the server url from the deployment file
+     * Retrieve the server url from the deployment file.
      *
      * @param serverName the name of the server, i.e. Publisher/Store
      * @return server URL of the requested endpoint
@@ -154,7 +154,7 @@ public class ApimApiServiceImpl extends ApimApiService {
     }
 
     /**
-     * Construct the access token from cookies
+     * Construct the access token from cookies.
      *
      * @param cookies cookies string received with the request
      * @return the access token

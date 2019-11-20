@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class which manages the Databridge receiver connections
+ * Class which manages the Databridge receiver connections.
  */
 public class MGWFileSourceRegistrationManager {
 

@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.TimerTask;
 
 /**
- * Task for cleaning uploaded old usage files in db
+ * Task for cleaning uploaded old usage files in db.
  */
 public class MGWFileCleanUpTask extends TimerTask {
 
@@ -40,7 +40,7 @@ public class MGWFileCleanUpTask extends TimerTask {
 
 
     /**
-     * Return the {@link Date} up to which files should be retained
+     * Return the {@link Date} up to which files should be retained.
      *
      * @param fileRetentionDays No of days to retain the files
      * @return {@link Date} up to which files should be retained
