@@ -20,7 +20,7 @@ package org.wso2.analytics.apim.rest.api.file.util;
 
 
 /**
- * This class contains all the constants
+ * This class contains all the constants.
  */
 public final class UploadServiceConstants {
 

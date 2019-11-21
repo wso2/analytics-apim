@@ -22,7 +22,7 @@ import org.wso2.analytics.apim.rest.api.proxy.exceptions.BadRequestException;
 import org.wso2.analytics.apim.rest.api.proxy.exceptions.InternalServerErrorException;
 
 /**
- * Util class
+ * Util class.
  */
 public class Util {
     private final Log log = LogFactory.getLog(Util.class);
@@ -32,7 +32,7 @@ public class Util {
     private static final String STATUS_INTERNAL_SERVER_ERROR_MESSAGE = "Internal server error";
 
     /**
-     * Logs the error, builds a internalServerErrorException with specified details and throws it
+     * Logs the error, builds a internalServerErrorException with specified details and throws it.
      *
      * @param msg error message
      * @param t Throwable instance
@@ -46,7 +46,7 @@ public class Util {
         throw internalServerErrorException;
     }
     /**
-     * Logs the error, builds a internalServerErrorException with specified details and throws it
+     * Logs the error, builds a internalServerErrorException with specified details and throws it.
      *
      * @param msg error message
      * @throws InternalServerErrorException
@@ -59,7 +59,7 @@ public class Util {
     }
 
     /**
-     * Returns a new InternalServerErrorException
+     * Returns a new InternalServerErrorException.
      *
      * @param errorDescription Error Description
      * @return a new InternalServerErrorException with default details as a response DTO
@@ -71,7 +71,7 @@ public class Util {
     }
 
     /**
-     * Logs the error, builds a BadRequestException with specified details and throws it
+     * Logs the error, builds a BadRequestException with specified details and throws it.
      *
      * @param msg error message
      * @throws BadRequestException
@@ -83,7 +83,7 @@ public class Util {
     }
 
     /**
-     * Returns a new BadRequestException
+     * Returns a new BadRequestException.
      *
      * @param errorDescription Error Description
      * @return a new BadRequestException with default details as a response DTO
@@ -95,7 +95,7 @@ public class Util {
     }
 
     /**
-     * Returns a generic errorDTO
+     * Returns a generic errorDTO.
      *
      * @param message specifies the error message
      * @return A generic errorDTO with the specified details

@@ -23,7 +23,7 @@ import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.carbon.kernel.config.model.CarbonConfiguration;
 
 /**
- *  Service Holder class for this component
+ *  Service Holder class for this component.
  */
 public class ServiceHolder {
     private static ServiceHolder instance = new ServiceHolder();
@@ -44,7 +44,7 @@ public class ServiceHolder {
     }
 
     /**
-     * Return the configProvider object
+     * Return the configProvider object.
      *
      * @return the configProvider object
      */
@@ -53,7 +53,7 @@ public class ServiceHolder {
     }
 
     /**
-     * Return the CarbonConfiguration object
+     * Return the CarbonConfiguration object.
      *
      * @return the CarbonConfiguration object
      */
@@ -62,7 +62,7 @@ public class ServiceHolder {
     }
 
     /**
-     * Set the configProvider object
+     * Set the configProvider object.
      *
      * @param configProvider configProvider object
      */

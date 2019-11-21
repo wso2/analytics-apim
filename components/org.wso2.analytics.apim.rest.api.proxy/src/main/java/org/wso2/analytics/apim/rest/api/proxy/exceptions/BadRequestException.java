@@ -21,7 +21,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 /**
- * Bad request exception
+ * Bad request exception.
  */
 public class BadRequestException extends WebApplicationException {
     private static final String APPLICATION_JSON = "application/json";

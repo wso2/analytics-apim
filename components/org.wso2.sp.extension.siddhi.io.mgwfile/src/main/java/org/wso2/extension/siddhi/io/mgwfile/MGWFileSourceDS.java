@@ -38,7 +38,7 @@ import java.util.TimerTask;
 
 
 /**
- * This is the activation and deactivation class for MGWFile osgi component
+ * This is the activation and deactivation class for MGWFile osgi component.
  */
 @Component(
         name = "org.wso2.analytics.apim.MGWFileSourceDS",
@@ -55,7 +55,7 @@ public class MGWFileSourceDS {
 
     /**
      * This is the activation method of MGWFileSource service. This will be called when its references are
-     * satisfied. Agent server is initialized here
+     * satisfied. Agent server is initialized here.
      *
      * @param bundleContext the bundle context instance of this bundle.
      * @throws Exception this will be thrown if an issue occurs while executing the activate method

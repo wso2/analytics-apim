@@ -44,7 +44,7 @@ import org.wso2.extension.siddhi.map.wso2event.source.WSO2SourceMapper;
 import java.util.Timer;
 
 /**
- * Micro Gateway File Source
+ * Micro Gateway File Source.
  */
 
 @Extension(name = "mgwfile", namespace = "source", description = "Event source to receive WSO2 Microgateway analytics"
@@ -163,7 +163,7 @@ public class MGWFileSource extends Source {
     }
 
     /**
-     * Called at the end to clean all the resources consumed by the {@link Source}
+     * Called at the end to clean all the resources consumed by the {@link Source}.
      */
     @Override
     public void destroy() {
@@ -171,7 +171,7 @@ public class MGWFileSource extends Source {
     }
 
     /**
-     * Called to pause event consumption
+     * Called to pause event consumption.
      */
     @Override
     public void pause() {
@@ -181,7 +181,7 @@ public class MGWFileSource extends Source {
     }
 
     /**
-     * Called to resume event consumption
+     * Called to resume event consumption.
      */
     @Override
     public void resume() {

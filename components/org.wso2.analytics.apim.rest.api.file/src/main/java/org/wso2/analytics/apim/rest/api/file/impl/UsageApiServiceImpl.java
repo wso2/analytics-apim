@@ -39,7 +39,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 /**
- *  Service Implementation class for microgateway analytics zip upload
+ *  Service Implementation class for microgateway analytics zip upload.
  */
 public class UsageApiServiceImpl extends UsageApiService {
     private static final Logger log = LoggerFactory.getLogger(UsageApiServiceImpl.class);
@@ -90,7 +90,7 @@ public class UsageApiServiceImpl extends UsageApiService {
     }
 
     /**
-     * This method will return a boolean on whether the user has admin role or not
+     * This method will return a boolean on whether the user has admin role or not.
      * @param userName username of the user who invoked the API
      * @return
      */
@@ -113,7 +113,7 @@ public class UsageApiServiceImpl extends UsageApiService {
     }
 
     /**
-     * Extracts the username given the authorization token
+     * Extracts the username given the authorization token.
      * @param authHeader auth token with the "Basic" prefix
      * @return
      */

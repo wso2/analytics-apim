@@ -18,7 +18,7 @@ package org.wso2.analytics.apim.rest.api.file.internal;
 import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 
 /**
- *  Service Holder class for this component
+ *  Service Holder class for this component.
  */
 public class ServiceHolder {
     private static ServiceHolder instance = new ServiceHolder();

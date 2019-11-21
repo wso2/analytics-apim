@@ -33,7 +33,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * Task for scheduling the usage publishing threads
+ * Task for scheduling the usage publishing threads.
  */
 public class MGWFileReaderTask extends TimerTask {
 

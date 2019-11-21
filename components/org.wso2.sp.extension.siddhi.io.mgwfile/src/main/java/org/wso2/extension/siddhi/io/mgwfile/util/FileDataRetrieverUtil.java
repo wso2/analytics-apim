@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Util Class for MGWFileDataRetriever
+ * Util Class for MGWFileDataRetriever.
  */
 public class FileDataRetrieverUtil {
 

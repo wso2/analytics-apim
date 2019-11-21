@@ -19,7 +19,7 @@
 package org.wso2.extension.siddhi.io.mgwfile.exception;
 
 /**
- * Exception for Usage Publishing errors
+ * Exception for Usage Publishing errors.
  */
 public class MGWFileSourceException extends Exception {
 

@@ -21,7 +21,7 @@ package org.wso2.extension.siddhi.io.mgwfile;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * This is the Thread Factory used to create the threads which reads the files from the DB and map them to streams
+ * This is the Thread Factory used to create the threads which reads the files from the DB and map them to streams.
  */
 public class MGWFileDataRetrieverThreadFactory implements ThreadFactory {
 
