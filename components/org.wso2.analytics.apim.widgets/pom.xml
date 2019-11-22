@@ -51,6 +51,20 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>lerna clean</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <executable>${npm.executable}</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>clean</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>lerna bootstrap</id>
                         <goals>
                             <goal>exec</goal>
