@@ -1161,40 +1161,6 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${maven.exec.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>npm install (initialize)</id>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                            <phase>initialize</phase>
-                            <configuration>
-                                <executable>${npm.executable}</executable>
-                                <arguments>
-                                    <argument>install</argument>
-                                </arguments>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>npm run dev (compile)</id>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                            <phase>generate-resources</phase>
-                            <configuration>
-                                <executable>${npm.executable}</executable>
-                                <arguments>
-                                    <argument>run</argument>
-                                    <argument>build</argument>
-                                </arguments>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
                     <groupId>org.wso2.carbon.maven</groupId>
                     <artifactId>carbon-feature-plugin</artifactId>
                     <version>${carbon.feature.plugin.version}</version>
