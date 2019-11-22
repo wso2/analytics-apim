@@ -19,9 +19,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
-import MenuItem from '@material-ui/core/MenuItem';
-import { CustomTableToolbar } from 'common-lib';
 import Moment from 'moment';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -31,6 +28,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
+import CustomTableToolbar from './CustomTableToolbar';
 
 /**
  * Compare two values and return the result
@@ -209,23 +207,7 @@ class CustomTable extends React.Component {
             : data;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-        const menuItems = [
-            <MenuItem value='apiname'>
-                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
-            </MenuItem>,
-            <MenuItem value='version'>
-                <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
-            </MenuItem>,
-            <MenuItem value='context'>
-                <FormattedMessage id='table.heading.context' defaultMessage='CONTEXT' />
-            </MenuItem>,
-            <MenuItem value='subscriber'>
-                <FormattedMessage id='table.heading.subscriber' defaultMessage='SUBSCRIBER' />
-            </MenuItem>,
-            <MenuItem value='lastaccess'>
-                <FormattedMessage id='table.heading.lastaccess' defaultMessage='LAST ACCESS TIME' />
-            </MenuItem>,
-        ];
+
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar
@@ -235,8 +217,6 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='API LAST ACCESS SUMMARY'
-                    menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
