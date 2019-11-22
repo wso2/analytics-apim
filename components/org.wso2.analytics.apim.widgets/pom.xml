@@ -29,41 +29,6 @@
     <description>WSO2 APIM Analytics - Widgets</description>
     <artifactId>org.wso2.analytics.apim.widgets</artifactId>
     <packaging>pom</packaging>
-
-    <modules>
-        <module>APIMApiCreated</module>
-        <module>APIMAppCreated</module>
-        <module>APIMSubscriptions</module>
-        <module>APIMDeveloperSignups</module>
-        <module>APIMTopApiCreators</module>
-        <module>APIMTopAppCreators</module>
-        <module>APIMTopAppUsers</module>
-        <module>APIMTopSubscribers</module>
-        <module>APIMApiRatings</module>
-        <module>APIMApiAvailability</module>
-        <module>APIMRegisteredAppUsers</module>
-        <module>APIMApiCreatedAnalytics</module>
-        <module>APIMAppCreatedAnalytics</module>
-        <module>APIMFaultyPerApp</module>
-        <module>APIMAppApiUsage</module>
-        <module>APIMAppResourceUsage</module>
-        <module>APIMSubscriptionsAnalytics</module>
-        <module>APIMSignupsAnalytics</module>
-        <module>APIMTopApiUsers</module>
-        <module>APIMApiVersionUsageSummary</module>
-        <module>APIMApiResourceUsageSummary</module>
-        <module>APIMApiBackendUsageSummary</module>
-        <module>APIMApiLastAccessSummary</module>
-        <module>APIMApiResponseSummary</module>
-        <module>APIMOverallApiUsage</module>
-        <module>APIMTopFaultyApis</module>
-        <module>APIMTopThrottledOutApis</module>
-        <module>APIMTopUserAgents</module>
-        <module>APIMTopPlatforms</module>
-        <module>APIMApiLatencyTime</module>
-        <module>APIMGeoBasedInvocations</module>
-        <module>DateTimeRangePicker</module>
-    </modules>
     <build>
         <plugins>
             <plugin>
@@ -85,7 +50,7 @@
                             </arguments>
                         </configuration>
                     </execution>
-                    <!-- <execution>
+                    <execution>
                         <id>lerna bootstrap</id>
                         <goals>
                             <goal>exec</goal>
@@ -98,8 +63,40 @@
                                 <argument>bootstrap</argument>
                             </arguments>
                         </configuration>
-                    </execution> -->
+                    </execution>
+                    <execution>
+                        <id>npm build (compile)</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <executable>${npm.executable}</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>build</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptors>
+                        <descriptor>${project.basedir}/assembly.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
             </plugin>
         </plugins>
     </build>
