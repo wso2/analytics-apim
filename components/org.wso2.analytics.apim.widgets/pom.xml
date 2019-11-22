@@ -31,7 +31,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>CommonLib</module>
         <module>APIMApiCreated</module>
         <module>APIMAppCreated</module>
         <module>APIMSubscriptions</module>

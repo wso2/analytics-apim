@@ -30,7 +30,7 @@ module.exports = {
         filename: 'APIMApiResponseSummary.js',
     },
     module: {
-        rules: [
+        loaders: [
             {
                 test: /\.html$/,
                 use: [{ loader: 'html-loader' }],
@@ -42,7 +42,7 @@ module.exports = {
                     {
                         loader: 'babel-loader',
                         query: {
-                            presets: ['@babel/preset-env', '@babel/preset-react'],
+                            presets: ['es2015', 'react'],
                         },
                     },
                 ],
@@ -56,11 +56,7 @@ module.exports = {
                 exclude: /(node_modules)/,
                 loader: 'babel-loader',
                 query: {
-                    presets: [
-                        '@babel/preset-env',
-                        '@babel/preset-react',
-                    ],
-                    plugins: ['@babel/plugin-proposal-class-properties'],
+                    presets: ['es2015', 'react', 'stage-2'],
                 },
             },
             {
