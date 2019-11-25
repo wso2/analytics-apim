@@ -1,3 +1,2 @@
-import { CustomTableToolbar } from './CustomTableToolbar';
-
+import CustomTableToolbar from './CustomTableToolbar';
 export {CustomTableToolbar};
