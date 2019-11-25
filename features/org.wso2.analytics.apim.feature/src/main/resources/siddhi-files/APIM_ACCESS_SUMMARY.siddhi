@@ -20,6 +20,10 @@
 @source(type='inMemory' , topic='APIM_REQUEST')
 define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
 
+define stream FilteredRequest (apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, apiHostname string, applicationId string, applicationName string, apiResourceTemplate string, apiMethod string, gatewayType string, label string, requestTimestamp long);
+
+define stream FilteredExecRequest (apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, apiHostname string, apiResourceTemplate string, apiMethod string, responseTime long, serviceTime long, backendTime long, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long,  otherLatency long, requestTimestamp long);
+
 define stream ApiUsagePerVersionFilteredStream (apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, apiHostname string, applicationId string, applicationName string, quotaExceededValue int, requestTimestamp long, gatewayType string, label string);
 
 define stream ApiUserAgentFilteredStreamExtend (apiName string, apiVersion string, apiContext string, apiCreator string, apiCreatorTenantDomain string, operatingSystem string, browser string, requestTimestamp long, gatewayType string, label string);
@@ -58,7 +62,7 @@ aggregate by requestTimestamp every seconds...years;
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "apiHostname:200, apiMethod:20")
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiResPathPerApp
-from Request
+from FilteredRequest
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, apiResourceTemplate, apiMethod, count() as totalRequestCount, gatewayType, label,'default' as regionalID
 group by apiContext, apiHostname, applicationId, apiResourceTemplate, apiMethod
 aggregate by requestTimestamp every seconds...years;
@@ -94,7 +98,7 @@ aggregate by requestTimestamp every seconds...years;
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 hour', min='3 days', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiExeTime
-from Request
+from FilteredExecRequest
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, apiResourceTemplate, apiMethod, avg(responseTime) as responseTime, avg(serviceTime) as serviceTime, avg(backendTime) as backendTime, avg(securityLatency) as securityLatency, avg(throttlingLatency) as throttlingLatency, avg(requestMedLat) as requestMedLat, avg(responseMedLat) as responseMedLat, avg(backendLatency) as backendLatency, avg(otherLatency) as otherLatency, 'default' as regionalID
 group by apiContext, apiHostname, apiResourceTemplate, apiMethod
 aggregate by requestTimestamp every seconds...years;
@@ -154,3 +158,26 @@ select apiContext, apiName, apiVersion, apiCreator,apiCreatorTenantDomain, appli
 update or insert into ApiLastAccessSummary
 set ApiLastAccessSummary.apiContext = apiContext, ApiLastAccessSummary.apiVersion = apiVersion, ApiLastAccessSummary.applicationOwner = applicationOwner, ApiLastAccessSummary.lastAccessTime = lastAccessTime
 on ApiLastAccessSummary.apiName == apiName and ApiLastAccessSummary.apiCreatorTenantDomain == apiCreatorTenantDomain and ApiLastAccessSummary.apiCreator == apiCreator;
+
+-- Filter GraphQL APIs for per resource aggregations
+from Request[apiMethod == 'QUERY' OR apiMethod == 'MUTATION' OR apiMethod == 'SUBSCRIPTION']
+select *
+insert into RequestForGraphQL;
+
+from Request[apiMethod != 'QUERY' AND apiMethod != 'MUTATION' AND apiMethod != 'SUBSCRIPTION']
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, apiResourceTemplate, apiMethod, gatewayType, label, requestTimestamp
+insert into FilteredRequest;
+
+from RequestForGraphQL#str:tokenize(apiResourceTemplate , ',')
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, token as apiResourceTemplate, apiMethod, gatewayType, label, requestTimestamp
+insert into FilteredRequest;
+
+-- Filter GraphQL APIs for per resource execution time aggregations
+
+from Request[apiMethod != 'QUERY' AND apiMethod != 'MUTATION' AND apiMethod != 'SUBSCRIPTION']
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, apiResourceTemplate, apiMethod, responseTime, serviceTime, backendTime, securityLatency, throttlingLatency,  requestMedLat, responseMedLat,  backendLatency,  otherLatency, requestTimestamp
+insert into FilteredExecRequest;
+
+from RequestForGraphQL#str:tokenize(apiResourceTemplate , ',')
+select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, token as apiResourceTemplate, apiMethod, responseTime,  serviceTime, backendTime, securityLatency, throttlingLatency, requestMedLat, responseMedLat,  backendLatency, otherLatency, requestTimestamp
+insert into FilteredExecRequest;
