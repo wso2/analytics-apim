@@ -30,7 +30,7 @@ module.exports = {
         filename: 'APIMGeoBasedInvocations.js',
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.html$/,
                 use: [{ loader: 'html-loader' }],
@@ -42,7 +42,7 @@ module.exports = {
                     {
                         loader: 'babel-loader',
                         query: {
-                            presets: ['es2015', 'react'],
+                            presets: ['@babel/preset-env', '@babel/preset-react'],
                         },
                     },
                 ],
@@ -56,7 +56,7 @@ module.exports = {
                 exclude: /(node_modules)/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['es2015', 'react', 'stage-2'],
+                    presets: ['@babel/preset-env', '@babel/preset-react'],
                 },
             },
             {

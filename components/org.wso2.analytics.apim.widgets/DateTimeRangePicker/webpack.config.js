@@ -17,7 +17,6 @@
  */
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const widgetConf = require("./resources/widgetConf.json");
-const SimpleProgressWebpackPlugin = require("simple-progress-webpack-plugin");
 
 const APP_NAME = widgetConf.id;
 
@@ -65,7 +64,6 @@ module.exports = {
       {
         from: "./resources/widgetConf.json"
       }
-    ]),
-    new SimpleProgressWebpackPlugin()
+    ])
   ]
 };
