@@ -12,9 +12,9 @@
         "config": {
           "datasourceName": "AM_DB",
           "queryData": {
-            "sublistquery": "select sub.USER_ID from AM_SUBSCRIBER sub {{tablesNames}} where sub.TENANT_ID='{{tenantId}}' {{subscriptionCondition}}",
+            "sublistquery": "select sub.USER_ID from AM_SUBSCRIBER sub {{tablesNames}} where sub.TENANT_ID='{{tenantId}}' {{subscriptionCondition}}",
             "apilistquery": "select API_NAME from AM_API where CONTEXT {{contextCondition}} {{createdBy}}",
-            "mainquery": "select count(app.APPLICATION_ID) as count, app.CREATED_TIME, app.NAME, app.CREATED_BY as time from AM_APPLICATION app, AM_SUBSCRIBER sub {{subscriptionTable}} where sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND sub.TENANT_ID='{{tenantId}}' {{subscription}} {{apiName}} {{apiProvider}} {{subscriberId}} AND app.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by app.CREATED_TIME, app.APPLICATION_ID"
+            "mainquery": "select count(app.APPLICATION_ID) as count, app.CREATED_TIME, app.NAME, app.CREATED_BY as time from AM_APPLICATION app, AM_SUBSCRIBER sub {{subscriptionTable}} where sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND sub.TENANT_ID='{{tenantId}}' {{subscription}} {{apiName}} {{apiProvider}} {{subscriberId}} AND app.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by app.CREATED_TIME, app.APPLICATION_ID"
           },
           "tableName": "{{tableName}}",
           "incrementalColumn": "{{incrementalColumn}}",
