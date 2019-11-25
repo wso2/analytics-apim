@@ -19,6 +19,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { CustomTableToolbar } from '@analytics-apim/common-lib';
+import { FormattedMessage } from 'react-intl';
+import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -27,7 +30,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
-import CustomTableToolbar from './CustomTableToolbar';
 
 /**
  * Compare two values and return the result
@@ -202,6 +204,23 @@ class CustomTable extends React.Component {
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
+        const menuItems = [
+            <MenuItem value='apiname'>
+                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='version'>
+                <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
+            </MenuItem>,
+            <MenuItem value='context'>
+                <FormattedMessage id='table.heading.context' defaultMessage='CONTEXT' />
+            </MenuItem>,
+            <MenuItem value='destination'>
+                <FormattedMessage id='table.heading.destination' defaultMessage='DESTINATION ADDRESS' />
+            </MenuItem>,
+            <MenuItem value='hits'>
+                <FormattedMessage id='table.heading.hits' defaultMessage='HITS' />
+            </MenuItem>,
+        ];
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar
@@ -211,6 +230,8 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title='API BACKEND USAGE SUMMARY'
+                    menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>

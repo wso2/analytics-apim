@@ -19,6 +19,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { CustomTableToolbar } from '@analytics-apim/common-lib';
+import { FormattedMessage } from 'react-intl';
+import MenuItem from '@material-ui/core/MenuItem';
 import Moment from 'moment';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -29,8 +32,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
-import CustomTableToolbar from './CustomTableToolbar';
-
 /**
  * Compare two values and return the result
  * @param {object} a - data field
@@ -209,6 +210,17 @@ class CustomTable extends React.Component {
         } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
+        const menuItems = [
+            <MenuItem value='apiname'>
+                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='appname'>
+                <FormattedMessage id='table.heading.appname' defaultMessage='APP NAME' />
+            </MenuItem>,
+            <MenuItem value='subscribedtime'>
+                <FormattedMessage id='table.heading.subscribedtime' defaultMessage='SUBSCRIBED TIME' />
+            </MenuItem>,
+        ];
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar
@@ -218,6 +230,8 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title='SUBSCRIBED TIMES'
+                    menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
