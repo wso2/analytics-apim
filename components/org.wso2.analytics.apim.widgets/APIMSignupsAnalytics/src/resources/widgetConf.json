@@ -12,7 +12,7 @@
         "config": {
           "datasourceName": "AM_DB",
           "queryData": {
-            "query" : "select USER_ID, CREATED_TIME, count(SUBSCRIBER_ID) as count from AM_SUBSCRIBER where TENANT_ID={{tenantId}} AND CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by CREATED_TIME, SUBSCRIBER_ID"
+            "query" : "select USER_ID, CREATED_TIME, count(SUBSCRIBER_ID) as count from AM_SUBSCRIBER where TENANT_ID={{tenantId}} AND CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by CREATED_TIME, USER_ID"
           },
           "tableName": "AM_SUBSCRIBER",
           "incrementalColumn": "CREATED_TIME",
