@@ -12,8 +12,8 @@
         "config" : {
           "datasourceName": "AM_DB",
           "queryData" : {
-            "totalQuery": "SELECT count(app.APPLICATION_ID) as count, APPLICATION_ID from AM_APPLICATION app,AM_SUBSCRIBER sub where sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND sub.TENANT_ID='{{tenantId}}' group by app.APPLICATION_ID",
-            "weekQuery": "SELECT count(app.APPLICATION_ID) as count, APPLICATION_ID from AM_APPLICATION app,AM_SUBSCRIBER sub where sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND sub.TENANT_ID='{{tenantId}}' AND app.CREATED_TIME between '{{weekStart}}' AND '{{weekEnd}}' group by app.APPLICATION_ID"
+            "totalQuery": "SELECT count(app.APPLICATION_ID) as count from AM_APPLICATION app,AM_SUBSCRIBER sub where sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND sub.TENANT_ID='{{tenantId}}' group by app.APPLICATION_ID",
+            "weekQuery": "SELECT count(app.APPLICATION_ID) as count from AM_APPLICATION app,AM_SUBSCRIBER sub where sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND sub.TENANT_ID='{{tenantId}}' AND app.CREATED_TIME between '{{weekStart}}' AND '{{weekEnd}}' group by app.APPLICATION_ID"
           },
           "tableName": "AM_APPLICATION",
           "incrementalColumn": "APPLICATION_ID",

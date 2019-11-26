@@ -12,8 +12,8 @@
         "config" : {
           "datasourceName": "AM_DB",
           "queryData" : {
-            "totalQuery" : "select count(SUBSCRIBER_ID) as count, SUBSCRIBER_ID from AM_SUBSCRIBER where TENANT_ID={{tenantId}} group by SUBSCRIBER_ID",
-            "weekQuery" : "select count(SUBSCRIBER_ID) as count, SUBSCRIBER_ID from AM_SUBSCRIBER where TENANT_ID={{tenantId}} and CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}' group by SUBSCRIBER_ID"
+            "totalQuery" : "select count(SUBSCRIBER_ID) as count from AM_SUBSCRIBER where TENANT_ID={{tenantId}} group by SUBSCRIBER_ID",
+            "weekQuery" : "select count(SUBSCRIBER_ID) as count from AM_SUBSCRIBER where TENANT_ID={{tenantId}} and CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}' group by SUBSCRIBER_ID"
           },
           "tableName": "AM_SUBSCRIBER",
           "incrementalColumn": "SUBSCRIBER_ID",
