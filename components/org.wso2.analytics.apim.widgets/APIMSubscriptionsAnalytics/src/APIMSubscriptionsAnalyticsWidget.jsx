@@ -277,7 +277,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             let config = dataProviderConfigs.configs.config;
 
             config.tableName = 'AM_SUBSCRIPTION';
-            config.incrementalColumn = 'subc.CREATED_TIME';
+            config.incrementalColumn = 'CREATED_TIME';
             config.queryData.queryName = 'mainquery';
             config.queryData.queryValues = {
                 '{{providerCondition}}': apiCreatedBy !== 'All' ?

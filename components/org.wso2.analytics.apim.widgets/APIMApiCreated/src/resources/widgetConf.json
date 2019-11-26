@@ -12,8 +12,8 @@
         "config" : {
           "datasourceName": "AM_DB",
           "queryData" : {
-            "totalQuery": "select COUNT(API_ID) as count from AM_API where CONTEXT {{contextCondition}} group by API_ID",
-            "weekQuery" : "select COUNT(API_ID) as count from AM_API where CONTEXT {{contextCondition}} and CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}' group by API_ID"
+            "totalQuery": "select COUNT(API_ID) as count, API_ID from AM_API where CONTEXT {{contextCondition}} group by API_ID",
+            "weekQuery" : "select COUNT(API_ID) as count, API_ID from AM_API where CONTEXT {{contextCondition}} and CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}' group by API_ID"
           },
           "tableName": "AM_API",
           "incrementalColumn": "API_ID",
