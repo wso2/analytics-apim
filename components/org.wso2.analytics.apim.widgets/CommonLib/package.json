@@ -1,0 +1,20 @@
+{
+  "name": "@analytics-apim/common-lib",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "files": [
+    "/dist"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/babel src -d dist --copy-files",
+    "dev": "./node_modules/.bin/babel src -d dist --copy-files --watch --source-maps"
+  },
+  "author": "",
+  "peerDependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.7.4"
+  },
+  "dependencies": {}
+}

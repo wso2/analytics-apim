@@ -20,6 +20,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { CustomTableToolbar } from '@analytics-apim/common-lib';
+import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -30,8 +32,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
-import CustomTableToolbar from './CustomTableToolbar';
-
 /**
  * Compare two values and return the result
  * @param {object} a - data field
@@ -215,6 +215,14 @@ class CustomTable extends React.Component {
             : data;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
+        const menuItems = [
+            <MenuItem value='username'>
+                <FormattedMessage id='table.heading.username' defaultMessage='USERNAME' />
+            </MenuItem>,
+            <MenuItem value='hits'>
+                <FormattedMessage id='table.heading.hits' defaultMessage='HITS' />
+            </MenuItem>,
+        ];
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar
@@ -224,6 +232,8 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title='TOP APPLICATION USERS'
+                    menuItems={menuItems}
                 />
                 {
                     inProgress ? (

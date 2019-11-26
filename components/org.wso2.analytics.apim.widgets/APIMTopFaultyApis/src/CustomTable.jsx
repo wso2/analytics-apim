@@ -19,6 +19,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { CustomTableToolbar } from '@analytics-apim/common-lib';
+import { FormattedMessage } from 'react-intl';
+import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -27,8 +30,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
-import CustomTableToolbar from './CustomTableToolbar';
-
 /**
  * Compare two values and return the result
  * @param {object} a - data field
@@ -194,6 +195,14 @@ class CustomTable extends React.Component {
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
+        const menuItems = [
+            <MenuItem value='apiname'>
+                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='faultcount'>
+                <FormattedMessage id='table.heading.faultcount' defaultMessage='FAULT COUNT' />
+            </MenuItem>,
+        ];
         return (
             <Paper className={classes.root}>
                 <CustomTableToolbar
@@ -203,6 +212,8 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title='TOP FAULTY APIS'
+                    menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>

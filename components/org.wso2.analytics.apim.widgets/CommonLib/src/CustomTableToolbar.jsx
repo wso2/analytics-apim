@@ -26,7 +26,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import Collapse from '@material-ui/core/Collapse';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -65,7 +64,7 @@ const styles = theme => ({
  */
 function CustomTableToolbar(props) {
     const {
-        classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, query,
+        classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, query, title, menuItems
     } = props;
 
     return (
@@ -73,7 +72,7 @@ function CustomTableToolbar(props) {
             <div className={classes.root}>
                 <div className={classes.title}>
                     <Typography variant='h6' id='tableTitle'>
-                        <FormattedMessage id='table.heading' defaultMessage='SIGNED UP TIMES' />
+                        <FormattedMessage id='widget.heading' defaultMessage={title} />
                     </Typography>
                 </div>
                 <div className={classes.actions}>
@@ -112,12 +111,7 @@ function CustomTableToolbar(props) {
                         }}
                         margin='normal'
                     >
-                        <MenuItem value='developer'>
-                            <FormattedMessage id='table.heading.developer' defaultMessage='DEVELOPER' />
-                        </MenuItem>
-                        <MenuItem value='signeduptime'>
-                            <FormattedMessage id='table.heading.signeduptime' defaultMessage='SIGNED UP TIME' />
-                        </MenuItem>
+                        { menuItems }
                     </TextField>
                     <TextField
                         id='query-search'

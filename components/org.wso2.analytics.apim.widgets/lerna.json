@@ -1,5 +1,6 @@
 {
   "packages": [
+    "CommonLib",
     "APIMApiCreated",
     "APIMAppCreated",
     "APIMSubscriptions",
@@ -33,5 +34,5 @@
     "APIMGeoBasedInvocations",
     "DateTimeRangePicker"
   ],
-  "version": "0.0.0"
+  "version": "1.0.0"
 }
