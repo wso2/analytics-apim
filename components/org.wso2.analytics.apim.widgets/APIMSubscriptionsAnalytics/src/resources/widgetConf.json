@@ -13,7 +13,7 @@
           "datasourceName": "AM_DB",
           "queryData": {
             "apilistquery":"select API_NAME from AM_API where CONTEXT {{contextCondition}}",
-            "mainquery": "select count(subc.SUBSCRIPTION_ID), subc.CREATED_TIME, api.API_NAME, api.CREATED_BY, app.NAME, app.CREATED_BY from AM_API api, AM_APPLICATION app, AM_SUBSCRIPTION subc where api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID AND api.CONTEXT {{contextCondition}} {{providerCondition}} {{apiName}} AND subc.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by subc.CREATED_TIME, subc.SUBSCRIPTION_ID"
+            "mainquery": "select count(subc.SUBSCRIPTION_ID), subc.CREATED_TIME, api.API_NAME, api.CREATED_BY, app.NAME, app.CREATED_BY from AM_API api, AM_APPLICATION app, AM_SUBSCRIPTION subc where api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID AND api.CONTEXT {{contextCondition}} {{providerCondition}} {{apiName}} AND subc.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by subc.CREATED_TIME, subc.SUBSCRIPTION_ID"
           },
           "tableName": "{{tableName}}",
           "incrementalColumn": "{{incrementalColumn}}",
