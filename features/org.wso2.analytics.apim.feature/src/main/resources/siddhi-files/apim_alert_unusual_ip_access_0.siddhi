@@ -103,3 +103,4 @@ update or
 insert into ApimIPAccessAlertCount
 set ApimIPAccessAlertCount.requestCount = ApimIPAccessAlertCount.requestCount + requestCount
  	on ApimIPAccessAlertCount.applicationConsumerKey == applicationConsumerKey and ApimIPAccessAlertCount.username == username;
+

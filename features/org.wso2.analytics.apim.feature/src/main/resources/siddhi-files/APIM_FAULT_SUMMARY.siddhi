@@ -46,3 +46,4 @@ from FaultStream
 select apiName, apiVersion, apiCreator, apiCreatorTenantDomain, apiContext, applicationConsumerKey, hostname, applicationId, applicationName, requestTimestamp, count() as totalFaultCount, 'default' as regionalID
 group by apiContext, applicationId, hostname
 aggregate by requestTimestamp every seconds...year;
+

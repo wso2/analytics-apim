@@ -154,3 +154,4 @@ select apiContext, apiName, apiVersion, apiCreator,apiCreatorTenantDomain, appli
 update or insert into ApiLastAccessSummary
 set ApiLastAccessSummary.apiContext = apiContext, ApiLastAccessSummary.apiVersion = apiVersion, ApiLastAccessSummary.applicationOwner = applicationOwner, ApiLastAccessSummary.lastAccessTime = lastAccessTime
 on ApiLastAccessSummary.apiName == apiName and ApiLastAccessSummary.apiCreatorTenantDomain == apiCreatorTenantDomain and ApiLastAccessSummary.apiCreator == apiCreator;
+
