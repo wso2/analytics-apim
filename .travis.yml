@@ -1,0 +1,11 @@
+language: java
+
+os:
+  - linux
+  - osx
+
+script: mvn clean install
+
+cache:
+  directories:
+   - $HOME/.m2
