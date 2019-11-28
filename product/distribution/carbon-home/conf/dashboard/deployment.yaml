@@ -389,6 +389,7 @@ auth.configs:
     grantType: authorization_code
     publisherUrl: https://localhost:9443
     #storeUrl: https://localhost:9443
+    externalLogoutUrl: https://localhost:9443/oidc/logout
 
 wso2.dashboard:
   roles:
