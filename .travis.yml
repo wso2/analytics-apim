@@ -2,7 +2,9 @@ language: java
 
 os:
   - linux
-  - osx
+
+jdk:
+- openjdk8
 
 script: mvn clean install
 
