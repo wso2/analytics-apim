@@ -12,8 +12,8 @@
         "config": {
           "datasourceName": "AM_DB",
           "queryData": {
-            "apilistquery":"select API_NAME from AM_API where CONTEXT {{contextCondition}}",
-            "mainquery": "select count(subc.SUBSCRIPTION_ID), subc.CREATED_TIME, api.API_NAME, api.CREATED_BY, app.NAME, app.CREATED_BY from AM_API api, AM_APPLICATION app, AM_SUBSCRIPTION subc where api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID AND api.CONTEXT {{contextCondition}} {{providerCondition}} {{apiName}} AND subc.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by subc.CREATED_TIME, subc.SUBSCRIPTION_ID, api.API_NAME, api.CREATED_BY, app.NAME, app.CREATED_BY"
+            "apilistquery":"select API_NAME, API_ID from AM_API where CONTEXT {{contextCondition}}",
+            "mainquery": "select count(subc.SUBSCRIPTION_ID) as count, subc.CREATED_TIME as CREATED_TIME, api.API_NAME, api.CREATED_BY as API_CREATED_BY, app.NAME, app.CREATED_BY as APP_CREATED_BY from AM_API api, AM_APPLICATION app, AM_SUBSCRIPTION subc where api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID AND api.CONTEXT {{contextCondition}} {{providerCondition}} {{apiName}} AND (subc.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}') group by api.API_NAME, subc.CREATED_TIME, api.CREATED_BY, app.NAME, app.CREATED_BY"
           },
           "tableName": "{{tableName}}",
           "incrementalColumn": "{{incrementalColumn}}",
