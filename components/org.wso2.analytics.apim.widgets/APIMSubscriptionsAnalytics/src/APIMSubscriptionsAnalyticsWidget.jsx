@@ -277,12 +277,12 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             let config = dataProviderConfigs.configs.config;
 
             config.tableName = 'AM_SUBSCRIPTION';
-            config.incrementalColumn = 'subc.CREATED_TIME';
+            config.incrementalColumn = 'CREATED_TIME';
             config.queryData.queryName = 'mainquery';
             config.queryData.queryValues = {
                 '{{providerCondition}}': apiCreatedBy !== 'All' ?
-                    'AND api.API_PROVIDER = \'{{username}}\'' : '',
-                '{{username}}': username,
+                    ' AND api.API_PROVIDER = \'{{username}}\'' : '',
+                '{{username}}': ' ' + username,
                 '{{apiName}}': subscribedTo !== 'All' ? 'AND api.API_NAME=\'' + subscribedTo + '\'' : '',
                 '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
                 '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss')

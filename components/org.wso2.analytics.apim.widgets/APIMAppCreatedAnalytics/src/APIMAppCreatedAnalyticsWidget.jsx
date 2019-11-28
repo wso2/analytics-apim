@@ -255,7 +255,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         let config = dataProviderConfigs.configs.config;
 
         config.tableName = 'AM_SUBSCRIBER';
-        config.incrementalColumn = 'sub.SUBSCRIBER_ID';
+        config.incrementalColumn = 'SUBSCRIBER_ID';
         config.queryData.queryName = 'sublistquery';
         config.queryData.queryValues = {
             '{{tablesNames}}': apiCreatedBy !== 'All' ?
@@ -358,7 +358,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         config.queryData.queryName = 'mainquery';
 
         config.tableName = 'AM_APPLICATION';
-        config.incrementalColumn = 'app.CREATED_TIME';
+        config.incrementalColumn = 'CREATED_TIME';
         config.queryData.queryValues = {
             '{{subscriptionTable}}':
                 (appCreatedBy !== 'All' || subscribedTo !== 'All') ? ', AM_API api, AM_SUBSCRIPTION subc' : '',
