@@ -69,3 +69,4 @@ insert into reqCountTempStreamInterm;
 from reqCountTempStreamInterm
 select apiName, ifThenElse(str:length(apiVersion)>100,str:substr(apiVersion,0,100), apiVersion) as apiVersion, ifThenElse(str:length(apiCreator)>150, str:substr(apiCreator,0,150), apiCreator) as apiCreator, ifThenElse(str:length(apiCreatorTenantDomain)>150, str:substr(apiCreatorTenantDomain,0,150), apiCreatorTenantDomain) as apiCreatorTenantDomain, applicationName, successCount, throttleCount,timestamp
 insert into reqCountTempStream;
+

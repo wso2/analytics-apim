@@ -98,3 +98,4 @@ insert into TierLimitHittingAlertStream;
 from SuppressedTemporaryUserStream
 select ifThenElse(userTenantDomain == 'carbon.super', str:concat(subscriber, "@carbon.super"), subscriber) as subscriber, ifThenElse(apiCreatorTenantDomain == 'carbon.super', str:concat(apiCreator, "@carbon.super"), apiCreator) as apiCreator, apiName, applicationId, applicationName, apiCreatorTenantDomain, userTenantDomain, str:concat("User ", username, " frequently crosses the limit set.") as message, 3 as severity, (time:timestampInMilliseconds()) as alertTimestamp
 insert into TierLimitHittingAlertStream;
+
