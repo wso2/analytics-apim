@@ -71,6 +71,9 @@ export default function APIMApiCreatedAnalytics(props) {
             justifyContent: 'center',
             height: height,
         },
+        formLabel: {
+            whiteSpace: 'nowrap',
+        },
     };
     const createdDataProps = {
         themeName, chartData, tableData, xAxisTicks, maxCount,
@@ -104,7 +107,11 @@ export default function APIMApiCreatedAnalytics(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='createdBy-label-placeholder'>
+                            <InputLabel
+                                shrink
+                                htmlFor='createdBy-label-placeholder'
+                                style={styles.formLabel}
+                            >
                                 <FormattedMessage id='createdBy.label' defaultMessage='Created By' />
                             </InputLabel>
                             <Select
