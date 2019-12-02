@@ -236,7 +236,7 @@ class APIMTopApiUsersWidget extends Widget {
 
     /**
      * Retrieve API list from APIM server
-     * @memberof APIMOverallApiUsageWidget
+     * @memberof APIMTopApiUsersWidget
      * */
     assembleApiListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)

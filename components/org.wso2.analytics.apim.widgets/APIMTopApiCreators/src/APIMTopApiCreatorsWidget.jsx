@@ -180,7 +180,7 @@ class APIMTopApiCreatorsWidget extends Widget {
 
     /**
      * Retrieve API list from APIM server
-     * @memberof APIMOverallApiUsageWidget
+     * @memberof APIMTopApiCreatorsWidget
      * */
     assembleApiListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
@@ -201,7 +201,7 @@ class APIMTopApiCreatorsWidget extends Widget {
     /**
      * Formats data retrieved from assembleApiListQuery
      * @param {object} data - data retrieved
-     * @memberof APIMOverallApiUsageWidget
+     * @memberof APIMTopApiCreatorsWidget
      * */
     handleApiListReceived(data) {
         const { list } = data;
