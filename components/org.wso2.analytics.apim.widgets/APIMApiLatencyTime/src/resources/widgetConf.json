@@ -14,7 +14,7 @@
           "queryData": {
             "apiidquery": "from AM_API on {{apiCondition}} select API_ID,API_NAME,API_VERSION,API_PROVIDER;",
             "resourcequery": "from AM_API_URL_MAPPING on API_ID=={{apiID}} select URL_PATTERN,HTTP_METHOD;",
-            "mainquery": "from ApiExeTime on apiCreatorTenantDomain=='{{tenantDomain}}' {{querystring}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select responseTime,securityLatency,throttlingLatency,requestMedLat,responseMedLat,backendLatency,otherLatency,AGG_TIMESTAMP;"
+            "mainquery": "from ApiExeTime on apiCreatorTenantDomain=='{{tenantDomain}}' {{querystring}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select responseTime,securityLatency,throttlingLatency,requestMedLat,responseMedLat,backendLatency,otherLatency,AGG_TIMESTAMP,apiResourceTemplate having ((str:length(apiResourceTemplate) - str:length(str:replaceAll(apiResourceTemplate,',',''))) == {{numberOfCommas}}"
           },
           "publishingInterval": 60
         }

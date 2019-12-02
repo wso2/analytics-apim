@@ -35,6 +35,8 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import VizG from 'react-vizgrammar';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
 
 /**
  * React Component for APIM Api Latency Time widget body
@@ -45,7 +47,7 @@ export default function APIMApiLatency(props) {
     const {
         themeName, queryParam, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, inProgress,
         apiVersion, latencyData, apilist, versionlist, resourceList, apiCreatedHandleChange, apiSelectedHandleChange,
-        apiVersionHandleChange, apiResourceHandleChange,
+        apiVersionHandleChange, apiOperationHandleChange, apiResourceHandleChange
     } = props;
     const styles = {
         headingWrapper: {
@@ -96,6 +98,17 @@ export default function APIMApiLatency(props) {
             height,
         },
     };
+
+    //Check whether the API is graphQL.
+    // Evaluated by checking the method of the first resource.
+    let isGraphQL;
+    if(resourceList.length > 0) {
+        const resFormat = resourceList[0].split(' (');
+        const method = resFormat[1].replace(')', '');
+        isGraphQL = (method === 'QUERY' || method === 'MUTATION' || method === 'SUBSCRIPTION');
+    }
+
+
     return (
         <Scrollbars
             style={{ height }}
@@ -186,14 +199,16 @@ export default function APIMApiLatency(props) {
                             <FormLabel component='legend'>
                                 <FormattedMessage id='resources.label' defaultMessage='Resources' />
                             </FormLabel>
+                            {
+                            isGraphQL ? (
                             <FormGroup>
                                 {
                                     resourceList.map(option => (
                                         <FormControlLabel
                                             control={(
                                                 <Checkbox
-                                                    checked={queryParam.resSelected.includes(option.toString())}
-                                                    onChange={apiResourceHandleChange}
+                                                    checked={queryParam.operationSelected.includes(option.toString())}
+                                                    onChange={apiOperationHandleChange}
                                                     value={option.toString()}
                                                 />
                                             )}
@@ -202,7 +217,24 @@ export default function APIMApiLatency(props) {
                                     ))
                                 }
                             </FormGroup>
-                            <FormHelperText>Select 1 or more resources</FormHelperText>
+                             ) : (
+                            <RadioGroup>
+                            {
+                                resourceList.map(option => (
+                                    <FormControlLabel
+                                        control={(
+                                            <Radio
+                                                checked={queryParam.resourceSelected.includes(option.toString())}
+                                                onChange={apiResourceHandleChange}
+                                                value={option.toString()}
+                                            />
+                                        )}
+                                        label={option}
+                                    />
+                                ))
+                            }
+                        </RadioGroup> )
+                        }
                         </FormControl>
                     </form>
                 </div>
@@ -265,5 +297,6 @@ APIMApiLatency.propTypes = {
     apiCreatedHandleChange: PropTypes.func.isRequired,
     apiSelectedHandleChange: PropTypes.func.isRequired,
     apiVersionHandleChange: PropTypes.func.isRequired,
+    apiOperationHandleChange: PropTypes.func.isRequired,
     apiResourceHandleChange: PropTypes.func.isRequired,
 };
