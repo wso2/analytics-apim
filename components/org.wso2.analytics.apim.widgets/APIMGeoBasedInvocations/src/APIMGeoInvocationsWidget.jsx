@@ -202,7 +202,6 @@ class APIMGeoInvocationsWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
-
     /**
      * Get username of the logged in user
      */
@@ -324,7 +323,7 @@ class APIMGeoInvocationsWidget extends Widget {
 
     /**
      * Formats the siddhi query - apilistquery
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMGeoInvocationsWidget
      * */
     assembleApiDataQuery() {
         this.resetState();
@@ -354,14 +353,14 @@ class APIMGeoInvocationsWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, latencyData: [] });
+            this.setState({ inProgress: false, geoData: [] });
         }
     }
 
     /**
      * Formats data retrieved from assembleApiIdQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMGeoInvocationsWidget
      * */
     handleApiIdReceived(message) {
         const { id } = this.props;

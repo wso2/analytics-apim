@@ -186,7 +186,6 @@ class APIMApiRatingsWidget extends Widget {
      * @memberof APIMApiRatingsWidget
      * */
     assembleAPIListQuery() {
-        this.resetState();
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
                 this.setState({ proxyError: null });

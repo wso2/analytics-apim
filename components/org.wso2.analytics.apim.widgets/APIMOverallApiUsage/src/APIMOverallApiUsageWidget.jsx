@@ -460,7 +460,6 @@ class APIMOverallApiUsageWidget extends Widget {
     limitHandleChange(event) {
         const { apiCreatedBy } = this.state;
         const { id } = this.props;
-
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(apiCreatedBy, parseInt(limit, 10));
