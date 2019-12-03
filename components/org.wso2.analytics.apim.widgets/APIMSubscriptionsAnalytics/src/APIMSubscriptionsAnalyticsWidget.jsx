@@ -250,7 +250,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         if (data) {
             let apilist = data.map((dataUnit) => { return dataUnit[0];} );
             apilist = [...new Set(apilist)];
-            apilist.sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             apilist.unshift('All');
             this.setState({ apilist });
             this.setQueryParam(apiCreatedBy, subscribedTo);

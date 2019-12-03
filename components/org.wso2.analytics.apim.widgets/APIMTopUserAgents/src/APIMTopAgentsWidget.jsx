@@ -298,16 +298,7 @@ class APIMTopAgentsWidget extends Widget {
                     versionlist.push(dataUnit.version);
                 }
             });
-
-            apilist.sort((a,b)=> {
-                if (b.toLowerCase() > a.toLowerCase()) {
-                    return -1;
-                }
-                if (b.toLowerCase() < a.toLowerCase()) {
-                    return 1;
-                }
-                return 0;
-            });
+            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             apilist.unshift('All');
             this.setState({ apilist, versionlist });
         }

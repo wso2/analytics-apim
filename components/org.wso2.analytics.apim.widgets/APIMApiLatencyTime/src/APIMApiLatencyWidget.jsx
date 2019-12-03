@@ -437,7 +437,7 @@ class APIMApiLatencyWidget extends Widget {
                 versionMap[dataUnit[1]] = versionlist;
             });
             apilist = [...new Set(apilist)];
-            apilist.sort();
+            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             this.setState({ apilist, versionMap, apiFullData: data, apiSelected });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
