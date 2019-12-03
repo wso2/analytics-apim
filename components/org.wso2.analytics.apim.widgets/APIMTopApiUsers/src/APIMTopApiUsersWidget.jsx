@@ -239,6 +239,7 @@ class APIMTopApiUsersWidget extends Widget {
      * @memberof APIMTopApiUsersWidget
      * */
     assembleApiListQuery() {
+        this.resetState();
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
                 this.setState({ proxyError: null });
