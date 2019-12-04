@@ -597,7 +597,7 @@ class APIMApiLatencyWidget extends Widget {
      * @param {string} apiSelected - API Name menu option selected
      * @param {string} apiVersion - API Version menu option selected
      * @param {string} operationSelected - Resources selected
-     * @memberof APIMApiResponseWidget
+     * @memberof APIMApiLatencyWidget
      * */
     setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected) {
         super.setGlobalState(queryParamKey, {

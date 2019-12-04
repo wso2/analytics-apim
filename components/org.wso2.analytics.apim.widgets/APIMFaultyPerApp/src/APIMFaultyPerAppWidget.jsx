@@ -282,7 +282,7 @@ class APIMFaultyPerAppWidget extends Widget {
     /**
      * Formats data retrieved from assembleAppQuery
      * @param {object} message - data retrieved
-     * @memberof APIMAppResourceUsageWidget
+     * @memberof APIMFaultyPerAppWidget
      * */
     handleAppIdDataReceived(message) {
         const { data } = message;
