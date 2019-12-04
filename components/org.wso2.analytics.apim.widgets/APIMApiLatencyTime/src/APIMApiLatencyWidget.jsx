@@ -360,6 +360,7 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     assembleApiListQuery() {
+        this.resetState();
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
                 this.setState({ proxyError: null });
@@ -447,7 +448,7 @@ class APIMApiLatencyWidget extends Widget {
                 versionMap[dataUnit[1]] = versionlist;
             });
             apilist = [...new Set(apilist)];
-            apilist.sort();
+            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             this.setState({ apilist, versionMap, apiFullData: data, apiSelected });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
