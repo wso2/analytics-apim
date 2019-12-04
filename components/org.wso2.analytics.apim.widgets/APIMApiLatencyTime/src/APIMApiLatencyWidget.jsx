@@ -94,7 +94,7 @@ class APIMApiLatencyWidget extends Widget {
                 {
                     type: 'line',
                     y: 'Response Time',
-                    fill: '#4555bb',
+                    fill: '#1a911c',
                 },
                 {
                     type: 'line',
@@ -132,6 +132,8 @@ class APIMApiLatencyWidget extends Widget {
             height: 400,
             interactiveLegend: true,
             legend: true,
+            timeFormat: '%Y-%m-%d %H:%M:%S',
+            tipTimeFormat: '%Y-%m-%d %H:%M:%S',
             style: {
                 xAxisTickAngle: -8,
                 tickLabelColor: '#a7b0c8',
@@ -200,7 +202,7 @@ class APIMApiLatencyWidget extends Widget {
             inProgress: true,
             metadata: this.metadata,
             chartConfig: this.chartConfig,
-            proxyError: null,
+            proxyError: null
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -310,6 +312,7 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     resetState() {
+        this.setState({inProgress: true, latencyData: [] });
         const queryParam = super.getGlobalState(queryParamKey);
         let {
             apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected
@@ -534,7 +537,7 @@ class APIMApiLatencyWidget extends Widget {
                 });
 
                 for (let i = 0; i < operations.length - 1; i++) {
-                  operationsString += 'str:contains(apiResourceTemplate,' + '\'' + operations[i] + '\' ) AND ';
+                  operationsString += 'str:contains(apiResourceTemplate,' + '\'' + operations[i] + '\') AND ';
                 }
                 operationsString += 'str:contains(apiResourceTemplate,' + '\'' + operations[operations.length -1] + '\'' + ')';
 
@@ -579,7 +582,7 @@ class APIMApiLatencyWidget extends Widget {
             } = this.state;
             const latencyData = data.map((dataUnit) => {
                 return ([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4],
-                    dataUnit[5], dataUnit[6], Moment(dataUnit[7]).format('YYYY-MMM-DD HH:mm:ss')]);
+                    dataUnit[5], dataUnit[6], Moment(dataUnit[7]).format('YYYY-MMM-DD HH:mm:ss Z')]);
             });
             this.setState({ latencyData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected);

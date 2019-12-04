@@ -36,7 +36,7 @@ class DateTimePicker extends Widget {
       width: this.props.width,
       granularityMode: null,
       customRangeGranularityValue: 'day',
-      quickRangeGranularityValue: '3 Months',
+      quickRangeGranularityValue: '1 Month',
       granularityValue: '',
       options: this.props.configs ? this.props.configs.options : {},
       enableSync: false,
@@ -214,7 +214,7 @@ class DateTimePicker extends Widget {
    *    */
   getDefaultTimeRange = () => {
     const { options } = this.state;
-    const defaultTimeRange = options.defaultValue || '3 Months';
+    const defaultTimeRange = '1 Month';
     const minGranularity = options.availableGranularities || 'From Second';
     let availableViews = [];
     switch (minGranularity) {
