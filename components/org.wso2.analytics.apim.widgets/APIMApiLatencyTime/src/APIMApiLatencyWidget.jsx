@@ -582,7 +582,7 @@ class APIMApiLatencyWidget extends Widget {
             } = this.state;
             const latencyData = data.map((dataUnit) => {
                 return ([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4],
-                    dataUnit[5], dataUnit[6], Moment(dataUnit[7]).format('YYYY-MMM-DD HH:mm:ss Z')]);
+                    dataUnit[5], dataUnit[6], dataUnit[7]]);
             });
             this.setState({ latencyData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected);
