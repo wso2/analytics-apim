@@ -1,5 +1,6 @@
 {
   "all.menuItem": "All",
+  "apim.server.error.heading" : "Error !",
   "apiName.label": "API Name",
   "apiVersion.label": "API Version",
   "config.error.body": "Cannot fetch provider configuration for APIM Top Platforms widget",

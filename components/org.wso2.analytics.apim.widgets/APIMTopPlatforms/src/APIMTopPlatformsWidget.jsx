@@ -100,6 +100,17 @@ class APIMTopPlatformsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
+            },
         };
 
         this.state = {
@@ -115,6 +126,7 @@ class APIMTopPlatformsWidget extends Widget {
             platformData: null,
             localeMessages: null,
             inProgress: true,
+            proxyError: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -134,6 +146,7 @@ class APIMTopPlatformsWidget extends Widget {
         this.handleLimitChange = this.handleLimitChange.bind(this);
         this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
+        this.getUsername = this.getUsername.bind(this);
     }
 
     componentWillMount() {
@@ -147,6 +160,7 @@ class APIMTopPlatformsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -203,23 +217,24 @@ class APIMTopPlatformsWidget extends Widget {
      * @memberof APIMTopPlatformsWidget
      * */
     resetState() {
+        const { apilist, versionlist } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy } = queryParam;
-        let { apiSelected } = queryParam;
-        let { apiVersion } = queryParam;
-        let { limit } = queryParam;
-        if (!apiCreatedBy) {
+        let { apiCreatedBy, apiSelected, apiVersion, limit } = queryParam;
+
+        if (!apiCreatedBy|| !(apiCreatedBy in createdByKeys)) {
             apiCreatedBy = 'All';
         }
-        if (!apiSelected) {
+        if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
             apiSelected = 'All';
-        }
-        if (!apiVersion) {
             apiVersion = 'All';
         }
-        if (!limit) {
+        if (!apiVersion || (versionlist && !versionlist.includes(apiVersion))) {
+            apiVersion = 'All';
+        }
+        if (!limit || limit < 0) {
             limit = 5;
         }
+
         this.setState({
             apiCreatedBy, apiSelected, apiVersion, limit,
         });
@@ -227,65 +242,70 @@ class APIMTopPlatformsWidget extends Widget {
     }
 
     /**
-     * Formats the siddhi query - apilistquery
-     * @memberof APIMTopPlatformsWidget
-     * */
-    assembleApiListQuery() {
-        this.resetState();
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data retrieved from assembleApiListQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMTopPlatformsWidget
-     * */
-    handleApiListReceived(message) {
-        const { data } = message;
-        const {
-            apiCreatedBy, apiSelected, apiVersion, limit,
-        } = this.state;
-        const { id } = this.props;
+     * Get username of the logged in user
+     */
+    getUsername() {
         let { username } = super.getCurrentUser();
         // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
         // are saved without tenant suffix
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
+        this.setState({ username })
+    }
 
-        if (data) {
-            const apilist = ['All'];
+    /**
+     * Retrieve API list from APIM server
+     * @memberof APIMTopPlatformsWidget
+     * */
+    assembleApiListQuery() {
+        this.resetState();
+        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
+            .then((response) => {
+                this.setState({ proxyError: null });
+                this.handleApiListReceived(response.data);
+            })
+            .catch(error => {
+                if (error.response && error.response.data) {
+                    let proxyError = error.response.data;
+                    proxyError = proxyError.split(':').splice(1).join('').trim();
+                    this.setState({ proxyError, inProgress: false });
+                }
+                console.error(error);
+            });
+    }
+
+    /**
+     * Formats data retrieved from assembleApiListQuery
+     * @param {object} data - data retrieved
+     * @memberof APIMTopPlatformsWidget
+     * */
+    handleApiListReceived(data) {
+        let { list } = data;
+        const { id } = this.props;
+        const { username } = this.state;
+        const queryParam = super.getGlobalState(queryParamKey);
+        const { apiSelected, apiCreatedBy  } = queryParam;
+
+        if (list) {
+            const apilist = [];
             const versionlist = ['All'];
 
-            if (apiCreatedBy === createdByKeys.All) {
-                data.forEach((dataUnit) => {
-                    if (!apilist.includes(dataUnit[0])) {
-                        apilist.push(dataUnit[0]);
-                    }
-                    if (apiSelected === dataUnit[0]) {
-                        versionlist.push(dataUnit[1]);
-                    }
-                });
-            } else if (apiCreatedBy === createdByKeys.Me) {
-                data.forEach((dataUnit) => {
-                    if (username === dataUnit[2]) {
-                        if (!apilist.includes(dataUnit[0])) {
-                            apilist.push(dataUnit[0]);
-                        }
-                        if (apiSelected === dataUnit[0]) {
-                            versionlist.push(dataUnit[1]);
-                        }
-                    }
-                });
+            if (apiCreatedBy !== 'All') {
+                list = list.filter((dataUnit) =>  dataUnit.provider === username );
             }
+
+            list.forEach((dataUnit) => {
+                if (!apilist.includes(dataUnit.name)) {
+                    apilist.push(dataUnit.name);
+                }
+                if (apiSelected === dataUnit.name) {
+                    versionlist.push(dataUnit.version);
+                }
+            });
+            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+            apilist.unshift('All');
             this.setState({ apilist, versionlist });
-            this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
@@ -305,47 +325,26 @@ class APIMTopPlatformsWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         if (apilist && apilist.length > 1) {
-            const apilistSliced = apilist.slice(1);
-            const last = apilist.slice(-1)[0];
-            let text = "apiName=='";
-            apilistSliced.forEach((api) => {
-                if (api !== last) {
-                    text += api + "' or apiName=='";
-                } else {
-                    text += api + "'";
-                }
-            });
+            let queryString = '';
+            if (apiSelected === 'All' && apiVersion === 'All') {
+                let apis = apilist.slice(1).map (api => { return 'apiName==\'' + api + '\''} );
+                apis = apis.join(' OR ');
+                queryString = 'AND (' + apis + ')';
+            } else if (apiSelected !== 'All' && apiVersion !== 'All') {
+                queryString = 'AND apiName==\'' + apiSelected + '\' AND apiVersion==\'' + apiVersion + '\'';
+            } else {
+                queryString = 'AND apiName==\'' + apiSelected + '\'';
+            }
 
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-            if (apiSelected === 'All' && apiVersion === 'All') {
-                dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{timeFrom}}': timeFrom,
-                    '{{timeTo}}': timeTo,
-                    '{{per}}': perValue,
-                    '{{limit}}': limit,
-                    '{{querystring}}': 'AND (' + text + ')'
-                };
-            } else if (apiSelected !== 'All' && apiVersion !== 'All') {
-                dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{timeFrom}}': timeFrom,
-                    '{{timeTo}}': timeTo,
-                    '{{per}}': perValue,
-                    '{{limit}}': limit,
-                    '{{querystring}}': "AND apiName=='{{api}}' AND apiVersion=='{{version}}'",
-                    '{{api}}': apiSelected,
-                    '{{version}}': apiVersion
-                };
-            } else {
-                dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{timeFrom}}': timeFrom,
-                    '{{timeTo}}': timeTo,
-                    '{{per}}': perValue,
-                    '{{limit}}': limit,
-                    '{{querystring}}': "AND apiName=='{{api}}'",
-                    '{{api}}': apiSelected
-                };
-            }
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{per}}': perValue,
+                '{{limit}}': limit,
+                '{{querystring}}': queryString
+            };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
@@ -473,10 +472,10 @@ class APIMTopPlatformsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion, inProgress,
-            legendData, platformData, apilist, versionlist,
+            legendData, platformData, apilist, versionlist, proxyError,
         } = this.state;
         const {
-            paper, paperWrapper,
+            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -493,6 +492,30 @@ class APIMTopPlatformsWidget extends Widget {
             versionlist,
             inProgress,
         };
+
+        if (proxyError) {
+            return (
+                <IntlProvider locale={language} messages={localeMessages}>
+                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!' />
+                                </Typography>
+                                <Typography component='p'>
+                                    { proxyError }
+                                </Typography>
+                            </Paper>
+                        </div>
+                    </MuiThemeProvider>
+                </IntlProvider>
+            );
+        }
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>

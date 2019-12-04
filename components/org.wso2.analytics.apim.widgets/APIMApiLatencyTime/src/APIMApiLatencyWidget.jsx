@@ -313,25 +313,24 @@ class APIMApiLatencyWidget extends Widget {
             apiCreatedBy, apiSelected, apiVersion, resSelected
         } = queryParam;
         const { apilist, versionMap } = this.state;
-        let vesions;
-        let vesionsMap = { ...versionMap };
+        let versions;
 
         if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
             apiCreatedBy = 'All';
         }
-        if (!apiSelected || !apilist.includes(apiSelected)) {
+        if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
             if (apilist.length > 0) {
                 apiSelected = apilist[0];
             }
         }
-        if (apiSelected in vesionsMap) {
-            vesions = vesionsMap[apiSelected];
+        if (versionMap && apiSelected in versionMap) {
+            versions = versionMap[apiSelected];
         } else {
-            vesions = [];
+            versions = [];
         }
-        if (!apiVersion || !vesions.includes(apiVersion)) {
-            if (vesions.length > 0) {
-                apiVersion = vesions[0];
+        if (!apiVersion || !versions.includes(apiVersion)) {
+            if (versions.length > 0) {
+                apiVersion = versions[0];
             } else {
                 apiVersion = '';
             }
@@ -340,7 +339,7 @@ class APIMApiLatencyWidget extends Widget {
             resSelected = [];
         }
         this.setState({
-            apiCreatedBy, apiSelected, apiVersion, resSelected, versionlist: vesions, vesionMap: vesionsMap
+            apiCreatedBy, apiSelected, apiVersion, resSelected, versionlist: versions
         });
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, resSelected);
     }
@@ -350,6 +349,7 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     assembleApiListQuery() {
+        this.resetState();
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
                 this.setState({ proxyError: null });
@@ -381,7 +381,7 @@ class APIMApiLatencyWidget extends Widget {
     }
 
     /**
-     * Formats the siddhi query - apilistquery
+     * Formats the siddhi query - apiidquery
      * @memberof APIMApiLatencyWidget
      * */
     assembleApiIdQuery() {
@@ -392,17 +392,18 @@ class APIMApiLatencyWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         if (apiDataList && apiDataList.length > 0) {
-            let apiCondition;
+            let apiList = [...apiDataList];
 
             if (apiCreatedBy !== "All") {
-                apiCondition = 'CREATED_BY==\'' + username + '\'';
-            } else {
-                apiCondition = apiDataList.map(api => {
-                    return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
-                        + '\' AND CREATED_BY==\'' + api.provider + '\')';
-                });
-                apiCondition = apiCondition.join(' OR ');
+                apiList = apiList.filter(api => { return api.provider === username; })
             }
+
+            let apiCondition = apiList.map(api => {
+                return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
+                    + '\' AND API_PROVIDER==\'' + api.provider + '\')';
+            });
+            apiCondition = apiCondition.join(' OR ');
+
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -437,7 +438,7 @@ class APIMApiLatencyWidget extends Widget {
                 versionMap[dataUnit[1]] = versionlist;
             });
             apilist = [...new Set(apilist)];
-            apilist.sort();
+            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             this.setState({ apilist, versionMap, apiFullData: data, apiSelected });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);

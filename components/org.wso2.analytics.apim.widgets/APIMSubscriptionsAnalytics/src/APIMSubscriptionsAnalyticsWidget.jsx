@@ -224,7 +224,9 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * */
     assembleApiListQuery() {
         this.resetState();
-        const { providerConfig } = this.state;
+        const { providerConfig, username } = this.state;
+        const queryParam = super.getGlobalState(queryParamKey);
+        let { apiCreatedBy } = queryParam;
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
 
@@ -232,6 +234,8 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         config.tableName = 'AM_API';
         config.incrementalColumn = 'API_ID';
         config.queryData.queryName = 'apilistquery';
+        config.queryData.queryValues = {'{{providerCondition}}' : apiCreatedBy !== 'All' ?
+                'AND API_PROVIDER=\'' + username +  '\'': ''};
         dataProviderConfigs.configs.config = config;
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
@@ -244,16 +248,14 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * */
     handleApiListReceived(message) {
         const { data } = message;
-        const { apiCreatedBy, subscribedTo } = this.state;
         const { id } = this.props;
 
         if (data) {
             let apilist = data.map((dataUnit) => { return dataUnit[0];} );
             apilist = [...new Set(apilist)];
-            apilist.sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             apilist.unshift('All');
             this.setState({ apilist });
-            this.setQueryParam(apiCreatedBy, subscribedTo);
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
@@ -281,8 +283,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             config.queryData.queryName = 'mainquery';
             config.queryData.queryValues = {
                 '{{providerCondition}}': apiCreatedBy !== 'All' ?
-                    ' AND api.API_PROVIDER = \'{{username}}\'' : '',
-                '{{username}}': ' ' + username,
+                    ' AND api.API_PROVIDER = \'' + username + '\'' : '',
                 '{{apiName}}': subscribedTo !== 'All' ? 'AND api.API_NAME=\'' + subscribedTo + '\'' : '',
                 '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
                 '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss')
