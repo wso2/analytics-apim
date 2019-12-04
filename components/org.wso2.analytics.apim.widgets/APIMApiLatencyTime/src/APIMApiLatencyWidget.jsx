@@ -348,9 +348,7 @@ class APIMApiLatencyWidget extends Widget {
          }
 
         this.setState({
-            apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected, versionlist: vesions,
-            vesionMap: vesionsMap
-            apiCreatedBy, apiSelected, apiVersion, resSelected, versionlist: versions
+            apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected, versionlist: versions
         });
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected);
     }
