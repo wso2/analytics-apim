@@ -117,6 +117,7 @@ class APIMTopApiUsersWidget extends Widget {
             apiSelected: 'All',
             apiVersion: 'All',
             versionlist: [],
+            versionMap: {},
             apilist: [],
             userData: null,
             localeMessages: null,
@@ -211,9 +212,10 @@ class APIMTopApiUsersWidget extends Widget {
      * @memberof APIMTopApiUsersWidget
      * */
     resetState() {
-        const { apilist, versionlist } = this.state;
+        const { apilist, versionMap } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { apiCreatedBy, apiSelected, apiVersion, limit } = queryParam;
+        let versions;
 
         if (!apiCreatedBy|| !(apiCreatedBy in createdByKeys)) {
             apiCreatedBy = 'All';
@@ -222,14 +224,19 @@ class APIMTopApiUsersWidget extends Widget {
             apiSelected = 'All';
             apiVersion = 'All';
         }
-        if (!apiVersion || (versionlist && !versionlist.includes(apiVersion))) {
+        if (versionMap && apiSelected in versionMap) {
+            versions = versionMap[apiSelected];
+        } else {
+            versions = [];
+        }
+        if (!apiVersion || (versions && !versions.includes(apiVersion))) {
             apiVersion = 'All';
         }
         if (!limit || limit < 0) {
             limit = 5;
         }
         this.setState({
-            apiCreatedBy, apiSelected, apiVersion, limit,
+            apiCreatedBy, apiSelected, apiVersion, limit, versionlist: versions,
         });
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
     }
@@ -278,27 +285,28 @@ class APIMTopApiUsersWidget extends Widget {
         const { id } = this.props;
         const { username } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        const { apiSelected, apiCreatedBy  } = queryParam;
+        const { apiCreatedBy  } = queryParam;
 
         if (list) {
-            const apilist = [];
-            const versionlist = ['All'];
-
             if (apiCreatedBy !== 'All') {
                 list = list.filter((dataUnit) =>  dataUnit.provider === username );
             }
 
+            let apilist = [];
+            const versionMap = {};
             list.forEach((dataUnit) => {
-                if (!apilist.includes(dataUnit.name)) {
-                    apilist.push(dataUnit.name);
-                }
-                if (apiSelected === dataUnit.name) {
-                    versionlist.push(dataUnit.version);
-                }
+                apilist.push(dataUnit.name);
+                // retrieve all entries for the api and get the api versions list
+                const versions = list.filter(d => d.name === dataUnit.name);
+                const versionlist = versions.map(ver => { return ver.version; });
+                versionlist.unshift('All');
+                versionMap[dataUnit.name] = versionlist;
             });
+            versionMap['All'] = ['All'];
+            apilist = [...new Set(apilist)];
             apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             apilist.unshift('All');
-            this.setState({ apilist, versionlist });
+            this.setState({ apilist, versionMap });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
@@ -436,7 +444,7 @@ class APIMTopApiUsersWidget extends Widget {
         this.setQueryParam(apiCreatedBy, event.target.value, 'All', limit);
         this.setState( { inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiListQuery();
+        this.assembleMainQuery();
     }
 
     /**
