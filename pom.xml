@@ -1107,7 +1107,7 @@
         <project.scm.id>scm-server</project.scm.id>
 
         <!--Siddhi Extension Versions-->
-        <siddhi.execution.string.version>5.0.5</siddhi.execution.string.version>
+        <siddhi.execution.string.version>5.0.8</siddhi.execution.string.version>
         <siddhi.execution.time.version>5.0.4</siddhi.execution.time.version>
         <siddhi.execution.markov.version>5.0.1</siddhi.execution.markov.version>
         <siddhi.execution.geo.version>5.0.0</siddhi.execution.geo.version>
