@@ -100,7 +100,7 @@ group by apiContext, apiHostname, apiResourceTemplate, apiMethod
 aggregate by requestTimestamp every seconds...years;
 
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
-@primaryKey('apiName', 'apiCreator', 'apiCreatorTenantDomain')
+@primaryKey('apiName', 'apiCreator', 'apiVersion', 'apiCreatorTenantDomain')
 define table ApiLastAccessSummary (apiContext string, apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, applicationOwner string, lastAccessTime long);
 
 @info(name='Add to buffer')
@@ -143,7 +143,7 @@ insert into RequestInterim;
 
 @info(name='Filter events to check latest timestamp')
 from RequestInterim as R left outer join ApiLastAccessSummary as S
-on R.apiName == S.apiName and R.apiCreatorTenantDomain == S.apiCreatorTenantDomain and R.apiCreator == S.apiCreator
+on R.apiName == S.apiName and R.apiCreatorTenantDomain == S.apiCreatorTenantDomain and R.apiCreator == S.apiCreator and R.apiVersion == S.apiVersion
 select R.apiContext, R.apiName, R.apiVersion, R.apiCreator, R.apiCreatorTenantDomain, R.applicationOwner, R.requestTimestamp as lastAccessTime
 having R.requestTimestamp >= S.lastAccessTime or S.lastAccessTime is null
 insert into ApiLastAccessUpdateStream;
@@ -153,5 +153,5 @@ from ApiLastAccessUpdateStream
 select apiContext, apiName, apiVersion, apiCreator,apiCreatorTenantDomain, applicationOwner, lastAccessTime
 update or insert into ApiLastAccessSummary
 set ApiLastAccessSummary.apiContext = apiContext, ApiLastAccessSummary.apiVersion = apiVersion, ApiLastAccessSummary.applicationOwner = applicationOwner, ApiLastAccessSummary.lastAccessTime = lastAccessTime
-on ApiLastAccessSummary.apiName == apiName and ApiLastAccessSummary.apiCreatorTenantDomain == apiCreatorTenantDomain and ApiLastAccessSummary.apiCreator == apiCreator;
+on ApiLastAccessSummary.apiName == apiName and ApiLastAccessSummary.apiCreatorTenantDomain == apiCreatorTenantDomain and ApiLastAccessSummary.apiCreator == apiCreator and ApiLastAccessSummary.apiVersion == apiVersion;
 
