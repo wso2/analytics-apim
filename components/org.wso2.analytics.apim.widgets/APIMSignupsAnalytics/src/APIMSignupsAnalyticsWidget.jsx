@@ -169,6 +169,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
+            inProgress: true,
         }, this.assembleQuery);
     }
 

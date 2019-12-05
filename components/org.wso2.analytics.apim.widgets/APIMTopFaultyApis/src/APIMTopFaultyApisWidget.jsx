@@ -172,6 +172,7 @@ class APIMTopFaultyApisWidget extends Widget {
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
+            inProgress: true,
         }, this.assembleQuery);
     }
 
@@ -191,7 +192,7 @@ class APIMTopFaultyApisWidget extends Widget {
             limit = 5;
         }
 
-        this.setState({ limit, faultData: null, legendData: null });
+        this.setState({ limit });
         this.setQueryParam(limit);
 
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -213,7 +214,6 @@ class APIMTopFaultyApisWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const { limit } = this.state;
 
         if (data) {
             const faultData = [];
@@ -230,7 +230,6 @@ class APIMTopFaultyApisWidget extends Widget {
             });
 
             this.setState({ legendData, faultData, inProgress: false });
-            this.setQueryParam(limit);
         } else {
             this.setState({ inProgress: false, faultData: [] });
         }
