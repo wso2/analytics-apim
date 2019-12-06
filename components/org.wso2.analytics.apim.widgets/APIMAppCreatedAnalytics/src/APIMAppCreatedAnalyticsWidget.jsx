@@ -215,6 +215,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
+            inProgress: true,
         }, this.assembleSubListQuery);
     }
 

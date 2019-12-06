@@ -218,6 +218,7 @@ class APIMTopAgentsWidget extends Widget {
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
+            inProgress: true,
         }, this.assembleApiListQuery);
     }
 
