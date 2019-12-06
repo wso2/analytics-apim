@@ -171,7 +171,7 @@ class APIMTopSubscribersWidget extends Widget {
 
     /**
      * Formats the siddhi query to retrieve subscribers
-     * @memberof APIMTopAppCreatorsWidget
+     * @memberof APIMTopSubscribersWidget
      * */
     assembleSubscriberQuery() {
         const { providerConfig } = this.state;
@@ -185,7 +185,7 @@ class APIMTopSubscribersWidget extends Widget {
     /**
      * Formats data retrieved and loads to the widget
      * @param {object} message - data retrieved
-     * @memberof APIMTopAppCreatorsWidget
+     * @memberof APIMTopSubscribersWidget
      * */
     handleSubscriberDataReceived(message) {
         const { data } = message;
@@ -202,7 +202,7 @@ class APIMTopSubscribersWidget extends Widget {
 
     /**
      * Formats the siddhi query to retrieve application id
-     * @memberof APIMTopAppCreatorsWidget
+     * @memberof APIMTopSubscribersWidget
      * */
     assembleApplicationQuery() {
         const { providerConfig, subscribers } = this.state;
@@ -225,7 +225,7 @@ class APIMTopSubscribersWidget extends Widget {
     /**
      * Formats data retrieved and loads to the widget
      * @param {object} message - data retrieved
-     * @memberof APIMTopAppCreatorsWidget
+     * @memberof APIMTopSubscribersWidget
      * */
     handleApplicationDataReceived(message) {
         const { data } = message;

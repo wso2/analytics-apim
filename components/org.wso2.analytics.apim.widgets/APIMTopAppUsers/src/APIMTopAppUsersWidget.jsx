@@ -280,7 +280,7 @@ class APIMTopAppUsersWidget extends Widget {
     /**
      * Formats data retrieved from assembleAppQuery
      * @param {object} message - data retrieved
-     * @memberof APIMAppResourceUsageWidget
+     * @memberof APIMTopAppUsersWidget
      * */
     handleAppIdDataReceived(message) {
         const { data } = message;

@@ -159,10 +159,8 @@ class APIMGeoInvocationsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleApiListReceived = this.handleApiListReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.handleApiIdReceived = this.handleApiIdReceived.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
-        this.assembleApiDataQuery = this.assembleApiDataQuery.bind(this);
         this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.apiSelectedHandleChange = this.apiSelectedHandleChange.bind(this);
         this.apiVersionHandleChange = this.apiVersionHandleChange.bind(this);
@@ -313,75 +311,28 @@ class APIMGeoInvocationsWidget extends Widget {
      * @memberof APIMGeoInvocationsWidget
      * */
     handleApiListReceived(data) {
-        const { list } = data;
+        let { list } = data;
         const { id } = this.props;
-        if (list) {
-            this.setState({ apiDataList: list });
-        }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiDataQuery();
-    }
-
-    /**
-     * Formats the siddhi query - apilistquery
-     * @memberof APIMGeoInvocationsWidget
-     * */
-    assembleApiDataQuery() {
-        this.resetState();
+        const { username } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiCreatedBy } = queryParam;
-        const { providerConfig, apiDataList, username } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-
-        if (apiDataList && apiDataList.length > 0) {
-            let apiList = [...apiDataList];
-
+        if (list) {
             if (apiCreatedBy !== "All") {
-                apiList = apiList.filter(api => { return api.provider === username; })
+                list = list.filter(api => { return api.provider === username; })
             }
 
-            let apiCondition = apiList.map(api => {
-                return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
-                    + '\' AND API_PROVIDER==\'' + api.provider + '\')';
-            });
-            apiCondition = apiCondition.join(' OR ');
-
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiCondition}}': apiCondition
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
-        } else {
-            this.setState({ inProgress: false, geoData: [] });
-        }
-    }
-
-    /**
-     * Formats data retrieved from assembleApiIdQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMGeoInvocationsWidget
-     * */
-    handleApiIdReceived(message) {
-        const { id } = this.props;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { apiSelected } = queryParam;
-        const { data } = message;
-
-        if (data && data.length > 0) {
             let apilist = [];
             const versionMap = {};
-            data.forEach((dataUnit) => {
-                apilist.push(dataUnit[1]);
+            list.forEach((dataUnit) => {
+                apilist.push(dataUnit.name);
                 // retrieve all entries for the api and get the api versions list
-                const versions = data.filter(d => d[1] === dataUnit[1]);
-                const versionlist = versions.map(ver => { return ver[2]; });
-                versionMap[dataUnit[1]] = versionlist;
+                const versions = list.filter(d => d.name === dataUnit.name);
+                const versionlist = versions.map(ver => { return ver.version; });
+                versionMap[dataUnit.name] = versionlist;
             });
             apilist = [...new Set(apilist)];
             apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
-            this.setState({ apilist, versionMap, apiSelected });
+            this.setState({ apilist, versionMap });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
@@ -481,7 +432,7 @@ class APIMGeoInvocationsWidget extends Widget {
         this.setQueryParam(apiCreatedBy, event.target.value, '');
         this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiListQuery();
+        this.assembleMainQuery();
     }
 
     /**
@@ -496,7 +447,7 @@ class APIMGeoInvocationsWidget extends Widget {
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value);
         this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiListQuery();
+        this.assembleMainQuery();
     }
 
     /**

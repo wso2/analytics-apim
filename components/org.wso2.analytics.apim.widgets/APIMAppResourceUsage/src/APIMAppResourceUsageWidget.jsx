@@ -223,7 +223,7 @@ class APIMAppResourceUsageWidget extends Widget {
     /**
      * Formats applciations data retrieved from APIM server
      * @param {object} data - data retrieved
-     * @memberof APIMAppApiUsageWidget
+     * @memberof APIMAppResourceUsageWidget
      * */
     handleAppDataReceived(data) {
         const { list } = data;
