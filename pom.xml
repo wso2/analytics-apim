@@ -1146,7 +1146,7 @@
         <org.wso2.orbit.commons-codec.version>1.12.0.wso2v1</org.wso2.orbit.commons-codec.version>
         <org.apache.httpcomponents.wso2.version>4.3.3.wso2v1</org.apache.httpcomponents.wso2.version>
         <org.wso2.orbit.commons-httpclient.version>3.1.0.wso2v6</org.wso2.orbit.commons-httpclient.version>
-        <org.wso2.carbon.identity.inbound.auth.oauth2.version>6.2.20
+        <org.wso2.carbon.identity.inbound.auth.oauth2.version>6.2.55
         </org.wso2.carbon.identity.inbound.auth.oauth2.version>
         <carbon.secvault.version>5.0.13</carbon.secvault.version>
 
