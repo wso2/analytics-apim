@@ -1054,8 +1054,8 @@
           "height": 882
         },
         {
-          "id": "api-proxy-performance",
-          "name": "API Proxy Performance",
+          "id": "api-performance",
+          "name": "API Performance",
           "content": [
             {
               "type": "column",
