@@ -24,7 +24,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 import Collapse from '@material-ui/core/Collapse';
 import { withStyles } from '@material-ui/core/styles';
@@ -71,7 +71,7 @@ function CustomTableToolbar(props) {
         <Toolbar style={{ display: 'block' }}>
             <div className={classes.root}>
                 <div className={classes.title}>
-                    <Typography variant='h6' id='tableTitle'>
+                    <Typography variant='h6' id='operationSelected'>
                         <FormattedMessage id='widget.heading' defaultMessage={title} />
                     </Typography>
                 </div>
@@ -81,9 +81,9 @@ function CustomTableToolbar(props) {
                             className={classes.expand}
                             onClick={handleExpandClick}
                             aria-expanded={expanded}
-                            aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
+                            aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter Bys dsd' />}
                         >
-                            <FilterListIcon />
+                            <SearchIcon />
                         </IconButton>
                     </Tooltip>
                 </div>
