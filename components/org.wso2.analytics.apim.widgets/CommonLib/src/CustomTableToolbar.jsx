@@ -71,7 +71,7 @@ function CustomTableToolbar(props) {
         <Toolbar style={{ display: 'block' }}>
             <div className={classes.root}>
                 <div className={classes.title}>
-                    <Typography variant='h6' id='operationSelected'>
+                    <Typography variant='h6' id='tableTitle'>
                         <FormattedMessage id='widget.heading' defaultMessage={title} />
                     </Typography>
                 </div>
