@@ -1090,7 +1090,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": false,
-                            "defaultValue": "3 Months",
+                            "defaultValue": "1 Month",
                             "availableGranularities": "From Second",
                             "autoSyncInterval": "10"
                           }
