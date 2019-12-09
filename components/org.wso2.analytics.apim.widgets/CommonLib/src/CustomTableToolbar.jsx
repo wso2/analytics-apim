@@ -81,7 +81,7 @@ function CustomTableToolbar(props) {
                             className={classes.expand}
                             onClick={handleExpandClick}
                             aria-expanded={expanded}
-                            aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter Bys dsd' />}
+                            aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
                         >
                             <SearchIcon />
                         </IconButton>
