@@ -24,7 +24,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 import Collapse from '@material-ui/core/Collapse';
 import { withStyles } from '@material-ui/core/styles';
@@ -83,7 +83,7 @@ function CustomTableToolbar(props) {
                             aria-expanded={expanded}
                             aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
                         >
-                            <FilterListIcon />
+                            <SearchIcon />
                         </IconButton>
                     </Tooltip>
                 </div>
