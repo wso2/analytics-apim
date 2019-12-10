@@ -1054,8 +1054,8 @@
           "height": 882
         },
         {
-          "id": "api-proxy-performance",
-          "name": "API Proxy Performance",
+          "id": "api-performance",
+          "name": "API Performance",
           "content": [
             {
               "type": "column",
@@ -1090,7 +1090,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": false,
-                            "defaultValue": "3 Months",
+                            "defaultValue": "1 Month",
                             "availableGranularities": "From Second",
                             "autoSyncInterval": "10"
                           }
