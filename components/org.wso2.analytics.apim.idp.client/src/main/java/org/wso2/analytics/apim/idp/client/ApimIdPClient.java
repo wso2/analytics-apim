@@ -213,22 +213,24 @@ public class ApimIdPClient extends ExternalIdPClient {
     public User getUser(String name) throws IdPClientException {
         String tenantDomain = extractTenantDomainFromUserName(name);
         TokenData tokenData = TokenDataHolder.getInstance().getTokenMap().get(name);
+        ArrayList<Role> roles;
         if (tokenData == null) {
-            String error = "Cannot find the token data for the user: " + name + " in the token data map.";
-            LOG.error(error);
-            throw new IdPClientException(error);
-        }
-        String scopes = tokenData.getScopes();
-        String[] scopeList = scopes.split(SPACE);
-        ArrayList<String> newScopes = new ArrayList<>();
-        for (String scope: scopeList) {
-            if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE) && !scope.equalsIgnoreCase(API_VIEW_SCOPE)
-                    && !scope.equalsIgnoreCase(SUBSCRIBE_SCOPE)) {
-                newScopes.add(scope + ANY_TENANT_DOMAIN_SCOPE_POSTFIX);
-                newScopes.add(scope + UNDERSCORE + tenantDomain);
+            LOG.debug("Cannot find the token data for the user: " + name + " in the token data map. Hence, cannot " +
+                    "retrieve user scopes. Empty array returned for roles.");
+            roles = new ArrayList<>();
+        } else {
+            String scopes = tokenData.getScopes();
+            String[] scopeList = scopes.split(SPACE);
+            ArrayList<String> newScopes = new ArrayList<>();
+            for (String scope: scopeList) {
+                if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE) && !scope.equalsIgnoreCase(API_VIEW_SCOPE)
+                        && !scope.equalsIgnoreCase(SUBSCRIBE_SCOPE)) {
+                    newScopes.add(scope + ANY_TENANT_DOMAIN_SCOPE_POSTFIX);
+                    newScopes.add(scope + UNDERSCORE + tenantDomain);
+                }
             }
+            roles = getRolesFromArray(newScopes.toArray(new String[0]));
         }
-        ArrayList<Role> roles = getRolesFromArray(newScopes.toArray(new String[0]));
         Map<String, String> properties = new HashMap<>();
         return new User(name, properties, roles);
     }
