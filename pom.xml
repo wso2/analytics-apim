@@ -995,7 +995,7 @@
     <properties>
 
         <carbon.analytics.version>3.0.17</carbon.analytics.version>
-        <siddhi.version>5.1.5</siddhi.version>
+        <siddhi.version>5.1.8</siddhi.version>
 
         <carbon.analytics-common.version>6.1.36</carbon.analytics-common.version>
         <!-- Maven plugins -->
@@ -1132,7 +1132,7 @@
 
         <!--Apim Analytics Idp client related -->
         <feign.version>9.5.0</feign.version>
-        <org.apache.axis2.wso2.version>1.6.1-wso2v38</org.apache.axis2.wso2.version>
+        <org.apache.axis2.wso2.version>1.6.1-wso2v40</org.apache.axis2.wso2.version>
         <org.apache.ws.commons.axiom.wso2.version>1.2.11-wso2v16</org.apache.ws.commons.axiom.wso2.version>
         <org.apache.ws.commons.schema.wso2.version>1.4.7-wso2v7</org.apache.ws.commons.schema.wso2.version>
         <org.wso2.orbit.org.apache.neethi.version>2.0.4.wso2v5</org.wso2.orbit.org.apache.neethi.version>
