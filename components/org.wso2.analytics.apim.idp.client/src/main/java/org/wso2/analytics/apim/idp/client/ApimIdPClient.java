@@ -142,11 +142,11 @@ public class ApimIdPClient extends ExternalIdPClient {
             session = login.authenticate(this.adminServiceUsername, this.adminServicePassword, this.uriHost);
         } catch (AxisFault axisFault) {
             String error = "Error occurred while creating Login admin Service Client.";
-            LOG.error(error);
-            throw new IdPClientException(error, axisFault.getCause());
+            LOG.error(error, axisFault);
+            throw new IdPClientException(error, axisFault);
         } catch (RemoteException | LoginAuthenticationExceptionException e) {
             String error = "Error occurred while authenticating admin user using Login admin Service Client.";
-            LOG.error(error);
+            LOG.error(error, e);
             throw new IdPClientException(error, e);
         }
         try {
@@ -154,8 +154,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                     this.adminServiceUsername, this.adminServicePassword, session);
         } catch (AxisFault axisFault) {
             String error = "Error occurred while creating OAuth Admin Service Client.";
-            LOG.error(error);
-            throw new IdPClientException(error, axisFault.getCause());
+            LOG.error(error, axisFault);
+            throw new IdPClientException(error, axisFault);
         }
 
         for (Map.Entry<String, OAuthApplicationInfo> entry : this.oAuthAppInfoMap.entrySet()) {
@@ -299,7 +299,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             }
         } catch (RemoteException | OAuthAdminServiceIdentityOAuthAdminException e) {
             String error = "Error occurred while getting all the OAuth application data.";
-            LOG.error(error);
+            LOG.error(error, e);
             throw new IdPClientException(error, e);
         }
         return false;
@@ -321,7 +321,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         } catch (RemoteException | OAuthAdminServiceIdentityOAuthAdminException e) {
             String error = "Error occurred while getting the OAuth application data for the application name:"
                     + oAuthAppName;
-            LOG.error(error);
+            LOG.error(error, e);
             throw new IdPClientException(error, e);
         }
         if (oAuthAppDataMap.isEmpty()) {
