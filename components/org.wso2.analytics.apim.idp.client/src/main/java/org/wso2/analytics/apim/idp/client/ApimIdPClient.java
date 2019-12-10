@@ -394,15 +394,15 @@ public class ApimIdPClient extends ExternalIdPClient {
                 if (IdPClientConstants.REFRESH_GRANT_TYPE.equals(grantType)) {
                     returnProperties.put(IdPClientConstants.ID_TOKEN_KEY, oAuth2TokenInfo.getIdToken());
                 }
+                TokenData tokenData = new TokenData(
+                        oAuth2TokenInfo.getAccessToken(),
+                        oAuth2TokenInfo.getScope(),
+                        tokenValidityPeriod
+                );
+                TokenDataHolder.getInstance().addTokenDataToMap(username, tokenData);
                 if (IdPClientConstants.PASSWORD_GRANT_TYPE.equals(grantType)) {
                     tokenCache.put(oAuth2TokenInfo.getAccessToken(),
                             new ExternalSession(username, oAuth2TokenInfo.getAccessToken()));
-                    TokenData tokenData = new TokenData(
-                            oAuth2TokenInfo.getAccessToken(),
-                            oAuth2TokenInfo.getScope(),
-                            tokenValidityPeriod
-                    );
-                    TokenDataHolder.getInstance().addTokenDataToMap(username, tokenData);
                 }
                 return returnProperties;
             } catch (IOException e) {
