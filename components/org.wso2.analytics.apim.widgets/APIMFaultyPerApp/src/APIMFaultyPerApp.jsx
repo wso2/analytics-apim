@@ -39,33 +39,33 @@ import CustomTable from './CustomTable';
  */
 export default function APIMFaultyPerApp(props) {
     const {
-        themeName, height, limit, applicationSelected, usageData, applicationList,
+        themeName, height, width, limit, applicationSelected, usageData, applicationList,
         applicationSelectedHandleChange, handleLimitChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
+        },
+        form: {
+            display: 'flex',
+            flexWrap: 'wrap',
         },
         formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         formControl: {
             marginTop: '5%',
             marginLeft: '5%',
         },
         textField: {
-            marginTop: 0,
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
             width: '30%',
         },
         select: {
-            paddingTop: 5,
-            marginTop: 10,
-            minWidth: 300,
+            minWidth: width * 0.3 < 200 ? 150 : 200,
         },
         table: {
             paddingTop: 35,
@@ -85,12 +85,12 @@ export default function APIMFaultyPerApp(props) {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         inProgress: {
             display: 'flex',
@@ -102,7 +102,12 @@ export default function APIMFaultyPerApp(props) {
 
     return (
         <Scrollbars style={{ height }}>
-            <div style={{ padding: '5% 5%' }}>
+            <div style={{
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                height,
+                margin: '10px',
+                padding: '20px',
+            }}>
                 <div style={styles.headingWrapper}>
                     <h3 style={styles.h3}>
                         <FormattedMessage id='widget.heading' defaultMessage='FAULTY INVOCATIONS PER APPLICATION' />
@@ -141,23 +146,21 @@ export default function APIMFaultyPerApp(props) {
                                 }
                             </Select>
                         </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <TextField
-                                id='limit-number'
-                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
-                                value={limit}
-                                onChange={handleLimitChange}
-                                type='number'
-                                style={styles.textField}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                margin='normal'
-                            />
-                        </FormControl>
+                        <TextField
+                            id='limit-number'
+                            label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                            value={limit}
+                            onChange={handleLimitChange}
+                            type='number'
+                            style={styles.textField}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            margin='normal'
+                        />
                     </form>
                 </div>
-                <div style={styles.table}>
+                <div>
                     { inProgress ? (
                         <div style={styles.inProgress}>
                             <CircularProgress />
@@ -165,10 +168,12 @@ export default function APIMFaultyPerApp(props) {
                         ) : (
                         <div>
                             { usageData.length > 0 ? (
-                                <CustomTable
-                                    data={usageData}
-                                    inProgress={inProgress}
-                                />
+                                <div style={styles.table}>
+                                    <CustomTable
+                                        data={usageData}
+                                        inProgress={inProgress}
+                                   />
+                                </div>
                             ) : (
                                 <div style={styles.paperWrapper}>
                                     <Paper
