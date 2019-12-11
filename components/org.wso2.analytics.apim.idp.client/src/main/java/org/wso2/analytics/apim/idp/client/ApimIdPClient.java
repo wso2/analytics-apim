@@ -386,24 +386,40 @@ public class ApimIdPClient extends ExternalIdPClient {
                 long currentTimeInSeconds = System.currentTimeMillis() / 1000;
                 long tokenValidityPeriod = currentTimeInSeconds + oAuth2TokenInfo.getExpiresIn();
                 returnProperties.put(IdPClientConstants.LOGIN_STATUS, IdPClientConstants.LoginStatus.LOGIN_SUCCESS);
-                returnProperties.put(IdPClientConstants.USERNAME, username);
                 returnProperties.put(IdPClientConstants.ACCESS_TOKEN, oAuth2TokenInfo.getAccessToken());
                 returnProperties.put(IdPClientConstants.REFRESH_TOKEN, oAuth2TokenInfo.getRefreshToken());
                 returnProperties.put(IdPClientConstants.VALIDITY_PERIOD,
                         Long.toString(oAuth2TokenInfo.getExpiresIn()));
                 if (IdPClientConstants.REFRESH_GRANT_TYPE.equals(grantType)) {
                     returnProperties.put(IdPClientConstants.ID_TOKEN_KEY, oAuth2TokenInfo.getIdToken());
+                    /*
+                    * To add the access token(got through the refresh grant flow) to the TokenDataMap, we need to know
+                    * the username. Since the username is not included in the response we get in the refresh token flow,
+                    * an introspection is performed to get the username.
+                    * */
+                    Response introspectTokenResponse = oAuth2ServiceStubs.getIntrospectionServiceStub()
+                            .introspectAccessToken(oAuth2TokenInfo.getAccessToken());
+                    if (introspectTokenResponse.status() == 200) {   //200 - Success
+                        OAuth2IntrospectionResponse introspectResponse = (OAuth2IntrospectionResponse) new GsonDecoder()
+                                .decode(introspectTokenResponse, OAuth2IntrospectionResponse.class);
+                        username = introspectResponse.getUsername();
+                    } else {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Unable to get the username from introspection of the token '" +
+                                    oAuth2TokenInfo.getAccessToken() + "'. Response : '" +
+                                    introspectTokenResponse.toString());
+                        }
+                    }
                 }
+                returnProperties.put(IdPClientConstants.USERNAME, username);
                 TokenData tokenData = new TokenData(
                         oAuth2TokenInfo.getAccessToken(),
                         oAuth2TokenInfo.getScope(),
                         tokenValidityPeriod
                 );
                 TokenDataHolder.getInstance().addTokenDataToMap(username, tokenData);
-                if (IdPClientConstants.PASSWORD_GRANT_TYPE.equals(grantType)) {
-                    tokenCache.put(oAuth2TokenInfo.getAccessToken(),
-                            new ExternalSession(username, oAuth2TokenInfo.getAccessToken()));
-                }
+                tokenCache.put(oAuth2TokenInfo.getAccessToken(),
+                        new ExternalSession(username, oAuth2TokenInfo.getAccessToken()));
                 return returnProperties;
             } catch (IOException e) {
                 String error = "Error occurred while parsing token response for user. Response: '" +
