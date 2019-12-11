@@ -336,9 +336,11 @@ public class ApimIdPClient extends ExternalIdPClient {
 
     @Override
     public Map<String, String> login(Map<String, String> properties) throws IdPClientException {
-        this.init(this.kmUserName);
         Map<String, String> returnProperties = new HashMap<>();
         String grantType = properties.getOrDefault(IdPClientConstants.GRANT_TYPE, this.grantType);
+        if (!IdPClientConstants.REFRESH_GRANT_TYPE.equals(grantType)) {
+            this.init(this.kmUserName);
+        }
 
         Response response;
         String oAuthAppContext = properties.get(IdPClientConstants.APP_NAME);
