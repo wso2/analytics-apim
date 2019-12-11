@@ -438,12 +438,18 @@ public class ApimIdPClient extends ExternalIdPClient {
         ExternalSession session = tokenCache.getIfPresent(token);
         String username;
         if (session == null) {
-            LOG.info("Token is not available in the Token Cache. Hence, username cannot be retrieved. " +
-                    "Token in the token data map will be deleted via the Token Data Map Cleaner Task.");
+            try {
+                OAuth2IntrospectionResponse introspectResponse = getIntrospectResponse(token);
+                username = introspectResponse.getUsername();
+            } catch (AuthenticationException e) {
+                String error = "Error occurred while introspecting the token '" + token + "'. " + e.getMessage();
+                LOG.error(error, e);
+                throw new IdPClientException(error, e);
+            }
         } else {
             username = session.getUserName();
-            TokenDataHolder.getInstance().removeTokenDataFromMap(username);
         }
+        TokenDataHolder.getInstance().removeTokenDataFromMap(username);
         tokenCache.invalidate(token);
         oAuth2ServiceStubs.getRevokeServiceStub().revokeAccessToken(
                 token,
