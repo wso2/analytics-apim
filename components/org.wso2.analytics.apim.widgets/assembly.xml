@@ -155,5 +155,9 @@
             <directory>DateTimeRangePicker/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>APIMRecentApiTraffic/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>
