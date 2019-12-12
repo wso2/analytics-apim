@@ -353,7 +353,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             returnProperties.put(IdPClientConstants.CLIENT_ID, this.oAuthAppInfoMap.get(oAuthAppContext).getClientId());
             returnProperties.put(IdPClientConstants.REDIRECTION_URL, this.authorizeEndpoint);
             returnProperties.put(IdPClientConstants.CALLBACK_URL, this.baseUrl +
-                    ApimIdPClientConstants.CALLBACK_URL + callbackUrl);
+                    ApimIdPClientConstants.CALLBACK_URL + callbackUrl + ApimIdPClientConstants.CALLBACK_URL_SUFFIX);
             returnProperties.put(IdPClientConstants.SCOPE, this.allScopes);
             return returnProperties;
         } else if (IdPClientConstants.PASSWORD_GRANT_TYPE.equals(grantType)) {
@@ -475,7 +475,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
         OAuthApplicationInfo oAuthApplicationInfo = this.oAuthAppInfoMap.get(oAuthAppContext);
         Response response = oAuth2ServiceStubs.getTokenServiceStub().generateAuthCodeGrantAccessToken(code,
-                this.baseUrl + ApimIdPClientConstants.CALLBACK_URL + oAuthAppContext, null,
+                this.baseUrl + ApimIdPClientConstants.CALLBACK_URL + oAuthAppContext +
+                        ApimIdPClientConstants.CALLBACK_URL_SUFFIX, null,
                 oAuthApplicationInfo.getClientId(), oAuthApplicationInfo.getClientSecret());
         if (response == null) {
             String error = "Error occurred while generating an access token from code '" + code + "'. " +
@@ -646,8 +647,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                     ApimIdPClientConstants.CALLBACK_URL + REGEX_BASE + postLogoutRedirectUrl + REGEX_BASE_END;
         } else {
             callBackUrl = ApimIdPClientConstants.REGEX_BASE_START + this.baseUrl +
-                    ApimIdPClientConstants.CALLBACK_URL + appContext + REGEX_BASE + postLogoutRedirectUrl
-                    + REGEX_BASE_END;
+                    ApimIdPClientConstants.CALLBACK_URL + appContext + ApimIdPClientConstants.CALLBACK_URL_SUFFIX +
+                    REGEX_BASE + postLogoutRedirectUrl + REGEX_BASE_END;
         }
 
         if (LOG.isDebugEnabled()) {
