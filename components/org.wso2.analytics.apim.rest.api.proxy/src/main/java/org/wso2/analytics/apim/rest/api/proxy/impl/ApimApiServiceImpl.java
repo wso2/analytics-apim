@@ -43,7 +43,7 @@ public class ApimApiServiceImpl extends ApimApiService {
     private static final String DASHBOARD_USER = "DASHBOARD_USER=";
     private static final String AM_COOKIE_P1 = "SDID";
     private static final String AM_COOKIE_P2 = "HID=";
-    private static final String ENDPOINT = "{serverUrl}/api/am/{serverName}/v1.0";
+    private static final String ENDPOINT = "{serverUrl}/api/am/{serverName}/v1";
     private static final String PUBLISHER = "publisher";
     private static final String STORE = "store";
     private final Util util = new Util();
