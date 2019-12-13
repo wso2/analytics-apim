@@ -152,6 +152,10 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>APIMApiUsage/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>DateTimeRangePicker/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
