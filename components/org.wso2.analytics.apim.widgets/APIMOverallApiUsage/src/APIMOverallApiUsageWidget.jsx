@@ -130,7 +130,9 @@ class APIMOverallApiUsageWidget extends Widget {
             apiCreatedBy: 'all',
             usageData: null,
             usageData1: null,
+            usageData2: null,
             apiIdMap: {},
+            apiIdMapGlobal:{},
             apiDataList: [],
             metadata: this.metadata,
             chartConfig: this.chartConfig,
@@ -161,6 +163,7 @@ class APIMOverallApiUsageWidget extends Widget {
         this.getUsername = this.getUsername.bind(this);
         this.assembleApiIdQuery = this.assembleApiIdQuery.bind(this);
         this.handleApiIdReceived = this.handleApiIdReceived.bind(this);
+        this.selectedAPIChangeCallback = this.selectedAPIChangeCallback.bind(this);
     }
 
     componentWillMount() {
@@ -369,6 +372,7 @@ class APIMOverallApiUsageWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
+            this.setState({ usageData2: [], inProgress: false  });
             this.setState({ usageData1: [], inProgress: false  });
         }
     }
@@ -383,9 +387,12 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id } = this.props;
 
         if (data) {
+            const apiIdMapGlobal = {};
             const apiIdMap = {};
             data.map(api => { apiIdMap[api[0]]= { apiname: api[1], creator: api[2] }; });
-            this.setState({ apiIdMap });
+            data.map(api => { apiIdMapGlobal[api[0]]= { apiname: api[1], creator: api[2] }; });
+            this.setState({apiIdMapGlobal})
+            this.setState({ apiIdMap});
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiSubQuery();
@@ -411,6 +418,7 @@ class APIMOverallApiUsageWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiSubReceived, dataProviderConfigs);
         } else {
+            this.setState({ usageData2: [], inProgress: false  });
             this.setState({ usageData1: [], inProgress: false  });
         }
     }
@@ -429,16 +437,20 @@ class APIMOverallApiUsageWidget extends Widget {
             } = this.state;
 
             const usageData1 = [];
+            const usageData2 = [];
             data.map(dataUnit => {
                 const { apiname, creator } = apiIdMap[dataUnit[0]];
                 const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator);
 
                 if (hits.length > 0) {
+                    usageData2.push([hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1]]);
                     usageData1.push([hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1]]);
                 }
             });
+            this.setState({ usageData2, inProgress: false  });
             this.setState({ usageData1, inProgress: false  });
         } else {
+            this.setState({ usageData2: [], inProgress: false  });
             this.setState({ usageData1: [], inProgress: false  });
         }
     }
@@ -488,6 +500,36 @@ class APIMOverallApiUsageWidget extends Widget {
         this.assembleApiUsageQuery();
     }
 
+    selectedAPIChangeCallback = (selectedAPI) => {
+
+        let usageData = this.state.usageData1;
+        let apiIdMap1 = this.state.apiIdMap;
+        const apiIdMapGlobal = this.state.apiIdMapGlobal;
+        let found = false;
+        const keys = Object.keys(apiIdMap1);
+        for(var i in keys) {
+            if(apiIdMap1[keys[i]].apiname === selectedAPI[0] && apiIdMap1[keys[i]].creator === selectedAPI[1]) {
+                delete apiIdMap1[keys[i]];
+                found = true;
+
+                usageData.splice(usageData.findIndex(e => (e[0] === selectedAPI[0]) && (e[1] === selectedAPI[1])), 1);
+            }
+        }
+        if(!found) {
+            const keysglobal = Object.keys(apiIdMapGlobal);
+            let idOfApi= 0;
+            for(var i in keysglobal) {
+                if(apiIdMapGlobal[keysglobal[i]].apiname === selectedAPI[0] && apiIdMapGlobal[keysglobal[i]].creator === selectedAPI[1]) {
+                    idOfApi = keysglobal[i];
+                }
+            }
+            apiIdMap1[idOfApi] = {'apiname' : selectedAPI[0], 'creator' : selectedAPI[1]};
+            usageData.push(selectedAPI);
+        }
+        this.setState({usageData1: usageData})
+        this.setState({apiIdMap: apiIdMap1})
+    };
+
     /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Overall Api Usage widget
@@ -495,7 +537,7 @@ class APIMOverallApiUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig,
+            localeMessages, faultyProviderConfig, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig,
             inProgress, proxyError,
         } = this.state;
         const {
@@ -504,7 +546,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const ovearllUsageProps = {
-            themeName, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig, inProgress,
+            themeName, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig, inProgress,
         };
 
         if (proxyError) {
@@ -558,6 +600,7 @@ class APIMOverallApiUsageWidget extends Widget {
                                 {...ovearllUsageProps}
                                 apiCreatedHandleChange={this.apiCreatedHandleChange}
                                 limitHandleChange={this.limitHandleChange}
+                                selectedAPIChangeCallback = {this.selectedAPIChangeCallback}
                             />
                         )
                     }
