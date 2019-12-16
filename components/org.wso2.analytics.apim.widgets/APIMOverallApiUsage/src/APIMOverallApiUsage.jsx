@@ -41,7 +41,7 @@ import CustomTable from './CustomTable';
 export default function APIMOverallApiUsage(props) {
     const {
         themeName, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig, apiCreatedHandleChange,
-        limitHandleChange, inProgress, selectedAPIChangeCallback
+        limitHandleChange, inProgress, selectedAPIChangeCallback,
     } = props;
     const styles = {
         headingWrapper: {
@@ -226,9 +226,7 @@ export default function APIMOverallApiUsage(props) {
                                 </div>
                             )
                         }
-
                     </div>
-
                 )
                 }
             </div>
