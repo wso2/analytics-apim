@@ -104,8 +104,6 @@ export default function APIMOverallApiUsage(props) {
         },
     };
 
-
-
     return (
         <Scrollbars style={{ height: '100%' }}>
             <div style={{ padding: '5% 5%' }}>
@@ -159,79 +157,79 @@ export default function APIMOverallApiUsage(props) {
                         />
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
-                    ) : (
-                        <div>
-                            {
-                                !usageData1 || usageData1.length === 0 ? (
-                                    <div style={styles.paperWrapper}>
-                                        <Paper
-                                            elevation={1}
-                                            style={styles.paper}
-                                        >
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='nodata.error.heading'
-                                                    defaultMessage='No Data Available !' />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='nodata.error.body'
-                                                    defaultMessage='No data available for the selected options.'
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <div style={styles.dataWrapper}>
-                                        <div style={styles.chartWrapper}>
-                                            <VizG
-                                                config={chartConfig}
-                                                metadata={metadata}
-                                                data={usageData1}
-                                                width={width}
-                                                theme={themeName}
+                ) : (
+                    <div>
+                        {
+                            !usageData1 || usageData1.length === 0 ? (
+                                <div style={styles.paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={styles.paper}
+                                    >
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage
+                                                id='nodata.error.heading'
+                                                defaultMessage='No Data Available !' />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='nodata.error.body'
+                                                defaultMessage='No data available for the selected options.'
                                             />
-                                        </div>
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <div style={styles.dataWrapper}>
+                                    <div style={styles.chartWrapper}>
+                                        <VizG
+                                            config={chartConfig}
+                                            metadata={metadata}
+                                            data={usageData1}
+                                            width={width}
+                                            theme={themeName}
+                                        />
                                     </div>
-                                )
-                            }
-                            {
-                                !usageData2 || usageData2.length === 0 ? (
-                                    <div style={styles.paperWrapper}>
-                                        <Paper
-                                            elevation={1}
-                                            style={styles.paper}
-                                        >
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='nodata.error.heading'
-                                                    defaultMessage='No Data Available !' />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='nodata.error.body'
-                                                    defaultMessage='No data available for the selected options.'
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <div style={styles.tableWrapper}>
-                                            <CustomTable
-                                                data={usageData2}
-                                                callBack={selectedAPIChangeCallback}
+                                </div>
+                            )
+                        }
+                        {
+                            !usageData2 || usageData2.length === 0 ? (
+                                <div style={styles.paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={styles.paper}
+                                    >
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage
+                                                id='nodata.error.heading'
+                                                defaultMessage='No Data Available !' />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='nodata.error.body'
+                                                defaultMessage='No data available for the selected options.'
                                             />
-                                        </div>
-                                )
-                            }
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <div style={styles.tableWrapper}>
+                                    <CustomTable
+                                        data={usageData2}
+                                        callBack={selectedAPIChangeCallback}
+                                    />
+                                </div>
+                            )
+                        }
 
-                        </div>
-                        
-                    )
+                    </div>
+
+                )
                 }
             </div>
         </Scrollbars>

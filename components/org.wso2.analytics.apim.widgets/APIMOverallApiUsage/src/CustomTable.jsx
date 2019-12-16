@@ -30,7 +30,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CustomTableHead from './CustomTableHead';
 /**
  * Compare two values and return the result
@@ -159,9 +158,8 @@ class CustomTable extends React.Component {
             query: '',
             selectedAPIs: [],
             initialLoad: true,
-            selectedAPIChangeCallback: props.callBack
+            selectedAPIChangeCallback: props.callBack,
         };
-
     }
 
     handleRequestSort = (event, property) => {
@@ -194,22 +192,23 @@ class CustomTable extends React.Component {
     };
 
     handleSelectedAPIChange = (event) => {
-        let selectedAPIsList = this.state.selectedAPIs;
+        const selectedAPIsList = this.state.selectedAPIs;
         const tickedApi = event.target.value;
-        if(selectedAPIsList.includes(tickedApi)) {
-            for( var i = 0; i < selectedAPIsList.length; i++){
-               if ( selectedAPIsList[i] === tickedApi) {
-                 selectedAPIsList.splice(i, 1);
-               }
+        if (selectedAPIsList.includes(tickedApi)) {
+            for (let i = 0; i < selectedAPIsList.length; i++) {
+                if (selectedAPIsList[i] === tickedApi) {
+                    selectedAPIsList.splice(i, 1);
+                    break;
+                }
             }
         } else {
             selectedAPIsList.push(tickedApi);
         }
-        this.setState({selectedAPIs : selectedAPIsList});
-        let data = this.props.data;
-        const foundElement = data.filter(function (element) {
+        this.setState({ selectedAPIs: selectedAPIsList });
+        const { data } = this.props;
+        const foundElement = data.filter((element) => {
             if (tickedApi.includes(element[0]) && tickedApi.includes(element[1])) {
-                 return element;
+                return element;
             }
         });
         this.state.selectedAPIChangeCallback(foundElement[0]);
@@ -221,10 +220,6 @@ class CustomTable extends React.Component {
      */
     render() {
         const { data, classes } = this.props;
-        let counter = 0;
-        // const formattedData = [];
-        let apiname = '';
-        let hits = 0;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -239,9 +234,9 @@ class CustomTable extends React.Component {
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
-        if(this.state.initialLoad) {
-            tableData.map( (element) => this.state.selectedAPIs.push(element.apiname));
-            this.setState({initialLoad : false});
+        if (this.state.initialLoad) {
+            tableData.map(element => this.state.selectedAPIs.push(element.apiname));
+            this.setState({ initialLoad: false });
         }
 
         const menuItems = [
@@ -281,10 +276,11 @@ class CustomTable extends React.Component {
                                             tabIndex={-1}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                <Checkbox value={option.apiname}
-                                                                   onChange={this.handleSelectedAPIChange}
-                                                                   checked={this.state.selectedAPIs.includes(option.apiname)}
-                                                                   />
+                                                <Checkbox
+                                                    value={option.apiname}
+                                                    onChange={this.handleSelectedAPIChange}
+                                                    checked={this.state.selectedAPIs.includes(option.apiname)}
+                                                />
                                                 {option.apiname}
                                             </TableCell>
                                             <TableCell numeric>
@@ -301,7 +297,6 @@ class CustomTable extends React.Component {
                         </TableBody>
                     </Table>
                 </div>
-
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
                     component='div'

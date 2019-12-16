@@ -132,7 +132,7 @@ class APIMOverallApiUsageWidget extends Widget {
             usageData1: null,
             usageData2: null,
             apiIdMap: {},
-            apiIdMapGlobal:{},
+            apiIdMapGlobal: {},
             apiDataList: [],
             metadata: this.metadata,
             chartConfig: this.chartConfig,
@@ -227,7 +227,7 @@ class APIMOverallApiUsageWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -282,7 +282,7 @@ class APIMOverallApiUsageWidget extends Widget {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
-            '{{limit}}': limit
+            '{{limit}}': limit,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
@@ -298,12 +298,12 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id } = this.props;
 
         if (data) {
-            const usageData = data.map(dataUnit => {
+            const usageData = data.map((dataUnit) => {
                 return {
                     apiname: dataUnit[0],
                     provider: dataUnit[1],
-                    hits: dataUnit[2]
-                }
+                    hits: dataUnit[2],
+                };
             });
             this.setState({ usageData });
         }
@@ -322,7 +322,7 @@ class APIMOverallApiUsageWidget extends Widget {
                 this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 if (error.response && error.response.data) {
                     let proxyError = error.response.data;
                     proxyError = proxyError.split(':').splice(1).join('').trim();
@@ -358,7 +358,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         if (apiDataList && apiDataList.length > 0) {
-            let apiCondition = apiDataList.map(api => {
+            let apiCondition = apiDataList.map((api) => {
                 return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
                     + '\' AND API_PROVIDER==\'' + api.provider + '\')';
             });
@@ -367,13 +367,13 @@ class APIMOverallApiUsageWidget extends Widget {
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiCondition}}': apiCondition
+                '{{apiCondition}}': apiCondition,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ usageData2: [], inProgress: false  });
-            this.setState({ usageData1: [], inProgress: false  });
+            this.setState({ usageData2: [], inProgress: false });
+            this.setState({ usageData1: [], inProgress: false });
         }
     }
 
@@ -389,10 +389,10 @@ class APIMOverallApiUsageWidget extends Widget {
         if (data) {
             const apiIdMapGlobal = {};
             const apiIdMap = {};
-            data.map(api => { apiIdMap[api[0]]= { apiname: api[1], creator: api[2] }; });
-            data.map(api => { apiIdMapGlobal[api[0]]= { apiname: api[1], creator: api[2] }; });
-            this.setState({apiIdMapGlobal})
-            this.setState({ apiIdMap});
+            data.map((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2] }; });
+            data.map((api) => { apiIdMapGlobal[api[0]] = { apiname: api[1], creator: api[2] }; });
+            this.setState({ apiIdMapGlobal });
+            this.setState({ apiIdMap });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiSubQuery();
@@ -408,18 +408,18 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         if (apiIdMap && Object.keys(apiIdMap).length > 0) {
-            let apiIds = Object.keys(apiIdMap).map(id => { return 'API_ID==' + id });
+            let apiIds = Object.keys(apiIdMap).map((id) => { return 'API_ID==' + id; });
             apiIds = apiIds.join(' OR ');
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apisubquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiList}}' : apiIds
+                '{{apiList}}': apiIds,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiSubReceived, dataProviderConfigs);
         } else {
-            this.setState({ usageData2: [], inProgress: false  });
-            this.setState({ usageData1: [], inProgress: false  });
+            this.setState({ usageData2: [], inProgress: false });
+            this.setState({ usageData1: [], inProgress: false });
         }
     }
 
@@ -438,7 +438,7 @@ class APIMOverallApiUsageWidget extends Widget {
 
             const usageData1 = [];
             const usageData2 = [];
-            data.map(dataUnit => {
+            data.map((dataUnit) => {
                 const { apiname, creator } = apiIdMap[dataUnit[0]];
                 const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator);
 
@@ -447,11 +447,11 @@ class APIMOverallApiUsageWidget extends Widget {
                     usageData1.push([hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1]]);
                 }
             });
-            this.setState({ usageData2, inProgress: false  });
-            this.setState({ usageData1, inProgress: false  });
+            this.setState({ usageData2, inProgress: false });
+            this.setState({ usageData1, inProgress: false });
         } else {
-            this.setState({ usageData2: [], inProgress: false  });
-            this.setState({ usageData1: [], inProgress: false  });
+            this.setState({ usageData2: [], inProgress: false });
+            this.setState({ usageData1: [], inProgress: false });
         }
     }
 
@@ -501,33 +501,34 @@ class APIMOverallApiUsageWidget extends Widget {
     }
 
     selectedAPIChangeCallback = (selectedAPI) => {
-
-        let usageData = this.state.usageData1;
-        let apiIdMapTemp = this.state.apiIdMap;
-        const apiIdMapGlobal = this.state.apiIdMapGlobal;
+        const usageData = this.state.usageData1;
+        const apiIdMapTemp = this.state.apiIdMap;
+        const { apiIdMapGlobal } = this.state;
         let found = false;
         const keys = Object.keys(apiIdMapTemp);
-        for(var i in keys) {
-            if(apiIdMapTemp[keys[i]].apiname === selectedAPI[0] && apiIdMapTemp[keys[i]].creator === selectedAPI[1]) {
+        for (const i in keys) {
+            if (apiIdMapTemp[keys[i]].apiname === selectedAPI[0] && apiIdMapTemp[keys[i]].creator === selectedAPI[1]) {
                 delete apiIdMapTemp[keys[i]];
                 found = true;
-
                 usageData.splice(usageData.findIndex(e => (e[0] === selectedAPI[0]) && (e[1] === selectedAPI[1])), 1);
+                break;
             }
         }
-        if(!found) {
+        if (!found) {
             const keysglobal = Object.keys(apiIdMapGlobal);
-            let idOfApi= 0;
-            for(var i in keysglobal) {
-                if(apiIdMapGlobal[keysglobal[i]].apiname === selectedAPI[0] && apiIdMapGlobal[keysglobal[i]].creator === selectedAPI[1]) {
+            let idOfApi = 0;
+            for (const i in keysglobal) {
+                if (apiIdMapGlobal[keysglobal[i]].apiname === selectedAPI[0]
+                    && apiIdMapGlobal[keysglobal[i]].creator === selectedAPI[1]) {
                     idOfApi = keysglobal[i];
+                    break;
                 }
             }
-            apiIdMapTemp[idOfApi] = {'apiname' : selectedAPI[0], 'creator' : selectedAPI[1]};
+            apiIdMapTemp[idOfApi] = { apiname: selectedAPI[0], creator: selectedAPI[1] };
             usageData.push(selectedAPI);
         }
-        this.setState({usageData1: usageData})
-        this.setState({apiIdMap: apiIdMapTemp})
+        this.setState({ usageData1: usageData });
+        this.setState({ apiIdMap: apiIdMapTemp });
     };
 
     /**
@@ -561,7 +562,8 @@ class APIMOverallApiUsageWidget extends Widget {
                                 <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='apim.server.error.heading'
-                                        defaultMessage='Error!' />
+                                        defaultMessage='Error!'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     { proxyError }
@@ -600,7 +602,7 @@ class APIMOverallApiUsageWidget extends Widget {
                                 {...ovearllUsageProps}
                                 apiCreatedHandleChange={this.apiCreatedHandleChange}
                                 limitHandleChange={this.limitHandleChange}
-                                selectedAPIChangeCallback = {this.selectedAPIChangeCallback}
+                                selectedAPIChangeCallback={this.selectedAPIChangeCallback}
                             />
                         )
                     }
