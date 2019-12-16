@@ -236,7 +236,6 @@ export default function APIMOverallApiUsage(props) {
     );
 }
 
-
 APIMOverallApiUsage.propTypes = {
     themeName: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
