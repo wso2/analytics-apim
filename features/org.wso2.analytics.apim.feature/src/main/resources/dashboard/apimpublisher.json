@@ -646,7 +646,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 4.166551610367141,
+                      "height": 3.4942880540421357,
                       "content": [
                         {
                           "title": "[Date Time Range]",
@@ -688,7 +688,8 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 54.10564876891044,
+                      "height": 39.32878450500374,
+                      "width": 100,
                       "content": [
                         {
                           "title": "[APIM Overall Api Usage]",
@@ -724,7 +725,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 41.72779962072242,
+                      "height": 28.661173021620375,
                       "content": [
                         {
                           "title": "[APIM Api Backend Usage Summary]",
@@ -755,6 +756,42 @@
                           "componentName": "lm-react-component"
                         }
                       ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 28.51575441933377,
+                      "content": [
+                        {
+                          "title": "[APIM Api Usage]",
+                          "type": "component",
+                          "component": "APIMApiUsage",
+                          "props": {
+                            "id": "d1e2e991-8a9f-4e87-9afc-27a5dab334c1",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "c9bb069e-bb7a-4781-b372-9b0830acb524"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true
+                              }
+                            },
+                            "widgetID": "APIMApiUsage"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
                     }
                   ]
                 },
@@ -769,7 +806,7 @@
                       "isClosable": true,
                       "title": "",
                       "width": 32.967786154900615,
-                      "height": 24.533415317688334,
+                      "height": 23.510190895851686,
                       "content": [
                         {
                           "title": "[APIM Top Api Users]",
@@ -805,7 +842,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 24.41403130154387,
+                      "height": 25.437255723380513,
                       "content": [
                         {
                           "title": "[APIM Api Version Usage Summary]",
@@ -914,7 +951,7 @@
               ]
             }
           ],
-          "height": 1690.6000232696533
+          "height": 2349
         },
         {
           "id": "devices",
@@ -1388,6 +1425,7 @@
       "APIMApiBackendUsageSummary",
       "APIMTopPlatforms",
       "APIMApiResourceUsageSummary",
+      "APIMApiUsage",
       "APIMApiVersionUsageSummary",
       "APIMApiCreated",
       "APIMTopThrottledOutApis",
