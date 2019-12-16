@@ -195,12 +195,13 @@ class CustomTable extends React.Component {
         const selectedAPIsList = this.state.selectedAPIs;
         const tickedApi = event.target.value;
         if (selectedAPIsList.includes(tickedApi)) {
-            for (let i = 0; i < selectedAPIsList.length; i++) {
-                if (selectedAPIsList[i] === tickedApi) {
-                    selectedAPIsList.splice(i, 1);
-                    break;
-                }
-            }
+            // for (let i = 0; i < selectedAPIsList.length; i++) {
+            //     if (selectedAPIsList[i] === tickedApi) {
+            //         selectedAPIsList.splice(i, 1);
+            //         break;
+            //     }
+            // }
+            selectedAPIsList.splice(selectedAPIsList.indexOf(tickedApi), 1);
         } else {
             selectedAPIsList.push(tickedApi);
         }
