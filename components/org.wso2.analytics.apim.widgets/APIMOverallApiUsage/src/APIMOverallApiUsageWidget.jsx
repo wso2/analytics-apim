@@ -501,16 +501,14 @@ class APIMOverallApiUsageWidget extends Widget {
     }
 
     selectedAPIChangeCallback = (selectedAPI) => {
-        const usageData = this.state.usageData1;
-        const apiIdMapTemp = this.state.apiIdMap;
-        const { apiIdMapGlobal } = this.state;
+        const { usageData1, apiIdMap, apiIdMapGlobal } = this.state;
         let found = false;
-        const keys = Object.keys(apiIdMapTemp);
+        const keys = Object.keys(apiIdMap);
         for (const i in keys) {
-            if (apiIdMapTemp[keys[i]].apiname === selectedAPI[0] && apiIdMapTemp[keys[i]].creator === selectedAPI[1]) {
-                delete apiIdMapTemp[keys[i]];
+            if (apiIdMap[keys[i]].apiname === selectedAPI[0] && apiIdMap[keys[i]].creator === selectedAPI[1]) {
+                delete apiIdMap[keys[i]];
                 found = true;
-                usageData.splice(usageData.findIndex(e => (e[0] === selectedAPI[0]) && (e[1] === selectedAPI[1])), 1);
+                usageData1.splice(usageData1.findIndex(e => (e[0] === selectedAPI[0]) && (e[1] === selectedAPI[1])), 1);
                 break;
             }
         }
@@ -524,11 +522,11 @@ class APIMOverallApiUsageWidget extends Widget {
                     break;
                 }
             }
-            apiIdMapTemp[idOfApi] = { apiname: selectedAPI[0], creator: selectedAPI[1] };
-            usageData.push(selectedAPI);
+            apiIdMap[idOfApi] = { apiname: selectedAPI[0], creator: selectedAPI[1] };
+            usageData1.push(selectedAPI);
         }
-        this.setState({ usageData1: usageData });
-        this.setState({ apiIdMap: apiIdMapTemp });
+        this.setState({ usageData1 });
+        this.setState({ apiIdMap });
     };
 
     /**

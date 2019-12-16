@@ -192,27 +192,21 @@ class CustomTable extends React.Component {
     };
 
     handleSelectedAPIChange = (event) => {
-        const selectedAPIsList = this.state.selectedAPIs;
+        const { selectedAPIs, selectedAPIChangeCallback } = this.state;
         const tickedApi = event.target.value;
-        if (selectedAPIsList.includes(tickedApi)) {
-            // for (let i = 0; i < selectedAPIsList.length; i++) {
-            //     if (selectedAPIsList[i] === tickedApi) {
-            //         selectedAPIsList.splice(i, 1);
-            //         break;
-            //     }
-            // }
-            selectedAPIsList.splice(selectedAPIsList.indexOf(tickedApi), 1);
+        if (selectedAPIs.includes(tickedApi)) {
+            selectedAPIs.splice(selectedAPIs.indexOf(tickedApi), 1);
         } else {
-            selectedAPIsList.push(tickedApi);
+            selectedAPIs.push(tickedApi);
         }
-        this.setState({ selectedAPIs: selectedAPIsList });
+        this.setState({ selectedAPIs });
         const { data } = this.props;
         const foundElement = data.filter((element) => {
             if (tickedApi.includes(element[0]) && tickedApi.includes(element[1])) {
                 return element;
             }
         });
-        this.state.selectedAPIChangeCallback(foundElement[0]);
+        selectedAPIChangeCallback(foundElement[0]);
     };
 
     /**
@@ -222,7 +216,7 @@ class CustomTable extends React.Component {
     render() {
         const { data, classes } = this.props;
         const {
-            query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
+            query, expanded, filterColumn, order, orderBy, rowsPerPage, page, initialLoad, selectedAPIs,
         } = this.state;
 
         const formattedData = data.map((dataUnit) => {
@@ -235,8 +229,8 @@ class CustomTable extends React.Component {
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
-        if (this.state.initialLoad) {
-            tableData.map(element => this.state.selectedAPIs.push(element.apiname));
+        if (initialLoad) {
+            tableData.map(element => selectedAPIs.push(element.apiname));
             this.setState({ initialLoad: false });
         }
 
@@ -280,7 +274,7 @@ class CustomTable extends React.Component {
                                                 <Checkbox
                                                     value={option.apiname}
                                                     onChange={this.handleSelectedAPIChange}
-                                                    checked={this.state.selectedAPIs.includes(option.apiname)}
+                                                    checked={selectedAPIs.includes(option.apiname)}
                                                 />
                                                 {option.apiname}
                                             </TableCell>
@@ -332,6 +326,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    callBack: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
