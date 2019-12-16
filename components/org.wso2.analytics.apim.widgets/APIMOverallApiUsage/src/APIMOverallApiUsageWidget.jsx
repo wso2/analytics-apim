@@ -503,13 +503,13 @@ class APIMOverallApiUsageWidget extends Widget {
     selectedAPIChangeCallback = (selectedAPI) => {
 
         let usageData = this.state.usageData1;
-        let apiIdMap1 = this.state.apiIdMap;
+        let apiIdMapTemp = this.state.apiIdMap;
         const apiIdMapGlobal = this.state.apiIdMapGlobal;
         let found = false;
-        const keys = Object.keys(apiIdMap1);
+        const keys = Object.keys(apiIdMapTemp);
         for(var i in keys) {
-            if(apiIdMap1[keys[i]].apiname === selectedAPI[0] && apiIdMap1[keys[i]].creator === selectedAPI[1]) {
-                delete apiIdMap1[keys[i]];
+            if(apiIdMapTemp[keys[i]].apiname === selectedAPI[0] && apiIdMapTemp[keys[i]].creator === selectedAPI[1]) {
+                delete apiIdMapTemp[keys[i]];
                 found = true;
 
                 usageData.splice(usageData.findIndex(e => (e[0] === selectedAPI[0]) && (e[1] === selectedAPI[1])), 1);
@@ -523,11 +523,11 @@ class APIMOverallApiUsageWidget extends Widget {
                     idOfApi = keysglobal[i];
                 }
             }
-            apiIdMap1[idOfApi] = {'apiname' : selectedAPI[0], 'creator' : selectedAPI[1]};
+            apiIdMapTemp[idOfApi] = {'apiname' : selectedAPI[0], 'creator' : selectedAPI[1]};
             usageData.push(selectedAPI);
         }
         this.setState({usageData1: usageData})
-        this.setState({apiIdMap: apiIdMap1})
+        this.setState({apiIdMap: apiIdMapTemp})
     };
 
     /**
