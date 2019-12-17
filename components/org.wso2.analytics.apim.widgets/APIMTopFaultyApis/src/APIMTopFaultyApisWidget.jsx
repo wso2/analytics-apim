@@ -222,11 +222,11 @@ class APIMTopFaultyApisWidget extends Widget {
             let apiName = '';
             data.forEach((dataUnit) => {
                 counter += 1;
-                apiName = dataUnit[0] + ' ' + dataUnit[1];
+                apiName = dataUnit[0] + ' (' + dataUnit[2] + ')';
                 if (!legendData.includes({ name: apiName })) {
                     legendData.push({ name: apiName });
                 }
-                faultData.push({ id: counter, apiname: apiName, faultcount: dataUnit[4] });
+                faultData.push({ id: counter, apiname: apiName, apiVersion: dataUnit[1], faultcount: dataUnit[4] });
             });
 
             this.setState({ legendData, faultData, inProgress: false });

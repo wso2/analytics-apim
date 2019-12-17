@@ -207,6 +207,9 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
+            <MenuItem value='apiname'>
+                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
+            </MenuItem>,
             <MenuItem value='throttledcount'>
                 <FormattedMessage id='table.heading.throttledcount' defaultMessage='THROTTLED OUT COUNT' />
             </MenuItem>,
@@ -243,12 +246,10 @@ class CustomTable extends React.Component {
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}
                                             </TableCell>
-                                            <TableCell
-                                                numeric
-                                                style={{
-                                                    paddingRight: '10%',
-                                                }}
-                                            >
+                                            <TableCell component='th' scope='row' numeric>
+                                                {n.apiVersion}
+                                            </TableCell>
+                                            <TableCell component='th' scope='row' numeric>
                                                 {n.throttledcount}
                                             </TableCell>
                                         </TableRow>

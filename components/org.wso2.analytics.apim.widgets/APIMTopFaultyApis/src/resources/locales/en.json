@@ -9,6 +9,7 @@
   "nodata.error.body": "No data available for the selected options.",
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
+  "table.heading.apiVersion": "API VERSION",
   "table.heading.faultcount": "FAULT COUNT",
   "widget.heading": "TOP FAULTY APIS"
 }

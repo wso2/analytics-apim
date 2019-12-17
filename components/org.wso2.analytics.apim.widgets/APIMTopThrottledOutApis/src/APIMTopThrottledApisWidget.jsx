@@ -224,11 +224,12 @@ class APIMTopThrottledApisWidget extends Widget {
             let apiName = '';
             data.forEach((dataUnit) => {
                 counter += 1;
-                apiName = dataUnit[0] + ' ' + dataUnit[1];
+                apiName = dataUnit[0] + ' (' + dataUnit[2] + ')';
                 if (!legendData.includes({ name: apiName })) {
                     legendData.push({ name: apiName });
                 }
-                throttledData.push({ id: counter, apiname: apiName, throttledcount: dataUnit[4] });
+                throttledData.push({ id: counter, apiname: apiName, apiVersion: dataUnit[1],
+                    throttledcount: dataUnit[4] });
             });
 
             this.setState({ legendData, throttledData, inProgress: false });
