@@ -1,0 +1,39 @@
+{
+  "name" : "APIM Api Alerts",
+  "id" : "APIMApiAlerts",
+  "thumbnailURL" : "",
+  "configs" : {
+    "pubsub" : {
+      "types" : ["subscriber"]
+    }, 
+    "providerConfig" : {
+      "configs" : {
+        "type" : "RDBMSStreamingDataProvider",
+        "config" : {
+          "datasourceName": "APIM_ANALYTICS_DB",
+          "queryData" : {
+            "alert": "select apiName, count(apiName) as counts from {{tableName}} WHERE alertTimestamp between '{{from}}' and '{{to}}' group by apiName"
+          },
+          "tableName": "{{tableName}}",
+          "incrementalColumn": "{{incrementalColumn}}",
+          "publishingLimit": 2147483647,
+          "isPurgingEnable": false
+        }
+      }
+    },
+    "options": [
+      {
+        "id" : "header",
+        "title" : "Header",
+        "type" : {
+          "name" : "BOOLEAN",
+          "possibleValues" : [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
+    ]
+  }
+}
