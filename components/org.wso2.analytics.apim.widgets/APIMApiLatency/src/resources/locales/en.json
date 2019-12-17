@@ -1,0 +1,5 @@
+{
+  "config.error.heading": "Configuration Error !",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Latency widget",
+  "widget.heading": "Maximum Api Latency"
+}
