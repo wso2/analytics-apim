@@ -30,6 +30,7 @@ import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import VizG from 'react-vizgrammar';
 import CustomTable from './CustomTable';
 
@@ -78,7 +79,6 @@ export default function APIMOverallApiUsage(props) {
             minWidth: 120,
         },
         selectEmpty: {
-            marginTop: 10,
         },
         dataWrapper: {
             height: '80%',
@@ -102,6 +102,13 @@ export default function APIMOverallApiUsage(props) {
             justifyContent: 'center',
             height,
         },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
+        },
     };
 
     return (
@@ -124,9 +131,18 @@ export default function APIMOverallApiUsage(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='api-createdBy-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiCreatedBy}
                                 onChange={apiCreatedHandleChange}
@@ -143,18 +159,27 @@ export default function APIMOverallApiUsage(props) {
                                 </MenuItem>
                             </Select>
                         </FormControl>
-                        <TextField
-                            id='limit-number'
-                            label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
-                            value={limit}
-                            onChange={limitHandleChange}
-                            type='number'
-                            style={styles.textField}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            margin='normal'
-                        />
+                        <FormControl style={styles.textField}>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='limit-number'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                </InputLabel>
+                            </Tooltip>
+                            <Input
+                                id='limit-number'
+                                value={limit}
+                                onChange={limitHandleChange}
+                                type='number'
+                                margin='normal'
+                            />
+                        </FormControl>
                     </form>
                 </div>
                 { inProgress ? (

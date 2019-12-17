@@ -28,7 +28,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import CustomTable from './CustomTable';
 
@@ -56,16 +56,9 @@ export default function APIMAppResourceUsage(props) {
         formControl: {
             marginTop: '5%',
             marginLeft: '5%',
-        },
-        textField: {
-            marginTop: 0,
             minWidth: 120,
-            width: '30%',
         },
         select: {
-            paddingTop: 5,
-            marginTop: 10,
-            minWidth: 300,
         },
         table: {
             paddingTop: 35,
@@ -101,6 +94,13 @@ export default function APIMAppResourceUsage(props) {
             justifyContent: 'center',
             height,
         },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
+        },
     };
 
     return (
@@ -114,9 +114,18 @@ export default function APIMAppResourceUsage(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='applicationSelected-label-placeholder'>
-                                <FormattedMessage id='applicationName.label' defaultMessage='Application Name' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='applicationName.label' defaultMessage='Application Name' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='applicationSelected-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='applicationName.label' defaultMessage='Application Name' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={applicationSelected}
                                 onChange={applicationSelectedHandleChange}
@@ -148,16 +157,23 @@ export default function APIMAppResourceUsage(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <TextField
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='limit-number'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                </InputLabel>
+                            </Tooltip>
+                            <Input
                                 id='limit-number'
-                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
                                 value={limit}
                                 onChange={handleLimitChange}
                                 type='number'
-                                style={styles.textField}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
                                 margin='normal'
                             />
                         </FormControl>

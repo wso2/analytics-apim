@@ -27,6 +27,7 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tooltip from '@material-ui/core/Tooltip';
 import APIMSubscriptionsData from './APIMSubscriptionsData';
 
 /**
@@ -60,7 +61,6 @@ export default function APIMSubscriptionsAnalytics(props) {
             minWidth: 120,
         },
         selectEmpty: {
-            marginTop: 10,
         },
         loadingIcon: {
             margin: 'auto',
@@ -71,6 +71,13 @@ export default function APIMSubscriptionsAnalytics(props) {
             alignItems: 'center',
             justifyContent: 'center',
             height: height,
+        },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
         },
     };
     const subDataProps = {
@@ -105,9 +112,18 @@ export default function APIMSubscriptionsAnalytics(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='api-createdBy-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiCreatedBy}
                                 onChange={apiCreatedHandleChange}
@@ -125,9 +141,18 @@ export default function APIMSubscriptionsAnalytics(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='subscribedTo-label-placeholder'>
-                                <FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='subscribedTo-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={subscribedTo}
                                 onChange={subscribedToHandleChange}

@@ -34,6 +34,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
 
 /**
  * React Component for Api Response Summary widget body
@@ -65,7 +66,6 @@ export default function APIMApiResponse(props) {
             minWidth: 120,
         },
         selectEmpty: {
-            marginTop: 10,
         },
         dataWrapper: {
             height: height * 0.40,
@@ -100,6 +100,13 @@ export default function APIMApiResponse(props) {
             justifyContent: 'center',
             height: this.props.height,
         },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
+        },
     };
     return (
         <Scrollbars
@@ -126,9 +133,18 @@ export default function APIMApiResponse(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form}>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='createdBy.label' defaultMessage='API Created By' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='api-createdBy-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiCreatedBy}
                                 onChange={apiCreatedHandleChange}
@@ -146,9 +162,18 @@ export default function APIMApiResponse(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiSelected-label-placeholder'>
-                                <FormattedMessage id='apiName.label' defaultMessage='API Name' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiName.label' defaultMessage='API Name' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiSelected-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiName.label' defaultMessage='API Name' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiSelected}
                                 onChange={apiSelectedHandleChange}
@@ -167,9 +192,18 @@ export default function APIMApiResponse(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiVersion-label-placeholder'>
-                                <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiVersion.label' defaultMessage='API Version' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiVersion-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiVersion}
                                 onChange={apiVersionHandleChange}
