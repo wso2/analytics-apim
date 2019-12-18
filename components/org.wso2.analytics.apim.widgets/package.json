@@ -4,7 +4,8 @@
   "scripts": {
     "build": "lerna run build --stream",
     "clean": "lerna clean -y",
-    "bootstrap": "lerna bootstrap"
+    "bootstrap": "lerna bootstrap",
+    "dev": "lerna run dev --parallel"
   },
   "dependencies": {
     "@material-ui/core": "^3.9.0",
