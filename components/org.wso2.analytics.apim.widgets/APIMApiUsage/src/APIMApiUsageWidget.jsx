@@ -27,7 +27,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import APIMTopApiUsers from './APIMTopApiUsers';
+import APIMApiUsage from './APIMApiUsage';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -74,15 +74,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Top Api Users widget
- * @class APIMTopApiUsersWidget
+ * Create React Component for APIM Api Usage widget
+ * @class APIMApiUsageWidget
  * @extends {Widget}
  */
-class APIMTopApiUsersWidget extends Widget {
+class APIMApiUsageWidget extends Widget {
     /**
-     * Creates an instance of APIMTopApiUsersWidget.
+     * Creates an instance of APIMApiUsageWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      */
     constructor(props) {
         super(props);
@@ -119,7 +119,7 @@ class APIMTopApiUsersWidget extends Widget {
             versionlist: [],
             versionMap: {},
             apilist: [],
-            userData: null,
+            usageData: null,
             localeMessages: null,
             inProgress: true,
             proxyError: null,
@@ -180,12 +180,12 @@ class APIMTopApiUsersWidget extends Widget {
     /**
      * Load locale file.
      * @param {string} locale Locale name
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMTopApiUsers/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiUsage/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -197,7 +197,7 @@ class APIMTopApiUsersWidget extends Widget {
     }
     /**
      * Retrieve params from publisher - DateTimeRange
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     handlePublisherParameters(receivedMsg) {
         this.setState({
@@ -210,7 +210,7 @@ class APIMTopApiUsersWidget extends Widget {
 
     /**
      * Reset the state according to queryParam
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     resetState() {
         const { apilist, versionMap } = this.state;
@@ -244,7 +244,7 @@ class APIMTopApiUsersWidget extends Widget {
 
     /**
      * Retrieve API list from APIM server
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     assembleApiListQuery() {
         this.resetState();
@@ -279,7 +279,7 @@ class APIMTopApiUsersWidget extends Widget {
     /**
      * Formats data retrieved from assembleApiListQuery
      * @param {object} data - data retrieved
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     handleApiListReceived(data) {
         let { list } = data;
@@ -315,7 +315,7 @@ class APIMTopApiUsersWidget extends Widget {
 
     /**
      * Formats the siddhi query - mainquery
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     assembleMainQuery() {
         this.resetState();
@@ -335,9 +335,8 @@ class APIMTopApiUsersWidget extends Widget {
                 let apis = apilist.slice(1).map (api => { return 'apiName==\'' + api + '\''} );
                 apis = apis.join(' OR ');
                 query = 'AND (' + apis + ')';
-            } else if (apiSelected !== 'All' && apiVersion !== 'All') {
+            } else if (apiVersion !== 'All') {
                 query = 'AND apiName==\'' + apiSelected + '\' AND apiVersion==\'' + apiVersion + '\'';
-
             } else {
                 query = 'AND apiName==\'' + apiSelected + '\''
             }
@@ -351,14 +350,14 @@ class APIMTopApiUsersWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, userData: [] });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
     /**
      * Formats data retrieved from assembleMainQuery
      * @param {object} message - data retrieved
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     handleDataReceived(message) {
         const { data } = message;
@@ -367,17 +366,13 @@ class APIMTopApiUsersWidget extends Widget {
         } = this.state;
 
         if (data) {
-            const userData = [];
-            let counter = 0;
-            data.forEach((dataUnit) => {
-                counter += 1;
-                userData.push({ id: counter, user: dataUnit[0], apiCalls: dataUnit[1] });
+            const usageData = data.map((dataUnit) => {
+                return { api: dataUnit[0], apiVersion: dataUnit[1], application: dataUnit[2], usage: dataUnit[3] };
             });
-
-            this.setState({ userData, inProgress: false });
+            this.setState({ usageData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         } else {
-            this.setState( { inProgress: false, userData: [] });
+            this.setState( { inProgress: false, usageData: [] });
         }
     }
 
@@ -387,7 +382,7 @@ class APIMTopApiUsersWidget extends Widget {
      * @param {string} apiSelected - API Name menu option selected
      * @param {string} apiVersion - API Version menu option selected
      * @param {number} limit - data limitation value
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit) {
         super.setGlobalState(queryParamKey, {
@@ -401,7 +396,7 @@ class APIMTopApiUsersWidget extends Widget {
     /**
      * Handle Limit select Change
      * @param {Event} event - listened event
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     handleLimitChange(event) {
         const { id } = this.props;
@@ -421,7 +416,7 @@ class APIMTopApiUsersWidget extends Widget {
     /**
      * Handle API Created By menu select change
      * @param {Event} event - listened event
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     apiCreatedHandleChange(event) {
         const { limit } = this.state;
@@ -436,7 +431,7 @@ class APIMTopApiUsersWidget extends Widget {
     /**
      * Handle API name menu select change
      * @param {Event} event - listened event
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     apiSelectedHandleChange(event) {
         const { apiCreatedBy, limit } = this.state;
@@ -451,7 +446,7 @@ class APIMTopApiUsersWidget extends Widget {
     /**
      * Handle API Version menu select change
      * @param {Event} event - listened event
-     * @memberof APIMTopApiUsersWidget
+     * @memberof APIMApiUsageWidget
      * */
     apiVersionHandleChange(event) {
         const { apiCreatedBy, apiSelected, limit } = this.state;
@@ -465,13 +460,13 @@ class APIMTopApiUsersWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Top Api Users widget
-     * @memberof APIMTopApiUsersWidget
+     * @returns {ReactElement} Render the APIM Api Usage widget
+     * @memberof APIMApiUsageWidget
      */
     render() {
         const {
             localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion,
-            userData, apilist, versionlist, inProgress, proxyError,
+            usageData, apilist, versionlist, inProgress, proxyError,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -479,7 +474,7 @@ class APIMTopApiUsersWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsersProps = {
-            themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, userData, apilist, versionlist,
+            themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, usageData, apilist, versionlist,
             inProgress,
         };
 
@@ -523,14 +518,14 @@ class APIMTopApiUsersWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM Top '
-                                            + 'Api Users widget'}
+                                            defaultMessage={'Cannot fetch provider configuration for APIM API '
+                                            + 'Usage widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMTopApiUsers
+                            <APIMApiUsage
                                 {...apiUsersProps}
                                 apiCreatedHandleChange={this.apiCreatedHandleChange}
                                 apiSelectedHandleChange={this.apiSelectedHandleChange}
@@ -545,4 +540,4 @@ class APIMTopApiUsersWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMTopApiUsers', APIMTopApiUsersWidget);
+global.dashboard.registerWidget('APIMApiUsage', APIMApiUsageWidget);
