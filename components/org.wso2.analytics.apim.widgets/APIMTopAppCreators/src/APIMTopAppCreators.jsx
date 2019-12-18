@@ -23,8 +23,11 @@ import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
 import sumBy from 'lodash/sumBy';
@@ -86,7 +89,7 @@ export default function APIMTopAppCreators(props) {
         textField: {
             marginLeft: 8,
             marginRight: 8,
-            width: 200,
+            minWidth: 120,
         },
         loadingIcon: {
             margin: 'auto',
@@ -97,6 +100,9 @@ export default function APIMTopAppCreators(props) {
             alignItems: 'center',
             justifyContent: 'center',
             height,
+        },
+        formLabel: {
+            whiteSpace: 'nowrap',
         },
     };
 
@@ -129,18 +135,27 @@ export default function APIMTopAppCreators(props) {
                     </div>
                     <div style={styles.formWrapper}>
                         <form style={styles.form} noValidate autoComplete='off'>
-                            <TextField
-                                id='limit-number'
-                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
-                                value={limit}
-                                onChange={handleChange}
-                                type='number'
-                                style={styles.textField}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                margin='normal'
-                            />
+                            <FormControl style={styles.formControl}>
+                                <Tooltip
+                                    placement='top'
+                                    title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                >
+                                    <InputLabel
+                                        shrink
+                                        htmlFor='limit-number'
+                                        style={styles.formLabel}
+                                    >
+                                        <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                    </InputLabel>
+                                </Tooltip>
+                                <Input
+                                    id='limit-number'
+                                    value={limit}
+                                    onChange={handleChange}
+                                    type='number'
+                                    margin='normal'
+                                />
+                            </FormControl>
                         </form>
                     </div>
                     <div>

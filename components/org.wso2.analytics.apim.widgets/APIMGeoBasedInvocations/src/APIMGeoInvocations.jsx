@@ -30,6 +30,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
+import Tooltip from '@material-ui/core/Tooltip';
 
 /**
  * React Component for APIM Geo Based Invocations widget data
@@ -82,6 +83,13 @@ export default function APIMGeoInvocations(props) {
             marginTop: '5%',
             minWidth: 120,
         },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
+        },
     };
 
     return (
@@ -113,9 +121,18 @@ export default function APIMGeoInvocations(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form}>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='createdBy.label' defaultMessage='API Created By' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='api-createdBy-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiCreatedBy}
                                 onChange={apiCreatedHandleChange}
@@ -132,9 +149,18 @@ export default function APIMGeoInvocations(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiSelected-label-placeholder'>
-                                <FormattedMessage id='apiName.label' defaultMessage='API Name' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiName.label' defaultMessage='API Name' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiSelected-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiName.label' defaultMessage='API Name' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiSelected}
                                 onChange={apiSelectedHandleChange}
@@ -152,9 +178,18 @@ export default function APIMGeoInvocations(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiVersion-label-placeholder'>
-                                <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiVersion.label' defaultMessage='API Version' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiVersion-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiVersion}
                                 onChange={apiVersionHandleChange}

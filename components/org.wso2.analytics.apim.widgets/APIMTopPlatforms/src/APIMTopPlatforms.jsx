@@ -29,6 +29,7 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
@@ -110,9 +111,18 @@ export default function APIMTopPlatforms(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form}>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='createdBy.label' defaultMessage='API Created By' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='api-createdBy-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiCreatedBy}
                                 onChange={apiCreatedHandleChange}
@@ -129,9 +139,18 @@ export default function APIMTopPlatforms(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiSelected-label-placeholder'>
-                                <FormattedMessage id='apiName.label' defaultMessage='API Name' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiName.label' defaultMessage='API Name' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiSelected-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiName.label' defaultMessage='API Name' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiSelected}
                                 onChange={apiSelectedHandleChange}
@@ -149,9 +168,18 @@ export default function APIMTopPlatforms(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiVersion-label-placeholder'>
-                                <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiVersion.label' defaultMessage='API Version' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiVersion-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiVersion}
                                 onChange={apiVersionHandleChange}
