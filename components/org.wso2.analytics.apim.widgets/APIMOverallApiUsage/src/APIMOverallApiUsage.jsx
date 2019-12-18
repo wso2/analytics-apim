@@ -40,8 +40,8 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiUsage(props) {
     const {
-        themeName, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig, apiCreatedHandleChange,
-        limitHandleChange, inProgress,
+        themeName, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig, apiCreatedHandleChange,
+        limitHandleChange, inProgress, selectedAPIChangeCallback,
     } = props;
     const styles = {
         headingWrapper: {
@@ -152,53 +152,77 @@ export default function APIMOverallApiUsage(props) {
                         />
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
-                    ) : (
-                        <div>
-                            {
-                                !usageData1 || usageData1.length === 0 ? (
-                                    <div style={styles.paperWrapper}>
-                                        <Paper
-                                            elevation={1}
-                                            style={styles.paper}
-                                        >
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='nodata.error.heading'
-                                                    defaultMessage='No Data Available !' />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='nodata.error.body'
-                                                    defaultMessage='No data available for the selected options.'
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <div style={styles.dataWrapper}>
-                                        <div style={styles.chartWrapper}>
-                                            <VizG
-                                                config={chartConfig}
-                                                metadata={metadata}
-                                                data={usageData1}
-                                                width={width}
-                                                theme={themeName}
+                ) : (
+                    <div>
+                        {
+                            !usageData1 || usageData1.length === 0 ? (
+                                <div style={styles.paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={styles.paper}
+                                    >
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage
+                                                id='nodata.error.heading'
+                                                defaultMessage='No Data Available !' />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='nodata.error.body'
+                                                defaultMessage='No data available for the selected options.'
                                             />
-                                        </div>
-                                        <div style={styles.tableWrapper}>
-                                            <CustomTable
-                                                data={usageData1}
-                                            />
-                                        </div>
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <div style={styles.dataWrapper}>
+                                    <div style={styles.chartWrapper}>
+                                        <VizG
+                                            config={chartConfig}
+                                            metadata={metadata}
+                                            data={usageData1}
+                                            width={width}
+                                            theme={themeName}
+                                        />
                                     </div>
-                                )
-                            }
-                        </div>
-                    )
+                                </div>
+                            )
+                        }
+                        {
+                            !usageData2 || usageData2.length === 0 ? (
+                                <div style={styles.paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={styles.paper}
+                                    >
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage
+                                                id='nodata.error.heading'
+                                                defaultMessage='No Data Available !' />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='nodata.error.body'
+                                                defaultMessage='No data available for the selected options.'
+                                            />
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <div style={styles.tableWrapper}>
+                                    <CustomTable
+                                        data={usageData2}
+                                        callBack={selectedAPIChangeCallback}
+                                    />
+                                </div>
+                            )
+                        }
+                    </div>
+                )
                 }
             </div>
         </Scrollbars>

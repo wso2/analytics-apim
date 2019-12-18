@@ -29,6 +29,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
+import Checkbox from '@material-ui/core/Checkbox';
 import CustomTableHead from './CustomTableHead';
 /**
  * Compare two values and return the result
@@ -155,6 +156,9 @@ class CustomTable extends React.Component {
             expanded: false,
             filterColumn: 'apiname',
             query: '',
+            selectedAPIs: [],
+            initialLoad: true,
+            selectedAPIChangeCallback: props.callBack,
         };
     }
 
@@ -187,22 +191,36 @@ class CustomTable extends React.Component {
         this.setState({ query: event.target.value });
     };
 
+    handleSelectedAPIChange = (event) => {
+        const { selectedAPIs, selectedAPIChangeCallback } = this.state;
+        const tickedApi = event.target.value;
+        if (selectedAPIs.includes(tickedApi)) {
+            selectedAPIs.splice(selectedAPIs.indexOf(tickedApi), 1);
+        } else {
+            selectedAPIs.push(tickedApi);
+        }
+        this.setState({ selectedAPIs });
+        const { data } = this.props;
+        const foundElement = data.filter((element) => {
+            if (tickedApi.includes(element[0]) && tickedApi.includes(element[1])) {
+                return element;
+            }
+        });
+        selectedAPIChangeCallback(foundElement[0]);
+    };
+
     /**
      * Render the Overall Api Usage table
      * @return {ReactElement} customTable
      */
     render() {
         const { data, classes } = this.props;
-        let counter = 0;
-        // const formattedData = [];
-        let apiname = '';
-        let hits = 0;
         const {
-            query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
+            query, expanded, filterColumn, order, orderBy, rowsPerPage, page, initialLoad, selectedAPIs,
         } = this.state;
 
         const formattedData = data.map((dataUnit) => {
-            return { apiname: dataUnit[0] + ' (' + dataUnit[1] + ')', hits: dataUnit[2] };
+            return { apiname: dataUnit[0] + ' (' + dataUnit[1] + ')', hits: dataUnit[2], subs: dataUnit[3] };
         });
 
         this.state.tableData = query
@@ -210,6 +228,11 @@ class CustomTable extends React.Component {
             : formattedData;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
+
+        if (initialLoad) {
+            tableData.map(element => selectedAPIs.push(element.apiname));
+            this.setState({ initialLoad: false });
+        }
 
         const menuItems = [
             <MenuItem value='apiname'>
@@ -241,17 +264,22 @@ class CustomTable extends React.Component {
                         <TableBody>
                             {stableSort(tableData, getSorting(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((n) => {
+                                .map((option) => {
                                     return (
                                         <TableRow
                                             hover
                                             tabIndex={-1}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                {n.apiname}
+                                                <Checkbox
+                                                    value={option.apiname}
+                                                    onChange={this.handleSelectedAPIChange}
+                                                    checked={selectedAPIs.includes(option.apiname)}
+                                                />
+                                                {option.apiname}
                                             </TableCell>
                                             <TableCell numeric>
-                                                {n.hits}
+                                                {option.hits}
                                             </TableCell>
                                         </TableRow>
                                     );
@@ -298,6 +326,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    callBack: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
