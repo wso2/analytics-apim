@@ -442,7 +442,7 @@ class APIMAppResourceUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, applicationSelected, usageData, applicationList,
+            localeMessages, faultyProviderConfig, height, width, limit, applicationSelected, usageData, applicationList,
             inProgress, proxyError,
         } = this.state;
         const {
@@ -453,6 +453,7 @@ class APIMAppResourceUsageWidget extends Widget {
         const resourceUsageProps = {
             themeName,
             height,
+            width,
             limit,
             applicationList,
             applicationSelected,

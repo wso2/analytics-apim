@@ -46,12 +46,12 @@ export default function APIMGeoInvocations(props) {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         dataWrapper: {
             height: '80%',
@@ -67,26 +67,20 @@ export default function APIMGeoInvocations(props) {
             height,
         },
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '100%',
+            width: '95%',
         },
         formWrapper: {
-            width: '100%',
-            height: '10%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            margin: '2%',
-            marginLeft: 0,
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
-        },
-        selectEmpty: {
-            marginTop: 10,
         },
     };
 
@@ -96,7 +90,10 @@ export default function APIMGeoInvocations(props) {
         >
             <div
                 style={{
-                    padding: '5%',
+                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                    height,
+                    margin: '10px',
+                    padding: '20px',
                 }}
             >
                 <div style={styles.headingWrapper}>
@@ -125,7 +122,6 @@ export default function APIMGeoInvocations(props) {
                                 input={<Input name='apiCreatedBy' id='api-createdBy-label-placeholder' />}
                                 displayEmpty
                                 name='apiCreatedBy'
-                                style={styles.selectEmpty}
                             >
                                 <MenuItem value='All'>
                                     <FormattedMessage id='all.menuItem' defaultMessage='All' />
@@ -145,7 +141,6 @@ export default function APIMGeoInvocations(props) {
                                 input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
                                 displayEmpty
                                 name='apiSelected'
-                                style={styles.selectEmpty}
                             >
                                 {
                                     apilist.map(option => (
@@ -166,7 +161,6 @@ export default function APIMGeoInvocations(props) {
                                 input={<Input name='apiVersion' id='apiVersion-label-placeholder' />}
                                 displayEmpty
                                 name='apiVersion'
-                                style={styles.selectEmpty}
                             >
                                 {
                                     versionlist.map(option => (

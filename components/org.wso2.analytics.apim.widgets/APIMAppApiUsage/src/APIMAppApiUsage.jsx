@@ -46,42 +46,40 @@ export default function APIMAppApiUsage(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
+        },
+        form: {
+            display: 'flex',
+            flexWrap: 'wrap',
         },
         formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
-        },
-        gridWrapper: {
-            marginLeft: '5%',
+            marginBottom: '5%',
         },
         formControl: {
-            marginTop: '5%',
             marginLeft: '5%',
+            marginTop: '5%',
+            minWidth: 120,
         },
         textField: {
-            marginTop: 0,
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
             width: '30%',
         },
         select: {
-            paddingTop: 5,
-            marginTop: 10,
-            minWidth: 300,
+            minWidth: width * 0.3 < 200 ? 150 : 200,
         },
         inProgress: {
             display: 'flex',
@@ -90,7 +88,10 @@ export default function APIMAppApiUsage(props) {
             height,
         },
         mainDiv: {
-            padding: '5% 5%',
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            height,
+            margin: '10px',
+            padding: '20px',
         },
         statDiv: {
             display: 'flex',
@@ -177,20 +178,18 @@ export default function APIMAppApiUsage(props) {
                                 }
                             </Select>
                         </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <TextField
-                                id='limit-number'
-                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
-                                value={limit}
-                                onChange={handleLimitChange}
-                                type='number'
-                                style={styles.textField}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                margin='normal'
-                            />
-                        </FormControl>
+                        <TextField
+                            id='limit-number'
+                            label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                            value={limit}
+                            onChange={handleLimitChange}
+                            type='number'
+                            style={styles.textField}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            margin='normal'
+                        />
                     </form>
                 </div>
                 { inProgress ? (
