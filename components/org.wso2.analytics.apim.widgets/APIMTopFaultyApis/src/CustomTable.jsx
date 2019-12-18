@@ -199,6 +199,9 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
+            <MenuItem value='apiVersion'>
+                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
+            </MenuItem>,
             <MenuItem value='faultcount'>
                 <FormattedMessage id='table.heading.faultcount' defaultMessage='FAULT COUNT' />
             </MenuItem>,
@@ -234,6 +237,9 @@ class CustomTable extends React.Component {
                                         >
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}
+                                            </TableCell>
+                                            <TableCell component='th' scope='row' numeric>
+                                                {n.apiVersion}
                                             </TableCell>
                                             <TableCell numeric>
                                                 {n.faultcount}

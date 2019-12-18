@@ -44,36 +44,30 @@ export default function APIMApiVersionUsage(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            margin: '5%',
-            minWidth: 120,
-        },
-        textField: {
-            margin: '5%',
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
         },
         selectEmpty: {
@@ -102,7 +96,10 @@ export default function APIMApiVersionUsage(props) {
             style={{ height }}
         >
             <div style={{
-                padding: '5% 5%',
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                height,
+                margin: '10px',
+                padding: '20px',
             }}
             >
                 <div style={styles.headingWrapper}>
@@ -140,7 +137,6 @@ export default function APIMApiVersionUsage(props) {
                                 input={<Input name='apiCreatedBy' id='api-createdBy-label-placeholder' />}
                                 displayEmpty
                                 name='apiCreatedBy'
-                                style={styles.selectEmpty}
                             >
                                 <MenuItem value='All'>
                                     <FormattedMessage id='all.menuItem' defaultMessage='All' />
@@ -150,7 +146,7 @@ export default function APIMApiVersionUsage(props) {
                                 </MenuItem>
                             </Select>
                         </FormControl>
-                        <FormControl style={styles.textField}>
+                        <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
                                 title={<FormattedMessage id='limit' defaultMessage='Limit :' />}

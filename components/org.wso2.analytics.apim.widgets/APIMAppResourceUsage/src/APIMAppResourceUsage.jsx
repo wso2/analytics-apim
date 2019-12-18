@@ -39,26 +39,32 @@ import CustomTable from './CustomTable';
  */
 export default function APIMAppResourceUsage(props) {
     const {
-        themeName, height, limit, applicationSelected, usageData, applicationList, applicationSelectedHandleChange,
+        themeName, height, width, limit, applicationSelected, usageData, applicationList, applicationSelectedHandleChange,
         handleLimitChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
+        },
+        form: {
+            display: 'flex',
+            flexWrap: 'wrap',
         },
         formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         formControl: {
             marginTop: '5%',
             marginLeft: '5%',
+        },
+        textField: {
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
         },
         select: {
+            minWidth: width * 0.3 < 200 ? 150 : 200,
         },
         table: {
             paddingTop: 35,
@@ -66,7 +72,10 @@ export default function APIMAppResourceUsage(props) {
             width: '90%',
         },
         div: {
-            padding: '5% 5%',
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            height,
+            margin: '10px',
+            padding: '20px',
         },
         h3: {
             borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -81,12 +90,12 @@ export default function APIMAppResourceUsage(props) {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         inProgress: {
             display: 'flex',
@@ -179,7 +188,7 @@ export default function APIMAppResourceUsage(props) {
                         </FormControl>
                     </form>
                 </div>
-                <div style={styles.table}>
+                <div>
                     { inProgress ? (
                         <div style={styles.inProgress}>
                             <CircularProgress />
@@ -187,10 +196,12 @@ export default function APIMAppResourceUsage(props) {
                     ) : (
                         <div>
                             { usageData && usageData.length > 0 ? (
-                                <CustomTable
-                                    data={usageData}
-                                    inProgress={inProgress}
-                                />
+                                <div style={styles.table}>
+                                    <CustomTable
+                                        data={usageData}
+                                        inProgress={inProgress}
+                                    />
+                                </div>
                             ) : (
                                 <div style={styles.paperWrapper}>
                                     <Paper

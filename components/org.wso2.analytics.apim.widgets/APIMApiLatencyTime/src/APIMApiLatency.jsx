@@ -51,21 +51,19 @@ export default function APIMApiLatency(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '97%',
+            width: '95%',
         },
         formWrapper: {
-            width: '90%',
-            height: '20%',
-            margin: 'auto',
+            marginBottom:'5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            margin: '5%',
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
         },
         selectEmpty: {
@@ -79,12 +77,12 @@ export default function APIMApiLatency(props) {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         loadingIcon: {
             margin: 'auto',
@@ -121,14 +119,18 @@ export default function APIMApiLatency(props) {
         >
             <div
                 style={{
-                    padding: '5% 5%',
+                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                    height,
+                    margin: '10px',
+                    padding: '20px',
                 }}
             >
                 <div style={styles.headingWrapper}>
                     <div style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        width: '40%',
-                        paddingBottom: '15px',
+                        paddingBottom: '10px',
+                        margin: 'auto',
+                        marginTop: 0,
                         textAlign: 'left',
                         fontWeight: 'normal',
                         letterSpacing: 1.5,
@@ -158,7 +160,6 @@ export default function APIMApiLatency(props) {
                                 input={<Input name='apiCreatedBy' id='api-createdBy-label-placeholder' />}
                                 displayEmpty
                                 name='apiCreatedBy'
-                                style={styles.selectEmpty}
                             >
                                 <MenuItem value='All'>
                                     <FormattedMessage id='all.menuItem' defaultMessage='All' />
@@ -187,7 +188,6 @@ export default function APIMApiLatency(props) {
                                 input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
                                 displayEmpty
                                 name='apiSelected'
-                                style={styles.selectEmpty}
                             >
                                 {
                                     apilist.map(option => (
@@ -217,7 +217,6 @@ export default function APIMApiLatency(props) {
                                 input={<Input name='apiVersion' id='apiVersion-label-placeholder' />}
                                 displayEmpty
                                 name='apiVersion'
-                                style={styles.selectEmpty}
                             >
                                 {
                                     versionlist.map(option => (

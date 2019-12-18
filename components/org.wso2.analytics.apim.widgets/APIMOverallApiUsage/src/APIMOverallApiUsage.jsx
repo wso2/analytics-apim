@@ -46,36 +46,30 @@ export default function APIMOverallApiUsage(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            margin: '5%',
-            minWidth: 120,
-        },
-        textField: {
-            margin: '5%',
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
         },
         selectEmpty: {
@@ -113,7 +107,12 @@ export default function APIMOverallApiUsage(props) {
 
     return (
         <Scrollbars style={{ height: '100%' }}>
-            <div style={{ padding: '5% 5%' }}>
+            <div style={{
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                height,
+                margin: '10px',
+                padding: '20px',
+            }}>
                 <div style={styles.headingWrapper}>
                     <div style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -149,7 +148,6 @@ export default function APIMOverallApiUsage(props) {
                                 input={<Input name='api-createdBy' id='api-createdBy-label-placeholder' />}
                                 displayEmpty
                                 name='apiCreatedBy'
-                                style={styles.selectEmpty}
                             >
                                 <MenuItem value='all'>
                                     <FormattedMessage id='all.menuItem' defaultMessage='All' />
@@ -159,7 +157,7 @@ export default function APIMOverallApiUsage(props) {
                                 </MenuItem>
                             </Select>
                         </FormControl>
-                        <FormControl style={styles.textField}>
+                        <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
                                 title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
