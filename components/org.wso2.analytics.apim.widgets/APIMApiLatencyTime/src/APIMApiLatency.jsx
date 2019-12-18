@@ -66,8 +66,6 @@ export default function APIMApiLatency(props) {
             marginTop: '5%',
             minWidth: 120,
         },
-        selectEmpty: {
-        },
         dataWrapper: {
             height: '70%',
             width: '100%',

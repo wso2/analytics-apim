@@ -72,8 +72,6 @@ export default function APIMTopPlatforms(props) {
             marginTop: '5%',
             minWidth: 120,
         },
-        selectEmpty: {
-        },
         dataWrapper: {
             height: '80%',
         },

@@ -83,8 +83,6 @@ export default function APIMGeoInvocations(props) {
             marginTop: '5%',
             minWidth: 120,
         },
-        selectEmpty: {
-        },
         formLabel: {
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',

@@ -65,8 +65,6 @@ export default function APIMApiResponse(props) {
             margin: '5%',
             minWidth: 120,
         },
-        selectEmpty: {
-        },
         dataWrapper: {
             height: height * 0.40,
             width: width * 0.95,

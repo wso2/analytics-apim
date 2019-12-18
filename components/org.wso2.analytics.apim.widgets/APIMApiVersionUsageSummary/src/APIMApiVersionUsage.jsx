@@ -70,8 +70,6 @@ export default function APIMApiVersionUsage(props) {
             marginTop: '5%',
             minWidth: 120,
         },
-        selectEmpty: {
-        },
         loadingIcon: {
             margin: 'auto',
             display: 'block',
