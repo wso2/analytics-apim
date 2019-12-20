@@ -31,8 +31,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -105,6 +107,12 @@ public class MGWFileSourceDAO {
         List<MGWFileInfoDTO> usageFileList = new ArrayList<>();
         try {
             connection = MGWFileSourceDBUtil.getConnection();
+            if (!isUsageTableExist(connection)) {
+                log.debug("Table 'AM_USAGE_UPLOADED_FILES' not found in '" + MGWFileSourceDBUtil.getDatasourceName()
+                        + "'. Skip publishing usage data assuming Micro GW is not configured.");
+                return Collections.emptyList();
+            }
+
             autoCommitStatus = connection.getAutoCommit();
             connection.setAutoCommit(false);
             if ((connection.getMetaData().getDriverName()).contains("Oracle")) {
@@ -240,6 +248,11 @@ public class MGWFileSourceDAO {
         boolean autoCommitStatus = false;
         try {
             connection = MGWFileSourceDBUtil.getConnection();
+            if (!isUsageTableExist(connection)) {
+                log.debug("Table 'AM_USAGE_UPLOADED_FILES' not found in '" + MGWFileSourceDBUtil.getDatasourceName()
+                        + "'. Skip publishing usage data assuming Micro GW is not configured.");
+                return;
+            }
             autoCommitStatus = connection.getAutoCommit();
             connection.setAutoCommit(false);
             delStatement = connection.prepareStatement(MGWFileSourceConstants.DELETE_OLD_UPLOAD_COMPLETED_FILES);
@@ -267,4 +280,25 @@ public class MGWFileSourceDAO {
         }
     }
 
+    /**
+     * Check whether given table is exist
+     *
+     * @param conn Connection
+     * @return existence
+     * @throws SQLException throw if an error occurred
+     */
+    private static boolean isUsageTableExist(Connection conn) throws SQLException {
+        Statement stmt = conn.createStatement();
+        try {
+            stmt.execute(MGWFileSourceConstants.TABLE_EXISTENCE_SQL);
+            return true;
+        } catch (SQLException e) {
+            //  logging is not required here.
+            return false;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+    }
 }

@@ -96,7 +96,7 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <delete file="src/main/resources/wso2/worker/database/WSO2AM_MGW_ANALYTICS_DB.h2.db" />
+                                <delete file="src/main/resources/wso2/worker/database/APIM_ANALYTICS_DB.h2.db" />
                             </tasks>
                         </configuration>
                     </execution>
@@ -111,8 +111,8 @@
                                 <path id="h2.classpath">
                                     <path refid="maven.compile.classpath" />
                                 </path>
-                                <echo message="########### Creating API Manager Database ##############" />
-                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/src/main/resources/wso2/worker/database/WSO2AM_MGW_ANALYTICS_DB;create=true" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
+                                <echo message="########### Creating APIM ANALYTICS Database ##############" />
+                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/src/main/resources/wso2/worker/database/APIM_ANALYTICS_DB;create=true" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
                                     <classpath>
                                         <path refid="h2.classpath" />
                                     </classpath>

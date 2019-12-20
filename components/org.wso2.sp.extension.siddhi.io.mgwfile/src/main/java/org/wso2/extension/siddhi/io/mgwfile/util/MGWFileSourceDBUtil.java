@@ -18,8 +18,10 @@
 package org.wso2.extension.siddhi.io.mgwfile.util;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.extension.siddhi.io.mgwfile.MGWFileSourceConstants;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -110,5 +112,14 @@ public class MGWFileSourceDBUtil {
 
     public static void setDataSource(HikariDataSource dataSource) {
         MGWFileSourceDBUtil.dataSource = dataSource;
+    }
+
+    public static String getDatasourceName() {
+        String dataSourceName = System.getProperty(MGWFileSourceConstants.DATASOURCE_PROPERTY);
+        if (StringUtils.isEmpty(dataSourceName)) {
+            log.debug("Default dataSource name will be used");
+            dataSourceName = MGWFileSourceConstants.DEFAULT_DATASOURCE;
+        }
+        return dataSourceName;
     }
 }
