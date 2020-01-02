@@ -71,9 +71,9 @@ public class MGWFileSourceDS {
             Timer cleanupTimer = new Timer();
             cleanupTimer.schedule(fileCleanupTask, 1000, Long.parseLong(fileCleanupFrequency));
         } else {
-            log.warn("MGW file cleanup task is not scheduled as data source 'WSO2AM_MGW_ANALYTICS_DB' is not present. "
-                             + "Please disregard this warning if you are not utilizing API Manager Analytics "
-                             + "capabilities.");
+            log.warn("MGW file cleanup task is not scheduled as data source '" + MGWFileSourceDBUtil.getDatasourceName()
+                    + "' is not present. Please disregard this warning if you are not utilizing API Manager Analytics "
+                    + "capabilities.");
         }
     }
 
@@ -141,8 +141,9 @@ public class MGWFileSourceDS {
             unbind = "unregisterDataSourceService"
     )
     protected void onDataSourceServiceReady(DataSourceService service) {
+
         try {
-            dsObject = (HikariDataSource) service.getDataSource("WSO2AM_MGW_ANALYTICS_DB");
+            dsObject = (HikariDataSource) service.getDataSource(MGWFileSourceDBUtil.getDatasourceName());
             MGWFileSourceDBUtil.setDataSource(dsObject);
         } catch (DataSourceException e) {
             log.error("Error occurred while fetching the data source. Please disregard this warning if you are not "

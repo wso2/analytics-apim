@@ -73,6 +73,12 @@ public class MGWFileSourceConstants {
 
     public static final String DEFAULT_WORKER_THREAD_COUNT = "3";
 
+    public static final String DEFAULT_DATASOURCE = "APIM_ANALYTICS_DB";
+
+    public static final String DATASOURCE_PROPERTY = "usage.datasource.name";
+
+    public static final String TABLE_EXISTENCE_SQL = "select 1 from ";
+
     // Separators used for persisting events
     public static final String EVENT_SEPARATOR = "-ES-";
 
