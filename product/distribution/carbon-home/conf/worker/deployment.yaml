@@ -303,9 +303,9 @@ state.persistence:
   intervalInMin: 1
   revisionsToKeep: 2
   persistenceStore: org.wso2.carbon.streaming.integrator.core.persistence.DBPersistenceStore
-    config:
-      datasource: PERSISTENCE_DB   # A datasource with this name should be defined in wso2.datasources namespace
-      table: PERSISTENCE_TABLE
+  config:
+    datasource: PERSISTENCE_DB   # A datasource with this name should be defined in wso2.datasources namespace
+    table: PERSISTENCE_TABLE
 
   # Secure Vault Configuration
 wso2.securevault:
