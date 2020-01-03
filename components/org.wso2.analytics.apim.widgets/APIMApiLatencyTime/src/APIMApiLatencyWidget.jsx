@@ -23,7 +23,6 @@ import {
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
-import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
@@ -196,13 +195,13 @@ class APIMApiLatencyWidget extends Widget {
             apiDataList: [],
             latencyData: null,
             apiFullData: [],
-            resourceList:[],
+            resourceList: [],
             operationSelected: [],
             resourceSelected: '',
             inProgress: true,
             metadata: this.metadata,
             chartConfig: this.chartConfig,
-            proxyError: null
+            proxyError: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -292,7 +291,7 @@ class APIMApiLatencyWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -313,10 +312,10 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     resetState() {
-        this.setState({inProgress: true, latencyData: [] });
+        this.setState({ inProgress: true, latencyData: [] });
         const queryParam = super.getGlobalState(queryParamKey);
         let {
-            apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected
+            apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected,
         } = queryParam;
         const { apilist, versionMap } = this.state;
         let versions;
@@ -326,7 +325,7 @@ class APIMApiLatencyWidget extends Widget {
         }
         if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
             if (apilist.length > 0) {
-                apiSelected = apilist[0];
+                [apiSelected] = apilist;
             }
         }
         if (versionMap && apiSelected in versionMap) {
@@ -336,7 +335,7 @@ class APIMApiLatencyWidget extends Widget {
         }
         if (!apiVersion || !versions.includes(apiVersion)) {
             if (versions.length > 0) {
-                apiVersion = versions[0];
+                [apiVersion] = versions;
             } else {
                 apiVersion = '';
             }
@@ -346,10 +345,10 @@ class APIMApiLatencyWidget extends Widget {
         }
         if (!resourceSelected) {
             resourceSelected = '';
-         }
+        }
 
         this.setState({
-            apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected, versionlist: versions
+            apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected, versionlist: versions,
         });
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected);
     }
@@ -365,7 +364,7 @@ class APIMApiLatencyWidget extends Widget {
                 this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
                 if (error.response && error.response.data) {
                     let proxyError = error.response.data;
@@ -404,11 +403,11 @@ class APIMApiLatencyWidget extends Widget {
         if (apiDataList && apiDataList.length > 0) {
             let apiList = [...apiDataList];
 
-            if (apiCreatedBy !== "All") {
-                apiList = apiList.filter(api => { return api.provider === username; })
+            if (apiCreatedBy !== 'All') {
+                apiList = apiList.filter((api) => { return api.provider === username; });
             }
 
-            let apiCondition = apiList.map(api => {
+            let apiCondition = apiList.map((api) => {
                 return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
                     + '\' AND API_PROVIDER==\'' + api.provider + '\')';
             });
@@ -417,7 +416,7 @@ class APIMApiLatencyWidget extends Widget {
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiCondition}}': apiCondition
+                '{{apiCondition}}': apiCondition,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
@@ -434,7 +433,7 @@ class APIMApiLatencyWidget extends Widget {
     handleApiIdReceived(message) {
         const { id } = this.props;
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiSelected } = queryParam;
+        const { apiSelected } = queryParam;
         const { data } = message;
 
         if (data && data.length > 0) {
@@ -444,12 +443,14 @@ class APIMApiLatencyWidget extends Widget {
                 apilist.push(dataUnit[1]);
                 // retrieve all entries for the api and get the api versions list
                 const versions = data.filter(d => d[1] === dataUnit[1]);
-                const versionlist = versions.map(ver => { return ver[2]; });
+                const versionlist = versions.map((ver) => { return ver[2]; });
                 versionMap[dataUnit[1]] = versionlist;
             });
             apilist = [...new Set(apilist)];
             apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
-            this.setState({ apilist, versionMap, apiFullData: data, apiSelected });
+            this.setState({
+                apilist, versionMap, apiFullData: data, apiSelected,
+            });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleResourceQuery();
@@ -473,7 +474,7 @@ class APIMApiLatencyWidget extends Widget {
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'resourcequery';
                 dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{apiID}}': api[0]
+                    '{{apiID}}': api[0],
                 };
                 super.getWidgetChannelManager()
                     .subscribeWidget(id, widgetName, this.handleResourceReceived, dataProviderConfigs);
@@ -512,9 +513,9 @@ class APIMApiLatencyWidget extends Widget {
     assembleMainQuery() {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiSelected, apiVersion } = queryParam;
+        const { apiSelected, apiVersion } = queryParam;
         const {
-            providerConfig, timeFrom, timeTo, perValue, operationSelected, resourceSelected
+            providerConfig, timeFrom, timeTo, perValue, operationSelected, resourceSelected,
         } = this.state;
         const { widgetID: widgetName, id } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -524,27 +525,26 @@ class APIMApiLatencyWidget extends Widget {
             let resources = '';
             let numberOfSelectedElements = 0;
 
-            if(operationSelected.length > 0) {
+            if (operationSelected.length > 0) {
                 const operations = [];
                 const operationTypes = [];
                 let operationsString = '';
                 let method = '';
-                operationSelected.map(res => {
+                operationSelected.forEach((res) => {
                     const resFormat = res.split(' (');
                     operations.push(resFormat[0]);
                     method = resFormat[1].replace(')', '');
                     operationTypes.push(method);
-                    numberOfSelectedElements += 1 ;
+                    numberOfSelectedElements += 1;
                 });
 
                 for (let i = 0; i < operations.length - 1; i++) {
-                  operationsString += 'str:contains(apiResourceTemplate,' + '\'' + operations[i] + '\') AND ';
+                    operationsString += 'str:contains(apiResourceTemplate,\'' + operations[i] + '\') AND ';
                 }
-                operationsString += 'str:contains(apiResourceTemplate,' + '\'' + operations[operations.length -1] + '\'' + ')';
+                operationsString += 'str:contains(apiResourceTemplate,\'' + operations[operations.length - 1] + '\')';
 
                 resources = '((' + operationsString + ') AND apiMethod==\'' + method + '\')';
-            }
-            else if (resourceSelected.length > 0) {
+            } else if (resourceSelected.length > 0) {
                 const resFormat = resourceSelected.split(' (');
                 const resource = resFormat[0];
                 const method = resFormat[1].replace(')', '');
@@ -560,7 +560,7 @@ class APIMApiLatencyWidget extends Widget {
                 '{{timeTo}}': timeTo,
                 '{{per}}': perValue,
                 '{{querystring}}': queryCondition,
-                '{{numberOfCommas}}': numberOfSelectedElements - 1
+                '{{numberOfCommas}}': numberOfSelectedElements - 1,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -579,7 +579,7 @@ class APIMApiLatencyWidget extends Widget {
 
         if (data) {
             const {
-                apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected
+                apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected,
             } = this.state;
             const latencyData = data.map((dataUnit) => {
                 return ([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4],
@@ -606,7 +606,7 @@ class APIMApiLatencyWidget extends Widget {
             apiSelected,
             apiVersion,
             operationSelected,
-            resourceSelected
+            resourceSelected,
         });
     }
 
@@ -620,7 +620,7 @@ class APIMApiLatencyWidget extends Widget {
         this.setQueryParam(event.target.value, '', '', []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({ apiCreatedBy: event.target.value, inProgress: true }, this.assembleApiIdQuery);
-        }
+    }
 
     /**
      * Handle API name menu select change
@@ -632,9 +632,13 @@ class APIMApiLatencyWidget extends Widget {
         const { id } = this.props;
         this.setQueryParam(apiCreatedBy, event.target.value, '', []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ apiSelected: event.target.value, versionlist: [], resourceList: [],
-        inProgress: true }, this.assembleResourceQuery);
-        }
+        this.setState({
+            apiSelected: event.target.value,
+            versionlist: [],
+            resourceList: [],
+            inProgress: true,
+        }, this.assembleResourceQuery);
+    }
 
     /**
      * Handle API Version menu select change
@@ -666,32 +670,31 @@ class APIMApiLatencyWidget extends Widget {
         } else {
             operationSelected.push(event.target.value);
         }
-        this.setState({ operationSelected , inProgress: true });
+        this.setState({ operationSelected, inProgress: true });
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
-       /**
+    /**
          * Handle operation select change
          * @param {Event} event - listened event
          * @memberof APIMApiLatencyWidget
          * */
-        apiResourceHandleChange(event) {
-            const { id } = this.props;
-            const queryParam = super.getGlobalState(queryParamKey);
-            const {
-                apiCreatedBy, apiSelected, apiVersion
-            } = this.state;
+    apiResourceHandleChange(event) {
+        const { id } = this.props;
+        const {
+            apiCreatedBy, apiSelected, apiVersion,
+        } = this.state;
 
-            const resourceSelected = event.target.value;
-            this.state.resourceSelected = resourceSelected;
+        const resourceSelected = event.target.value;
+        this.state.resourceSelected = resourceSelected;
 
-            this.setState({ resourceSelected , inProgress: true });
-            this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, [], resourceSelected);
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleMainQuery();
-        }
+        this.setState({ resourceSelected, inProgress: true });
+        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, [], resourceSelected);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+        this.assembleMainQuery();
+    }
 
     /**
      * @inheritDoc
@@ -702,7 +705,7 @@ class APIMApiLatencyWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
             localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, proxyError,
-            apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList
+            apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -738,7 +741,8 @@ class APIMApiLatencyWidget extends Widget {
                                 <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='apim.server.error.heading'
-                                        defaultMessage='Error!' />
+                                        defaultMessage='Error!'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     { proxyError }
