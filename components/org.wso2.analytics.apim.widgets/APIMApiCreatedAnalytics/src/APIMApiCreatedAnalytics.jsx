@@ -36,7 +36,7 @@ import APIMApiCreatedData from './APIMApiCreatedData';
  */
 export default function APIMApiCreatedAnalytics(props) {
     const {
-        themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount, handleChange, inProgress
+        themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount, handleChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -66,7 +66,7 @@ export default function APIMApiCreatedAnalytics(props) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            height: height,
+            height,
         },
         formLabel: {
             whiteSpace: 'nowrap',
@@ -128,8 +128,8 @@ export default function APIMApiCreatedAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress ?
-                    (
+                { inProgress
+                    ? (
                         <div style={styles.loading}>
                             <CircularProgress style={styles.loadingIcon} />
                         </div>
@@ -151,4 +151,5 @@ APIMApiCreatedAnalytics.propTypes = {
     xAxisTicks: PropTypes.instanceOf(Object).isRequired,
     maxCount: PropTypes.number.isRequired,
     handleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };
