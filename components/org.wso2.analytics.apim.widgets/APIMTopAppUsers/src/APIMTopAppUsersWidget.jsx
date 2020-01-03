@@ -224,7 +224,7 @@ class APIMTopAppUsersWidget extends Widget {
                 this.setState({ proxyError: null });
                 this.handleAppDataReceived(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 if (error.response && error.response.data) {
                     let proxyError = error.response.data;
                     proxyError = proxyError.split(':').splice(1).join('').trim();
@@ -244,7 +244,7 @@ class APIMTopAppUsersWidget extends Widget {
 
         if (list && list.length > 0) {
             const applicationUUIDMap = {};
-            list.map((dataUnit) => {
+            list.forEach((dataUnit) => {
                 applicationUUIDMap[dataUnit.applicationId] = {
                     appName: dataUnit.name + ' (' + dataUnit.owner + ')',
                     appOwner: dataUnit.owner,
@@ -268,7 +268,7 @@ class APIMTopAppUsersWidget extends Widget {
 
             dataProviderConfigs.configs.config.queryData.queryName = 'applicationQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{applicationUUID}}': 'UUID==\'' + Object.keys(applicationUUIDMap).join('\' OR UUID==\'') + '\''
+                '{{applicationUUID}}': 'UUID==\'' + Object.keys(applicationUUIDMap).join('\' OR UUID==\'') + '\'',
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleAppIdDataReceived, dataProviderConfigs);
@@ -295,7 +295,7 @@ class APIMTopAppUsersWidget extends Widget {
             }
             const applicationList = data.map((dataUnit) => {
                 const app = applicationUUIDMap[dataUnit[1]];
-                app.appId = dataUnit[0];
+                [app.appId] = dataUnit;
                 return app;
             });
             applicationList.sort(sortFunction);
@@ -330,7 +330,7 @@ class APIMTopAppUsersWidget extends Widget {
         if (applicationSelected && limit) {
             const { id, widgetID: widgetName } = this.props;
             const dataProviderConfigs = cloneDeep(providerConfig);
-            const applicationIds = applicationList.map(app => { return app.appId; });
+            const applicationIds = applicationList.map((app) => { return app.appId; });
             let applicationCondition;
 
             if (applicationSelected === 'All') {
@@ -346,7 +346,7 @@ class APIMTopAppUsersWidget extends Widget {
                 '{{from}}': timeFrom,
                 '{{to}}': timeTo,
                 '{{per}}': perValue,
-                '{{limit}}': limit
+                '{{limit}}': limit,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -474,7 +474,8 @@ class APIMTopAppUsersWidget extends Widget {
                                 <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='apim.server.error.heading'
-                                        defaultMessage='Error!' />
+                                        defaultMessage='Error!'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     { proxyError }
