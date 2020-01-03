@@ -144,7 +144,7 @@ class APIMDeveloperSignupsWidget extends Widget {
                 const refreshIntervalId = setInterval(refresh, refreshInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                    refreshIntervalId
+                    refreshIntervalId,
                 }, this.assembleTotalQuery);
             })
             .catch((error) => {
@@ -160,7 +160,7 @@ class APIMDeveloperSignupsWidget extends Widget {
         const { refreshIntervalId } = this.state;
         clearInterval(refreshIntervalId);
         this.setState({
-            refreshIntervalId: null
+            refreshIntervalId: null,
         });
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
@@ -226,7 +226,7 @@ class APIMDeveloperSignupsWidget extends Widget {
         dataProviderConfigs.configs.config.queryData.queryName = 'weekQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{weekStart}}': Moment(weekStart).format('YYYY-MM-DD HH:mm:ss'),
-            '{{weekEnd}}': Moment().format('YYYY-MM-DD HH:mm:ss')
+            '{{weekEnd}}': Moment().format('YYYY-MM-DD HH:mm:ss'),
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleWeekCountReceived, dataProviderConfigs);
