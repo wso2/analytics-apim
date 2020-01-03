@@ -213,25 +213,25 @@ export default function APIMSubscriptionsData(props) {
                     <CustomTable
                         tableData={tableData}
                     />
-                    {/*todo make route path configurable using widgetconf*/}
-                    {/*<Button*/}
-                        {/*variant='contained'*/}
-                        {/*color='secondary'*/}
-                        {/*style={styles.button}*/}
-                        {/*onClick={() => {*/}
-                            {/*window.location.href = './overview';*/}
-                        {/*}}*/}
-                    {/*>*/}
-                        {/*<ArrowBack />*/}
-                        {/*<FormattedMessage id='back.btn' defaultMessage='BACK' />*/}
-                    {/*</Button>*/}
+                    {/* todo make route path configurable using widgetconf */}
+                    {/* <Button */}
+                    {/* variant='contained' */}
+                    {/* color='secondary' */}
+                    {/* style={styles.button} */}
+                    {/* onClick={() => { */}
+                    {/* window.location.href = './overview'; */}
+                    {/* }} */}
+                    {/* > */}
+                    {/* <ArrowBack /> */}
+                    {/* <FormattedMessage id='back.btn' defaultMessage='BACK' /> */}
+                    {/* </Button> */}
                 </div>
             </div>
         );
     } else {
         return (
             <div style={styles.paperWrapper}>
-                <Paper  style={styles.paper}>
+                <Paper style={styles.paper}>
                     <Typography variant='h5' component='h3'>
                         <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
                     </Typography>
