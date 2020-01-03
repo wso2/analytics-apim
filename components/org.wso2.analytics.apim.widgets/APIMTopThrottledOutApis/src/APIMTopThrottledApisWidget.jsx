@@ -202,7 +202,7 @@ class APIMTopThrottledApisWidget extends Widget {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
-            '{{limit}}': limit
+            '{{limit}}': limit,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -228,8 +228,12 @@ class APIMTopThrottledApisWidget extends Widget {
                 if (!legendData.includes({ name: apiName })) {
                     legendData.push({ name: apiName });
                 }
-                throttledData.push({ id: counter, apiname: apiName, apiVersion: dataUnit[1],
-                    throttledcount: dataUnit[4] });
+                throttledData.push({
+                    id: counter,
+                    apiname: apiName,
+                    apiVersion: dataUnit[1],
+                    throttledcount: dataUnit[4],
+                });
             });
 
             this.setState({ legendData, throttledData, inProgress: false });
@@ -277,7 +281,7 @@ class APIMTopThrottledApisWidget extends Widget {
             localeMessages, faultyProviderConfig, height, limit, throttledData, legendData, inProgress,
         } = this.state;
         const {
-            paper, paperWrapper
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
