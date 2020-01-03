@@ -189,7 +189,7 @@ class APIMTopAppCreatorsWidget extends Widget {
         const { id } = this.props;
 
         if (data) {
-            const subscribers = data.map(dataUnit => { return dataUnit[0]; });
+            const subscribers = data.map((dataUnit) => { return dataUnit[0]; });
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ subscribers }, this.assembleQuery);
         } else {
@@ -212,12 +212,12 @@ class APIMTopAppCreatorsWidget extends Widget {
         }
         if (subscribers && subscribers.length > 0) {
             const dataProviderConfigs = cloneDeep(providerConfig);
-            let subs = subscribers.map(sub => { return 'SUBSCRIBER_ID==' + sub; });
+            let subs = subscribers.map((sub) => { return 'SUBSCRIBER_ID==' + sub; });
             subs = subs.join(' OR ');
             dataProviderConfigs.configs.config.queryData.queryName = 'appQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{subscriberId}}': subs,
-                '{{limit}}': limit
+                '{{limit}}': limit,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
