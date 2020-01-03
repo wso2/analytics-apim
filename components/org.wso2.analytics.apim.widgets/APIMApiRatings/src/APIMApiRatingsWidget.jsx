@@ -213,7 +213,7 @@ class APIMApiRatingsWidget extends Widget {
             this.setState({ apiDataList: list });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleAPIDataQuery()
+        this.assembleAPIDataQuery();
     }
 
     /**
@@ -225,7 +225,7 @@ class APIMApiRatingsWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         if (apiDataList && apiDataList.length > 0) {
-            let apiCondition = apiDataList.map(api => {
+            let apiCondition = apiDataList.map((api) => {
                 return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
                     + '\' AND API_PROVIDER==\'' + api.provider + '\')';
             });
@@ -234,12 +234,12 @@ class APIMApiRatingsWidget extends Widget {
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiCondition}}': apiCondition
+                '{{apiCondition}}': apiCondition,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleAPIDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, topApiNameData: [] })
+            this.setState({ inProgress: false, topApiNameData: [] });
         }
     }
 
@@ -253,11 +253,11 @@ class APIMApiRatingsWidget extends Widget {
         const { id } = this.props;
         if (data) {
             const apiIdMap = {};
-            data.map(api => { apiIdMap[api[0]]= api; });
+            data.forEach((api) => { apiIdMap[api[0]] = api; });
             this.setState({ apiIdMap });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleTopAPIQuery()
+        this.assembleTopAPIQuery();
     }
 
     /**
@@ -269,17 +269,17 @@ class APIMApiRatingsWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         if (apiIdMap && Object.keys(apiIdMap).length > 0) {
-            let apiIds = Object.keys(apiIdMap).map(id => { return 'API_ID==' + id });
+            let apiIds = Object.keys(apiIdMap).map((apiId) => { return 'API_ID==' + apiId; });
             apiIds = apiIds.join(' OR ');
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiList}}': apiIds
+                '{{apiList}}': apiIds,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleTopAPIReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, topApiNameData: [] })
+            this.setState({ inProgress: false, topApiNameData: [] });
         }
     }
 
@@ -293,7 +293,7 @@ class APIMApiRatingsWidget extends Widget {
 
         if (data) {
             const { apiIdMap } = this.state;
-            const topApiNameData = data.map(dataUnit => {
+            const topApiNameData = data.map((dataUnit) => {
                 const api = apiIdMap[dataUnit[0]];
                 return {
                     apiname: api[1] + ' (' + api[3] + ')',
@@ -337,7 +337,8 @@ class APIMApiRatingsWidget extends Widget {
                                 <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='apim.server.error.heading'
-                                        defaultMessage='Error!' />
+                                        defaultMessage='Error!'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     { proxyError }
