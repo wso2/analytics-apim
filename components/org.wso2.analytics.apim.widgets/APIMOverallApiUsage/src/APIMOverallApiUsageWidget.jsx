@@ -303,7 +303,7 @@ class APIMOverallApiUsageWidget extends Widget {
                     apiname: dataUnit[0],
                     provider: dataUnit[1],
                     hits: dataUnit[2],
-                    version: dataUnit[3]
+                    version: dataUnit[3],
                 };
             });
             this.setState({ usageData });
@@ -388,7 +388,7 @@ class APIMOverallApiUsageWidget extends Widget {
 
         if (data) {
             const apiIdMap = {};
-            data.map((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2], version: api[3] }; });
+            data.forEach((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2], version: api[3] }; });
             this.setState({ apiIdMapGlobal: cloneDeep(apiIdMap), apiIdMap });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -405,7 +405,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         if (apiIdMap && Object.keys(apiIdMap).length > 0) {
-            let apiIds = Object.keys(apiIdMap).map((id) => { return 'API_ID==' + id; });
+            let apiIds = Object.keys(apiIdMap).map((apiId) => { return 'API_ID==' + apiId; });
             apiIds = apiIds.join(' OR ');
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apisubquery';
@@ -434,7 +434,7 @@ class APIMOverallApiUsageWidget extends Widget {
 
             const usageData1 = [];
             const usageData2 = [];
-            data.map((dataUnit) => {
+            data.forEach((dataUnit) => {
                 if (apiIdMap[dataUnit[0]]) {
                     const { apiname, creator, version } = apiIdMap[dataUnit[0]];
                     const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator
@@ -442,9 +442,9 @@ class APIMOverallApiUsageWidget extends Widget {
 
                     if (hits.length > 0) {
                         usageData1.push(
-                            [hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1], hits[0].version]);
+                            [hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1], hits[0].version],
+                        );
                     }
-
                 } else {
                     const { apiname, creator, version } = apiIdMapGlobal[dataUnit[0]];
                     const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator
@@ -452,13 +452,14 @@ class APIMOverallApiUsageWidget extends Widget {
 
                     if (hits.length > 0) {
                         usageData2.push(
-                            [hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1], hits[0].version]);
+                            [hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1], hits[0].version],
+                        );
                     }
                 }
             });
             this.setState({ usageData1, usageData2: [...usageData1, ...usageData2], inProgress: false });
         } else {
-            this.setState({ usageData1: [],usageData2: [], inProgress: false });
+            this.setState({ usageData1: [], usageData2: [], inProgress: false });
         }
     }
 
@@ -547,8 +548,8 @@ class APIMOverallApiUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig,
-            inProgress, proxyError,
+            localeMessages, faultyProviderConfig, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata,
+            chartConfig, inProgress, proxyError,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,

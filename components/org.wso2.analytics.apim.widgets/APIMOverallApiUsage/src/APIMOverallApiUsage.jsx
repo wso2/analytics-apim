@@ -40,8 +40,8 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiUsage(props) {
     const {
-        themeName, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig, apiCreatedHandleChange,
-        limitHandleChange, inProgress, selectedAPIChangeCallback,
+        themeName, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig,
+        apiCreatedHandleChange, limitHandleChange, inProgress, selectedAPIChangeCallback,
     } = props;
     const styles = {
         headingWrapper: {
@@ -57,7 +57,7 @@ export default function APIMOverallApiUsage(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
             marginBottom: 30,
         },
         formWrapper: {
@@ -103,10 +103,10 @@ export default function APIMOverallApiUsage(props) {
         },
     };
 
-    let chartData =[];
+    let chartData = [];
 
     if (usageData1) {
-        chartData = usageData1.map(data => {return [data[0] + ' (' + data[4] + ')', data[1], data[2], data[3]]})
+        chartData = usageData1.map((data) => { return [data[0] + ' (' + data[4] + ')', data[1], data[2], data[3]]; });
         chartData.sort((a, b) => { return a[0].toLowerCase().localeCompare(b[0].toLowerCase()); });
     }
 
@@ -117,7 +117,8 @@ export default function APIMOverallApiUsage(props) {
                 height,
                 margin: '10px',
                 padding: '20px',
-            }}>
+            }}
+            >
                 <div style={styles.headingWrapper}>
                     <div style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -201,7 +202,8 @@ export default function APIMOverallApiUsage(props) {
                                         <Typography variant='h5' component='h3'>
                                             <FormattedMessage
                                                 id='nodata.error.heading'
-                                                defaultMessage='No Data Available !' />
+                                                defaultMessage='No Data Available !'
+                                            />
                                         </Typography>
                                         <Typography component='p'>
                                             <FormattedMessage
@@ -235,7 +237,8 @@ export default function APIMOverallApiUsage(props) {
                                         <Typography variant='h5' component='h3'>
                                             <FormattedMessage
                                                 id='nodata.error.heading'
-                                                defaultMessage='No Data Available !' />
+                                                defaultMessage='No Data Available !'
+                                            />
                                         </Typography>
                                         <Typography component='p'>
                                             <FormattedMessage
@@ -265,11 +268,15 @@ export default function APIMOverallApiUsage(props) {
 APIMOverallApiUsage.propTypes = {
     themeName: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
+    height: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     apiCreatedBy: PropTypes.string.isRequired,
     usageData1: PropTypes.instanceOf(Object).isRequired,
+    usageData2: PropTypes.instanceOf(Object).isRequired,
     metadata: PropTypes.instanceOf(Object).isRequired,
     chartConfig: PropTypes.instanceOf(Object).isRequired,
     apiCreatedHandleChange: PropTypes.func.isRequired,
     limitHandleChange: PropTypes.func.isRequired,
+    selectedAPIChangeCallback: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

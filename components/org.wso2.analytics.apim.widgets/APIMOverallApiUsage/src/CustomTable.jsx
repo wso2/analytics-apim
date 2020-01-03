@@ -206,6 +206,8 @@ class CustomTable extends React.Component {
             if (tickedApiParts[0] === element[0] + ' (' + element[1] + ')' && tickedApiParts[1] === element[4]) {
                 return element;
             }
+            // this return is never reached, it is added to comply to es-lint arr0w-callback-return rule
+            return true;
         });
         selectedAPIChangeCallback(foundElement[0]);
     };
@@ -221,8 +223,12 @@ class CustomTable extends React.Component {
         } = this.state;
 
         const formattedData = data.map((dataUnit) => {
-            return { apiname: dataUnit[0] + ' (' + dataUnit[1] + ')', hits: dataUnit[2], apiVersion: dataUnit[4],
-                subs: dataUnit[3] };
+            return {
+                apiname: dataUnit[0] + ' (' + dataUnit[1] + ')',
+                hits: dataUnit[2],
+                apiVersion: dataUnit[4],
+                subs: dataUnit[3],
+            };
         });
 
         this.state.tableData = query
@@ -280,7 +286,8 @@ class CustomTable extends React.Component {
                                                     value={option.apiname + ':' + option.apiVersion}
                                                     onChange={this.handleSelectedAPIChange}
                                                     checked={selectedAPIs.includes(
-                                                        option.apiname + ':' + option.apiVersion)}
+                                                        option.apiname + ':' + option.apiVersion,
+                                                    )}
                                                 />
                                                 {option.apiname}
                                             </TableCell>
