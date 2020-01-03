@@ -20,7 +20,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import PlayCircleFilled from '@material-ui/icons/PlayCircleFilled';
+// import PlayCircleFilled from '@material-ui/icons/PlayCircleFilled';
 import AppIcon from './AppIcon';
 
 /**
@@ -121,9 +121,9 @@ export default function APIMAppCreated(props) {
                     {totalCount}
                 </h1>
                 <h3 style={styles.typeText}>
-                    {totalCount === '01' ?
-                        <FormattedMessage id='app' defaultMessage='APP' /> :
-                        <FormattedMessage id='apps' defaultMessage='APPS' />}
+                    {totalCount === '01'
+                        ? <FormattedMessage id='app' defaultMessage='APP' />
+                        : <FormattedMessage id='apps' defaultMessage='APPS' />}
                 </h3>
                 <p style={styles.weekCount}>
                     [
@@ -136,32 +136,32 @@ export default function APIMAppCreated(props) {
                     ]
                 </p>
             </div>
-            {/*todo make routing configurable from widgetconf*/}
-            {/*<button*/}
-                {/*type='button'*/}
-                {/*style={{*/}
-                    {/*display: 'block',*/}
-                    {/*width: '100%',*/}
-                    {/*height: '21%',*/}
-                    {/*background: themeName === 'dark'*/}
-                        {/*? 'linear-gradient(to right, rgba(37, 38, 41, 0.75) 0%, rgba(252, 252, 252, 0) 100%)'*/}
-                        {/*: '#fff',*/}
-                    {/*border: 'none',*/}
-                    {/*borderTop: themeName === 'dark' ? 'none' : '1.5px solid #000',*/}
-                    {/*color: themeName === 'dark' ? '#fff' : '#000',*/}
-                    {/*textAlign: 'left',*/}
-                    {/*padding: '0 5%',*/}
-                    {/*fontSize: '90%',*/}
-                    {/*letterSpacing: 1,*/}
-                    {/*cursor: 'pointer',*/}
-                {/*}}*/}
-                {/*onClick={() => {*/}
-                    {/*window.location.href = './api-app-statistics';*/}
-                {/*}}*/}
-            {/*>*/}
-                {/*<FormattedMessage id='overtime.btn.text' defaultMessage='Overtime Analysis' />*/}
-                {/*<PlayCircleFilled style={styles.icon} />*/}
-            {/*</button>*/}
+            {/* todo make routing configurable from widgetconf */}
+            {/* <button */}
+            {/* type='button' */}
+            {/* style={{ */}
+            {/* display: 'block', */}
+            {/* width: '100%', */}
+            {/* height: '21%', */}
+            {/* background: themeName === 'dark' */}
+            {/* ? 'linear-gradient(to right, rgba(37, 38, 41, 0.75) 0%, rgba(252, 252, 252, 0) 100%)' */}
+            {/* : '#fff', */}
+            {/* border: 'none', */}
+            {/* borderTop: themeName === 'dark' ? 'none' : '1.5px solid #000', */}
+            {/* color: themeName === 'dark' ? '#fff' : '#000', */}
+            {/* textAlign: 'left', */}
+            {/* padding: '0 5%', */}
+            {/* fontSize: '90%', */}
+            {/* letterSpacing: 1, */}
+            {/* cursor: 'pointer', */}
+            {/* }} */}
+            {/* onClick={() => { */}
+            {/* window.location.href = './api-app-statistics'; */}
+            {/* }} */}
+            {/* > */}
+            {/* <FormattedMessage id='overtime.btn.text' defaultMessage='Overtime Analysis' /> */}
+            {/* <PlayCircleFilled style={styles.icon} /> */}
+            {/* </button> */}
         </div>
     );
 }
