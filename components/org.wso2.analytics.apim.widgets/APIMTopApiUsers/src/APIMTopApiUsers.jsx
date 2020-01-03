@@ -57,7 +57,7 @@ export default function APIMTopApiUsers(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         formWrapper: {
             marginBottom: '5%',
@@ -231,7 +231,7 @@ export default function APIMTopApiUsers(props) {
                 ) : (
                     <div>
                         {
-                            !userData || userData .length === 0 ? (
+                            !userData || userData.length === 0 ? (
                                 <div style={styles.paperWrapper}>
                                     <Paper
                                         elevation={1}
@@ -240,7 +240,8 @@ export default function APIMTopApiUsers(props) {
                                         <Typography variant='h5' component='h3'>
                                             <FormattedMessage
                                                 id='nodata.error.heading'
-                                                defaultMessage='No Data Available !' />
+                                                defaultMessage='No Data Available !'
+                                            />
                                         </Typography>
                                         <Typography component='p'>
                                             <FormattedMessage
@@ -250,9 +251,9 @@ export default function APIMTopApiUsers(props) {
                                         </Typography>
                                     </Paper>
                                 </div>
-                        ) : (
-                            <CustomTable data={userData}/>
-                        )}
+                            ) : (
+                                <CustomTable data={userData} />
+                            )}
                     </div>
                 )}
 
@@ -275,4 +276,5 @@ APIMTopApiUsers.propTypes = {
     apiSelectedHandleChange: PropTypes.func.isRequired,
     apiVersionHandleChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

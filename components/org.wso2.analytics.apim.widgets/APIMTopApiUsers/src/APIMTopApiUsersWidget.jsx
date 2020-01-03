@@ -195,6 +195,7 @@ class APIMTopApiUsersWidget extends Widget {
                 .catch(error => reject(error));
         });
     }
+
     /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMTopApiUsersWidget
@@ -215,10 +216,12 @@ class APIMTopApiUsersWidget extends Widget {
     resetState() {
         const { apilist, versionMap } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy, apiSelected, apiVersion, limit } = queryParam;
+        let {
+            apiCreatedBy, apiSelected, apiVersion, limit,
+        } = queryParam;
         let versions;
 
-        if (!apiCreatedBy|| !(apiCreatedBy in createdByKeys)) {
+        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
             apiCreatedBy = 'All';
         }
         if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
@@ -253,7 +256,7 @@ class APIMTopApiUsersWidget extends Widget {
                 this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 if (error.response && error.response.data) {
                     let proxyError = error.response.data;
                     proxyError = proxyError.split(':').splice(1).join('').trim();
@@ -273,7 +276,7 @@ class APIMTopApiUsersWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -286,11 +289,11 @@ class APIMTopApiUsersWidget extends Widget {
         const { id } = this.props;
         const { username } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy  } = queryParam;
+        const { apiCreatedBy } = queryParam;
 
         if (list && list.length > 0) {
             if (apiCreatedBy !== 'All') {
-                list = list.filter((dataUnit) =>  dataUnit.provider === username );
+                list = list.filter(dataUnit => dataUnit.provider === username);
             }
 
             let apilist = [];
@@ -299,11 +302,11 @@ class APIMTopApiUsersWidget extends Widget {
                 apilist.push(dataUnit.name);
                 // retrieve all entries for the api and get the api versions list
                 const versions = list.filter(d => d.name === dataUnit.name);
-                const versionlist = versions.map(ver => { return ver.version; });
+                const versionlist = versions.map((ver) => { return ver.version; });
                 versionlist.unshift('All');
                 versionMap[dataUnit.name] = versionlist;
             });
-            versionMap['All'] = ['All'];
+            versionMap.All = ['All'];
             apilist = [...new Set(apilist)];
             apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             apilist.unshift('All');
@@ -332,21 +335,20 @@ class APIMTopApiUsersWidget extends Widget {
 
             let query;
             if (apiSelected === 'All' && apiVersion === 'All') {
-                let apis = apilist.slice(1).map (api => { return 'apiName==\'' + api + '\''} );
+                let apis = apilist.slice(1).map((api) => { return 'apiName==\'' + api + '\''; });
                 apis = apis.join(' OR ');
                 query = 'AND (' + apis + ')';
             } else if (apiSelected !== 'All' && apiVersion !== 'All') {
                 query = 'AND apiName==\'' + apiSelected + '\' AND apiVersion==\'' + apiVersion + '\'';
-
             } else {
-                query = 'AND apiName==\'' + apiSelected + '\''
+                query = 'AND apiName==\'' + apiSelected + '\'';
             }
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{from}}': timeFrom,
                 '{{to}}': timeTo,
                 '{{per}}': perValue,
                 '{{limit}}': limit,
-                '{{querystring}}': query
+                '{{querystring}}': query,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -377,7 +379,7 @@ class APIMTopApiUsersWidget extends Widget {
             this.setState({ userData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         } else {
-            this.setState( { inProgress: false, userData: [] });
+            this.setState({ inProgress: false, userData: [] });
         }
     }
 
@@ -428,7 +430,7 @@ class APIMTopApiUsersWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(event.target.value, 'All', 'All', limit);
-        this.setState( { inProgress: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -443,7 +445,7 @@ class APIMTopApiUsersWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, 'All', limit);
-        this.setState( { inProgress: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -458,7 +460,7 @@ class APIMTopApiUsersWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, limit);
-        this.setState( { inProgress: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -479,7 +481,15 @@ class APIMTopApiUsersWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsersProps = {
-            themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, userData, apilist, versionlist,
+            themeName,
+            height,
+            limit,
+            apiCreatedBy,
+            apiSelected,
+            apiVersion,
+            userData,
+            apilist,
+            versionlist,
             inProgress,
         };
 
@@ -495,7 +505,8 @@ class APIMTopApiUsersWidget extends Widget {
                                 <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='apim.server.error.heading'
-                                        defaultMessage='Error!' />
+                                        defaultMessage='Error!'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     { proxyError }
