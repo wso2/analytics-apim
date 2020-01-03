@@ -39,8 +39,8 @@ import CustomTable from './CustomTable';
  */
 export default function APIMAppResourceUsage(props) {
     const {
-        themeName, height, width, limit, applicationSelected, usageData, applicationList, applicationSelectedHandleChange,
-        handleLimitChange, inProgress,
+        themeName, height, width, limit, applicationSelected, usageData, applicationList,
+        applicationSelectedHandleChange, handleLimitChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -95,7 +95,7 @@ export default function APIMAppResourceUsage(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         inProgress: {
             display: 'flex',
@@ -125,7 +125,12 @@ export default function APIMAppResourceUsage(props) {
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
-                                title={<FormattedMessage id='applicationName.label' defaultMessage='Application Name' />}
+                                title={(
+                                    <FormattedMessage
+                                        id='applicationName.label'
+                                        defaultMessage='Application Name'
+                                    />
+                                )}
                             >
                                 <InputLabel
                                     shrink
@@ -234,6 +239,7 @@ export default function APIMAppResourceUsage(props) {
 APIMAppResourceUsage.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
     limit: PropTypes.string.isRequired,
     applicationSelected: PropTypes.number.isRequired,
     applicationList: PropTypes.instanceOf(Object).isRequired,
