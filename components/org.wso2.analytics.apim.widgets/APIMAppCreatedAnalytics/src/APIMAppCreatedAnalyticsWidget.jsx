@@ -204,7 +204,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -249,25 +249,26 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiCreatedBy } = queryParam;
-        const { providerConfig, username} = this.state;
+        const { providerConfig, username } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let config = dataProviderConfigs.configs.config;
+        const { config } = dataProviderConfigs.configs;
 
         config.tableName = 'AM_SUBSCRIBER';
         config.incrementalColumn = 'SUBSCRIBER_ID';
         config.queryData.queryName = 'sublistquery';
         config.queryData.queryValues = {
-            '{{tablesNames}}': apiCreatedBy !== 'All' ?
-            ', AM_API as api, AM_APPLICATION app, AM_SUBSCRIPTION subc' : '',
-            '{{subscriptionCondition}}': apiCreatedBy !== 'All' ?
-            'AND api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID ' +
-            'AND sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND api.API_PROVIDER=\'{{provider}}\'' : '',
-            '{{provider}}': username
+            '{{tablesNames}}': apiCreatedBy !== 'All'
+                ? ', AM_API as api, AM_APPLICATION app, AM_SUBSCRIPTION subc' : '',
+            '{{subscriptionCondition}}': apiCreatedBy !== 'All'
+                ? 'AND api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID '
+            + 'AND sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND api.API_PROVIDER=\'{{provider}}\'' : '',
+            '{{provider}}': username,
         };
         dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleSubListReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, widgetName,
+            this.handleSubListReceived, dataProviderConfigs);
     }
 
     /**
@@ -285,7 +286,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
                 return dataUnit[0];
             });
             sublist = [...new Set(sublist)];
-            sublist.sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+            sublist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             sublist.unshift('All');
             this.setState({ sublist });
             this.setQueryParam(apiCreatedBy, appCreatedBy, subscribedTo);
@@ -303,19 +304,20 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiCreatedBy } = queryParam;
         const { providerConfig, username } = this.state;
-        const { id, widgetID: widgetName  } = this.props;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let config = dataProviderConfigs.configs.config;
+        const { config } = dataProviderConfigs.configs;
 
         config.tableName = 'AM_API';
         config.incrementalColumn = 'API_ID';
         config.queryData.queryName = 'apilistquery';
         config.queryData.queryValues = {
             '{{createdBy}}': apiCreatedBy === createdByKeys.Me ? 'AND CREATED_BY=\'{{creator}}\'' : '',
-            '{{creator}}': username
+            '{{creator}}': username,
         };
         dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id, widgetName,
+            this.handleApiListReceived, dataProviderConfigs);
     }
 
     /**
@@ -353,9 +355,9 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         const {
             providerConfig, timeFrom, timeTo, username, sublist,
         } = this.state;
-        const { id, widgetID: widgetName  } = this.props;
+        const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let config = dataProviderConfigs.configs.config;
+        const { config } = dataProviderConfigs.configs;
         config.queryData.queryName = 'mainquery';
 
         config.tableName = 'AM_APPLICATION';
@@ -363,8 +365,8 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         config.queryData.queryValues = {
             '{{subscriptionTable}}':
                 (appCreatedBy !== 'All' || subscribedTo !== 'All') ? ', AM_API api, AM_SUBSCRIPTION subc' : '',
-            '{{subscription}}': (appCreatedBy !== 'All' || subscribedTo !== 'All') ?
-            'AND api.API_ID=subc.API_ID and app.APPLICATION_ID=subc.APPLICATION_ID' : '',
+            '{{subscription}}': (appCreatedBy !== 'All' || subscribedTo !== 'All')
+                ? 'AND api.API_ID=subc.API_ID and app.APPLICATION_ID=subc.APPLICATION_ID' : '',
             '{{apiName}}': subscribedTo !== 'All' ? 'AND api.API_NAME = \'' + subscribedTo + '\'' : '',
             '{{apiProvider}}':
                 (appCreatedBy !== 'All' || subscribedTo !== 'All') ? 'AND api.API_PROVIDER {{providerCondition}}' : '',
@@ -372,7 +374,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             apiCreatedBy === 'All' ? 'in (\'' + sublist.slice(1).join('\', \'') + '\')' : '= \'' + username + '\'',
             '{{subscriberId}}': appCreatedBy !== 'All' ? 'and sub.USER_ID = \'' + appCreatedBy + '\'' : '',
             '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss')
+            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
         };
         dataProviderConfigs.configs.config = config;
         super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -421,7 +423,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             }
 
             this.setState({
-                chartData, tableData, xAxisTicks, maxCount, inProgress: false
+                chartData, tableData, xAxisTicks, maxCount, inProgress: false,
             });
         } else {
             this.setState({ chartData: [], tableData: [], inProgress: false });
