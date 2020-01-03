@@ -55,7 +55,7 @@ export default function APIMApiResourceUsage(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         formWrapper: {
             marginBottom: '5%',
@@ -181,7 +181,8 @@ export default function APIMApiResourceUsage(props) {
                                     <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='nodata.error.heading'
-                                            defaultMessage='No Data Available !' />
+                                            defaultMessage='No Data Available !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
@@ -191,8 +192,8 @@ export default function APIMApiResourceUsage(props) {
                                     </Typography>
                                 </Paper>
                             </div>
-                        ) :(
-                            <CustomTable data={usageData}/>
+                        ) : (
+                            <CustomTable data={usageData} />
                         )}
                     </div>
                 )}
@@ -209,4 +210,5 @@ APIMApiResourceUsage.propTypes = {
     usageData: PropTypes.instanceOf(Object).isRequired,
     apiCreatedHandleChange: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };
