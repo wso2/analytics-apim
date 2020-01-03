@@ -13,6 +13,7 @@
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
+  "table.heading.apiVersion": "API VERSION",
   "table.heading.hits": "HITS ",
   "table.main.heading": "OVERALL API USAGE (ALL VERSIONS) :",
   "widget.heading": "OVERALL API USAGE"

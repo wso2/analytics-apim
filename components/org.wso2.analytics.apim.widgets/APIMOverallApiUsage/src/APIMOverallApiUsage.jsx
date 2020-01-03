@@ -27,7 +27,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
-import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -59,6 +58,7 @@ export default function APIMOverallApiUsage(props) {
             padding: '4%',
             border: '1.5px solid',
             marginLeft:'5%',
+            marginBottom: 30,
         },
         formWrapper: {
             marginBottom: '5%',
@@ -102,6 +102,13 @@ export default function APIMOverallApiUsage(props) {
             overflow: 'hidden',
         },
     };
+
+    let chartData =[];
+
+    if (usageData1) {
+        chartData = usageData1.map(data => {return [data[0] + ' (' + data[4] + ')', data[1], data[2], data[3]]})
+        chartData.sort((a, b) => { return a[0].toLowerCase().localeCompare(b[0].toLowerCase()); });
+    }
 
     return (
         <Scrollbars style={{ height: '100%' }}>
@@ -210,7 +217,7 @@ export default function APIMOverallApiUsage(props) {
                                         <VizG
                                             config={chartConfig}
                                             metadata={metadata}
-                                            data={usageData1}
+                                            data={chartData}
                                             width={width}
                                             theme={themeName}
                                         />

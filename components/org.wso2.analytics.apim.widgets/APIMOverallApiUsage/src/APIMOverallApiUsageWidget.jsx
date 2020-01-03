@@ -303,6 +303,7 @@ class APIMOverallApiUsageWidget extends Widget {
                     apiname: dataUnit[0],
                     provider: dataUnit[1],
                     hits: dataUnit[2],
+                    version: dataUnit[3]
                 };
             });
             this.setState({ usageData });
@@ -372,8 +373,7 @@ class APIMOverallApiUsageWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ usageData2: [], inProgress: false });
-            this.setState({ usageData1: [], inProgress: false });
+            this.setState({ usageData1: [], usageData2: [], inProgress: false });
         }
     }
 
@@ -387,12 +387,9 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id } = this.props;
 
         if (data) {
-            const apiIdMapGlobal = {};
             const apiIdMap = {};
-            data.map((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2] }; });
-            data.map((api) => { apiIdMapGlobal[api[0]] = { apiname: api[1], creator: api[2] }; });
-            this.setState({ apiIdMapGlobal });
-            this.setState({ apiIdMap });
+            data.map((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2], version: api[3] }; });
+            this.setState({ apiIdMapGlobal: cloneDeep(apiIdMap), apiIdMap });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiSubQuery();
@@ -418,8 +415,7 @@ class APIMOverallApiUsageWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiSubReceived, dataProviderConfigs);
         } else {
-            this.setState({ usageData2: [], inProgress: false });
-            this.setState({ usageData1: [], inProgress: false });
+            this.setState({ usageData1: [], usageData2: [], inProgress: false });
         }
     }
 
@@ -433,25 +429,36 @@ class APIMOverallApiUsageWidget extends Widget {
 
         if (data) {
             const {
-                usageData, apiIdMap,
+                usageData, apiIdMap, apiIdMapGlobal,
             } = this.state;
 
             const usageData1 = [];
             const usageData2 = [];
             data.map((dataUnit) => {
-                const { apiname, creator } = apiIdMap[dataUnit[0]];
-                const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator);
+                if (apiIdMap[dataUnit[0]]) {
+                    const { apiname, creator, version } = apiIdMap[dataUnit[0]];
+                    const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator
+                        && usage.version === version);
 
-                if (hits.length > 0) {
-                    usageData2.push([hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1]]);
-                    usageData1.push([hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1]]);
+                    if (hits.length > 0) {
+                        usageData1.push(
+                            [hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1], hits[0].version]);
+                    }
+
+                } else {
+                    const { apiname, creator, version } = apiIdMapGlobal[dataUnit[0]];
+                    const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator
+                        && usage.version === version);
+
+                    if (hits.length > 0) {
+                        usageData2.push(
+                            [hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1], hits[0].version]);
+                    }
                 }
             });
-            this.setState({ usageData2, inProgress: false });
-            this.setState({ usageData1, inProgress: false });
+            this.setState({ usageData1, usageData2: [...usageData1, ...usageData2], inProgress: false });
         } else {
-            this.setState({ usageData2: [], inProgress: false });
-            this.setState({ usageData1: [], inProgress: false });
+            this.setState({ usageData1: [],usageData2: [], inProgress: false });
         }
     }
 
@@ -502,13 +509,17 @@ class APIMOverallApiUsageWidget extends Widget {
 
     selectedAPIChangeCallback = (selectedAPI) => {
         const { usageData1, apiIdMap, apiIdMapGlobal } = this.state;
+        const usage = cloneDeep(usageData1);
+        const idMap = cloneDeep(apiIdMap);
         let found = false;
-        const keys = Object.keys(apiIdMap);
+        const keys = Object.keys(idMap);
         for (const i in keys) {
-            if (apiIdMap[keys[i]].apiname === selectedAPI[0] && apiIdMap[keys[i]].creator === selectedAPI[1]) {
-                delete apiIdMap[keys[i]];
+            if (idMap[keys[i]].apiname === selectedAPI[0] && idMap[keys[i]].creator === selectedAPI[1]
+                && idMap[keys[i]].version === selectedAPI[4]) {
+                delete idMap[keys[i]];
                 found = true;
-                usageData1.splice(usageData1.findIndex(e => (e[0] === selectedAPI[0]) && (e[1] === selectedAPI[1])), 1);
+                usage.splice(usage.findIndex(e => (e[0] === selectedAPI[0]) && (e[1] === selectedAPI[1])
+                    && (e[4] === selectedAPI[4])), 1);
                 break;
             }
         }
@@ -517,16 +528,16 @@ class APIMOverallApiUsageWidget extends Widget {
             let idOfApi = 0;
             for (const i in keysglobal) {
                 if (apiIdMapGlobal[keysglobal[i]].apiname === selectedAPI[0]
-                    && apiIdMapGlobal[keysglobal[i]].creator === selectedAPI[1]) {
+                    && apiIdMapGlobal[keysglobal[i]].creator === selectedAPI[1]
+                    && apiIdMapGlobal[keysglobal[i]].version === selectedAPI[4]) {
                     idOfApi = keysglobal[i];
                     break;
                 }
             }
-            apiIdMap[idOfApi] = { apiname: selectedAPI[0], creator: selectedAPI[1] };
-            usageData1.push(selectedAPI);
+            idMap[idOfApi] = { apiname: selectedAPI[0], creator: selectedAPI[1], version: selectedAPI[4] };
+            usage.push(selectedAPI);
         }
-        this.setState({ usageData1 });
-        this.setState({ apiIdMap });
+        this.setState({ usageData1: usage, apiIdMap: idMap });
     };
 
     /**
