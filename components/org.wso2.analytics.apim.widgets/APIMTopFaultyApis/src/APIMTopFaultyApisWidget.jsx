@@ -117,7 +117,7 @@ class APIMTopFaultyApisWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
