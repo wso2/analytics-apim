@@ -188,7 +188,7 @@ class APIMTopApiCreatorsWidget extends Widget {
                 this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 if (error.response && error.response.data) {
                     let proxyError = error.response.data;
                     proxyError = proxyError.split(':').splice(1).join('').trim();
@@ -232,7 +232,7 @@ class APIMTopApiCreatorsWidget extends Widget {
         this.setQueryParam(limit);
 
         if (apiDataList && apiDataList.length > 0) {
-            let apiCondition = apiDataList.map(api => {
+            let apiCondition = apiDataList.map((api) => {
                 return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
                     + '\' AND API_PROVIDER==\'' + api.provider + '\')';
             });
@@ -242,12 +242,12 @@ class APIMTopApiCreatorsWidget extends Widget {
             dataProviderConfigs.configs.config.queryData.queryName = 'query';
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{apiCondition}}': apiCondition,
-                '{{limit}}': limit
+                '{{limit}}': limit,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ creatorData: [], inProgress: false  });
+            this.setState({ creatorData: [], inProgress: false });
         }
     }
 
@@ -337,7 +337,8 @@ class APIMTopApiCreatorsWidget extends Widget {
                                 <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='apim.server.error.heading'
-                                        defaultMessage='Error!' />
+                                        defaultMessage='Error!'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     { proxyError }

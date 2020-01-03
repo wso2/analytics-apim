@@ -175,7 +175,8 @@ export default function APIMTopApiCreators(props) {
                                             <Typography variant='h5' component='h3'>
                                                 <FormattedMessage
                                                     id='nodata.error.heading'
-                                                    defaultMessage='No Data Available !' />
+                                                    defaultMessage='No Data Available !'
+                                                />
                                             </Typography>
                                             <Typography component='p'>
                                                 <FormattedMessage
@@ -208,7 +209,8 @@ export default function APIMTopApiCreators(props) {
                                                 padding={{
                                                     left: 50, bottom: 50, top: 50, right: 50,
                                                 }}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                    '#e01171', '#ffe2ff']}
                                                 data={creatorData}
                                                 x={d => d.creator}
                                                 y={d => d.apicount}
@@ -217,7 +219,8 @@ export default function APIMTopApiCreators(props) {
                                             />
                                             <VictoryLegend
                                                 standalone={false}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                    '#e01171', '#ffe2ff']}
                                                 x={450}
                                                 y={20}
                                                 gutter={20}
@@ -252,4 +255,5 @@ APIMTopApiCreators.propTypes = {
     creatorData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };
