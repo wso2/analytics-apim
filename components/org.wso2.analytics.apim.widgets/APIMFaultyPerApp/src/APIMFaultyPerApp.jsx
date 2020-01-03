@@ -91,7 +91,7 @@ export default function APIMFaultyPerApp(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         inProgress: {
             display: 'flex',
@@ -115,7 +115,8 @@ export default function APIMFaultyPerApp(props) {
                 height,
                 margin: '10px',
                 padding: '20px',
-            }}>
+            }}
+            >
                 <div style={styles.headingWrapper}>
                     <h3 style={styles.h3}>
                         <FormattedMessage id='widget.heading' defaultMessage='FAULTY INVOCATIONS PER APPLICATION' />
@@ -126,7 +127,12 @@ export default function APIMFaultyPerApp(props) {
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
-                                title={<FormattedMessage id='applicationName.label' defaultMessage='Application Name' />}
+                                title={(
+                                    <FormattedMessage
+                                        id='applicationName.label'
+                                        defaultMessage='Application Name'
+                                    />
+                                )}
                             >
                                 <InputLabel
                                     shrink
@@ -149,17 +155,20 @@ export default function APIMFaultyPerApp(props) {
                                 name='applicationSelected'
                                 style={styles.select}
                             >
-                                { applicationList.length > 0 ?
-                                    applicationList.map(option => (
+                                { applicationList.length > 0
+                                    ? applicationList.map(option => (
                                         <MenuItem key={option.appId} value={option.appId}>
                                             {option.appName}
                                         </MenuItem>
                                     ))
-                                     :
-                                    <MenuItem disabled>
-                                        <FormattedMessage
-                                            id='no.applications' defaultMessage='No Applications Available' />
-                                    </MenuItem>
+                                    : (
+                                        <MenuItem disabled>
+                                            <FormattedMessage
+                                                id='no.applications'
+                                                defaultMessage='No Applications Available'
+                                            />
+                                        </MenuItem>
+                                    )
                                 }
                             </Select>
                         </FormControl>
@@ -191,14 +200,14 @@ export default function APIMFaultyPerApp(props) {
                         <div style={styles.inProgress}>
                             <CircularProgress />
                         </div>
-                        ) : (
+                    ) : (
                         <div>
                             { usageData.length > 0 ? (
                                 <div style={styles.table}>
                                     <CustomTable
                                         data={usageData}
                                         inProgress={inProgress}
-                                   />
+                                    />
                                 </div>
                             ) : (
                                 <div style={styles.paperWrapper}>
@@ -222,7 +231,7 @@ export default function APIMFaultyPerApp(props) {
                                 </div>
                             )}
                         </div>
-                        )}
+                    )}
                 </div>
             </div>
         </Scrollbars>
@@ -232,10 +241,11 @@ export default function APIMFaultyPerApp(props) {
 APIMFaultyPerApp.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     applicationSelected: PropTypes.string.isRequired,
-    applicationList: PropTypes.array.isRequired,
-    usageData: PropTypes.array.isRequired,
+    applicationList: PropTypes.instanceOf(Object).isRequired,
+    usageData: PropTypes.instanceOf(Object).isRequired,
     applicationSelectedHandleChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
