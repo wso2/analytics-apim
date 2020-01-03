@@ -55,7 +55,7 @@ export default function APIMApiLastAccess(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         formWrapper: {
             marginBottom: '5%',
@@ -172,7 +172,7 @@ export default function APIMApiLastAccess(props) {
                             <div style={styles.loading}>
                                 <CircularProgress style={styles.loadingIcon} />
                             </div>
-                            ) : (
+                        ) : (
                             <div>
                                 { !accessData || accessData.length === 0 ? (
                                     <div style={styles.paperWrapper}>
@@ -181,7 +181,10 @@ export default function APIMApiLastAccess(props) {
                                             style={styles.paper}
                                         >
                                             <Typography variant='h5' component='h3'>
-                                                <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
+                                                <FormattedMessage
+                                                    id='nodata.error.heading'
+                                                    defaultMessage='No Data Available !'
+                                                />
                                             </Typography>
                                             <Typography component='p'>
                                                 <FormattedMessage
@@ -191,8 +194,8 @@ export default function APIMApiLastAccess(props) {
                                             </Typography>
                                         </Paper>
                                     </div>
-                                    ) : (
-                                    <CustomTable data={accessData}/>
+                                ) : (
+                                    <CustomTable data={accessData} />
                                 )}
                             </div>
                         )
@@ -211,4 +214,5 @@ APIMApiLastAccess.propTypes = {
     accessData: PropTypes.instanceOf(Object).isRequired,
     apiCreatedHandleChange: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };
