@@ -77,7 +77,8 @@ export default function APIMApiAvailability(props) {
                 height,
                 margin: '10px',
                 padding: '20px',
-            }}>
+            }}
+            >
                 <div style={styles.headingWrapper}>
                     <h3 style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -99,22 +100,24 @@ export default function APIMApiAvailability(props) {
                         </div>
                     ) : (
                         <div>
-                            { availableApiData.length === 0 ?
-                                (
+                            { availableApiData.length === 0
+                                ? (
                                     <div style={styles.dataWrapper}>
                                         <Paper
                                             elevation={1}
                                             style={styles.paper}
                                         >
                                             <Typography variant='h5' component='h3'>
-                                                <FormattedMessage id='nodata.error.heading'
-                                                                  defaultMessage='No Data Available !' />
+                                                <FormattedMessage
+                                                    id='nodata.error.heading'
+                                                    defaultMessage='No Data Available !'
+                                                />
                                             </Typography>
                                             <Typography component='p'>
                                                 <FormattedMessage
                                                     id='nodata.error.body'
-                                                    defaultMessage={'No matching data available for the ' +
-                                                    'selected options.'}
+                                                    defaultMessage={'No matching data available for the '
+                                                    + 'selected options.'}
                                                 />
                                             </Typography>
                                         </Paper>
@@ -129,12 +132,12 @@ export default function APIMApiAvailability(props) {
                                         }}
                                         >
                                             <ApiAvailability {...availabilityProps} />
-                                            <Typography variant="caption" style={{ color: '#9e9e9e' }}>
+                                            <Typography variant='caption' style={{ color: '#9e9e9e' }}>
                                                 <FormattedMessage
                                                     id='chart.helper.text'
-                                                    defaultMessage={'Please note that API availability is accurately' +
-                                                    ' shown only when alerts are enabled. If alerts are disabled, ' +
-                                                    'the chart will show as 100% availability.'}
+                                                    defaultMessage={'Please note that API availability is accurately'
+                                                    + ' shown only when alerts are enabled. If alerts are disabled, '
+                                                    + 'the chart will show as 100% availability.'}
                                                 />
                                             </Typography>
                                         </div>
@@ -152,6 +155,7 @@ export default function APIMApiAvailability(props) {
 APIMApiAvailability.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    inProgress: PropTypes.bool.isRequired,
     availableApiData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
 };
