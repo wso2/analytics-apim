@@ -228,7 +228,7 @@ class APIMAppResourceUsageWidget extends Widget {
     handleAppDataReceived(data) {
         const { list } = data;
 
-        if (list) {
+        if (list && list.length > 0) {
             const applicationUUIDMap = {};
             list.map((dataUnit) => {
                 applicationUUIDMap[dataUnit.applicationId] = {

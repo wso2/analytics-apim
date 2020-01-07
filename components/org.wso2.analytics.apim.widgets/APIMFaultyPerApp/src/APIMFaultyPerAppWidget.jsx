@@ -243,7 +243,7 @@ class APIMFaultyPerAppWidget extends Widget {
         const { list } = data;
         const { id } = this.props;
 
-        if (list) {
+        if (list && list.length > 0) {
             const applicationUUIDMap = {};
             list.map((dataUnit) => {
                 applicationUUIDMap[dataUnit.applicationId] = {

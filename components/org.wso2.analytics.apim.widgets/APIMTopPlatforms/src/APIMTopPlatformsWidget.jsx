@@ -295,7 +295,7 @@ class APIMTopPlatformsWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiCreatedBy  } = queryParam;
 
-        if (list) {
+        if (list && list.length > 0) {
             if (apiCreatedBy !== 'All') {
                 list = list.filter((dataUnit) =>  dataUnit.provider === username );
             }
