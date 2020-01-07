@@ -201,8 +201,9 @@ class CustomTable extends React.Component {
         }
         this.setState({ selectedAPIs });
         const { data } = this.props;
+        const tickedApiParts = tickedApi.split(':');
         const foundElement = data.filter((element) => {
-            if (tickedApi.includes(element[0]) && tickedApi.includes(element[1])) {
+            if (tickedApiParts[0] === element[0] + ' (' + element[1] + ')' && tickedApiParts[1] === element[4]) {
                 return element;
             }
         });
@@ -220,7 +221,8 @@ class CustomTable extends React.Component {
         } = this.state;
 
         const formattedData = data.map((dataUnit) => {
-            return { apiname: dataUnit[0] + ' (' + dataUnit[1] + ')', hits: dataUnit[2], subs: dataUnit[3] };
+            return { apiname: dataUnit[0] + ' (' + dataUnit[1] + ')', hits: dataUnit[2], apiVersion: dataUnit[4],
+                subs: dataUnit[3] };
         });
 
         this.state.tableData = query
@@ -230,13 +232,16 @@ class CustomTable extends React.Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
         if (initialLoad) {
-            tableData.map(element => selectedAPIs.push(element.apiname));
+            tableData.map(element => selectedAPIs.push(element.apiname + ':' + element.apiVersion));
             this.setState({ initialLoad: false });
         }
 
         const menuItems = [
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='apiVersion'>
+                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
             </MenuItem>,
             <MenuItem value='hits'>
                 <FormattedMessage id='table.heading.hits' defaultMessage='HITS' />
@@ -272,11 +277,15 @@ class CustomTable extends React.Component {
                                         >
                                             <TableCell component='th' scope='row'>
                                                 <Checkbox
-                                                    value={option.apiname}
+                                                    value={option.apiname + ':' + option.apiVersion}
                                                     onChange={this.handleSelectedAPIChange}
-                                                    checked={selectedAPIs.includes(option.apiname)}
+                                                    checked={selectedAPIs.includes(
+                                                        option.apiname + ':' + option.apiVersion)}
                                                 />
                                                 {option.apiname}
+                                            </TableCell>
+                                            <TableCell component='th' scope='row' numeric>
+                                                {option.apiVersion}
                                             </TableCell>
                                             <TableCell numeric>
                                                 {option.hits}
