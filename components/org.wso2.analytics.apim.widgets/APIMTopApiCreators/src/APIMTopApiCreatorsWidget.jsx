@@ -207,7 +207,7 @@ class APIMTopApiCreatorsWidget extends Widget {
         const { list } = data;
         const { id } = this.props;
 
-        if (list) {
+        if (list && list.length > 0) {
             this.setState({ apiDataList: list });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);

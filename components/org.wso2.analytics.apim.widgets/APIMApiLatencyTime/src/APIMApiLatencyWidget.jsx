@@ -383,7 +383,7 @@ class APIMApiLatencyWidget extends Widget {
     handleApiListReceived(data) {
         const { id } = this.props;
         const { list } = data;
-        if (list) {
+        if (list && list.length > 0) {
             this.setState({ apiDataList: list });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
