@@ -1,8 +1,5 @@
-/* eslint-disable max-len */
-/* eslint-disable no-console */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable require-jsdoc */
-/* eslint-disable indent */
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -87,7 +84,7 @@ const styles = theme => ({
   },
 });
 
-class CustomTable extends React.Component {
+class ApiInfoChart extends React.Component {
   constructor(props) {
     super(props);
       this.state = {
@@ -101,11 +98,6 @@ class CustomTable extends React.Component {
           finaldata: [],
           finalrowdata: [],
       };
-    }
-
-    getData(rowData, rowMeta) {
-      console.log(rowData);
-      console.log(rowMeta);
     }
 
     renderexpandrowdata(rowData) {
@@ -151,7 +143,7 @@ class CustomTable extends React.Component {
 
 
     // define table columns
-    const columns = ['Api Name', 'Version', 'Target', 'Total Hits', 'error 5XX', 'error 4XX', 'Average Latency P99', ''];
+    const columns = ['Api Name', 'Version', 'ResourceTemplate','Method', 'Total Hits', 'error 5XX', 'error 4XX', 'Average Latency P99', ''];
 
     // define options for table
     const options = {
@@ -159,7 +151,6 @@ class CustomTable extends React.Component {
       filterType: 'dropdown',
       expandableRows: true,
       selectableRows: 'none',
-      // expandableRowsOnClick: true,
       isRowExpandable: (dataIndex, expandedRows) => {
         // Prevent expand/collapse of any row if there are 4 rows expanded already (but allow those already expanded to be collapsed)
         if (expandedRows.data.length > 0 && expandedRows.data.filter(d => d.dataIndex === dataIndex).length === 0) return false;
@@ -180,17 +171,6 @@ class CustomTable extends React.Component {
               <TableRow>
                   <TableCell colSpan={colSpan} />
                   <TableCell colSpan={colSpan} />
-                  {/* <TableCell>
-                      <button
-                          type='button'
-                          onClick={() => {
-                            // window.location.href = './api-app-stats';
-                            window.location.href = './api-single-api-stats#{"apsssss":{"hello"}}';
-                            }}
-                      >
-                        Click
-                      </button>
-                  </TableCell> */}
                   <TableCell />
                   <TableCell>
                       {item[1]}
@@ -206,6 +186,9 @@ class CustomTable extends React.Component {
                   </TableCell>
                   <TableCell>
                       {item[5]}
+                  </TableCell>
+                  <TableCell>
+                      {item[6]}
                   </TableCell>
               </TableRow>
          ))
@@ -228,11 +211,11 @@ class CustomTable extends React.Component {
   }
 }
 
-CustomTable.propTypes = {
+ApiInfoChart.propTypes = {
     // eslint-disable-next-line react/no-unused-prop-types
     usageData: PropTypes.instanceOf(Object).isRequired,
     totalcount: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
 };
 
-export default withStyles(styles)(CustomTable);
+export default withStyles(styles)(ApiInfoChart);

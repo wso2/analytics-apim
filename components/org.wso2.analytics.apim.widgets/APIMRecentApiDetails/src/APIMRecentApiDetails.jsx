@@ -20,14 +20,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
-import CustomTable from './CustomTable';
+import ApiInfoChart from './ApiInfoChart';
 import PrimarySearchAppBar from './PrimarySearchAppBar';
 
-/**
- * React Component for Recent Api Traffic widget body
- * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Recent Api Traffic widget body
- */
+
 export default function APIMRecentApiDetails(props) {
     const { height, usageData, totalcount } = props;
     return (
@@ -35,23 +31,8 @@ export default function APIMRecentApiDetails(props) {
             style={{ height }}
         >
             <div>
-                {/* <div style={styles.headingWrapper}>
-                    <h3 style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        marginLeft: '5px',
-                        textAlign: 'left',
-                        fontWeight: 'bold',
-                        letterSpacing: 1.2,
-                    }}
-                    >
-                        <FormattedMessage id='widget.heading' defaultMessage='Recent Api Details' />
-                        <FormattedMessage id='widget.subheading' defaultMessage='Recent' />
-                    </h3>
-
-                </div> */}
                 <PrimarySearchAppBar />
-                <CustomTable
+                <ApiInfoChart
                     usageData={usageData}
                     totalcount={totalcount}
                 />

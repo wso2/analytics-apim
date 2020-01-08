@@ -20,7 +20,7 @@ function SimpleAppBar(props) {
             <AppBar position='static' color='#27296b' style={{ backgroundColor: '#27296b' }}>
                 <Toolbar>
                     <Typography variant='h7' color='inherit'>
-            Recent Api Details
+            Overall API Info
                     </Typography>
                 </Toolbar>
             </AppBar>
