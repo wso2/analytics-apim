@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import CustomTable from './CustomTable';
+import LatencyChart from './LatencyChart';
 
 /**
  * React Component for Api Latency widget body
@@ -100,7 +100,7 @@ export default function APIMApiLatency(props) {
                     </h3>
                 </div>
                 <div style={styles.dataWrapper}>
-                    <CustomTable
+                    <LatencyChart
                         data={latancyData}
                     />
                 </div>
@@ -109,7 +109,7 @@ export default function APIMApiLatency(props) {
     );
 }
 
-APIMRecentApiTraffic.propTypes = {
+APIMApiLatency.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     latancyData: PropTypes.instanceOf(Object).isRequired,
