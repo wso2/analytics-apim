@@ -1,9 +1,3 @@
-/* eslint-disable react/jsx-indent-props */
-/* eslint-disable comma-dangle */
-/* eslint-disable indent */
-/* eslint-disable react/jsx-indent */
-/* eslint-disable spaced-comment */
-/* eslint-disable react/jsx-one-expression-per-line */
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -36,8 +30,8 @@ import Typography from '@material-ui/core/Typography';
  */
 export default function APIMApiErrorRate(props) {
     const {
- themeName, sorteddata, errorpercentage
-} = props;
+        themeName, sorteddata, errorpercentage,
+    } = props;
     const styles = {
         headingWrapper: {
             height: '5%',
@@ -123,35 +117,39 @@ export default function APIMApiErrorRate(props) {
                         letterSpacing: 1.5,
                     }}
                 >
-                    <FormattedMessage id='widget.heading' defaultMessage='Recent Api Traffic' />
+                    <FormattedMessage id='widget.heading' defaultMessage='API Error Rate' />
                 </h3>
                 <h3
-                style={{
-                    fontWeight: 'normal'
-                }}
+                    style={{
+                        fontWeight: 'normal',
+                    }}
                 >
-                   Total Error Rate: {errorpercentage} %
+                   Total Error Rate:
+                    {' '}
+                    {errorpercentage}
+                    {' '}
+                    %
                 </h3>
             </div>
 
             <div style={styles.dataWrapper}>
-            <svg viewBox='-150 0 600 300'>
-                <VictoryPie
-                animate={{
-                    duration: 2000,
-                    onLoad: { duration: 1000 }
-                    }}
-                standalone={false}
-                width={290}
-                height={290}
-                data={sorteddata}
+                <svg viewBox='-150 0 600 300'>
+                    <VictoryPie
+                        animate={{
+                            duration: 2000,
+                            onLoad: { duration: 1000 },
+                        }}
+                        standalone={false}
+                        width={290}
+                        height={290}
+                        data={sorteddata}
 
-                innerRadius={0}
-                labelRadius={0}
-                colorScale='blue'
-                style={{ labels: { fontSize: 11, fill: 'white' } }}
-                />
-            </svg>
+                        innerRadius={0}
+                        labelRadius={0}
+                        colorScale='blue'
+                        style={{ labels: { fontSize: 11, fill: 'white' } }}
+                    />
+                </svg>
             </div>
         </div>
     );
