@@ -33,13 +33,10 @@ import ErrorAnalysisChart from './ErrorAnalysisChart';
  * @returns {ReactElement} Render the Recent Api Traffic widget body
  */
 export default function APIMSingleApiStats(props) {
-    const {themeName, height, usageData, data, apiname, totalreqcount, trafficdata, latencydata, totallatencycount, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, timeFrom, timeTo} = props;
+    const {themeName, height, usageData, data, apiname, totalreqcount, trafficdata, latencydata, totallatencycount, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, timeFrom, timeTo, apiVersion} = props;
     return (
-        // <Scrollbars
-        //     style={{ height }}
-        // >
             <div>
-                <AppBar apiname={apiname}/>
+                <AppBar apiname={apiname} apiVersion={apiVersion}/>
                 <DetailBar totalreqcount={totalreqcount} totalerrorcount={totalerrorcount} avglatency={avglatency} formatederrorpercentage={formatederrorpercentage} timeFrom={timeFrom} timeTo={timeTo} totallatencycount={totallatencycount}/>
                 <div style={{width: '50%', float: 'left'}}>
                 <Trafficchart trafficdata={trafficdata}/>
@@ -53,37 +50,7 @@ export default function APIMSingleApiStats(props) {
                 <div style={{width: '50%', float: 'left'}}>
                 <ErrorAnalysisChart sorteddata={sorteddata}/>
                 </div>
-                
-                
-                
-                {/* <div style={styles.headingWrapper}>
-                    <h3 style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        marginLeft: '5px',
-                        textAlign: 'left',
-                        fontWeight: 'bold',
-                        letterSpacing: 1.2,
-                    }}
-                    >
-                        <FormattedMessage id='widget.heading' defaultMessage='Recent Api Details' />
-                        <FormattedMessage id='widget.subheading' defaultMessage='Recent' />
-                    </h3>
-                    
-                </div> */}
-                {/* <PrimarySearchAppBar/>*/}
-
-                {/* <div style={styles.formWrapper}>
-                    <form style={styles.form}>
-                    <AppBar/>
-                <DetailBar/>
-                    </form>
-                </div>  */}
-                {/* <CustomTable
-                  data={usageData}
-                /> */}
             </div>
-        // </Scrollbars>
     );
 }
 
@@ -91,6 +58,4 @@ APIMSingleApiStats.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
-    apiCreatedHandleChange: PropTypes.func.isRequired,
-    handleChange: PropTypes.func.isRequired,
 };

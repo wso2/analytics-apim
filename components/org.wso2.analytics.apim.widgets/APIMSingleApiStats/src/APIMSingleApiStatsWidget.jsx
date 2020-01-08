@@ -53,7 +53,7 @@ const lightTheme = createMuiTheme({
 
 
 
-const queryParamKey = 'recentapitraffic';
+const queryParamKey = 'recentapistats';
 
 
 const language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
@@ -95,7 +95,8 @@ class APIMSingleApiStatsWidget extends Widget {
             usageData: null,
             localeMessages: null,
             data:null,
-            apiname: 'EmployeeApi',
+            apiname:null,
+            apiVersion:null,
             totalreqcount: null,
             trafficdata: null,
             totallatencycount: null,
@@ -107,6 +108,7 @@ class APIMSingleApiStatsWidget extends Widget {
             totalreqcounted: null,
             sorteddata: null,
             formatederrorpercentage: null,
+            xAxisTicks: null,
             isloading: true,
 
         };
@@ -119,8 +121,6 @@ class APIMSingleApiStatsWidget extends Widget {
             }));
         }
 
-        this.handleChange = this.handleChange.bind(this);
-        //this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
         this.assemblelatencyquery = this.assemblelatencyquery.bind(this);
@@ -164,7 +164,19 @@ class APIMSingleApiStatsWidget extends Widget {
     }
 
     loadurldata(){
-        console.log(window.location.href);
+       var str = window.location.href;
+       var iscommunicated = str.includes("apsssss");
+       console.log(iscommunicated);
+       if(iscommunicated){
+          var stringArray = str.split("%22");
+          //console.log(stringArray);
+          //console.log(stringArray[5]);
+          //console.log(stringArray[9]);
+        this.setState({apiname:stringArray[5],apiVersion:stringArray[9]});
+       }
+       else{
+          window.location.href = './recent-api-details';
+       }
     }
  
     loadLocale(locale) {
@@ -178,6 +190,19 @@ class APIMSingleApiStatsWidget extends Widget {
     //Set the date time range
     handlePublisherParameters(receivedMsg) {
         this.setState({
+            // totalreqcount: null,
+            // trafficdata: null,
+            // totallatencycount: null,
+            // latencydata: null,
+            // totalerrorcount: null,
+            // errordata: null,
+            // avglatency: null,
+            // errpercentage: null,
+            // totalreqcounted: null,
+            // sorteddata: null,
+            // formatederrorpercentage: null,
+            // usageData: null,
+            // data:null,
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
@@ -186,8 +211,7 @@ class APIMSingleApiStatsWidget extends Widget {
     }
 
     getresourcetemplates(){
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { providerConfig,apiname
+        const { providerConfig,apiname,apiVersion
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -195,16 +219,16 @@ class APIMSingleApiStatsWidget extends Widget {
         dataProviderConfigs.configs.config.queryData.queryName = 'resourcetemplates';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{apiname}}': apiname,
+            '{{apiVersion}}':apiVersion,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleresourcetemplates, dataProviderConfigs);
     }
 
     handleresourcetemplates(message){
-        const { data } = message;
         const { id } = this.props;
 
-        console.log(data);
+      //  console.log(data);
 
         super.getWidgetChannelManager()
         .subscribeWidget(id, widgetName, this.assembleApiUsageQuery, dataProviderConfigs);
@@ -213,21 +237,22 @@ class APIMSingleApiStatsWidget extends Widget {
   
     //Format the siddhi query
     assembleApiUsageQuery() {
-        const queryParam = super.getGlobalState(queryParamKey);
         const {
-            timeFrom, timeTo, perValue, providerConfig,apiname
+            timeFrom, timeTo, perValue, providerConfig,apiname,apiVersion
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
 
         dataProviderConfigs.configs.config.apiname = apiname;
+        dataProviderConfigs.configs.config.apiVersion = apiVersion;
         dataProviderConfigs.configs.config.queryData.queryName = 'trafficquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
             '{{apiname}}': apiname,
+            '{{apiVersion}}':apiVersion,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
@@ -240,7 +265,6 @@ class APIMSingleApiStatsWidget extends Widget {
         const { id } = this.props;
         if (data) {
             const trafficdata = [];
-            const counter = 0;
             let totalreqcount = 0;
 
             data.forEach((e) => {
@@ -249,41 +273,53 @@ class APIMSingleApiStatsWidget extends Widget {
                     .format('YYYY/MM/DD hh:mm'), y: e[2] },);
             });
 
-            this.setState({ trafficdata:trafficdata, totalreqcount: totalreqcount });
+            // const maxCount = trafficdata[trafficdata.length - 1].y;
+
+            // const first = new Date(trafficdata[0].x).getTime();
+            // const last = new Date(trafficdata[trafficdata.length - 1].x).getTime();
+            // const interval = (last - first) / 10;
+            // let duration = 0;
+            // xAxisTicks.push(first);
+            // for (let i = 1; i <= 10; i++) {
+            //     duration = interval * i;
+            //     xAxisTicks.push(new Date(first + duration).getTime());
+            // }
+
+            this.setState({ trafficdata, totalreqcount});
 
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assemblelatencyquery();
         }
     }
 
-    // format the siddhi query for abnormal request alert
+    // format siddhi query to get average latency
     assemblelatencyquery() {
-        const queryParam = super.getGlobalState(queryParamKey);
         const {
-            timeFrom, timeTo, perValue, providerConfig,apiname
+            timeFrom, timeTo, perValue, providerConfig,apiname,apiVersion
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
 
         dataProviderConfigs.configs.config.apiname = apiname;
+        dataProviderConfigs.configs.config.apiVersion = apiVersion;
         dataProviderConfigs.configs.config.queryData.queryName = 'latencyquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
             '{{apiname}}': apiname,
+            '{{apiVersion}}':apiVersion,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handlelatencyReceived, dataProviderConfigs);
     }
 
 
-    // format the latency query
+    // format the data received for latency query
     handlelatencyReceived(message) {
         const { data } = message;
         const { id } = this.props;
-        console.log(data);
         if (data) {
             const latencydata = [];
             let totallatencycount = 0;
@@ -298,14 +334,13 @@ class APIMSingleApiStatsWidget extends Widget {
             });
             
             avglatency = Math.floor(totallatencytime/totallatencycount);
-            console.log(avglatency);
 
             //console.log(latencydata);
             if(isNaN(avglatency)){
-                this.setState({ totallatencycount:totallatencycount, latencydata: latencydata, avglatency: 0});
+                this.setState({ latencydata: latencydata, avglatency: 0});
             }
             else
-            this.setState({ totallatencycount:totallatencycount, latencydata: latencydata, avglatency: avglatency});
+            this.setState({ latencydata, avglatency});
 
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleerrorsquery();
@@ -314,21 +349,22 @@ class APIMSingleApiStatsWidget extends Widget {
 
     // format the siddhi query for error count
     assembleerrorsquery() {
-        const queryParam = super.getGlobalState(queryParamKey);
         const {
-            timeFrom, timeTo, perValue, providerConfig,apiname
+            timeFrom, timeTo, perValue, providerConfig,apiname,apiVersion
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
 
         dataProviderConfigs.configs.config.apiname = apiname;
+        dataProviderConfigs.configs.config.apiVersion = apiVersion;
         dataProviderConfigs.configs.config.queryData.queryName = 'errorquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
             '{{apiname}}': apiname,
+            '{{apiVersion}}':apiVersion,
         };
         //console.log(timeFrom,timeTo,perValue);
         super.getWidgetChannelManager()
@@ -361,7 +397,7 @@ class APIMSingleApiStatsWidget extends Widget {
     //first query to retreive the error percentage
     errorpercentageQuery() {
         const {
-            timeFrom, timeTo, perValue, providerConfig, apiname
+            timeFrom, timeTo, perValue, providerConfig, apiname, apiVersion
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -372,9 +408,8 @@ class APIMSingleApiStatsWidget extends Widget {
             '{{to}}': timeTo,
             '{{per}}': perValue,
             '{{apiname}}': apiname,
+            '{{apiVersion}}':apiVersion,
         };
-        // this.setState({ isloading: true });
-        // console.log(timeFrom, timeTo);
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handlerrorRateReceived, dataProviderConfigs);
     }
@@ -391,13 +426,11 @@ class APIMSingleApiStatsWidget extends Widget {
         this.assembletotalreqcountquery();
     }
 
-    /**
-     * Formats the siddhi query using selected options
-     * @memberof APIMApiErrorRateWidget
-     * */
+   
+    // retreive total request count to calculate error percentage
     assembletotalreqcountquery() {
         const {
-            timeFrom, timeTo, providerConfig, perValue, apiname
+            timeFrom, timeTo, providerConfig, perValue, apiname, apiVersion
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -408,24 +441,20 @@ class APIMSingleApiStatsWidget extends Widget {
             '{{to}}': timeTo,
             '{{per}}': perValue,
             '{{apiname}}': apiname,
+            '{{apiVersion}}': apiVersion,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handletotalreqcountReceived, dataProviderConfigs);
     }
 
-    /**
-     * Formats data received from assembleweekQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMApiErrorRateWidget
-     * */
+    // format the data received by totalreqcount query
     handletotalreqcountReceived(message) {
         const { data } = message;
         const { id } = this.props;
-        console.log(data);
+       // console.log(data);
 
-        // if (data.length !== 0) {
+    
         this.setState({ totalreqcounted: data });
-        // }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.analyzeerrorrate();
     }
@@ -433,7 +462,7 @@ class APIMSingleApiStatsWidget extends Widget {
     // analyze the errors received
     analyzeerrorrate() {
         const { errpercentage, totalreqcounted } = this.state;
-        console.log(errpercentage, totalreqcounted);
+       console.log(errpercentage, totalreqcounted);
         const sorteddata = [];
         let totalhits = 0;
         let totalerrors = 0;
@@ -456,39 +485,24 @@ class APIMSingleApiStatsWidget extends Widget {
                 if (dataUnit[0] === totalreqcounted[err][0]) {
                     const percentage = (totalreqcounted[err][1] / dataUnit[1]) * 100;
                     sorteddata.push({
-                        x: totalreqcounted[err][0] + ' ' + percentage.toPrecision(3) + '%', y: percentage,
+                        x: '( '+totalreqcounted[err][0]+' )' + ' ' + percentage.toPrecision(3) + '%', y: percentage,
                     });
                 }
             }
         });
         
         if(errorpercentage.length == 0 || isNaN(errorpercentage)){
-            this.setState({ sorteddata:sorteddata, formatederrorpercentage:0 });
+            this.setState({ sorteddata, formatederrorpercentage:0 });
         }
         else
-        this.setState({ sorteddata:sorteddata, formatederrorpercentage:errorpercentage, isloading: false, });
-    }
-    /**
-     * Handle Limit select Change
-     * @param {Event} event - listened event
-     * @memberof APIMSingleApiStatsWidget
-     * */
-    handleChange(event) {
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiUsageQuery();
+        this.setState({ sorteddata, formatederrorpercentage:errorpercentage, isloading: false, });
     }
 
-    /**
-     * @inheritDoc
-     * @returns {ReactElement} Render the APIM Recent Api Traffic widget
-     * @memberof APIMSingleApiStatsWidget
-     */
+    
+
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, apiname, totalreqcount, trafficdata, latencydata, totallatencycount, timeFrom, timeTo, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata
+            localeMessages, faultyProviderConfig, height, apiname,apiVersion, totalreqcount, trafficdata, latencydata, totallatencycount, timeFrom, timeTo, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, isloading
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, inProgress,
@@ -496,10 +510,10 @@ class APIMSingleApiStatsWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
-            themeName, height,trafficdata, apiname, totalreqcount, latencydata, totallatencycount, timeFrom, timeTo, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata
+            themeName, height,trafficdata, apiname,apiVersion, totalreqcount, latencydata, totallatencycount, timeFrom, timeTo, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata
         };
 
-        if (!localeMessages || !trafficdata ) {
+        if (!localeMessages || !trafficdata || isloading) {
             return (
                 <div style={inProgress}>
                     <CircularProgress style={loadingIcon} />
