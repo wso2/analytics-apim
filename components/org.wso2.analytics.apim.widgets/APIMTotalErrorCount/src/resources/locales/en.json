@@ -1,0 +1,8 @@
+{
+  "api": "ERROR",
+  "apis": "ERRORS",
+  "config.error.heading": "Configuration Error !",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Created widget",
+  "widget.heading": "TOTAL ERROR COUNT",
+  "within.week.text": "ERRORS WITHIN ALL TIME"
+}
