@@ -1,0 +1,8 @@
+{
+  "error": "%",
+  "config.error.heading": "Configuration Error !",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Created widget",
+  "overtime.btn.text": "Overtime Analysis",
+  "widget.heading": "TOTAL ERROR PERCENTAGE",
+  "within.week.text": "REQUESTS WITHIN ALL TIME"
+}
