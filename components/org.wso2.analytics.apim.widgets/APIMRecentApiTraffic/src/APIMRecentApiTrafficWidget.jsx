@@ -1,5 +1,5 @@
-/* eslint-disable require-jsdoc */
 /* eslint-disable no-console */
+/* eslint-disable require-jsdoc */
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -98,8 +98,6 @@ class APIMRecentApiTrafficWidget extends Widget {
             }));
         }
 
-        this.handleChange = this.handleChange.bind(this);
-        this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
@@ -145,13 +143,13 @@ class APIMRecentApiTrafficWidget extends Widget {
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
+            usageData: null,
         }, this.assembleApiUsageQuery);
     }
 
 
     // Format the siddhi query
     assembleApiUsageQuery() {
-        // const queryParam = super.getGlobalState(queryParamKey);
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
@@ -172,47 +170,20 @@ class APIMRecentApiTrafficWidget extends Widget {
     // format the query data
     handleApiUsageReceived(message) {
         const { data } = message;
+        console.log(data);
 
         if (data) {
             const usageData = [];
-            const counter = 0;
 
             data.forEach((dataUnit) => {
                 usageData.push({
-                    id: counter, apiname: dataUnit[0], version: dataUnit[1], hits: dataUnit[3],
+                    API: dataUnit[0] + '(' + dataUnit[1] + ')', Traffic: dataUnit[2],
                 });
             });
             this.setState({ usageData });
         }
     }
 
-
-    /**
-     * Handle Limit select Change
-     * @param {Event} event - listened event
-     * @memberof APIMRecentApiTrafficWidget
-     * */
-    handleChange(event) {
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiUsageQuery();
-    }
-
-    /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMRecentApiTrafficWidget
-     * */
-    apiCreatedHandleChange(event) {
-        // const { limit } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiUsageQuery();
-    }
 
     /**
      * @inheritDoc
@@ -264,8 +235,6 @@ class APIMRecentApiTrafficWidget extends Widget {
                         ) : (
                             <APIMRecentApiTraffic
                                 {...apiUsageProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
-                                handleChange={this.handleChange}
                             />
                         )
                     }

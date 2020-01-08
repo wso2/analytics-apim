@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
-
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -22,10 +20,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { Scrollbars } from 'react-custom-scrollbars';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import CustomTable from './CustomTable';
+import TrafficChart from './TrafficChart';
 
 /**
  * React Component for Recent Api Traffic widget body
@@ -34,12 +31,13 @@ import CustomTable from './CustomTable';
  */
 export default function APIMRecentApiTraffic(props) {
     const {
-        themeName, height, usageData,
+        themeName, usageData,
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
+            height: '5%',
             margin: 'auto',
+            paddingTop: '10px',
             width: '90%',
         },
         paperWrapper: {
@@ -53,27 +51,11 @@ export default function APIMRecentApiTraffic(props) {
             margin: 'auto',
             marginTop: '5%',
         },
-        formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
-        },
-        form: {
-            display: 'flex',
-            flexWrap: 'wrap',
-        },
-        formControl: {
-            margin: '5%',
-            minWidth: 120,
-        },
-        textField: {
-            margin: '5%',
-            minWidth: 120,
-        },
         selectEmpty: {
             marginTop: 10,
         },
     };
+
     if (usageData.length === 0) {
         return (
             <div style={styles.paperWrapper}>
@@ -95,43 +77,41 @@ export default function APIMRecentApiTraffic(props) {
         );
     }
     return (
-        <Scrollbars
-            style={{ height }}
-        >
-            <div style={{
-                padding: '5% 5%',
+        <div
+            style={{
+                background: themeName === 'light' ? '#fff' : '#162638',
+                width: 'auto',
+                height: 'auto',
+                margin: '3% 3%',
             }}
-            >
-                <div style={styles.headingWrapper}>
-                    <h3 style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        marginTop: 0,
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                    >
-                        <FormattedMessage id='widget.heading' defaultMessage='Recent Api Traffic' />
+        >
+            <div style={styles.headingWrapper}>
+                <h3 style={{
+                    borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '1px solid #02212f',
+                    paddingBottom: '5px',
+                    margin: 'auto',
+                    textAlign: 'center',
+                    fontWeight: 'normal',
+                    letterSpacing: 1.5,
+                }}
+                >
+                    <FormattedMessage id='widget.heading' defaultMessage='Recent Api Traffic' />
 
-                    </h3>
-                </div>
-                <div style={styles.formWrapper}>
-                    <form style={styles.form} />
-                </div>
-                <CustomTable
+                </h3>
+            </div>
+
+            <div style={styles.dataWrapper}>
+                <TrafficChart
                     data={usageData}
                 />
             </div>
-        </Scrollbars>
+
+        </div>
+
     );
 }
 
 APIMRecentApiTraffic.propTypes = {
     themeName: PropTypes.string.isRequired,
-    height: PropTypes.string.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
-    apiCreatedHandleChange: PropTypes.func.isRequired,
-    handleChange: PropTypes.func.isRequired,
 };
