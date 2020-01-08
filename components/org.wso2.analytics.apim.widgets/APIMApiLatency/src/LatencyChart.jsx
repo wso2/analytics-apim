@@ -11,7 +11,7 @@
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
  *  KIND, either express or implied.  See the License for the
  *  specific language governing permissions and limitations
  *  under the License.
@@ -20,7 +20,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import { VictoryBar, VictoryChart, VictoryAxis } from 'victory';
 
@@ -51,7 +50,7 @@ const chartTheme = {
        tickLabels: {
          // this changed the color of my numbers to white
          fill: 'white',
-         fontSize: '6px',
+         fontSize: '8px',
          angle: 25,
        },
        grid: { stroke: 'none' },
@@ -60,12 +59,9 @@ const chartTheme = {
  };
 
 
-// dataset for the chart
-const dataset = [];
 
-
-//React component for table data
-class CustomTable extends React.Component {
+//React component for chart data
+class LatencyChart extends React.Component {
     /**
      * Creates an instance of CustomTable.
      * @param {any} props @inheritDoc
@@ -76,7 +72,6 @@ class CustomTable extends React.Component {
 
         this.state = {
             tableData: [],
-           // rowsPerPage: 5,
             orderBy: 'hits',
             order: 'desc',
             expanded: false,
@@ -84,13 +79,8 @@ class CustomTable extends React.Component {
         };
     }
 
-    //handle the latencydatatable
     render() {
         const { data, classes } = this.props;
-
-        console.log(data);
-        //Set the table data
-        //setdata(latancyData);
         
         return (
                   <VictoryChart
@@ -114,7 +104,7 @@ class CustomTable extends React.Component {
                     data={data}
                     x='ApiName'
                   // eslint-disable-next-line indent
-                    y='maxLatency'
+                    y='AvgLatency'
                 />
                   <VictoryAxis
                     label='API Name'
@@ -128,7 +118,7 @@ class CustomTable extends React.Component {
                 />
                   <VictoryAxis
                     dependentAxis
-                    label='Max Latency (ms)'
+                    label='Average Latency (ms)'
                     style={{
                     axisLabel: {
                       padding: 30,
@@ -142,8 +132,8 @@ class CustomTable extends React.Component {
     }
 }
 
-CustomTable.propTypes = {
+LatencyChart.propTypes = {
     latancyData: PropTypes.instanceOf(Object).isRequired,
 };
 
-export default withStyles(styles)(CustomTable);
+export default withStyles(styles)(LatencyChart);

@@ -104,7 +104,6 @@ class APIMApiLatencyWidget extends Widget {
         this.handleTotallatencyReceived = this.handleTotallatencyReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount() {
@@ -142,7 +141,7 @@ class APIMApiLatencyWidget extends Widget {
 
      //Set the date time range
      handlePublisherParameters(receivedMsg) {
-         console.log(receivedMsg);
+         //console.log(receivedMsg);
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
@@ -169,27 +168,18 @@ class APIMApiLatencyWidget extends Widget {
     //Format the data received from the query
     handleTotallatencyReceived(message) {
         const { data } = message;
-        console.log(data);
+         //console.log(data);
         const latancyData = [];
         
         if (data) {
             data.forEach(dataunit => {
                 latancyData.push({
-                    ApiName: dataunit[0], maxLatency: dataunit[1]})
+                    ApiName: dataunit[0]+'('+dataunit[3]+')', AvgLatency: (dataunit[1]/dataunit[2])})
                 
             });
         }
 
         this.setState({latancyData});
-       // console.log(latancyData);
-    }
-
-    handleChange(event) {
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assemblelatencyQuery();
     }
 
     //Render the Apim Latency Widget
@@ -204,7 +194,6 @@ class APIMApiLatencyWidget extends Widget {
         const themeName = muiTheme.name;
         const apiLatancyProps = { themeName, latancyData, height };
 
-       // console.log(apiLatancyProps);
 
         if (!localeMessages) {
             return (
@@ -237,7 +226,6 @@ class APIMApiLatencyWidget extends Widget {
                             </div>
                         ) : (
                             <APIMApiLatency {...apiLatancyProps}
-                            handleChange={this.handleChange} 
                             />
                         )
                     }
