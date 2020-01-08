@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
@@ -8,14 +6,12 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-const styles = theme => ( {
+const styles = () => ( {
     root: {
       flexGrow: 1,
       
     },
     dropdown: {
-        // alignItems: 'right',
-        // justifyContent: 'center',
         float: 'right',
         
     },
@@ -31,16 +27,16 @@ class AppBars extends React.Component {
         };
     }
 
-  handleClick = event => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
+  // handleClick = event => {
+  //   this.setState({ anchorEl: event.currentTarget });
+  // };
 
-  handleClose = () => {
-    this.setState({ anchorEl: null });
-  };
+  // handleClose = () => {
+  //   this.setState({ anchorEl: null });
+  // };
 
   render() {
-    const { classes, apiname } = this.props;
+    const { apiname, apiVersion } = this.props;
     const { anchorEl } = this.state;
 
     return (
@@ -49,9 +45,9 @@ class AppBars extends React.Component {
         <AppBar position="static" color="default">
             <Toolbar>
                 <Typography variant="h8" color="inherit">
-                    {'Recent API Traffic'} {'        '} {' > '} {'         '}{apiname}
+                    {'Recent API Traffic'} {'        '} {' > '} {'         '}{apiname}{' '}{'('}{apiVersion}{')'}
                 </Typography>
-                <div>
+                {/* <div>
                     <Button style={{marginLeft: '1400px'}}
                     aria-owns={anchorEl ? 'simple-menu' : undefined}
                     aria-haspopup="true"
@@ -69,7 +65,7 @@ class AppBars extends React.Component {
                     <MenuItem onClick={this.handleClose}>Post</MenuItem>
                     <MenuItem onClick={this.handleClose}>Delete</MenuItem>
                     </Menu>
-                </div>
+                </div> */}
             </Toolbar>
         </AppBar>
         </div>

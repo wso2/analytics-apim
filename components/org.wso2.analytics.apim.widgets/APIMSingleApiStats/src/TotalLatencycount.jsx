@@ -125,7 +125,7 @@ class TotalReqcount extends React.Component {
             </h3>
             <p style={styles.weekCount}>
                 [
-  {'Avg Latency'} {' '} {avglatency} {' '} {'ms'} {' '} {'WITHIN'} {Moment(timeFrom).format('YYYY-MMM')} {' TO '} {Moment(timeTo).format('YYYY-MMM')} {' '}
+                {'Avg Latency'} {' '} {avglatency} {' '} {'ms'} {' '} {'WITHIN'} {Moment(timeFrom).format('YYYY-MMM')} {' TO '} {Moment(timeTo).format('YYYY-MMM')} {' '}
                 {/* <FormattedMessage id='within.week.text' defaultMessage='WITHIN LAST WEEK ' /> */}
                 ]
             </p>

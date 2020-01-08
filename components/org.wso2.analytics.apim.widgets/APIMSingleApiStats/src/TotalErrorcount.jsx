@@ -1,10 +1,6 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import Moment from 'moment';
 
@@ -27,7 +23,7 @@ class TotalReqcount extends React.Component {
     }
 
   render() {
-    const { classes, totalerrorcount, timeFrom, timeTo } = this.props;
+    const { totalerrorcount, timeFrom, timeTo } = this.props;
     const styles = {
         headingWrapper: {
             height: '10%',

@@ -1,9 +1,8 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import {
-  VictoryBar, VictoryChart, VictoryArea, VictoryTheme, VictoryAxis
+  VictoryChart, VictoryArea, VictoryAxis
  } from 'victory';
 import Paper from '@material-ui/core/Paper';
 import { FormattedMessage } from 'react-intl';
@@ -23,6 +22,12 @@ const styles = () => ({
     margin: 'auto',
     marginTop: '5%',
 },
+headingWrapper: {
+  height: '5%',
+  margin: 'auto',
+  paddingTop: '10px',
+  width: '90%',
+},
 });
 
 class Trafficchart extends React.Component {
@@ -35,17 +40,7 @@ class Trafficchart extends React.Component {
     }
 
   render() {
-    const { classes, trafficdata } = this.props;
-   // console.log(trafficdata);
-
-    const data = [
-      {x: "API1", y: 13000},
-      {x: "API2", y: 16500},
-      {x: "API3", y: 14250},
-      {x: "API4", y: 19000},
-      {x: "API5", y: 9000},
-      {x: "API6", y: 4000},
-    ];
+    const { trafficdata } = this.props;
 
     const chartTheme = {
       axis: {
@@ -56,14 +51,30 @@ class Trafficchart extends React.Component {
            fontSize: '8px',
            angle: 25,
          },
-        grid: { stroke: 'none' },
+        // grid: { stroke: 'none' },
        },
      },
    };
 
    if (trafficdata.length === 0) {
     return (
-        <div style={{maxWidth: '100%', maxHeight: '375px', minWidth: '50%', minHeight: '375px', marginRight:'2px', backgroundColor:'#040b4b', marginTop:'5px'}}>
+        <div style={{maxWidth: '100%', maxHeight: '420px', minWidth: '50%', minHeight: '420px', marginRight:'2px', backgroundColor:'#040b4b', marginTop:'5px'}}>
+          <div style={styles.headingWrapper}>
+                <h3 style={{
+                    borderBottom: '1.5px solid #fff',
+                    paddingBottom: '7px',
+                    paddingTop: '7px',
+                    margin: 'auto',
+                    textAlign: 'center',
+                    fontWeight: 'normal',
+                    letterSpacing: 1.5,
+                    width: '80%',
+                }}
+                >
+                    <FormattedMessage id='widget.traffic.heading' defaultMessage='No of HITS against TIME' />
+
+                </h3>
+            </div>
             <Paper
                 elevation={1}
                 style={{background: '#040b4b',
@@ -87,7 +98,23 @@ class Trafficchart extends React.Component {
 }
 else{
     return (
-      <div style={{maxWidth: '100%', maxHeight: '375px', minWidth: '50%', minHeight: '375px', marginRight:'2px', backgroundColor:'#040b4b', marginTop:'5px'}}>
+      <div style={{maxWidth: '100%', maxHeight: '420px', minWidth: '50%', minHeight: '420px', marginRight:'2px', backgroundColor:'#040b4b', margin:'5px'}}>
+        <div style={styles.headingWrapper}>
+                <h3 style={{
+                    borderBottom: '1.5px solid #fff',
+                    paddingBottom: '7px',
+                    paddingTop: '12px',
+                    margin: 'auto',
+                    textAlign: 'center',
+                    fontWeight: 'normal',
+                    letterSpacing: 1.5,
+                    width: '80%',
+                }}
+                >
+                    <FormattedMessage id='widget.traffic.heading' defaultMessage='No of HITS against TIME' />
+
+                </h3>
+            </div>
         <svg viewBox="-50 1 500 200">
           <h6>Traffic Vs Time</h6>
         <VictoryChart
@@ -101,7 +128,7 @@ else{
               duration: 2000,
               onLoad: { duration: 1000 }
             }}
-            style={{ data: { fill: "#0c0133" } }}
+            style={{ data: { fill: "#0e0e24" } }}
             data={trafficdata}
           />
           <VictoryAxis
