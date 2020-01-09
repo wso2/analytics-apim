@@ -203,11 +203,7 @@ class CustomTable extends React.Component {
         const { data } = this.props;
         const tickedApiParts = tickedApi.split(':');
         const foundElement = data.filter((element) => {
-            if (tickedApiParts[0] === element[0] + ' (' + element[1] + ')' && tickedApiParts[1] === element[4]) {
-                return element;
-            }
-            // this return is never reached, it is added to comply to es-lint arr0w-callback-return rule
-            return true;
+            return (tickedApiParts[0] === element[0] + ' (' + element[1] + ')' && tickedApiParts[1] === element[4]);
         });
         selectedAPIChangeCallback(foundElement[0]);
     };
