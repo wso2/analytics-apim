@@ -35,7 +35,18 @@
     "APIMGeoBasedInvocations",
     "APIMApiUsage",
     "DateTimeRangePicker",
-    "APIMRecentApiTraffic"
+    "APIMRecentApiTraffic",
+    "APIMApiErrorRate",
+    "APIMApiAlerts",
+    "APIMApiLatency",
+    "APIMRecentApiDetails",
+    "APIMSingleApiStats",
+    "APIMApiErrorAnalysis",
+    "APIMApiTrafficTrends",
+    "APIMTotalRequestCount",
+    "APIMTotalErrorCount",
+    "APIMOverallAvgLatency",
+    "APIMTotalErrorRate"
   ],
   "version": "1.0.0"
 }

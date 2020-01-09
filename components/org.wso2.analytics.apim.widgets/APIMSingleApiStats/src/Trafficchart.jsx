@@ -40,7 +40,7 @@ class Trafficchart extends React.Component {
     }
 
   render() {
-    const { trafficdata } = this.props;
+    const { trafficdata} = this.props;
 
     const chartTheme = {
       axis: {

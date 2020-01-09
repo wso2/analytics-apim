@@ -109,6 +109,7 @@ class APIMSingleApiStatsWidget extends Widget {
             sorteddata: null,
             formatederrorpercentage: null,
             xAxisTicks: null,
+            maxCount: null,
             isloading: true,
 
         };
@@ -265,6 +266,7 @@ class APIMSingleApiStatsWidget extends Widget {
         const { id } = this.props;
         if (data) {
             const trafficdata = [];
+            var xAxisTicks = [];
             let totalreqcount = 0;
 
             data.forEach((e) => {
@@ -277,10 +279,10 @@ class APIMSingleApiStatsWidget extends Widget {
 
             // const first = new Date(trafficdata[0].x).getTime();
             // const last = new Date(trafficdata[trafficdata.length - 1].x).getTime();
-            // const interval = (last - first) / 10;
+            // const interval = (last - first) / 5;
             // let duration = 0;
             // xAxisTicks.push(first);
-            // for (let i = 1; i <= 10; i++) {
+            // for (let i = 1; i <= 5; i++) {
             //     duration = interval * i;
             //     xAxisTicks.push(new Date(first + duration).getTime());
             // }
@@ -502,7 +504,8 @@ class APIMSingleApiStatsWidget extends Widget {
 
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, apiname,apiVersion, totalreqcount, trafficdata, latencydata, totallatencycount, timeFrom, timeTo, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, isloading
+            localeMessages, faultyProviderConfig, height, apiname,apiVersion, totalreqcount, trafficdata, latencydata, totallatencycount, timeFrom, timeTo, 
+            totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, isloading
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, inProgress,
@@ -510,7 +513,8 @@ class APIMSingleApiStatsWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
-            themeName, height,trafficdata, apiname,apiVersion, totalreqcount, latencydata, totallatencycount, timeFrom, timeTo, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata
+            themeName, height,trafficdata, apiname,apiVersion, totalreqcount, latencydata, totallatencycount, timeFrom, timeTo, 
+            totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata
         };
 
         if (!localeMessages || !trafficdata || isloading) {

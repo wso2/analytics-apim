@@ -167,5 +167,49 @@
             <directory>APIMRecentApiTraffic/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>APIMApiErrorRate/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMApiAlerts/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMApiLatency/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMRecentApiDetails/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+         <fileSet>
+            <directory>APIMSingleApiStats/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+         <fileSet>
+            <directory>APIMApiErrorAnalysis/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+         <fileSet>
+            <directory>APIMApiTrafficTrends/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMTotalRequestCount/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMTotalErrorCount/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMOverallAvgLatency/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMTotalErrorRate/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>

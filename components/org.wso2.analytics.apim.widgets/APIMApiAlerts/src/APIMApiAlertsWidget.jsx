@@ -104,7 +104,6 @@ class APIMApiAlertsWidget extends Widget {
                 height: this.props.glContainer.height,
             }));
         }
-        this.handleChange = this.handleChange.bind(this);
         this.assemblereqalertquery = this.assemblereqalertquery.bind(this);
         this.assemblereqalertreceived = this.assemblereqalertreceived.bind(this);
         this.assembleresponsealertquery = this.assembleresponsealertquery.bind(this);
@@ -113,7 +112,6 @@ class APIMApiAlertsWidget extends Widget {
         this.assemblebackendalertreceived = this.assemblebackendalertreceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
-        this.apiAlertsHandleChange = this.apiAlertsHandleChange.bind(this);
     }
 
 
@@ -144,7 +142,14 @@ class APIMApiAlertsWidget extends Widget {
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             isloading: true,
+            backendalert: null,
+            responsealert: null,
+            reqalert: null,
+            sortedarray: null,
+            finaldataset: null,
+            totalcount: null,
         }, this.assemblereqalertquery);
+        //console.log(receivedMsg.from, receivedMsg.to);
     }
 
 
@@ -189,7 +194,6 @@ class APIMApiAlertsWidget extends Widget {
     // format the abnormal request alert received
     assemblereqalertreceived(message) {
         const { data } = message;
-        // console.log(data);
         const { id } = this.props;
 
         if (data.length !== 0) {
@@ -224,7 +228,6 @@ class APIMApiAlertsWidget extends Widget {
     // format the abnormal response time alert
     assembleresponsealertreceived(message) {
         const { data } = message;
-        // console.log(data);
         const { id } = this.props;
 
         if (data.length !== 0) {
@@ -260,7 +263,6 @@ class APIMApiAlertsWidget extends Widget {
     // format abnormal backend time alerts
     assemblebackendalertreceived(message) {
         const { data } = message;
-        // console.log(data);
         const { id } = this.props;
 
         if (data.length !== 0) {
@@ -269,18 +271,16 @@ class APIMApiAlertsWidget extends Widget {
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.analyzealertdata();
-        // const{ backendalert, responsealert, reqalert } = this.state
-        // this.aluthinArrayhadamu(backendalert,responsealert,reqalert)
     }
 
 
     // analyze the total alert data received
-    // eslint-disable-next-line require-jsdoc
     analyzealertdata() {
-        const { backendalert, responsealert, reqalert } = this.state;
-        console.log(backendalert, responsealert, reqalert);
-        const sortedarray = [];
-        let totalcount = null;
+        var { backendalert, responsealert, reqalert } = this.state;
+        
+       console.log(backendalert, responsealert, reqalert);
+       let sortedarray = [];
+       var totalcount = 0;
 
         if (backendalert != null) {
             for (var i in backendalert) {
@@ -288,11 +288,13 @@ class APIMApiAlertsWidget extends Widget {
             }
         }
 
+      //  console.log(sortedarray);
         if (responsealert != null) {
             for (var i in responsealert) {
                 var matchFoun = false;
                 for (var n in sortedarray) {
                     if (responsealert[i][0] == sortedarray[n][0]) {
+                        console.log(sortedarray[n][1],responsealert[i][1]);
                         sortedarray[n][1] += responsealert[i][1];
                         matchFoun = true;
                         break;
@@ -302,7 +304,7 @@ class APIMApiAlertsWidget extends Widget {
                     sortedarray.push(responsealert[i]);
                 }
             }
-        }
+       }
 
         if (reqalert != null) {
             for (var i in reqalert) {
@@ -325,10 +327,10 @@ class APIMApiAlertsWidget extends Widget {
             totalcount += element[1];
         });
 
-        console.log(sortedarray, totalcount);
-        this.setState({ sortedarray, totalcount });
-        this.sortedarray = null;
-        this.converttojsonobject();
+        console.log(sortedarray);
+       this.setState({ sortedarray, totalcount });
+       this.sortedarray = null;
+       this.converttojsonobject();
     }
 
     // convert the dataset to json object
@@ -344,26 +346,8 @@ class APIMApiAlertsWidget extends Widget {
         });
 
         this.setState({ finaldataset, isloading: false });
-        console.log(finaldataset);
+       // console.log(finaldataset);
     }
-
-
-    handleChange(event) {
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assemblealertQuery();
-    }
-
-    apiAlertsHandleChange(event) {
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assemblealertQuery();
-    }
-
 
     render() {
         const {
@@ -414,5 +398,4 @@ class APIMApiAlertsWidget extends Widget {
         );
     }
 }
-
 global.dashboard.registerWidget('APIMApiAlerts', APIMApiAlertsWidget);

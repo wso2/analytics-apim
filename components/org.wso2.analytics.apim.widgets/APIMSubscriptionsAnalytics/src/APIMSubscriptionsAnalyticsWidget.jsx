@@ -308,6 +308,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
+        console.log(data);
         const {
             apiCreatedBy, subscribedTo,
         } = this.state;
@@ -333,6 +334,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                     subscribedtime: Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss'),
                 });
             });
+            console.log(chartData);
 
             const maxCount = chartData[chartData.length - 1].y;
 
@@ -345,6 +347,8 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                 duration = interval * i;
                 xAxisTicks.push(new Date(first + duration).getTime());
             }
+            console.log(xAxisTicks);
+            console.log(maxCount);
 
             this.setState({
                 chartData, tableData, xAxisTicks, maxCount, inProgress: false,

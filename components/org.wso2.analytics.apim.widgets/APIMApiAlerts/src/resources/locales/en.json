@@ -2,6 +2,6 @@
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Api Alerts widget",
   "overtime.btn.text": "Overtime Analysis",
-  "widget.heading": "API Alerts (last Hour)",
+  "widget.heading": "API Alerts",
   "within.week.text": "ALERTS WITHIN LAST WEEK"
 }
