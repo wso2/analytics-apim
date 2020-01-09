@@ -166,8 +166,8 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMSubscriptionsAnalytics/locales/
-                ${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMSubscriptionsAnalytics/locales/`
+                    + `${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
