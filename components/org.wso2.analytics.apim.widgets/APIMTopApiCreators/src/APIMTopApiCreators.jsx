@@ -23,8 +23,11 @@ import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
 import sumBy from 'lodash/sumBy';
@@ -59,25 +62,22 @@ export default function APIMTopApiCreators(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft: '5%',
         },
         formWrapper: {
-            width: '90%',
-            height: '15%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         form: {
             width: '30%',
@@ -90,6 +90,7 @@ export default function APIMTopApiCreators(props) {
             marginLeft: 8,
             marginRight: 8,
             width: 200,
+            minWidth: 120,
         },
         loadingIcon: {
             margin: 'auto',
@@ -100,6 +101,9 @@ export default function APIMTopApiCreators(props) {
             alignItems: 'center',
             justifyContent: 'center',
             height,
+        },
+        formLabel: {
+            whiteSpace: 'nowrap',
         },
     };
 
@@ -112,9 +116,9 @@ export default function APIMTopApiCreators(props) {
             >
                 <div style={{
                     backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                    width: '80%',
-                    margin: '5% auto',
-                    padding: '10% 5%',
+                    height,
+                    margin: '10px',
+                    padding: '20px',
                 }}
                 >
                     <div style={styles.headingWrapper}>
@@ -132,18 +136,27 @@ export default function APIMTopApiCreators(props) {
                     </div>
                     <div style={styles.formWrapper}>
                         <form style={styles.form} noValidate autoComplete='off'>
-                            <TextField
-                                id='limit-number'
-                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
-                                value={limit}
-                                onChange={handleChange}
-                                type='number'
-                                style={styles.textField}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                margin='normal'
-                            />
+                            <FormControl style={styles.formControl}>
+                                <Tooltip
+                                    placement='top'
+                                    title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                >
+                                    <InputLabel
+                                        shrink
+                                        htmlFor='limit-number'
+                                        style={styles.formLabel}
+                                    >
+                                        <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                    </InputLabel>
+                                </Tooltip>
+                                <Input
+                                    id='limit-number'
+                                    value={limit}
+                                    onChange={handleChange}
+                                    type='number'
+                                    margin='normal'
+                                />
+                            </FormControl>
                         </form>
                     </div>
                     <div>

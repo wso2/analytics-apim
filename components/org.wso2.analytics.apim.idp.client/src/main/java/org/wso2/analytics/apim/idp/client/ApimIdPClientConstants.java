@@ -85,9 +85,10 @@ public class ApimIdPClientConstants {
     public static final String INTROSPECTION_URL = "introspectionUrl";
 
     public static final String CALLBACK_URL = "/login/callback/";
+    public static final String CALLBACK_URL_SUFFIX = "/login";
     public static final String REGEX_BASE_START = "regexp=(";
     public static final String FORWARD_SLASH = "/";
-    public static final String REGEX_BASE = ".*|";
+    public static final String REGEX_BASE = "|";
     public static final String REGEX_BASE_END = ")";
     public static final String SPACE = " ";
     public static final String AT = "@";

@@ -31,6 +31,7 @@ import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
 
 /**
@@ -45,41 +46,31 @@ export default function APIMTopAgents(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
+            marginBottom:'5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            margin: '5%',
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
-        },
-        textField: {
-            margin: '5%',
-            marginTop: 0,
-            minWidth: 120,
-        },
-        selectEmpty: {
-            marginTop: 10,
         },
         dataWrapper: {
             height: '80%',
@@ -101,7 +92,10 @@ export default function APIMTopAgents(props) {
             style={{ height }}
         >
             <div style={{
-                padding: '5% 5%',
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                height,
+                margin: '10px',
+                padding: '20px',
             }}
             >
                 <div style={styles.headingWrapper}>
@@ -121,16 +115,24 @@ export default function APIMTopAgents(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form}>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='createdBy.label' defaultMessage='API Created By' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='api-createdBy-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiCreatedBy}
                                 onChange={apiCreatedHandleChange}
                                 input={<Input name='apiCreatedBy' id='api-createdBy-label-placeholder' />}
                                 displayEmpty
                                 name='apiCreatedBy'
-                                style={styles.selectEmpty}
                             >
                                 <MenuItem value='All'>
                                     <FormattedMessage id='all.menuItem' defaultMessage='All' />
@@ -141,16 +143,24 @@ export default function APIMTopAgents(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiSelected-label-placeholder'>
-                                <FormattedMessage id='apiName.label' defaultMessage='API Name' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiName.label' defaultMessage='API Name' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiSelected-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiName.label' defaultMessage='API Name' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiSelected}
                                 onChange={apiSelectedHandleChange}
                                 input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
                                 displayEmpty
                                 name='apiSelected'
-                                style={styles.selectEmpty}
                             >
                                 {
                                     apilist.map(option => (
@@ -162,16 +172,24 @@ export default function APIMTopAgents(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiVersion-label-placeholder'>
-                                <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiVersion.label' defaultMessage='API Version' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiVersion-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiVersion}
                                 onChange={apiVersionHandleChange}
                                 input={<Input name='apiVersion' id='apiVersion-label-placeholder' />}
                                 displayEmpty
                                 name='apiVersion'
-                                style={styles.selectEmpty}
                             >
                                 {
                                     versionlist.map(option => (
@@ -182,17 +200,13 @@ export default function APIMTopAgents(props) {
                                 }
                             </Select>
                         </FormControl>
-                    </form>
-                </div>
-                <div style={styles.formWrapper}>
-                    <form style={styles.form} noValidate autoComplete='off'>
                         <TextField
                             id='limit-number'
                             label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
                             value={limit}
                             onChange={handleLimitChange}
                             type='number'
-                            style={styles.textField}
+                            style={styles.formControl}
                             InputLabelProps={{
                                 shrink: true,
                             }}

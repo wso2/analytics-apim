@@ -30,6 +30,7 @@ import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import sumBy from 'lodash/sumBy';
 import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
 import CustomTable from './CustomTable';
@@ -46,42 +47,40 @@ export default function APIMTopAppUsers(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         gridWrapper: {
             marginLeft: '5%',
+        },
+        form: {
+            display: 'flex',
+            flexWrap: 'wrap',
         },
         formControl: {
             marginTop: '5%',
             marginLeft: '5%',
         },
         textField: {
-            marginTop: 0,
+            marginTop: '5%',
+            marginLeft: '5%',
             minWidth: 120,
-            width: '30%',
         },
         select: {
-            paddingTop: 5,
-            marginTop: 10,
-            minWidth: 300,
         },
         inProgress: {
             display: 'flex',
@@ -128,11 +127,23 @@ export default function APIMTopAppUsers(props) {
                 fontSize: 25,
             },
         },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
+        },
     };
 
     return (
         <Scrollbars style={{ height }}>
-            <div style={{ padding: '5% 5%' }}>
+            <div style={{
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                height,
+                margin: '10px',
+                padding: '20px',
+            }}>
                 <div style={styles.headingWrapper}>
                     <h3 style={styles.h3}>
                         <FormattedMessage id='widget.heading' defaultMessage='TOP APPLICATION USERS' />
@@ -141,9 +152,18 @@ export default function APIMTopAppUsers(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='applicationSelected-label-placeholder'>
-                                <FormattedMessage id='applicationName.label' defaultMessage='Application Name' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='applicationName.label' defaultMessage='Application Name' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='applicationSelected-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='applicationName.label' defaultMessage='Application Name' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={applicationSelected}
                                 onChange={applicationSelectedHandleChange}
@@ -175,16 +195,23 @@ export default function APIMTopAppUsers(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <TextField
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='limit-number'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                </InputLabel>
+                            </Tooltip>
+                            <Input
                                 id='limit-number'
-                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
                                 value={limit}
                                 onChange={handleLimitChange}
                                 type='number'
-                                style={styles.textField}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
                                 margin='normal'
                             />
                         </FormControl>

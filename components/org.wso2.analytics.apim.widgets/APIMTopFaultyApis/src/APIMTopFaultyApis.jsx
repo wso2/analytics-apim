@@ -59,37 +59,31 @@ export default function APIMTopFaultyApis(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         formWrapper: {
-            width: '90%',
-            height: '15%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         form: {
-            width: '30%',
-            marginLeft: '5%',
-            marginTop: '5%',
             display: 'flex',
             flexWrap: 'wrap',
         },
-        textField: {
-            marginLeft: 8,
-            marginRight: 8,
-            width: 200,
+        formControl: {
+            marginLeft: '5%',
+            marginTop: '5%',
+            minWidth: 120,
         },
         loadingIcon: {
             margin: 'auto',
@@ -112,9 +106,9 @@ export default function APIMTopFaultyApis(props) {
             >
                 <div style={{
                     backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                    width: '80%',
-                    margin: '5% auto',
-                    padding: '10% 5%',
+                    height,
+                    margin: '10px',
+                    padding: '20px',
                 }}
                 >
                     <div style={styles.headingWrapper}>
@@ -138,7 +132,7 @@ export default function APIMTopFaultyApis(props) {
                                 value={limit}
                                 onChange={handleChange}
                                 type='number'
-                                style={styles.textField}
+                                style={styles.formControl}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}

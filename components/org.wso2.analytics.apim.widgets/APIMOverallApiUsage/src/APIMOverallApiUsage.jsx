@@ -27,9 +27,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
-import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import VizG from 'react-vizgrammar';
 import CustomTable from './CustomTable';
 
@@ -40,45 +40,37 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiUsage(props) {
     const {
-        themeName, width, height, limit, apiCreatedBy, usageData1, metadata, chartConfig, apiCreatedHandleChange,
-        limitHandleChange, inProgress,
+        themeName, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig, apiCreatedHandleChange,
+        limitHandleChange, inProgress, selectedAPIChangeCallback,
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
+            marginBottom: 30,
         },
         formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            margin: '5%',
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
-        },
-        textField: {
-            margin: '5%',
-            minWidth: 120,
-        },
-        selectEmpty: {
-            marginTop: 10,
         },
         dataWrapper: {
             height: '80%',
@@ -102,11 +94,30 @@ export default function APIMOverallApiUsage(props) {
             justifyContent: 'center',
             height,
         },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
+        },
     };
+
+    let chartData =[];
+
+    if (usageData1) {
+        chartData = usageData1.map(data => {return [data[0] + ' (' + data[4] + ')', data[1], data[2], data[3]]})
+        chartData.sort((a, b) => { return a[0].toLowerCase().localeCompare(b[0].toLowerCase()); });
+    }
 
     return (
         <Scrollbars style={{ height: '100%' }}>
-            <div style={{ padding: '5% 5%' }}>
+            <div style={{
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                height,
+                margin: '10px',
+                padding: '20px',
+            }}>
                 <div style={styles.headingWrapper}>
                     <div style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -124,16 +135,24 @@ export default function APIMOverallApiUsage(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='api-createdBy-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiCreatedBy}
                                 onChange={apiCreatedHandleChange}
                                 input={<Input name='api-createdBy' id='api-createdBy-label-placeholder' />}
                                 displayEmpty
                                 name='apiCreatedBy'
-                                style={styles.selectEmpty}
                             >
                                 <MenuItem value='all'>
                                     <FormattedMessage id='all.menuItem' defaultMessage='All' />
@@ -143,67 +162,100 @@ export default function APIMOverallApiUsage(props) {
                                 </MenuItem>
                             </Select>
                         </FormControl>
-                        <TextField
-                            id='limit-number'
-                            label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
-                            value={limit}
-                            onChange={limitHandleChange}
-                            type='number'
-                            style={styles.textField}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            margin='normal'
-                        />
+                        <FormControl style={styles.formControl}>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='limit-number'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                </InputLabel>
+                            </Tooltip>
+                            <Input
+                                id='limit-number'
+                                value={limit}
+                                onChange={limitHandleChange}
+                                type='number'
+                                margin='normal'
+                            />
+                        </FormControl>
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
-                    ) : (
-                        <div>
-                            {
-                                !usageData1 || usageData1.length === 0 ? (
-                                    <div style={styles.paperWrapper}>
-                                        <Paper
-                                            elevation={1}
-                                            style={styles.paper}
-                                        >
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='nodata.error.heading'
-                                                    defaultMessage='No Data Available !' />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='nodata.error.body'
-                                                    defaultMessage='No data available for the selected options.'
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <div style={styles.dataWrapper}>
-                                        <div style={styles.chartWrapper}>
-                                            <VizG
-                                                config={chartConfig}
-                                                metadata={metadata}
-                                                data={usageData1}
-                                                width={width}
-                                                theme={themeName}
+                ) : (
+                    <div>
+                        {
+                            !usageData1 || usageData1.length === 0 ? (
+                                <div style={styles.paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={styles.paper}
+                                    >
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage
+                                                id='nodata.error.heading'
+                                                defaultMessage='No Data Available !' />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='nodata.error.body'
+                                                defaultMessage='No data available for the selected options.'
                                             />
-                                        </div>
-                                        <div style={styles.tableWrapper}>
-                                            <CustomTable
-                                                data={usageData1}
-                                            />
-                                        </div>
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <div style={styles.dataWrapper}>
+                                    <div style={styles.chartWrapper}>
+                                        <VizG
+                                            config={chartConfig}
+                                            metadata={metadata}
+                                            data={chartData}
+                                            width={width}
+                                            theme={themeName}
+                                        />
                                     </div>
-                                )
-                            }
-                        </div>
-                    )
+                                </div>
+                            )
+                        }
+                        {
+                            !usageData2 || usageData2.length === 0 ? (
+                                <div style={styles.paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={styles.paper}
+                                    >
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage
+                                                id='nodata.error.heading'
+                                                defaultMessage='No Data Available !' />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='nodata.error.body'
+                                                defaultMessage='No data available for the selected options.'
+                                            />
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <div style={styles.tableWrapper}>
+                                    <CustomTable
+                                        data={usageData2}
+                                        callBack={selectedAPIChangeCallback}
+                                    />
+                                </div>
+                            )
+                        }
+                    </div>
+                )
                 }
             </div>
         </Scrollbars>

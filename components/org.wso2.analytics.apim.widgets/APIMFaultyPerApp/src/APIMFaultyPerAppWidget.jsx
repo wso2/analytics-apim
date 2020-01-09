@@ -243,7 +243,7 @@ class APIMFaultyPerAppWidget extends Widget {
         const { list } = data;
         const { id } = this.props;
 
-        if (list) {
+        if (list && list.length > 0) {
             const applicationUUIDMap = {};
             list.map((dataUnit) => {
                 applicationUUIDMap[dataUnit.applicationId] = {
@@ -438,7 +438,7 @@ class APIMFaultyPerAppWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, applicationSelected, usageData, applicationList,
+            localeMessages, faultyProviderConfig, height, width, limit, applicationSelected, usageData, applicationList,
             inProgress, proxyError,
         } = this.state;
         const {
@@ -449,6 +449,7 @@ class APIMFaultyPerAppWidget extends Widget {
         const faultyUsageProps = {
             themeName,
             height,
+            width,
             limit,
             applicationList,
             applicationSelected,

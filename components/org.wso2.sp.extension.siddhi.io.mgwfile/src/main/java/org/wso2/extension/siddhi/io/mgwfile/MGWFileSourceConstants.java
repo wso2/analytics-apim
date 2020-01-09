@@ -56,8 +56,9 @@ public class MGWFileSourceConstants {
             + "WHERE FILE_PROCESSED=0 ORDER BY FILE_TIMESTAMP";
 
     public static final String GET_NEXT_FILES_TO_PROCESS_QUERY_DB2 =
-            "SELECT FILE_NAME,FILE_TIMESTAMP FROM AM_USAGE_UPLOADED_FILES "
-                    + "WHERE FILE_PROCESSED=0 ORDER BY FILE_TIMESTAMP LIMIT ? FOR UPDATE";
+            "SELECT FILE_NAME,FILE_TIMESTAMP FROM AM_USAGE_UPLOADED_FILES WHERE FILE_PROCESSED IN " +
+                    "(SELECT FILE_PROCESSED FROM AM_USAGE_UPLOADED_FILES WHERE FILE_PROCESSED=0 " +
+                    "ORDER BY FILE_TIMESTAMP LIMIT ?) FOR UPDATE";
 
     public static final String UPDATE_FILE_PROCESSING_STARTED_STATUS = "UPDATE AM_USAGE_UPLOADED_FILES "
             + "SET FILE_PROCESSED=1 WHERE FILE_PROCESSED=0 AND FILE_NAME = ?";
@@ -72,6 +73,12 @@ public class MGWFileSourceConstants {
             + "SET FILE_PROCESSED=2 WHERE FILE_NAME=?";
 
     public static final String DEFAULT_WORKER_THREAD_COUNT = "3";
+
+    public static final String DEFAULT_DATASOURCE = "APIM_ANALYTICS_DB";
+
+    public static final String DATASOURCE_PROPERTY = "usage.datasource.name";
+
+    public static final String TABLE_EXISTENCE_SQL = "select 1 from ";
 
     // Separators used for persisting events
     public static final String EVENT_SEPARATOR = "-ES-";

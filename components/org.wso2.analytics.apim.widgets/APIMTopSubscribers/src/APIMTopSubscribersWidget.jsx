@@ -97,7 +97,7 @@ class APIMTopSubscribersWidget extends Widget {
             legendData: [],
             applications: [],
             subscribers: [],
-            limit: 0,
+            limit: 5,
             localeMessages: null,
             inProgress: true,
         };

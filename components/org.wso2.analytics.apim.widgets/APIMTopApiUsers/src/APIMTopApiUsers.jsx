@@ -30,6 +30,7 @@ import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import CustomTable from './CustomTable';
 
 /**
@@ -44,41 +45,31 @@ export default function APIMTopApiUsers(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
         formWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            margin: '5%',
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
-        },
-        textField: {
-            margin: '5%',
-            marginTop: 0,
-            minWidth: 120,
-        },
-        selectEmpty: {
-            marginTop: 10,
         },
         loadingIcon: {
             margin: 'auto',
@@ -90,6 +81,13 @@ export default function APIMTopApiUsers(props) {
             justifyContent: 'center',
             height,
         },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
+        },
     };
 
     return (
@@ -97,7 +95,10 @@ export default function APIMTopApiUsers(props) {
             style={{ height }}
         >
             <div style={{
-                padding: '5% 5%',
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                height,
+                margin: '10px',
+                padding: '20px',
             }}
             >
                 <div style={styles.headingWrapper}>
@@ -117,9 +118,18 @@ export default function APIMTopApiUsers(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form}>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='createdBy.label' defaultMessage='API Created By' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='api-createdBy-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiCreatedBy}
                                 onChange={apiCreatedHandleChange}
@@ -137,9 +147,18 @@ export default function APIMTopApiUsers(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiSelected-label-placeholder'>
-                                <FormattedMessage id='apiName.label' defaultMessage='API Name' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiName.label' defaultMessage='API Name' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiSelected-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiName.label' defaultMessage='API Name' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiSelected}
                                 onChange={apiSelectedHandleChange}
@@ -158,9 +177,18 @@ export default function APIMTopApiUsers(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiVersion-label-placeholder'>
-                                <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='apiVersion.label' defaultMessage='API Version' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='apiVersion-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiVersion}
                                 onChange={apiVersionHandleChange}
@@ -188,7 +216,7 @@ export default function APIMTopApiUsers(props) {
                             value={limit}
                             onChange={handleLimitChange}
                             type='number'
-                            style={styles.textField}
+                            style={styles.formControl}
                             InputLabelProps={{
                                 shrink: true,
                             }}

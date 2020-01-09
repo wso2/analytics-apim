@@ -27,6 +27,7 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tooltip from '@material-ui/core/Tooltip';
 import APIMSubscriptionsData from './APIMSubscriptionsData';
 
 /**
@@ -41,26 +42,20 @@ export default function APIMSubscriptionsAnalytics(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '97%',
+            width: '95%',
         },
         formWrapper: {
-            width: '97%',
-            height: '10%',
-            margin: 'auto',
-            marginTop: '2%',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            margin: 5,
+            marginLeft: '5%',
+            marginTop: '5%',
             minWidth: 120,
-        },
-        selectEmpty: {
-            marginTop: 10,
         },
         loadingIcon: {
             margin: 'auto',
@@ -71,6 +66,13 @@ export default function APIMSubscriptionsAnalytics(props) {
             alignItems: 'center',
             justifyContent: 'center',
             height: height,
+        },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
         },
     };
     const subDataProps = {
@@ -83,17 +85,16 @@ export default function APIMSubscriptionsAnalytics(props) {
             <div
                 style={{
                     backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                    width: '85%',
                     height,
-                    margin: '5% auto',
-                    padding: '5%',
+                    margin: '10px',
+                    padding: '20px',
                 }}
             >
                 <div style={styles.headingWrapper}>
                     <div style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        width: '40%',
-                        paddingBottom: '15px',
+                        paddingBottom: '10px',
+                        margin: 'auto',
                         textAlign: 'left',
                         fontWeight: 'normal',
                         letterSpacing: 1.5,
@@ -105,9 +106,18 @@ export default function APIMSubscriptionsAnalytics(props) {
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='api-createdBy-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={apiCreatedBy}
                                 onChange={apiCreatedHandleChange}
@@ -125,9 +135,18 @@ export default function APIMSubscriptionsAnalytics(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='subscribedTo-label-placeholder'>
-                                <FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />
-                            </InputLabel>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='subscribedTo-label-placeholder'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />
+                                </InputLabel>
+                            </Tooltip>
                             <Select
                                 value={subscribedTo}
                                 onChange={subscribedToHandleChange}

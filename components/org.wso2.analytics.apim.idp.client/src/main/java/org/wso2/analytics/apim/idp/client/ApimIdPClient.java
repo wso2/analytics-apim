@@ -142,11 +142,11 @@ public class ApimIdPClient extends ExternalIdPClient {
             session = login.authenticate(this.adminServiceUsername, this.adminServicePassword, this.uriHost);
         } catch (AxisFault axisFault) {
             String error = "Error occurred while creating Login admin Service Client.";
-            LOG.error(error);
-            throw new IdPClientException(error, axisFault.getCause());
+            LOG.error(error, axisFault);
+            throw new IdPClientException(error, axisFault);
         } catch (RemoteException | LoginAuthenticationExceptionException e) {
             String error = "Error occurred while authenticating admin user using Login admin Service Client.";
-            LOG.error(error);
+            LOG.error(error, e);
             throw new IdPClientException(error, e);
         }
         try {
@@ -154,8 +154,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                     this.adminServiceUsername, this.adminServicePassword, session);
         } catch (AxisFault axisFault) {
             String error = "Error occurred while creating OAuth Admin Service Client.";
-            LOG.error(error);
-            throw new IdPClientException(error, axisFault.getCause());
+            LOG.error(error, axisFault);
+            throw new IdPClientException(error, axisFault);
         }
 
         for (Map.Entry<String, OAuthApplicationInfo> entry : this.oAuthAppInfoMap.entrySet()) {
@@ -213,22 +213,24 @@ public class ApimIdPClient extends ExternalIdPClient {
     public User getUser(String name) throws IdPClientException {
         String tenantDomain = extractTenantDomainFromUserName(name);
         TokenData tokenData = TokenDataHolder.getInstance().getTokenMap().get(name);
+        ArrayList<Role> roles;
         if (tokenData == null) {
-            String error = "Cannot find the token data for the user: " + name + " in the token data map.";
-            LOG.error(error);
-            throw new IdPClientException(error);
-        }
-        String scopes = tokenData.getScopes();
-        String[] scopeList = scopes.split(SPACE);
-        ArrayList<String> newScopes = new ArrayList<>();
-        for (String scope: scopeList) {
-            if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE) && !scope.equalsIgnoreCase(API_VIEW_SCOPE)
-                    && !scope.equalsIgnoreCase(SUBSCRIBE_SCOPE)) {
-                newScopes.add(scope + ANY_TENANT_DOMAIN_SCOPE_POSTFIX);
-                newScopes.add(scope + UNDERSCORE + tenantDomain);
+            LOG.debug("Cannot find the token data for the user: " + name + " in the token data map. Hence, cannot " +
+                    "retrieve user scopes. Empty array returned for roles.");
+            roles = new ArrayList<>();
+        } else {
+            String scopes = tokenData.getScopes();
+            String[] scopeList = scopes.split(SPACE);
+            ArrayList<String> newScopes = new ArrayList<>();
+            for (String scope: scopeList) {
+                if (!scope.equalsIgnoreCase(OPEN_ID_SCOPE) && !scope.equalsIgnoreCase(API_VIEW_SCOPE)
+                        && !scope.equalsIgnoreCase(SUBSCRIBE_SCOPE)) {
+                    newScopes.add(scope + ANY_TENANT_DOMAIN_SCOPE_POSTFIX);
+                    newScopes.add(scope + UNDERSCORE + tenantDomain);
+                }
             }
+            roles = getRolesFromArray(newScopes.toArray(new String[0]));
         }
-        ArrayList<Role> roles = getRolesFromArray(newScopes.toArray(new String[0]));
         Map<String, String> properties = new HashMap<>();
         return new User(name, properties, roles);
     }
@@ -299,7 +301,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             }
         } catch (RemoteException | OAuthAdminServiceIdentityOAuthAdminException e) {
             String error = "Error occurred while getting all the OAuth application data.";
-            LOG.error(error);
+            LOG.error(error, e);
             throw new IdPClientException(error, e);
         }
         return false;
@@ -321,7 +323,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         } catch (RemoteException | OAuthAdminServiceIdentityOAuthAdminException e) {
             String error = "Error occurred while getting the OAuth application data for the application name:"
                     + oAuthAppName;
-            LOG.error(error);
+            LOG.error(error, e);
             throw new IdPClientException(error, e);
         }
         if (oAuthAppDataMap.isEmpty()) {
@@ -334,9 +336,11 @@ public class ApimIdPClient extends ExternalIdPClient {
 
     @Override
     public Map<String, String> login(Map<String, String> properties) throws IdPClientException {
-        this.init(this.kmUserName);
         Map<String, String> returnProperties = new HashMap<>();
         String grantType = properties.getOrDefault(IdPClientConstants.GRANT_TYPE, this.grantType);
+        if (!IdPClientConstants.REFRESH_GRANT_TYPE.equals(grantType)) {
+            this.init(this.kmUserName);
+        }
 
         Response response;
         String oAuthAppContext = properties.get(IdPClientConstants.APP_NAME);
@@ -353,7 +357,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             returnProperties.put(IdPClientConstants.CLIENT_ID, this.oAuthAppInfoMap.get(oAuthAppContext).getClientId());
             returnProperties.put(IdPClientConstants.REDIRECTION_URL, this.authorizeEndpoint);
             returnProperties.put(IdPClientConstants.CALLBACK_URL, this.baseUrl +
-                    ApimIdPClientConstants.CALLBACK_URL + callbackUrl);
+                    ApimIdPClientConstants.CALLBACK_URL + callbackUrl + ApimIdPClientConstants.CALLBACK_URL_SUFFIX);
             returnProperties.put(IdPClientConstants.SCOPE, this.allScopes);
             return returnProperties;
         } else if (IdPClientConstants.PASSWORD_GRANT_TYPE.equals(grantType)) {
@@ -384,24 +388,40 @@ public class ApimIdPClient extends ExternalIdPClient {
                 long currentTimeInSeconds = System.currentTimeMillis() / 1000;
                 long tokenValidityPeriod = currentTimeInSeconds + oAuth2TokenInfo.getExpiresIn();
                 returnProperties.put(IdPClientConstants.LOGIN_STATUS, IdPClientConstants.LoginStatus.LOGIN_SUCCESS);
-                returnProperties.put(IdPClientConstants.USERNAME, username);
                 returnProperties.put(IdPClientConstants.ACCESS_TOKEN, oAuth2TokenInfo.getAccessToken());
                 returnProperties.put(IdPClientConstants.REFRESH_TOKEN, oAuth2TokenInfo.getRefreshToken());
                 returnProperties.put(IdPClientConstants.VALIDITY_PERIOD,
                         Long.toString(oAuth2TokenInfo.getExpiresIn()));
                 if (IdPClientConstants.REFRESH_GRANT_TYPE.equals(grantType)) {
                     returnProperties.put(IdPClientConstants.ID_TOKEN_KEY, oAuth2TokenInfo.getIdToken());
+                    /*
+                    * To add the access token(got through the refresh grant flow) to the TokenDataMap, we need to know
+                    * the username. Since the username is not included in the response we get in the refresh token flow,
+                    * an introspection is performed to get the username.
+                    * */
+                    Response introspectTokenResponse = oAuth2ServiceStubs.getIntrospectionServiceStub()
+                            .introspectAccessToken(oAuth2TokenInfo.getAccessToken());
+                    if (introspectTokenResponse.status() == 200) {   //200 - Success
+                        OAuth2IntrospectionResponse introspectResponse = (OAuth2IntrospectionResponse) new GsonDecoder()
+                                .decode(introspectTokenResponse, OAuth2IntrospectionResponse.class);
+                        username = introspectResponse.getUsername();
+                    } else {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Unable to get the username from introspection of the token '" +
+                                    oAuth2TokenInfo.getAccessToken() + "'. Response : '" +
+                                    introspectTokenResponse.toString());
+                        }
+                    }
                 }
-                if (IdPClientConstants.PASSWORD_GRANT_TYPE.equals(grantType)) {
-                    tokenCache.put(oAuth2TokenInfo.getAccessToken(),
-                            new ExternalSession(username, oAuth2TokenInfo.getAccessToken()));
-                    TokenData tokenData = new TokenData(
-                            oAuth2TokenInfo.getAccessToken(),
-                            oAuth2TokenInfo.getScope(),
-                            tokenValidityPeriod
-                    );
-                    TokenDataHolder.getInstance().addTokenDataToMap(username, tokenData);
-                }
+                returnProperties.put(IdPClientConstants.USERNAME, username);
+                TokenData tokenData = new TokenData(
+                        oAuth2TokenInfo.getAccessToken(),
+                        oAuth2TokenInfo.getScope(),
+                        tokenValidityPeriod
+                );
+                TokenDataHolder.getInstance().addTokenDataToMap(username, tokenData);
+                tokenCache.put(oAuth2TokenInfo.getAccessToken(),
+                        new ExternalSession(username, oAuth2TokenInfo.getAccessToken()));
                 return returnProperties;
             } catch (IOException e) {
                 String error = "Error occurred while parsing token response for user. Response: '" +
@@ -436,12 +456,18 @@ public class ApimIdPClient extends ExternalIdPClient {
         ExternalSession session = tokenCache.getIfPresent(token);
         String username;
         if (session == null) {
-            LOG.info("Token is not available in the Token Cache. Hence, username cannot be retrieved. " +
-                    "Token in the token data map will be deleted via the Token Data Map Cleaner Task.");
+            try {
+                OAuth2IntrospectionResponse introspectResponse = getIntrospectResponse(token);
+                username = introspectResponse.getUsername();
+            } catch (AuthenticationException e) {
+                String error = "Error occurred while introspecting the token '" + token + "'. " + e.getMessage();
+                LOG.error(error, e);
+                throw new IdPClientException(error, e);
+            }
         } else {
             username = session.getUserName();
-            TokenDataHolder.getInstance().removeTokenDataFromMap(username);
         }
+        TokenDataHolder.getInstance().removeTokenDataFromMap(username);
         tokenCache.invalidate(token);
         oAuth2ServiceStubs.getRevokeServiceStub().revokeAccessToken(
                 token,
@@ -475,7 +501,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
         OAuthApplicationInfo oAuthApplicationInfo = this.oAuthAppInfoMap.get(oAuthAppContext);
         Response response = oAuth2ServiceStubs.getTokenServiceStub().generateAuthCodeGrantAccessToken(code,
-                this.baseUrl + ApimIdPClientConstants.CALLBACK_URL + oAuthAppContext, null,
+                this.baseUrl + ApimIdPClientConstants.CALLBACK_URL + oAuthAppContext +
+                        ApimIdPClientConstants.CALLBACK_URL_SUFFIX, null,
                 oAuthApplicationInfo.getClientId(), oAuthApplicationInfo.getClientSecret());
         if (response == null) {
             String error = "Error occurred while generating an access token from code '" + code + "'. " +
@@ -646,8 +673,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                     ApimIdPClientConstants.CALLBACK_URL + REGEX_BASE + postLogoutRedirectUrl + REGEX_BASE_END;
         } else {
             callBackUrl = ApimIdPClientConstants.REGEX_BASE_START + this.baseUrl +
-                    ApimIdPClientConstants.CALLBACK_URL + appContext + REGEX_BASE + postLogoutRedirectUrl
-                    + REGEX_BASE_END;
+                    ApimIdPClientConstants.CALLBACK_URL + appContext + ApimIdPClientConstants.CALLBACK_URL_SUFFIX +
+                    REGEX_BASE + postLogoutRedirectUrl + REGEX_BASE_END;
         }
 
         if (LOG.isDebugEnabled()) {

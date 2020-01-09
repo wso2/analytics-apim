@@ -40,6 +40,18 @@ export default function APIMSignupsData(props) {
         themeName, chartData, tableData, xAxisTicks, maxCount,
     } = props;
     const styles = {
+        paperWrapper: {
+            height: '75%',
+        },
+        paper: {
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
+            width: '75%',
+            padding: '4%',
+            border: '1.5px solid',
+            marginLeft: '5%',
+            marginTop: '5%',
+        },
         dataWrapper: {
             height: '78%',
             width: '97%',
@@ -219,16 +231,10 @@ export default function APIMSignupsData(props) {
         );
     } else {
         return (
-            <div style={styles.dataWrapper}>
+            <div style={styles.paperWrapper}>
                 <Paper
                     elevation={1}
-                    style={{
-                        padding: '4%',
-                        border: '1px solid #fff',
-                        height: '10%',
-                        marginTop: '5%',
-                    }}
-                >
+                    style={styles.paper}>
                     <Typography variant='h5' component='h3'>
                         <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
                     </Typography>
