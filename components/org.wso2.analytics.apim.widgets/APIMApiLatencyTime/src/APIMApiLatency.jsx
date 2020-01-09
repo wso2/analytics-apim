@@ -47,7 +47,7 @@ export default function APIMApiLatency(props) {
     const {
         themeName, queryParam, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, inProgress,
         apiVersion, latencyData, apilist, versionlist, resourceList, apiCreatedHandleChange, apiSelectedHandleChange,
-        apiVersionHandleChange, apiOperationHandleChange, apiResourceHandleChange
+        apiVersionHandleChange, apiOperationHandleChange, apiResourceHandleChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -99,10 +99,10 @@ export default function APIMApiLatency(props) {
         },
     };
 
-    //Check whether the API is graphQL.
+    // Check whether the API is graphQL.
     // Evaluated by checking the method of the first resource.
     let isGraphQL;
-    if(resourceList.length > 0) {
+    if (resourceList.length > 0) {
         const resFormat = resourceList[0].split(' (');
         const method = resFormat[1].replace(')', '');
         isGraphQL = (method === 'QUERY' || method === 'MUTATION' || method === 'SUBSCRIPTION');
@@ -200,41 +200,42 @@ export default function APIMApiLatency(props) {
                                 <FormattedMessage id='resources.label' defaultMessage='Resources' />
                             </FormLabel>
                             {
-                            isGraphQL ? (
-                            <FormGroup>
-                                {
-                                    resourceList.map(option => (
-                                        <FormControlLabel
-                                            control={(
-                                                <Checkbox
-                                                    checked={queryParam.operationSelected.includes(option.toString())}
-                                                    onChange={apiOperationHandleChange}
-                                                    value={option.toString()}
+                                isGraphQL ? (
+                                    <FormGroup>
+                                        {
+                                            resourceList.map(option => (
+                                                <FormControlLabel
+                                                    control={(
+                                                        <Checkbox
+                                                            checked={queryParam.operationSelected.includes(option.toString())}
+                                                            onChange={apiOperationHandleChange}
+                                                            value={option.toString()}
+                                                        />
+                                                    )}
+                                                    label={option}
                                                 />
-                                            )}
-                                            label={option}
-                                        />
-                                    ))
-                                }
-                            </FormGroup>
-                             ) : (
-                            <RadioGroup>
-                            {
-                                resourceList.map(option => (
-                                    <FormControlLabel
-                                        control={(
-                                            <Radio
-                                                checked={queryParam.resourceSelected.includes(option.toString())}
-                                                onChange={apiResourceHandleChange}
-                                                value={option.toString()}
-                                            />
-                                        )}
-                                        label={option}
-                                    />
-                                ))
+                                            ))
+                                        }
+                                    </FormGroup>
+                                ) : (
+                                    <RadioGroup>
+                                        {
+                                            resourceList.map(option => (
+                                                <FormControlLabel
+                                                    control={(
+                                                        <Radio
+                                                            checked={queryParam.resourceSelected.includes(option.toString())}
+                                                            onChange={apiResourceHandleChange}
+                                                            value={option.toString()}
+                                                        />
+                                                    )}
+                                                    label={option}
+                                                />
+                                            ))
+                                        }
+                                    </RadioGroup>
+                                )
                             }
-                        </RadioGroup> )
-                        }
                         </FormControl>
                     </form>
                 </div>
@@ -253,7 +254,8 @@ export default function APIMApiLatency(props) {
                                     <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='nodata.error.heading'
-                                            defaultMessage='No Data Available !' />
+                                            defaultMessage='No Data Available !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
@@ -274,7 +276,7 @@ export default function APIMApiLatency(props) {
                             </div>
                         )}
                     </div>
-                    )}
+                )}
             </div>
         </Scrollbars>
     );

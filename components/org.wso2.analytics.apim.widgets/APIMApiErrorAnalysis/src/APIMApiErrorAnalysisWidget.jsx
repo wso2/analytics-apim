@@ -438,36 +438,17 @@ class APIMApiErrorAnalysisWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
 
+        // console.log(resourceSelected);
+
         if (apiSelected !== '' && apiVersion !== '' && (operationSelected.length > 0 || resourceSelected.length > 0)) {
             let resources = '';
             let numberOfSelectedElements = 0;
 
-            if (operationSelected.length > 0) {
-                const operations = [];
-                const operationTypes = [];
-                let operationsString = '';
-                let method = '';
-                operationSelected.map((res) => {
-                    const resFormat = res.split(' (');
-                    operations.push(resFormat[0]);
-                    method = resFormat[1].replace(')', '');
-                    operationTypes.push(method);
-                    numberOfSelectedElements += 1;
-                });
-
-                for (let i = 0; i < operations.length - 1; i++) {
-                    operationsString += 'str:contains(apiResourceTemplate,' + '\'' + operations[i] + '\') AND ';
-                }
-                operationsString += 'str:contains(apiResourceTemplate,' + '\'' + operations[operations.length - 1] + '\'' + ')';
-
-                resources = '((' + operationsString + ') AND apiMethod==\'' + method + '\')';
-            } else if (resourceSelected.length > 0) {
-                const resFormat = resourceSelected.split(' (');
-                const resource = resFormat[0];
-                const method = resFormat[1].replace(')', '');
-                numberOfSelectedElements = 1;
-                resources = '(apiResourceTemplate==\'' + resource + '\' AND apiMethod==\'' + method + '\')';
-            }
+            const resFormat = resourceSelected.split(' (');
+            const resource = resFormat[0];
+            const method = resFormat[1].replace(')', '');
+            numberOfSelectedElements = 1;
+            resources = '(apiResourceTemplate==\'' + resource + '\' AND apiMethod==\'' + method + '\')';
 
             const queryCondition = '(apiName==\'' + apiSelected + '\' AND apiVersion==\''
                 + apiVersion + '\' AND (' + resources + '))';

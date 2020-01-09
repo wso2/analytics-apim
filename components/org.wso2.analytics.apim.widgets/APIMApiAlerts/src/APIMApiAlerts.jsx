@@ -84,7 +84,7 @@ export default function APIMApiAlerts(props) {
             right: '8%',
         },
     };
-    if (totalcount == null) {
+    if (totalcount == null || totalcount == 0) {
         return (
             <div style={styles.paperWrapper}>
                 <Paper
@@ -131,7 +131,7 @@ export default function APIMApiAlerts(props) {
                     fontWeight: 'normal'
                 }}
                 >
-                   Total Alrts : {totalcount}
+                   Total Alerts : {totalcount}
                 </h3>
             </div>
 
