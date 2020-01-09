@@ -104,7 +104,7 @@ export default function APIMApiLatency(props) {
     // Check whether the API is graphQL.
     // Evaluated by checking the method of the first resource.
     let isGraphQL;
-    if (resourceList.length > 0) {
+    if (resourceList && resourceList.length > 0) {
         const resFormat = resourceList[0].split(' (');
         const method = resFormat[1].replace(')', '');
         isGraphQL = (method === 'QUERY' || method === 'MUTATION' || method === 'SUBSCRIPTION');
