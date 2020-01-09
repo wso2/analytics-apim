@@ -63,9 +63,6 @@ export default function APIMTopAppUsers(props) {
         formWrapper: {
             marginBottom: '5%',
         },
-        gridWrapper: {
-            marginLeft: '5%',
-        },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
@@ -80,6 +77,7 @@ export default function APIMTopAppUsers(props) {
             minWidth: 120,
         },
         select: {
+            minWidth: width * 0.3 < 200 ? 150 : 200,
         },
         inProgress: {
             display: 'flex',
