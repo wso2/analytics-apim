@@ -61,6 +61,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
     private SecretRepository secretRepository;
     private boolean isHostnameVerifierEnabled;
     private AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService;
+    private BundleContext bundleContext;
 
     @Activate
     protected void activate(BundleContext bundleContext) {
@@ -69,6 +70,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         // Start tokenData map cleaner.
         TokenDataMapCleaner tokenDataMapCleaner = new TokenDataMapCleaner();
         tokenDataMapCleaner.startTokenDataMapCleaner();
+        this.bundleContext = bundleContext;
     }
 
     @Deactivate
@@ -289,9 +291,13 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         String targetURIForRedirection = properties.getOrDefault(ApimIdPClientConstants.EXTERNAL_SSO_LOGOUT_URL,
                             ApimIdPClientConstants.DEFAULT_EXTERNAL_SSO_LOGOUT_URL);
 
-        return new ApimIdPClient(adminServiceBaseUrl, adminServiceUsername, adminServicePassword, uriHost, baseUrl,
+        ApimIdPClient externalIdPClient = new ApimIdPClient(adminServiceBaseUrl, adminServiceUsername,
+                adminServicePassword, uriHost, baseUrl,
                 kmTokenUrlForRedirectUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType, adminScopeName,
                 allScopes, oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub, keyManagerServiceStubs,
                 idPClientConfiguration.isSsoEnabled(), targetURIForRedirection, this.isHostnameVerifierEnabled);
+
+        bundleContext.registerService(ApimIdPClient.class, externalIdPClient, null);
+        return externalIdPClient;
     }
 }

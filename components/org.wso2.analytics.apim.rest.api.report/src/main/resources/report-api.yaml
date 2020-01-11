@@ -1,0 +1,128 @@
+swagger: '2.0'
+###########################################################################
+# Prolog
+###########################################################################
+info:
+  version: "v1.0"
+  title: "WSO2 Analytics for API Manager"
+  description: |
+    This document specifies a **RESTful API** for WSO2 Analytics for **API Manager** .
+
+    It is written with [swagger 2](http://swagger.io/).
+
+  contact:
+    name: "WSO2"
+    url: "https://github.com/wso2/analytics-apim/"
+    email: "architecture@wso2.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+
+###########################################################################
+# The fixed parts of the URLs of the API
+###########################################################################
+
+# The schemes supported by the API
+schemes:
+  - https
+  - http
+
+# The domain of the API.
+# This is configured by the customer during deployment.
+# The given host is just an example.
+host: apis.wso2.com
+
+# The base path of the API.
+# Will be prefixed to all paths.
+basePath: /analytics-apim/apis/v1.0
+
+###########################################################################
+# The resource API to retrieve the APIs list from the APIM server
+###########################################################################
+paths:
+  /report:
+
+    #--------------------------------------------------------------------------
+    # Retrieve APIs list from the APIM server
+    #--------------------------------------------------------------------------
+    get:
+      summary: |
+        Retrieve PDF Report
+      description: |
+        Downloads a PDF report with API traffic data for a given month
+      parameters:
+        - in: query
+          name: month
+          schema:
+            type: string
+          description: The month of the required report.
+        - in: query
+          name: year
+          schema:
+            type: string
+          description: The year of the required report.
+      responses:
+        200:
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        400:
+          description: |
+            Bad Request.
+            Invalid request or validation error.
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  #--------------------------------------------------------------------------
+  # The Error resource
+  #--------------------------------------------------------------------------
+  Error:
+    title: Error object returned with 4XX HTTP lifeCycleStatus
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int64
+      message:
+        type: string
+        description: Error message.
+      description:
+        type: string
+        description: |
+          A detail description about the error message.
+      moreInfo:
+        type: string
+        description: |
+          Preferably an url with more details about the error.
+      error:
+        type: array
+        description: |
+          If there are more than one error list them out.
+          For example, list out validation errors by each field.
+        items:
+          $ref: '#/definitions/ErrorListItem'
+
+  #--------------------------------------------------------------------------
+  # The Error List Item resource
+  #--------------------------------------------------------------------------
+  ErrorListItem:
+    title: Description of individual errors that may have occurred during a request.
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+        description: |
+          Description about individual errors occurred
+
+#--------------------------------------------------------------------------
+# END-OF-FILE
+#--------------------------------------------------------------------------
