@@ -994,10 +994,10 @@
 
     <properties>
 
-        <carbon.analytics.version>3.0.18</carbon.analytics.version>
+        <carbon.analytics.version>3.0.19</carbon.analytics.version>
         <siddhi.version>5.1.10</siddhi.version>
 
-        <carbon.analytics-common.version>6.1.36</carbon.analytics-common.version>
+        <carbon.analytics-common.version>6.1.38</carbon.analytics-common.version>
         <!-- Maven plugins -->
         <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
         <maven.findbugsplugin.exclude>findbugs-exclude.xml</maven.findbugsplugin.exclude>
@@ -1042,7 +1042,7 @@
 
         <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.10</carbon.dashboards.version>
+        <carbon.dashboards.version>4.1.11</carbon.dashboards.version>
         <carbon.uis.version>1.0.3</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
@@ -1120,7 +1120,7 @@
         <siddhi.map.wso2event.version>5.0.1</siddhi.map.wso2event.version>
         <siddhi.store.rdbms.version>7.0.5</siddhi.store.rdbms.version>
         <siddhi.io.grpc.version>1.0.4</siddhi.io.grpc.version>
-        <carbon.coordination.version>2.1.1</carbon.coordination.version>
+        <carbon.coordination.version>2.1.3</carbon.coordination.version>
 
         <!-- Java 11 related dependencies -->
         <javax.annotation.version>1.3.2</javax.annotation.version>
