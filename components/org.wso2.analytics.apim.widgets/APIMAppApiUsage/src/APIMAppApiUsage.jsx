@@ -58,7 +58,7 @@ export default function APIMAppApiUsage(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         form: {
             display: 'flex',
@@ -154,7 +154,12 @@ export default function APIMAppApiUsage(props) {
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
-                                title={<FormattedMessage id='applicationName.label' defaultMessage='Application Name' />}
+                                title={(
+                                    <FormattedMessage
+                                        id='applicationName.label'
+                                        defaultMessage='Application Name'
+                                    />
+                                )}
                             >
                                 <InputLabel
                                     shrink

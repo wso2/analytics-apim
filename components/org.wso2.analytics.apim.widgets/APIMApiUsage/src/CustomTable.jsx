@@ -241,7 +241,7 @@ class CustomTable extends React.Component {
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((n) => {
                                     return (
-                                    <TableRow
+                                        <TableRow
                                             hover
                                             tabIndex={-1}
                                         >

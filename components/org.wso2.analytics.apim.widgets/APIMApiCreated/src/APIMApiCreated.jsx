@@ -20,7 +20,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import PlayCircleFilled from '@material-ui/icons/PlayCircleFilled';
 import ApiIcon from './ApiIcon';
 
 /**
@@ -121,43 +120,21 @@ export default function APIMApiCreated(props) {
                     {totalCount}
                 </h1>
                 <h3 style={styles.typeText}>
-                    {totalCount === '01' ?
-                        <FormattedMessage id='api' defaultMessage='API' /> :
-                        <FormattedMessage id='apis' defaultMessage='APIS' /> }
+                    {totalCount === '01'
+                        ? <FormattedMessage id='api' defaultMessage='API' />
+                        : <FormattedMessage id='apis' defaultMessage='APIS' /> }
                 </h3>
                 <p style={styles.weekCount}>
                     [
-                    {' '} {weekCount} {' '} {weekCount === '01' ? 'API' : 'APIS'} {' '}
+                    {' '}
+                    {weekCount}
+                    {' '}
+                    {weekCount === '01' ? 'API' : 'APIS'}
+                    {' '}
                     <FormattedMessage id='within.week.text' defaultMessage='WITHIN LAST WEEK ' />
                     ]
                 </p>
             </div>
-            {/*todo make route path configurable from widgetconf*/}
-            {/*<button*/}
-                {/*type='button'*/}
-                {/*style={{*/}
-                    {/*display: 'block',*/}
-                    {/*width: '100%',*/}
-                    {/*height: '21%',*/}
-                    {/*background: themeName === 'dark'*/}
-                        {/*? 'linear-gradient(to right, rgba(37, 38, 41, 0.75) 0%, rgba(252, 252, 252, 0) 100%)'*/}
-                        {/*: '#fff',*/}
-                    {/*border: 'none',*/}
-                    {/*borderTop: themeName === 'dark' ? 'none' : '1.5px solid #000',*/}
-                    {/*color: themeName === 'dark' ? '#fff' : '#000',*/}
-                    {/*textAlign: 'left',*/}
-                    {/*padding: '0 5%',*/}
-                    {/*fontSize: '90%',*/}
-                    {/*letterSpacing: 1,*/}
-                    {/*cursor: 'pointer',*/}
-                {/*}}*/}
-                {/*onClick={() => {*/}
-                    {/*window.location.href = './api-app-stats';*/}
-                {/*}}*/}
-            {/*>*/}
-                {/*<FormattedMessage id='overtime.btn.text' defaultMessage='Overtime Analysis' />*/}
-                {/*<PlayCircleFilled style={styles.playIcon} />*/}
-            {/*</button>*/}
         </div>
     );
 }

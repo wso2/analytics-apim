@@ -22,9 +22,9 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import CustomTable from './CustomTable';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import CustomTable from './CustomTable';
 
 /**
  * React Component for Api Ratings widget body
@@ -55,7 +55,7 @@ export default function APIMApiRatings(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         loadingIcon: {
             margin: 'auto',
@@ -99,22 +99,24 @@ export default function APIMApiRatings(props) {
                         </div>
                     ) : (
                         <div>
-                            { topApiNameData.length === 0 ?
-                                (
+                            { topApiNameData.length === 0
+                                ? (
                                     <div style={styles.dataWrapper}>
                                         <Paper
                                             elevation={1}
                                             style={styles.paper}
                                         >
                                             <Typography variant='h5' component='h3'>
-                                                <FormattedMessage id='nodata.error.heading'
-                                                                  defaultMessage='No Data Available !' />
+                                                <FormattedMessage
+                                                    id='nodata.error.heading'
+                                                    defaultMessage='No Data Available !'
+                                                />
                                             </Typography>
                                             <Typography component='p'>
                                                 <FormattedMessage
                                                     id='nodata.error.body'
-                                                    defaultMessage={'No matching data available for the ' +
-                                                    'selected options.'}
+                                                    defaultMessage={'No matching data available for the '
+                                                    + 'selected options.'}
                                                 />
                                             </Typography>
                                         </Paper>
@@ -138,6 +140,6 @@ export default function APIMApiRatings(props) {
 APIMApiRatings.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    availableApiData: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
+    topApiNameData: PropTypes.instanceOf(Object).isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

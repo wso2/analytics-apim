@@ -51,8 +51,8 @@ export default function APIMRegisteredAppUsers(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
-            marginTop:'5%',
+            marginLeft: '5%',
+            marginTop: '5%',
         },
         contentDiv: {
             backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',

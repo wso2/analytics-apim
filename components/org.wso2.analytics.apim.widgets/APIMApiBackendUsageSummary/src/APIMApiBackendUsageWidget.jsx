@@ -127,7 +127,7 @@ class APIMApiBackendUsageWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -164,7 +164,8 @@ class APIMApiBackendUsageWidget extends Widget {
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiBackendUsageSummary/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiBackendUsageSummary/locales/`
+                    + `${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -185,7 +186,7 @@ class APIMApiBackendUsageWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -239,7 +240,7 @@ class APIMApiBackendUsageWidget extends Widget {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
-            '{{limit}}': limit
+            '{{limit}}': limit,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
@@ -255,14 +256,14 @@ class APIMApiBackendUsageWidget extends Widget {
         const { apiCreatedBy, limit } = this.state;
 
         if (data) {
-            const usageData = data.map( dataUnit => {
+            const usageData = data.map((dataUnit) => {
                 return {
                     apiname: dataUnit[0] + ' (' + dataUnit[2] + ')',
                     version: dataUnit[1],
                     context: dataUnit[3],
                     destination: dataUnit[4],
                     hits: dataUnit[5],
-                }
+                };
             });
             this.setState({ usageData, inProgress: false });
             this.setQueryParam(apiCreatedBy, limit);

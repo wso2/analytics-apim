@@ -148,7 +148,7 @@ class APIMApiUsageWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -195,6 +195,7 @@ class APIMApiUsageWidget extends Widget {
                 .catch(error => reject(error));
         });
     }
+
     /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMApiUsageWidget
@@ -215,10 +216,12 @@ class APIMApiUsageWidget extends Widget {
     resetState() {
         const { apilist, versionMap } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy, apiSelected, apiVersion, limit } = queryParam;
+        let {
+            apiCreatedBy, apiSelected, apiVersion, limit,
+        } = queryParam;
         let versions;
 
-        if (!apiCreatedBy|| !(apiCreatedBy in createdByKeys)) {
+        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
             apiCreatedBy = 'All';
         }
         if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
@@ -253,7 +256,7 @@ class APIMApiUsageWidget extends Widget {
                 this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 if (error.response && error.response.data) {
                     let proxyError = error.response.data;
                     proxyError = proxyError.split(':').splice(1).join('').trim();
@@ -273,7 +276,7 @@ class APIMApiUsageWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -286,11 +289,11 @@ class APIMApiUsageWidget extends Widget {
         const { id } = this.props;
         const { username } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy  } = queryParam;
+        const { apiCreatedBy } = queryParam;
 
         if (list && list.length > 0) {
             if (apiCreatedBy !== 'All') {
-                list = list.filter((dataUnit) =>  dataUnit.provider === username );
+                list = list.filter(dataUnit => dataUnit.provider === username);
             }
 
             let apilist = [];
@@ -299,11 +302,11 @@ class APIMApiUsageWidget extends Widget {
                 apilist.push(dataUnit.name);
                 // retrieve all entries for the api and get the api versions list
                 const versions = list.filter(d => d.name === dataUnit.name);
-                const versionlist = versions.map(ver => { return ver.version; });
+                const versionlist = versions.map((ver) => { return ver.version; });
                 versionlist.unshift('All');
                 versionMap[dataUnit.name] = versionlist;
             });
-            versionMap['All'] = ['All'];
+            versionMap.All = ['All'];
             apilist = [...new Set(apilist)];
             apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             apilist.unshift('All');
@@ -332,20 +335,20 @@ class APIMApiUsageWidget extends Widget {
 
             let query;
             if (apiSelected === 'All' && apiVersion === 'All') {
-                let apis = apilist.slice(1).map (api => { return 'apiName==\'' + api + '\''} );
+                let apis = apilist.slice(1).map((api) => { return 'apiName==\'' + api + '\''; });
                 apis = apis.join(' OR ');
                 query = 'AND (' + apis + ')';
             } else if (apiVersion !== 'All') {
                 query = 'AND apiName==\'' + apiSelected + '\' AND apiVersion==\'' + apiVersion + '\'';
             } else {
-                query = 'AND apiName==\'' + apiSelected + '\''
+                query = 'AND apiName==\'' + apiSelected + '\'';
             }
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{from}}': timeFrom,
                 '{{to}}': timeTo,
                 '{{per}}': perValue,
                 '{{limit}}': limit,
-                '{{querystring}}': query
+                '{{querystring}}': query,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -367,12 +370,14 @@ class APIMApiUsageWidget extends Widget {
 
         if (data) {
             const usageData = data.map((dataUnit) => {
-                return { api: dataUnit[0], apiVersion: dataUnit[1], application: dataUnit[2], usage: dataUnit[3] };
+                return {
+                    api: dataUnit[0], apiVersion: dataUnit[1], application: dataUnit[2], usage: dataUnit[3],
+                };
             });
             this.setState({ usageData, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         } else {
-            this.setState( { inProgress: false, usageData: [] });
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -423,7 +428,7 @@ class APIMApiUsageWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(event.target.value, 'All', 'All', limit);
-        this.setState( { inProgress: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -438,7 +443,7 @@ class APIMApiUsageWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, 'All', limit);
-        this.setState( { inProgress: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -453,7 +458,7 @@ class APIMApiUsageWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, limit);
-        this.setState( { inProgress: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -474,7 +479,15 @@ class APIMApiUsageWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsersProps = {
-            themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, usageData, apilist, versionlist,
+            themeName,
+            height,
+            limit,
+            apiCreatedBy,
+            apiSelected,
+            apiVersion,
+            usageData,
+            apilist,
+            versionlist,
             inProgress,
         };
 
@@ -490,7 +503,8 @@ class APIMApiUsageWidget extends Widget {
                                 <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='apim.server.error.heading'
-                                        defaultMessage='Error!' />
+                                        defaultMessage='Error!'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     { proxyError }

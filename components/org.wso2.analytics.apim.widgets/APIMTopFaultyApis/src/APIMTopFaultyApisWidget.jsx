@@ -117,7 +117,7 @@ class APIMTopFaultyApisWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -201,7 +201,7 @@ class APIMTopFaultyApisWidget extends Widget {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
-            '{{limit}}': limit
+            '{{limit}}': limit,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -226,7 +226,9 @@ class APIMTopFaultyApisWidget extends Widget {
                 if (!legendData.includes({ name: apiName })) {
                     legendData.push({ name: apiName });
                 }
-                faultData.push({ id: counter, apiname: apiName, apiVersion: dataUnit[1], faultcount: dataUnit[4] });
+                faultData.push({
+                    id: counter, apiname: apiName, apiVersion: dataUnit[1], faultcount: dataUnit[4],
+                });
             });
 
             this.setState({ legendData, faultData, inProgress: false });
@@ -273,13 +275,13 @@ class APIMTopFaultyApisWidget extends Widget {
             localeMessages, faultyProviderConfig, height, limit, faultData, legendData, inProgress,
         } = this.state;
         const {
-            paper, paperWrapper
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const faultyApisProps = {
             themeName, height, limit, faultData, legendData, inProgress,
-            };
+        };
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>

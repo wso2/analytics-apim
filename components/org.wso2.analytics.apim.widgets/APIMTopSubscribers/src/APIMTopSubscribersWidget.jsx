@@ -122,7 +122,7 @@ class APIMTopSubscribersWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -192,7 +192,7 @@ class APIMTopSubscribersWidget extends Widget {
         const { id } = this.props;
 
         if (data) {
-            const subscribers = data.map(dataUnit => { return dataUnit[0]; });
+            const subscribers = data.map((dataUnit) => { return dataUnit[0]; });
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ subscribers }, this.assembleApplicationQuery);
         } else {
@@ -208,12 +208,12 @@ class APIMTopSubscribersWidget extends Widget {
         const { providerConfig, subscribers } = this.state;
         const { id, widgetID: widgetName } = this.props;
         if (subscribers && subscribers.length > 0) {
-            let subs = subscribers.map(sub => { return 'SUBSCRIBER_ID==' + sub; });
+            let subs = subscribers.map((sub) => { return 'SUBSCRIBER_ID==' + sub; });
             subs = subs.join(' OR ');
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'applicationquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{subscriberId}}': subs
+                '{{subscriberId}}': subs,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApplicationDataReceived, dataProviderConfigs);
@@ -232,7 +232,7 @@ class APIMTopSubscribersWidget extends Widget {
         const { id } = this.props;
 
         if (data) {
-            const applications = data.map(dataUnit => { return dataUnit[0]; });
+            const applications = data.map((dataUnit) => { return dataUnit[0]; });
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ applications }, this.assembleQuery);
         } else {
@@ -257,13 +257,13 @@ class APIMTopSubscribersWidget extends Widget {
         this.setState({ limit, creatorData: [] });
         this.setQueryParam(limit);
         if (applications && applications.length > 0) {
-            let apps = applications.map(app => { return 'APPLICATION_ID==' + app; });
+            let apps = applications.map((app) => { return 'APPLICATION_ID==' + app; });
             apps = apps.join(' OR ');
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'subscriptionquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{limit}}': limit,
-                '{{applicationId}}': apps
+                '{{applicationId}}': apps,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -349,8 +349,8 @@ class APIMTopSubscribersWidget extends Widget {
         return (
             <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                {
-                    faultyProviderConfig ? (
+                    {
+                        faultyProviderConfig ? (
                             <div style={paperWrapper}>
                                 <Paper elevation={1} style={paper}>
                                     <Typography variant='h5' component='h3'>
@@ -368,10 +368,10 @@ class APIMTopSubscribersWidget extends Widget {
                                     </Typography>
                                 </Paper>
                             </div>
-                    ) : (
-                        <APIMTopSubscribers {...subscribersProps} handleChange={this.handleChange} />
-                    )
-                }
+                        ) : (
+                            <APIMTopSubscribers {...subscribersProps} handleChange={this.handleChange} />
+                        )
+                    }
                 </MuiThemeProvider>
             </IntlProvider>
         );

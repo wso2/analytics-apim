@@ -96,4 +96,5 @@ APIMSignupsAnalytics.propTypes = {
     tableData: PropTypes.instanceOf(Object).isRequired,
     xAxisTicks: PropTypes.instanceOf(Object).isRequired,
     maxCount: PropTypes.number.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

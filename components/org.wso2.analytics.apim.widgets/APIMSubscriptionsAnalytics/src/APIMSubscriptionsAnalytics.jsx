@@ -65,7 +65,7 @@ export default function APIMSubscriptionsAnalytics(props) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            height: height,
+            height,
         },
         formLabel: {
             whiteSpace: 'nowrap',
@@ -166,8 +166,8 @@ export default function APIMSubscriptionsAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress ?
-                    (
+                { inProgress
+                    ? (
                         <div style={styles.loading}>
                             <CircularProgress style={styles.loadingIcon} />
                         </div>
@@ -191,4 +191,5 @@ APIMSubscriptionsAnalytics.propTypes = {
     maxCount: PropTypes.number.isRequired,
     apiCreatedHandleChange: PropTypes.func.isRequired,
     subscribedToHandleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

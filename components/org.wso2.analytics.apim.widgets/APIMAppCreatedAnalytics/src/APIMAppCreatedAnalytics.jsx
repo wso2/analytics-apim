@@ -68,7 +68,7 @@ export default function APIMAppCreatedAnalytics(props) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            height: height,
+            height,
         },
         formLabel: {
             whiteSpace: 'nowrap',
@@ -136,7 +136,15 @@ export default function APIMAppCreatedAnalytics(props) {
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <Tooltip placement='top' title={<FormattedMessage id='app.createdBy.label' defaultMessage='APP Created By' />}>
+                            <Tooltip
+                                placement='top'
+                                title={(
+                                    <FormattedMessage
+                                        id='app.createdBy.label'
+                                        defaultMessage='APP Created By'
+                                    />
+                                )}
+                            >
                                 <InputLabel
                                     shrink
                                     htmlFor='app-createdBy-label-placeholder'
@@ -156,13 +164,22 @@ export default function APIMAppCreatedAnalytics(props) {
                                 {
                                     sublist.map(option => (
                                         <MenuItem key={option} value={option}>
-                                            {option}</MenuItem>
+                                            {option}
+                                        </MenuItem>
                                     ))
                                 }
                             </Select>
                         </FormControl>
                         <FormControl style={styles.formControl}>
-                            <Tooltip placement='top' title={<FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />}>
+                            <Tooltip
+                                placement='top'
+                                title={(
+                                    <FormattedMessage
+                                        id='subscribedTo.label'
+                                        defaultMessage='Subscribed To'
+                                    />
+                                )}
+                            >
                                 <InputLabel
                                     shrink
                                     htmlFor='subscribedTo-label-placeholder'
@@ -190,14 +207,15 @@ export default function APIMAppCreatedAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress ?
-                    <div style={styles.loading}>
-                        <CircularProgress style={styles.loadingIcon}/>
-                    </div>
-                    :
-                    <APIMAppCreatedData {...createdDataProps} />
+                { inProgress
+                    ? (
+                        <div style={styles.loading}>
+                            <CircularProgress style={styles.loadingIcon} />
+                        </div>
+                    )
+                    : <APIMAppCreatedData {...createdDataProps} />
                 }
-             </div>
+            </div>
         </Scrollbars>
     );
 }
@@ -217,4 +235,5 @@ APIMAppCreatedAnalytics.propTypes = {
     apiCreatedHandleChange: PropTypes.func.isRequired,
     appCreatedHandleChange: PropTypes.func.isRequired,
     subscribedToHandleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };
