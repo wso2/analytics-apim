@@ -20,7 +20,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-// import PlayCircleFilled from '@material-ui/icons/PlayCircleFilled';
 import SubIcon from './SubIcon';
 
 /**
@@ -136,32 +135,6 @@ export default function APIMSubscriptions(props) {
                     ]
                 </p>
             </div>
-            {/* todo make route path configurable using widgetconf */}
-            {/* <button */}
-            {/* type='button' */}
-            {/* style={{ */}
-            {/* display: 'block', */}
-            {/* width: '100%', */}
-            {/* height: '21%', */}
-            {/* background: themeName === 'dark' */}
-            {/* ? 'linear-gradient(to right, rgba(37, 38, 41, 0.75) 0%, rgba(252, 252, 252, 0) 100%)' */}
-            {/* : '#fff', */}
-            {/* border: 'none', */}
-            {/* borderTop: themeName === 'dark' ? 'none' : '1.5px solid #000', */}
-            {/* color: themeName === 'dark' ? '#fff' : '#000', */}
-            {/* textAlign: 'left', */}
-            {/* padding: '0 5%', */}
-            {/* fontSize: '90%', */}
-            {/* letterSpacing: 1, */}
-            {/* cursor: 'pointer', */}
-            {/* }} */}
-            {/* onClick={() => { */}
-            {/* window.location.href = './developer-statistics'; */}
-            {/* }} */}
-            {/* > */}
-            {/* <FormattedMessage id='overtime.btn.text' defaultMessage='Overtime Analysis' /> */}
-            {/* <PlayCircleFilled style={styles.icon} /> */}
-            {/* </button> */}
         </div>
     );
 }
