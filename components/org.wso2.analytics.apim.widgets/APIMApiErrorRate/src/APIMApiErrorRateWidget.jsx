@@ -1,8 +1,6 @@
-/* eslint-disable no-console */
-/* eslint-disable valid-jsdoc */
 /* eslint-disable require-jsdoc */
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -22,12 +20,11 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -51,21 +48,27 @@ const lightTheme = createMuiTheme({
     },
 });
 
-
+/**
+ * Language
+ * @type {string}
+ */
 const language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
 
+/**
+ * Language without region code
+ */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
-
+/**
+ * Widget for displaying APIM Api Error Rate
+ * @class APIMApiErrorRateWidget
+ * @extends {Widget}
+ */
 class APIMApiErrorRateWidget extends Widget {
     constructor(props) {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -74,12 +77,6 @@ class APIMApiErrorRateWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -92,6 +89,9 @@ class APIMApiErrorRateWidget extends Widget {
             sorteddata: null,
             errorpercentage: null,
             isloading: true,
+            legendData: null,
+            tableData: null,
+
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -111,11 +111,17 @@ class APIMApiErrorRateWidget extends Widget {
         this.analyzeerrorrate = this.analyzeerrorrate.bind(this);
     }
 
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch(() => {
+                // TODO: Show error message.
+            });
+        });
+    }
+
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
-
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 this.setState({
@@ -123,6 +129,7 @@ class APIMApiErrorRateWidget extends Widget {
                 }, () => super.subscribe(this.handlePublisherParameters));
             })
             .catch((error) => {
+                // eslint-disable-next-line no-console
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
                 this.setState({
                     faultyProviderConfig: true,
@@ -130,7 +137,28 @@ class APIMApiErrorRateWidget extends Widget {
             });
     }
 
-    // Set the date time range
+    componentWillUnmount() {
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+    }
+
+
+    // Load Locale file
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiErrorRate/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    // Receive parameters from date time picker
     handlePublisherParameters(receivedMsg) {
         this.setState({
             timeFrom: receivedMsg.from,
@@ -144,30 +172,11 @@ class APIMApiErrorRateWidget extends Widget {
         }, this.assembleTotalErrorCountQuery);
     }
 
-
-    componentWillUnmount() {
-        const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-    }
-
-    /**
-     * Load locale file.
-     * @memberof APIMApiErrorRateWidget
-     */
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMApiErrorRate/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
-    }
-
-    // format the siddhi query to get total errors
+    // Retrieve total error count for APIs
     assembleTotalErrorCountQuery() {
         const {
-            timeFrom, timeTo, perValue, providerConfig, isloading,
+            timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
-        console.log(isloading);
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -191,7 +200,7 @@ class APIMApiErrorRateWidget extends Widget {
         this.assembleTotalRequestCount();
     }
 
-    // Formats the siddhi query using selected options
+    // Retrieve the total request count for APIs
     assembleTotalRequestCount() {
         const {
             timeFrom, timeTo, providerConfig, perValue,
@@ -209,7 +218,7 @@ class APIMApiErrorRateWidget extends Widget {
             .subscribeWidget(id, widgetName, this.handleTotalReqCountReceived, dataProviderConfigs);
     }
 
-    // Formats data received from assembleTotalRequestCount
+    // Format the total request count received
     handleTotalReqCountReceived(message) {
         const { data } = message;
         const { id } = this.props;
@@ -219,59 +228,67 @@ class APIMApiErrorRateWidget extends Widget {
         this.analyzeerrorrate();
     }
 
-    // analyze the errors received
+    // Calculate the error percentage
     analyzeerrorrate() {
         const { errorCount, totalReqCount } = this.state;
         const sorteddata = [];
+        const legendData = [];
+        const tableData = [];
         let totalhits = 0;
         let totalerrors = 0;
         let errorpercentage = 0;
 
-        // console.log(errorpercentage);
-
         totalReqCount.forEach((element) => {
-            totalhits += element[1];
+            totalhits += element[2];
         });
 
         errorCount.forEach((element) => {
-            totalerrors += element[1];
+            totalerrors += element[2];
         });
 
         errorpercentage = ((totalerrors / totalhits) * 100).toPrecision(3);
 
         totalReqCount.forEach((dataUnit) => {
             for (let err = 0; err < errorCount.length; err++) {
-                if (dataUnit[0] === errorCount[err][0]) {
-                    const percentage = (errorCount[err][1] / dataUnit[1]) * 100;
+                if (dataUnit[0] === errorCount[err][0] && dataUnit[1] === errorCount[err][1]) {
+                    const percentage = (errorCount[err][2] / dataUnit[2]) * 100;
                     sorteddata.push({
-                        x: errorCount[err][0] + ' ' + percentage.toPrecision(3) + '%', y: percentage,
+                        apiName: errorCount[err][0] + '(' + errorCount[err][1] + ')' + percentage.toPrecision(3) + '%',
+                        count: percentage.toPrecision(3),
+                    });
+
+                    legendData.push({
+                        name: errorCount[err][0] + '(' + errorCount[err][1] + ')',
+                    });
+
+                    tableData.push({
+                        apiName: errorCount[err][0],
+                        version: errorCount[err][1],
+                        count: percentage.toPrecision(3) + ' % ',
                     });
                 }
             }
         });
 
-        this.setState({ sorteddata, errorpercentage, isloading: false });
+        this.setState({
+            sorteddata, legendData, tableData, errorpercentage, isloading: false,
+        });
     }
 
     render() {
         const {
-            localeMessages, faultyProviderConf, errorCount, totalReqCount, sorteddata, errorpercentage, isloading,
+            width, height, localeMessages, faultyProviderConf, sorteddata, errorpercentage,
+            isloading, legendData, tableData,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apitestProps = {
-            themeName, errorCount, totalReqCount, sorteddata, errorpercentage,
+        const apiErrorRateProps = {
+            width, height, themeName, sorteddata, errorpercentage, legendData, tableData, isloading,
         };
-        if (!localeMessages || isloading) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
+
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
@@ -295,7 +312,7 @@ class APIMApiErrorRateWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiErrorRate {...apitestProps} />
+                            <APIMApiErrorRate {...apiErrorRateProps} />
                         )
                     }
                 </MuiThemeProvider>
