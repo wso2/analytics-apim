@@ -1,5 +1,6 @@
 {
   "apim.server.error.heading" : "Error !",
+  "apim.server.error" : "Error occurred while retrieving API list.",
   "config.error.body": "Cannot fetch provider configuration for APIM Top Api Creators widget",
   "config.error.heading": "Configuration Error !",
   "filter.column.menu.heading": "Column Name",
