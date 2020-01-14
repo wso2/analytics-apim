@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "dependencies": {
+        "mui-datatables": "^2.13.1",
         "@analytics-apim/common-lib": "^1.0.0"
     },
     "scripts": {
