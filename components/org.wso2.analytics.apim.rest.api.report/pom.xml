@@ -83,10 +83,6 @@
             <artifactId>pdfbox</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.analytics</groupId>
-            <artifactId>org.wso2.carbon.siddhi.store.api.rest</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.siddhi</groupId>
             <artifactId>siddhi-query-api</artifactId>
         </dependency>
@@ -108,7 +104,6 @@
         <import.package>
             org.wso2.carbon.config.*; version="${carbon.config.version.range}",
             org.wso2.msf4j.*; version="[2.4.0, 3.0.0)",
-            org.wso2.carbon.siddhi.store.api.rest.*;version="${carbon.analytics.version}",
             javax.ws.rs.*; version="[2.0.0,3.0.0)",
             org.wso2.analytics.apim.idp.client.*;version="${project.version}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",

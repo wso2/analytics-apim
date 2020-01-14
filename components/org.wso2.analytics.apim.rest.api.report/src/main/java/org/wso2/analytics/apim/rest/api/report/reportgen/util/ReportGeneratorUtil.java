@@ -26,9 +26,9 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
 import org.wso2.analytics.apim.rest.api.report.impl.ReportApiServiceImpl;
+import org.wso2.analytics.apim.rest.api.report.reportgen.model.Record;
+import org.wso2.analytics.apim.rest.api.report.reportgen.model.RecordDetail;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.RowEntry;
-import org.wso2.carbon.siddhi.store.api.rest.model.Record;
-import org.wso2.carbon.siddhi.store.api.rest.model.RecordDetail;
 
 import java.io.IOException;
 import java.io.InputStream;

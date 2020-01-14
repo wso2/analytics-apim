@@ -28,11 +28,11 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.wso2.analytics.apim.rest.api.report.api.ReportGenerator;
+import org.wso2.analytics.apim.rest.api.report.reportgen.model.ModelApiResponse;
+import org.wso2.analytics.apim.rest.api.report.reportgen.model.Record;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.RowEntry;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.TableData;
 import org.wso2.analytics.apim.rest.api.report.reportgen.util.ReportGeneratorUtil;
-import org.wso2.carbon.siddhi.store.api.rest.model.ModelApiResponse;
-import org.wso2.carbon.siddhi.store.api.rest.model.Record;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
