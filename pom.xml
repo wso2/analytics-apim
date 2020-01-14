@@ -828,6 +828,12 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.rest.api.report.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
                 <artifactId>org.wso2.analytics.apim.widgets</artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>
@@ -845,8 +851,24 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.rest.api.report</artifactId>
+                <version>${project.version}</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>fontbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>jempbox</artifactId>
                 <version>${pdfbox.version}</version>
             </dependency>
         </dependencies>
@@ -1072,6 +1094,7 @@
         <jaxen.version>1.1.6</jaxen.version>
         <jaxen.import.version.range>[1.1.6,1.2.0)</jaxen.import.version.range>
         <commons.logging.version>1.2</commons.logging.version>
+        <commons.logging.import.range>[1.2,2.0)</commons.logging.import.range>
         <geronimo.activation>1.1</geronimo.activation>
         <geronimo.stax>1.0.1</geronimo.stax>
         <mime4j.version>0.7.2</mime4j.version>
@@ -1166,7 +1189,8 @@
         <testng.version>6.9.10</testng.version>
         <commons-httpclient.version>3.1.0.wso2v2</commons-httpclient.version>
         <commons.logging.version>1.2</commons.logging.version>
-        <apache.commons.version>1.3</apache.commons.version>
+        <apache.commons.version>3.3.2</apache.commons.version>
+        <apache.commons.import.range>[3.3,4.0)</apache.commons.import.range>
         <json.version>3.0.0.wso2v1</json.version>
         <codehaus.jackson.version>1.9.13</codehaus.jackson.version>
         <org.snakeyaml.version>1.17</org.snakeyaml.version>

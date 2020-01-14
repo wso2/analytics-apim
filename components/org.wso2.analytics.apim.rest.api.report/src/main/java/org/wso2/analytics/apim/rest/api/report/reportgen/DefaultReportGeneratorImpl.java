@@ -16,7 +16,9 @@
  */
 package org.wso2.analytics.apim.rest.api.report.reportgen;
 
+import com.google.common.io.Resources;
 import io.siddhi.core.SiddhiAppRuntime;
+import io.siddhi.core.SiddhiManager;
 import io.siddhi.core.event.Event;
 import io.siddhi.query.api.definition.Attribute;
 import org.apache.commons.logging.Log;
@@ -25,20 +27,19 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
-import org.wso2.analytics.apim.rest.api.report.ApiException;
 import org.wso2.analytics.apim.rest.api.report.api.ReportGenerator;
-import org.wso2.analytics.apim.rest.api.report.internal.ServiceHolder;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.RowEntry;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.TableData;
 import org.wso2.analytics.apim.rest.api.report.reportgen.util.ReportGeneratorUtil;
 import org.wso2.carbon.siddhi.store.api.rest.model.ModelApiResponse;
 import org.wso2.carbon.siddhi.store.api.rest.model.Record;
-import org.wso2.carbon.streaming.integrator.common.SiddhiAppRuntimeService;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +51,8 @@ import java.util.Map;
 public class DefaultReportGeneratorImpl implements ReportGenerator {
 
     private static final Log log = LogFactory.getLog(DefaultReportGeneratorImpl.class);
+    private static final String REQUEST_SUMMARY_MONTHLY_APP_NAME = "APIMTopAppUsersReport.siddhi";
 
-    private static final String REQUEST_COUNT_SIDDHI_APP_NAME = "APIM_ACCESS_SUMMARY";
     private List<Integer> recordsPerPageList;
     private TableData table;
     private PDDocument document;
@@ -62,11 +63,12 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
             "September", "October", "November", "December"};
 
     /**
-     * @param year
-     * @param month
-     * @throws ApiException
+     * The default implementation of Monthly request report.
+     * @param year year of the report.
+     * @param month month of the report.
+     * @param tenantDomain
      */
-    public DefaultReportGeneratorImpl(String year, String month, String tenantDomain) throws ApiException {
+    public DefaultReportGeneratorImpl(String year, String month, String tenantDomain) throws IOException {
 
         this.table = getRecordsFromAggregations(year, month, tenantDomain);
         String[] columnHeaders = {"#", "API Name", "Version", "Application Name", "Application Owner",
@@ -77,7 +79,6 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
         this.numOfPages = ReportGeneratorUtil.getNumberOfPages(table.getRows().size());
         this.document = initializePages();
         this.recordsPerPageList = ReportGeneratorUtil.getRecordsPerPage(table.getRows().size());
-
     }
 
     private PDDocument initializePages() {
@@ -126,57 +127,49 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    private TableData getRecordsFromAggregations(String year, String month, String apiCreatorTenantDomain) throws
-            ApiException {
+    private TableData getRecordsFromAggregations(String year, String month, String apiCreatorTenantDomain)
+            throws IOException {
+
+        URL url = Resources.getResource(REQUEST_SUMMARY_MONTHLY_APP_NAME);
+        String siddhiApp = Resources.toString(url, StandardCharsets.UTF_8);
 
         TableData table = new TableData();
         String date = year + "-" + month;
-        String requestCountQuery = "from ApiUserPerAppAgg on apiCreatorTenantDomain==" + "\'" + apiCreatorTenantDomain +
+        SiddhiManager siddhiManager = new SiddhiManager();
+        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(siddhiApp);
+        siddhiAppRuntime.start();
+
+        String requestCountQuery = "from ApiUserPerAppAgg on apiCreatorTenantDomain==" + "\'" +
+                apiCreatorTenantDomain +
                 "\'" + " within '" + date + "-** **:**:**' per \"months\" select apiName, apiVersion, " +
                 "applicationName, applicationOwner, sum(totalRequestCount) as " +
                 "RequestCount group by " +
                 "apiName, apiVersion, applicationName, applicationOwner order by RequestCount desc";
-        SiddhiAppRuntimeService siddhiAppRuntimeService =
-                ServiceHolder.getInstance().getSiddhiAppRuntimeService();
-        Map<String, SiddhiAppRuntime> siddhiAppRuntimes = siddhiAppRuntimeService.getActiveSiddhiAppRuntimes();
-        SiddhiAppRuntime siddhiAppRuntime = siddhiAppRuntimes.get(REQUEST_COUNT_SIDDHI_APP_NAME);
+        Event[] events = siddhiAppRuntime.query(requestCountQuery);
+        List<Record> records = ReportGeneratorUtil.getRecords(events);
+        ModelApiResponse response = new ModelApiResponse();
+        response.setRecords(records);
+        Attribute[] attributes = siddhiAppRuntime.getOnDemandQueryOutputAttributes(requestCountQuery);
+        response.setDetails(ReportGeneratorUtil.getRecordDetails(attributes));
 
-        if (siddhiAppRuntime == null) {
-            throw new ApiException(500, "Cannot find an active Siddhi App with name: " + REQUEST_COUNT_SIDDHI_APP_NAME);
-        } else {
-
-            Event[] events = siddhiAppRuntime.query(requestCountQuery);
-            List<Record> records = ReportGeneratorUtil.getRecords(events);
-            ModelApiResponse response = new ModelApiResponse();
-            response.setRecords(records);
-            Attribute[] attributes = siddhiAppRuntime.getStoreQueryOutputAttributes(requestCountQuery);
-            response.setDetails(ReportGeneratorUtil.getRecordDetails(attributes));
-
-            if (response != null) {
-                List<RowEntry> rowData = new ArrayList<RowEntry>();
-                //build data object to pass for generation
-
-                int recordNumber = 1;
-                for (Record record : response.getRecords()) {
-                    RowEntry entry = new RowEntry();
-                    entry.setEntry(recordNumber + ")");
-                    entry.setEntry(record.get(0).toString());
-                    entry.setEntry(record.get(1).toString());
-                    entry.setEntry(record.get(2).toString());
-                    entry.setEntry(record.get(3).toString());
-                    entry.setEntry(record.get(4).toString());
-                    rowData.add(entry);
-                    table.setRows(rowData);
-                    recordNumber += 1;
-//                    for (int i = 0; i < 40; i++) {
-//                        rowData.add(entry);
-//                        table.setRows(rowData);
-//                        recordNumber += 1;
-//                    }
-                }
+        if (response != null) {
+            List<RowEntry> rowData = new ArrayList<RowEntry>();
+            //build data object to pass for generation
+            int recordNumber = 1;
+            for (Record record : response.getRecords()) {
+                RowEntry entry = new RowEntry();
+                entry.setEntry(recordNumber + ")");
+                entry.setEntry(record.get(0).toString());
+                entry.setEntry(record.get(1).toString());
+                entry.setEntry(record.get(2).toString());
+                entry.setEntry(record.get(3).toString());
+                entry.setEntry(record.get(4).toString());
+                rowData.add(entry);
+                table.setRows(rowData);
+                recordNumber += 1;
             }
-            return table;
         }
+        return table;
     }
 
 }

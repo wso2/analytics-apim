@@ -243,7 +243,7 @@ public class ApimIdPClient extends ExternalIdPClient {
      * @throws IdPClientException thrown when the username is empty or when an error occurred when retrieve the tenant
      * domain.
      */
-    private String extractTenantDomainFromUserName(String username) throws IdPClientException {
+    public String extractTenantDomainFromUserName(String username) throws IdPClientException {
         if (username == null || username.isEmpty()) {
             String error = "Username cannot be empty.";
             LOG.error(error);
@@ -595,7 +595,7 @@ public class ApimIdPClient extends ExternalIdPClient {
      * @throws AuthenticationException thrown when the token is not active
      * @return the introspect response
      */
-    private OAuth2IntrospectionResponse getIntrospectResponse(String token) throws IdPClientException,
+    public OAuth2IntrospectionResponse getIntrospectResponse(String token) throws IdPClientException,
             AuthenticationException {
         Response response = oAuth2ServiceStubs.getIntrospectionServiceStub().introspectAccessToken(token);
 

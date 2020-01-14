@@ -22,56 +22,43 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.wso2.analytics.apim.idp.client.ApimIdPClient;
-import org.wso2.carbon.analytics.idp.client.external.ExternalIdPClient;
-import org.wso2.carbon.streaming.integrator.common.SiddhiAppRuntimeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 
 /**
  * Service component to get Carbon Config Provider OSGi service.
  */
 @Component(
-        name = "ApimReportServiceComponent",
-        service = ServiceComponent.class,
+        name = "org.wso2.analytics.apim.rest.api.report.internal.ReportComponent",
         immediate = true
 )
-public class ServiceComponent {
-    @Activate
-    protected void start(BundleContext bundleContext) {
+public class ReportComponent {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ReportComponent.class);
+
+    @Activate
+    protected void activate(BundleContext bundleContext) {
+        LOG.debug("activating ReportComponent bundle");
     }
 
     @Deactivate
-    protected void stop() {
+    protected void deactivate() {
     }
 
     @Reference(
-            name = "siddhi.app.runtime.service.reference",
-            service = SiddhiAppRuntimeService.class,
-            cardinality = ReferenceCardinality.AT_LEAST_ONE,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetSiddhiAppRuntimeService"
-    )
-    protected void setSiddhiAppRuntimeService(SiddhiAppRuntimeService siddhiAppRuntimeService) {
-        ServiceHolder.getInstance().setSiddhiAppRuntimeService(siddhiAppRuntimeService);
-    }
-
-    protected void unsetSiddhiAppRuntimeService(SiddhiAppRuntimeService siddhiAppRuntimeService) {
-        ServiceHolder.getInstance().setSiddhiAppRuntimeService(null);
-    }
-
-    @Reference(
-            name = "APIMAdminClient",
-            service = ApimIdPClient.class,
+            name = "IdPClient",
+            service = IdPClient.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterIdP"
     )
-    protected void registerIdP(ApimIdPClient client) {
+    protected void registerIdP(IdPClient client) {
         ServiceHolder.getInstance().setAPIMAdminClient(client);
     }
 
-    protected void unregisterIdP(ExternalIdPClient client) {
-
+    protected void unregisterIdP(IdPClient client) {
         ServiceHolder.getInstance().setAPIMAdminClient(null);
     }
+
 }

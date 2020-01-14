@@ -78,29 +78,6 @@
             <groupId>org.wso2.carbon.analytics</groupId>
             <artifactId>org.wso2.carbon.analytics.msf4j.interceptor.common</artifactId>
         </dependency>
-        <!--Carbon Config-->
-        <dependency>
-            <groupId>org.wso2.carbon.config</groupId>
-            <artifactId>org.wso2.carbon.config</artifactId>
-        </dependency>
-        <!--Http client-->
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-gson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-okhttp</artifactId>
-        </dependency>
-        <!-- JSON dependencies -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
@@ -114,10 +91,6 @@
             <artifactId>siddhi-query-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.analytics</groupId>
-            <artifactId>org.wso2.carbon.siddhi.store.api.rest</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
@@ -129,27 +102,23 @@
             <groupId>org.wso2.carbon.analytics-common</groupId>
             <artifactId>org.wso2.carbon.analytics.idp.client</artifactId>
         </dependency>
-
-
     </dependencies>
 
     <properties>
         <import.package>
             org.wso2.carbon.config.*; version="${carbon.config.version.range}",
             org.wso2.msf4j.*; version="[2.4.0, 3.0.0)",
-            org.wso2.carbon.siddhi.store.api.rest.*; version="${carbon.analytics.version}",
-            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            org.wso2.carbon.siddhi.store.api.rest.*;version="${carbon.analytics.version}",
             javax.ws.rs.*; version="[2.0.0,3.0.0)",
-            org.json.simple.*;
-            feign.*;version="${feign.version}",
-            feign.gson.*;version="${feign.version}",
-            feign.okhttp.*;version="${feign.version}",
-            com.google.code.gson.*;version="${gson.import.version.range}",
-            org.wso2.analytics.apim.idp.client.*,
+            org.wso2.analytics.apim.idp.client.*;version="${project.version}",
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            org.apache.commons.lang3.*;version="${apache.commons.import.range}",
+            org.apache.pdfbox.*;version="${pdfbox.version}",
+            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             *;resolution:=optional
         </import.package>
         <export.package>
-            org.wso2.analytics.apim.rest.api.report.*; version="${project.version}"
+            org.wso2.analytics.apim.rest.api.report.*; version="${project.version}",
         </export.package>
         <carbon.component>
             osgi.service; objectClass="org.wso2.msf4j.Microservice"; serviceCount="1"

@@ -15,36 +15,25 @@
 */
 package org.wso2.analytics.apim.rest.api.report.internal;
 
-import org.wso2.analytics.apim.idp.client.ApimIdPClient;
-import org.wso2.carbon.streaming.integrator.common.SiddhiAppRuntimeService;
+import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 
 /**
- *  Service Holder class for this component.
+ *  Service Holder class for Report component.
  */
 public class ServiceHolder {
 
-    private SiddhiAppRuntimeService siddhiAppRuntimeService;
-    private ApimIdPClient apimAdminClient;
-
+    private IdPClient apimAdminClient;
     private static ServiceHolder instance = new ServiceHolder();
 
     private ServiceHolder() {
     }
 
-    public void setAPIMAdminClient(ApimIdPClient service) {
+    public void setAPIMAdminClient(IdPClient service) {
         this.apimAdminClient = service;
     }
 
-    public ApimIdPClient getApimAdminClient() {
+    public IdPClient getApimAdminClient() {
         return apimAdminClient;
-    }
-
-    public SiddhiAppRuntimeService getSiddhiAppRuntimeService() {
-        return siddhiAppRuntimeService;
-    }
-
-    public void setSiddhiAppRuntimeService(SiddhiAppRuntimeService siddhiAppRuntimeService) {
-        this.siddhiAppRuntimeService = siddhiAppRuntimeService;
     }
 
     public static ServiceHolder getInstance() {
