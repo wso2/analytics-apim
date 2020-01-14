@@ -1,5 +1,6 @@
 {
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for API Error Rate Widget widget",
-  "widget.heading": "API Error Rate"
+  "widget.heading": "API ERROR PERCENTAGE",
+  "nodata.error.heading": "No Data Available!"
 }
