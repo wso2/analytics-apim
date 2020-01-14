@@ -1,7 +1,6 @@
-/* eslint-disable require-jsdoc */
 
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +20,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -50,22 +49,33 @@ const lightTheme = createMuiTheme({
     },
 });
 
+/**
+ * Query string parameter
+ * @type {string}
+ */
 const queryParamKey = 'apimapialerts';
 
+/**
+ * Language
+ * @type {string}
+ */
 const language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
 
+/**
+ * Language without region code
+ */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
-
+/**
+ * Widget for displaying API alerts of APIs
+ * @class APIMAppApiUsageWidget
+ * @extends {Widget}
+ */
 class APIMApiAlertsWidget extends Widget {
     constructor(props) {
         super(props);
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -74,12 +84,6 @@ class APIMApiAlertsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -94,7 +98,8 @@ class APIMApiAlertsWidget extends Widget {
             finaldataset: null,
             totalcount: null,
             isloading: true,
-
+            legandDataSet: null,
+            tableDataSet: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -114,11 +119,18 @@ class APIMApiAlertsWidget extends Widget {
         this.loadLocale = this.loadLocale.bind(this);
     }
 
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch(() => {
+                // TODO: Show error message.
+            });
+        });
+    }
+
 
     componentDidMount() {
-        const { widgetID, id } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
+        const { widgetID } = this.props;
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -134,9 +146,38 @@ class APIMApiAlertsWidget extends Widget {
             });
     }
 
+    componentWillUnmount() {
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+    }
 
 
-    // Set the date time range
+     /**
+     * Load locale file.
+     *
+     * @param {string} locale Locale name
+     * @memberof APIMApiAlertsWidget
+     */
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiAlerts/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    /**
+     * Retrieve params from publisher - DateTimeRange
+     *
+     * @param receivedMsg  message received from subscribed widgets
+     * @memberof APIMApiAlertsWidget
+     * */
     handlePublisherParameters(receivedMsg) {
         this.setState({
             timeFrom: receivedMsg.from,
@@ -149,29 +190,13 @@ class APIMApiAlertsWidget extends Widget {
             finaldataset: null,
             totalcount: null,
         }, this.assemblereqalertquery);
-        //console.log(receivedMsg.from, receivedMsg.to);
     }
-
-
-    componentWillUnmount() {
-        const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-    }
-
-
-    // load the local file
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMApiAlerts/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
-    }
-
-
-    // format the siddhi query for abnormal request alert
+  
+    /**
+     * Retrieve No of abnormal request count alerts, for APIs
+     * @memberof APIMApiAlertsWidget
+     * */
     assemblereqalertquery() {
-        const queryParam = super.getGlobalState(queryParamKey);
         const { timeFrom, timeTo, providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -191,7 +216,10 @@ class APIMApiAlertsWidget extends Widget {
     }
 
 
-    // format the abnormal request alert received
+    /**
+     * Format the data received
+     * @memberof APIMApiAlertsWidget
+     * */
     assemblereqalertreceived(message) {
         const { data } = message;
         const { id } = this.props;
@@ -204,9 +232,11 @@ class APIMApiAlertsWidget extends Widget {
     }
 
 
-    // format siddhi query for abnormal response alerts
+     /**
+     * Retrieve No of response alert count, for APIs
+     * @memberof APIMApiAlertsWidget
+     * */
     assembleresponsealertquery() {
-        const queryParam = super.getGlobalState(queryParamKey);
         const { timeFrom, timeTo, providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -225,22 +255,26 @@ class APIMApiAlertsWidget extends Widget {
             .subscribeWidget(id, widgetName, this.assembleresponsealertreceived, dataProviderConfigs);
     }
 
-    // format the abnormal response time alert
+    /**
+     * Format the data received
+     * @memberof APIMApiAlertsWidget
+     * */
     assembleresponsealertreceived(message) {
         const { data } = message;
         const { id } = this.props;
 
         if (data.length !== 0) {
             this.setState({ responsealert: data });
-            // console.log(data);
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assemblebackendalertquery();
     }
 
-    // format siddhi query for abnormal backend time alerts
+    /**
+    * Retrieve No of abnormal backend alert count, for APIs
+    * @memberof APIMApiAlertsWidget
+    * */
     assemblebackendalertquery() {
-        const queryParam = super.getGlobalState(queryParamKey);
         const { timeFrom, timeTo, providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -260,25 +294,28 @@ class APIMApiAlertsWidget extends Widget {
     }
 
 
-    // format abnormal backend time alerts
+    /**
+     * Format the data received
+     * @memberof APIMApiAlertsWidget
+     * */
     assemblebackendalertreceived(message) {
         const { data } = message;
         const { id } = this.props;
 
         if (data.length !== 0) {
             this.setState({ backendalert: data });
-            // console.log(data);
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.analyzealertdata();
     }
 
 
-    // analyze the total alert data received
+    /**
+    * Analyze the total errors received
+    * @memberof APIMApiAlertsWidget
+    * */
     analyzealertdata() {
-        var { backendalert, responsealert, reqalert } = this.state;
-        
-       console.log(backendalert, responsealert, reqalert);
+       var { backendalert, responsealert, reqalert } = this.state;
        let sortedarray = [];
        var totalcount = 0;
 
@@ -288,13 +325,11 @@ class APIMApiAlertsWidget extends Widget {
             }
         }
 
-      //  console.log(sortedarray);
         if (responsealert != null) {
             for (var i in responsealert) {
                 var matchFoun = false;
                 for (var n in sortedarray) {
                     if (responsealert[i][0] == sortedarray[n][0]) {
-                        console.log(sortedarray[n][1],responsealert[i][1]);
                         sortedarray[n][1] += responsealert[i][1];
                         matchFoun = true;
                         break;
@@ -327,46 +362,60 @@ class APIMApiAlertsWidget extends Widget {
             totalcount += element[1];
         });
 
-        console.log(sortedarray);
        this.setState({ sortedarray, totalcount });
        this.sortedarray = null;
        this.converttojsonobject();
     }
 
-    // convert the dataset to json object
+    /**
+     * Convert the final dataset to json object
+     * @memberof APIMApiAlertsWidget
+     * */
     converttojsonobject() {
         const { sortedarray } = this.state;
-        let finaldataset = [];
+        let { finaldataset, legandDataSet, tableDataSet } = [];
 
         finaldataset = sortedarray.map((x) => {
             return{
-                "x": x[0] + '  ' + '( ' + x[1] + ' )',
-                "y": x[1]
+                "apiName": x[0] +'(' + x[2] + ')'+ ' ' + x[1],
+                "hits": x[1]
             };
         });
 
-        this.setState({ finaldataset, isloading: false });
-       // console.log(finaldataset);
+        legandDataSet = sortedarray.map((x) => {
+            return{
+                "name": x[0] +'(' + x[2] + ')'
+            };
+        });
+
+        tableDataSet = sortedarray.map((x) => {
+            return{
+                "name": x[0],
+                "version": x[2],
+                "hits": x[1]
+            };
+        });
+
+        
+        this.setState({ finaldataset,tableDataSet, isloading: false, legandDataSet});
     }
 
+    /**
+     * @inheritDoc
+     * @returns {ReactElement} Render the APIM Api Alerts widget
+     * @memberof APIMApiAlertsWidget
+     */
     render() {
         const {
-            localeMessages, faultyProviderConf, finaldataset, totalcount, isloading
+            localeMessages, faultyProviderConf, height, width, finaldataset, totalcount, isloading,legandDataSet,tableDataSet
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apialertProps = { themeName, finaldataset, totalcount };
+        const apialertProps = { themeName, finaldataset, totalcount, width, height, isloading,legandDataSet,tableDataSet };
 
-        if (!localeMessages || isloading ) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
@@ -377,14 +426,14 @@ class APIMApiAlertsWidget extends Widget {
                                     <Typography variant='h4' component='h3'>
                                         <FormattedMessage
                                             id='config.error.heading'
-                                            defaultMessage='Configuration Erro !'
+                                            defaultMessage='Configuration Error !'
                                         />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                            + 'Created widget'}
+                                            + 'Alerts Widget'}
                                         />
                                     </Typography>
                                 </Paper>

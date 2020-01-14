@@ -1,9 +1,3 @@
-/* eslint-disable react/jsx-indent-props */
-/* eslint-disable comma-dangle */
-/* eslint-disable indent */
-/* eslint-disable react/jsx-indent */
-/* eslint-disable spaced-comment */
-/* eslint-disable react/jsx-one-expression-per-line */
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -25,139 +19,186 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
-import PlayCircleFilled from '@material-ui/icons/PlayCircleFilled';
-import { VictoryPie, VictoryLabel } from 'victory';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { FormattedMessage } from 'react-intl';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-/**
- * React Component for APIM Api Created widget body
- * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Api Created Count widget body
- */
-export default function APIMApiAlerts(props) {
+import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
+import CustomTable from './CustomTable'
 
-    const { themeName, finaldataset, totalcount } = props;
+/**
+ * Display API Alerts details
+ * @param {any} props @inheritDoc
+ * @returns {ReactElement} Render the Api Alert widget body
+ */
+export default function APIMAppApiUsage(props) {
+    const {
+        themeName, finaldataset, width, height, isloading,legandDataSet,tableDataSet,totalcount 
+    } = props;
     const styles = {
         headingWrapper: {
-            height: '5%',
             margin: 'auto',
-            paddingTop: '10px',
-            width: '90%',
-        },
-        dataWrapper: {
-            textAlign: 'center',
-            width: 'auto',
-            height: 'auto',
-        },
-        weekCount: {
-            margin: 0,
-            marginTop: '5%',
-            color: 'rgb(135,205,223)',
-            letterSpacing: 1,
-            fontSize: '80%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
+            border: '1.5px solid',
+            marginLeft:'5%',
         },
-        typeText: {
+        inProgress: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
+        },
+        mainDiv: {
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            height,
+            margin: '10px',
+            padding: '20px',
+        },
+        statDiv: {
+            display: 'flex',
+            flexWrap: 'wrap',
+        },
+        pieDiv: {
+            width: width > 1000 ? '50%' : '100%',
+            paddingTop: 30,
+        },
+        tableDiv: {
+            width: width > 1000 ? '50%' : '100%',
+            marginTop: '5px',
+        },
+        h3: {
+            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+            paddingBottom: '10px',
+            margin: 'auto',
+            marginTop: 0,
             textAlign: 'left',
             fontWeight: 'normal',
-            margin: 0,
-            display: 'inline',
-            marginLeft: '3%',
             letterSpacing: 1.5,
-            fontSize: 'small',
         },
-        playIcon: {
-            position: 'absolute',
-            bottom: '13%',
-            right: '8%',
+        flyoutStyle: {
+            fill: '#000',
+            fillOpacity: '0.5',
+            strokeWidth: 1,
         },
+        victoryTooltip: {
+            fill: '#fff',
+            fontSize: 25,
+        },
+        rowGutter: {
+            top: 0,
+            bottom: -10,
+        },
+        victoryLegend: {
+            labels: {
+                fill: '#9e9e9e',
+                fontSize: 19,
+            },
+        },
+        countdiv: {
+            margin: 'auto',
+            width: '95%',
+            paddingTop: '20px',
+            fontWeight: 'normal',
+        }
     };
-    if (totalcount == null || totalcount == 0) {
-        return (
-            <div style={styles.paperWrapper}>
-                <Paper
-                    elevation={1}
-                    style={styles.paper}
-                >
-                    <Typography variant='h5' component='h3'>
-                        <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                    </Typography>
-                    <Typography component='p'>
-                        <FormattedMessage
-                            id='nodata.error.body'
-                            defaultMessage='No data available for the selected options.'
-                        />
-                    </Typography>
-                </Paper>
-            </div>
-        );
-    }
+
     return (
-        <div
-            style={{
-                background: themeName === 'light' ? '#fff' : '#162638',
-                width: 'auto',
-                height: 'auto',
-                margin: '3% 3%',
-            }}
-        >
-            <div style={styles.headingWrapper}>
-                <h3
-                    style={{
-                        borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '3px solid #2571a7',
-                        paddingBottom: '5px',
-                        margin: 'auto',
-                        textAlign: 'center',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                >
-                    <FormattedMessage id='widget.heading' defaultMessage='Recent Api Alerts' />
-                </h3>
-                <h3
-                style={{
-                    fontWeight: 'normal'
-                }}
-                >
-                   Total Alerts : {totalcount}
-                </h3>
+        <Scrollbars style={{ height }}>
+            <div style={styles.mainDiv}>
+                <div style={styles.headingWrapper}>
+                    <h3 style={styles.h3}>
+                        <FormattedMessage id='widget.heading' defaultMessage='API ALERTS' />
+                    </h3>
+                </div>
+                { isloading ? (
+                    <div style={styles.inProgress}>
+                        <CircularProgress />
+                    </div>
+                ) : (
+                    <div>
+                        { finaldataset.length > 0 ? (
+                            <div style={styles.statDiv}>
+                                    <h3 style={styles.countdiv}>
+                                        Total Alerts : {totalcount}
+                                    </h3>
+                                <div style={styles.pieDiv}>
+                                    <svg viewBox='-50 0 1000 500'>
+                                        <VictoryPie
+                                            labelComponent={(
+                                                <VictoryTooltip
+                                                    orientation='right'
+                                                    pointerLength={0}
+                                                    cornerRadius={2}
+                                                    flyoutStyle={styles.flyoutStyle}
+                                                    style={styles.victoryTooltip}
+                                                />
+                                            )}
+                                            width={500}
+                                            height={500}
+                                            standalone={false}
+                                            padding={50}
+                                            colorScale='blue'
+                                            data={finaldataset}
+                                            x={d => d.apiName}
+                                            y={d => d.hits}
+                                        />
+                                        <VictoryLegend
+                                            standalone={false}
+                                            colorScale='blue'
+                                            x={500}
+                                            y={20}
+                                            gutter={20}
+                                            rowGutter={styles.rowGutter}
+                                            style={styles.victoryLegend}
+                                            data={legandDataSet}
+                                        />
+                                    </svg>
+                                </div>
+                                <div style={styles.tableDiv}>
+                                    <CustomTable
+                                        data={tableDataSet}
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={styles.paperWrapper}>
+                                <Paper
+                                    elevation={1}
+                                    style={styles.paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='nodata.error.heading'
+                                            defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        )
+                        }
+                    </div>
+                )}
             </div>
-
-            <div style={styles.dataWrapper}>
-            <svg viewBox="-150 0 600 300">
-                <VictoryPie
-                animate={{
-                    duration: 2000,
-                    onLoad: { duration: 1000 }
-                    }}
-                standalone={false}
-                width={290} height={290}
-                data={finaldataset}
-
-                innerRadius={0} labelRadius={0}
-                colorScale='blue'
-                style={{ labels: { fontSize: 11, fill: "white" } }}
-                />
-            </svg>
-            </div>
-        </div> 
-        );
+        </Scrollbars>
+    );
 }
 
 APIMApiAlerts.propTypes = {
     themeName: PropTypes.string.isRequired,
-    sortedarray: PropTypes.string.isRequired,
-    totalcount: PropTypes.string.isRequired,
+    height: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
+    finaldataset: PropTypes.instanceOf(Object).isRequired,
+    legendData: PropTypes.instanceOf(Object).isRequired,
+    totalcount: PropTypes.number.isRequired,
+    isloading: PropTypes.bool.isRequired,
 };
