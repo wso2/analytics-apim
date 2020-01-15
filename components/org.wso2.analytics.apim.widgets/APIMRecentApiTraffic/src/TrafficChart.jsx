@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable require-jsdoc */
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -25,57 +24,18 @@ import { withStyles } from '@material-ui/core/styles';
 import { VictoryBar, VictoryChart, VictoryAxis } from 'victory';
 
 
-const styles = theme => ({
-    root: {
-        width: '750px',
-        height: '500px',
-        backgroundColor: theme.palette.type === 'light' ? '#fff' : '#162638',
+const styles = ({
+    victorybar: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        data: { fill: 'rgb(0, 107, 201)', width: 5 },
     },
-    table: {
-        minWidth: 200,
-    },
-    tableWrapper: {
-        overflowX: 'auto',
-    },
-    loadingIcon: {
-        margin: 'auto',
-        display: 'block',
-    },
-    paginationRoot: {
-        color: theme.palette.text.secondary,
-        fontSize: theme.typography.pxToRem(12),
-        '&:last-child': {
-            padding: 0,
+    victoryaxis: {
+        axisLabel: {
+            padding: 30,
+            fill: '#ffffff',
+            fontSize: '8px',
         },
-    },
-    paginationToolbar: {
-        height: 56,
-        minHeight: 56,
-        padding: '0 5%',
-    },
-    paginationCaption: {
-        flexShrink: 0,
-    },
-    paginationSelectRoot: {
-        marginRight: '10px',
-    },
-    paginationSelect: {
-        paddingLeft: 8,
-        paddingRight: 16,
-    },
-    paginationSelectIcon: {
-        top: 1,
-    },
-    paginationInput: {
-        color: 'inherit',
-        fontSize: 'inherit',
-        flexShrink: 0,
-    },
-    paginationMenuItem: {
-        backgroundColor: theme.palette.type === 'light' ? '#fff' : '#162638',
-    },
-    paginationActions: {
-        marginLeft: 0,
     },
 });
 
@@ -88,7 +48,7 @@ const chartTheme = {
                 // this changed the color of my numbers to white
                 fill: 'white',
                 fontSize: '8px',
-                angle: 25,
+                angle: 45,
             },
             grid: { stroke: 'none' },
         },
@@ -116,40 +76,23 @@ class TrafficChart extends React.Component {
                 <VictoryBar
                     barWidth={6}
                     cornerRadius={{ topRight: 5 }}
-                    style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        data: { fill: 'rgb(0, 107, 201)', width: 5 },
-                    }}
+                    style={styles.victorybar}
                     animate={{
-                        duration: 2000,
-                        onLoad: { duration: 1000 },
+                        duration: 1000,
+                        onLoad: { duration: 500 },
                     }}
                     data={data}
                     x='API'
-                    // eslint-disable-next-line indent
                     y='Traffic'
                 />
                 <VictoryAxis
                     label='API Name'
-                    style={{
-                        axisLabel: {
-                            padding: 30,
-                            fill: '#ffffff',
-                            fontSize: '8px',
-                        },
-                    }}
+                    style={styles.victoryaxis}
                 />
                 <VictoryAxis
                     dependentAxis
                     label='Total Traffic'
-                    style={{
-                        axisLabel: {
-                            padding: 30,
-                            fill: '#ffffff',
-                            fontSize: '8px',
-                        },
-                    }}
+                    style={styles.victoryaxis}
                 />
             </VictoryChart>
         );

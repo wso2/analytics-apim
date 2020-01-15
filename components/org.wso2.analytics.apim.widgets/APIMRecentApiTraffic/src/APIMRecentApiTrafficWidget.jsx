@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 /* eslint-disable require-jsdoc */
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -21,12 +20,11 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -56,15 +54,13 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
+const queryParamKey = 'appCreators';
+
 // Create react component for the APIM Recent Api Traffic
 class APIMRecentApiTrafficWidget extends Widget {
     constructor(props) {
         super(props);
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -74,20 +70,16 @@ class APIMRecentApiTrafficWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
-            },
         };
 
 
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            usageData: null,
+            usageData: [],
             localeMessages: null,
+            limit: 5,
+            isloading: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -102,14 +94,21 @@ class APIMRecentApiTrafficWidget extends Widget {
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch(() => {
+                // TODO: Show error message.
+            });
+        });
     }
 
 
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
-
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 this.setState({
@@ -128,13 +127,23 @@ class APIMRecentApiTrafficWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
     }
 
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMRecentApiTraffic/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
+    }
 
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMRecentApiTraffic/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    // Set Query Param key
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
     }
 
     // Set the date time range
@@ -143,10 +152,8 @@ class APIMRecentApiTrafficWidget extends Widget {
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-            usageData: null,
         }, this.assembleApiUsageQuery);
     }
-
 
     // Format the siddhi query
     assembleApiUsageQuery() {
@@ -154,13 +161,19 @@ class APIMRecentApiTrafficWidget extends Widget {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
+        const queryParam = super.getGlobalState(queryParamKey);
+        let { limit } = queryParam;
 
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
+            '{{limit}}': limit,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
@@ -170,8 +183,6 @@ class APIMRecentApiTrafficWidget extends Widget {
     // format the query data
     handleApiUsageReceived(message) {
         const { data } = message;
-        console.log(data);
-
         if (data) {
             const usageData = [];
 
@@ -180,7 +191,22 @@ class APIMRecentApiTrafficWidget extends Widget {
                     API: dataUnit[0] + '(' + dataUnit[1] + ')', Traffic: dataUnit[2],
                 });
             });
-            this.setState({ usageData });
+            this.setState({ usageData, isloading: false });
+        }
+    }
+
+    // Handle on change of limit
+    handleLimitChange(event) {
+        const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ isloading: false, limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleApiUsageQuery();
+        } else {
+            this.setState({ limit });
         }
     }
 
@@ -192,24 +218,17 @@ class APIMRecentApiTrafficWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, usageData,
+            localeMessages, faultyProviderConfig, height, usageData, isloading, limit,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
-            themeName, height, usageData,
+            themeName, height, usageData, limit, isloading,
         };
 
-        if (!localeMessages || !usageData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
@@ -226,7 +245,7 @@ class APIMRecentApiTrafficWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration forAPIM Api '
+                                            defaultMessage={'Cannot fetch provider configuration forAPIM'
                                             + 'Recent Api Traffic widget'}
                                         />
                                     </Typography>
@@ -235,6 +254,7 @@ class APIMRecentApiTrafficWidget extends Widget {
                         ) : (
                             <APIMRecentApiTraffic
                                 {...apiUsageProps}
+                                handleLimitChange={this.handleLimitChange}
                             />
                         )
                     }
