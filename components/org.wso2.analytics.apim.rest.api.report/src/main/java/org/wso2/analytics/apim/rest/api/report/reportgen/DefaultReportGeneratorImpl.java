@@ -16,11 +16,11 @@
  */
 package org.wso2.analytics.apim.rest.api.report.reportgen;
 
-import com.google.common.io.Resources;
 import io.siddhi.core.SiddhiAppRuntime;
 import io.siddhi.core.SiddhiManager;
 import io.siddhi.core.event.Event;
 import io.siddhi.query.api.definition.Attribute;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -38,7 +38,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +50,7 @@ import java.util.Map;
 public class DefaultReportGeneratorImpl implements ReportGenerator {
 
     private static final Log log = LogFactory.getLog(DefaultReportGeneratorImpl.class);
-    private static final String REQUEST_SUMMARY_MONTHLY_APP_NAME = "APIMTopAppUsersReport.siddhi";
+    private static final String REQUEST_SUMMARY_MONTHLY_APP_NAME = "/APIMTopAppUsersReport.siddhi";
 
     private List<Integer> recordsPerPageList;
     private TableData table;
@@ -130,8 +129,9 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
     private TableData getRecordsFromAggregations(String year, String month, String apiCreatorTenantDomain)
             throws IOException {
 
-        URL url = Resources.getResource(REQUEST_SUMMARY_MONTHLY_APP_NAME);
-        String siddhiApp = Resources.toString(url, StandardCharsets.UTF_8);
+        InputStream inputStream = DefaultReportGeneratorImpl.class.
+                getResourceAsStream(REQUEST_SUMMARY_MONTHLY_APP_NAME);
+        String siddhiApp = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 
         TableData table = new TableData();
         String date = year + "-" + month;

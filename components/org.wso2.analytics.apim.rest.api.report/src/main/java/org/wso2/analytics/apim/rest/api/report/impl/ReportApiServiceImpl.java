@@ -1,25 +1,31 @@
 package org.wso2.analytics.apim.rest.api.report.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.wso2.analytics.apim.idp.client.ApimIdPClient;
 import org.wso2.analytics.apim.rest.api.report.NotFoundException;
 import org.wso2.analytics.apim.rest.api.report.ReportApiService;
 import org.wso2.analytics.apim.rest.api.report.api.ReportGenerator;
 import org.wso2.analytics.apim.rest.api.report.internal.ServiceHolder;
 import org.wso2.analytics.apim.rest.api.report.reportgen.DefaultReportGeneratorImpl;
+import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 import org.wso2.carbon.analytics.idp.client.core.exception.AuthenticationException;
 import org.wso2.carbon.analytics.idp.client.core.exception.IdPClientException;
-import org.wso2.carbon.analytics.idp.client.external.dto.OAuth2IntrospectionResponse;
+import org.wso2.carbon.analytics.idp.client.core.models.Role;
+import org.wso2.carbon.analytics.idp.client.core.models.User;
 import org.wso2.msf4j.Request;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.AT;
 
 /**
  * Service implementation class to fetch PDF report.
@@ -27,7 +33,10 @@ import javax.ws.rs.core.Response;
 public class ReportApiServiceImpl extends ReportApiService {
 
     private static final Log log = LogFactory.getLog(ReportApiServiceImpl.class);
-    private static final String ADMIN_SCOPE = "apim_analytics:admin";
+    private static final String ADMIN_SCOPE = "apim_analytics:admin_any";
+    private static final String DASHBOARD_USER = "DASHBOARD_USER=";
+    private static final String AM_COOKIE_P1 = "SDID";
+    private static final String AM_COOKIE_P2 = "HID=";
     /**
      *
      * @param month month in number format. e.g 01, 02
@@ -39,43 +48,46 @@ public class ReportApiServiceImpl extends ReportApiService {
     @Override
     public Response reportGet(String month, String year, Request request) throws NotFoundException {
 
-        HttpHeaders httpHeaders = request.getHeaders();
-
-        List<String> authorization = httpHeaders.getRequestHeader("Authorization");
+        //HttpHeaders httpHeaders = request.getHeaders();
+        String cookie = getAccessToken(request.getHeader("Cookie"));
         //If no authorization information present; block access
-        if (authorization == null || authorization.isEmpty()) {
-            String errorMsg = "Received a request to PDF Reporting REST API without Authorization header.";
+        if (StringUtils.isEmpty(cookie)) {
+            String errorMsg = "Received a request to PDF Reporting REST API without cookie  header.";
             log.error(errorMsg);
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
         }
-        ApimIdPClient idPClient = (ApimIdPClient) ServiceHolder.getInstance().getApimAdminClient();
-        boolean isAdmin;
-        OAuth2IntrospectionResponse introspectionResponse;
+        IdPClient idPClient = ServiceHolder.getInstance().getApimAdminClient();
+        boolean isAdmin = false;
+        String username;
         try {
-            introspectionResponse = idPClient.getIntrospectResponse
-                    (extractTokenFromAuthHeader(authorization));
-            isAdmin = introspectionResponse.getScope().contains(ADMIN_SCOPE);
+            username = idPClient.authenticate(cookie);
+            User user = idPClient.getUser(username);
+            List<Role> rolesOfUser = user.getRoles();
+            for (Role role : rolesOfUser) {
+                if (role.getDisplayName().equals(ADMIN_SCOPE)) {
+                    isAdmin = true;
+                }
+            }
         } catch (IdPClientException | AuthenticationException e) {
             String errorMsg = "Error during token introspection for report generation API.";
             log.error(errorMsg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
         }
         if (isAdmin) {
-            if (StringUtils.isEmpty(month) || StringUtils.isEmpty(year)) {
+            if (StringUtils.isEmpty(year) || StringUtils.isEmpty(month)) {
                 String errorMsg = "Missing required parameters.";
                 log.error(errorMsg);
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorMsg).build();
             }
             InputStream data;
             try {
-                String username = introspectionResponse.getUsername();
-                String tenantDomain = idPClient.extractTenantDomainFromUserName(username);
+                String tenantDomain = extractTenantDomainFromUserName(username);
                 ReportGenerator defaultReportGeneratorImpl = new DefaultReportGeneratorImpl(year, month, tenantDomain);
                 data = defaultReportGeneratorImpl.generateMonthlyRequestSummaryPDF();
                 if (data != null) {
                     return Response.ok().entity(data).build();
                 } else {
-                    String msg = "No data found for required time period";
+                    String msg = "No data found for requested time period";
                     return Response.ok().entity(msg).build();
                 }
 
@@ -86,16 +98,53 @@ public class ReportApiServiceImpl extends ReportApiService {
             }
         } else {
             String errorMsg = "Access token does not contain admin scope. Hence unable to fetch report for user :" +
-                    introspectionResponse.getUsername();
+                    username;
             log.error(errorMsg);
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
         }
     }
 
-    private String extractTokenFromAuthHeader(List<String> authHeader) {
+    /**
+     * Construct the access token from cookies.
+     *
+     * @param cookies cookies string received with the request
+     * @return the access token
+     */
+    private String getAccessToken(String cookies) {
+        List<String> cookieList = Arrays.asList(cookies.split(";"));
+        String accessTokenP1 = "";
+        String accessTokenP2 = "";
 
-        String encodedCredentials = authHeader.get(0).replaceFirst("Bearer" + " ", "");
-        return encodedCredentials;
+        for (String cookie : cookieList) {
+            if (cookie.contains(DASHBOARD_USER)) {
+                String userDTO = cookie.replace(DASHBOARD_USER, "");
+                JsonObject jsonUserDto = new Gson().fromJson(userDTO, JsonObject.class);
+                JsonElement element = jsonUserDto.get(AM_COOKIE_P1);
+                if (element != null) {
+                    accessTokenP1 = element.getAsString();
+                }
+            } else if (cookie.contains(AM_COOKIE_P2)) {
+                accessTokenP2 = cookie.replace(AM_COOKIE_P2, "").trim();
+            }
+        }
+
+        return accessTokenP1 + accessTokenP2;
+    }
+
+    private String extractTenantDomainFromUserName(String username) throws IdPClientException {
+        if (username == null || username.isEmpty()) {
+            String error = "Username cannot be empty.";
+            log.error(error);
+            throw new IdPClientException(error);
+        }
+        String[] usernameSections = username.split(AT);
+        String tenantDomain = usernameSections[usernameSections.length - 1];
+        if (tenantDomain == null) {
+            String error = "Cannot get the tenant domain from the given username: " + username;
+            log.error(error);
+            throw new IdPClientException(error);
+        }
+        return tenantDomain;
     }
 
 }

@@ -910,10 +910,6 @@
                                     <id>org.wso2.analytics.apim.rest.api.proxy.feature</id>
                                     <version>${project.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.analytics.apim.rest.api.report.feature</id>
-                                    <version>${project.version}</version>
-                                </feature>
 
                                 <!-- Databridge feature -->
                                 <feature>

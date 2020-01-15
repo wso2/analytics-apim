@@ -24,8 +24,6 @@ import java.util.ArrayList;
 /**
  * This class represents the bean class forthe returned event/record from the table
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaMSF4JServerCodegen",
-        date = "2017-11-01T11:26:25.925Z")
 public class Record extends ArrayList<Object> {
 
     @Override

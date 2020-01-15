@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Represents a table with data.
  */
 public class TableData {
     private String[] columnHeaders;

@@ -29,8 +29,6 @@ import java.util.Objects;
 /**
  * This class represents the bean class for the response of the query api
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaMSF4JServerCodegen",
-        date = "2017-11-01T11:26:25.925Z")
 public class ModelApiResponse {
     @JsonProperty("records")
     private List<Record> records = null;

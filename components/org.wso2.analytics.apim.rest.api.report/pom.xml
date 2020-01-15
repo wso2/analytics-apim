@@ -3,9 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>analytics-apim-components</artifactId>
         <groupId>org.wso2.analytics.apim</groupId>
+        <artifactId>analytics-apim-components</artifactId>
         <version>3.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -67,6 +68,10 @@
             <artifactId>msf4j-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>
@@ -87,10 +92,6 @@
             <artifactId>siddhi-query-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
             <artifactId>org.wso2.analytics.apim.idp.client</artifactId>
         </dependency>
@@ -102,18 +103,17 @@
 
     <properties>
         <import.package>
-            org.wso2.carbon.config.*; version="${carbon.config.version.range}",
             org.wso2.msf4j.*; version="[2.4.0, 3.0.0)",
             javax.ws.rs.*; version="[2.0.0,3.0.0)",
-            org.wso2.analytics.apim.idp.client.*;version="${project.version}",
-            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
-            org.apache.commons.lang3.*;version="${apache.commons.import.range}",
             org.apache.pdfbox.*;version="${pdfbox.version}",
-            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
+            org.json.simple.*,
+            io.siddhi.core.*,
+            io.siddhi.query.*,
             *;resolution:=optional
         </import.package>
+        <dynamic.import.package>*</dynamic.import.package>
         <export.package>
-            org.wso2.analytics.apim.rest.api.report.*; version="${project.version}",
+            org.wso2.analytics.apim.rest.api.report.*;version="${project.version}",
         </export.package>
         <carbon.component>
             osgi.service; objectClass="org.wso2.msf4j.Microservice"; serviceCount="1"

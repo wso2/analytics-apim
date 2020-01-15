@@ -243,7 +243,7 @@ public class ApimIdPClient extends ExternalIdPClient {
      * @throws IdPClientException thrown when the username is empty or when an error occurred when retrieve the tenant
      * domain.
      */
-    public String extractTenantDomainFromUserName(String username) throws IdPClientException {
+    private String extractTenantDomainFromUserName(String username) throws IdPClientException {
         if (username == null || username.isEmpty()) {
             String error = "Username cannot be empty.";
             LOG.error(error);
