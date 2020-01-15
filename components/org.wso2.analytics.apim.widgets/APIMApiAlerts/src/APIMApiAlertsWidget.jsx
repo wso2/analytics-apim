@@ -25,7 +25,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -49,11 +48,6 @@ const lightTheme = createMuiTheme({
     },
 });
 
-/**
- * Query string parameter
- * @type {string}
- */
-const queryParamKey = 'apimapialerts';
 
 /**
  * Language
@@ -395,7 +389,6 @@ class APIMApiAlertsWidget extends Widget {
                 "hits": x[1]
             };
         });
-
         
         this.setState({ finaldataset,tableDataSet, isloading: false, legandDataSet});
     }

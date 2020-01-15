@@ -2,6 +2,7 @@
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Api Alerts widget",
   "widget.heading": "API ALERTS",
-  "nodata.error.heading": "No Data Available!"
+  "nodata.error.heading": "No Data Available!",
+  "nodata.error.body": "No data available for the selected options!"
   
 }
