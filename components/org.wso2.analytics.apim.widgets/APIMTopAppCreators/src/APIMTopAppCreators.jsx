@@ -74,7 +74,7 @@ export default function APIMTopAppCreators(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         formWrapper: {
             marginBottom: '5%',
@@ -174,7 +174,8 @@ export default function APIMTopAppCreators(props) {
                                             <Typography variant='h5' component='h3'>
                                                 <FormattedMessage
                                                     id='nodata.error.heading'
-                                                    defaultMessage='No Data Available !' />
+                                                    defaultMessage='No Data Available !'
+                                                />
                                             </Typography>
                                             <Typography component='p'>
                                                 <FormattedMessage
@@ -208,7 +209,8 @@ export default function APIMTopAppCreators(props) {
                                                 padding={{
                                                     left: 50, bottom: 50, top: 50, right: 50,
                                                 }}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                    '#e01171', '#ffe2ff']}
                                                 data={creatorData}
                                                 x={d => d.creator}
                                                 y={d => d.appcount}
@@ -217,7 +219,8 @@ export default function APIMTopAppCreators(props) {
                                             />
                                             <VictoryLegend
                                                 standalone={false}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                    '#e01171', '#ffe2ff']}
                                                 x={450}
                                                 y={20}
                                                 gutter={20}
@@ -231,7 +234,7 @@ export default function APIMTopAppCreators(props) {
                                                 data={legendData}
                                             />
                                         </svg>
-                                        <CustomTable data={creatorData}/>
+                                        <CustomTable data={creatorData} />
                                     </div>
                                 )}
                             </div>
@@ -247,6 +250,8 @@ APIMTopAppCreators.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
+    handleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
     creatorData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
 };

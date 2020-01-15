@@ -55,7 +55,7 @@ export default function APIMApiLatency(props) {
             width: '95%',
         },
         formWrapper: {
-            marginBottom:'5%',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
@@ -80,7 +80,7 @@ export default function APIMApiLatency(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         loadingIcon: {
             margin: 'auto',
@@ -104,7 +104,7 @@ export default function APIMApiLatency(props) {
     // Check whether the API is graphQL.
     // Evaluated by checking the method of the first resource.
     let isGraphQL;
-    if (resourceList.length > 0) {
+    if (resourceList && resourceList.length > 0) {
         const resFormat = resourceList[0].split(' (');
         const method = resFormat[1].replace(')', '');
         isGraphQL = (method === 'QUERY' || method === 'MUTATION' || method === 'SUBSCRIPTION');
@@ -237,7 +237,9 @@ export default function APIMApiLatency(props) {
                                                 <FormControlLabel
                                                     control={(
                                                         <Checkbox
-                                                            checked={queryParam.operationSelected.includes(option.toString())}
+                                                            checked={
+                                                                queryParam.operationSelected.includes(option.toString())
+                                                            }
                                                             onChange={apiOperationHandleChange}
                                                             value={option.toString()}
                                                         />
@@ -254,7 +256,8 @@ export default function APIMApiLatency(props) {
                                                 <FormControlLabel
                                                     control={(
                                                         <Radio
-                                                            checked={queryParam.resourceSelected.includes(option.toString())}
+                                                            checked={
+                                                                queryParam.resourceSelected.includes(option.toString())}
                                                             onChange={apiResourceHandleChange}
                                                             value={option.toString()}
                                                         />
@@ -331,4 +334,5 @@ APIMApiLatency.propTypes = {
     apiVersionHandleChange: PropTypes.func.isRequired,
     apiOperationHandleChange: PropTypes.func.isRequired,
     apiResourceHandleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

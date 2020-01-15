@@ -27,7 +27,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
-import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -56,7 +55,7 @@ export default function APIMApiVersionUsage(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         formWrapper: {
             marginBottom: '5%',
@@ -182,7 +181,8 @@ export default function APIMApiVersionUsage(props) {
                                     <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='nodata.error.heading'
-                                            defaultMessage='No Data Available !' />
+                                            defaultMessage='No Data Available !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
@@ -193,7 +193,7 @@ export default function APIMApiVersionUsage(props) {
                                 </Paper>
                             </div>
                         ) : (
-                            <CustomTable data={usageData}/>
+                            <CustomTable data={usageData} />
                         )}
                     </div>
                 )}
@@ -210,4 +210,5 @@ APIMApiVersionUsage.propTypes = {
     usageData: PropTypes.instanceOf(Object).isRequired,
     apiCreatedHandleChange: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

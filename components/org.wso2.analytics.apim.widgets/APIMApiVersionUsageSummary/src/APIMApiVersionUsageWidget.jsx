@@ -127,7 +127,7 @@ class APIMApiVersionUsageWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -163,7 +163,8 @@ class APIMApiVersionUsageWidget extends Widget {
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiVersionUsageSummary/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiVersionUsageSummary/locales/`
+                    + `${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -184,7 +185,7 @@ class APIMApiVersionUsageWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -237,7 +238,7 @@ class APIMApiVersionUsageWidget extends Widget {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
-            '{{limit}}': limit
+            '{{limit}}': limit,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
@@ -258,7 +259,7 @@ class APIMApiVersionUsageWidget extends Widget {
                     apiname: dataUnit[0] + ' (' + dataUnit[2] + ')',
                     version: dataUnit[1],
                     hits: dataUnit[3],
-                }
+                };
             });
             this.setState({ usageData, inProgress: false });
             this.setQueryParam(apiCreatedBy, limit);

@@ -55,7 +55,7 @@ export default function APIMApiBackendUsage(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         formWrapper: {
             marginBottom: '5%',
@@ -95,7 +95,8 @@ export default function APIMApiBackendUsage(props) {
                 height,
                 margin: '10px',
                 padding: '20px',
-            }}>
+            }}
+            >
                 <div style={styles.headingWrapper}>
                     <h3 style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -178,7 +179,8 @@ export default function APIMApiBackendUsage(props) {
                                     <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='nodata.error.heading'
-                                            defaultMessage='No Data Available !' />
+                                            defaultMessage='No Data Available !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
@@ -189,7 +191,7 @@ export default function APIMApiBackendUsage(props) {
                                 </Paper>
                             </div>
                         ) : (
-                            <CustomTable data={usageData}/>
+                            <CustomTable data={usageData} />
                         )}
                     </div>
                 )}
@@ -206,4 +208,5 @@ APIMApiBackendUsage.propTypes = {
     usageData: PropTypes.instanceOf(Object).isRequired,
     apiCreatedHandleChange: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

@@ -149,7 +149,7 @@ class APIMTopAgentsWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -207,7 +207,7 @@ class APIMTopAgentsWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -229,7 +229,9 @@ class APIMTopAgentsWidget extends Widget {
      * */
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy, apiSelected, apiVersion, limit } = queryParam;
+        let {
+            apiCreatedBy, apiSelected, apiVersion, limit,
+        } = queryParam;
         const { versionMap, apilist } = this.state;
         let versions;
 
@@ -268,7 +270,7 @@ class APIMTopAgentsWidget extends Widget {
                 this.setState({ proxyError: null });
                 this.handleApiListReceived(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 if (error.response && error.response.data) {
                     let proxyError = error.response.data;
                     proxyError = proxyError.split(':').splice(1).join('').trim();
@@ -288,11 +290,11 @@ class APIMTopAgentsWidget extends Widget {
         const { id } = this.props;
         const { username } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy  } = queryParam;
+        const { apiCreatedBy } = queryParam;
 
         if (list && list.length > 0) {
             if (apiCreatedBy !== 'All') {
-                list = list.filter((dataUnit) =>  dataUnit.provider === username );
+                list = list.filter(dataUnit => dataUnit.provider === username);
             }
 
             let apilist = [];
@@ -301,11 +303,11 @@ class APIMTopAgentsWidget extends Widget {
                 apilist.push(dataUnit.name);
                 // retrieve all entries for the api and get the api versions list
                 const versions = list.filter(d => d.name === dataUnit.name);
-                const versionlist = versions.map(ver => { return ver.version; });
+                const versionlist = versions.map((ver) => { return ver.version; });
                 versionlist.unshift('All');
                 versionMap[dataUnit.name] = versionlist;
             });
-            versionMap['All'] = ['All'];
+            versionMap.All = ['All'];
             apilist = [...new Set(apilist)];
             apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             apilist.unshift('All');
@@ -331,7 +333,7 @@ class APIMTopAgentsWidget extends Widget {
         if (apilist && apilist.length > 0) {
             let queryString = '';
             if (apiSelected === 'All' && apiVersion === 'All') {
-                let apis = apilist.slice(1).map(api => { return 'apiName==\'' + api + '\''});
+                let apis = apilist.slice(1).map((api) => { return 'apiName==\'' + api + '\''; });
                 apis = apis.join(' OR ');
                 queryString = 'AND (' + apis + ')';
             } else if (apiSelected !== 'All' && apiVersion !== 'All') {
@@ -347,7 +349,7 @@ class APIMTopAgentsWidget extends Widget {
                 '{{timeTo}}': timeTo,
                 '{{per}}': perValue,
                 '{{limit}}': limit,
-                '{{querystring}}': queryString
+                '{{querystring}}': queryString,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -376,7 +378,7 @@ class APIMTopAgentsWidget extends Widget {
                 }
                 agentData.push({
                     agent: dataUnit[0],
-                    reqCount: dataUnit[1]
+                    reqCount: dataUnit[1],
                 });
             });
 
@@ -434,7 +436,7 @@ class APIMTopAgentsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(event.target.value, 'All', 'All', limit);
-        this.setState( { inProgress: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiListQuery();
     }
@@ -449,7 +451,7 @@ class APIMTopAgentsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, event.target.value, 'All', limit);
-        this.setState( { inProgress: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -464,7 +466,7 @@ class APIMTopAgentsWidget extends Widget {
         const { id } = this.props;
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, limit);
-        this.setState( { inProgress: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
@@ -510,7 +512,8 @@ class APIMTopAgentsWidget extends Widget {
                                 <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='apim.server.error.heading'
-                                        defaultMessage='Error!' />
+                                        defaultMessage='Error!'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     { proxyError }

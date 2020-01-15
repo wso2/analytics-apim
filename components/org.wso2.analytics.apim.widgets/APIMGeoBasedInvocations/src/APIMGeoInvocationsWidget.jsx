@@ -106,7 +106,7 @@ class APIMGeoInvocationsWidget extends Widget {
 
         this.metadata = {
             names: ['count', 'Country'],
-            types: ['linear','ordinal'],
+            types: ['linear', 'ordinal'],
         };
 
         this.styles = {
@@ -171,7 +171,7 @@ class APIMGeoInvocationsWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -210,7 +210,7 @@ class APIMGeoInvocationsWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -252,7 +252,7 @@ class APIMGeoInvocationsWidget extends Widget {
     resetState() {
         const queryParam = super.getGlobalState(queryParamKey);
         let {
-            apiCreatedBy, apiSelected, apiVersion
+            apiCreatedBy, apiSelected, apiVersion,
         } = queryParam;
         const { apilist, versionMap } = this.state;
         let versions;
@@ -262,7 +262,7 @@ class APIMGeoInvocationsWidget extends Widget {
         }
         if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
             if (apilist.length > 0) {
-                apiSelected = apilist[0];
+                [apiSelected] = apilist;
             }
         }
         if (versionMap && apiSelected in versionMap) {
@@ -272,14 +272,14 @@ class APIMGeoInvocationsWidget extends Widget {
         }
         if (!apiVersion || !versions.includes(apiVersion)) {
             if (versions.length > 0) {
-                apiVersion = versions[0];
+                [apiVersion] = versions;
             } else {
                 apiVersion = '';
             }
         }
 
         this.setState({
-            apiCreatedBy, apiSelected, apiVersion, versionlist: versions
+            apiCreatedBy, apiSelected, apiVersion, versionlist: versions,
         });
         this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
     }
@@ -317,8 +317,8 @@ class APIMGeoInvocationsWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiCreatedBy } = queryParam;
         if (list && list.length > 0) {
-            if (apiCreatedBy !== "All") {
-                list = list.filter(api => { return api.provider === username; })
+            if (apiCreatedBy !== 'All') {
+                list = list.filter((api) => { return api.provider === username; });
             }
 
             let apilist = [];
@@ -327,7 +327,7 @@ class APIMGeoInvocationsWidget extends Widget {
                 apilist.push(dataUnit.name);
                 // retrieve all entries for the api and get the api versions list
                 const versions = list.filter(d => d.name === dataUnit.name);
-                const versionlist = versions.map(ver => { return ver.version; });
+                const versionlist = versions.map((ver) => { return ver.version; });
                 versionMap[dataUnit.name] = versionlist;
             });
             apilist = [...new Set(apilist)];
@@ -361,14 +361,14 @@ class APIMGeoInvocationsWidget extends Widget {
                 '{{per}}': perValue,
                 '{{querystring}}': "AND apiName=='{{api}}' AND apiVersion=='{{version}}'",
                 '{{api}}': apiSelected,
-                '{{version}}': apiVersion
+                '{{version}}': apiVersion,
             };
         } else {
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{timeFrom}}': timeFrom,
                 '{{timeTo}}': timeTo,
                 '{{per}}': perValue,
-                '{{querystring}}': ''
+                '{{querystring}}': '',
             };
         }
         super.getWidgetChannelManager()
@@ -387,7 +387,7 @@ class APIMGeoInvocationsWidget extends Widget {
             const { apiCreatedBy, apiSelected, apiVersion } = this.state;
             this.setState({ geoData: data, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
-        }  else {
+        } else {
             this.setState({ inProgress: false, geoData: [] });
         }
     }
@@ -460,7 +460,9 @@ class APIMGeoInvocationsWidget extends Widget {
             localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, apiCreatedBy, inProgress,
             apiSelected, apiVersion, geoData, apilist, versionlist, proxyError,
         } = this.state;
-        const { paper, paperWrapper, proxyPaperWrapper, proxyPaper } = this.styles;
+        const {
+            paper, paperWrapper, proxyPaperWrapper, proxyPaper,
+        } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const geoProps = {
@@ -490,7 +492,8 @@ class APIMGeoInvocationsWidget extends Widget {
                                 <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='apim.server.error.heading'
-                                        defaultMessage='Error!' />
+                                        defaultMessage='Error!'
+                                    />
                                 </Typography>
                                 <Typography component='p'>
                                     { proxyError }

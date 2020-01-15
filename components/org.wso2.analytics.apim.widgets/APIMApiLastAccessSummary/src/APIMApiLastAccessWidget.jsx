@@ -48,15 +48,6 @@ const lightTheme = createMuiTheme({
 });
 
 /**
-* Query string parameter values
-* @type {object}
-*/
-const createdByKeys = {
-    All: 'All',
-    Me: 'Me',
-};
-
-/**
  * Query string parameter
  * @type {string}
  */
@@ -188,7 +179,7 @@ class APIMApiLastAccessWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
 
@@ -224,7 +215,7 @@ class APIMApiLastAccessWidget extends Widget {
         dataProviderConfigs.configs.config.queryData.queryName = 'lastaccessquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{limit}}': limit,
-            '{{apiCreator}}': apiCreatedBy !== 'All' ? 'AND apiCreator==\'' + username + '\'' : ''
+            '{{apiCreator}}': apiCreatedBy !== 'All' ? 'AND apiCreator==\'' + username + '\'' : '',
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiAccessReceived, dataProviderConfigs);
@@ -239,14 +230,14 @@ class APIMApiLastAccessWidget extends Widget {
         const { data } = message;
 
         if (data) {
-            const accessData = data.map(dataUnit => {
+            const accessData = data.map((dataUnit) => {
                 return {
                     apiname: dataUnit[0] + ' (' + dataUnit[2] + ')',
                     version: dataUnit[1],
                     context: dataUnit[3],
                     subscriber: dataUnit[4],
                     lastaccess: dataUnit[5],
-                }
+                };
             });
             this.setState({ accessData, inProgress: false });
         } else {
@@ -271,7 +262,7 @@ class APIMApiLastAccessWidget extends Widget {
      * */
     handleChange(event) {
         const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy } = queryParam;
+        const { apiCreatedBy } = queryParam;
         const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 

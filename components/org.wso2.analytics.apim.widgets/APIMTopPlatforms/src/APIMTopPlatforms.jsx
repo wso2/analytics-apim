@@ -58,10 +58,10 @@ export default function APIMTopPlatforms(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         formWrapper: {
-            marginBottom:'5%',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
@@ -225,7 +225,8 @@ export default function APIMTopPlatforms(props) {
                                     <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='nodata.error.heading'
-                                            defaultMessage='No Data Available !' />
+                                            defaultMessage='No Data Available !'
+                                        />
                                     </Typography>
                                     <Typography component='p'>
                                         <FormattedMessage
@@ -305,4 +306,5 @@ APIMTopPlatforms.propTypes = {
     apiSelectedHandleChange: PropTypes.func.isRequired,
     apiVersionHandleChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

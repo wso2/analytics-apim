@@ -133,7 +133,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -191,7 +191,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         if (username.split('@').length === 2) {
             username = username.replace('@carbon.super', '');
         }
-        this.setState({ username })
+        this.setState({ username });
     }
 
     /**
@@ -211,7 +211,9 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      * @memberof APIMApiCreatedAnalyticsWidget
      * */
     assembleQuery() {
-        const { providerConfig, timeFrom, timeTo, username } = this.state;
+        const {
+            providerConfig, timeFrom, timeTo, username,
+        } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { createdBy } = queryParam;
 
@@ -228,7 +230,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
             '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
             '{{createdBy}}': createdBy === createdByKeys.me ? "AND CREATED_BY='{{creator}}'" : '',
-            '{{creator}}': username
+            '{{creator}}': username,
         };
         super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
@@ -277,7 +279,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             }
 
             this.setState({
-                chartData, tableData, xAxisTicks, maxCount, inProgress: false
+                chartData, tableData, xAxisTicks, maxCount, inProgress: false,
             });
         } else {
             this.setState({ inProgress: false, chartData: [], tableData: [] });
@@ -317,7 +319,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, createdBy, chartData, tableData, xAxisTicks, maxCount,
-            inProgress
+            inProgress,
         } = this.state;
         const {
             paper, paperWrapper,

@@ -71,7 +71,7 @@ export default function APIMTopThrottledApis(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         formWrapper: {
             marginBottom: '5%',
@@ -156,7 +156,8 @@ export default function APIMTopThrottledApis(props) {
                                             <Typography variant='h5' component='h3'>
                                                 <FormattedMessage
                                                     id='nodata.error.heading'
-                                                    defaultMessage='No Data Available !' />
+                                                    defaultMessage='No Data Available !'
+                                                />
                                             </Typography>
                                             <Typography component='p'>
                                                 <FormattedMessage
@@ -166,7 +167,7 @@ export default function APIMTopThrottledApis(props) {
                                             </Typography>
                                         </Paper>
                                     </div>
-                                ) :(
+                                ) : (
                                     <div>
                                         <svg viewBox='-50 0 1000 500'>
                                             <VictoryPie
@@ -189,16 +190,19 @@ export default function APIMTopThrottledApis(props) {
                                                 padding={{
                                                     left: 50, bottom: 50, top: 50, right: 50,
                                                 }}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                    '#e01171', '#ffe2ff']}
                                                 data={throttledData}
                                                 x={d => d.apiname}
                                                 y={d => d.throttledcount}
                                                 labels={d => `${d.apiname} : ${((d.throttledcount
-                                                    / (sumBy(throttledData, o => o.throttledcount))) * 100).toFixed(2)}%`}
+                                                    / (sumBy(throttledData, o => o.throttledcount))) * 100)
+                                                    .toFixed(2)}%`}
                                             />
                                             <VictoryLegend
                                                 standalone={false}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                    '#e01171', '#ffe2ff']}
                                                 x={450}
                                                 y={20}
                                                 gutter={20}
@@ -233,4 +237,5 @@ APIMTopThrottledApis.propTypes = {
     throttledData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

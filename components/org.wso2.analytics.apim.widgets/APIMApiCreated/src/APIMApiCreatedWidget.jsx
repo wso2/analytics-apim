@@ -124,7 +124,7 @@ class APIMApiCreatedWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -160,7 +160,7 @@ class APIMApiCreatedWidget extends Widget {
         const { refreshIntervalId } = this.state;
         clearInterval(refreshIntervalId);
         this.setState({
-            refreshIntervalId: null
+            refreshIntervalId: null,
         });
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
@@ -207,7 +207,7 @@ class APIMApiCreatedWidget extends Widget {
         const { id } = this.props;
 
         if (data) {
-            this.setState({ totalCount:  data.length < 10 ? ('0' + data.length) : data.length });
+            this.setState({ totalCount: data.length < 10 ? ('0' + data.length) : data.length });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleweekQuery();
@@ -226,7 +226,7 @@ class APIMApiCreatedWidget extends Widget {
         dataProviderConfigs.configs.config.queryData.queryName = 'weekQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{weekStart}}': Moment(weekStart).format('YYYY-MM-DD HH:mm:ss'),
-            '{{weekEnd}}': Moment().format('YYYY-MM-DD HH:mm:ss')
+            '{{weekEnd}}': Moment().format('YYYY-MM-DD HH:mm:ss'),
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleWeekCountReceived, dataProviderConfigs);

@@ -138,7 +138,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -175,7 +175,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
         const { refreshIntervalId } = this.state;
         clearInterval(refreshIntervalId);
         this.setState({
-            refreshIntervalId: null
+            refreshIntervalId: null,
         });
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
@@ -218,7 +218,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
 
         dataProviderConfigs.configs.config.queryData.queryName = 'appCountQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{appOwner}}': username
+            '{{appOwner}}': username,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleAppCountDataReceived, dataProviderConfigs);
@@ -259,7 +259,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
 
         dataProviderConfigs.configs.config.queryData.queryName = 'applicationQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{appOwner}}': username
+            '{{appOwner}}': username,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleAppDataReceived, dataProviderConfigs);
@@ -304,7 +304,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             const appIdListQuery = 'APPLICATION_ID==' + appIdList.join(' or APPLICATION_ID==');
             dataProviderConfigs.configs.config.queryData.queryName = 'appKeyMapQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{query}}': appIdListQuery
+                '{{query}}': appIdListQuery,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleAppKeyDataReceived, dataProviderConfigs);
@@ -351,7 +351,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
             const appKeyListQuery = 'CONSUMER_KEY==\'' + appKeyList.join('\' or CONSUMER_KEY==\'') + '\'';
             dataProviderConfigs.configs.config.queryData.queryName = 'consumerAppsQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{query}}': appKeyListQuery
+                '{{query}}': appKeyListQuery,
             };
             super.getWidgetChannelManager().subscribeWidget(id, widgetName,
                 this.handleConsumerAppsDataReceived, dataProviderConfigs);
@@ -399,7 +399,7 @@ class APIMRegisteredAppUsersWidget extends Widget {
                 + consumerKeyList.join(' or CONSUMER_KEY_ID==');
             dataProviderConfigs.configs.config.queryData.queryName = 'accessTokenQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{query}}': consumerKeyListQuery
+                '{{query}}': consumerKeyListQuery,
             };
             super.getWidgetChannelManager().subscribeWidget(id, widgetName,
                 this.handleAppAccessDataReceived, dataProviderConfigs);
@@ -446,21 +446,21 @@ class APIMRegisteredAppUsersWidget extends Widget {
 
         if (applicationList) {
             applicationList.map((app) => {
-            const consumerKeysList = appKeyMapList.filter((appKey) => { return appKey.appId === app.appId; });
-            if (consumerKeysList.length > 0) {
-                const consumerKeys = consumerKeysList.map((key) => { return key.consumerKey; });
-                const consumerKeyIdList = consumerKeyMapList
-                    .filter((appKey) => { return consumerKeys.includes(appKey.consumerKey); });
-                const consumerKeyIds = consumerKeyIdList.map((keyId) => { return keyId.consumerKeyId; });
-                const appUsers = appAccessList
-                    .filter((users) => { return consumerKeyIds.includes(users.consumerKeyId); });
-                const usernames = appUsers.map((user) => { return user.user; });
-                const distinctappUsers = [...new Set(usernames)];
+                const consumerKeysList = appKeyMapList.filter((appKey) => { return appKey.appId === app.appId; });
+                if (consumerKeysList.length > 0) {
+                    const consumerKeys = consumerKeysList.map((key) => { return key.consumerKey; });
+                    const consumerKeyIdList = consumerKeyMapList
+                        .filter((appKey) => { return consumerKeys.includes(appKey.consumerKey); });
+                    const consumerKeyIds = consumerKeyIdList.map((keyId) => { return keyId.consumerKeyId; });
+                    const appUsers = appAccessList
+                        .filter((users) => { return consumerKeyIds.includes(users.consumerKeyId); });
+                    const usernames = appUsers.map((user) => { return user.user; });
+                    const distinctappUsers = [...new Set(usernames)];
 
-                usageData.push({ applicationName: [app.appName], users: distinctappUsers.length });
-                legendData.push({ name: app.appName });
-            }
-            return null;
+                    usageData.push({ applicationName: [app.appName], users: distinctappUsers.length });
+                    legendData.push({ name: app.appName });
+                }
+                return null;
             });
         }
         this.setState({ usageData, legendData, inProgress: false });

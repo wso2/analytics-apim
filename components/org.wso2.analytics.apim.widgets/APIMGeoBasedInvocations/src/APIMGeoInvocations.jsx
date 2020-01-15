@@ -40,7 +40,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 export default function APIMGeoInvocations(props) {
     const {
         themeName, chartConfig, metadata, width, geoData, inProgress, height, apiCreatedBy, apiSelected,
-        apiVersion, apilist, versionlist, apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange
+        apiVersion, apilist, versionlist, apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange,
     } = props;
     const styles = {
         paperWrapper: {
@@ -52,7 +52,7 @@ export default function APIMGeoInvocations(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         dataWrapper: {
             height: '80%',
@@ -222,7 +222,10 @@ export default function APIMGeoInvocations(props) {
                                         style={styles.paper}
                                     >
                                         <Typography variant='h5' component='h3'>
-                                            <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
+                                            <FormattedMessage
+                                                id='nodata.error.heading'
+                                                defaultMessage='No Data Available !'
+                                            />
                                         </Typography>
                                         <Typography component='p'>
                                             <FormattedMessage
@@ -257,4 +260,14 @@ APIMGeoInvocations.propTypes = {
     metadata: PropTypes.instanceOf(Object).isRequired,
     width: PropTypes.string.isRequired,
     geoData: PropTypes.instanceOf(Object).isRequired,
+    inProgress: PropTypes.bool.isRequired,
+    height: PropTypes.string.isRequired,
+    apiCreatedBy: PropTypes.string.isRequired,
+    apiSelected: PropTypes.string.isRequired,
+    apiVersion: PropTypes.string.isRequired,
+    apilist: PropTypes.instanceOf(Object).isRequired,
+    versionlist: PropTypes.instanceOf(Object).isRequired,
+    apiCreatedHandleChange: PropTypes.func.isRequired,
+    apiSelectedHandleChange: PropTypes.func.isRequired,
+    apiVersionHandleChange: PropTypes.func.isRequired,
 };

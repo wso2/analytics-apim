@@ -28,7 +28,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import sumBy from 'lodash/sumBy';
@@ -59,13 +58,10 @@ export default function APIMTopAppUsers(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
         },
         formWrapper: {
             marginBottom: '5%',
-        },
-        gridWrapper: {
-            marginLeft: '5%',
         },
         form: {
             display: 'flex',
@@ -81,6 +77,7 @@ export default function APIMTopAppUsers(props) {
             minWidth: 120,
         },
         select: {
+            minWidth: width * 0.3 < 200 ? 150 : 200,
         },
         inProgress: {
             display: 'flex',
@@ -143,7 +140,8 @@ export default function APIMTopAppUsers(props) {
                 height,
                 margin: '10px',
                 padding: '20px',
-            }}>
+            }}
+            >
                 <div style={styles.headingWrapper}>
                     <h3 style={styles.h3}>
                         <FormattedMessage id='widget.heading' defaultMessage='TOP APPLICATION USERS' />
@@ -154,7 +152,12 @@ export default function APIMTopAppUsers(props) {
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
-                                title={<FormattedMessage id='applicationName.label' defaultMessage='Application Name' />}
+                                title={(
+                                    <FormattedMessage
+                                        id='applicationName.label'
+                                        defaultMessage='Application Name'
+                                    />
+                                )}
                             >
                                 <InputLabel
                                     shrink

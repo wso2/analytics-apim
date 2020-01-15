@@ -114,7 +114,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -185,7 +185,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss')
+            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -249,7 +249,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
             localeMessages, faultyProviderConfig, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
         } = this.state;
         const {
-            paper, paperWrapper
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
