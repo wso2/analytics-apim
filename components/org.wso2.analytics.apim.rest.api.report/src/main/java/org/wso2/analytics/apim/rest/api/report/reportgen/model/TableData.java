@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -39,11 +39,17 @@ public class TableData {
     }
 
     public String[] getColumnHeaders() {
-        return columnHeaders;
+
+        if (columnHeaders != null) {
+            return columnHeaders.clone();
+        } else {
+            return new String[0];
+        }
     }
 
     public void setColumnHeaders(String[] columnHeaders) {
-        this.columnHeaders = columnHeaders;
+
+        this.columnHeaders = columnHeaders.clone();
     }
 
 }

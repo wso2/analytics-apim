@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+* Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -35,11 +35,11 @@ import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 )
 public class ReportComponent {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ReportComponent.class);
+    private static final Logger log = LoggerFactory.getLogger(ReportComponent.class);
 
     @Activate
     protected void activate(BundleContext bundleContext) {
-        LOG.debug("activating ReportComponent bundle");
+        log.debug("activating ReportComponent bundle");
     }
 
     @Deactivate

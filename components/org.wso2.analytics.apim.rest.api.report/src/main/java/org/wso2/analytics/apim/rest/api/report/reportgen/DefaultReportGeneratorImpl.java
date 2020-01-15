@@ -51,7 +51,6 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
 
     private static final Log log = LogFactory.getLog(DefaultReportGeneratorImpl.class);
     private static final String REQUEST_SUMMARY_MONTHLY_APP_NAME = "/APIMTopAppUsersReport.siddhi";
-
     private List<Integer> recordsPerPageList;
     private TableData table;
     private PDDocument document;
@@ -93,18 +92,13 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
         return document;
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @throws COSVisitorException
-     */
+    @Override
     public InputStream generateMonthlyRequestSummaryPDF() throws IOException,
             COSVisitorException {
 
         if (table.getRows().size() == 0) {
             return null;
         }
-
         log.debug("Starting to generate PDF.");
         PDPageContentStream contentStream = new PDPageContentStream(document, pageMap.get(1), true, false);
 
@@ -145,30 +139,23 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
                 "applicationName, applicationOwner, sum(totalRequestCount) as " +
                 "RequestCount group by " +
                 "apiName, apiVersion, applicationName, applicationOwner order by RequestCount desc";
-        Event[] events = siddhiAppRuntime.query(requestCountQuery);
-        List<Record> records = ReportGeneratorUtil.getRecords(events);
-        ModelApiResponse response = new ModelApiResponse();
-        response.setRecords(records);
-        Attribute[] attributes = siddhiAppRuntime.getOnDemandQueryOutputAttributes(requestCountQuery);
-        response.setDetails(ReportGeneratorUtil.getRecordDetails(attributes));
 
-        if (response != null) {
-            List<RowEntry> rowData = new ArrayList<RowEntry>();
-            //build data object to pass for generation
-            int recordNumber = 1;
-            for (Record record : response.getRecords()) {
-                RowEntry entry = new RowEntry();
-                entry.setEntry(recordNumber + ")");
-                entry.setEntry(record.get(0).toString());
-                entry.setEntry(record.get(1).toString());
-                entry.setEntry(record.get(2).toString());
-                entry.setEntry(record.get(3).toString());
-                entry.setEntry(record.get(4).toString());
-                rowData.add(entry);
-                table.setRows(rowData);
-                recordNumber += 1;
-            }
+        Event[] events = siddhiAppRuntime.query(requestCountQuery);
+        List<RowEntry> rowData = new ArrayList<>();
+        int recordNumber = 1;
+        for (Event event : events) {
+            RowEntry entry = new RowEntry();
+            entry.setEntry(recordNumber + ")");
+            entry.setEntry(event.getData(0).toString());
+            entry.setEntry(event.getData(1).toString());
+            entry.setEntry(event.getData(2).toString());
+            entry.setEntry(event.getData(3).toString());
+            entry.setEntry(event.getData(4).toString());
+            rowData.add(entry);
+            table.setRows(rowData);
+            recordNumber += 1;
         }
+
         return table;
     }
 

@@ -28,8 +28,10 @@ import java.io.InputStream;
 public interface ReportGenerator {
 
     /**
-     * Generates monthly request summary report
+     * Generates monthly request summary report.
      * @return
+     * @throws IOException
+     * @throws COSVisitorException
      */
     InputStream generateMonthlyRequestSummaryPDF() throws IOException, COSVisitorException;
 

@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *   Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -22,18 +22,10 @@ package org.wso2.analytics.apim.rest.api.report.reportgen.model;
 import java.util.ArrayList;
 
 /**
- * This class represents the bean class forthe returned event/record from the table
+ * This class represents the bean class for the returned event/record from the table
  */
 public class Record extends ArrayList<Object> {
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class Record {\n");
-        sb.append("    ").append(toIndentedString(super.toString())).append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
+    private static final long serialVersionUID = -4475214013640404242L;
 
     @Override
     public boolean equals(Object o) {
@@ -45,15 +37,5 @@ public class Record extends ArrayList<Object> {
         return super.hashCode();
     }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
 }
 

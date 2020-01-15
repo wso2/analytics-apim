@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *   Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -19,54 +19,16 @@
 
 package org.wso2.analytics.apim.rest.api.report.reportgen.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This class represents the bean class for the response of the query api
  */
 public class ModelApiResponse {
-    @JsonProperty("records")
+
     private List<Record> records = null;
-    @JsonProperty("details")
     private List<RecordDetail> details = null;
 
-    public ModelApiResponse records(List<Record> records) {
-        this.records = records;
-        return this;
-    }
-
-    public ModelApiResponse details(List<RecordDetail> details) {
-        this.details = details;
-        return this;
-    }
-
-    public ModelApiResponse addRecordsItem(Record recordsItem) {
-        if (this.records == null) {
-            this.records = new ArrayList<Record>();
-        }
-        this.records.add(recordsItem);
-        return this;
-    }
-
-    public ModelApiResponse addRecordDetailItem(RecordDetail recordDetail) {
-        if (this.details == null) {
-            this.details = new ArrayList<>();
-        }
-        this.details.add(recordDetail);
-        return this;
-    }
-
-    /**
-     * Get records
-     *
-     * @return records
-     */
-    @ApiModelProperty(value = "")
     public List<Record> getRecords() {
         return records;
     }
@@ -83,50 +45,5 @@ public class ModelApiResponse {
         this.details = details;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ModelApiResponse apiResponse = (ModelApiResponse) o;
-
-        if (!Objects.equals(this.records, apiResponse.records)) {
-            return false;
-        }
-        if (!Objects.equals(this.details, apiResponse.details)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(records) * 31 + Objects.hash(details);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ModelApiResponse {\n");
-
-        sb.append("    records: ").append(toIndentedString(records)).append("\n");
-        sb.append("    details: ").append(toIndentedString(details)).append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
 }
 

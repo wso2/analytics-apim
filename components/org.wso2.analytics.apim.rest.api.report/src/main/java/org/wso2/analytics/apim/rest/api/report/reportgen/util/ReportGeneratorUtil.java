@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Util class for report generation.
  */
 public class ReportGeneratorUtil {
 
@@ -112,6 +112,12 @@ public class ReportGeneratorUtil {
         return recordCountPerPage;
     }
 
+    /**
+     * Inserts page number onto the bottom center of the page.
+     * @param contentStream content stream of the page.
+     * @param pageNumber page number.
+     * @throws IOException
+     */
     public static void insertPageNumber(PDPageContentStream contentStream, int pageNumber) throws IOException {
 
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE);
@@ -122,6 +128,12 @@ public class ReportGeneratorUtil {
         contentStream.endText();
     }
 
+    /**
+     * Inserts logo onto the top right of the page.
+     * @param document
+     * @param contentStream
+     * @throws IOException
+     */
     public static void insertLogo(PDDocument document, PDPageContentStream contentStream) throws IOException {
 
         InputStream in = ReportApiServiceImpl.class.getResourceAsStream("/wso2-logo.jpg");
@@ -129,12 +141,24 @@ public class ReportGeneratorUtil {
         contentStream.drawImage(img, 375, 755);
     }
 
+    /**
+     * Inserts title to the page.
+     * @param contentStream
+     * @param title
+     * @throws IOException
+     */
     public static void insertReportTitleToHeader(PDPageContentStream contentStream, String title) throws IOException {
 
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
         writeContent(contentStream, CELL_MARGIN, 770, title);
     }
 
+    /**
+     * Inserts report period to the page.
+     * @param contentStream
+     * @param period
+     * @throws IOException
+     */
     public static void insertReportTimePeriodToHeader(PDPageContentStream contentStream, String period)
             throws IOException {
 
@@ -142,12 +166,25 @@ public class ReportGeneratorUtil {
         writeContent(contentStream, CELL_MARGIN, 750, period);
     }
 
+    /**
+     * Inserts report generated time.
+     * @param contentStream
+     * @throws IOException
+     */
     public static void insertReportGeneratedTimeToHeader(PDPageContentStream contentStream) throws IOException {
 
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE);
         writeContent(contentStream, CELL_MARGIN, 730, "Report generated on : " + new Date().toString());
     }
 
+    /**
+     *
+     * @param contentStream
+     * @param positionX
+     * @param positionY
+     * @param text
+     * @throws IOException
+     */
     public static void writeContent(PDPageContentStream contentStream, float positionX, float positionY, String text)
             throws IOException {
 
@@ -157,6 +194,15 @@ public class ReportGeneratorUtil {
         contentStream.endText();
     }
 
+    /**
+     *
+     * @param columnHeaders
+     * @param columnWidths
+     * @param document
+     * @param pageMap
+     * @param rowEntries
+     * @throws IOException
+     */
     public static void writeRowsContent(String[] columnHeaders, float[] columnWidths, PDDocument document, Map<Integer,
             PDPage> pageMap, List<RowEntry> rowEntries) throws IOException {
 
@@ -193,6 +239,15 @@ public class ReportGeneratorUtil {
         }
     }
 
+    /**
+     *
+     * @param contentStream
+     * @param columnWidths
+     * @param positionX
+     * @param positionY
+     * @param entry
+     * @throws IOException
+     */
     public static void writeToRow(PDPageContentStream contentStream, float[] columnWidths, float positionX,
                                   float positionY, RowEntry entry)
             throws IOException {
@@ -204,6 +259,15 @@ public class ReportGeneratorUtil {
         contentStream.close();
     }
 
+    /**
+     *
+     * @param contentStream
+     * @param columnWidths
+     * @param positionX
+     * @param positionY
+     * @param content
+     * @throws IOException
+     */
     public static void writeColumnHeader(PDPageContentStream contentStream, float[] columnWidths, float positionX,
                                          float positionY, String[] content)
             throws IOException {
@@ -272,6 +336,11 @@ public class ReportGeneratorUtil {
         }
     }
 
+    /**
+     * Returns the number of pages in the document.
+     * @param numberOfRows number of records.
+     * @return number of pages in the document.
+     */
     public static int getNumberOfPages(int numberOfRows) {
 
         return (int) Math.ceil(numberOfRows / RECORD_COUNT_PER_PAGE);
