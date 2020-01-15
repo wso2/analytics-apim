@@ -595,7 +595,7 @@ public class ApimIdPClient extends ExternalIdPClient {
      * @throws AuthenticationException thrown when the token is not active
      * @return the introspect response
      */
-    public OAuth2IntrospectionResponse getIntrospectResponse(String token) throws IdPClientException,
+    private OAuth2IntrospectionResponse getIntrospectResponse(String token) throws IdPClientException,
             AuthenticationException {
         Response response = oAuth2ServiceStubs.getIntrospectionServiceStub().introspectAccessToken(token);
 
