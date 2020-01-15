@@ -994,13 +994,8 @@
 
     <properties>
 
-<<<<<<< HEAD
         <carbon.analytics.version>3.0.19-SNAPSHOT</carbon.analytics.version>
         <siddhi.version>5.1.12-SNAPSHOT</siddhi.version>
-=======
-        <carbon.analytics.version>3.0.18</carbon.analytics.version>
-        <siddhi.version>5.1.10</siddhi.version>
->>>>>>> upstream/master
 
         <carbon.analytics-common.version>6.1.36</carbon.analytics-common.version>
         <!-- Maven plugins -->
