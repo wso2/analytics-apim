@@ -19,7 +19,6 @@ package org.wso2.analytics.apim.rest.api.report.reportgen;
 import io.siddhi.core.SiddhiAppRuntime;
 import io.siddhi.core.SiddhiManager;
 import io.siddhi.core.event.Event;
-import io.siddhi.query.api.definition.Attribute;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,8 +27,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.wso2.analytics.apim.rest.api.report.api.ReportGenerator;
-import org.wso2.analytics.apim.rest.api.report.reportgen.model.ModelApiResponse;
-import org.wso2.analytics.apim.rest.api.report.reportgen.model.Record;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.RowEntry;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.TableData;
 import org.wso2.analytics.apim.rest.api.report.reportgen.util.ReportGeneratorUtil;
@@ -155,7 +152,6 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
             table.setRows(rowData);
             recordNumber += 1;
         }
-
         return table;
     }
 

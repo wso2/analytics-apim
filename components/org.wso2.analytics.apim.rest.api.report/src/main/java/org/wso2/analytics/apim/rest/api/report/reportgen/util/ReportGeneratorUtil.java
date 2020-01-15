@@ -17,8 +17,6 @@
  */
 package org.wso2.analytics.apim.rest.api.report.reportgen.util;
 
-import io.siddhi.core.event.Event;
-import io.siddhi.query.api.definition.Attribute;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
@@ -26,14 +24,11 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
 import org.wso2.analytics.apim.rest.api.report.impl.ReportApiServiceImpl;
-import org.wso2.analytics.apim.rest.api.report.reportgen.model.Record;
-import org.wso2.analytics.apim.rest.api.report.reportgen.model.RecordDetail;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.RowEntry;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -55,40 +50,10 @@ public class ReportGeneratorUtil {
     private static final float RECORD_COUNT_PER_PAGE = 25;
 
     /**
-     *
-     * @param events
-     * @return
+     * Get List of integers with the number of records in each page.
+     * @param numberOfRows total number of rows across the document.
+     * @return list of integers with the number of records. Each index represents the page number - 1.
      */
-    public static List<Record> getRecords(Event[] events) {
-
-        List<Record> records = new ArrayList<>();
-        if (events != null) {
-            for (Event event : events) {
-                Record record = new Record();
-                record.addAll(Arrays.asList(event.getData()));
-                records.add(record);
-            }
-        }
-        return records;
-    }
-
-    /**
-     * Get record details.
-     *
-     * @param attributes Set of attributes
-     * @return List of record details
-     */
-    public static List<RecordDetail> getRecordDetails(Attribute[] attributes) {
-
-        List<RecordDetail> details = new ArrayList<>();
-        for (Attribute attribute : attributes) {
-            details.add(new RecordDetail()
-                    .name(attribute.getName())
-                    .dataType(attribute.getType().toString()));
-        }
-        return details;
-    }
-
     public static List<Integer> getRecordsPerPage(int numberOfRows) {
 
         int numOfPages = (int) Math.ceil(numberOfRows / RECORD_COUNT_PER_PAGE);
@@ -155,8 +120,8 @@ public class ReportGeneratorUtil {
 
     /**
      * Inserts report period to the page.
-     * @param contentStream
-     * @param period
+     * @param contentStream content stream of the page.
+     * @param period the time duration which should be printed below the title.
      * @throws IOException
      */
     public static void insertReportTimePeriodToHeader(PDPageContentStream contentStream, String period)
@@ -168,7 +133,7 @@ public class ReportGeneratorUtil {
 
     /**
      * Inserts report generated time.
-     * @param contentStream
+     * @param contentStream content stream of the page.
      * @throws IOException
      */
     public static void insertReportGeneratedTimeToHeader(PDPageContentStream contentStream) throws IOException {
@@ -179,10 +144,10 @@ public class ReportGeneratorUtil {
 
     /**
      *
-     * @param contentStream
-     * @param positionX
-     * @param positionY
-     * @param text
+     * @param contentStream content stream of the page.
+     * @param positionX x-axis position.
+     * @param positionY y-axis position.
+     * @param text the content to write.
      * @throws IOException
      */
     public static void writeContent(PDPageContentStream contentStream, float positionX, float positionY, String text)
@@ -195,12 +160,12 @@ public class ReportGeneratorUtil {
     }
 
     /**
-     *
-     * @param columnHeaders
-     * @param columnWidths
-     * @param document
-     * @param pageMap
-     * @param rowEntries
+     * Prints a table with column headers and data.
+     * @param columnHeaders the table column headers.
+     * @param columnWidths widths of each column.
+     * @param document the document.
+     * @param pageMap page map with each page object stored against each page index.
+     * @param rowEntries list of rows.
      * @throws IOException
      */
     public static void writeRowsContent(String[] columnHeaders, float[] columnWidths, PDDocument document, Map<Integer,
@@ -240,12 +205,12 @@ public class ReportGeneratorUtil {
     }
 
     /**
-     *
-     * @param contentStream
-     * @param columnWidths
-     * @param positionX
-     * @param positionY
-     * @param entry
+     *  Writes a row.
+     * @param contentStream content stream of the page.
+     * @param columnWidths widths of each column.
+     * @param positionX x-axis position
+     * @param positionY y-axis position
+     * @param entry row data.
      * @throws IOException
      */
     public static void writeToRow(PDPageContentStream contentStream, float[] columnWidths, float positionX,
@@ -260,12 +225,12 @@ public class ReportGeneratorUtil {
     }
 
     /**
-     *
-     * @param contentStream
-     * @param columnWidths
-     * @param positionX
-     * @param positionY
-     * @param content
+     * Writes the column header.
+     * @param contentStream content stream of the page.
+     * @param columnWidths widths of each column.
+     * @param positionX x-axis position
+     * @param positionY y-axis position
+     * @param content data to write in column header.
      * @throws IOException
      */
     public static void writeColumnHeader(PDPageContentStream contentStream, float[] columnWidths, float positionX,
@@ -282,9 +247,12 @@ public class ReportGeneratorUtil {
     }
 
     /**
-     * Draws the table grid.
-     *
-     * @param numberOfRows number of rows for the table
+     *  Draws a table.
+     * @param document document to draw the table.
+     * @param pageMap map of page objects against page numbers.
+     * @param recordsPerPageList a list of integers with number of records for each page.
+     * @param columnWidths widths of the columns.
+     * @param numberOfRows total number of rows.
      * @throws IOException
      */
     public static void drawTableGrid(PDDocument document, Map<Integer,

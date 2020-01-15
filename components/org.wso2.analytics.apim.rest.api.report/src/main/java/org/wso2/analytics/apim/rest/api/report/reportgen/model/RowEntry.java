@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a row
+ * Represents a row.
  */
 public class RowEntry {
     private List<String> entries = new ArrayList<String>();
