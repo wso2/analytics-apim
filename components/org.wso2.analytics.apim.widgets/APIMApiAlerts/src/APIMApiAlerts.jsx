@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -32,7 +32,7 @@ import CustomTable from './CustomTable'
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Api Alert widget body
  */
-export default function APIMAppApiUsage(props) {
+export default function APIMApiAlerts(props) {
     const {
         themeName, finaldataset, width, height, isloading,legandDataSet,tableDataSet,totalcount 
     } = props;
@@ -51,6 +51,7 @@ export default function APIMAppApiUsage(props) {
             padding: '4%',
             border: '1.5px solid',
             marginLeft:'5%',
+            marginTop: '5%',
         },
         inProgress: {
             display: 'flex',
@@ -180,6 +181,12 @@ export default function APIMAppApiUsage(props) {
                                         <FormattedMessage
                                             id='nodata.error.heading'
                                             defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options.'
                                         />
                                     </Typography>
                                 </Paper>

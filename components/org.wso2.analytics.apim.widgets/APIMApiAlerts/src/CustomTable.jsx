@@ -55,7 +55,7 @@ class CustomTable extends React.Component {
             },
             {
              name: "hits",
-             label: "Hits",
+             label: "Alerts",
              options: {
               filter: true,
               sort: false,
