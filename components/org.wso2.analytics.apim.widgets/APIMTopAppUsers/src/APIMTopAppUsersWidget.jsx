@@ -126,7 +126,7 @@ class APIMTopAppUsersWidget extends Widget {
             legendData: [],
             localeMessages: null,
             inProgress: true,
-            proxyError: null,
+            proxyError: false,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -221,15 +221,11 @@ class APIMTopAppUsersWidget extends Widget {
     assembleAppQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/applications`)
             .then((response) => {
-                this.setState({ proxyError: null });
+                this.setState({ proxyError: false });
                 this.handleAppDataReceived(response.data);
             })
             .catch((error) => {
-                if (error.response && error.response.data) {
-                    let proxyError = error.response.data;
-                    proxyError = proxyError.split(':').splice(1).join('').trim();
-                    this.setState({ proxyError, inProgress: false });
-                }
+                this.setState({ proxyError: true, inProgress: false });
                 console.error(error);
             });
     }
@@ -478,7 +474,10 @@ class APIMTopAppUsersWidget extends Widget {
                                     />
                                 </Typography>
                                 <Typography component='p'>
-                                    { proxyError }
+                                    <FormattedMessage
+                                        id='apim.server.error'
+                                        defaultMessage='Error occurred while retrieving application list.'
+                                    />
                                 </Typography>
                             </Paper>
                         </div>

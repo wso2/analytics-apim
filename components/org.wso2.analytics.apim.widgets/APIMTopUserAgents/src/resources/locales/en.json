@@ -1,6 +1,7 @@
 {
   "all.menuItem": "All",
   "apim.server.error.heading" : "Error !",
+  "apim.server.error" : "Error occurred while retrieving API list.",
   "apiName.label": "API Name",
   "apiVersion.label": "API Version",
   "config.error.body": "Cannot fetch provider configuration for APIM Top User Agents widget",

@@ -80,7 +80,7 @@ class APIMApiRatingsWidget extends Widget {
             apiDataList: [],
             localeMessages: null,
             inProgress: true,
-            proxyError: null,
+            proxyError: false,
             refreshInterval: 60000, // 1min
         };
 
@@ -188,15 +188,11 @@ class APIMApiRatingsWidget extends Widget {
     assembleAPIListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
-                this.setState({ proxyError: null });
+                this.setState({ proxyError: false });
                 this.handleAPIListReceived(response.data);
             })
             .catch((error) => {
-                if (error.response && error.response.data) {
-                    let proxyError = error.response.data;
-                    proxyError = proxyError.split(':').splice(1).join('').trim();
-                    this.setState({ proxyError, inProgress: false });
-                }
+                this.setState({ proxyError: true, inProgress: false });
                 console.error(error);
             });
     }
@@ -341,7 +337,10 @@ class APIMApiRatingsWidget extends Widget {
                                     />
                                 </Typography>
                                 <Typography component='p'>
-                                    { proxyError }
+                                    <FormattedMessage
+                                        id='apim.server.error'
+                                        defaultMessage='Error occurred while retrieving API list.'
+                                    />
                                 </Typography>
                             </Paper>
                         </div>

@@ -9,6 +9,7 @@
   "limit": "Limit :",
   "me.menuItem": "Me",
   "apim.server.error.heading" : "Error !",
+  "apim.server.error" : "Error occurred while retrieving API list.",
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
