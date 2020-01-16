@@ -415,6 +415,12 @@
                                     <version>${siddhi.map.json.version}</version>
                                     <type>jar</type>
                                 </artifactItem>
+                                <dependency>
+                                    <groupId>io.siddhi.extension.map.protobuf</groupId>
+                                    <artifactId>siddhi-map-protobuf</artifactId>
+                                    <version>${siddhi.map.protobuf.version}</version>
+                                    <type>jar</type>
+                                </dependency>
                                 <!--Store Extensions-->
                                 <artifactItem>
                                     <groupId>io.siddhi.extension.store.rdbms</groupId>
