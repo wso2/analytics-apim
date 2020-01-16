@@ -272,8 +272,7 @@ public class ReportGeneratorUtil {
             if (rowNum > RECORD_COUNT_PER_PAGE) {
                 contentStream.close();
                 currentPageNum++;
-                contentStream = new PDPageContentStream(document, pageMap.get(currentPageNum),
-                        true, false);
+                contentStream = new PDPageContentStream(document, pageMap.get(currentPageNum), true, false);
                 insertPageNumber(contentStream, currentPageNum);
                 insertLogo(document, contentStream);
                 nextY = TABLE_TOP_Y;
