@@ -171,8 +171,7 @@ class APIMAdminReportsWidget extends Widget {
         } = this.state;
         const { muiTheme, height } = this.props;
         const themeName = muiTheme.name;
-
-        const pdfBaseUrl = '/analytics-dashboard/apis/v1.0/report';
+        const pdfBaseUrl = `${window.contextPath}/apis/v1.0/report`;
         const monthInt = this.state.month + 1; // Date is 0 based in the widget
         const monthString = (monthInt < 10) ? '0' + monthInt : monthInt; // prefix by 0;
 
