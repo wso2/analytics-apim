@@ -172,7 +172,9 @@ class APIMAdminReportsWidget extends Widget {
         const { muiTheme, height } = this.props;
         const themeName = muiTheme.name;
 
-        const pdfBaseUrl = '/apis/v1.0/report';
+        const pdfBaseUrl = '/analytics-dashboard/apis/v1.0/report';
+        const monthInt = this.state.month + 1; // Date is 0 based in the widget
+        const monthString = (monthInt < 10) ? '0' + monthInt : monthInt; // prefix by 0;
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
@@ -201,7 +203,7 @@ class APIMAdminReportsWidget extends Widget {
 
                                 <form style={styles.form} noValidate autoComplete='off' method='get' target='_blank' action={pdfBaseUrl}>
                                     <input type='hidden' name='year' value={this.state.year} />
-                                    <input type='hidden' name='month' value={this.state.month + 1} />
+                                    <input type='hidden' name='month' value={monthString} />
                                     <DateWidget
                                         year={this.state.year}
                                         month={this.state.month}
@@ -222,7 +224,7 @@ class APIMAdminReportsWidget extends Widget {
                                 <br />
                                 <div>
                                     <PDFView
-                                        src={`${pdfBaseUrl}?year=${this.state.year}&month=${this.state.month + 1}`}
+                                        src={`${pdfBaseUrl}?year=${this.state.year}&month=${monthString}`}
                                     />
                                 </div>
                             </div>
