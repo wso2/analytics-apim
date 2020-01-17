@@ -137,6 +137,9 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
                 "apiName, apiVersion, applicationName, applicationOwner order by RequestCount desc";
 
         Event[] events = siddhiAppRuntime.query(requestCountQuery);
+        if(events == null) {
+            return table; // no data found
+        }
         List<RowEntry> rowData = new ArrayList<>();
         int recordNumber = 1;
         for (Event event : events) {
