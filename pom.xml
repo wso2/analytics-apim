@@ -813,7 +813,7 @@
                 <version>${forgetme.tool.version}</version>
             </dependency>
 
-            <!-- WSO2 APIM widgets-->
+            <!-- WSO2 APIM Analytics Features-->
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
                 <artifactId>org.wso2.analytics.apim.feature</artifactId>
@@ -864,6 +864,44 @@
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>jempbox</artifactId>
                 <version>${pdfbox.version}</version>
+            </dependency>
+
+            <!-- Microgateway gRPC service related -->
+            <dependency>
+                <groupId>io.siddhi.extension.io.grpc</groupId>
+                <artifactId>siddhi-io-grpc</artifactId>
+                <version>${siddhi.io.grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty-shaded</artifactId>
+                <version>${io.grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-protobuf</artifactId>
+                <version>${io.grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-stub</artifactId>
+                <version>${io.grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${com.google.protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.mgw.grpc.service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.mgw.grpc.service.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -1148,6 +1186,14 @@
         <siddhi.map.protobuf.version>1.0.4</siddhi.map.protobuf.version>
         <siddhi.store.rdbms.version>7.0.5</siddhi.store.rdbms.version>
         <siddhi.io.grpc.version>1.0.8</siddhi.io.grpc.version>
+
+        <!-- Microgateway gRPC service dependencies -->
+        <io.grpc.version>1.26.0</io.grpc.version>
+        <io.grpc.protoc-gen-grpc-java.version>1.22.1</io.grpc.protoc-gen-grpc-java.version>
+        <com.google.protobuf.version>3.11.1</com.google.protobuf.version>
+        <com.google.protobuf.protoc.version>3.7.1</com.google.protobuf.protoc.version>
+        <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
+        <protobuf-maven-plugin.version>0.5.1</protobuf-maven-plugin.version>
 
         <carbon.coordination.version>2.1.4</carbon.coordination.version>
 
