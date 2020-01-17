@@ -29,7 +29,6 @@ define stream workflowStream(
     updatedTime long
 );
 
-@source(ref='grpcSource', enable.ssl="TRUE" , @map(type='json'))
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.0.0', @map(type = 'wso2event'))
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.0.0', @map(type = 'wso2event'))
 define stream InComingRequestStream (meta_clientType string,
@@ -70,7 +69,6 @@ define stream InComingRequestStream (meta_clientType string,
     gatewayType string,
     label string);
 
-@source(ref='grpcSource', enable.ssl="TRUE" , @map(type='json'))
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0', @map(type = 'wso2event'))
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.0.0',
 	@map(type = 'wso2event'))
@@ -111,7 +109,6 @@ define stream ThrottledOutStream(
     hostname string
 );
 
-@source(ref='grpcSource', enable.ssl="TRUE" , @map(type='json'))
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0', @map(type = 'wso2event'))
 @source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.0.0',
 	@map(type = 'wso2event'))
@@ -135,6 +132,56 @@ define stream FaultStream(
     errorCode string,
     errorMessage string,
     requestTimestamp long
+);
+
+@source(ref='grpcSource', enable.ssl="TRUE" , @map(type='protobuf'))
+define stream gRPCStream(
+    messageStreamName string,
+    meta_clientType string,
+    applicationConsumerKey string,
+    applicationName string,
+    applicationId string,
+    applicationOwner string,
+    apiContext string,
+    apiName string,
+    apiVersion string,
+    apiResourcePath string,
+    apiResourceTemplate string,
+    apiMethod string,
+    apiCreator string,
+    apiCreatorTenantDomain string,
+    apiTier string,
+    apiHostname string,
+    username string,
+    userTenantDomain string,
+    userIp string,
+    userAgent string,
+    requestTimestamp long,
+    throttledOut bool,
+    responseTime long,
+    serviceTime long,
+    backendTime long,
+    responseCacheHit bool,
+    responseSize long,
+    protocol string,
+    responseCode int,
+    destination string,
+    securityLatency long,
+    throttlingLatency long,
+    requestMedLat long,
+    responseMedLat long,
+    backendLatency long,
+    otherLatency long,
+    gatewayType string,
+    label string,
+
+    subscriber string,
+    throttledOutReason string,
+    throttledOutTimestamp long,
+    hostname string,
+
+    errorCode string,
+    errorMessage string
 );
 
 @sink(type='inMemory' , topic='APIM_REQUEST')
@@ -175,6 +222,44 @@ define stream Request (meta_clientType string,
     otherLatency long,
     gatewayType string,
     label string);
+
+
+
+-- Insert relevant Data to the Request Stream from gRPCStream
+from gRPCStream
+select  meta_clientType, applicationConsumerKey, applicationName, applicationId, applicationOwner, apiContext,apiName, apiVersion, apiResourcePath, apiResourceTemplate, ifThenElse(str:length(apiMethod)>20,str:substr(apiMethod,0,20),apiMethod) as apiMethod,ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150), apiCreator) as  apiCreator, ifThenElse(str:length(apiCreatorTenantDomain) > 150,str:substr(apiCreatorTenantDomain,0,150), apiCreatorTenantDomain) as apiCreatorTenantDomain, apiTier, ifThenElse(str:length(apiHostname)>200, str:substr(apiHostname,0,200), apiHostname) as apiHostname, ifThenElse(str:length(username) > 150,str:substr(username,0,150), username) as username, ifThenElse(str:length(userTenantDomain) > 150,str:substr(userTenantDomain,0,150), userTenantDomain) as userTenantDomain, userIp, userAgent, requestTimestamp, throttledOut, responseTime, serviceTime, backendTime, responseCacheHit, responseSize, protocol, responseCode, destination, securityLatency, throttlingLatency, requestMedLat, responseMedLat, backendLatency, otherLatency, gatewayType, label, messageStreamName
+having messageStreamName == "InComingRequestStream"
+insert into tempStream;
+
+from tempStream
+select  meta_clientType, applicationConsumerKey, applicationName, applicationId, applicationOwner, apiContext,apiName, apiVersion, apiResourcePath, apiResourceTemplate, apiMethod,apiCreator,  apiCreatorTenantDomain, apiTier,  apiHostname,  username,  userTenantDomain, userIp, userAgent, requestTimestamp, throttledOut, responseTime, serviceTime, backendTime, responseCacheHit, responseSize, protocol, responseCode, destination, securityLatency, throttlingLatency, requestMedLat, responseMedLat, backendLatency, otherLatency, gatewayType, label
+ insert into Request;
+
+
+ -- Insert relevant Data to the ThrottledOutStream Stream from gRPCStream
+ from gRPCStream
+ select meta_clientType, username, userTenantDomain, apiName, apiVersion, apiContext, ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150),
+ apiCreator) as  apiCreator, apiCreatorTenantDomain, applicationId, applicationName, subscriber, ifThenElse(str:length(throttledOutReason) > 30,str:substr(throttledOutReason,0,30), throttledOutReason) as  throttledOutReason,
+ gatewayType, throttledOutTimestamp, ifThenElse(str:length(hostname)>200, str:substr(hostname,0,200), hostname) as hostname, messageStreamName
+having messageStreamName == "ThrottledOutStream"
+insert into tempStream1;
+
+from tempStream1
+select meta_clientType, username, userTenantDomain, apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, applicationId, applicationName, subscriber, throttledOutReason,
+ gatewayType, throttledOutTimestamp, hostname
+insert into ThrottledOutStream;
+
+
+-- Insert relevant Data to the FaultStream Stream from gRPCStream
+from gRPCStream
+select  meta_clientType, applicationConsumerKey, apiName,  apiVersion, apiContext, apiResourcePath, apiMethod, apiCreator, username, userTenantDomain, apiCreatorTenantDomain, hostname, applicationId, applicationName, protocol, errorCode, errorMessage, requestTimestamp,
+messageStreamName
+having messageStreamName == "FaultStream"
+insert into tempStream2;
+
+from tempStream2
+select  meta_clientType, applicationConsumerKey, apiName,  apiVersion, apiContext, apiResourcePath, apiMethod, apiCreator, username, userTenantDomain, apiCreatorTenantDomain, hostname, applicationId, applicationName, protocol, errorCode, errorMessage, requestTimestamp
+insert into FaultStream;
 
 -- Insert the recieving request events into a in memory stream. This was changed due to an error when connecting to Mysql RDBMS when UTF8 character set is used (https://github.com/wso2/analytics-solutions/issues/182).
 @info(name='Trim the event values') 
