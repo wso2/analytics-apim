@@ -366,7 +366,7 @@ data.provider.configs:
 ## The configured APIs will be available as https://{host}:{port}/analytics-dashboard/{API_context_path}
 additional.apis:
   /apis/analytics/v1.0/apim: org.wso2.analytics.apim.rest.api.proxy.ApimApi
-  /analytics-apim/apis/v1.0/report: org.wso2.analytics.apim.rest.api.report.ReportApi
+  /apis/v1.0/report: org.wso2.analytics.apim.rest.api.report.ReportApi
 
 ## Authentication configuration
 auth.configs:
