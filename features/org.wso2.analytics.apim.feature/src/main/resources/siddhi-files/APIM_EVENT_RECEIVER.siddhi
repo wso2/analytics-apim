@@ -237,10 +237,10 @@ select  meta_clientType, applicationConsumerKey, applicationName, applicationId,
 
 
  -- Insert relevant Data to the ThrottledOutStream Stream from gRPCStream
- from gRPCStream
- select meta_clientType, username, userTenantDomain, apiName, apiVersion, apiContext, ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150),
- apiCreator) as  apiCreator, apiCreatorTenantDomain, applicationId, applicationName, subscriber, ifThenElse(str:length(throttledOutReason) > 30,str:substr(throttledOutReason,0,30), throttledOutReason) as  throttledOutReason,
- gatewayType, throttledOutTimestamp, ifThenElse(str:length(hostname)>200, str:substr(hostname,0,200), hostname) as hostname, messageStreamName
+from gRPCStream
+select meta_clientType, username, userTenantDomain, apiName, apiVersion, apiContext, ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150),
+apiCreator) as  apiCreator, apiCreatorTenantDomain, applicationId, applicationName, subscriber, ifThenElse(str:length(throttledOutReason) > 30,str:substr(throttledOutReason,0,30), throttledOutReason) as  throttledOutReason,
+gatewayType, throttledOutTimestamp, ifThenElse(str:length(hostname)>200, str:substr(hostname,0,200), hostname) as hostname, messageStreamName
 having messageStreamName == "ThrottledOutStream"
 insert into tempStream1;
 
