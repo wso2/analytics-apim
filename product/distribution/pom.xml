@@ -215,6 +215,13 @@
             <type>zip</type>
         </dependency>
 
+        <!-- Microgateway gRPC service related -->
+        <dependency>
+            <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.analytics.mgw.grpc.service.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+
         <dependency>
             <groupId>org.wso2.analytics.apim</groupId>
             <artifactId>org.wso2.analytics.apim.rest.api.report.feature</artifactId>
@@ -654,6 +661,12 @@
                                     <version>${project.version}</version>
                                 </feature>
 
+                                <!-- Microgateway gRPC service related -->
+                                <feature>
+                                    <id>org.wso2.analytics.mgw.grpc.service.feature</id>
+                                    <version>${project.version}</version>
+                                </feature>
+
                                 <!-- Permission module -->
                                 <feature>
                                     <id>org.wso2.carbon.analytics.permissions.feature</id>
@@ -911,6 +924,12 @@
                                     <version>${project.version}</version>
                                 </feature>
 
+                                <!-- Microgateway gRPC service related -->
+                                <feature>
+                                    <id>org.wso2.analytics.mgw.grpc.service.feature</id>
+                                    <version>${project.version}</version>
+                                </feature>
+
                                 <!-- Databridge feature -->
                                 <feature>
                                     <id>org.wso2.carbon.databridge.feature.group</id>
@@ -1088,6 +1107,12 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.analytics.apim.rest.api.report.feature</id>
+                                    <version>${project.version}</version>
+                                </feature>
+
+                                <!-- Microgateway gRPC service related -->
+                                <feature>
+                                    <id>org.wso2.analytics.mgw.grpc.service.feature</id>
                                     <version>${project.version}</version>
                                 </feature>
 
