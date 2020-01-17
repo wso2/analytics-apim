@@ -36,7 +36,7 @@ import javax.ws.rs.core.Response;
     service = Microservice.class,
     immediate = true
 )
-@Path("/analytics-apim/apis/v1.[\\d]+/report")
+@Path("/analytics-dashboard/apis/v1.[\\d]+/report")
 
 
 @ApplicationPath("/report")

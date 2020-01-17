@@ -90,8 +90,7 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
     }
 
     @Override
-    public InputStream generateMonthlyRequestSummaryPDF() throws IOException,
-            COSVisitorException {
+    public InputStream generateMonthlyRequestSummaryPDF() throws IOException, COSVisitorException {
 
         if (table.getRows().size() == 0) {
             return null;

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.wso2.analytics.apim.rest.api.report.impl;
 
 import com.google.gson.Gson;
@@ -48,11 +64,10 @@ public class ReportApiServiceImpl extends ReportApiService {
     @Override
     public Response reportGet(String month, String year, Request request) throws NotFoundException {
 
-        //HttpHeaders httpHeaders = request.getHeaders();
         String cookie = getAccessToken(request.getHeader("Cookie"));
         //If no authorization information present; block access
         if (StringUtils.isEmpty(cookie)) {
-            String errorMsg = "Received a request to PDF Reporting REST API without cookie  header.";
+            String errorMsg = "Received a request to PDF Reporting REST API without Cookie header.";
             log.error(errorMsg);
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
         }
@@ -69,7 +84,7 @@ public class ReportApiServiceImpl extends ReportApiService {
                 }
             }
         } catch (IdPClientException | AuthenticationException e) {
-            String errorMsg = "Error during token introspection for report generation API.";
+            String errorMsg = "Error during authentication for report generation API.";
             log.error(errorMsg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
         }

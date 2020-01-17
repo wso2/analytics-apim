@@ -34,7 +34,7 @@ host: apis.wso2.com
 
 # The base path of the API.
 # Will be prefixed to all paths.
-basePath: /analytics-apim/apis/v1.0
+basePath: /analytics-dashboard/apis/v1.0
 
 ###########################################################################
 # The resource API to retrieve the APIs list from the APIM server

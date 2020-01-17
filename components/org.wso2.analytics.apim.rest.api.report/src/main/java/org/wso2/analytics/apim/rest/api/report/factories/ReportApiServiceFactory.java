@@ -4,7 +4,7 @@ import org.wso2.analytics.apim.rest.api.report.ReportApiService;
 import org.wso2.analytics.apim.rest.api.report.impl.ReportApiServiceImpl;
 
 /**
- *
+ * Factory class for ReportApiService.
  */
 public class ReportApiServiceFactory {
     private static final ReportApiService service = new ReportApiServiceImpl();
