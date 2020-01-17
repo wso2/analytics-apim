@@ -216,6 +216,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.analytics.apim.rest.api.report.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
             <groupId>org.wso2.carbon.analytics</groupId>
             <artifactId>org.wso2.carbon.analytics.auth.rest.api.feature</artifactId>
             <type>zip</type>
@@ -641,6 +647,10 @@
                                 <!-- APIM proxy API related -->
                                 <feature>
                                     <id>org.wso2.analytics.apim.rest.api.proxy.feature</id>
+                                    <version>${project.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.analytics.apim.rest.api.report.feature</id>
                                     <version>${project.version}</version>
                                 </feature>
 
@@ -1074,6 +1084,10 @@
                                 <!-- APIM proxy API related -->
                                 <feature>
                                     <id>org.wso2.analytics.apim.rest.api.proxy.feature</id>
+                                    <version>${project.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.analytics.apim.rest.api.report.feature</id>
                                     <version>${project.version}</version>
                                 </feature>
 

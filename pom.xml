@@ -219,7 +219,6 @@
                 <artifactId>log4j</artifactId>
                 <version>${wso2.log4j.version}</version>
             </dependency>
-
             <!-- JSON dependencies -->
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -639,7 +638,6 @@
                 <version>${feign.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
                 <artifactId>org.wso2.carbon.analytics.permissions</artifactId>
@@ -824,6 +822,12 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.rest.api.report.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
                 <artifactId>org.wso2.analytics.apim.widgets</artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>
@@ -839,6 +843,27 @@
                 <artifactId>org.wso2.analytics.apim.rest.api.file</artifactId>
                 <type>jar</type>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.rest.api.report</artifactId>
+                <version>${project.version}</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>fontbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>jempbox</artifactId>
+                <version>${pdfbox.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -996,7 +1021,7 @@
 
         <carbon.analytics.version>3.0.21</carbon.analytics.version>
         <siddhi.version>5.1.10</siddhi.version>
-
+        <siddhi.core.import.version.range>[5.1,6.0]</siddhi.core.import.version.range>
         <carbon.analytics-common.version>6.1.40</carbon.analytics-common.version>
         <!-- Maven plugins -->
         <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
@@ -1041,6 +1066,8 @@
         </slf4j.logging.package.import.version.range>
 
         <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
+        <pdfbox.version>1.8.16</pdfbox.version>
+        <pdfbox.import.version.range>[1.8,2.0)</pdfbox.import.version.range>
         <!--Dashboard-->
         <carbon.dashboards.version>4.1.12</carbon.dashboards.version>
         <carbon.uis.version>1.0.3</carbon.uis.version>
@@ -1156,7 +1183,6 @@
         <testng.version>6.9.10</testng.version>
         <commons-httpclient.version>3.1.0.wso2v2</commons-httpclient.version>
         <commons.logging.version>1.2</commons.logging.version>
-        <apache.commons.version>1.3</apache.commons.version>
         <json.version>3.0.0.wso2v1</json.version>
         <codehaus.jackson.version>1.9.13</codehaus.jackson.version>
         <org.snakeyaml.version>1.17</org.snakeyaml.version>

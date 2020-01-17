@@ -116,7 +116,7 @@
         <private.package>
         </private.package>
         <export.package>
-            org.wso2.analytics.apim.idp.client.*,
+            org.wso2.analytics.apim.idp.client.*;version="${project.version}",
         </export.package>
         <import.package>
             org.wso2.carbon.analytics.idp.client.*,
