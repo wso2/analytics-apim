@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "url": "admin-reports",
+    "owner": "admin@carbon.super",
+    "name": "Admin Reports",
+    "description": "",
+    "landingPage": "home",
+    "parentId": "0",
+    "content": {
+      "properties": {},
+      "pages": [
+        {
+          "id": "home",
+          "name": "Home",
+          "content": [
+            {
+              "type": "stack",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "title": "[APIM Admin Reports]",
+                  "type": "component",
+                  "component": "APIMAdminReports",
+                  "props": {
+                    "id": "619033ff-10ee-4174-97a0-064bc59260cb",
+                    "configs": {
+                      "pubsub": {
+                        "types": [
+                          "subscriber"
+                        ]
+                      },
+                      "isGenerated": false,
+                      "options": {
+                        "header": true
+                      }
+                    },
+                    "widgetID": "APIMAdminReports"
+                  },
+                  "isClosable": false,
+                  "header": {
+                    "show": true
+                  },
+                  "componentName": "lm-react-component"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "hasOwnerPermission": false,
+    "hasDesignerPermission": false,
+    "hasViewerPermission": false
+  },
+  "widgets": {
+    "generated": [],
+    "custom": [
+      "APIMAdminReports"
+    ]
+  },
+  "permissions": {
+    "viewers": [
+      "apim_analytics:admin_carbon.super"
+    ],
+    "owners": [
+      "apim_analytics:admin_carbon.super"
+    ],
+    "editors": [
+      "apim_analytics:admin_carbon.super"
+    ]
+  }
+}

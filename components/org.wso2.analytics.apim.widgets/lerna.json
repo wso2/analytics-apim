@@ -1,6 +1,7 @@
 {
   "packages": [
     "CommonLib",
+    "APIMAdminReports",
     "APIMApiCreated",
     "APIMAppCreated",
     "APIMSubscriptions",
