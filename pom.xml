@@ -972,7 +972,7 @@
                                 <failsOnError>true</failsOnError>
                                 <includeTestSourceDirectory>true</includeTestSourceDirectory>
                                 <!--Exclude generated sources-->
-                                <excludes>**/parser/*</excludes>
+                                <excludes>**/parser/*,^target/generated-sources</excludes>
                             </configuration>
                             <goals>
                                 <goal>check</goal>
