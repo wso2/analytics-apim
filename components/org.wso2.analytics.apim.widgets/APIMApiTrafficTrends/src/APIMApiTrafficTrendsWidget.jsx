@@ -1,5 +1,3 @@
-/* eslint-disable valid-jsdoc */
-/* eslint-disable no-console */
 /* eslint-disable require-jsdoc */
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -131,14 +129,15 @@ class APIMApiTrafficTrendsWidget extends Widget {
             apiFullData: [],
             resourceList: [],
             operationSelected: [],
-            resourceSelected: '',
             inProgress: true,
-            metadata: this.metadata,
-            chartConfig: this.chartConfig,
             proxyError: null,
             chartData: null,
             xAxisTicks: null,
             maxCount: 0,
+            apiresource: null,
+            apimethod: null,
+            dataarray: [],
+            legandDataSet: [],
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -161,7 +160,6 @@ class APIMApiTrafficTrendsWidget extends Widget {
         this.apiSelectedHandleChange = this.apiSelectedHandleChange.bind(this);
         this.apiVersionHandleChange = this.apiVersionHandleChange.bind(this);
         this.apiOperationHandleChange = this.apiOperationHandleChange.bind(this);
-        this.apiResourceHandleChange = this.apiResourceHandleChange.bind(this);
         this.resetState = this.resetState.bind(this);
     }
 
@@ -237,10 +235,9 @@ class APIMApiTrafficTrendsWidget extends Widget {
             xAxisTicks: null, });
         const queryParam = super.getGlobalState(queryParamKey);
         let {
-            apiSelected, apiVersion, operationSelected, resourceSelected,
+            apiSelected, apiVersion, operationSelected,
         } = queryParam;
 
-        // console.log(apiSelected, apiVersion);
         const { apilist, versionMap } = this.state;
         let versions;
 
@@ -264,14 +261,11 @@ class APIMApiTrafficTrendsWidget extends Widget {
         if (!operationSelected) {
             operationSelected = [];
         }
-        if (!resourceSelected) {
-            resourceSelected = '';
-        }
 
         this.setState({
-            apiSelected, apiVersion, operationSelected, resourceSelected, versionlist: versions,
+            apiSelected, apiVersion, operationSelected, versionlist: versions,
         });
-        this.setQueryParam(apiSelected, apiVersion, operationSelected, resourceSelected);
+        this.setQueryParam(apiSelected, apiVersion, operationSelected,);
     }
 
     /**
@@ -303,9 +297,11 @@ class APIMApiTrafficTrendsWidget extends Widget {
     handleApiListReceived(data) {
         const { id } = this.props;
         const { list } = data;
-        // console.log(list);
         if (list) {
             this.setState({ apiDataList: list });
+        }
+        else{
+            this.setState({inProgress:false})
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiIdQuery();
@@ -368,7 +364,6 @@ class APIMApiTrafficTrendsWidget extends Widget {
                 apilist, versionMap, apiFullData: data, apiSelected,
             });
 
-            // console.log(apiSelected);
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleResourceQuery();
@@ -382,13 +377,12 @@ class APIMApiTrafficTrendsWidget extends Widget {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
-        const { providerConfig, apiFullData } = this.state;
+        const { providerConfig, apiFullData,} = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-       // console.log(apiSelected, apiVersion, apiFullData);
+ 
         if (apiFullData && apiFullData.length > 0) {
             const api = apiFullData.filter(apiData => apiSelected === apiData[1] && apiVersion === apiData[2])[0];
-            console.log(api);
 
             if (api) {
                 const dataProviderConfigs = cloneDeep(providerConfig);
@@ -414,82 +408,85 @@ class APIMApiTrafficTrendsWidget extends Widget {
     handleResourceReceived(message) {
         const { data } = message;
         const { id } = this.props;
-
-        //console.log(data);
+        const {operationSelected} = this.state;
+        const queryParam = super.getGlobalState(queryParamKey);
+        const { apiSelected, apiVersion } = queryParam;
 
         if (data) {
+
+            var legenddata = [];
+            const operations = [];
+            const operationTypes = [];
+            let method = '';
+
             const resourceList = [];
             data.forEach((dataUnit) => {
                 resourceList.push([dataUnit[0] + ' (' + dataUnit[1]] + ')');
             });
             this.setState({ resourceList });
+
+            if (operationSelected && operationSelected.length > 0) {
+                operationSelected.map((res) => {
+                    const resFormat = res.split(' (');
+                    operations.push(resFormat[0]);
+                    method = resFormat[1].replace(')', '');
+                    operationTypes.push(method);
+                });
+
+                for (let index = 0; index < operations.length; index++) {
+                    legenddata.push(
+                        {"name":operations[index]}
+                    )
+                }
+                this.setState({legandDataSet:legenddata})
+
+                for (let index = 0; index < operations.length; index++) {
+                    this.setQueryParam(apiSelected, apiVersion, operationSelected);
+                    this.assembleMainQuery(operations[index], operationTypes[index]);     
+                }
+
+            }
+
+            else{
+                this.setGlobalState({inProgress:false})
+                super.getWidgetChannelManager().unsubscribeWidget(id);
+                this.assembleMainQuery("","");
+            }
+           
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
     }
 
     /**
      * Formats the siddhi query - mainquery
      * @memberof APIMApiTrafficTrendsWidget
      * */
-    assembleMainQuery() {
-        this.resetState();
+    assembleMainQuery(apiresource, apimethod) {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
         const {
-            providerConfig, timeFrom, timeTo, perValue, operationSelected, resourceSelected,
+             providerConfig, timeFrom, timeTo, perValue,operationSelected,
         } = this.state;
         const { widgetID: widgetName, id } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
 
-        if (apiSelected !== '' && apiVersion !== '' && (operationSelected.length > 0 || resourceSelected.length > 0)) {
-            let resources = '';
-            let numberOfSelectedElements = 0;
-
-            if (operationSelected.length > 0) {
-                const operations = [];
-                const operationTypes = [];
-                let operationsString = '';
-                let method = '';
-                operationSelected.map((res) => {
-                    const resFormat = res.split(' (');
-                    operations.push(resFormat[0]);
-                    method = resFormat[1].replace(')', '');
-                    operationTypes.push(method);
-                    numberOfSelectedElements += 1;
-                });
-
-                for (let i = 0; i < operations.length - 1; i++) {
-                    operationsString += 'str:contains(apiResourceTemplate,' + '\'' + operations[i] + '\') AND ';
-                }
-                operationsString += 'str:contains(apiResourceTemplate,' + '\'' + operations[operations.length - 1] + '\'' + ')';
-
-                resources = '((' + operationsString + ') AND apiMethod==\'' + method + '\')';
-            } else if (resourceSelected.length > 0) {
-                const resFormat = resourceSelected.split(' (');
-                const resource = resFormat[0];
-                const method = resFormat[1].replace(')', '');
-                numberOfSelectedElements = 1;
-                resources = '(apiResourceTemplate==\'' + resource + '\' AND apiMethod==\'' + method + '\')';
-            }
-
-            const queryCondition = '(apiName==\'' + apiSelected + '\' AND apiVersion==\''
-                + apiVersion + '\' AND (' + resources + '))';
-
-            // console.log(queryCondition);
-
+        if (apiSelected !== '' && apiVersion !== '' && (operationSelected.length > 0) && apiresource !== '') {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'resourcedata';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
+                '{{from}}': timeFrom,
+                '{{to}}': timeTo,
                 '{{per}}': perValue,
-                '{{querystring}}': queryCondition,
-                '{{numberOfCommas}}': numberOfSelectedElements - 1,
+                '{{apiName}}': apiSelected,
+                '{{apiVersion}}': apiVersion,
+                '{{apiResource}}': apiresource,
+                '{{apiMethod}}': apimethod,
             };
+        
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
-        } else {
-            this.setState({ inProgress: false, resultdata: [] });
+        }
+
+        else{
+            this.setState({inProgress:false, dataarray:[]})
         }
     }
 
@@ -499,32 +496,22 @@ class APIMApiTrafficTrendsWidget extends Widget {
      * @memberof APIMApiTrafficTrendsWidget
      * */
     handleDataReceived(message) {
-        const resultdata = [];
-        const maxarray = [];
         const { data } = message;
-        //console.log(data);
-
-        if (data.length != 0) {
-            const xAxisTicks = [];
+        var maxCount = 0;
+        const { dataarray } = this.state
+         if (data && data.length != 0) {
             const chartData = [];
-            var maxCount = 0;
-            const {
-                apiSelected, apiVersion, operationSelected, resourceSelected,
-            } = this.state;
+            const xAxisTicks = [];   
 
             data.forEach((dataUnit) => {
                 chartData.push({
                     x: new Date(dataUnit[0]).getTime(),
                     y: dataUnit[1],
                     label: 'CREATED_TIME:' + Moment(dataUnit[0]).format('YYYY-MMM-DD HH:mm:ss') + '\nCOUNT:' + dataUnit[1],
-                });
+               });
 
                 maxCount += dataUnit[1];
-
             });
-            console.log(chartData);
-
-            //const maxCount = 5;
 
             const first = new Date(chartData[0].x).getTime();
             const last = new Date(chartData[chartData.length - 1].x).getTime();
@@ -535,16 +522,16 @@ class APIMApiTrafficTrendsWidget extends Widget {
                 duration = interval * i;
                 xAxisTicks.push(new Date(first + duration).getTime());
             }
-            //console.log(xAxisTicks);
-            //console.log(maxCount);
 
-            // console.log(data, resultdata);
-            this.setState({
-                resultdata, inProgress: false, chartData, xAxisTicks, maxCount
-            });
-            this.setQueryParam(apiSelected, apiVersion, operationSelected, resourceSelected);
-        } else {
-            this.setState({ inProgress: false, tableData: [] });
+            dataarray.push(chartData);
+            this.setState({ dataarray, inProgress: false, xAxisTicks, maxCount });
+         } 
+         
+         else if (dataarray.length > 0){
+            this.setState({ inProgress: false})
+         }
+         else {
+            this.setState({ inProgress: false, dataarray: [] });
         }
     }
 
@@ -555,25 +542,12 @@ class APIMApiTrafficTrendsWidget extends Widget {
      * @param {string} operationSelected - Resources selected
      * @memberof APIMApiTrafficTrendsWidget
      * */
-    setQueryParam(apiSelected, apiVersion, operationSelected, resourceSelected) {
+    setQueryParam(apiSelected, apiVersion, operationSelected) {
         super.setGlobalState(queryParamKey, {
             apiSelected,
             apiVersion,
             operationSelected,
-            resourceSelected,
         });
-    }
-
-    /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMApiTrafficTrendsWidget
-     * */
-    apiCreatedHandleChange(event) {
-        const { id } = this.props;
-        this.setQueryParam(event.target.value, '', '', []);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ apiCreatedBy: event.target.value, inProgress: true }, this.assembleApiIdQuery);
     }
 
     /**
@@ -605,7 +579,6 @@ class APIMApiTrafficTrendsWidget extends Widget {
         this.setQueryParam(apiSelected, event.target.value, []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({ apiVersion: event.target.value, inProgress: true, resourceList: [] }, this.assembleResourceQuery);
-        //console.log(apiCreatedBy, apiSelected, event.target.value);
     }
 
     /**
@@ -624,42 +597,43 @@ class APIMApiTrafficTrendsWidget extends Widget {
         } else {
             operationSelected.push(event.target.value);
         }
-        this.setState({ operationSelected, inProgress: true });
+
+        const operations = [];
+        const operationTypes = [];
+        let method = '';
+        var legenddata = [];
+        operationSelected.map((res) => {
+            const resFormat = res.split(' (');
+            operations.push(resFormat[0]);
+            method = resFormat[1].replace(')', '');
+            operationTypes.push(method);
+        });
+
+       for (let index = 0; index < operations.length; index++) {
+        legenddata.push(
+            {"name":operations[index]}
+        )
+        }
+        this.setState({ operationSelected, inProgress: true, dataarray: [], legandDataSet:legenddata });
         this.setQueryParam(apiSelected, apiVersion, operationSelected);
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
+
+        for (let index = 0; index < operations.length; index++) {   
+            this.assembleMainQuery(operations[index], operationTypes[index]);     
+        }
     }
 
-    /**
-         * Handle operation select change
-         * @param {Event} event - listened event
-         * @memberof APIMApiTrafficTrendsWidget
-         * */
-    apiResourceHandleChange(event) {
-        const { id } = this.props;
-        const {
-            apiSelected, apiVersion,
-        } = this.state;
-
-        const resourceSelected = event.target.value;
-        this.state.resourceSelected = resourceSelected;
-
-        this.setState({ resourceSelected, inProgress: true });
-        this.setQueryParam(apiSelected, apiVersion, [], resourceSelected);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
-    }
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Api Latency Time widget
+     * @returns {ReactElement} Render the APIM Api Traffic Trends widget
      * @memberof APIMApiTrafficTrendsWidget
      */
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, proxyError,
-            apiSelected, apiVersion, resultdata, apilist, versionlist, resourceList,chartData,xAxisTicks,maxCount
+            localeMessages, faultyProviderConfig, height, width, inProgress, proxyError,
+            apiSelected, apiVersion, resultdata, apilist, versionlist, resourceList,chartData,xAxisTicks,maxCount,dataarray,legandDataSet
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -669,8 +643,6 @@ class APIMApiTrafficTrendsWidget extends Widget {
         const latencyProps = {
             themeName,
             queryParam,
-            chartConfig,
-            metadata,
             height,
             width,
             apiSelected,
@@ -682,7 +654,9 @@ class APIMApiTrafficTrendsWidget extends Widget {
             inProgress,
             chartData,
             xAxisTicks,
-            maxCount
+            maxCount,
+            dataarray,
+            legandDataSet,
         };
 
         return (
@@ -735,7 +709,6 @@ class APIMApiTrafficTrendsWidget extends Widget {
                                         apiSelectedHandleChange={this.apiSelectedHandleChange}
                                         apiVersionHandleChange={this.apiVersionHandleChange}
                                         apiOperationHandleChange={this.apiOperationHandleChange}
-                                        apiResourceHandleChange={this.apiResourceHandleChange}
                                     />
                                 )
                             }

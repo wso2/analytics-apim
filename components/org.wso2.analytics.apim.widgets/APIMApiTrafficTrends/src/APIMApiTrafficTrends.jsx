@@ -35,27 +35,24 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
-import VizG from 'react-vizgrammar';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
 import {
-    VictoryAxis, VictoryLabel, VictoryLine, VictoryTooltip,
+    VictoryAxis, VictoryLabel, VictoryLine, VictoryTooltip, VictoryLegend
 } from 'victory';
 import Moment from 'moment';
-// import { syntaxHighlight } from './resources/'
 
 
 /**
- * React Component for APIM Api Latency Time widget body
+ * React Component for APIM Traffic Trends widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Api Latency Time widget body
+ * @returns {ReactElement} Render the APIM Traffic Trends widget body
  */
 export default function APIMApiTrafficTrends(props) {
     const {
         themeName, queryParam, height, apiSelected, inProgress,
-        apiVersion, resultdata, apilist, versionlist, resourceList, apiSelectedHandleChange,
-        apiVersionHandleChange, apiOperationHandleChange, apiResourceHandleChange,chartData,xAxisTicks, maxCount,
+        apiVersion, apilist, versionlist, resourceList, apiSelectedHandleChange,
+        apiVersionHandleChange, apiOperationHandleChange, xAxisTicks, maxCount,dataarray,legandDataSet,
     } = props;
+    const colorScale=['#385dbd', '#83FF33', '#CB33FF', '#FF335C', '#33FFF5','#FF9633'];
     const styles = {
         headingWrapper: {
             height: '10%',
@@ -94,7 +91,6 @@ export default function APIMApiTrafficTrends(props) {
             width: '100%',
             padding: '4%',
             border: '1.5px solid #fff',
-            // margin: 'auto',
             marginTop: '5%',
         },
         loadingIcon: {
@@ -123,6 +119,25 @@ export default function APIMApiTrafficTrends(props) {
             fontsize: '1px',
             fontWeight: 50,
         },
+        rowGutter: {
+            top: 0,
+            bottom: -10,
+        },
+        victoryLegend: {
+            labels: {
+                fill: '#9e9e9e',
+                fontSize: 10,
+            },
+        },
+        heading:{
+            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+            width: '40%',
+            paddingBottom: '15px',
+            textAlign: 'left',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        }
+
     };
 
     // Check whether the API is graphQL.
@@ -135,28 +150,6 @@ export default function APIMApiTrafficTrends(props) {
     }
 
 
-    const ordinalDataChart = {
-        x: 'Time',
-        charts: [
-            {
-                type: 'bar',
-                y: 'Hits',
-                color: 'responseCode',
-                mode: 'stacked',
-
-            },
-        ],
-        legend: true,
-        style: {
-            barWidth: 5,
-        },
-    };
-
-    const ordinalMetadata = {
-        names: ['Time', 'Hits', 'responseCode'],
-        types: ['ordinal', 'linear', 'ordinal'],
-    };
-
 
     return (
         <Scrollbars
@@ -168,14 +161,7 @@ export default function APIMApiTrafficTrends(props) {
                 }}
             >
                 <div style={styles.headingWrapper}>
-                    <div style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        width: '40%',
-                        paddingBottom: '15px',
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
+                    <div style={styles.heading}
                     >
                         <FormattedMessage id='widget.heading' defaultMessage='API ERROR ANALYSIS' />
                     </div>
@@ -226,7 +212,6 @@ export default function APIMApiTrafficTrends(props) {
                         </FormControl>
                         <FormControl component='fieldset' style={styles.formControl}>
                             <FormLabel component='legend'>
-                                {/* <FormattedMessage id='resources.label' defaultMessage='Resources' /> */}
                                 Resources
                             </FormLabel>
                             {
@@ -237,7 +222,6 @@ export default function APIMApiTrafficTrends(props) {
                                                 <FormControlLabel
                                                     control={(
                                                         <Checkbox
-                                                            // eslint-disable-next-line max-len
                                                             checked={queryParam.operationSelected.includes(option.toString())}
                                                             onChange={apiOperationHandleChange}
                                                             value={option.toString()}
@@ -249,24 +233,19 @@ export default function APIMApiTrafficTrends(props) {
                                         }
                                     </FormGroup>
                                 ) : (
-                                    <RadioGroup>
-                                        {
-                                            resourceList.map(option => (
-                                                <FormControlLabel
-                                                    control={(
-                                                        <Radio
-                                                            // eslint-disable-next-line max-len
-                                                            checked={queryParam.resourceSelected.includes(option.toString())}
-                                                            onChange={apiResourceHandleChange}
-                                                            value={option.toString()}
-                                                        />
-                                                    )}
-                                                    label={option}
-                                                    classes={{ label: styles.checkbox }}
+                                    resourceList.map(option => (
+                                        <FormControlLabel
+                                            control={(
+                                                <Checkbox
+                                                    // eslint-disable-next-line max-len
+                                                    checked={queryParam.operationSelected.includes(option.toString())}
+                                                    onChange={apiOperationHandleChange}
+                                                    value={option.toString()}
                                                 />
-                                            ))
-                                        }
-                                    </RadioGroup>
+                                            )}
+                                            label={option}
+                                        />
+                                    ))
                                 )
                             }
                         </FormControl>
@@ -276,7 +255,7 @@ export default function APIMApiTrafficTrends(props) {
                             </div>
                         ) : (
                             <div>
-                                { !chartData || chartData.length == 0  ? (
+                                { !dataarray || dataarray.length == 0  ? (
                                     <div style={styles.paperWrapper}>
                                         <Paper
                                             elevation={1}
@@ -310,7 +289,7 @@ export default function APIMApiTrafficTrends(props) {
                                                         fontSize: 8,
                                                         fontStyle: 'italic',
                                                     }}
-                                                    text='COUNT'
+                                                    text='HITS'
                                                 />
                                                 <g transform='translate(0, 40)'>
                                                     <VictoryAxis
@@ -389,37 +368,50 @@ export default function APIMApiTrafficTrends(props) {
                                                             },
                                                         }}
                                                     />
-                                                    <VictoryLine
-                                                        data={chartData}
-                                                        labels={d => d.label}
-                                                        width={700}
-                                                        domain={{
-                                                            x: [xAxisTicks[0], xAxisTicks[xAxisTicks.length - 1]],
-                                                            y: [1, maxCount],
-                                                        }}
-                                                        scale={{ x: 'time', y: 'linear' }}
-                                                        standalone={false}
-                                                        style={{
-                                                            data: {
-                                                                stroke: themeName === 'dark' ? '#fff' : '#000',
-                                                                strokeWidth: 2,
-                                                            },
-                                                        }}
-                                                        labelComponent={(
-                                                            <VictoryTooltip
-                                                                orientation='right'
-                                                                pointerLength={0}
-                                                                cornerRadius={2}
-                                                                flyoutStyle={{
-                                                                    fill: '#000',
-                                                                    fillOpacity: '0.5',
-                                                                    strokeWidth: 1,
-                                                                }}
-                                                                style={styles.tooltip}
-                                                            />
-                                                        )}
-                                                    />
+                                                    {
+                                                        dataarray.map((p, element) =>
+                                                            <VictoryLine
+                                                            data={p}
+                                                            labels={d => d.label}
+                                                            width={700}
+                                                            domain={{                                                      
+                                                                y: [1, maxCount],
+                                                            }}
+                                                            scale={{ x: 'time', y: 'linear' }}
+                                                            standalone={false}
+                                                            style={{
+                                                                data: {
+                                                                    stroke: themeName === 'dark' ? colorScale[element] : '#000',
+                                                                    strokeWidth: 2,
+                                                                },
+                                                            }}
+                                                            labelComponent={(
+                                                                <VictoryTooltip
+                                                                    orientation='right'
+                                                                    pointerLength={0}
+                                                                    cornerRadius={2}
+                                                                    flyoutStyle={{
+                                                                        fill: '#000',
+                                                                        fillOpacity: '0.5',
+                                                                        strokeWidth: 1,
+                                                                    }}
+                                                                    style={styles.tooltip}
+                                                                />
+                                                            )}
+                                                        />)}
+                                                    
+                                                    
                                                 </g>
+                                                 <VictoryLegend
+                                                    standalone={false}
+                                                    colorScale={colorScale}
+                                                    x={575}
+                                                    y={20}
+                                                    gutter={10}
+                                                    rowGutter={styles.rowGutter}
+                                                    style={styles.victoryLegend}
+                                                    data={legandDataSet}
+                                                />
                                                 </svg>                     
                                             </div>
                                             <div>
@@ -449,5 +441,4 @@ APIMApiTrafficTrends.propTypes = {
     apiSelectedHandleChange: PropTypes.func.isRequired,
     apiVersionHandleChange: PropTypes.func.isRequired,
     apiOperationHandleChange: PropTypes.func.isRequired,
-    apiResourceHandleChange: PropTypes.func.isRequired,
 };
