@@ -22,12 +22,10 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.wso2.analytics.apim.rest.api.report.NotFoundException;
 import org.wso2.analytics.apim.rest.api.report.ReportApiService;
 import org.wso2.analytics.apim.rest.api.report.api.ReportGenerator;
 import org.wso2.analytics.apim.rest.api.report.internal.ServiceHolder;
-import org.wso2.analytics.apim.rest.api.report.reportgen.DefaultReportGeneratorImpl;
 import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 import org.wso2.carbon.analytics.idp.client.core.exception.AuthenticationException;
 import org.wso2.carbon.analytics.idp.client.core.exception.IdPClientException;
@@ -35,7 +33,6 @@ import org.wso2.carbon.analytics.idp.client.core.models.Role;
 import org.wso2.carbon.analytics.idp.client.core.models.User;
 import org.wso2.msf4j.Request;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -97,8 +94,11 @@ public class ReportApiServiceImpl extends ReportApiService {
             InputStream data;
             try {
                 String tenantDomain = extractTenantDomainFromUserName(username);
-                ReportGenerator defaultReportGeneratorImpl = new DefaultReportGeneratorImpl(year, month, tenantDomain);
-                data = defaultReportGeneratorImpl.generateMonthlyRequestSummaryPDF();
+                Class reportGeneratorClass = Class.forName(ServiceHolder.getReportImplClass());
+                ReportGenerator reportGeneratorImpl = (ReportGenerator) reportGeneratorClass.
+                        getDeclaredConstructor(String.class, String.class, String.class).newInstance(year,month,
+                        tenantDomain);
+                data = reportGeneratorImpl.generateMonthlyRequestSummaryPDF();
                 if (data != null) {
                     return Response.ok().entity(data).build();
                 } else {
@@ -106,7 +106,7 @@ public class ReportApiServiceImpl extends ReportApiService {
                     return Response.ok().entity(msg).build();
                 }
 
-            } catch (COSVisitorException | IOException | IdPClientException e) {
+            } catch (Exception e) {
                 String errorMsg = "Unable to fetch report.";
                 log.error(errorMsg, e);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
