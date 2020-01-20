@@ -182,6 +182,7 @@ class APIMRecentApiTrafficWidget extends Widget {
 
     // format the query data
     handleApiUsageReceived(message) {
+        console.log('hello');
         const { data } = message;
         if (data) {
             const usageData = [];

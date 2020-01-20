@@ -1,7 +1,5 @@
-/* eslint-disable require-jsdoc */
-/* eslint-disable no-console */
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +19,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -30,9 +28,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import APIMRecentApiDetails from './APIMRecentApiDetails';
+import APIMOverallApiInfo from './APIMOverallApiInfo';
 import Button from '@material-ui/core/Button';
-import ArrowIcon from '@material-ui/icons/ArrowRight';
+import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
+
+
+
+
 
 const darkTheme = createMuiTheme({
     useNextVariants: true,
@@ -60,14 +62,10 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 // Create react component for the APIM Recent Api Details
-class APIMRecentApiDetailsWidget extends Widget {
+class APIMOverallApiInfoWidget extends Widget {
     constructor(props) {
         super(props);
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -76,12 +74,6 @@ class APIMRecentApiDetailsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -92,7 +84,7 @@ class APIMRecentApiDetailsWidget extends Widget {
             usageData: null,
             totalcount: null,
             localeMessages: null,
-            data: null,
+            isloading: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -111,12 +103,17 @@ class APIMRecentApiDetailsWidget extends Widget {
         this.loadLocale = this.loadLocale.bind(this);
     }
 
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch(() => {
+                // TODO: Show error message.
+            });
+        });
+    }
 
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
-
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 this.setState({
@@ -132,16 +129,23 @@ class APIMRecentApiDetailsWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
 
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMRecentApiDetails/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMOverallApiInfo/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
     }
 
     // Set the date time range
@@ -178,26 +182,22 @@ class APIMRecentApiDetailsWidget extends Widget {
         const { data } = message;
         var err5xx = null;
         let err4xx = null;
-        console.log(data);
         const { id } = this.props;
         if (data) {
             const usageData = [];
             data.forEach((element) => {
                 const avglatency = element[5] / element[3];
                 if (element[4] > 399 && element[4] < 499) {
-                    usageData.push([element[0], element[1], element[2], element[3], 0, element[3], parseInt(avglatency)]);
+                    usageData.push([element[0], element[1], element[2], element[3], 0, element[3], parseInt(avglatency), element[6]]);
                     err4xx += element[4];
                 } else if (element[4] > 499) {
-                    usageData.push([element[0],element[1], element[2], element[3], element[3], 0, parseInt(avglatency)]);
+                    usageData.push([element[0],element[1], element[2], element[3], element[3], 0, parseInt(avglatency), element[6]]);
                     err5xx += element[4];
                 } else {
-                    usageData.push([element[0],element[1], element[2], element[3], 0, 0, parseInt(avglatency)]);
+                    usageData.push([element[0],element[1], element[2], element[3], 0, 0, parseInt(avglatency), element[6]]);
                 }
             });
-            this.setState({ usageData });
-          //  console.log(usageData);
-          //  console.log(err5xx, err4xx);
-
+            this.setState({ usageData, isloading:false });
             super.getWidgetChannelManager().unsubscribeWidget(id);
         }
     }
@@ -225,18 +225,15 @@ class APIMRecentApiDetailsWidget extends Widget {
     handleMainApiInfo(message) {
         const totalcount = [];
         const { data } = message;
-        console.log(data);
         const { id } = this.props;
         data.forEach((element) => {
             totalcount.push([element[0], element[1], 'All', 'All', element[2], '..', '..',parseInt(element[3]/element[2]),<Button style={{maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}} variant="contained" color="primary" onClick={() => {
-                // window.location.href = './api-app-stats';
                 window.location.href = './single-api-stats#{"apsssss":{"apiName":"'+element[0]+'","apiVersion":"'+element[1]+'","sync":false}}';
                 }}>
-            <ArrowIcon/>
+            <VisibilityOutlinedIcon/>
           </Button>]);
         });
 
-        // console.log(totalcount);
         this.setState({ totalcount });
 
         super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -244,14 +241,10 @@ class APIMRecentApiDetailsWidget extends Widget {
     }
 
 
-    /**
-     * @inheritDoc
-     * @returns {ReactElement} Render the APIM Recent Api Traffic widget
-     * @memberof APIMRecentApiDetailsWidget
-     */
+   // Render the APIM Recent Api Traffic widget 
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, usageData, data, totalcount,
+            localeMessages, faultyProviderConfig, height, usageData, totalcount, isloading,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, inProgress,
@@ -259,16 +252,9 @@ class APIMRecentApiDetailsWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
-            themeName, height, usageData, data, totalcount,
+            themeName, height, usageData, totalcount, isloading,
         };
 
-        if (!localeMessages || !usageData) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
@@ -285,14 +271,14 @@ class APIMRecentApiDetailsWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration forAPIM Api '
-                                            + 'Recent Api Traffic widget'}
+                                            defaultMessage={'Cannot fetch provider configuration forAPIM Overall '
+                                            + 'Api Info Widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMRecentApiDetails
+                            <APIMOverallApiInfo
                                 {...apiUsageProps}
                             />
                         )
@@ -303,4 +289,4 @@ class APIMRecentApiDetailsWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMRecentApiDetails', APIMRecentApiDetailsWidget);
+global.dashboard.registerWidget('APIMOverallApiInfo', APIMOverallApiInfoWidget);

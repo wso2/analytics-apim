@@ -1,7 +1,6 @@
-/* eslint-disable react/no-unused-state */
 /* eslint-disable require-jsdoc */
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -88,35 +87,8 @@ class ApiInfoChart extends React.Component {
   constructor(props) {
     super(props);
       this.state = {
-          tableData: [],
-          orderBy: 'hits',
-          order: 'desc',
-          expanded: false,
-          query: '',
-          datas: null,
-          datass: null,
-          finaldata: [],
-          finalrowdata: [],
-      };
-    }
 
-    renderexpandrowdata(rowData) {
-        const expandeddata = [];
-        const colSpan = rowData.length + 1;
-        const { usageData } = this.props;
-        usageData.forEach((element) => {
-          if (element[0] === rowData[0]) {
-            expandeddata.push(element);
-          }
-        });
-      console.log(expandeddata[0][0]);
-      return (
-          <TableRow>
-              <TableCell colSpan={colSpan}>
-                  {expandeddata[0][0]}
-              </TableCell>
-          </TableRow>
-      );
+      };
     }
 
   render() {
@@ -139,8 +111,6 @@ class ApiInfoChart extends React.Component {
       },
     });
 
-     // console.log(totalcount);
-
 
     // define table columns
     const columns = ['Api Name', 'Version', 'ResourceTemplate','Method', 'Total Hits', 'error 5XX', 'error 4XX', 'Average Latency P99', ''];
@@ -160,12 +130,11 @@ class ApiInfoChart extends React.Component {
         const expandeddata = [];
         const colSpan = 1;
         usageData.forEach((element) => {
-          if (element[0] === rowData[0]) {
+          if (element[0] === rowData[0] && element[7] === rowData[1]) {
             expandeddata.push(element);
           }
         });
 
-      console.log(expandeddata[0][0]);
       return (
           expandeddata.map(item => (
               <TableRow>
@@ -200,7 +169,6 @@ class ApiInfoChart extends React.Component {
         <Paper className={classes.root}>
             <MuiThemeProvider theme={theme}>
                 <MUIDataTable
-                    // title={'Api Monitoring -> Recent'}
                     data={totalcount}
                     columns={columns}
                     options={options}
@@ -212,7 +180,6 @@ class ApiInfoChart extends React.Component {
 }
 
 ApiInfoChart.propTypes = {
-    // eslint-disable-next-line react/no-unused-prop-types
     usageData: PropTypes.instanceOf(Object).isRequired,
     totalcount: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,

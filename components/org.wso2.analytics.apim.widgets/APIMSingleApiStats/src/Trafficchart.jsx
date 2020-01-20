@@ -7,35 +7,56 @@ import {
 import Paper from '@material-ui/core/Paper';
 import { FormattedMessage } from 'react-intl';
 
-const styles = () => ({
-  button: {
-  // margin: '1%',
-  },
-  input: {
-    display: 'none',
-  },
-  paper: {
-    background: '#969696',
-    width: '75%',
-    padding: '4%',
-    border: '1.5px solid #fff',
-    margin: 'auto',
-    marginTop: '5%',
-},
-headingWrapper: {
-  height: '5%',
-  margin: 'auto',
-  paddingTop: '10px',
-  width: '90%',
-},
-});
+const styles = {
+    input: {
+      display: 'none',
+    },
+    paper: {
+      background: '#040b4b',
+      width: '75%',
+      padding: '4%',
+      margin: 'auto',
+      paddingTop: '150px',
+    },
+    headingWrapper: {
+      height: '5%',
+      margin: 'auto',
+      paddingTop: '10px',
+      width: '90%',
+    },
+    h3: {
+      borderBottom: '1.5px solid #fff',
+      paddingBottom: '7px',
+      paddingTop: '7px',
+      margin: 'auto',
+      textAlign: 'center',
+      fontWeight: 'normal',
+      letterSpacing: 1.5,
+      width: '80%',
+    },
+    maindiv:{
+      maxWidth: '100%',
+      maxHeight: '420px',
+      minWidth: '50%',
+      minHeight: '420px',
+      marginRight:'2px',
+      backgroundColor:'#040b4b',
+      marginTop:'5px',
+    },
+    victry:{
+      axisLabel: {
+        padding: 30,
+        fill: '#ffffff',
+        fontSize: '8px',
+        },
+    },
+}
 
 class Trafficchart extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            anchorEl: null,
         };
     }
 
@@ -56,32 +77,19 @@ class Trafficchart extends React.Component {
      },
    };
 
-   if (trafficdata.length === 0) {
+   if (trafficdata === null || trafficdata.length === 0) {
     return (
-        <div style={{maxWidth: '100%', maxHeight: '420px', minWidth: '50%', minHeight: '420px', marginRight:'2px', backgroundColor:'#040b4b', marginTop:'5px'}}>
+        <div style={styles.maindiv}>
           <div style={styles.headingWrapper}>
-                <h3 style={{
-                    borderBottom: '1.5px solid #fff',
-                    paddingBottom: '7px',
-                    paddingTop: '7px',
-                    margin: 'auto',
-                    textAlign: 'center',
-                    fontWeight: 'normal',
-                    letterSpacing: 1.5,
-                    width: '80%',
-                }}
+                <h3 style={styles.h3}
                 >
-                    <FormattedMessage id='widget.traffic.heading' defaultMessage='No of HITS against TIME' />
+                    <FormattedMessage id='widget.traffic.heading' defaultMessage='API TRAFFIC' />
 
                 </h3>
             </div>
             <Paper
                 elevation={1}
-                style={{background: '#040b4b',
-                width: '75%',
-                padding: '4%',
-                margin: 'auto',
-                paddingTop: '150px'}}
+                style={styles.paper}
             >
                 <Typography variant='h5' component='h3'>
                     <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
@@ -98,18 +106,9 @@ class Trafficchart extends React.Component {
 }
 else{
     return (
-      <div style={{maxWidth: '100%', maxHeight: '420px', minWidth: '50%', minHeight: '420px', marginRight:'2px', backgroundColor:'#040b4b', margin:'5px'}}>
+      <div style={styles.maindiv}>
         <div style={styles.headingWrapper}>
-                <h3 style={{
-                    borderBottom: '1.5px solid #fff',
-                    paddingBottom: '7px',
-                    paddingTop: '12px',
-                    margin: 'auto',
-                    textAlign: 'center',
-                    fontWeight: 'normal',
-                    letterSpacing: 1.5,
-                    width: '80%',
-                }}
+                <h3 style={styles.h3}
                 >
                     <FormattedMessage id='widget.traffic.heading' defaultMessage='No of HITS against TIME' />
 
@@ -133,24 +132,12 @@ else{
           />
           <VictoryAxis
             label='Time'
-            style={{
-              axisLabel: {
-              padding: 40,
-              fill: '#ffffff',
-              fontSize: '8px',
-              },
-            }}/>
+            style={styles.victry}/>
 
             <VictoryAxis
                 dependentAxis
                 label='Hits'
-                style={{
-                  axisLabel: {
-                  padding: 40,
-                  fill: '#ffffff',
-                  fontSize: '8px',
-                  },
-                }}/>
+                style={styles.victry}/>
         </VictoryChart>
         </svg>
         

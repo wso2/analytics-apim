@@ -1,7 +1,5 @@
-/* eslint-disable react/no-danger */
-/* eslint-disable react/prop-types */
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -231,7 +229,6 @@ export default function APIMApiErrorAnalysis(props) {
                                                 <FormControlLabel
                                                     control={(
                                                         <Checkbox
-                                                            // eslint-disable-next-line max-len
                                                             checked={queryParam.operationSelected.includes(option.toString())}
                                                             onChange={apiOperationHandleChange}
                                                             value={option.toString()}
@@ -249,7 +246,6 @@ export default function APIMApiErrorAnalysis(props) {
                                                 <FormControlLabel
                                                     control={(
                                                         <Radio
-                                                            // eslint-disable-next-line max-len
                                                             checked={queryParam.resourceSelected.includes(option.toString())}
                                                             onChange={apiResourceHandleChange}
                                                             value={option.toString()}
@@ -333,4 +329,5 @@ APIMApiErrorAnalysis.propTypes = {
     apiVersionHandleChange: PropTypes.func.isRequired,
     apiOperationHandleChange: PropTypes.func.isRequired,
     apiResourceHandleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };
