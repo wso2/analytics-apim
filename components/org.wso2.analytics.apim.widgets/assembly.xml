@@ -28,6 +28,10 @@
 
     <fileSets>
         <fileSet>
+            <directory>APIMAdminReports/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>APIMApiCreated/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>

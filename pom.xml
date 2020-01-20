@@ -219,7 +219,6 @@
                 <artifactId>log4j</artifactId>
                 <version>${wso2.log4j.version}</version>
             </dependency>
-
             <!-- JSON dependencies -->
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -639,7 +638,6 @@
                 <version>${feign.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
                 <artifactId>org.wso2.carbon.analytics.permissions</artifactId>
@@ -815,10 +813,16 @@
                 <version>${forgetme.tool.version}</version>
             </dependency>
 
-            <!-- WSO2 APIM widgets-->
+            <!-- WSO2 APIM Analytics Features-->
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
                 <artifactId>org.wso2.analytics.apim.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.rest.api.report.feature</artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>
             </dependency>
@@ -839,6 +843,65 @@
                 <artifactId>org.wso2.analytics.apim.rest.api.file</artifactId>
                 <type>jar</type>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.rest.api.report</artifactId>
+                <version>${project.version}</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>fontbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>jempbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+
+            <!-- Microgateway gRPC service related -->
+            <dependency>
+                <groupId>io.siddhi.extension.io.grpc</groupId>
+                <artifactId>siddhi-io-grpc</artifactId>
+                <version>${siddhi.io.grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty-shaded</artifactId>
+                <version>${io.grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-protobuf</artifactId>
+                <version>${io.grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-stub</artifactId>
+                <version>${io.grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${com.google.protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.mgw.grpc.service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.mgw.grpc.service.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -993,11 +1056,12 @@
     </profiles>
 
     <properties>
-
-        <carbon.analytics.version>3.0.19-SNAPSHOT</carbon.analytics.version>
+    
+        <carbon.analytics.version>3.0.21</carbon.analytics.version>
         <siddhi.version>5.1.12-SNAPSHOT</siddhi.version>
+        <siddhi.core.import.version.range>[5.1,6.0]</siddhi.core.import.version.range>
+        <carbon.analytics-common.version>6.1.40</carbon.analytics-common.version>
 
-        <carbon.analytics-common.version>6.1.38</carbon.analytics-common.version>
         <!-- Maven plugins -->
         <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
         <maven.findbugsplugin.exclude>findbugs-exclude.xml</maven.findbugsplugin.exclude>
@@ -1031,7 +1095,7 @@
 
         <carbon.cache.version>1.1.3</carbon.cache.version>
         <carbon.touchpoint.version>1.1.1</carbon.touchpoint.version>
-        <carbon.utils.version>2.0.8</carbon.utils.version>
+        <carbon.utils.version>2.0.10</carbon.utils.version>
         <carbon.config.version>2.1.14</carbon.config.version>
         <carbon.config.version.range>[2.1.5, 3.0.0)</carbon.config.version.range>
         <carbon.securevault.version>5.0.13</carbon.securevault.version>
@@ -1041,8 +1105,10 @@
         </slf4j.logging.package.import.version.range>
 
         <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
+        <pdfbox.version>1.8.16</pdfbox.version>
+        <pdfbox.import.version.range>[1.8,2.0)</pdfbox.import.version.range>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.11</carbon.dashboards.version>
+        <carbon.dashboards.version>4.1.12</carbon.dashboards.version>
         <carbon.uis.version>1.0.3</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
@@ -1107,20 +1173,30 @@
         <project.scm.id>scm-server</project.scm.id>
 
         <!--Siddhi Extension Versions-->
-        <siddhi.execution.string.version>5.0.8</siddhi.execution.string.version>
+        <siddhi.execution.string.version>5.0.9</siddhi.execution.string.version>
         <siddhi.execution.time.version>5.0.4</siddhi.execution.time.version>
         <siddhi.execution.markov.version>5.0.1</siddhi.execution.markov.version>
         <siddhi.execution.geo.version>5.0.0</siddhi.execution.geo.version>
         <siddhi.execution.regex.version>5.0.5</siddhi.execution.regex.version>
         <siddhi.execution.env.version>2.0.0</siddhi.execution.env.version>
         <siddhi.io.wso2event.version>5.0.0</siddhi.io.wso2event.version>
-        <siddhi.io.email.version>2.0.3</siddhi.io.email.version>
-        <siddhi.map.json.version>5.0.4</siddhi.map.json.version>
+        <siddhi.io.email.version>2.0.5</siddhi.io.email.version>
+        <siddhi.map.json.version>5.0.6</siddhi.map.json.version>
         <siddhi.map.text.version>2.0.4</siddhi.map.text.version>
         <siddhi.map.wso2event.version>5.0.1</siddhi.map.wso2event.version>
+        <siddhi.map.protobuf.version>1.0.4</siddhi.map.protobuf.version>
         <siddhi.store.rdbms.version>7.0.5</siddhi.store.rdbms.version>
-        <siddhi.io.grpc.version>1.0.4</siddhi.io.grpc.version>
-        <carbon.coordination.version>2.1.3</carbon.coordination.version>
+        <siddhi.io.grpc.version>1.0.8</siddhi.io.grpc.version>
+
+        <!-- Microgateway gRPC service dependencies -->
+        <io.grpc.version>1.26.0</io.grpc.version>
+        <io.grpc.protoc-gen-grpc-java.version>1.22.1</io.grpc.protoc-gen-grpc-java.version>
+        <com.google.protobuf.version>3.11.1</com.google.protobuf.version>
+        <com.google.protobuf.protoc.version>3.7.1</com.google.protobuf.protoc.version>
+        <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
+        <protobuf-maven-plugin.version>0.5.1</protobuf-maven-plugin.version>
+
+        <carbon.coordination.version>2.1.4</carbon.coordination.version>
 
         <!-- Java 11 related dependencies -->
         <javax.annotation.version>1.3.2</javax.annotation.version>
@@ -1146,7 +1222,7 @@
         <org.wso2.orbit.commons-codec.version>1.12.0.wso2v1</org.wso2.orbit.commons-codec.version>
         <org.apache.httpcomponents.wso2.version>4.3.3.wso2v1</org.apache.httpcomponents.wso2.version>
         <org.wso2.orbit.commons-httpclient.version>3.1.0.wso2v6</org.wso2.orbit.commons-httpclient.version>
-        <org.wso2.carbon.identity.inbound.auth.oauth2.version>6.2.55
+        <org.wso2.carbon.identity.inbound.auth.oauth2.version>6.2.111
         </org.wso2.carbon.identity.inbound.auth.oauth2.version>
         <carbon.secvault.version>5.0.13</carbon.secvault.version>
 
@@ -1154,7 +1230,6 @@
         <testng.version>6.9.10</testng.version>
         <commons-httpclient.version>3.1.0.wso2v2</commons-httpclient.version>
         <commons.logging.version>1.2</commons.logging.version>
-        <apache.commons.version>1.3</apache.commons.version>
         <json.version>3.0.0.wso2v1</json.version>
         <codehaus.jackson.version>1.9.13</codehaus.jackson.version>
         <org.snakeyaml.version>1.17</org.snakeyaml.version>

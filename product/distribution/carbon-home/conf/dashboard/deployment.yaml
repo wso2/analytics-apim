@@ -309,7 +309,7 @@ wso2.datasources:
     definition:
       type: RDBMS
       configuration:
-        jdbcUrl: "jdbc:h2:${sys:carbon.home}/../wso2am-3.1.0/repository/database/WSO2AM_DB;AUTO_SERVER=TRUE"
+        jdbcUrl: "jdbc:h2:${sys:carbon.home}/../wso2am-3.1.0-alpha/repository/database/WSO2AM_DB;AUTO_SERVER=TRUE"
         username: wso2carbon
         password: wso2carbon
         driverClassName: org.h2.Driver
@@ -366,6 +366,7 @@ data.provider.configs:
 ## The configured APIs will be available as https://{host}:{port}/analytics-dashboard/{API_context_path}
 additional.apis:
   /apis/analytics/v1.0/apim: org.wso2.analytics.apim.rest.api.proxy.ApimApi
+  /apis/v1.0/report: org.wso2.analytics.apim.rest.api.report.ReportApi
 
 ## Authentication configuration
 auth.configs:
@@ -377,7 +378,7 @@ auth.configs:
     adminServiceBaseUrl: https://localhost:9443
     adminUsername: admin
     adminPassword: admin
-    kmDcrUrl: https://localhost:9443/client-registration/v0.15/register
+    kmDcrUrl: https://localhost:9443/client-registration/v0.16/register
     kmTokenUrlForRedirection: https://localhost:9443/oauth2
     kmTokenUrl: https://localhost:9443/oauth2
     kmUsername: admin

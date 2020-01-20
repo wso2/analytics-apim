@@ -1,5 +1,6 @@
 {
   "apim.server.error.heading" : "Error !",
+  "apim.server.error" : "Error occurred while retrieving application list.",
   "applicationName.label" : "Application Name",
   "config.error.body": "Cannot fetch provider configuration for APIM Top Application Users widget",
   "config.error.heading": "Configuration Error !",

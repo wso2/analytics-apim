@@ -437,7 +437,7 @@ siddhi:
         name: 'grpcSource'
         type: 'grpc'
         properties:
-          receiver.url : grpc://localhost:9806/org.wso2.grpc.EventService/consume
+          receiver.url : grpc://localhost:9806/org.wso2.analytics.mgw.grpc.service.AnalyticsSendService/sendAnalytics
   extensions:
     -
       extension:

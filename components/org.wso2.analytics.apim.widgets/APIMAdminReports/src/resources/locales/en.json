@@ -1,0 +1,10 @@
+{
+  "apim.server.error.heading" : "Error !",
+  "config.error.body": "Cannot fetch provider configuration for Admin Reports widget",
+  "config.error.heading": "Configuration Error !",
+  "nodata.error.body": "No data available for the selected options",
+  "nodata.error.heading": "No Data Available !",
+  "widget.heading": "APIM ADMIN Reports",
+  "download": "Download",
+  
+}

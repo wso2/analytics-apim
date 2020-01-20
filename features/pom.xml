@@ -30,6 +30,8 @@
         <module>org.wso2.analytics.apim.feature</module>
         <module>org.wso2.analytics.apim.idp.client.feature</module>
         <module>org.wso2.analytics.apim.rest.api.proxy.feature</module>
+        <module>org.wso2.analytics.apim.rest.api.report.feature</module>
+        <module>org.wso2.analytics.mgw.grpc.service.feature</module>
     </modules>
 
 </project>

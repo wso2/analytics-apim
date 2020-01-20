@@ -1,0 +1,15 @@
+@App:name('APIMTopAppUsersSiddhiReport')
+
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId
+string, applicationOwner string,apiContext string,apiName string, apiVersion string, apiResourcePath string,
+apiResourceTemplate string,apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string,
+apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long,
+throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long,
+protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long,
+responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+@store(type = 'rdbms', datasource ='APIM_ANALYTICS_DB')
+define aggregation ApiUserPerAppAgg from Request select apiName,apiVersion, apiContext, apiCreator,
+apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain,
+count() as totalRequestCount, gatewayType, label,'default' as regionalID group by apiContext,apiHostname, applicationId,
+username, userTenantDomain aggregate by requestTimestamp every seconds...years;

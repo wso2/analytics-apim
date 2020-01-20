@@ -211,7 +211,7 @@ class APIMApiLatencyWidget extends Widget {
             inProgress: true,
             metadata: this.metadata,
             chartConfig: this.chartConfig,
-            proxyError: null,
+            proxyError: false,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -371,16 +371,12 @@ class APIMApiLatencyWidget extends Widget {
         this.resetState();
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
-                this.setState({ proxyError: null });
+                this.setState({ proxyError: false });
                 this.handleApiListReceived(response.data);
             })
             .catch((error) => {
+                this.setState({ proxyError: true, inProgress: false });
                 console.error(error);
-                if (error.response && error.response.data) {
-                    let proxyError = error.response.data;
-                    proxyError = proxyError.split(':').splice(1).join('').trim();
-                    this.setState({ proxyError, inProgress: false });
-                }
             });
     }
 
@@ -757,7 +753,10 @@ class APIMApiLatencyWidget extends Widget {
                                     />
                                 </Typography>
                                 <Typography component='p'>
-                                    { proxyError }
+                                    <FormattedMessage
+                                        id='apim.server.error'
+                                        defaultMessage='Error occurred while retrieving API list.'
+                                    />
                                 </Typography>
                             </Paper>
                         </div>
