@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,12 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import Tooltip from '@material-ui/core/Tooltip';
+import { Scrollbars } from 'react-custom-scrollbars';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import LatencyChart from './LatencyChart';
 
 /**
@@ -31,81 +37,129 @@ import LatencyChart from './LatencyChart';
  */
 export default function APIMApiLatency(props) {
     const {
-        themeName, latancyData,
+        themeName, latancyData, handleLimitChange, limit, height, isloading,
     } = props;
-  //  console.log(latancyData);
     const styles = {
         headingWrapper: {
-            height: '5%',
             margin: 'auto',
-            paddingTop: '10px',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
             margin: 'auto',
             marginTop: '5%',
+            border: '1.5px solid',
         },
-        selectEmpty: {
-            marginTop: 10,
+        inProgress: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
+        },
+        formControl: {
+            marginTop: '2%',
+            marginLeft: '5%',
+        },
+        mainDiv: {
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            height,
+            margin: '10px',
+            padding: '20px',
+        },
+        h3: {
+            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+            paddingBottom: '10px',
+            margin: 'auto',
+            marginTop: 0,
+            textAlign: 'left',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
         },
     };
-    if (latancyData == null || latancyData.length === 0) {
-        return (
-            <div style={styles.paperWrapper}>
-                <Paper
-                    elevation={1}
-                    style={styles.paper}
-                >
-                    <Typography variant='h5' component='h3'>
-                        <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
-                    </Typography>
-                    <Typography component='p'>
-                        <FormattedMessage
-                            id='nodata.error.body'
-                            defaultMessage='No data available for the selected options.'
-                        />
-                    </Typography>
-                </Paper>
-            </div>
-        );
-    }
-    return (
-            <div 
-                style={{
-                background: themeName === 'light' ? '#fff' : '#162638',
-                width: 'auto',
-                height: 'auto',
-                margin: '3% 3%',
-            }}
-            >
-                <div style={styles.headingWrapper}>
-                    <h3 style={{
-                        borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '5px',
-                        margin: 'auto',
-                        textAlign: 'center',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                    >
-                        <FormattedMessage id='widget.heading' defaultMessage='Api Latency' />
 
-                    </h3>
-                </div>
-                <div style={styles.dataWrapper}>
-                    <LatencyChart
-                        data={latancyData}
-                    />
-                </div>
-                
+    return (
+        <Scrollbars style={{ height }}>
+        <div style={styles.mainDiv}>
+            <div style={styles.headingWrapper}>
+                <h3 style={styles.h3}>
+                    <FormattedMessage id='widget.heading' defaultMessage='AVERAGE LAATENCY' />
+                </h3>
             </div>
+            <FormControl style={styles.formControl}>
+                <Tooltip
+                    placement='top'
+                    title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                >
+                    <InputLabel
+                        shrink
+                        htmlFor='limit-number'
+                        style={styles.formLabel}
+                    >
+                        <FormattedMessage id='limit' defaultMessage='Limit :' />
+                    </InputLabel>
+                </Tooltip>
+                <Input
+                    id='limit-number'
+                    value={limit}
+                    onChange={handleLimitChange}
+                    type='number'
+                    margin='normal'
+                />
+            </FormControl>
+            { isloading ? (
+                <div style={styles.inProgress}>
+                    <CircularProgress />
+                </div>
+            ) : (
+                <div>
+                    { latancyData.length !== 0 ? (
+                        <div style={styles.dataWrapper}>
+                            <LatencyChart
+                                data={latancyData}
+                            />
+                        </div>
+                    ) : (
+                        <div style={styles.paperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={styles.paper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='nodata.error.heading'
+                                        defaultMessage='No Data Available !'
+                                    />
+                                </Typography>
+                                <Typography component='p'>
+                                    <FormattedMessage
+                                        id='nodata.error.body'
+                                        defaultMessage='No data available for the selected options.'
+                                    />
+                                </Typography>
+                            </Paper>
+                        </div>
+                    )
+
+                    }
+                </div>
+            )
+
+            }
+        </div>
+    </Scrollbars>
     );
 }
 
@@ -113,5 +167,7 @@ APIMApiLatency.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     latancyData: PropTypes.instanceOf(Object).isRequired,
-    handleChange: PropTypes.func.isRequired,
+    handleLimitChange: PropTypes.func.isRequired,
+    limit: PropTypes.string.isRequired,
+    isloading: PropTypes.bool.isRequired,
 };
