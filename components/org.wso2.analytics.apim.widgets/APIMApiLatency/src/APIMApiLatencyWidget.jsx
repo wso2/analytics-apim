@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -19,12 +19,11 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -56,6 +55,7 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 
+// create react component for the APIM Api Latency Widget
 class APIMApiLatencyWidget extends Widget {
 
     constructor(props) {
@@ -65,15 +65,12 @@ class APIMApiLatencyWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             localeMessages: null,
-            latancyData: null,
-           // refreshInterval: 60000, // 1min
+            latancyData: [],
+            limit: 5,
+            isloading: true,
         };
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '10px solid #4555BB',
@@ -82,12 +79,6 @@ class APIMApiLatencyWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            inProgress: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -104,13 +95,20 @@ class APIMApiLatencyWidget extends Widget {
         this.handleTotallatencyReceived = this.handleTotallatencyReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch(() => {
+                // TODO: Show error message.
+            });
+        });
     }
 
     componentDidMount() {
         const { widgetID, id } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
-
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 this.setState({
@@ -130,18 +128,27 @@ class APIMApiLatencyWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
-    //Load the locale file
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMApiLatency/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiLatency/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    // Set Query Param key
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
     }
 
      //Set the date time range
      handlePublisherParameters(receivedMsg) {
-         //console.log(receivedMsg);
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
@@ -149,17 +156,23 @@ class APIMApiLatencyWidget extends Widget {
         }, this.assemblelatencyQuery);
     }
 
-    //format the siddhi query
+    //Retreive latency data
     assemblelatencyQuery() {
         const { id, widgetID: widgetName } = this.props;
         const {timeFrom, timeTo, perValue, providerConfig} = this.state;
+        const queryParam = super.getGlobalState(queryParamKey);
+        let { limit } = queryParam;
 
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'latencyquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
+            '{{limit}}': limit,
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleTotallatencyReceived, dataProviderConfigs);
@@ -168,7 +181,6 @@ class APIMApiLatencyWidget extends Widget {
     //Format the data received from the query
     handleTotallatencyReceived(message) {
         const { data } = message;
-         //console.log(data);
         const latancyData = [];
         
         if (data) {
@@ -179,29 +191,36 @@ class APIMApiLatencyWidget extends Widget {
             });
         }
 
-        this.setState({latancyData});
+        this.setState({latancyData, isloading: false});
+    }
+
+    // Handle on change of limit
+    handleLimitChange(event) {
+        const { id } = this.props;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ limit });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assemblelatencyQuery();
+        } else {
+            this.setState({ limit });
+        }
     }
 
     //Render the Apim Latency Widget
     render() {
         const {
-            localeMessages, faultyProviderConf, latancyData, height
+            localeMessages, faultyProviderConf, latancyData, height, isloading, limit
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, inProgress,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiLatancyProps = { themeName, latancyData, height };
+        const apiLatancyProps = { themeName, latancyData, height, isloading, limit };
 
-
-        if (!localeMessages) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
@@ -226,6 +245,7 @@ class APIMApiLatencyWidget extends Widget {
                             </div>
                         ) : (
                             <APIMApiLatency {...apiLatancyProps}
+                            handleLimitChange={this.handleLimitChange}
                             />
                         )
                     }

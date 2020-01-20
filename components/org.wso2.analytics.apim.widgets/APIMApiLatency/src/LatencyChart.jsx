@@ -1,6 +1,5 @@
-/* eslint-disable indent */
 /* 
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -24,21 +23,18 @@ import { withStyles } from '@material-ui/core/styles';
 import { VictoryBar, VictoryChart, VictoryAxis } from 'victory';
 
 
-const styles = theme => ({ 
-    root: {
-        width: '750px',
-        height: '500px',
-        backgroundColor: theme.palette.type === 'light' ? '#fff' : '#162638',
+const styles = ({ 
+      victorybar: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        data: { fill: 'rgb(0, 107, 201)', width: 5 },
     },
-    table: {
-        minWidth: 200,
-    },
-    tableWrapper: {
-        overflowX: 'auto',
-    },
-    loadingIcon: {
-        margin: 'auto',
-        display: 'block',
+    victoryaxis: {
+        axisLabel: {
+            padding: 30,
+            fill: '#ffffff',
+            fontSize: '8px',
+        },
     },
 });
 
@@ -51,7 +47,7 @@ const chartTheme = {
          // this changed the color of my numbers to white
          fill: 'white',
          fontSize: '8px',
-         angle: 25,
+         angle: 45,
        },
        grid: { stroke: 'none' },
      },
@@ -62,20 +58,10 @@ const chartTheme = {
 
 //React component for chart data
 class LatencyChart extends React.Component {
-    /**
-     * Creates an instance of CustomTable.
-     * @param {any} props @inheritDoc
-     * @memberof CustomTable
-     */
     constructor(props) {
         super(props);
 
         this.state = {
-            tableData: [],
-            orderBy: 'hits',
-            order: 'desc',
-            expanded: false,
-            query: '',
         };
     }
 
@@ -92,40 +78,23 @@ class LatencyChart extends React.Component {
                   <VictoryBar
                     barWidth={6}
                     cornerRadius={{ topRight: 5 }}
-                    style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    data: { fill: 'rgb(0, 107, 201)', width: 5 },
-                  }}
+                    style={styles.victorybar}
                     animate={{
-                    duration: 2000,
-                    onLoad: { duration: 1000 },
+                    duration: 1000,
+                    onLoad: { duration: 500 },
                   }}
                     data={data}
                     x='ApiName'
-                  // eslint-disable-next-line indent
                     y='AvgLatency'
                 />
                   <VictoryAxis
                     label='API Name'
-                    style={{
-                    axisLabel: {
-                      padding: 30,
-                      fill: '#ffffff',
-                      fontSize: '8px',
-                    },
-                  }}
+                    style={styles.victoryaxis}
                 />
                   <VictoryAxis
                     dependentAxis
                     label='Average Latency (ms)'
-                    style={{
-                    axisLabel: {
-                      padding: 30,
-                      fill: '#ffffff',
-                      fontSize: '8px',
-                    },
-                  }}
+                    style={styles.victoryaxis}
                 />
               </VictoryChart>
         );
