@@ -1,7 +1,6 @@
-/* eslint-disable valid-jsdoc */
 /* eslint-disable require-jsdoc */
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -298,7 +297,6 @@ class APIMApiErrorAnalysisWidget extends Widget {
     handleApiListReceived(data) {
         const { id } = this.props;
         const { list } = data;
-        // console.log(list);
         if (list) {
             this.setState({ apiDataList: list });
         }
@@ -312,8 +310,6 @@ class APIMApiErrorAnalysisWidget extends Widget {
      * */
     assembleApiIdQuery() {
         this.resetState();
-        // const queryParam = super.getGlobalState(queryParamKey);
-        // const { apiCreatedBy } = queryParam;
         const { providerConfig, apiDataList } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -380,10 +376,8 @@ class APIMApiErrorAnalysisWidget extends Widget {
         const { providerConfig, apiFullData } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        console.log(apiSelected, apiVersion, apiFullData);
         if (apiFullData && apiFullData.length > 0) {
             const api = apiFullData.filter(apiData => apiSelected === apiData[1] && apiVersion === apiData[2])[0];
-            console.log(api);
 
             if (api) {
                 const dataProviderConfigs = cloneDeep(providerConfig);
@@ -409,8 +403,6 @@ class APIMApiErrorAnalysisWidget extends Widget {
     handleResourceReceived(message) {
         const { data } = message;
         const { id } = this.props;
-
-        console.log(data);
 
         if (data) {
             const resourceList = [];
@@ -438,22 +430,39 @@ class APIMApiErrorAnalysisWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
 
-        // console.log(resourceSelected);
-
         if (apiSelected !== '' && apiVersion !== '' && (operationSelected.length > 0 || resourceSelected.length > 0)) {
             let resources = '';
             let numberOfSelectedElements = 0;
 
-            const resFormat = resourceSelected.split(' (');
-            const resource = resFormat[0];
-            const method = resFormat[1].replace(')', '');
-            numberOfSelectedElements = 1;
-            resources = '(apiResourceTemplate==\'' + resource + '\' AND apiMethod==\'' + method + '\')';
+            if (operationSelected.length > 0) {
+                const operations = [];
+                const operationTypes = [];
+                let operationsString = '';
+                let method = '';
+                operationSelected.forEach((res) => {
+                    const resFormat = res.split(' (');
+                    operations.push(resFormat[0]);
+                    method = resFormat[1].replace(')', '');
+                    operationTypes.push(method);
+                    numberOfSelectedElements += 1;
+                });
+
+                for (let i = 0; i < operations.length - 1; i++) {
+                    operationsString += 'str:contains(apiResourceTemplate,\'' + operations[i] + '\') AND ';
+                }
+                operationsString += 'str:contains(apiResourceTemplate,\'' + operations[operations.length - 1] + '\')';
+
+                resources = '((' + operationsString + ') AND apiMethod==\'' + method + '\')';
+            } else if (resourceSelected.length > 0) {
+                const resFormat = resourceSelected.split(' (');
+                const resource = resFormat[0];
+                const method = resFormat[1].replace(')', '');
+                numberOfSelectedElements = 1;
+                resources = '(apiResourceTemplate==\'' + resource + '\' AND apiMethod==\'' + method + '\')';
+            }
 
             const queryCondition = '(apiName==\'' + apiSelected + '\' AND apiVersion==\''
                 + apiVersion + '\' AND (' + resources + '))';
-
-            // console.log(queryCondition);
 
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{timeFrom}}': timeFrom,
@@ -477,7 +486,6 @@ class APIMApiErrorAnalysisWidget extends Widget {
     handleDataReceived(message) {
         const resultdata = [];
         const { data } = message;
-        // console.log(data);
 
         if (data) {
             const {
@@ -487,7 +495,6 @@ class APIMApiErrorAnalysisWidget extends Widget {
                 resultdata.push([Moment(element[1]).format('YYYY/MM/DD hh:mm'), element[3], element[0]]);
             });
 
-            // console.log(data, resultdata);
             this.setState({
                 resultdata, inProgress: false,
             });
@@ -555,7 +562,6 @@ class APIMApiErrorAnalysisWidget extends Widget {
         this.setQueryParam(apiSelected, event.target.value, []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({ apiVersion: event.target.value, inProgress: true, resourceList: [] }, this.assembleResourceQuery);
-        console.log(apiSelected, event.target.value);
     }
 
     /**

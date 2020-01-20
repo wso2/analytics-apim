@@ -37,7 +37,7 @@
     "APIMApiErrorRate",
     "APIMApiAlerts",
     "APIMApiLatency",
-    "APIMRecentApiDetails",
+    "APIMOverallApiInfo",
     "APIMSingleApiStats",
     "APIMApiErrorAnalysis",
     "APIMApiTrafficTrends",

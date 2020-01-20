@@ -176,7 +176,7 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>APIMRecentApiDetails/dist</directory>
+            <directory>APIMOverallApiInfo/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
          <fileSet>

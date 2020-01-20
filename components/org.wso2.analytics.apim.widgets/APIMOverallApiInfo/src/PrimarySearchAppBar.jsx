@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -29,7 +28,6 @@ function SimpleAppBar(props) {
 }
 
 SimpleAppBar.propTypes = {
-    // eslint-disable-next-line react/forbid-prop-types
     classes: PropTypes.object.isRequired,
 };
 

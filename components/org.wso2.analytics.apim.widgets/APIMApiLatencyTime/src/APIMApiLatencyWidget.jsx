@@ -181,6 +181,16 @@ class APIMApiLatencyWidget extends Widget {
                 margin: 'auto',
                 marginTop: '5%',
             },
+            rowGutter: {
+                top: 0,
+                bottom: -10,
+            },
+            victoryLegend: {
+                labels: {
+                    fill: '#9e9e9e',
+                    fontSize: 19,
+                },
+            },
         };
 
         this.state = {
@@ -555,6 +565,8 @@ class APIMApiLatencyWidget extends Widget {
             const queryCondition = ' AND (apiName==\'' + apiSelected + '\' AND apiVersion==\''
                 + apiVersion + '\' AND (' + resources + '))';
 
+            console.log(queryCondition);
+
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{timeFrom}}': timeFrom,
                 '{{timeTo}}': timeTo,
@@ -576,7 +588,7 @@ class APIMApiLatencyWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-
+        console.log(data);
         if (data) {
             const {
                 apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected,

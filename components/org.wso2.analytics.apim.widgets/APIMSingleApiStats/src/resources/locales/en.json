@@ -15,7 +15,7 @@
   "table.heading.version": "VERSION",
   "table.heading.hits": "HITS",
   "widget.heading": "API Monitoring",
-  "widget.traffic.heading": "No of HITS against TIME",
+  "widget.traffic.heading": "API TRAFFIC",
   "reqcount.widget.heading": "TOTAL REQUEST COUNT",
   "errorcount.widget.heading": "TOTAL ERROR COUNT",
   "errorratecount.widget.heading": "TOTAL ERROR RATE",

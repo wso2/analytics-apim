@@ -1,5 +1,3 @@
-/* eslint-disable require-jsdoc */
-/* eslint-disable no-console */
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -21,7 +19,7 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage,
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
@@ -111,6 +109,9 @@ class APIMSingleApiStatsWidget extends Widget {
             xAxisTicks: null,
             maxCount: null,
             isloading: true,
+            urlavailable: true,
+            apiList: [],
+            apiSelected: null,
 
         };
 
@@ -133,17 +134,25 @@ class APIMSingleApiStatsWidget extends Widget {
         this.assembletotalreqcountquery = this.assembletotalreqcountquery.bind(this);
         this.handletotalreqcountReceived = this.handletotalreqcountReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.getresourcetemplates = this.getresourcetemplates.bind(this);
-        this.handleresourcetemplates = this.handleresourcetemplates.bind(this);
         this.loadurldata=this.loadurldata.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.getApiList = this.getApiList.bind(this);
+        this.handleApiListReceived = this.handleApiListReceived.bind(this);
+        this.apiSelectedHandleChange = this.apiSelectedHandleChange.bind(this);
+    }
+
+    componentWillMount() {
+        const locale = (languageWithoutRegionCode || language || 'en');
+        this.loadLocale(locale).catch(() => {
+            this.loadLocale().catch(() => {
+                // TODO: Show error message.
+            });
+        });
     }
 
 
     componentDidMount() {
         const { widgetID } = this.props;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
         this.loadurldata();
 
         super.getWidgetConfiguration(widgetID)
@@ -164,79 +173,96 @@ class APIMSingleApiStatsWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
     }
 
+
+    loadLocale(locale = 'en') {
+        return new Promise((resolve, reject) => {
+            Axios
+                .get(`${window.contextPath}/public/extensions/widgets/APIMSingleApiStats/locales/${locale}.json`)
+                .then((response) => {
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    addLocaleData(require(`react-intl/locale-data/${locale}`));
+                    this.setState({ localeMessages: defineMessages(response.data) });
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    // load the url data
     loadurldata(){
        var str = window.location.href;
        var iscommunicated = str.includes("apsssss");
-       console.log(iscommunicated);
        if(iscommunicated){
           var stringArray = str.split("%22");
-          //console.log(stringArray);
-          //console.log(stringArray[5]);
-          //console.log(stringArray[9]);
-        this.setState({apiname:stringArray[5],apiVersion:stringArray[9]});
+        this.setState({apiname:stringArray[5],apiVersion:stringArray[9],urlavailable:true,apiSelected:stringArray[5]+':'+stringArray[9]});
        }
        else{
-          window.location.href = './recent-api-details';
+        this.setState({urlavailable:false});
        }
     }
- 
-    loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMSingleApiStats/locales/${locale}.json`)
-            .then((response) => {
-                this.setState({ localeMessages: defineMessages(response.data) });
-            })
-            .catch(error => console.error(error));
+
+    // retreive API List
+    getApiList(){
+        const {
+            timeFrom, timeTo, perValue, providerConfig,
+        } = this.state;
+        const { id, widgetID: widgetName } = this.props;
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{from}}': timeFrom,
+            '{{to}}': timeTo,
+            '{{per}}': perValue,
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
+    }
+
+    handleApiListReceived(message){
+        const { data } = message;
+        const { urlavailable } = this.state;
+        let apiarray = [];
+
+        data.forEach(element => {
+            apiarray.push(element[0]+':'+element[1]);
+        });
+
+        if (data && data.length > 0) {
+            if (urlavailable) {
+                this.setState({ apiList: apiarray});
+                this.assembleApiUsageQuery();
+            }
+            else{
+                this.setState({ apiList: apiarray });
+                this.setState({apiname:data[0][0],apiVersion:data[0][1], apiSelected:data[0][0]+':'+data[0][1]});
+                this.assembleApiUsageQuery();
+            }
+           
+        }
+        else{
+            this.setState({apiList:apiarray, isloading:false});
+        }
+
+    }
+
+
+    // Set Query Param key
+    setQueryParam(urlavailable) {
+        super.setGlobalState(queryParamKey, { urlavailable });
     }
 
     //Set the date time range
     handlePublisherParameters(receivedMsg) {
-        this.setState({
-            // totalreqcount: null,
-            // trafficdata: null,
-            // totallatencycount: null,
-            // latencydata: null,
-            // totalerrorcount: null,
-            // errordata: null,
-            // avglatency: null,
-            // errpercentage: null,
-            // totalreqcounted: null,
-            // sorteddata: null,
-            // formatederrorpercentage: null,
-            // usageData: null,
-            // data:null,
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            isloading: true,
-        }, this.assembleApiUsageQuery);
-    }
-
-    getresourcetemplates(){
-        const { providerConfig,apiname,apiVersion
-        } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.apiname = apiname;
-        dataProviderConfigs.configs.config.queryData.queryName = 'resourcetemplates';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{apiname}}': apiname,
-            '{{apiVersion}}':apiVersion,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleresourcetemplates, dataProviderConfigs);
-    }
-
-    handleresourcetemplates(message){
-        const { id } = this.props;
-
-      //  console.log(data);
-
-        super.getWidgetChannelManager()
-        .subscribeWidget(id, widgetName, this.assembleApiUsageQuery, dataProviderConfigs);
+            this.setState({
+                timeFrom: receivedMsg.from,
+                timeTo: receivedMsg.to,
+                perValue: receivedMsg.granularity,
+                isloading: true,
+            }, this.getApiList);
     }
 
   
-    //Format the siddhi query
+    //Retreive traffic data
     assembleApiUsageQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,apiname,apiVersion
@@ -276,7 +302,6 @@ class APIMSingleApiStatsWidget extends Widget {
             });
 
             // const maxCount = trafficdata[trafficdata.length - 1].y;
-
             // const first = new Date(trafficdata[0].x).getTime();
             // const last = new Date(trafficdata[trafficdata.length - 1].x).getTime();
             // const interval = (last - first) / 5;
@@ -288,7 +313,6 @@ class APIMSingleApiStatsWidget extends Widget {
             // }
 
             this.setState({ trafficdata, totalreqcount});
-
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assemblelatencyquery();
         }
@@ -337,7 +361,6 @@ class APIMSingleApiStatsWidget extends Widget {
             
             avglatency = Math.floor(totallatencytime/totallatencycount);
 
-            //console.log(latencydata);
             if(isNaN(avglatency)){
                 this.setState({ latencydata: latencydata, avglatency: 0});
             }
@@ -368,7 +391,6 @@ class APIMSingleApiStatsWidget extends Widget {
             '{{apiname}}': apiname,
             '{{apiVersion}}':apiVersion,
         };
-        //console.log(timeFrom,timeTo,perValue);
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleerrorsReceived, dataProviderConfigs);
     }
@@ -378,7 +400,6 @@ class APIMSingleApiStatsWidget extends Widget {
     handleerrorsReceived(message) {
         const { data } = message;
         const { id } = this.props;
-       // console.log(data);
         if (data) {
             const errordata = [];
             let totalerrorcount = 0;
@@ -419,7 +440,6 @@ class APIMSingleApiStatsWidget extends Widget {
     // format the total error count received
     handlerrorRateReceived(message) {
         const { data } = message;
-        console.log(data);
         const { id } = this.props;
 
        this.setState({ errpercentage: data })
@@ -453,8 +473,6 @@ class APIMSingleApiStatsWidget extends Widget {
     handletotalreqcountReceived(message) {
         const { data } = message;
         const { id } = this.props;
-       // console.log(data);
-
     
         this.setState({ totalreqcounted: data });
         super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -464,13 +482,10 @@ class APIMSingleApiStatsWidget extends Widget {
     // analyze the errors received
     analyzeerrorrate() {
         const { errpercentage, totalreqcounted } = this.state;
-       console.log(errpercentage, totalreqcounted);
         const sorteddata = [];
         let totalhits = 0;
         let totalerrors = 0;
         let errorpercentage = 0;
-
-        // console.log(errorpercentage);
 
         errpercentage.forEach((element) => {
             totalerrors += element[1];
@@ -500,12 +515,18 @@ class APIMSingleApiStatsWidget extends Widget {
         this.setState({ sorteddata, formatederrorpercentage:errorpercentage, isloading: false, });
     }
 
+
+    apiSelectedHandleChange(event) {
+       var stringArray = event.target.value.split(":");
+       this.setState({apiname:stringArray[0],apiVersion:stringArray[1],urlavailable:true,apiSelected:event.target.value});
+       this.getApiList();
+    }
     
 
     render() {
         const {
             localeMessages, faultyProviderConfig, height, apiname,apiVersion, totalreqcount, trafficdata, latencydata, totallatencycount, timeFrom, timeTo, 
-            totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, isloading
+            totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, isloading, apiList, apiSelected
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, inProgress,
@@ -514,16 +535,9 @@ class APIMSingleApiStatsWidget extends Widget {
         const themeName = muiTheme.name;
         const apiUsageProps = {
             themeName, height,trafficdata, apiname,apiVersion, totalreqcount, latencydata, totallatencycount, timeFrom, timeTo, 
-            totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata
+            totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, apiList, apiSelected, isloading
         };
 
-        if (!localeMessages || !trafficdata || isloading) {
-            return (
-                <div style={inProgress}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
@@ -549,6 +563,7 @@ class APIMSingleApiStatsWidget extends Widget {
                         ) : (
                             <APIMSingleApiStats
                                 {...apiUsageProps}
+                                apiSelectedHandleChange={this.apiSelectedHandleChange}
                             />
                         )
                     }

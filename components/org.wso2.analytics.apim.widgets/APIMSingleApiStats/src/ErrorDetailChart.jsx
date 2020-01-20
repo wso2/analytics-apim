@@ -7,15 +7,50 @@ import {
 import Paper from '@material-ui/core/Paper';
 import { FormattedMessage } from 'react-intl';
 
-const styles = () => ({
-  button: {
-  // margin: '1%',
-  },
+const styles = {
   input: {
     display: 'none',
   },
-});
-
+  paper: {
+    background: '#040b4b',
+    width: '75%',
+    padding: '4%',
+    margin: 'auto',
+    paddingTop: '150px',
+  },
+  headingWrapper: {
+    height: '5%',
+    margin: 'auto',
+    paddingTop: '10px',
+    width: '90%',
+  },
+  h3: {
+    borderBottom: '1.5px solid #fff',
+    paddingBottom: '7px',
+    paddingTop: '7px',
+    margin: 'auto',
+    textAlign: 'center',
+    fontWeight: 'normal',
+    letterSpacing: 1.5,
+    width: '80%',
+  },
+  maindiv:{
+    maxWidth: '100%',
+    maxHeight: '420px',
+    minWidth: '50%',
+    minHeight: '420px',
+    marginRight:'2px',
+    backgroundColor:'#040b4b',
+    marginTop:'5px',
+  },
+  victry:{
+    axisLabel: {
+      padding: 30,
+      fill: '#ffffff',
+      fontSize: '8px',
+      },
+  },
+}
 class ErrorDetailChart extends React.Component {
     constructor(props) {
         super(props);
@@ -27,7 +62,6 @@ class ErrorDetailChart extends React.Component {
 
   render() {
     const { errordata } = this.props;
-
 
     const chartTheme = {
       axis: {
@@ -45,31 +79,17 @@ class ErrorDetailChart extends React.Component {
 
    if (errordata === null || errordata.length === 0) {
     return (
-        <div style={{maxWidth: '100%', maxHeight: '420px', minWidth: '50%', minHeight: '420px', marginRight:'2px', backgroundColor:'#040b4b', marginTop:'5px'}}>
+        <div style={styles.maindiv}>
            <div style={styles.headingWrapper}>
-                <h3 style={{
-                    borderBottom: '1.5px solid #fff',
-                    paddingBottom: '7px',
-                    paddingTop: '12px',
-                    margin: 'auto',
-                    textAlign: 'center',
-                    fontWeight: 'normal',
-                    letterSpacing: 1.5,
-                   // fontSize: '10px',
-                    width: '80%',
-                }}
+                <h3 style={styles.h3}
                 >
-                    <FormattedMessage id='widget.errors.heading' defaultMessage='No of ERRORS against TIME' />
+                    <FormattedMessage id='widget.errors.heading' defaultMessage='ERROR COUNT' />
 
                 </h3>
             </div>
             <Paper
                 elevation={1}
-                style={{background: '#040b4b',
-                width: '75%',
-                padding: '4%',
-                margin: 'auto',
-                paddingTop: '150px'}}
+                style={styles.paper}
             >
                 <Typography variant='h5' component='h3'>
                     <FormattedMessage id='nodata.error.heading' defaultMessage='No Data Available !' />
@@ -86,21 +106,11 @@ class ErrorDetailChart extends React.Component {
   }
   else{
     return (
-      <div style={{maxWidth: '100%', maxHeight: '420px', minWidth: '50%', minHeight: '420px', marginRight:'2px', backgroundColor:'#040b4b', color:'white', margin:'5px'}}>
+      <div style={styles.maindiv}>
          <div style={styles.headingWrapper}>
-                <h3 style={{
-                    borderBottom: '1.5px solid #fff',
-                    paddingBottom: '7px',
-                    paddingTop: '12px',
-                    margin: 'auto',
-                    textAlign: 'center',
-                    fontWeight: 'normal',
-                    letterSpacing: 1.5,
-                   // fontSize: '10px',
-                    width: '80%',
-                }}
+                <h3 style={styles.h3}
                 >
-                    <FormattedMessage id='widget.errors.heading' defaultMessage='No of ERRORS against TIME' />
+                    <FormattedMessage id='widget.errors.heading' defaultMessage='ERROR COUNT' />
 
                 </h3>
             </div>
@@ -122,24 +132,12 @@ class ErrorDetailChart extends React.Component {
           />
           <VictoryAxis
             label='Time'
-            style={{
-              axisLabel: {
-              padding: 30,
-              fill: '#ffffff',
-              fontSize: '8px',
-              },
-            }}/>
+            style={styles.victry}/>
 
             <VictoryAxis
                 dependentAxis
                 label='Api Error Count'
-                style={{
-                  axisLabel: {
-                  padding: 40,
-                  fill: '#ffffff',
-                  fontSize: '8px',
-                  },
-                }}/>
+                style={styles.victry}/>
         </VictoryChart>
         </svg>
         
