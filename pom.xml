@@ -1061,6 +1061,7 @@
         <siddhi.version>5.1.12</siddhi.version>
         <siddhi.core.import.version.range>[5.1,6.0]</siddhi.core.import.version.range>
         <carbon.analytics-common.version>6.1.40</carbon.analytics-common.version>
+
         <!-- Maven plugins -->
         <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
         <maven.findbugsplugin.exclude>findbugs-exclude.xml</maven.findbugsplugin.exclude>
