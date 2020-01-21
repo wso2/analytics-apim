@@ -1057,8 +1057,8 @@
 
     <properties>
 
-        <carbon.analytics.version>3.0.21</carbon.analytics.version>
-        <siddhi.version>5.1.10</siddhi.version>
+        <carbon.analytics.version>3.0.22</carbon.analytics.version>
+        <siddhi.version>5.1.12</siddhi.version>
         <siddhi.core.import.version.range>[5.1,6.0]</siddhi.core.import.version.range>
         <carbon.analytics-common.version>6.1.40</carbon.analytics-common.version>
         <!-- Maven plugins -->
@@ -1103,7 +1103,7 @@
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)
         </slf4j.logging.package.import.version.range>
 
-        <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
+        <antlr4.runtime.version>4.7.2.wso2v1</antlr4.runtime.version>
         <pdfbox.version>1.8.16</pdfbox.version>
         <pdfbox.import.version.range>[1.8,2.0)</pdfbox.import.version.range>
         <!--Dashboard-->
