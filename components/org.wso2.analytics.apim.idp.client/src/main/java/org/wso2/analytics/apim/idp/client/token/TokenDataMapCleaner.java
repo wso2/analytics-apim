@@ -41,11 +41,11 @@ public class TokenDataMapCleaner extends TimerTask {
     private void cleanTokenDataMap() {
         long currentTimestamp = System.currentTimeMillis();
         Map<String, TokenData> tokenDataMap = TokenDataHolder.getInstance().getTokenMap();
-        Iterator it = tokenDataMap.entrySet().iterator();
+        Iterator<Map.Entry<String, TokenData>> it = tokenDataMap.entrySet().iterator();
         int count = 0;
         while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            TokenData tokenData = (TokenData) entry.getValue();
+            Map.Entry<String, TokenData> entry = it.next();
+            TokenData tokenData = entry.getValue();
             long expiryTime = tokenData.getExpireTimestamp() * 1000;
             if (currentTimestamp > expiryTime) { // if token is expired, remove token data from the tokeData map
                 it.remove();
