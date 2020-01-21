@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.analytics.apim.rest.api.report.NotFoundException;
 import org.wso2.analytics.apim.rest.api.report.ReportApiService;
 import org.wso2.analytics.apim.rest.api.report.api.ReportGenerator;
+import org.wso2.analytics.apim.rest.api.report.exception.PDFReportException;
 import org.wso2.analytics.apim.rest.api.report.internal.ServiceHolder;
 import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 import org.wso2.carbon.analytics.idp.client.core.exception.AuthenticationException;
@@ -94,10 +95,8 @@ public class ReportApiServiceImpl extends ReportApiService {
             InputStream data;
             try {
                 String tenantDomain = extractTenantDomainFromUserName(username);
-                Class reportGeneratorClass = Class.forName(ServiceHolder.getReportImplClass());
-                ReportGenerator reportGeneratorImpl = (ReportGenerator) reportGeneratorClass.
-                        getDeclaredConstructor(String.class, String.class, String.class).newInstance(year,month,
-                        tenantDomain);
+                ReportGenerator reportGeneratorImpl = (ReportGenerator) (ServiceHolder.getInstance().
+                        getReportImplClassConstructor()).newInstance(year, month, tenantDomain);
                 data = reportGeneratorImpl.generateMonthlyRequestSummaryPDF();
                 if (data != null) {
                     return Response.ok().entity(data).build();
@@ -105,8 +104,7 @@ public class ReportApiServiceImpl extends ReportApiService {
                     String msg = "No data found for requested time period";
                     return Response.ok().entity(msg).build();
                 }
-
-            } catch (Exception e) {
+            } catch (PDFReportException | ReflectiveOperationException e) {
                 String errorMsg = "Unable to fetch report.";
                 log.error(errorMsg, e);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
@@ -146,18 +144,18 @@ public class ReportApiServiceImpl extends ReportApiService {
         return accessTokenP1 + accessTokenP2;
     }
 
-    private String extractTenantDomainFromUserName(String username) throws IdPClientException {
+    private String extractTenantDomainFromUserName(String username) throws PDFReportException {
         if (username == null || username.isEmpty()) {
             String error = "Username cannot be empty.";
             log.error(error);
-            throw new IdPClientException(error);
+            throw new PDFReportException(error);
         }
         String[] usernameSections = username.split(AT);
         String tenantDomain = usernameSections[usernameSections.length - 1];
         if (tenantDomain == null) {
             String error = "Cannot get the tenant domain from the given username: " + username;
             log.error(error);
-            throw new IdPClientException(error);
+            throw new PDFReportException(error);
         }
         return tenantDomain;
     }

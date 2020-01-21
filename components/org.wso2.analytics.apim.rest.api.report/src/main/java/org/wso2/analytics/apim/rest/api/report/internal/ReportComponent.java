@@ -28,6 +28,7 @@ import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 import org.wso2.carbon.config.ConfigurationException;
 import org.wso2.carbon.config.provider.ConfigProvider;
 
+import java.lang.reflect.Constructor;
 import java.util.LinkedHashMap;
 
 /**
@@ -46,14 +47,17 @@ public class ReportComponent {
         log.debug("activating ReportComponent bundle");
         ConfigProvider configProvider = ServiceHolder.getInstance().getConfigProvider();
         try {
-            LinkedHashMap<String, String> reportConfigs = (LinkedHashMap<String, String>)configProvider.
+            LinkedHashMap<String, String> reportConfigs = (LinkedHashMap<String, String>) configProvider.
                     getConfigurationObject("report");
-            if(reportConfigs != null) {
-                    String implClass = reportConfigs.get("implClass");
-                    ServiceHolder.setReportImplClass(implClass);
+            if (reportConfigs != null) {
+                String implClass = reportConfigs.get("implClass");
+                Class<?> reportGeneratorClass = Class.forName(implClass);
+                Constructor<?> constructor = reportGeneratorClass.
+                        getDeclaredConstructor(String.class, String.class, String.class);
+                ServiceHolder.getInstance().setReportImplClassConstructor(constructor);
             }
-        } catch (ConfigurationException e) {
-            log.error("Error during reading apim analytics reporting configs.");
+        } catch (ConfigurationException | ClassNotFoundException | NoSuchMethodException e) {
+            log.error("Error during activating ReportComponent.", e);
         }
     }
 

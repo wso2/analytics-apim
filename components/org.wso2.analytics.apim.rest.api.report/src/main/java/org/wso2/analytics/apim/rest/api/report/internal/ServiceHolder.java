@@ -18,6 +18,8 @@ package org.wso2.analytics.apim.rest.api.report.internal;
 import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
 import org.wso2.carbon.config.provider.ConfigProvider;
 
+import java.lang.reflect.Constructor;
+
 /**
  *  Service Holder class for Report component.
  */
@@ -25,20 +27,20 @@ public class ServiceHolder {
 
     private IdPClient apimAdminClient;
     private static ServiceHolder instance = new ServiceHolder();
-    private static ConfigProvider configProvider;
-    private static String reportImplClass;
+    private  ConfigProvider configProvider;
+    private Constructor<?> reportImplClassConstructor;
 
     private ServiceHolder() {
     }
 
-    public static String getReportImplClass() {
+    public Constructor getReportImplClassConstructor() {
 
-        return reportImplClass;
+        return reportImplClassConstructor;
     }
 
-    public static void setReportImplClass(String reportImplClass) {
+    public void setReportImplClassConstructor(Constructor reportImplClassConstructor) {
 
-        ServiceHolder.reportImplClass = reportImplClass;
+        this.reportImplClassConstructor = reportImplClassConstructor;
     }
 
     public void setAPIMAdminClient(IdPClient service) {
@@ -58,7 +60,7 @@ public class ServiceHolder {
         this.configProvider = configProvider;
     }
 
-    public static ConfigProvider getConfigProvider() {
+    public ConfigProvider getConfigProvider() {
 
         return configProvider;
     }

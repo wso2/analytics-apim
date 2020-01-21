@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.wso2.analytics.apim.rest.api.report.api.ReportGenerator;
+import org.wso2.analytics.apim.rest.api.report.exception.PDFReportException;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.RowEntry;
 import org.wso2.analytics.apim.rest.api.report.reportgen.model.TableData;
 import org.wso2.analytics.apim.rest.api.report.reportgen.util.ReportGeneratorUtil;
@@ -90,30 +91,35 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
     }
 
     @Override
-    public InputStream generateMonthlyRequestSummaryPDF() throws IOException, COSVisitorException {
+    public InputStream generateMonthlyRequestSummaryPDF() throws PDFReportException {
 
         if (table.getRows().size() == 0) {
             return null;
         }
         log.debug("Starting to generate PDF.");
-        PDPageContentStream contentStream = new PDPageContentStream(document, pageMap.get(1), true, false);
+        PDPageContentStream contentStream = null;
+        try {
+            contentStream = new PDPageContentStream(document, pageMap.get(1), true, false);
+            ReportGeneratorUtil.insertLogo(document, contentStream);
+            ReportGeneratorUtil.insertPageNumber(contentStream, 1);
+            ReportGeneratorUtil.insertReportTitleToHeader(contentStream, "Monthly Usage Summary");
+            ReportGeneratorUtil.insertReportTimePeriodToHeader(contentStream, period);
+            ReportGeneratorUtil.insertReportGeneratedTimeToHeader(contentStream);
+            contentStream.close();
 
-        ReportGeneratorUtil.insertLogo(document, contentStream);
-        ReportGeneratorUtil.insertPageNumber(contentStream, 1);
-        ReportGeneratorUtil.insertReportTitleToHeader(contentStream, "API Request Summary");
-        ReportGeneratorUtil.insertReportTimePeriodToHeader(contentStream, period);
-        ReportGeneratorUtil.insertReportGeneratedTimeToHeader(contentStream);
-        contentStream.close();
-
-        float[] columnWidths = {40, 110, 50, 110, 110, 110};
-        ReportGeneratorUtil.drawTableGrid(document, pageMap, recordsPerPageList, columnWidths, table.getRows().size());
-        ReportGeneratorUtil.writeRowsContent(table.getColumnHeaders(), columnWidths, document, pageMap,
-                table.getRows());
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        document.save(out);
-        document.close();
-        log.debug("PDF generation complete.");
-        return new ByteArrayInputStream(out.toByteArray());
+            float[] columnWidths = {40, 110, 50, 110, 110, 110};
+            ReportGeneratorUtil.drawTableGrid(document, pageMap, recordsPerPageList, columnWidths,
+                    table.getRows().size());
+            ReportGeneratorUtil.writeRowsContent(table.getColumnHeaders(), columnWidths, document, pageMap,
+                    table.getRows());
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            document.save(out);
+            document.close();
+            log.debug("PDF generation complete.");
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (IOException | COSVisitorException e) {
+            throw new PDFReportException("Error during generating monthly request summary report.", e);
+        }
     }
 
     private TableData getRecordsFromAggregations(String year, String month, String apiCreatorTenantDomain)
