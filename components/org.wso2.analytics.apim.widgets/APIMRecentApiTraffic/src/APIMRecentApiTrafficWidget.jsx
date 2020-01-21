@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 /*
  *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -182,7 +181,6 @@ class APIMRecentApiTrafficWidget extends Widget {
 
     // format the query data
     handleApiUsageReceived(message) {
-        console.log('hello');
         const { data } = message;
         if (data) {
             const usageData = [];

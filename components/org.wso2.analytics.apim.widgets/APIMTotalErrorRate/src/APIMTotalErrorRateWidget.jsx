@@ -206,7 +206,6 @@ class APIMTotalErrorRateWidget extends Widget {
     //format total request count received
     handleTotalCountReceived(message) {
         const { data } = message;
-        console.log(data);
         const { id } = this.props;
 
         if (data.length != 0) {
@@ -240,7 +239,6 @@ class APIMTotalErrorRateWidget extends Widget {
     handleTotalerrorCountReceived(message) {
         const { data } = message;
         const { totalCount } = this.state
-        console.log(data);
         const { id } = this.props;
 
         if (data.length != 0) {

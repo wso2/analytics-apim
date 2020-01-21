@@ -196,13 +196,13 @@ class APIMApiAlertsWidget extends Widget {
 
         const dataProviderConfigs = cloneDeep(providerConfig);
 
-        dataProviderConfigs.configs.config.tableName = 'ApimAbnormalReqAlert';
         dataProviderConfigs.configs.config.incrementalColumn = 'requestCountPerMin';
         dataProviderConfigs.configs.config.queryData.queryName = 'alert';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{tableName}}': 'ApimAbnormalReqAlert',
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
+            '{{Domain}}': 'tenantDomain',
         };
 
         super.getWidgetChannelManager()
@@ -236,13 +236,13 @@ class APIMApiAlertsWidget extends Widget {
 
         const dataProviderConfigs = cloneDeep(providerConfig);
 
-        dataProviderConfigs.configs.config.tableName = 'ApimAbnormalResponseTimeAlert';
         dataProviderConfigs.configs.config.incrementalColumn = 'responseTime';
         dataProviderConfigs.configs.config.queryData.queryName = 'alert';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{tableName}}': 'ApimAbnormalResponseTimeAlert',
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
+            '{{Domain}}': 'apiCreatorTenantDomain',
         };
 
         super.getWidgetChannelManager()
@@ -274,13 +274,13 @@ class APIMApiAlertsWidget extends Widget {
 
         const dataProviderConfigs = cloneDeep(providerConfig);
 
-        dataProviderConfigs.configs.config.tableName = 'ApimAbnormalBackendTimeAlert';
         dataProviderConfigs.configs.config.incrementalColumn = 'backendTime';
         dataProviderConfigs.configs.config.queryData.queryName = 'alert';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{tableName}}': 'ApimAbnormalBackendTimeAlert',
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
+            '{{Domain}}': 'apiCreatorTenantDomain',
         };
 
         super.getWidgetChannelManager()

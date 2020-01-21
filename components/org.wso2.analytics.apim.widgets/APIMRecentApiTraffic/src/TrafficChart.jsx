@@ -1,4 +1,4 @@
-/* eslint-disable require-jsdoc */
+
 /*
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *

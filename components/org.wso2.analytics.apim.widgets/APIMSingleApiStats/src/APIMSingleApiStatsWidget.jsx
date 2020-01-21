@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -191,10 +190,12 @@ class APIMSingleApiStatsWidget extends Widget {
     // load the url data
     loadurldata(){
        var str = window.location.href;
-       var iscommunicated = str.includes("apsssss");
+       var iscommunicated = str.includes("apidata");
        if(iscommunicated){
           var stringArray = str.split("%22");
+          console.log(stringArray[5],stringArray[9]);
         this.setState({apiname:stringArray[5],apiVersion:stringArray[9],urlavailable:true,apiSelected:stringArray[5]+':'+stringArray[9]});
+        
        }
        else{
         this.setState({urlavailable:false});
@@ -292,7 +293,6 @@ class APIMSingleApiStatsWidget extends Widget {
         const { id } = this.props;
         if (data) {
             const trafficdata = [];
-            var xAxisTicks = [];
             let totalreqcount = 0;
 
             data.forEach((e) => {
@@ -529,7 +529,7 @@ class APIMSingleApiStatsWidget extends Widget {
             totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, isloading, apiList, apiSelected
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;

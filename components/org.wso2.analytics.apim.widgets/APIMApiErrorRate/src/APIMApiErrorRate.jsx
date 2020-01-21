@@ -51,6 +51,7 @@ export default function APIMApiErrorRate(props) {
             padding: '4%',
             border: '1.5px solid',
             marginLeft: '5%',
+            marginTop: '5%',
         },
         inProgress: {
             display: 'flex',
@@ -183,6 +184,12 @@ export default function APIMApiErrorRate(props) {
                                         <FormattedMessage
                                             id='nodata.error.heading'
                                             defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options.'
                                         />
                                     </Typography>
                                 </Paper>

@@ -228,7 +228,7 @@ class APIMOverallApiInfoWidget extends Widget {
         const { id } = this.props;
         data.forEach((element) => {
             totalcount.push([element[0], element[1], 'All', 'All', element[2], '..', '..',parseInt(element[3]/element[2]),<Button style={{maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}} variant="contained" color="primary" onClick={() => {
-                window.location.href = './single-api-stats#{"apsssss":{"apiName":"'+element[0]+'","apiVersion":"'+element[1]+'","sync":false}}';
+                window.location.href = './single-api-stats#{"apidata":{"apiName":"'+element[0]+'","apiVersion":"'+element[1]+'","sync":false}}';
                 }}>
             <VisibilityOutlinedIcon/>
           </Button>]);
