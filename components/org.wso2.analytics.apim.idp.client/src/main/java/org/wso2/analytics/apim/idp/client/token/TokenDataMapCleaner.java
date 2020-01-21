@@ -17,8 +17,8 @@
  */
 package org.wso2.analytics.apim.idp.client.token;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.TimerTask;
  */
 public class TokenDataMapCleaner extends TimerTask {
 
-    private static final Log log = LogFactory.getLog(TokenDataMapCleaner.class);
+    private static final Logger log = LoggerFactory.getLogger(TokenDataMapCleaner.class);
 
     @Override
     public void run() {
