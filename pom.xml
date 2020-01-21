@@ -31,7 +31,7 @@
     <version>3.1.0-SNAPSHOT</version>
     <name>WSO2 Analytics for API Manager - Aggregator Module</name>
     <description>WSO2 Analytics for API Manager</description>
-    <url>http://wso2.com/products/api-manager</url>
+    <url>https://wso2.com/products/api-manager</url>
 
     <scm>
         <url>https://github.com/wso2/analytics-apim.git</url>
