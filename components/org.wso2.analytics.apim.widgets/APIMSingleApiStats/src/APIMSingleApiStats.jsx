@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -34,9 +34,9 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 
 /**
- * React Component for Recent Api Traffic widget body
+ * React Component for APIM Single Api Stats widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Recent Api Traffic widget body
+ * @returns {ReactElement} Render the APIM Single Api Stats widget body
  */
 export default function APIMSingleApiStats(props) {
     const {themeName, height, usageData, data, apiname, totalreqcount, trafficdata, latencydata, totallatencycount, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, timeFrom, timeTo, apiVersion, apiList, apiSelected, apiSelectedHandleChange, isloading} = props;

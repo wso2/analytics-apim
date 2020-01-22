@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -24,9 +24,9 @@ import { FormattedMessage } from 'react-intl';
 import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
 
 /**
- * React Component for APIM Api Created widget body
+ * React Component for APIM Overall Avg Latency widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Api Created Count widget body
+ * @returns {ReactElement} Render the APIM Avg Latency widget body
  */
 export default function APIMOverallAvgLatency(props) {
     const { themeName, avglatency, timeFrom, timeTo } = props;

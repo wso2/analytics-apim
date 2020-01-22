@@ -24,9 +24,9 @@ import { FormattedMessage } from 'react-intl';
 import ApiIcon from './ApiIcon';
 
 /**
- * React Component for APIM Api Created widget body
+ * React Component for APIM Total Error Count widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Api Created Count widget body
+ * @returns {ReactElement} Render the APIM Total Error Count widget body
  */
 export default function APIMTotalErrorCount(props) {
     const { themeName, totalCount, timeFrom, timeTo } = props;

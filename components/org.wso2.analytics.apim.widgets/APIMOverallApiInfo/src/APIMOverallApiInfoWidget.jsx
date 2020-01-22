@@ -61,7 +61,7 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
-// Create react component for the APIM Recent Api Details
+// Create react component for the APIM Oerall Api Info widget
 class APIMOverallApiInfoWidget extends Widget {
     constructor(props) {
         super(props);

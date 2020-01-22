@@ -186,15 +186,12 @@ export default function APIMApiErrorRate(props) {
                                             defaultMessage='No Data Available !'
                                         />
                                     </Typography>
-<<<<<<< HEAD
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='nodata.error.body'
                                             defaultMessage='No data available for the selected options.'
                                         />
                                     </Typography>
-=======
->>>>>>> dd31c46827b39d8770276d986a3e24db12b43a11
                                 </Paper>
                             </div>
                         )

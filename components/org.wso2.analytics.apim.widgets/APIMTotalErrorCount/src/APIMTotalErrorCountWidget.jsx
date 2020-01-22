@@ -60,7 +60,7 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Api Created
+ * Create React Component for APIM Total Error Count widget
  * @class APIMTotalErrorCountWidget
  * @extends {Widget}
  */

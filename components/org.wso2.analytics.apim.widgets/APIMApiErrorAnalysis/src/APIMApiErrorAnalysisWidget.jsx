@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 /*
  *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -68,7 +67,7 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Api Latency Time widget
+ * Create React Component for APIM Api Error Analysis widget
  * @class APIMApiErrorAnalysisWidget
  * @extends {Widget}
  */
@@ -506,7 +505,6 @@ class APIMApiErrorAnalysisWidget extends Widget {
 
     /**
      * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
      * @param {string} apiSelected - API Name menu option selected
      * @param {string} apiVersion - API Version menu option selected
      * @param {string} operationSelected - Resources selected
@@ -561,7 +559,11 @@ class APIMApiErrorAnalysisWidget extends Widget {
 
         this.setQueryParam(apiSelected, event.target.value, []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ apiVersion: event.target.value, inProgress: true, resourceList: [] }, this.assembleResourceQuery);
+        this.setState({
+            apiVersion: event.target.value,
+            inProgress: true,
+            resourceList: [],
+        }, this.assembleResourceQuery);
     }
 
     /**

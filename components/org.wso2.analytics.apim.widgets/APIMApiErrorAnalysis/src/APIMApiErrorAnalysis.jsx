@@ -86,7 +86,6 @@ export default function APIMApiErrorAnalysis(props) {
             width: '100%',
             padding: '4%',
             border: '1.5px solid #fff',
-            // margin: 'auto',
             marginTop: '5%',
         },
         loadingIcon: {
@@ -290,13 +289,16 @@ export default function APIMApiErrorAnalysis(props) {
                                     <div style={styles.dataWrapper}>
                                         <div>
                                             <div style={{ height: 450, width: 800, marginLeft: '25px' }}>
-                                                <p style={{ textAlign: 'right', fontSize: '12px' }}>Response codes of the API    </p>
+                                                <p style={{ textAlign: 'right', fontSize: '12px' }}>
+                                                    Response codes of the API
+                                                    {' '}
+
+                                                </p>
                                                 <VizG
-                                                    
+
                                                     config={ordinalDataChart}
                                                     metadata={ordinalMetadata}
                                                     data={resultdata}
-                                                    // theme={this.props.theme}
                                                 />
                                             </div>
                                             <div>

@@ -1,6 +1,5 @@
-/* eslint-disable require-jsdoc */
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -69,7 +68,7 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Api Latency Time widget
+ * Create React Component for APIM Api Traffic Trends widget
  * @class APIMApiTrafficTrendsWidget
  * @extends {Widget}
  */
@@ -698,7 +697,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
                                                 <FormattedMessage
                                                     id='config.error.body'
                                                     defaultMessage={'Cannot fetch provider configuration for APIM '
-                                                    + 'Api Latency Time widget'}
+                                                    + 'Api Traffic Trends widget'}
                                                 />
                                             </Typography>
                                         </Paper>

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -58,7 +58,7 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
-//Create react component for the APIM Recent Api Traffic
+//Create react component for the APIM Single Api Stats Widget
 class APIMSingleApiStatsWidget extends Widget {
    
     constructor(props) {
@@ -193,7 +193,6 @@ class APIMSingleApiStatsWidget extends Widget {
        var iscommunicated = str.includes("apidata");
        if(iscommunicated){
           var stringArray = str.split("%22");
-          console.log(stringArray[5],stringArray[9]);
         this.setState({apiname:stringArray[5],apiVersion:stringArray[9],urlavailable:true,apiSelected:stringArray[5]+':'+stringArray[9]});
         
        }
