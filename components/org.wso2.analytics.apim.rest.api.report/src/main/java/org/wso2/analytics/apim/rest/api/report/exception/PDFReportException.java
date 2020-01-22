@@ -15,22 +15,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.analytics.apim.rest.api.report.api;
-
-import org.wso2.analytics.apim.rest.api.report.exception.PDFReportException;
-
-import java.io.InputStream;
+package org.wso2.analytics.apim.rest.api.report.exception;
 
 /**
- *  Report Generator interface. All implementations of report generators need to implement this.
+ *  Exception class for PDF reporting.
  */
-public interface ReportGenerator {
+public class PDFReportException extends Exception {
 
-    /**
-     * Generates monthly request summary report.
-     * @return
-     * @throws PDFReportException
-     */
-    InputStream generateMonthlyRequestSummaryPDF() throws PDFReportException;
+    public PDFReportException(String message) {
+
+        super(message);
+    }
+
+    public PDFReportException(String message, Throwable e) {
+
+        super(message, e);
+    }
 
 }

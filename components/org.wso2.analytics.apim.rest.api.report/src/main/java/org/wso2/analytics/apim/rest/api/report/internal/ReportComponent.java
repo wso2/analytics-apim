@@ -25,6 +25,11 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
+import org.wso2.carbon.config.ConfigurationException;
+import org.wso2.carbon.config.provider.ConfigProvider;
+
+import java.lang.reflect.Constructor;
+import java.util.LinkedHashMap;
 
 /**
  * Service component to get Carbon Config Provider OSGi service.
@@ -40,6 +45,20 @@ public class ReportComponent {
     @Activate
     protected void activate(BundleContext bundleContext) {
         log.debug("activating ReportComponent bundle");
+        ConfigProvider configProvider = ServiceHolder.getInstance().getConfigProvider();
+        try {
+            LinkedHashMap<String, String> reportConfigs = (LinkedHashMap<String, String>) configProvider.
+                    getConfigurationObject("report");
+            if (reportConfigs != null) {
+                String implClass = reportConfigs.get("implClass");
+                Class<?> reportGeneratorClass = Class.forName(implClass);
+                Constructor<?> constructor = reportGeneratorClass.
+                        getDeclaredConstructor(String.class, String.class, String.class);
+                ServiceHolder.getInstance().setReportImplClassConstructor(constructor);
+            }
+        } catch (ConfigurationException | ClassNotFoundException | NoSuchMethodException e) {
+            log.error("Error during activating ReportComponent.", e);
+        }
     }
 
     @Deactivate
@@ -59,6 +78,18 @@ public class ReportComponent {
 
     protected void unregisterIdP(IdPClient client) {
         ServiceHolder.getInstance().setAPIMAdminClient(null);
+    }
+
+    @Reference(service = ConfigProvider.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterConfigProvider")
+    protected void registerConfigProvider(ConfigProvider client) {
+        ServiceHolder.getInstance().setConfigProvider(client);
+    }
+
+    protected void unregisterConfigProvider(ConfigProvider client) {
+        ServiceHolder.getInstance().setConfigProvider(null);
     }
 
 }
