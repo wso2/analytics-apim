@@ -368,6 +368,9 @@ additional.apis:
   /apis/analytics/v1.0/apim: org.wso2.analytics.apim.rest.api.proxy.ApimApi
   /apis/v1.0/report: org.wso2.analytics.apim.rest.api.report.ReportApi
 
+report:
+  implClass: org.wso2.analytics.apim.rest.api.report.reportgen.DefaultReportGeneratorImpl
+
 ## Authentication configuration
 auth.configs:
   type: apim
