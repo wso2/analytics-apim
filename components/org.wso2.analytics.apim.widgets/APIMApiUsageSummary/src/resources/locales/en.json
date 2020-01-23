@@ -1,6 +1,6 @@
 {
   "apim.server.error.heading" : "Error !",
-  "config.error.body": "Cannot fetch provider configuration for monthly API requests summary widget",
+  "config.error.body": "Cannot fetch provider configuration for monthly API usage summary widget",
   "config.error.heading": "Configuration Error !",
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
