@@ -169,11 +169,14 @@ class APIMTopThrottledApisWidget extends Widget {
      * @memberof APIMTopThrottledApisWidget
      * */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-            inProgress: true,
+            inProgress: !sync,
         }, this.assembleQuery);
     }
 

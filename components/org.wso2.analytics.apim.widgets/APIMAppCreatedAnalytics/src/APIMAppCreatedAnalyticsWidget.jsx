@@ -212,10 +212,13 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
-            inProgress: true,
+            inProgress: !sync,
         }, this.assembleSubListQuery);
     }
 

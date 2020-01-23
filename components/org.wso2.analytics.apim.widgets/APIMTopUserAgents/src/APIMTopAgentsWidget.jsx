@@ -215,11 +215,14 @@ class APIMTopAgentsWidget extends Widget {
      * @memberof APIMTopAgentsWidget
      * */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-            inProgress: true,
+            inProgress: !sync,
         }, this.assembleApiListQuery);
     }
 
