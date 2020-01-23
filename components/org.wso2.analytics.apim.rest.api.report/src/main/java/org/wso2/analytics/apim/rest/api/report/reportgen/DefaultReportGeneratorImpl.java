@@ -126,6 +126,7 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             document.save(out);
             document.close();
+            siddhiAppRuntime.shutdown();
             log.debug("PDF generation complete.");
             return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException | COSVisitorException e) {
