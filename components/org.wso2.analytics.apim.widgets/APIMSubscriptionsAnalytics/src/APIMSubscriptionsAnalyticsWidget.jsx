@@ -196,10 +196,13 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * @memberof APIMSubscriptionsAnalyticsWidget
      * */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
-            inProgress: true,
+            inProgress: !sync,
         }, this.assembleApiListQuery);
     }
 
