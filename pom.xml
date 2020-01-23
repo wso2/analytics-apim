@@ -31,7 +31,7 @@
     <version>3.1.0-SNAPSHOT</version>
     <name>WSO2 Analytics for API Manager - Aggregator Module</name>
     <description>WSO2 Analytics for API Manager</description>
-    <url>http://wso2.com/products/api-manager</url>
+    <url>https://wso2.com/products/api-manager</url>
 
     <scm>
         <url>https://github.com/wso2/analytics-apim.git</url>
@@ -984,7 +984,7 @@
                 <plugin>
                     <groupId>org.antlr</groupId>
                     <artifactId>antlr4-maven-plugin</artifactId>
-                    <version>4.5.1</version>
+                    <version>4.7.2</version>
                     <executions>
                         <execution>
                             <goals>
@@ -1057,10 +1057,10 @@
 
     <properties>
 
-        <carbon.analytics.version>3.0.22</carbon.analytics.version>
+        <carbon.analytics.version>3.0.23</carbon.analytics.version>
         <siddhi.version>5.1.12</siddhi.version>
         <siddhi.core.import.version.range>[5.1,6.0]</siddhi.core.import.version.range>
-        <carbon.analytics-common.version>6.1.40</carbon.analytics-common.version>
+        <carbon.analytics-common.version>6.1.41</carbon.analytics-common.version>
         <!-- Maven plugins -->
         <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
         <maven.findbugsplugin.exclude>findbugs-exclude.xml</maven.findbugsplugin.exclude>
@@ -1069,7 +1069,7 @@
         <carbon.feature.plugin.version>3.1.3</carbon.feature.plugin.version>
 
         <testng.version>6.9.4</testng.version>
-        <plugin.version.antlr>4.5.1</plugin.version.antlr>
+        <plugin.version.antlr>4.7.2</plugin.version.antlr>
 
         <!-- OSGI -->
         <osgi.api.version>6.0.0</osgi.api.version>
@@ -1107,8 +1107,8 @@
         <pdfbox.version>1.8.16</pdfbox.version>
         <pdfbox.import.version.range>[1.8,2.0)</pdfbox.import.version.range>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.12</carbon.dashboards.version>
-        <carbon.uis.version>1.0.3</carbon.uis.version>
+        <carbon.dashboards.version>4.1.13</carbon.dashboards.version>
+        <carbon.uis.version>1.0.4</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 
@@ -1195,7 +1195,7 @@
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <protobuf-maven-plugin.version>0.5.1</protobuf-maven-plugin.version>
 
-        <carbon.coordination.version>2.1.4</carbon.coordination.version>
+        <carbon.coordination.version>2.1.5</carbon.coordination.version>
 
         <!-- Java 11 related dependencies -->
         <javax.annotation.version>1.3.2</javax.annotation.version>
