@@ -23,11 +23,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     context: path.resolve(__dirname, './src'),
     entry: {
-        index: './APIMAdminReportsWidget.jsx',
+        index: './APIMApiUsageSummaryWidget.jsx',
     },
     output: {
-        path: path.resolve(__dirname, './dist/APIMAdminReports'),
-        filename: 'APIMAdminReports.js',
+        path: path.resolve(__dirname, './dist/APIMApiUsageSummary'),
+        filename: 'APIMApiUsageSummary.js',
     },
     module: {
         rules: [

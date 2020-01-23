@@ -1,9 +1,9 @@
 {
   "dashboard": {
-    "url": "admin-reports",
+    "url": "apimadmin",
     "owner": "admin@carbon.super",
-    "name": "Admin Reports",
-    "description": "",
+    "name": "APIM Admin",
+    "description": "Dashboard for APIM Admin statistics ",
     "landingPage": "home",
     "parentId": "0",
     "content": {
@@ -19,9 +19,9 @@
               "title": "",
               "content": [
                 {
-                  "title": "[APIM Admin Reports]",
+                  "title": "[APIM Monthly API Usage Summary]",
                   "type": "component",
-                  "component": "APIMAdminReports",
+                  "component": "APIMApiUsageSummary",
                   "props": {
                     "id": "619033ff-10ee-4174-97a0-064bc59260cb",
                     "configs": {
@@ -35,7 +35,7 @@
                         "header": true
                       }
                     },
-                    "widgetID": "APIMAdminReports"
+                    "widgetID": "APIMApiUsageSummary"
                   },
                   "isClosable": false,
                   "header": {
@@ -56,12 +56,12 @@
   "widgets": {
     "generated": [],
     "custom": [
-      "APIMAdminReports"
+      "APIMApiUsageSummary"
     ]
   },
   "permissions": {
     "viewers": [
-      "apim_analytics:admin_carbon.super"
+      "apim_analytics:admin_any"
     ],
     "owners": [
       "apim_analytics:admin_carbon.super"

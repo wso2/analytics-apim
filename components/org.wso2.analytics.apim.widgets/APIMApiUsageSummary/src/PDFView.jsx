@@ -11,13 +11,16 @@ pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 const fetchPdf = async (src, canvas) => {
     const loadingTask = pdfjs.getDocument(src);
 
-    const pdf = await loadingTask.promise;
+    const pdf = await loadingTask.promise.catch(() => {
+    });
 
+    if (!pdf) {
+        return;
+    }
     const firstPageNumber = 1;
 
     const page = await pdf.getPage(firstPageNumber);
-
-    const scale = 1.5;
+    const scale = 1;
     const viewport = page.getViewport({ scale });
 
     // Prepare canvas using PDF page dimensions
