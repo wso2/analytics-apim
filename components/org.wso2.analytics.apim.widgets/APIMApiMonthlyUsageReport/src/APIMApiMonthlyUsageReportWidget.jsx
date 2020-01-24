@@ -82,7 +82,7 @@ const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 /**
  *
  */
-class APIMApiUsageSummaryWidget extends Widget {
+class APIMApiMonthlyUsageReportWidget extends Widget {
     /**
      * Creates an instance of APIMApiAvailabilityWidget.
      * @param {any} props @inheritDoc
@@ -129,7 +129,7 @@ class APIMApiUsageSummaryWidget extends Widget {
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiUsageSummary/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiMonthlyUsageReport/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -243,4 +243,4 @@ class APIMApiUsageSummaryWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMApiUsageSummary', APIMApiUsageSummaryWidget);
+global.dashboard.registerWidget('APIMApiMonthlyUsageReport', APIMApiMonthlyUsageReportWidget);

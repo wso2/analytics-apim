@@ -36,7 +36,7 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>APIMApiUsageSummary/dist</directory>
+            <directory>APIMApiMonthlyUsageReport/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>

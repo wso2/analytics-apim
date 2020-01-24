@@ -3,7 +3,7 @@
     "CommonLib",
     "APIMApiCreated",
     "APIMAppCreated",
-    "APIMApiUsageSummary",
+    "APIMApiMonthlyUsageReport",
     "APIMSubscriptions",
     "APIMDeveloperSignups",
     "APIMTopApiCreators",

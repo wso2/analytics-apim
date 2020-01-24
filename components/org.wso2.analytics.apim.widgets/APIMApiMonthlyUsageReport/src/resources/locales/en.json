@@ -4,6 +4,6 @@
   "config.error.heading": "Configuration Error !",
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
-  "widget.heading": "APIM Monthly API Usage Summary",
+  "widget.heading": "APIM Monthly API Usage Report",
   "download": "Download"
 }
