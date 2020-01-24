@@ -644,7 +644,7 @@ public class ApimIdPClient extends ExternalIdPClient {
     }
 
     /**
-     * This method registers a application using a DCR call if the OAuth application does not exists. If is exists it
+     * This method registers an application using a DCR call if the OAuth application does not exists. If is exists it
      * retrieves the application data and saved in oAuthAppInfoMap.
      * @param appContext  context of the application
      * @param clientName name of the client

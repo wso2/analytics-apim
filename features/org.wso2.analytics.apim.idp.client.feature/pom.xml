@@ -32,13 +32,6 @@
     <url>http://wso2.org</url>
     <description>This feature contains Apim Analytics IdP Client Feature</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon.analytics-common</groupId>
-            <artifactId>org.wso2.carbon.analytics.idp.client</artifactId>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -65,10 +58,6 @@
                                 </advice>
                             </adviceFileContents>
                             <bundles>
-                                <bundle>
-                                    <symbolicName>org.wso2.carbon.analytics.idp.client</symbolicName>
-                                    <version>${carbon.analytics-common.version}</version>
-                                </bundle>
                                 <bundle>
                                     <symbolicName>org.wso2.analytics.apim.idp.client</symbolicName>
                                     <version>${project.version}</version>
