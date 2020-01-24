@@ -479,8 +479,8 @@ cluster.config:
   coordinationStrategyClass: org.wso2.carbon.cluster.coordinator.rdbms.RDBMSCoordinationStrategy
   strategyConfig:
     datasource: WSO2_CLUSTER_DB
-    heartbeatInterval: 1000
-    heartbeatMaxRetry: 2
+    heartbeatInterval: 5000
+    heartbeatMaxRetry: 3
     eventPollingInterval: 1000
 
 # Authentication configuration
