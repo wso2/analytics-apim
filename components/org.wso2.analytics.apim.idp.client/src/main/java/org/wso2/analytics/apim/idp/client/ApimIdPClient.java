@@ -22,9 +22,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import feign.Response;
 import feign.gson.GsonDecoder;
-import org.apache.axis2.AxisFault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.analytics.apim.idp.client.dao.OAuthAppDAO;
 import org.wso2.analytics.apim.idp.client.dto.DCRClientInfo;
 import org.wso2.analytics.apim.idp.client.dto.DCRClientResponse;
 import org.wso2.analytics.apim.idp.client.dto.DCRError;
@@ -42,12 +42,8 @@ import org.wso2.carbon.analytics.idp.client.external.impl.DCRMServiceStub;
 import org.wso2.carbon.analytics.idp.client.external.impl.OAuth2ServiceStubs;
 import org.wso2.carbon.analytics.idp.client.external.models.ExternalSession;
 import org.wso2.carbon.analytics.idp.client.external.models.OAuthApplicationInfo;
-import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
-import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceIdentityOAuthAdminException;
-import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,8 +54,7 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.ANY_TENA
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.API_VIEW_SCOPE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.AT;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.FORWARD_SLASH;
-import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTH_CONSUMER_KEY;
-import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTH_CONSUMER_SECRET_KEY;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OAUTHAPP_TABLE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.OPEN_ID_SCOPE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.POST_LOGOUT_REDIRECT_URI_PHRASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE;
@@ -75,40 +70,34 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.UNDERSCO
 public class ApimIdPClient extends ExternalIdPClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClient.class);
+    private static final Object OAuthAppCreationLock = new Object();
 
     private DCRMServiceStub dcrmServiceStub;
     private OAuth2ServiceStubs oAuth2ServiceStubs;
     private String kmUserName;
     private String authorizeEndpoint;
     private String grantType;
-    private String adminServiceBaseUrl;
     private String adminServiceUsername;
-    private String adminServicePassword;
-    private String uriHost;
     private String baseUrl;
     private String adminScopeName;
     private String allScopes;
+    private OAuthAppDAO oAuthAppDAO;
     private Cache<String, ExternalSession> tokenCache;
     private boolean isSSOEnabled;
     private String ssoLogoutURL;
     private boolean isHostnameVerifierEnabled;
-    private OAuthAdminServiceClient oAuthAdminServiceClient;
 
     // Here the user given context are mapped to the OAuthApp Info.
     private Map<String, OAuthApplicationInfo> oAuthAppInfoMap;
 
-    public ApimIdPClient(String adminServiceBaseUrl, String adminServiceUsername, String adminServicePassword,
-                         String uriHost, String baseUrl, String authorizeEndpoint, String grantType,
-                         String adminScopeName, String allScopes, Map<String, OAuthApplicationInfo> oAuthAppInfoMap,
-                         int cacheTimeout, String kmUserName, DCRMServiceStub dcrmServiceStub,
-                         OAuth2ServiceStubs oAuth2ServiceStubs, boolean isSSOEnabled, String ssoLogoutURL,
-                         boolean isHostnameVerifierEnabled) {
+    public ApimIdPClient(String adminServiceUsername, String baseUrl, OAuthAppDAO oAuthAppDAO, String authorizeEndpoint,
+                         String grantType, String adminScopeName, String allScopes,
+                         Map<String, OAuthApplicationInfo> oAuthAppInfoMap, int cacheTimeout, String kmUserName,
+                         DCRMServiceStub dcrmServiceStub, OAuth2ServiceStubs oAuth2ServiceStubs,
+                         boolean isSSOEnabled, String ssoLogoutURL, boolean isHostnameVerifierEnabled) {
         super(baseUrl, authorizeEndpoint, grantType, null, adminScopeName, oAuthAppInfoMap,
                 cacheTimeout, null, dcrmServiceStub, oAuth2ServiceStubs, null, null, isSSOEnabled, ssoLogoutURL);
-        this.adminServiceBaseUrl = adminServiceBaseUrl;
         this.adminServiceUsername = adminServiceUsername;
-        this.adminServicePassword = adminServicePassword;
-        this.uriHost = uriHost;
         this.baseUrl = baseUrl;
         this.authorizeEndpoint = authorizeEndpoint;
         this.grantType = grantType;
@@ -116,6 +105,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         this.adminScopeName = adminScopeName;
         this.allScopes = allScopes;
         this.kmUserName = kmUserName;
+        this.oAuthAppDAO = oAuthAppDAO;
         this.dcrmServiceStub = dcrmServiceStub;
         this.oAuth2ServiceStubs = oAuth2ServiceStubs;
         this.tokenCache = CacheBuilder.newBuilder()
@@ -131,38 +121,29 @@ public class ApimIdPClient extends ExternalIdPClient {
         if (!isHostnameVerifierEnabled) {
             System.setProperty("httpclient.hostnameVerifier", "AllowAll");
         }
-        /*
-        * Service clients are created inside init (which is called in login method) in order to prevent error logs
-        * printed when the dashboard runtime started without starting APIM server.
-        * */
-        LoginAdminServiceClient login;
-        String session;
-        try {
-            login = new LoginAdminServiceClient(this.adminServiceBaseUrl);
-            session = login.authenticate(this.adminServiceUsername, this.adminServicePassword, this.uriHost);
-        } catch (AxisFault axisFault) {
-            String error = "Error occurred while creating Login admin Service Client.";
-            LOG.error(error, axisFault);
-            throw new IdPClientException(error, axisFault);
-        } catch (RemoteException | LoginAuthenticationExceptionException e) {
-            String error = "Error occurred while authenticating admin user using Login admin Service Client.";
-            LOG.error(error, e);
-            throw new IdPClientException(error, e);
-        }
-        try {
-            this.oAuthAdminServiceClient = new OAuthAdminServiceClient(this.adminServiceBaseUrl,
-                    this.adminServiceUsername, this.adminServicePassword, session);
-        } catch (AxisFault axisFault) {
-            String error = "Error occurred while creating OAuth Admin Service Client.";
-            LOG.error(error, axisFault);
-            throw new IdPClientException(error, axisFault);
+        this.oAuthAppDAO.init();
+        if (!this.oAuthAppDAO.tableExists()) {
+            String error
+                    = OAUTHAPP_TABLE + "does not exists in the " + this.oAuthAppDAO.getDatabaseName() + " database.";
+            LOG.error(error);
+            throw new IdPClientException(error);
         }
 
         for (Map.Entry<String, OAuthApplicationInfo> entry : this.oAuthAppInfoMap.entrySet()) {
             String appContext = entry.getKey();
             OAuthApplicationInfo oAuthApp = entry.getValue();
             String clientName = oAuthApp.getClientName();
-            initialiseApplication(appContext, clientName, kmUserName);
+            OAuthApplicationInfo persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName);
+            if (persistedOAuthApp == null) {
+                synchronized (OAuthAppCreationLock) {
+                    persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName);
+                    if (persistedOAuthApp == null) {
+                        registerApplication(appContext, clientName, kmUserName);
+                    }
+                }
+            } else {
+                this.oAuthAppInfoMap.replace(appContext, persistedOAuthApp);
+            }
         }
     }
 
@@ -279,59 +260,6 @@ public class ApimIdPClient extends ExternalIdPClient {
             roles.add(newRole);
         }
         return roles;
-    }
-
-    /**
-     * This method checks whether a given oAuth application exists using OAuthAdminService.
-     * @param oAuthAppName oAuth application name
-     * @return whether the application exists
-     * @throws IdPClientException thrown when an error occurred when retrieving applications data from
-     * OAuthAdminService service
-     */
-    private boolean isOAuthApplicationExists(String oAuthAppName) throws IdPClientException {
-        try {
-            OAuthConsumerAppDTO[] oAuthApps = this.oAuthAdminServiceClient.getAllOAuthApplicationData();
-            if (oAuthApps == null) {
-                return false;
-            }
-            for (OAuthConsumerAppDTO oAuthApp : oAuthApps) {
-                if (oAuthApp.getApplicationName().equalsIgnoreCase(oAuthAppName)) {
-                    return true;
-                }
-            }
-        } catch (RemoteException | OAuthAdminServiceIdentityOAuthAdminException e) {
-            String error = "Error occurred while getting all the OAuth application data.";
-            LOG.error(error, e);
-            throw new IdPClientException(error, e);
-        }
-        return false;
-    }
-
-    /**
-     * This methods returns data of a OAuthApplication using OAuthAdminService.
-     * @param oAuthAppName oAuth application name
-     * @return properties Map of OAuthApplication data which includes oauthConsumerKey and oauthConsumerSecret
-     * @throws IdPClientException thrown when an error occurred when retrieving application data from
-     * OAuthAdminService service
-     */
-    private Map<String, String> getOAuthApplicationData(String oAuthAppName) throws IdPClientException {
-        Map<String, String> oAuthAppDataMap = new HashMap<>();
-        try {
-            OAuthConsumerAppDTO oAuthApp = this.oAuthAdminServiceClient.getOAuthApplicationDataByAppName(oAuthAppName);
-            oAuthAppDataMap.put(OAUTH_CONSUMER_KEY, oAuthApp.getOauthConsumerKey());
-            oAuthAppDataMap.put(OAUTH_CONSUMER_SECRET_KEY, oAuthApp.getOauthConsumerSecret());
-        } catch (RemoteException | OAuthAdminServiceIdentityOAuthAdminException e) {
-            String error = "Error occurred while getting the OAuth application data for the application name:"
-                    + oAuthAppName;
-            LOG.error(error, e);
-            throw new IdPClientException(error, e);
-        }
-        if (oAuthAppDataMap.isEmpty()) {
-            String error = "No OAuth Application data found for the application name: " + oAuthAppName;
-            LOG.error(error);
-            throw new IdPClientException(error);
-        }
-        return oAuthAppDataMap;
     }
 
     @Override
@@ -652,16 +580,8 @@ public class ApimIdPClient extends ExternalIdPClient {
      * @throws IdPClientException thrown when an error occurred when sending the DCR call or retrieving application
      * data using OAuthAdminService service
      */
-    private synchronized void initialiseApplication(String appContext, String clientName, String kmUserName)
+    private void registerApplication(String appContext, String clientName, String kmUserName)
             throws IdPClientException {
-        if (isOAuthApplicationExists(kmUserName + "_" + clientName)) {
-            Map<String, String> oAuthAppDataMap = getOAuthApplicationData(kmUserName + "_" + clientName);
-            OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo(
-                    clientName, oAuthAppDataMap.get(OAUTH_CONSUMER_KEY), oAuthAppDataMap.get(OAUTH_CONSUMER_SECRET_KEY)
-            );
-            this.oAuthAppInfoMap.replace(appContext, oAuthApplicationInfo);
-            return;
-        }
 
         String grantType =
                 IdPClientConstants.PASSWORD_GRANT_TYPE + SPACE + IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE +

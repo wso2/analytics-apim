@@ -25,8 +25,6 @@ public class ApimIdPClientConstants {
     public static final String EXTERNAL_IDP_CLIENT_TYPE = "apim";
 
     public static final String ADMIN_USERNAME = "adminUsername";
-    public static final String ADMIN_PASSWORD = "adminPassword";
-    public static final String ADMIN_SERVICE_BASE_URL = "adminServiceBaseUrl";
     public static final String ADMIN_SCOPE = "adminScope";
     public static final String ALL_SCOPES = "allScopes";
     public static final String BASE_URL = "baseUrl";
@@ -45,18 +43,17 @@ public class ApimIdPClientConstants {
     public static final String PORTAL_CLIENT_SECRET = "portalClientSecret";
     public static final String BR_DB_CLIENT_SECRET = "businessRulesClientSecret";
     public static final String CACHE_TIMEOUT = "cacheTimeout";
+    public static final String DATABASE_NAME = "databaseName";
     public static final String DCR_APP_OWNER = "dcrAppOwner";
     public static final String CONNECTION_TIMEOUT = "connectionTimeout";
     public static final String READ_TIMEOUT = "readTimeout";
     public static final String EXTERNAL_SSO_LOGOUT_URL = "externalLogoutUrl";
 
     public static final String DEFAULT_ADMIN_SERVICE_USERNAME = "admin";
-    public static final String DEFAULT_ADMIN_SERVICE_PASSWORD = "admin";
     public static final String DEFAULT_ADMIN_SCOPE = "apim_analytics:admin_carbon.super";
     public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin apim_analytics:product_manager " +
             "apim_analytics:api_developer apim_analytics:app_developer apim_analytics:devops_engineer " +
             "apim_analytics:analytics_viewer apim_analytics:everyone";
-    public static final String DEFAULT_ADMIN_SERVICE_BASE_URL = "https://localhost:9443";
     public static final String DEFAULT_BASE_URL = "https://localhost:9643";
     public static final String DEFAULT_KM_TOKEN_URL = "https://localhost:9443/oauth2";
     public static final String DEFAULT_KM_TOKEN_URL_FOR_REDIRECTION = "https://localhost:9443/oauth2";
@@ -67,14 +64,12 @@ public class ApimIdPClientConstants {
     public static final String DEFAULT_PORTAL_APP_CONTEXT = "analytics-dashboard";
     public static final String DEFAULT_BR_DB_APP_CONTEXT = "business-rules";
     public static final String DEFAULT_CACHE_TIMEOUT = "900";
+    public static final String DEFAULT_DATABASE_NAME = "AM_DB";
     public static final String DEFAULT_CONNECTION_TIMEOUT = "10000";
     public static final String DEFAULT_READ_TIMEOUT = "60000";
     public static final String DEFAULT_EXTERNAL_SSO_LOGOUT_URL = "https://localhost:9443/oidc/logout";
     public static final String SSO_LOGING_ID_TOKEN_TAIL = "?id_token_hint=";
     public static final String POST_LOGOUT_REDIRECT_URI_PHRASE = "&post_logout_redirect_uri=";
-
-    public static final String AUTHENTICATION_ADMIN_SERVICE_ENDPOINT_POSTFIX = "/services/AuthenticationAdmin";
-    public static final String OAUTH_ADMIN_SERVICE_ENDPOINT_POSTFIX = "/services/OAuthAdminService";
 
     public static final String REDIRECT_URL = "Redirect_Url";
 
@@ -98,8 +93,6 @@ public class ApimIdPClientConstants {
     public static final String INTROSPECT_POSTFIX = "/introspect";
     public static final String AUTHORIZE_POSTFIX = "/authorize";
 
-    public static final String OAUTH_CONSUMER_KEY = "oauthConsumerKey";
-    public static final String OAUTH_CONSUMER_SECRET_KEY = "oauthConsumerSecret";
     public static final String ANY_TENANT_DOMAIN_SCOPE_POSTFIX = "_any";
     public static final String UNDERSCORE = "_";
 
@@ -108,6 +101,12 @@ public class ApimIdPClientConstants {
     public static final String OPEN_ID_SCOPE = "openid";
     public static final String API_VIEW_SCOPE = "apim:api_view";
     public static final String SUBSCRIBE_SCOPE = "apim:subscribe";
+
+    public static final String OAUTHAPP_TABLE = "AM_SYSTEM_APPS";
+    public static final String OAUTHAPP_TABLE_CONSUMER_KEY_COLUMN = "CONSUMER_KEY";
+    public static final String OAUTHAPP_TABLE_CONSUMER_SECRET_COLUMN = "CONSUMER_SECRET";
+    public static final String OAUTH_APP_TABLE_CHECK = "OAUTH_APP_TABLE_CHECK";
+    public static final String RETRIEVE_OAUTH_APP_TEMPLATE = "RETRIEVE_OAUTH_APP";
 
     private ApimIdPClientConstants() {
     }
