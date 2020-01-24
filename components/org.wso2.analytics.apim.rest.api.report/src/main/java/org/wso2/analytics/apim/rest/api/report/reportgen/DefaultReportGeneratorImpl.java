@@ -69,14 +69,16 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
 
         initializeSiddhiAPPRuntime();
         this.table = getRecordsFromAggregations(year, month, tenantDomain);
-        String[] columnHeaders = {"#", "API Name", "Version", "Application Name", "Application Owner",
-                "Request Count"};
-        table.setColumnHeaders(columnHeaders);
-        String monthName = months[Integer.parseInt(month) - 1];
-        this.period = monthName + " " + year;
-        this.numOfPages = ReportGeneratorUtil.getNumberOfPages(table.getRows().size());
-        this.document = initializePages();
-        this.recordsPerPageList = ReportGeneratorUtil.getRecordsPerPage(table.getRows().size());
+        if (table.getRows().size() > 0) {
+            String[] columnHeaders = {"#", "API Name", "Version", "Application Name", "Application Owner",
+                    "Request Count"};
+            table.setColumnHeaders(columnHeaders);
+            String monthName = months[Integer.parseInt(month) - 1];
+            this.period = monthName + " " + year;
+            this.numOfPages = ReportGeneratorUtil.getNumberOfPages(table.getRows().size());
+            this.document = initializePages();
+            this.recordsPerPageList = ReportGeneratorUtil.getRecordsPerPage(table.getRows().size());
+        }
     }
 
     private static void initializeSiddhiAPPRuntime() throws IOException {
