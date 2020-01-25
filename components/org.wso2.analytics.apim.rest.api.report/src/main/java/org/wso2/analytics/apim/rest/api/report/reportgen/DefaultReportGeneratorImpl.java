@@ -107,6 +107,7 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
     public InputStream generateMonthlyRequestSummaryPDF() throws PDFReportException {
 
         if (table.getRows().size() == 0) {
+            siddhiAppRuntime.shutdown();
             return null;
         }
         log.debug("Starting to generate PDF.");
@@ -128,7 +129,6 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             document.save(out);
             document.close();
-            siddhiAppRuntime.shutdown();
             log.debug("PDF generation complete.");
             return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException | COSVisitorException e) {
@@ -166,6 +166,7 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
             table.setRows(rowData);
             recordNumber += 1;
         }
+        siddhiAppRuntime.shutdown();
         return table;
     }
 }
