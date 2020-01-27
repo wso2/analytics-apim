@@ -28,7 +28,6 @@ import org.wso2.carbon.database.query.manager.exception.QueryMappingNotAvailable
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
 
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -60,44 +59,13 @@ public class OAuthAppDAO {
         this.deploymentQueries = deploymentQueries;
     }
 
-    private static void closeConnection(Connection connection, PreparedStatement preparedStatement,
-                                        ResultSet resultSet) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                LOG.warn("Error closing database connection", e);
-            }
-        }
-
-        if (preparedStatement != null) {
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                LOG.warn("Error closing prepared statement.", e);
-            }
-        }
-
-        if (resultSet != null) {
-            try {
-                resultSet.close();
-            } catch (SQLException e) {
-                LOG.warn("Error closing result set.", e);
-            }
-        }
-    }
-
     public void init() throws IdPClientException {
-        Connection conn = null;
-        try {
-            conn = getConnection();
+        try (Connection conn = getConnection()) {
             DatabaseMetaData databaseMetaData = conn.getMetaData();
             this.queryManager = new QueryManager(databaseMetaData.getDatabaseProductName(),
                     databaseMetaData.getDatabaseProductVersion(), this.deploymentQueries);
         } catch (SQLException | IOException | QueryMappingNotAvailableException e) {
             throw new IdPClientException("Error initializing connection.", e);
-        } finally {
-            closeConnection(conn, null, null);
         }
     }
 
@@ -107,67 +75,55 @@ public class OAuthAppDAO {
      * @return true/false based on the table existence.
      */
     public boolean tableExists() {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        String query = null;
-        ResultSet rs = null;
-        try {
-            conn = getConnection();
-            query = this.queryManager.getQuery(ApimIdPClientConstants.OAUTH_APP_TABLE_CHECK);
-            stmt = conn.prepareStatement(query);
-            rs = stmt.executeQuery();
-            return true;
+        String query = this.queryManager.getQuery(ApimIdPClientConstants.OAUTH_APP_TABLE_CHECK);
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                return true;
+            }
         } catch (SQLException | IdPClientException e) {
             LOG.debug("Table '{}' assumed to not exist since its existence check query {} resulted "
                     + "in exception {}.", ApimIdPClientConstants.OAUTHAPP_TABLE, query, e.getMessage());
             return false;
-        } finally {
-            closeConnection(conn, stmt, rs);
         }
     }
 
     public OAuthApplicationInfo getOAuthApp(String name) throws IdPClientException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet resultSet = null;
         String query = this.queryManager.getQuery(ApimIdPClientConstants.RETRIEVE_OAUTH_APP_TEMPLATE);
-
-        try {
-            conn = getConnection();
-            ps = conn.prepareStatement(query);
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, name);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Executing query: " + query);
             }
-            resultSet = ps.executeQuery();
-            if (resultSet.next()) {
-                return new OAuthApplicationInfo(name, resultSet.getString(OAUTHAPP_TABLE_CONSUMER_KEY_COLUMN),
-                        resultSet.getString(OAUTHAPP_TABLE_CONSUMER_SECRET_COLUMN));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new OAuthApplicationInfo(name, rs.getString(OAUTHAPP_TABLE_CONSUMER_KEY_COLUMN),
+                            rs.getString(OAUTHAPP_TABLE_CONSUMER_SECRET_COLUMN));
+                }
             }
         } catch (SQLException e) {
             throw new IdPClientException("Unable to retrieve OAuthApp. [Query=" + query + "]", e);
-        } finally {
-            closeConnection(conn, ps, resultSet);
         }
         return null;
     }
 
     private DataSource getDataSource() throws IdPClientException {
-        if (dataSource != null) {
-            return dataSource;
+        if (this.dataSource != null) {
+            return this.dataSource;
         }
 
-        if (dataSourceService == null) {
+        if (this.dataSourceService == null) {
             throw new IdPClientException("Datasource service is null. Cannot retrieve datasource '"
                     + this.databaseName + "'.");
         }
 
         try {
-            dataSource = (DataSource) dataSourceService.getDataSource(this.databaseName);
+            this.dataSource = (DataSource) this.dataSourceService.getDataSource(this.databaseName);
         } catch (DataSourceException e) {
             throw new IdPClientException("Unable to retrieve the datasource: '" + this.databaseName + "'.", e);
         }
-        return dataSource;
+        return this.dataSource;
     }
 
     private Connection getConnection() throws SQLException, IdPClientException {
