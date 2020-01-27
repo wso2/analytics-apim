@@ -20,7 +20,7 @@ const fetchPdf = async (src, canvas) => {
     const firstPageNumber = 1;
 
     const page = await pdf.getPage(firstPageNumber);
-    const scale = 1;
+    const scale = 1.3;
     const viewport = page.getViewport({ scale });
 
     // Prepare canvas using PDF page dimensions
@@ -63,7 +63,7 @@ export default class PDFView extends React.Component {
         return (
             <canvas
                 ref={this.canvasRef}
-                width={window.innerWidth}
+                width={800}
                 height={window.innerHeight}
             />
         );
