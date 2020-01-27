@@ -124,7 +124,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         this.oAuthAppDAO.init();
         if (!this.oAuthAppDAO.tableExists()) {
             String error
-                    = OAUTHAPP_TABLE + "does not exists in the " + this.oAuthAppDAO.getDatabaseName() + " database.";
+                    = OAUTHAPP_TABLE + " does not exists in the " + this.oAuthAppDAO.getDatabaseName() + " database.";
             LOG.error(error);
             throw new IdPClientException(error);
         }
