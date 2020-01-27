@@ -349,6 +349,10 @@ wso2.transport.http:
       value: true
 
   listenerConfigurations:
+    - id: "default"
+      host: "0.0.0.0"
+      port: 9092
+
     - id: "default-https"
       host: "0.0.0.0"
       port: 9643
