@@ -52,6 +52,7 @@ const styles = {
     headingWrapper: {
         margin: 'auto',
         width: '95%',
+        maxWidth: '800px',
     },
     formWrapper: {
         marginBottom: '5%',
