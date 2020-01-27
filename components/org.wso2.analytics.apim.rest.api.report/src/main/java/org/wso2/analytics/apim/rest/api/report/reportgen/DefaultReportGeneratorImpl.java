@@ -67,7 +67,6 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
      */
     public DefaultReportGeneratorImpl(String year, String month, String tenantDomain) throws IOException {
 
-        initializeSiddhiAPPRuntime();
         this.table = getRecordsFromAggregations(year, month, tenantDomain);
         if (table.getRows().size() > 0) {
             String[] columnHeaders = {"#", "API Name", "Version", "Application Name", "Application Owner",
@@ -81,7 +80,7 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
         }
     }
 
-    private static void initializeSiddhiAPPRuntime() throws IOException {
+    private void initializeSiddhiAPPRuntime() throws IOException {
         InputStream inputStream = DefaultReportGeneratorImpl.class.
                 getResourceAsStream(REQUEST_SUMMARY_MONTHLY_APP_NAME);
         String siddhiApp = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
@@ -107,7 +106,6 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
     public InputStream generateMonthlyRequestSummaryPDF() throws PDFReportException {
 
         if (table.getRows().size() == 0) {
-            siddhiAppRuntime.shutdown();
             return null;
         }
         log.debug("Starting to generate PDF.");
@@ -148,7 +146,9 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
                 "RequestCount group by " +
                 "apiName, apiVersion, applicationName, applicationOwner order by RequestCount desc";
 
+        initializeSiddhiAPPRuntime();
         Event[] events = siddhiAppRuntime.query(requestCountQuery);
+        siddhiAppRuntime.shutdown();
         if (events == null) {
             return table; // no data found
         }
@@ -166,7 +166,6 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
             table.setRows(rowData);
             recordNumber += 1;
         }
-        siddhiAppRuntime.shutdown();
         return table;
     }
 }
