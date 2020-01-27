@@ -32,13 +32,6 @@
     <url>http://wso2.org</url>
     <description>This feature contains Apim Analytics IdP Client Feature</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon.analytics-common</groupId>
-            <artifactId>org.wso2.carbon.analytics.idp.client</artifactId>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -66,72 +59,8 @@
                             </adviceFileContents>
                             <bundles>
                                 <bundle>
-                                    <symbolicName>org.wso2.carbon.analytics.idp.client</symbolicName>
-                                    <version>${carbon.analytics-common.version}</version>
-                                </bundle>
-                                <bundle>
                                     <symbolicName>org.wso2.analytics.apim.idp.client</symbolicName>
                                     <version>${project.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>axis2</symbolicName>
-                                    <version>${org.apache.axis2.wso2.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>axiom</symbolicName>
-                                    <version>${org.apache.ws.commons.axiom.wso2.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>geronimo-saaj_1.3_spec</symbolicName>
-                                    <version>${org.wso2.orbit.org.apache.geronimo.specs.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>mail</symbolicName>
-                                    <version>${org.wso2.orbit.javax.mail.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>tomcat-servlet-api</symbolicName>
-                                    <version>${org.wso2.orbit.org.apache.tomcat.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.wso2.carbon.framework.exporter</symbolicName>
-                                    <version>${org.wso2.carbon.4x.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>neethi</symbolicName>
-                                    <version>${org.wso2.orbit.org.apache.neethi.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>wsdl4j.wso2</symbolicName>
-                                    <version>${org.wso2.wsdl4j.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>XmlSchema</symbolicName>
-                                    <version>${org.apache.ws.commons.schema.wso2.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.wso2.securevault</symbolicName>
-                                    <version>${org.wso2.securevault.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>httpcore</symbolicName>
-                                    <version>${org.apache.httpcomponents.wso2.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>commons-httpclient</symbolicName>
-                                    <version>${org.wso2.orbit.commons-httpclient.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>commons-codec</symbolicName>
-                                    <version>${org.wso2.orbit.commons-codec.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.wso2.carbon.authenticator.stub</symbolicName>
-                                    <version>${org.wso2.carbon.4x.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.wso2.carbon.identity.oauth.stub</symbolicName>
-                                    <version>${org.wso2.carbon.identity.inbound.auth.oauth2.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>
