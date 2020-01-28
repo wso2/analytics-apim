@@ -57,7 +57,7 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
     private int numOfPages;
     private final String[] months = {"January", "February", "March", "April", "May", "June", "July", "August",
             "September", "October", "November", "December"};
-    private static SiddhiAppRuntime siddhiAppRuntime = null;
+    private SiddhiAppRuntime siddhiAppRuntime = null;
 
     /**
      * The default implementation of Monthly request report.
