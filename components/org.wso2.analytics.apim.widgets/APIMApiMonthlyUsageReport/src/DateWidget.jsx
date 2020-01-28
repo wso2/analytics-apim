@@ -50,7 +50,8 @@ export default function DateWidget(props) {
      */
     function renderYears() {
         const years = [];
-        for (let step = 1970; step < 2100; step++) {
+        const currentYear = new Date().getFullYear()
+        for (let step = currentYear - 9 ; step <= currentYear; step++) {
             years.push(<MenuItem value={step}>{step}</MenuItem>);
         }
         return years;
