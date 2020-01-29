@@ -110,12 +110,12 @@ export default function APIMTopAppCreators(props) {
         <MuiThemeProvider
             theme={themeName === 'dark' ? darkTheme : lightTheme}
         >
-            <Scrollbars
-                style={{ height }}
+            <Scrollbars style={{
+                height,
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            }}
             >
                 <div style={{
-                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                    height,
                     margin: '10px',
                     padding: '20px',
                 }}

@@ -68,7 +68,6 @@ export default function APIMSignupsData(props) {
             fontSize: 8,
         },
         tableWrapper: {
-            width: '80%',
             height: '30%',
             margin: 'auto',
             textAlign: 'right',

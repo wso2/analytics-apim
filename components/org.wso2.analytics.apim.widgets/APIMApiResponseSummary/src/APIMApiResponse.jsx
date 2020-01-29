@@ -107,8 +107,10 @@ export default function APIMApiResponse(props) {
         },
     };
     return (
-        <Scrollbars
-            style={{ height }}
+        <Scrollbars style={{
+            height,
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+        }}
         >
             <div style={{
                 padding: '5% 5%',
@@ -249,7 +251,7 @@ export default function APIMApiResponse(props) {
                             ) : (
                             <div style={styles.dataWrapper}>
                                 <Paper style={{
-                                    width: '80%', margin: 'auto', backgroundColor: themeName === 'dark' ? '#162638' : '#fff',
+                                    margin: 'auto', backgroundColor: themeName === 'dark' ? '#162638' : '#fff',
                                 }}
                                 >
                                     <Toolbar>
