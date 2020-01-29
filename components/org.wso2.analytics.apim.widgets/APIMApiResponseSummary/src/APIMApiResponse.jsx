@@ -251,7 +251,7 @@ export default function APIMApiResponse(props) {
                             ) : (
                             <div style={styles.dataWrapper}>
                                 <Paper style={{
-                                    width: '80%', margin: 'auto', backgroundColor: themeName === 'dark' ? '#162638' : '#fff',
+                                    margin: 'auto', backgroundColor: themeName === 'dark' ? '#162638' : '#fff',
                                 }}
                                 >
                                     <Toolbar>

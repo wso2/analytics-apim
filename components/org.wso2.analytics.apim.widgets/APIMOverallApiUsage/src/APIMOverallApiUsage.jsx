@@ -80,7 +80,6 @@ export default function APIMOverallApiUsage(props) {
             height: '70%',
         },
         tableWrapper: {
-            width: '80%',
             height: '30%',
             margin: 'auto',
         },
