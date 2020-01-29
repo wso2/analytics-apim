@@ -229,6 +229,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.wso2.analytics.apim</groupId>
+            <artifactId>org.wso2.analytics.apim.dashboards.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
             <groupId>org.wso2.carbon.analytics</groupId>
             <artifactId>org.wso2.carbon.analytics.auth.rest.api.feature</artifactId>
             <type>zip</type>
@@ -664,6 +670,12 @@
                                 <!-- Microgateway gRPC service related -->
                                 <feature>
                                     <id>org.wso2.analytics.mgw.grpc.service.feature</id>
+                                    <version>${project.version}</version>
+                                </feature>
+
+                                <!-- APIM Dashboards service related -->
+                                <feature>
+                                    <id>org.wso2.analytics.apim.dashboards.feature</id>
                                     <version>${project.version}</version>
                                 </feature>
 
@@ -1113,6 +1125,12 @@
                                 <!-- Microgateway gRPC service related -->
                                 <feature>
                                     <id>org.wso2.analytics.mgw.grpc.service.feature</id>
+                                    <version>${project.version}</version>
+                                </feature>
+
+                                <!-- APIM Dashboards service related -->
+                                <feature>
+                                    <id>org.wso2.analytics.apim.dashboards.feature</id>
                                     <version>${project.version}</version>
                                 </feature>
 

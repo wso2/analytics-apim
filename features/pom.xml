@@ -32,6 +32,7 @@
         <module>org.wso2.analytics.apim.rest.api.proxy.feature</module>
         <module>org.wso2.analytics.apim.rest.api.report.feature</module>
         <module>org.wso2.analytics.mgw.grpc.service.feature</module>
+        <module>org.wso2.analytics.apim.dashboards.feature</module>
     </modules>
 
 </project>
