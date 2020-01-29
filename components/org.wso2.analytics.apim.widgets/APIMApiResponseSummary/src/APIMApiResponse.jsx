@@ -107,8 +107,10 @@ export default function APIMApiResponse(props) {
         },
     };
     return (
-        <Scrollbars
-            style={{ height }}
+        <Scrollbars style={{
+            height,
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+        }}
         >
             <div style={{
                 padding: '5% 5%',

@@ -111,10 +111,13 @@ export default function APIMOverallApiUsage(props) {
     }
 
     return (
-        <Scrollbars style={{ height: '100%' }}>
+        <Scrollbars style={{
+            height,
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+        }}
+        >
             <div style={{
                 backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                height,
                 margin: '10px',
                 padding: '20px',
             }}
