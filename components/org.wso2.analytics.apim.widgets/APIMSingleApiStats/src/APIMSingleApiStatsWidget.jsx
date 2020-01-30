@@ -572,7 +572,9 @@ class APIMSingleApiStatsWidget extends Widget {
 
         if (errorpercentage.length === 0 || isNaN(errorpercentage)) {
             this.setState({ sortedData, formattedErrorPercentage: 0 });
-        } else { this.setState({ sortedData, formattedErrorPercentage: errorpercentage, inProgress: false }); }
+        } else {
+            this.setState({ sortedData, formattedErrorPercentage: errorpercentage, inProgress: false });
+        }
     }
 
     /**
