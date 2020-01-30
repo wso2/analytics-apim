@@ -30,7 +30,6 @@ import Widget from '@wso2-dashboards/widget';
 import Moment from 'moment';
 import APIMApiTrafficTrends from './APIMApiTrafficTrends';
 
-
 const darkTheme = createMuiTheme({
     palette: {
         type: 'dark',
@@ -49,12 +48,11 @@ const lightTheme = createMuiTheme({
     },
 });
 
-
 /**
  * Query string parameter
  * @type {string}
  */
-const queryParamKey = 'erroranalysis';
+const queryParamKey = 'trafficTrends';
 
 /**
  * Language
@@ -80,7 +78,6 @@ class APIMApiTrafficTrendsWidget extends Widget {
      */
     constructor(props) {
         super(props);
-
         this.styles = {
             formControl: {
                 margin: 5,
@@ -129,7 +126,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
             resourceList: [],
             operationSelected: [],
             inProgress: true,
-            proxyError: null,
+            proxyError: false,
             chartData: null,
             xAxisTicks: null,
             maxCount: 0,
@@ -165,7 +162,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
@@ -194,10 +191,11 @@ class APIMApiTrafficTrendsWidget extends Widget {
     }
 
     /**
-     * Load locale file.
-     * @param {string} locale Locale name
-     * @memberof APIMApiTrafficTrendsWidget
-     */
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMApiTrafficTrendsWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -214,14 +212,18 @@ class APIMApiTrafficTrendsWidget extends Widget {
 
     /**
      * Retrieve params from publisher - DateTimeRange
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
      * @memberof APIMApiTrafficTrendsWidget
      * */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-            inProgress: true,
+            inProgress: !sync,
         }, this.assembleApiListQuery);
     }
 
@@ -230,19 +232,22 @@ class APIMApiTrafficTrendsWidget extends Widget {
      * @memberof APIMApiTrafficTrendsWidget
      * */
     resetState() {
-        this.setState({ inProgress: true, resultdata: [],chartData: null,
-            xAxisTicks: null, });
+        this.setState({
+            inProgress: true,
+            resultdata: [],
+            chartData: null,
+            xAxisTicks: null,
+        });
         const queryParam = super.getGlobalState(queryParamKey);
         let {
             apiSelected, apiVersion, operationSelected,
         } = queryParam;
-
         const { apilist, versionMap } = this.state;
         let versions;
 
         if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
             if (apilist.length > 0) {
-                apiSelected = apilist[0];
+                [apiSelected] = apilist;
             }
         }
         if (versionMap && apiSelected in versionMap) {
@@ -252,7 +257,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
         }
         if (!apiVersion || !versions.includes(apiVersion)) {
             if (versions.length > 0) {
-                apiVersion = versions[0];
+                [apiVersion] = versions;
             } else {
                 apiVersion = '';
             }
@@ -264,7 +269,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
         this.setState({
             apiSelected, apiVersion, operationSelected, versionlist: versions,
         });
-        this.setQueryParam(apiSelected, apiVersion, operationSelected,);
+        this.setQueryParam(apiSelected, apiVersion, operationSelected);
     }
 
     /**
@@ -275,16 +280,12 @@ class APIMApiTrafficTrendsWidget extends Widget {
         this.resetState();
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
-                this.setState({ proxyError: null });
+                this.setState({ proxyError: false });
                 this.handleApiListReceived(response.data);
             })
             .catch((error) => {
+                this.setState({ proxyError: true, inProgress: false });
                 console.error(error);
-                if (error.response && error.response.data) {
-                    let proxyError = error.response.data;
-                    proxyError = proxyError.split(':').splice(1).join('').trim();
-                    this.setState({ proxyError, inProgress: false });
-                }
             });
     }
 
@@ -298,9 +299,8 @@ class APIMApiTrafficTrendsWidget extends Widget {
         const { list } = data;
         if (list) {
             this.setState({ apiDataList: list });
-        }
-        else{
-            this.setState({inProgress:false})
+        } else {
+            this.setState({ inProgress: false });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiIdQuery();
@@ -312,18 +312,16 @@ class APIMApiTrafficTrendsWidget extends Widget {
      * */
     assembleApiIdQuery() {
         this.resetState();
-        const { providerConfig, apiDataList, username } = this.state;
+        const { providerConfig, apiDataList } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         if (apiDataList && apiDataList.length > 0) {
-            let apiList = [...apiDataList];
-
+            const apiList = [...apiDataList];
             let apiCondition = apiList.map((api) => {
                 return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
                     + '\')';
             });
             apiCondition = apiCondition.join(' OR ');
-
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -352,7 +350,6 @@ class APIMApiTrafficTrendsWidget extends Widget {
             const versionMap = {};
             data.forEach((dataUnit) => {
                 apilist.push(dataUnit[1]);
-                // retrieve all entries for the api and get the api versions list
                 const versions = data.filter(d => d[1] === dataUnit[1]);
                 const versionlist = versions.map((ver) => { return ver[2]; });
                 versionMap[dataUnit[1]] = versionlist;
@@ -362,7 +359,6 @@ class APIMApiTrafficTrendsWidget extends Widget {
             this.setState({
                 apilist, versionMap, apiFullData: data, apiSelected,
             });
-
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleResourceQuery();
@@ -376,13 +372,11 @@ class APIMApiTrafficTrendsWidget extends Widget {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
-        const { providerConfig, apiFullData,} = this.state;
+        const { providerConfig, apiFullData } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
- 
         if (apiFullData && apiFullData.length > 0) {
             const api = apiFullData.filter(apiData => apiSelected === apiData[1] && apiVersion === apiData[2])[0];
-
             if (api) {
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'resourcequery';
@@ -407,63 +401,60 @@ class APIMApiTrafficTrendsWidget extends Widget {
     handleResourceReceived(message) {
         const { data } = message;
         const { id } = this.props;
-        const {operationSelected} = this.state;
+        const { operationSelected } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
 
         if (data) {
-
-            var legenddata = [];
+            const legenddata = [];
             const operations = [];
             const operationTypes = [];
             let method = '';
-
             const resourceList = [];
+
             data.forEach((dataUnit) => {
                 resourceList.push([dataUnit[0] + ' (' + dataUnit[1]] + ')');
             });
             this.setState({ resourceList });
 
             if (operationSelected && operationSelected.length > 0) {
-                operationSelected.map((res) => {
-                    const resFormat = res.split(' (');
+                operationSelected.forEach((element) => {
+                    const resFormat = element.split(' (');
                     operations.push(resFormat[0]);
                     method = resFormat[1].replace(')', '');
                     operationTypes.push(method);
                 });
 
-                for (let index = 0; index < operations.length; index++) {
+                operations.forEach((element) => {
                     legenddata.push(
-                        {"name":operations[index]}
-                    )
-                }
-                this.setState({legandDataSet:legenddata})
+                        { name: element },
+                    );
+                });
+                this.setState({ legandDataSet: legenddata });
 
                 for (let index = 0; index < operations.length; index++) {
                     this.setQueryParam(apiSelected, apiVersion, operationSelected);
-                    this.assembleMainQuery(operations[index], operationTypes[index]);     
+                    this.assembleMainQuery(operations[index], operationTypes[index]);
                 }
-
-            }
-
-            else{
-                this.setGlobalState({inProgress:false})
+            } else {
+                this.setGlobalState({ inProgress: false });
                 super.getWidgetChannelManager().unsubscribeWidget(id);
-                this.assembleMainQuery("","");
+                this.assembleMainQuery('', '');
             }
-           
         }
     }
 
     /**
      * Formats the siddhi query - mainquery
+     * @param {string} apiresource - Selected Api Resource
+     * @param {string} apimethod - Selected Api Method
      * @memberof APIMApiTrafficTrendsWidget
      * */
     assembleMainQuery(apiresource, apimethod) {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
         const {
-             providerConfig, timeFrom, timeTo, perValue,operationSelected,
+            providerConfig, timeFrom, timeTo, perValue, operationSelected,
         } = this.state;
         const { widgetID: widgetName, id } = this.props;
 
@@ -479,13 +470,10 @@ class APIMApiTrafficTrendsWidget extends Widget {
                 '{{apiResource}}': apiresource,
                 '{{apiMethod}}': apimethod,
             };
-        
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
-        }
-
-        else{
-            this.setState({inProgress:false, dataarray:[]})
+        } else {
+            this.setState({ inProgress: false, dataarray: [] });
         }
     }
 
@@ -496,19 +484,20 @@ class APIMApiTrafficTrendsWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        var maxCount = 0;
-        const { dataarray } = this.state
-         if (data && data.length != 0) {
+        let maxCount = 0;
+        const { dataarray } = this.state;
+        if (data && data.length !== 0) {
             const chartData = [];
-            const xAxisTicks = [];   
+            const xAxisTicks = [];
 
             data.forEach((dataUnit) => {
                 chartData.push({
                     x: new Date(dataUnit[0]).getTime(),
                     y: dataUnit[1],
-                    label: 'CREATED_TIME:' + Moment(dataUnit[0]).format('YYYY-MMM-DD HH:mm:ss') + '\nCOUNT:' + dataUnit[1],
-               });
-
+                    label: 'CREATED_TIME:'
+                     + Moment(dataUnit[0]).format('YYYY-MMM-DD HH:mm:ss')
+                     + '\nCOUNT:' + dataUnit[1],
+                });
                 maxCount += dataUnit[1];
             });
 
@@ -523,13 +512,12 @@ class APIMApiTrafficTrendsWidget extends Widget {
             }
 
             dataarray.push(chartData);
-            this.setState({ dataarray, inProgress: false, xAxisTicks, maxCount });
-         } 
-         
-         else if (dataarray.length > 0){
-            this.setState({ inProgress: false})
-         }
-         else {
+            this.setState({
+                dataarray, inProgress: false, xAxisTicks, maxCount,
+            });
+        } else if (dataarray.length > 0) {
+            this.setState({ inProgress: false });
+        } else {
             this.setState({ inProgress: false, dataarray: [] });
         }
     }
@@ -572,12 +560,16 @@ class APIMApiTrafficTrendsWidget extends Widget {
      * @memberof APIMApiTrafficTrendsWidget
      * */
     apiVersionHandleChange(event) {
-        const {apiSelected } = this.state;
+        const { apiSelected } = this.state;
         const { id } = this.props;
 
         this.setQueryParam(apiSelected, event.target.value, []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ apiVersion: event.target.value, inProgress: true, resourceList: [] }, this.assembleResourceQuery);
+        this.setState({
+            apiVersion: event.target.value,
+            inProgress: true,
+            resourceList: [],
+        }, this.assembleResourceQuery);
     }
 
     /**
@@ -600,28 +592,30 @@ class APIMApiTrafficTrendsWidget extends Widget {
         const operations = [];
         const operationTypes = [];
         let method = '';
-        var legenddata = [];
-        operationSelected.map((res) => {
-            const resFormat = res.split(' (');
+        const legenddata = [];
+
+        operationSelected.forEach((element) => {
+            const resFormat = element.split(' (');
             operations.push(resFormat[0]);
             method = resFormat[1].replace(')', '');
             operationTypes.push(method);
         });
 
-       for (let index = 0; index < operations.length; index++) {
-        legenddata.push(
-            {"name":operations[index]}
-        )
-        }
-        this.setState({ operationSelected, inProgress: true, dataarray: [], legandDataSet:legenddata });
+        operations.forEach((element) => {
+            legenddata.push(
+                { name: element },
+            );
+        });
+        this.setState({
+            operationSelected, inProgress: true, dataarray: [], legandDataSet: legenddata,
+        });
         this.setQueryParam(apiSelected, apiVersion, operationSelected);
         super.getWidgetChannelManager().unsubscribeWidget(id);
 
-        for (let index = 0; index < operations.length; index++) {   
-            this.assembleMainQuery(operations[index], operationTypes[index]);     
+        for (let index = 0; index < operations.length; index++) {
+            this.assembleMainQuery(operations[index], operationTypes[index]);
         }
     }
-
 
     /**
      * @inheritDoc
@@ -631,8 +625,9 @@ class APIMApiTrafficTrendsWidget extends Widget {
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
-            localeMessages, faultyProviderConfig, height, width, inProgress, proxyError,
-            apiSelected, apiVersion, resultdata, apilist, versionlist, resourceList,chartData,xAxisTicks,maxCount,dataarray,legandDataSet
+            localeMessages, faultyProviderConfig, height, width,
+            inProgress, proxyError, apiSelected, apiVersion, resultdata, apilist,
+            versionlist, resourceList, chartData, xAxisTicks, maxCount, dataarray, legandDataSet,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -667,7 +662,10 @@ class APIMApiTrafficTrendsWidget extends Widget {
                                 elevation={1}
                                 style={proxyPaper}
                             >
-                                <Typography variant='h5' component='h3'>
+                                <Typography
+                                    variant='h5'
+                                    component='h3'
+                                >
                                     <FormattedMessage
                                         id='apim.server.error.heading'
                                         defaultMessage='Error!'
@@ -687,7 +685,10 @@ class APIMApiTrafficTrendsWidget extends Widget {
                                             elevation={1}
                                             style={paper}
                                         >
-                                            <Typography variant='h5' component='h3'>
+                                            <Typography
+                                                variant='h5'
+                                                component='h3'
+                                            >
                                                 <FormattedMessage
                                                     id='config.error.heading'
                                                     defaultMessage='Configuration Error !'

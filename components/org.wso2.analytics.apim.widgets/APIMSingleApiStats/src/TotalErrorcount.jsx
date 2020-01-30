@@ -18,120 +18,159 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import Moment from 'moment';
 
-const styles = {
-    headingWrapper: {
-        height: '10%',
-        margin: 'auto',
-        paddingTop: '15px',
-        width: '90%',
-    },
-    iconWrapper: {
-        float: 'left',
-        width: '40%',
-        height: '62%',
-    },
-    icon: {
-        display: 'block',
-        margin: 'auto',
-        marginTop: '25%',
-        width: '50%',
-        height: '50%'
-    },
-    dataWrapper: {
-        float: 'left',
-        width: '60%',
-        height: '50%',
-        paddingTop: '8%',
-    },
-    weekCount: {
-        margin: 0,
-        marginTop: '5%',
-        color: 'rgb(135,205,223)',
-        letterSpacing: 1,
-        fontSize: '80%',
-    },
-    typeText: {
-        textAlign: 'left',
-        fontWeight: 'normal',
-        margin: 0,
-        display: 'inline',
-        marginLeft: '3%',
-        letterSpacing: 1.5,
-        fontSize: 'small',
-    },
-};
-class TotalReqcount extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            anchorEl: null,
-        };
-    }
-
-  render() {
-    const { totalerrorcount, timeFrom, timeTo } = this.props;
-    return (
-    <div
-        style={{
+/**
+ * Display Total Error Percentage
+ * @param {any} props @inheritDoc
+ * @returns {ReactElement} Render the Error Percentage component
+ */
+export default function TotalErrorCount(props) {
+    const { totalErrorCount, timeFrom, timeTo } = props;
+    const styles = {
+        headingWrapper: {
+            height: '10%',
+            margin: 'auto',
+            paddingTop: '15px',
+            width: '90%',
+        },
+        iconWrapper: {
+            float: 'left',
+            width: '40%',
+            height: '62%',
+        },
+        icon: {
+            display: 'block',
+            margin: 'auto',
+            marginTop: '25%',
+            width: '50%',
+            height: '50%',
+        },
+        dataWrapper: {
+            float: 'left',
+            width: '60%',
+            height: '50%',
+            paddingTop: '8%',
+        },
+        weekCount: {
+            margin: 0,
+            marginTop: '5%',
+            color: 'rgb(135,205,223)',
+            letterSpacing: 1,
+            fontSize: '80%',
+        },
+        typeText: {
+            textAlign: 'left',
+            fontWeight: 'normal',
+            margin: 0,
+            display: 'inline',
+            marginLeft: '3%',
+            letterSpacing: 1.5,
+            fontSize: 'small',
+        },
+        mainWrapper: {
             background: 'linear-gradient(to right, rgb(3, 8, 68) 0%, rgb(47, 93, 197) 46%, rgb(42, 49, 101) 100%)',
-            maxWidth: 'auto', 
-            maxHeight: '200px', 
-            minWidth: 'auto', 
-            minHeight: '200px', 
-            marginRight:'2px', 
-            marginLeft:'2px' ,
-        }}
-    >
-      <div style={styles.headingWrapper}>
-            <h3
-                style={{
-                    borderBottom: '1.5px solid #fff',
-                    paddingBottom: '10px',
-                    margin: 'auto',
-                    textAlign: 'left',
-                    fontWeight: 'normal',
-                    letterSpacing: 1.5,
-                }}
-            >
-                <FormattedMessage id='errorcount.widget.heading' defaultMessage='TOTAL REQUEST COUNT' />
-            </h3>
-        </div>
-        <div style={styles.iconWrapper}> 
-        <ErrorOutlineIcon style={styles.icon}/>
-        </div>
+            maxWidth: 'auto',
+            maxHeight: '200px',
+            minWidth: 'auto',
+            minHeight: '200px',
+            marginRight: '2px',
+            marginLeft: '2px',
+        },
+        h3: {
+            borderBottom: '1.5px solid #fff',
+            paddingBottom: '10px',
+            margin: 'auto',
+            textAlign: 'left',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        },
+        h1: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontSize: '300%',
+            display: 'inline',
+            color: '#fff',
+        },
+    };
 
-        <div style={styles.dataWrapper}>
-            <h1
-                style={{
-                    margin: 'auto',
-                    textAlign: 'center',
-                    fontSize: '300%',
-                    display: 'inline',
-                    color: '#fff',
-                }}
-            >
-                {totalerrorcount}
-            </h1>
-            <h3 style={styles.typeText}>
-                {totalerrorcount === '01' ?
-                    <FormattedMessage id='error' defaultMessage='ERROR' /> :
-                    <FormattedMessage id='errors' defaultMessage='ERRORS' /> }
-            </h3>
-            <p style={styles.weekCount}>
-                [
-                {' '} {totalerrorcount} {' '} {totalerrorcount === '01' ? 'ERROR' : 'ERRORS'} {' '} {'WITHIN'} {Moment(timeFrom).format('YYYY-MMM')} {' TO '} {Moment(timeTo).format('YYYY-MMM')} {' '}
-                ]
-            </p>
+    return (
+        <div
+            style={styles.mainWrapper}
+        >
+            <div style={styles.headingWrapper}>
+                <h3 style={styles.h3}>
+                    <FormattedMessage
+                        id='errorcount.widget.heading'
+                        defaultMessage='TOTAL ERROR COUNT'
+                    />
+                </h3>
+            </div>
+            <div style={styles.iconWrapper}>
+                <ErrorOutlineIcon style={styles.icon} />
+            </div>
+            <div style={styles.dataWrapper}>
+                <h1 style={styles.h1}>
+                    {totalErrorCount}
+                </h1>
+                <h3 style={styles.typeText}>
+                    {totalErrorCount === '01'
+                        ? (
+                            <FormattedMessage
+                                id='error'
+                                defaultMessage='ERROR'
+                            />
+                        )
+                        : (
+                            <FormattedMessage
+                                id='errors'
+                                defaultMessage='ERRORS'
+                            />
+                        ) }
+                </h3>
+                <p style={styles.weekCount}>
+                    {' [ '}
+                    {totalErrorCount}
+                    {' '}
+                    {totalErrorCount === '01'
+                        ? (
+                            <FormattedMessage
+                                id='error'
+                                defaultMessage='ERROR'
+                            />
+                        )
+                        : (
+                            <FormattedMessage
+                                id='errors'
+                                defaultMessage='ERRORS'
+                            />
+                        ) }
+                    {' '}
+                    {<FormattedMessage
+                        id='within.text'
+                        defaultMessage='WITHIN'
+                    />}
+                    {' '}
+                    {Moment(timeFrom).format('YYYY-MMM')}
+                    {' '}
+                    {<FormattedMessage
+                        id='to.text'
+                        defaultMessage='TO'
+                    />}
+                    {' '}
+                    {Moment(timeTo).format('YYYY-MMM')}
+                    {' ] '}
+                </p>
+            </div>
         </div>
-    </div>
     );
-  }
 }
 
-export default withStyles(styles)(TotalReqcount);
+TotalErrorCount.propTypes = {
+    totalErrorCount: PropTypes.number.isRequired,
+    timeFrom: PropTypes.number.isRequired,
+    timeTo: PropTypes.number.isRequired,
+};

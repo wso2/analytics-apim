@@ -25,12 +25,16 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ApiInfoChart from './ApiInfoChart';
-import PrimarySearchAppBar from './PrimarySearchAppBar';
 
-
+/**
+ * Display API Overall Info
+ * @param {any} props @inheritDoc
+ * @returns {ReactElement} Render the Api Overall info widget body
+ */
 export default function APIMOverallApiInfo(props) {
-    const { height, usageData, totalcount, isloading, themeName } = props;
-
+    const {
+        height, usageData, totalcount, inProgress, themeName,
+    } = props;
     const styles = {
         inProgress: {
             display: 'flex',
@@ -47,33 +51,69 @@ export default function APIMOverallApiInfo(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'8%',
+            marginLeft: '8%',
             marginTop: '5%',
         },
-    }
+        appBarColour: {
+            backgroundColor: themeName === 'dark' ? '#27296b' : '#E8E8E8',
+        },
+        headingWrapper: {
+            margin: 'auto',
+            width: '95%',
+            marginBottom: '10px',
+        },
+        h3: {
+            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+            paddingBottom: '10px',
+            margin: 'auto',
+            marginTop: '10px',
+            textAlign: 'left',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        },
+        mainDiv: {
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            height,
+            margin: '10px',
+            padding: '20px',
+        },
+    };
+
     return (
-        <Scrollbars style={{ height }}>
-            { isloading ? (
-                <div style={styles.inProgress} >
-                    <CircularProgress />
+        <div style={styles.mainDiv}>
+            <Scrollbars style={{ height }}>
+                <div style={styles.headingWrapper}>
+                    <h3 style={styles.h3}>
+                        <FormattedMessage
+                            id='api.info.heading'
+                            defaultMessage='OVERALL API STATS'
+                        />
+                    </h3>
                 </div>
-            ) : (
-                <div>
-                    { usageData.length > 0 ? (
-                         <div>
-                         <PrimarySearchAppBar />
-                         <ApiInfoChart
-                             usageData={usageData}
-                             totalcount={totalcount}
-                         />
-                     </div>
-                    ) : (
-                        <div style={styles.paperWrapper}>
+                { inProgress ? (
+                    <div style={styles.inProgress}>
+                        <CircularProgress />
+                    </div>
+                ) : (
+                    <div>
+                        { usageData.length > 0 ? (
+                            <div>
+                                <ApiInfoChart
+                                    usageData={usageData}
+                                    totalcount={totalcount}
+                                    themeName={themeName}
+                                />
+                            </div>
+                        ) : (
+                            <div style={styles.paperWrapper}>
                                 <Paper
                                     elevation={1}
                                     style={styles.paper}
                                 >
-                                    <Typography variant='h5' component='h3'>
+                                    <Typography
+                                        variant='h5'
+                                        component='h3'
+                                    >
                                         <FormattedMessage
                                             id='nodata.error.heading'
                                             defaultMessage='No Data Available !'
@@ -87,14 +127,11 @@ export default function APIMOverallApiInfo(props) {
                                     </Typography>
                                 </Paper>
                             </div>
-                    )
-
-                    }
-                </div>
-            )
-            }
-           
-        </Scrollbars>
+                        )}
+                    </div>
+                )}
+            </Scrollbars>
+        </div>
     );
 }
 
@@ -102,5 +139,6 @@ APIMOverallApiInfo.propTypes = {
     height: PropTypes.string.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
     totalcount: PropTypes.instanceOf(Object).isRequired,
-    isloading: PropTypes.bool.isRequired,
+    inProgress: PropTypes.bool.isRequired,
+    themeName: PropTypes.string.isRequired,
 };

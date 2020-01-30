@@ -1,6 +1,6 @@
 {
-  "name": "APIM Api Latency",
-  "id": "APIMApiLatency",
+  "name": "APIM Average Api Latency",
+  "id": "APIMAverageApiLatency",
   "thumbnailURL": "", 
   "configs": {
     "pubsub": {

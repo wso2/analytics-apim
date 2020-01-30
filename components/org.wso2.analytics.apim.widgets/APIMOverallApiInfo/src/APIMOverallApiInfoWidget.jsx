@@ -24,17 +24,12 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import APIMOverallApiInfo from './APIMOverallApiInfo';
 import Button from '@material-ui/core/Button';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
-
-
-
-
+import APIMOverallApiInfo from './APIMOverallApiInfo';
 
 const darkTheme = createMuiTheme({
     useNextVariants: true,
@@ -56,13 +51,28 @@ const lightTheme = createMuiTheme({
     },
 });
 
-
+/**
+ * Language
+ * @type {string}
+ */
 const language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
 
+/**
+ * Language without region code
+ */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
-// Create react component for the APIM Oerall Api Info widget
+/**
+ * Create react component for the APIM Oerall Api Info widget
+ * @class APIMOverallApiInfoWidget
+ * @extends {Widget}
+ */
 class APIMOverallApiInfoWidget extends Widget {
+    /**
+     * Creates an instance of APIMOverallApiInfoWidget.
+     * @param {any} props @inheritDoc
+     * @memberof APIMOverallApiInfoWidget
+     */
     constructor(props) {
         super(props);
         this.styles = {
@@ -75,8 +85,13 @@ class APIMOverallApiInfoWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            button: {
+                maxWidth: '30px',
+                maxHeight: '30px',
+                minWidth: '30px',
+                minHeight: '30px',
+            },
         };
-
 
         this.state = {
             width: this.props.width,
@@ -84,7 +99,7 @@ class APIMOverallApiInfoWidget extends Widget {
             usageData: null,
             totalcount: null,
             localeMessages: null,
-            isloading: true,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -133,7 +148,12 @@ class APIMOverallApiInfoWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
-
+    /**
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMOverallApiInfoWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -148,17 +168,27 @@ class APIMOverallApiInfoWidget extends Widget {
         });
     }
 
-    // Set the date time range
+    /**
+     * Retrieve params from publisher - DateTimeRange
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
+     * @memberof APIMOverallApiInfoWidget
+   */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
+            inProgress: !sync,
         }, this.AssembleMainApiInfoQuery);
     }
 
-
-    // Format the siddhi query
+    /**
+     * Retreive the API info for sub rows
+     * @memberof APIMOverallApiInfoWidget
+     * */
     assembleApiSubInfo() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
@@ -176,34 +206,39 @@ class APIMOverallApiInfoWidget extends Widget {
             .subscribeWidget(id, widgetName, this.handleApiSubInfoReceived, dataProviderConfigs);
     }
 
-
-    // format the query data
+    /**
+     * Formats data retrieved from assembleApiSubInfo query
+     * @param {object} message - data retrieved
+     * @memberof APIMOverallApiInfoWidget
+     * */
     handleApiSubInfoReceived(message) {
         const { data } = message;
-        var err5xx = null;
-        let err4xx = null;
         const { id } = this.props;
+
         if (data) {
             const usageData = [];
             data.forEach((element) => {
                 const avglatency = element[5] / element[3];
                 if (element[4] > 399 && element[4] < 499) {
-                    usageData.push([element[0], element[1], element[2], element[3], 0, element[3], parseInt(avglatency), element[6]]);
-                    err4xx += element[4];
+                    usageData.push([element[0], element[1], element[2], element[3],
+                        0, element[3], parseInt(avglatency, 10), element[6]]);
                 } else if (element[4] > 499) {
-                    usageData.push([element[0],element[1], element[2], element[3], element[3], 0, parseInt(avglatency), element[6]]);
-                    err5xx += element[4];
+                    usageData.push([element[0], element[1], element[2], element[3], element[3],
+                        0, parseInt(avglatency, 10), element[6]]);
                 } else {
-                    usageData.push([element[0],element[1], element[2], element[3], 0, 0, parseInt(avglatency), element[6]]);
+                    usageData.push([element[0], element[1], element[2], element[3],
+                        0, 0, parseInt(avglatency, 10), element[6]]);
                 }
             });
-            this.setState({ usageData, isloading:false });
+            this.setState({ usageData, inProgress: false });
             super.getWidgetChannelManager().unsubscribeWidget(id);
         }
     }
 
-
-    // Query to calculate the main api count
+    /**
+     * Retreive the API info for main rows
+     * @memberof APIMOverallApiInfoWidget
+     * */
     AssembleMainApiInfoQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
@@ -221,48 +256,70 @@ class APIMOverallApiInfoWidget extends Widget {
             .subscribeWidget(id, widgetName, this.handleMainApiInfo, dataProviderConfigs);
     }
 
-    // handle the total count received
+    /**
+     * Formats data retrieved from AssembleMainApiInfoQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMOverallApiInfoWidget
+     * */
     handleMainApiInfo(message) {
         const totalcount = [];
         const { data } = message;
-        const { id } = this.props;
+        const { id, muiTheme } = this.props;
         data.forEach((element) => {
-            totalcount.push([element[0], element[1], 'All', 'All', element[2], '..', '..',parseInt(element[3]/element[2]),<Button style={{maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}} variant="contained" color="primary" onClick={() => {
-                window.location.href = './single-api-stats#{"apidata":{"apiName":"'+element[0]+'","apiVersion":"'+element[1]+'","sync":false}}';
-                }}>
-            <VisibilityOutlinedIcon/>
-          </Button>]);
+            totalcount.push([element[0], element[1], 'All', 'All', element[2],
+                '..', '..', parseInt(element[3] / element[2], 10),
+                <Button
+                    style={this.styles.button}
+                    variant='contained'
+                    color={muiTheme.name === 'dark' ? 'primary' : 'default'}
+                    onClick={() => {
+                        window.location.href = './single-api-stats#{"apidata":{"apiName":"'
+                        + element[0] + '","apiVersion":"' + element[1] + '","sync":false}}';
+                    }}
+                >
+                    <VisibilityOutlinedIcon />
+                </Button>]);
         });
-
         this.setState({ totalcount });
-
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiSubInfo();
     }
 
-
-   // Render the APIM Recent Api Traffic widget 
+    /**
+     * @inheritDoc
+     * @returns {ReactElement} Render the APIM Api Overall Api Info widget
+     * @memberof APIMOverallApiInfoWidget
+     */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, usageData, totalcount, isloading,
+            localeMessages, faultyProviderConfig, height, usageData, totalcount, inProgress,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
-            themeName, height, usageData, totalcount, isloading,
+            themeName, height, usageData, totalcount, inProgress,
         };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider
+                locale={language}
+                messages={localeMessages}
+            >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConfig ? (
                             <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
+                                <Paper
+                                    elevation={1}
+                                    style={paper}
+                                >
+                                    <Typography
+                                        variant='h5'
+                                        component='h3'
+                                    >
                                         <FormattedMessage
                                             id='config.error.heading'
                                             defaultMessage='Configuration Error !'

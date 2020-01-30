@@ -25,16 +25,16 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
-import CustomTable from './CustomTable';
+import MUIDataTable from 'mui-datatables';
 
 /**
- * Display API Alerts details
+ * Display API Error Rate
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Api Error Rate widget body
  */
 export default function APIMApiErrorRate(props) {
     const {
-        width, height, themeName, sorteddata, errorpercentage, legendData, tableData, isloading,
+        width, height, themeName, sortedData, errorPercentage, legendData, tableData, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -112,28 +112,61 @@ export default function APIMApiErrorRate(props) {
             fontWeight: 'normal',
         },
     };
+    const columns = [
+        {
+            name: 'apiName',
+            label: <FormattedMessage id='name.column' defaultMessage='Api Name' />,
+            options: {
+                filter: true,
+                sort: true,
+            },
+        },
+        {
+            name: 'version',
+            label: <FormattedMessage id='version.column' defaultMessage='Version' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+        {
+            name: 'count',
+            label: <FormattedMessage id='count.column' defaultMessage='Error Percentage' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+    ];
+    const options = {
+        selectableRows: 'none',
+    };
 
     return (
         <Scrollbars style={{ height }}>
             <div style={styles.mainDiv}>
                 <div style={styles.headingWrapper}>
                     <h3 style={styles.h3}>
-                        <FormattedMessage id='widget.heading' defaultMessage='API ERROR PERCENTAGE' />
+                        <FormattedMessage
+                            id='widget.heading'
+                            defaultMessage='API ERROR PERCENTAGE'
+                        />
                     </h3>
                 </div>
-                { isloading ? (
+                { inProgress ? (
                     <div style={styles.inProgress}>
                         <CircularProgress />
                     </div>
                 ) : (
                     <div>
-                        { sorteddata.length > 0 ? (
+                        { sortedData.length > 0 ? (
                             <div style={styles.statDiv}>
                                 <h3 style={styles.countdiv}>
-                                        Total Error Percentage :
-                                    {errorpercentage}
-                                    {' '}
-%
+                                    <FormattedMessage
+                                        id='errorrate.heading'
+                                        defaultMessage='"Total Error Percentage :'
+                                    />
+                                    {' ' + errorPercentage + '%'}
                                 </h3>
                                 <div style={styles.pieDiv}>
                                     <svg viewBox='-50 0 1000 500'>
@@ -152,9 +185,7 @@ export default function APIMApiErrorRate(props) {
                                             standalone={false}
                                             padding={50}
                                             colorScale='blue'
-                                            data={sorteddata}
-                                            x={d => d.apiName}
-                                            y={d => d.count}
+                                            data={sortedData}
                                         />
                                         <VictoryLegend
                                             standalone={false}
@@ -169,8 +200,10 @@ export default function APIMApiErrorRate(props) {
                                     </svg>
                                 </div>
                                 <div style={styles.tableDiv}>
-                                    <CustomTable
+                                    <MUIDataTable
                                         data={tableData}
+                                        columns={columns}
+                                        options={options}
                                     />
                                 </div>
                             </div>
@@ -194,8 +227,7 @@ export default function APIMApiErrorRate(props) {
                                     </Typography>
                                 </Paper>
                             </div>
-                        )
-                        }
+                        )}
                     </div>
                 )}
             </div>
@@ -207,9 +239,9 @@ APIMApiErrorRate.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
-    sorteddata: PropTypes.instanceOf(Object).isRequired,
+    sortedData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
-    errorpercentage: PropTypes.number.isRequired,
-    isloading: PropTypes.bool.isRequired,
+    errorPercentage: PropTypes.number.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

@@ -17,155 +17,166 @@
  *
  */
 
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
-import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import { FormattedMessage } from 'react-intl';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 
-
-const styles = theme => ({
-
-  root: {
-      width: '100%',
-      backgroundColor: theme.palette.type === 'light' ? '#fff' : '#162638',
-  },
-  table: {
-      minWidth: 200,
-  },
-  tableWrapper: {
-      overflowX: 'auto',
-  },
-  loadingIcon: {
-      margin: 'auto',
-      display: 'block',
-  },
-  paginationRoot: {
-      color: theme.palette.text.secondary,
-      fontSize: theme.typography.pxToRem(12),
-      '&:last-child': {
-          padding: 0,
-      },
-  },
-  paginationToolbar: {
-      height: 56,
-      minHeight: 56,
-      padding: '0 5%',
-  },
-  paginationCaption: {
-      flexShrink: 0,
-  },
-  paginationSelectRoot: {
-      marginRight: '10px',
-  },
-  paginationSelect: {
-      paddingLeft: 8,
-      paddingRight: 16,
-  },
-  paginationSelectIcon: {
-      top: 1,
-  },
-  paginationInput: {
-      color: 'inherit',
-      fontSize: 'inherit',
-      flexShrink: 0,
-  },
-  paginationMenuItem: {
-      backgroundColor: theme.palette.type === 'light' ? '#fff' : '#162638',
-  },
-  paginationActions: {
-      marginLeft: 0,
-  },
-});
-
-class ApiInfoChart extends React.Component {
-  constructor(props) {
-    super(props);
-      this.state = {
-
-      };
-    }
-
-  render() {
-    const { usageData, totalcount, classes } = this.props;
-
+/**
+ * Display Overall Api Info Chart
+ * @param {any} props @inheritDoc
+ * @returns {ReactElement} Render the Api Info Chart
+ */
+export default function ApiInfoChart(props) {
+    const { usageData, totalcount, themeName } = props;
     const theme = createMuiTheme({
-      useNextVariants: true,
-      palette: { type: 'dark' },
-      overrides: {
-        MUIDataTable: {
-          root: {
-            type: 'dark',
-          },
+        useNextVariants: true,
+        palette: { type: themeName === 'dark' ? 'dark' : 'light' },
+        overrides: {
+            MUIDataTable: {
+                root: {
+                    type: 'dark',
+                },
+            },
+            MUIDataTableHeadCell: {
+                data: {
+                    fontSize: '15px',
+                },
+            },
         },
-        MUIDataTableHeadCell: {
-          data: {
-            fontSize: '15px',
-          },
-        },
-      },
     });
 
+    /**
+     * Define colums for the table
+     */
+    const columns = [
+        {
+            name: 'apiname',
+            label: <FormattedMessage id='heading.apiname' defaultMessage='Api Name' />,
+            options: {
+                filter: true,
+                sort: true,
+            },
+        },
+        {
+            name: 'version',
+            label: <FormattedMessage id='heading.version' defaultMessage='Version' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+        {
+            name: 'resourcetemplate',
+            label: <FormattedMessage id='heading.resourcetemplate' defaultMessage='ResourceTemplate' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+        {
+            name: 'method',
+            label: <FormattedMessage id='heading.method' defaultMessage='Method' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+        {
+            name: 'totalhits',
+            label: <FormattedMessage id='heading.hits' defaultMessage='Total Hits' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+        {
+            name: 'error5XX',
+            label: <FormattedMessage id='heading.error5xx' defaultMessage='error5XX' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+        {
+            name: 'error4xx',
+            label: <FormattedMessage id='heading.error4xx' defaultMessage='error4XX' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+        {
+            name: 'averagelatency',
+            label: <FormattedMessage id='heading.avglatency' defaultMessage='Average Latency' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+        '',
+    ];
 
-    // define table columns
-    const columns = ['Api Name', 'Version', 'ResourceTemplate','Method', 'Total Hits', 'error 5XX', 'error 4XX', 'Average Latency P99', ''];
-
-    // define options for table
+    /**
+     * Define options for the table
+     */
     const options = {
-      filter: true,
-      filterType: 'dropdown',
-      expandableRows: true,
-      selectableRows: 'none',
-      isRowExpandable: (dataIndex, expandedRows) => {
-        // Prevent expand/collapse of any row if there are 4 rows expanded already (but allow those already expanded to be collapsed)
-        if (expandedRows.data.length > 0 && expandedRows.data.filter(d => d.dataIndex === dataIndex).length === 0) return false;
-        return true;
-      },
-      renderExpandableRow: (rowData) => {
-        const expandeddata = [];
-        const colSpan = 1;
-        usageData.forEach((element) => {
-          if (element[0] === rowData[0] && element[7] === rowData[1]) {
-            expandeddata.push(element);
-          }
-        });
+        filter: true,
+        filterType: 'dropdown',
+        expandableRows: true,
+        selectableRows: 'none',
+        isRowExpandable: (dataIndex, expandedRows) => {
+            if (expandedRows.data.length > 0 && expandedRows.data.filter(
+                d => d.dataIndex === dataIndex,
+            ).length === 0) return false;
+            return true;
+        },
+        renderExpandableRow: (rowData) => {
+            const expandeddata = [];
+            const colSpan = 1;
 
-      return (
-          expandeddata.map(item => (
-              <TableRow>
-                  <TableCell colSpan={colSpan} />
-                  <TableCell colSpan={colSpan} />
-                  <TableCell />
-                  <TableCell>
-                      {item[1]}
-                  </TableCell>
-                  <TableCell>
-                      {item[2]}
-                  </TableCell>
-                  <TableCell>
-                      {item[3]}
-                  </TableCell>
-                  <TableCell>
-                      {item[4]}
-                  </TableCell>
-                  <TableCell>
-                      {item[5]}
-                  </TableCell>
-                  <TableCell>
-                      {item[6]}
-                  </TableCell>
-              </TableRow>
-         ))
-      );
-      },
+            usageData.forEach((element) => {
+                if (element[0] === rowData[0] && element[7] === rowData[1]) {
+                    expandeddata.push(element);
+                }
+            });
+
+            return (
+                expandeddata.map(item => (
+                    <TableRow>
+                        <TableCell colSpan={colSpan} />
+                        <TableCell colSpan={colSpan} />
+                        <TableCell />
+                        <TableCell>
+                            {item[1]}
+                        </TableCell>
+                        <TableCell>
+                            {item[2]}
+                        </TableCell>
+                        <TableCell>
+                            {item[3]}
+                        </TableCell>
+                        <TableCell>
+                            {item[4]}
+                        </TableCell>
+                        <TableCell>
+                            {item[5]}
+                        </TableCell>
+                        <TableCell>
+                            {item[6]}
+                        </TableCell>
+                    </TableRow>
+                ))
+            );
+        },
     };
 
     return (
-        <Paper className={classes.root}>
+        <Paper>
             <MuiThemeProvider theme={theme}>
                 <MUIDataTable
                     data={totalcount}
@@ -175,13 +186,10 @@ class ApiInfoChart extends React.Component {
             </MuiThemeProvider>
         </Paper>
     );
-  }
 }
 
 ApiInfoChart.propTypes = {
     usageData: PropTypes.instanceOf(Object).isRequired,
     totalcount: PropTypes.instanceOf(Object).isRequired,
-    classes: PropTypes.instanceOf(Object).isRequired,
+    themeName: PropTypes.string.isRequired,
 };
-
-export default withStyles(styles)(ApiInfoChart);

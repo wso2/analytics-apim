@@ -1,5 +1,5 @@
 {
-    "name": "apim-api-latency",
+    "name": "apim-average-api-latency",
     "version": "1.0.0",
     "private": true,
     "dependencies": {

@@ -65,10 +65,13 @@ const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
  * @extends {Widget}
  */
 class APIMOverallAvgLatencyWidget extends Widget {
-
+    /**
+     * Creates an instance of APIMOverallAvgLatencyWidget.
+     * @param {any} props @inheritDoc
+     * @memberof APIMOverallAvgLatencyWidget
+     */
     constructor(props) {
         super(props);
-
         this.state = {
             width: this.props.width,
             height: this.props.height,
@@ -110,11 +113,11 @@ class APIMOverallAvgLatencyWidget extends Widget {
         }
 
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.assembletotalQuery = this.assembletotalQuery.bind(this);
+        this.assembleTotalQuery = this.assembleTotalQuery.bind(this);
         this.handleTotalCountReceived = this.handleTotalCountReceived.bind(this);
-        this.assemblelatencyQuery = this.assemblelatencyQuery.bind(this);
-        this.handletotallatencyreceived = this.handletotallatencyreceived.bind(this);
-        this.calculateavglatency = this.calculateavglatency.bind(this);
+        this.assembleLatencyQuery = this.assembleLatencyQuery.bind(this);
+        this.handleTotalLatencyReceived = this.handleTotalLatencyReceived.bind(this);
+        this.calculateAverageLatency = this.calculateAverageLatency.bind(this);
     }
 
     componentWillMount() {
@@ -149,9 +152,11 @@ class APIMOverallAvgLatencyWidget extends Widget {
     }
 
     /**
-     * Load locale file.
-     * @memberof APIMOverallAvgLatencyWidget
-     */
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMOverallAvgLatencyWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -166,20 +171,28 @@ class APIMOverallAvgLatencyWidget extends Widget {
         });
     }
 
-    // Set the date time range
+    /**
+     * Retrieve params from publisher - DateTimeRange
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
+     * @memberof APIMOverallAvgLatencyWidget
+   */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-            totalCount: 0,
-            latency: 0,
-            avglatency: 0,
-        }, this.assembletotalQuery);
+            inProgress: !sync,
+        }, this.assembleTotalQuery);
     }
 
-    // retreive total request count
-    assembletotalQuery() {
+    /**
+     * Formats the siddhi query
+     * @memberof APIMOverallAvgLatencyWidget
+     * */
+    assembleTotalQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
@@ -196,24 +209,29 @@ class APIMOverallAvgLatencyWidget extends Widget {
             .subscribeWidget(id, widgetName, this.handleTotalCountReceived, dataProviderConfigs);
     }
 
-    //format the data received
+    /**
+     * Formats data received from assembleTotalQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMOverallAvgLatencyWidget
+     * */
     handleTotalCountReceived(message) {
         const { data } = message;
-        console.log(data);
         const { id } = this.props;
 
-        if (data.length != 0) {
-            this.setState({ totalCount:  data, inProgress:false });
+        if (data.length !== 0) {
+            this.setState({ totalCount: data, inProgress: false });
+        } else {
+            this.setState({ totalCount: 0, inProgress: false });
         }
-        else
-            this.setState({ totalCount:  0, inProgress:false });
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assemblelatencyQuery();
+        this.assembleLatencyQuery();
     }
 
-
-    // Siddhi query to receive total errors
-    assemblelatencyQuery() {
+    /**
+     * Formats the siddhi query
+     * @memberof APIMOverallAvgLatencyWidget
+     * */
+    assembleLatencyQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
@@ -227,37 +245,42 @@ class APIMOverallAvgLatencyWidget extends Widget {
             '{{per}}': perValue,
         };
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handletotallatencyreceived, dataProviderConfigs);
+            .subscribeWidget(id, widgetName, this.handleTotalLatencyReceived, dataProviderConfigs);
     }
 
-    // format total error count received
-    handletotallatencyreceived(message) {
+    /**
+     * Formats data received from assembleLatencyQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMOverallAvgLatencyWidget
+     * */
+    handleTotalLatencyReceived(message) {
         const { data } = message;
-        console.log(data);
         const { id } = this.props;
 
-        if (data.length != 0) {
-            this.setState({ latency:  data, inProgress:false });
+        if (data.length !== 0) {
+            this.setState({ latency: data });
+        } else {
+            this.setState({ latency: 0 });
         }
-        else
-            this.setState({ latency:  0, inProgress:false });
 
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.calculateavglatency();
+        this.calculateAverageLatency();
     }
 
-    //calculate the error percentage
-    calculateavglatency() {
+    /**
+     * calculate the average Latency
+     * @memberof APIMOverallAvgLatencyWidget
+     * */
+    calculateAverageLatency() {
         const { totalCount, latency } = this.state;
         const avglatency = (latency / totalCount).toPrecision(3);
 
         if (isNaN(avglatency)) {
-            this.setState({ avglatency: 0 })
-        }else
-        this.setState({ avglatency });
+            this.setState({ avglatency: 0, inProgress: false });
+        } else {
+            this.setState({ avglatency, inProgress: false });
+        }
     }
-
-
 
     /**
      * @inheritDoc
@@ -266,14 +289,16 @@ class APIMOverallAvgLatencyWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, inProgress, timeFrom, timeTo, avglatency
+            messages, faultyProviderConf, inProgress, timeFrom, timeTo, avglatency,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiCreatedProps = { themeName, avglatency, timeFrom, timeTo };
+        const apiCreatedProps = {
+            themeName, avglatency, timeFrom, timeTo,
+        };
 
         if (inProgress) {
             return (
@@ -283,13 +308,22 @@ class APIMOverallAvgLatencyWidget extends Widget {
             );
         }
         return (
-            <IntlProvider locale={language} messages={messages}>
+            <IntlProvider
+                locale={language}
+                messages={messages}
+            >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
                             <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
+                                <Paper
+                                    elevation={1}
+                                    style={paper}
+                                >
+                                    <Typography
+                                        variant='h5'
+                                        component='h3'
+                                    >
                                         <FormattedMessage
                                             id='config.error.heading'
                                             defaultMessage='Configuration Error !'
@@ -298,14 +332,16 @@ class APIMOverallAvgLatencyWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                            + 'Created widget'}
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Overall Avg Latency Widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMOverallAvgLatency {...apiCreatedProps} />
+                            <APIMOverallAvgLatency
+                                {...apiCreatedProps}
+                            />
                         )
                     }
                 </MuiThemeProvider>

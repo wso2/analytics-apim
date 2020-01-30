@@ -72,7 +72,6 @@ class APIMTotalErrorCountWidget extends Widget {
      */
     constructor(props) {
         super(props);
-
         this.state = {
             width: this.props.width,
             height: this.props.height,
@@ -112,7 +111,7 @@ class APIMTotalErrorCountWidget extends Widget {
         }
 
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.assembletotalQuery = this.assembletotalQuery.bind(this);
+        this.assembleTotalQuery = this.assembleTotalQuery.bind(this);
         this.handleTotalCountReceived = this.handleTotalCountReceived.bind(this);
     }
 
@@ -148,9 +147,11 @@ class APIMTotalErrorCountWidget extends Widget {
     }
 
     /**
-     * Load locale file.
-     * @memberof APIMTotalErrorCountWidget
-     */
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMTotalErrorCountWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -165,28 +166,35 @@ class APIMTotalErrorCountWidget extends Widget {
         });
     }
 
-    // Set the date time range
+    /**
+     * Retrieve params from publisher - DateTimeRange
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
+     * @memberof APIMTotalErrorCountWidget
+     */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-            totalCount: 0,
-        }, this.assembletotalQuery);
+            inProgress: !sync,
+        }, this.assembleTotalQuery);
     }
 
     /**
      * Formats the siddhi query
      * @memberof APIMTotalErrorCountWidget
      * */
-    assembletotalQuery() {
+    assembleTotalQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'totalerrorcountquery';
+        dataProviderConfigs.configs.config.queryData.queryName = 'totalErrorCountQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
@@ -197,7 +205,7 @@ class APIMTotalErrorCountWidget extends Widget {
     }
 
     /**
-     * Formats data received from assembletotalQuery
+     * Formats data received from assembleTotalQuery
      * @param {object} message - data retrieved
      * @memberof APIMTotalErrorCountWidget
      * */
@@ -205,30 +213,31 @@ class APIMTotalErrorCountWidget extends Widget {
         const { data } = message;
         const { id } = this.props;
 
-        if (data.length != 0) {
-            this.setState({ totalCount:  data, inProgress:false });
+        if (data.length !== 0) {
+            this.setState({ totalCount: data, inProgress: false });
+        } else {
+            this.setState({ totalCount: 0, inProgress: false }); 
         }
-        else
-            this.setState({ totalCount:  0, inProgress:false });
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
-
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Api Created widget
+     * @returns {ReactElement} Render the APIM Error Count Widget
      * @memberof APIMTotalErrorCountWidget
      */
     render() {
         const {
-            messages, faultyProviderConf, totalCount, inProgress, timeFrom, timeTo
+            messages, faultyProviderConf, totalCount, inProgress, timeFrom, timeTo,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiCreatedProps = { themeName, totalCount, timeFrom, timeTo };
+        const apiCreatedProps = {
+            themeName, totalCount, timeFrom, timeTo,
+        };
 
         if (inProgress) {
             return (
@@ -238,13 +247,22 @@ class APIMTotalErrorCountWidget extends Widget {
             );
         }
         return (
-            <IntlProvider locale={language} messages={messages}>
+            <IntlProvider
+                locale={language}
+                messages={messages}
+            >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
                             <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
+                                <Paper
+                                    elevation={1}
+                                    style={paper}
+                                >
+                                    <Typography
+                                        variant='h5'
+                                        component='h3'
+                                    >
                                         <FormattedMessage
                                             id='config.error.heading'
                                             defaultMessage='Configuration Error !'
@@ -253,14 +271,16 @@ class APIMTotalErrorCountWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                            + 'Created widget'}
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Total Error Count Widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMTotalErrorCount {...apiCreatedProps} />
+                            <APIMTotalErrorCount
+                                {...apiCreatedProps}
+                            />
                         )
                     }
                 </MuiThemeProvider>

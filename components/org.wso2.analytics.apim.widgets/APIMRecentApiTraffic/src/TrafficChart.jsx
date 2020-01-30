@@ -19,87 +19,76 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import { VictoryBar, VictoryChart, VictoryAxis } from 'victory';
 
-
-const styles = ({
-    victorybar: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        data: { fill: 'rgb(0, 107, 201)', width: 5 },
-    },
-    victoryaxis: {
-        axisLabel: {
-            padding: 30,
-            fill: '#ffffff',
-            fontSize: '8px',
+/**
+ * Display API Traffic details
+ * @param {any} props @inheritDoc
+ * @returns {ReactElement} Render the Apim Recent Api Traffic widget body
+ */
+export default function TrafficChart(props) {
+    const { data, themeName } = props;
+    const styles = {
+        victorybar: {
+            display: 'flex',
+            flexWrap: 'wrap',
+            data: { fill: 'rgb(0, 107, 201)', width: 5 },
         },
-    },
-});
-
-
-// theme for the chart
-const chartTheme = {
-    axis: {
-        style: {
-            tickLabels: {
-                // this changed the color of my numbers to white
-                fill: 'white',
+        victoryaxis: {
+            axisLabel: {
+                padding: 30,
+                fill: themeName === 'dark' ? '#fff' : '#02212f',
                 fontSize: '8px',
-                angle: 45,
             },
-            grid: { stroke: 'none' },
         },
-    },
-};
+    };
 
+    const chartTheme = {
+        axis: {
+            style: {
+                tickLabels: {
+                    fill: themeName === 'dark' ? '#fff' : '#02212f',
+                    fontSize: '8px',
+                    angle: 45,
+                },
+                grid: { stroke: 'none' },
+            },
+        },
+    };
 
-class TrafficChart extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-        };
-    }
-
-    render() {
-        const { data } = this.props;
-        return (
-            <VictoryChart
-                theme={chartTheme}
-                domainPadding={{ x: 30 }}
-                maxDomain={{ x: 5 }}
-                height={245}
-            >
-                <VictoryBar
-                    barWidth={6}
-                    cornerRadius={{ topRight: 5 }}
-                    style={styles.victorybar}
-                    animate={{
-                        duration: 1000,
-                        onLoad: { duration: 500 },
-                    }}
-                    data={data}
-                    x='API'
-                    y='Traffic'
-                />
-                <VictoryAxis
-                    label='API Name'
-                    style={styles.victoryaxis}
-                />
-                <VictoryAxis
-                    dependentAxis
-                    label='Total Traffic'
-                    style={styles.victoryaxis}
-                />
-            </VictoryChart>
-        );
-    }
+    return (
+        <VictoryChart
+            theme={chartTheme}
+            domainPadding={{ x: 30 }}
+            maxDomain={{ x: 5 }}
+            height={245}
+        >
+            <VictoryBar
+                barWidth={6}
+                cornerRadius={{ topRight: 5 }}
+                style={styles.victorybar}
+                animate={{
+                    duration: 1000,
+                    onLoad: { duration: 500 },
+                }}
+                data={data}
+                x='API'
+                y='Traffic'
+            />
+            <VictoryAxis
+                label='Api Name'
+                style={styles.victoryaxis}
+            />
+            <VictoryAxis
+                dependentAxis
+                label='Total Traffic'
+                style={styles.victoryaxis}
+            />
+        </VictoryChart>
+    );
 }
 
 TrafficChart.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
+    themeName: PropTypes.string.isRequired,
 };
-
-export default withStyles(styles)(TrafficChart);

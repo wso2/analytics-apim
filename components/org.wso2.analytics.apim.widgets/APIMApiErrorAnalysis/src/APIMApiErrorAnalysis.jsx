@@ -40,19 +40,18 @@ import Radio from '@material-ui/core/Radio';
 /**
  * React Component for APIM Api Error Analysis body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Api Latency Time widget body
+ * @returns {ReactElement} Render the APIM Api Error Analysis widget body
  */
 export default function APIMApiErrorAnalysis(props) {
     const {
         themeName, queryParam, height, apiSelected, inProgress,
-        apiVersion, resultdata, apilist, versionlist, resourceList, apiSelectedHandleChange,
+        apiVersion, resultData, apiList, versionList, resourceList, apiSelectedHandleChange,
         apiVersionHandleChange, apiOperationHandleChange, apiResourceHandleChange,
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '97%',
+            width: '96%',
         },
         formWrapper: {
             width: '100%',
@@ -82,11 +81,12 @@ export default function APIMApiErrorAnalysis(props) {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '100%',
             padding: '4%',
             border: '1.5px solid #fff',
-            marginTop: '5%',
+            marginTop: '20%',
         },
         loadingIcon: {
             margin: 'auto',
@@ -114,18 +114,32 @@ export default function APIMApiErrorAnalysis(props) {
             fontsize: '1px',
             fontWeight: 50,
         },
+        heading: {
+            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+            paddingBottom: '10px',
+            margin: 'auto',
+            marginTop: 0,
+            textAlign: 'left',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        },
+        mainDiv: {
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            height,
+            margin: '10px',
+            padding: '20px',
+        },
+        chart: {
+            height: 450,
+            width: 800,
+            marginLeft: '25px',
+            marginTop: '10px',
+        },
+        legandDataHeading: {
+            textAlign: 'right',
+            fontSize: '12px',
+        },
     };
-
-    // Check whether the API is graphQL.
-    // Evaluated by checking the method of the first resource.
-    let isGraphQL;
-    if (resourceList.length > 0) {
-        const resFormat = resourceList[0].split(' (');
-        const method = resFormat[1].replace(')', '');
-        isGraphQL = (method === 'QUERY' || method === 'MUTATION' || method === 'SUBSCRIPTION');
-    }
-
-
     const ordinalDataChart = {
         x: 'Time',
         charts: [
@@ -142,51 +156,58 @@ export default function APIMApiErrorAnalysis(props) {
             barWidth: 5,
         },
     };
-
     const ordinalMetadata = {
         names: ['Time', 'Hits', 'responseCode'],
         types: ['ordinal', 'linear', 'ordinal'],
     };
 
 
+    /**
+     * Check whether the API is graphQL.
+     * Evaluated by checking the method of the first resource.
+     */
+    let isGraphQL;
+    if (resourceList.length > 0) {
+        const resFormat = resourceList[0].split(' (');
+        const method = resFormat[1].replace(')', '');
+        isGraphQL = (method === 'QUERY' || method === 'MUTATION' || method === 'SUBSCRIPTION');
+    }
+
     return (
-        <Scrollbars
-            style={{ height }}
-        >
-            <div
-                style={{
-                    padding: '3% 3%',
-                }}
-            >
+        <Scrollbars style={{ height }}>
+            <div style={styles.mainDiv}>
                 <div style={styles.headingWrapper}>
-                    <div style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        width: '40%',
-                        paddingBottom: '15px',
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                    >
-                        <FormattedMessage id='widget.heading' defaultMessage='API ERROR ANALYSIS' />
+                    <div style={styles.heading}>
+                        <FormattedMessage
+                            id='widget.heading'
+                            defaultMessage='API ERROR ANALYSIS'
+                        />
                     </div>
                 </div>
                 <div style={styles.formWrapper}>
                     <form style={styles.form}>
                         <FormControl style={styles.formControl}>
                             <InputLabel shrink htmlFor='apiSelected-label-placeholder'>
-                                <FormattedMessage id='apiName.label' defaultMessage='API Name' />
+                                <FormattedMessage
+                                    id='apiName.label'
+                                    defaultMessage='API Name'
+                                />
                             </InputLabel>
                             <Select
                                 value={apiSelected}
                                 onChange={apiSelectedHandleChange}
-                                input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
+                                input={(
+                                    <Input
+                                        name='apiSelected'
+                                        id='apiSelected-label-placeholder'
+                                    />
+                                )}
                                 displayEmpty
                                 name='apiSelected'
                                 style={styles.selectEmpty}
                             >
                                 {
-                                    apilist.map(option => (
+                                    apiList.map(option => (
                                         <MenuItem key={option} value={option}>
                                             {option}
                                         </MenuItem>
@@ -196,18 +217,26 @@ export default function APIMApiErrorAnalysis(props) {
                         </FormControl>
                         <FormControl style={styles.formControl}>
                             <InputLabel shrink htmlFor='apiVersion-label-placeholder'>
-                                <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
+                                <FormattedMessage
+                                    id='apiVersion.label'
+                                    defaultMessage='API Version'
+                                />
                             </InputLabel>
                             <Select
                                 value={apiVersion}
                                 onChange={apiVersionHandleChange}
-                                input={<Input name='apiVersion' id='apiVersion-label-placeholder' />}
+                                input={(
+                                    <Input
+                                        name='apiVersion'
+                                        id='apiVersion-label-placeholder'
+                                    />
+                                )}
                                 displayEmpty
                                 name='apiVersion'
                                 style={styles.selectEmpty}
                             >
                                 {
-                                    versionlist.map(option => (
+                                    versionList.map(option => (
                                         <MenuItem key={option} value={option}>
                                             {option}
                                         </MenuItem>
@@ -215,10 +244,15 @@ export default function APIMApiErrorAnalysis(props) {
                                 }
                             </Select>
                         </FormControl>
-                        <FormControl component='fieldset' style={styles.formControl}>
+                        <FormControl
+                            component='fieldset'
+                            style={styles.formControl}
+                        >
                             <FormLabel component='legend'>
-                                {/* <FormattedMessage id='resources.label' defaultMessage='Resources' /> */}
-                                Resources
+                                <FormattedMessage
+                                    id='resources.label'
+                                    defaultMessage='Resources'
+                                />
                             </FormLabel>
                             {
                                 isGraphQL ? (
@@ -228,7 +262,9 @@ export default function APIMApiErrorAnalysis(props) {
                                                 <FormControlLabel
                                                     control={(
                                                         <Checkbox
-                                                            checked={queryParam.operationSelected.includes(option.toString())}
+                                                            checked={
+                                                                queryParam.operationSelected.includes(option.toString())
+                                                            }
                                                             onChange={apiOperationHandleChange}
                                                             value={option.toString()}
                                                         />
@@ -245,7 +281,9 @@ export default function APIMApiErrorAnalysis(props) {
                                                 <FormControlLabel
                                                     control={(
                                                         <Radio
-                                                            checked={queryParam.resourceSelected.includes(option.toString())}
+                                                            checked={
+                                                                queryParam.resourceSelected.includes(option.toString())
+                                                            }
                                                             onChange={apiResourceHandleChange}
                                                             value={option.toString()}
                                                         />
@@ -265,13 +303,16 @@ export default function APIMApiErrorAnalysis(props) {
                             </div>
                         ) : (
                             <div>
-                                { !resultdata || resultdata.length === 0 ? (
+                                { !resultData || resultData.length === 0 ? (
                                     <div style={styles.paperWrapper}>
                                         <Paper
                                             elevation={1}
                                             style={styles.paper}
                                         >
-                                            <Typography variant='h5' component='h3'>
+                                            <Typography
+                                                variant='h5'
+                                                component='h3'
+                                            >
                                                 <FormattedMessage
                                                     id='nodata.error.heading'
                                                     defaultMessage='No Data Available !'
@@ -288,22 +329,18 @@ export default function APIMApiErrorAnalysis(props) {
                                 ) : (
                                     <div style={styles.dataWrapper}>
                                         <div>
-                                            <div style={{ height: 450, width: 800, marginLeft: '25px' }}>
-                                                <p style={{ textAlign: 'right', fontSize: '12px' }}>
-                                                    Response codes of the API
-                                                    {' '}
-
+                                            <div style={styles.chart}>
+                                                <p style={styles.legandDataHeading}>
+                                                    <FormattedMessage
+                                                        id='legandData.heading'
+                                                        defaultMessage='Response codes of the API'
+                                                    />
                                                 </p>
                                                 <VizG
-
                                                     config={ordinalDataChart}
                                                     metadata={ordinalMetadata}
-                                                    data={resultdata}
+                                                    data={resultData}
                                                 />
-                                            </div>
-                                            <div>
-                                                <br />
-                                                <br />
                                             </div>
                                         </div>
                                     </div>
@@ -323,10 +360,10 @@ APIMApiErrorAnalysis.propTypes = {
     height: PropTypes.string.isRequired,
     apiSelected: PropTypes.string.isRequired,
     apiVersion: PropTypes.string.isRequired,
-    apilist: PropTypes.instanceOf(Object).isRequired,
-    versionlist: PropTypes.instanceOf(Object).isRequired,
+    apiList: PropTypes.instanceOf(Object).isRequired,
+    versionList: PropTypes.instanceOf(Object).isRequired,
     resourceList: PropTypes.instanceOf(Object).isRequired,
-    resultdata: PropTypes.instanceOf(Object).isRequired,
+    resultData: PropTypes.instanceOf(Object).isRequired,
     apiSelectedHandleChange: PropTypes.func.isRequired,
     apiVersionHandleChange: PropTypes.func.isRequired,
     apiOperationHandleChange: PropTypes.func.isRequired,

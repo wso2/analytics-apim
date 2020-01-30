@@ -12,7 +12,7 @@
         "config" : {
           "datasourceName": "APIM_ANALYTICS_DB",
           "queryData" : {
-            "alert": "select apiName, count(apiName) as counts, apiVersion from {{tableName}} WHERE {{Domain}} = '{{tenantDomain}}' AND alertTimestamp between '{{from}}' and '{{to}}' group by apiName, apiVersion"
+            "alert": "select apiName, count(apiName) as counts, apiVersion from {{tableName}} WHERE {{Domain}} = '{{tenantDomain}}' AND alertTimestamp between '{{from}}L' and '{{to}}L' group by apiName, apiVersion"
           },
           "tableName": "{{tableName}}",
           "incrementalColumn": "{{incrementalColumn}}",

@@ -1,7 +1,8 @@
 {
   "latency": "MS",
+  "to": "TO",
   "config.error.heading": "Configuration Error !",
-  "config.error.body": "Cannot fetch provider configuration for APIM Api Created widget",
+  "config.error.body": "Cannot fetch provider configuration for APIM Overall Average Latency Widget",
   "widget.heading": "OVERALL AVERAGE LATENCY",
-  "within.week.text": "REQUESTS WITHIN ALL TIME"
+  "within.text": "WITHIN"
 }

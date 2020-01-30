@@ -22,16 +22,17 @@ import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Scrollbars } from 'react-custom-scrollbars';
 import AppBar from './AppBar';
-import DetailBar from './DetailBar';
 import Trafficchart from './Trafficchart';
 import LatencyChart from './LatencyChart';
 import ErrorDetailChart from './ErrorDetailChart';
 import ErrorAnalysisChart from './ErrorAnalysisChart';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Scrollbars } from 'react-custom-scrollbars';
-
-
+import TotalReqcount from './TotalReqcount';
+import TotalErrorcount from './TotalErrorcount';
+import TotalErrorRatecount from './TotalErrorRatecount';
+import TotalLatencycount from './TotalLatencycount';
 
 /**
  * React Component for APIM Single Api Stats widget body
@@ -39,14 +40,18 @@ import { Scrollbars } from 'react-custom-scrollbars';
  * @returns {ReactElement} Render the APIM Single Api Stats widget body
  */
 export default function APIMSingleApiStats(props) {
-    const {themeName, height, usageData, data, apiname, totalreqcount, trafficdata, latencydata, totallatencycount, totalerrorcount, errordata, avglatency, formatederrorpercentage, sorteddata, timeFrom, timeTo, apiVersion, apiList, apiSelected, apiSelectedHandleChange, isloading} = props;
+    const {
+        themeName, height, apiname, totalRequestCount, trafficData, latencyData,
+        totalErrorCount, errorData, averageLatency, formattedErrorPercentage, sortedData, timeFrom,
+        timeTo, apiVersion, apiList, apiSelected, apiSelectedHandleChange, inProgress,
+    } = props;
 
     const styles = {
         mainDiv: {
             backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
             height,
-            margin: '10px',
-            padding: '20px',
+            margin: '5x',
+            padding: '5px',
         },
         inProgress: {
             display: 'flex',
@@ -62,69 +67,113 @@ export default function APIMSingleApiStats(props) {
             borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid',
-            marginLeft:'5%',
+            margin: 'auto',
             marginTop: '5%',
+            border: '1.5px solid',
         },
         chart: {
-            width: '50%', 
+            width: '50%',
             float: 'left',
         },
-    }
+        divdata: {
+            width: '25%',
+            float: 'left',
+        },
+    };
+
     return (
-        <Scrollbars style={{height}}>
-            <div>
-                { isloading ? (
-                     <div style={styles.inProgress}>
+        <Scrollbars style={{ height }}>
+            <div style={styles.mainDiv}>
+                { inProgress ? (
+                    <div style={styles.inProgress}>
                         <CircularProgress />
                     </div>
                 ) : (
                     <div>
                         {apiList.length > 0 ? (
                             <div>
-                            <AppBar apiname={apiname} apiVersion={apiVersion} apiList={apiList} apiSelected={apiSelected} apiSelectedHandleChange={apiSelectedHandleChange}/>
-                            <DetailBar totalreqcount={totalreqcount} totalerrorcount={totalerrorcount} avglatency={avglatency} formatederrorpercentage={formatederrorpercentage} timeFrom={timeFrom} timeTo={timeTo} totallatencycount={totallatencycount}/>
-                            <div style={styles.chart}>
-                            <Trafficchart trafficdata={trafficdata}/>
+                                <AppBar
+                                    apiname={apiname}
+                                    apiVersion={apiVersion}
+                                    apiList={apiList}
+                                    apiSelected={apiSelected}
+                                    apiSelectedHandleChange={apiSelectedHandleChange}
+                                />
+                                <div>
+                                    <div style={styles.divdata}>
+                                        <TotalReqcount
+                                            totalRequestCount={totalRequestCount}
+                                            timeFrom={timeFrom}
+                                            timeTo={timeTo}
+                                        />
+                                    </div>
+                                    <div style={styles.divdata}>
+                                        <TotalErrorcount
+                                            totalErrorCount={totalErrorCount}
+                                            timeFrom={timeFrom}
+                                            timeTo={timeTo}
+                                        />
+                                    </div>
+                                    <div style={styles.divdata}>
+                                        <TotalErrorRatecount
+                                            formattedErrorPercentage={formattedErrorPercentage}
+                                            timeFrom={timeFrom}
+                                            timeTo={timeTo}
+                                        />
+                                    </div>
+                                    <div style={styles.divdata}>
+                                        <TotalLatencycount
+                                            averageLatency={averageLatency}
+                                            timeFrom={timeFrom}
+                                            timeTo={timeTo}
+                                        />
+                                    </div>
+                                </div>
+                                <div style={styles.chart}>
+                                    <Trafficchart
+                                        trafficData={trafficData}
+                                    />
+                                </div>
+                                <div style={styles.chart}>
+                                    <LatencyChart
+                                        latencyData={latencyData}
+                                    />
+                                </div>
+                                <div style={styles.chart}>
+                                    <ErrorDetailChart
+                                        errorData={errorData}
+                                    />
+                                </div>
+                                <div style={styles.chart}>
+                                    <ErrorAnalysisChart
+                                        sortedData={sortedData}
+                                    />
+                                </div>
                             </div>
-                            <div style={styles.chart}>
-                            <LatencyChart latencydata={latencydata}/>
-                            </div>
-                            <div style={styles.chart}>
-                            <ErrorDetailChart errordata={errordata}/>
-                            </div>
-                            <div style={styles.chart}>
-                            <ErrorAnalysisChart sorteddata={sorteddata}/>
-                            </div>
-                        </div>
                         ) : (
                             <div style={styles.paperWrapper}>
-                            <Paper
-                                elevation={1}
-                                style={styles.paper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage
-                                        id='nodata.error.heading'
-                                        defaultMessage='No Data Available !'
-                                    />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='nodata.error.body'
-                                        defaultMessage='No data available for the selected options.'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                        )
-                        }
+                                <Paper
+                                    elevation={1}
+                                    style={styles.paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='nodata.error.heading'
+                                            defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options!.'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        )}
                     </div>
-                )
-
-                }
+                )}
             </div>
-
         </Scrollbars>
     );
 }
@@ -132,5 +181,21 @@ export default function APIMSingleApiStats(props) {
 APIMSingleApiStats.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    usageData: PropTypes.instanceOf(Object).isRequired,
+    errorData: PropTypes.instanceOf(Object).isRequired,
+    trafficData: PropTypes.instanceOf(Object).isRequired,
+    latencyData: PropTypes.instanceOf(Object).isRequired,
+    sortedData: PropTypes.instanceOf(Object).isRequired,
+    apiList: PropTypes.instanceOf(Object).isRequired,
+    apiSelectedHandleChange: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
+    apiSelected: PropTypes.string.isRequired,
+    apiname: PropTypes.string.isRequired,
+    totalRequestCount: PropTypes.number.isRequired,
+    totalErrorCount: PropTypes.number.isRequired,
+    averageLatency: PropTypes.number.isRequired,
+    apiVersion: PropTypes.number.isRequired,
+    formattedErrorPercentage: PropTypes.string.isRequired,
+    timeFrom: PropTypes.number.isRequired,
+    timeTo: PropTypes.number.isRequired,
+
 };

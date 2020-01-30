@@ -3,5 +3,6 @@
   "config.error.body": "Cannot fetch provider configuration for APIM Api Latency widget",
   "widget.heading": "AVERAGE LATENCY",
   "nodata.error.heading": "No Data Available!",
-  "nodata.error.body": "No data available for the selected options!"
+  "nodata.error.body": "No data available for the selected options!",
+  "limit": "Limit"
 }

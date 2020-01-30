@@ -23,7 +23,6 @@ import {
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
-import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
@@ -73,13 +72,12 @@ class APIMTotalErrorRateWidget extends Widget {
      */
     constructor(props) {
         super(props);
-
         this.state = {
             width: this.props.width,
             height: this.props.height,
             totalCount: 0,
             errorCount: 0,
-            errorpercentage: 0,
+            errorPercentage: 0,
             messages: null,
             inProgress: true,
         };
@@ -115,25 +113,24 @@ class APIMTotalErrorRateWidget extends Widget {
         }
 
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.assembletotalQuery = this.assembletotalQuery.bind(this);
+        this.assembleTotalQuery = this.assembleTotalQuery.bind(this);
         this.handleTotalCountReceived = this.handleTotalCountReceived.bind(this);
-        this.assembletotalerrorQuery = this.assembletotalerrorQuery.bind(this);
+        this.assembleTotalErrorQuery = this.assembleTotalErrorQuery.bind(this);
         this.handleTotalerrorCountReceived = this.handleTotalerrorCountReceived.bind(this);
-        this.analyzeerrorrate = this.analyzeerrorrate.bind(this);
+        this.analyzeErrorRate = this.analyzeErrorRate.bind(this);
     }
 
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch((error) => {
+            this.loadLocale().catch(() => {
                 // TODO: Show error message.
             });
         });
     }
 
     componentDidMount() {
-        const { widgetID, id } = this.props;
-        const { refreshInterval } = this.state;
+        const { widgetID } = this.props;
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -151,14 +148,15 @@ class APIMTotalErrorRateWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        const { refreshIntervalId } = this.state;
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
-     * Load locale file.
-     * @memberof APIMTotalErrorRateWidget
-     */
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMTotalErrorRateWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -173,27 +171,35 @@ class APIMTotalErrorRateWidget extends Widget {
         });
     }
 
-    // Set the date time range
+    /**
+     * Retrieve params from publisher - DateTimeRange
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
+     * @memberof APIMTotalErrorRateWidget
+     */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-            totalCount: 0,
-            errorCount: 0,
-            errorpercentage:0,
-        }, this.assembletotalQuery);
+            inProgress: !sync,
+        }, this.assembleTotalQuery);
     }
 
-    // Siddhi query to retreive the total request count
-    assembletotalQuery() {
+    /**
+     * Siddhi query to retreive the total request count
+     * @memberof APIMTotalErrorRateWidget
+     * */
+    assembleTotalQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'totalreqcountquery';
+        dataProviderConfigs.configs.config.queryData.queryName = 'totalRequestCountQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
@@ -203,29 +209,36 @@ class APIMTotalErrorRateWidget extends Widget {
             .subscribeWidget(id, widgetName, this.handleTotalCountReceived, dataProviderConfigs);
     }
 
-    //format total request count received
+    /**
+     * Formats data received from assembleTotalQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMTotalErrorRateWidget
+     * */
     handleTotalCountReceived(message) {
         const { data } = message;
         const { id } = this.props;
 
-        if (data.length != 0) {
-            this.setState({ totalCount:  data });
+        if (data.length !== 0) {
+            this.setState({ totalCount: data });
+        } else {
+            this.setState({ totalCount: 0 });
         }
-        else
-            this.setState({ totalCount:  0 });
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembletotalerrorQuery();
+        this.assembleTotalErrorQuery();
     }
 
-    // Siddhi query to receive total errors
-    assembletotalerrorQuery() {
+    /**
+     * Siddhi query to retreive total error count
+     * @memberof APIMTotalErrorRateWidget
+     * */
+    assembleTotalErrorQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'totalerrorquery';
+        dataProviderConfigs.configs.config.queryData.queryName = 'totalErrorQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
@@ -235,33 +248,39 @@ class APIMTotalErrorRateWidget extends Widget {
             .subscribeWidget(id, widgetName, this.handleTotalerrorCountReceived, dataProviderConfigs);
     }
 
-    // format total error count received
+    /**
+     * Formats data received from assembleTotalErrorQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMTotalErrorRateWidget
+     * */
     handleTotalerrorCountReceived(message) {
         const { data } = message;
-        const { totalCount } = this.state
         const { id } = this.props;
 
-        if (data.length != 0) {
-            this.setState({ errorCount:  data, inProgress:false });
+        if (data.length !== 0) {
+            this.setState({ errorCount: data, inProgress: false });
+        } else {
+            this.setState({ errorCount: 0, inProgress: false });
         }
-        else
-            this.setState({ errorCount:  0, inProgress:false });
 
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.analyzeerrorrate();
+        this.analyzeErrorRate();
     }
 
-    //calculate the error percentage
-    analyzeerrorrate() {
+    /**
+     * Calculate the error percentage
+     * @memberof APIMTotalErrorRateWidget
+     * */
+    analyzeErrorRate() {
         const { totalCount, errorCount } = this.state;
-        const errorpercentage = ((errorCount / totalCount) * 100).toPrecision(3);
+        const errorPercentage = ((errorCount / totalCount) * 100).toPrecision(3);
 
-        if (isNaN(errorpercentage)) {
-            this.setState({ errorpercentage: 0 })
-        }else
-        this.setState({ errorpercentage });
+        if (isNaN(errorPercentage)) {
+            this.setState({ errorPercentage: 0 });
+        } else {
+            this.setState({ errorPercentage });
+        }
     }
-
 
     /**
      * @inheritDoc
@@ -270,14 +289,16 @@ class APIMTotalErrorRateWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, errorpercentage, inProgress, timeFrom, timeTo
+            messages, faultyProviderConf, errorPercentage, inProgress, timeFrom, timeTo,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiCreatedProps = { themeName, errorpercentage, timeFrom, timeTo };
+        const apiCreatedProps = {
+            themeName, errorPercentage, timeFrom, timeTo,
+        };
 
         if (inProgress) {
             return (
@@ -287,13 +308,22 @@ class APIMTotalErrorRateWidget extends Widget {
             );
         }
         return (
-            <IntlProvider locale={language} messages={messages}>
+            <IntlProvider
+                locale={language}
+                messages={messages}
+            >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
                             <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
+                                <Paper
+                                    elevation={1}
+                                    style={paper}
+                                >
+                                    <Typography
+                                        variant='h5'
+                                        component='h3'
+                                    >
                                         <FormattedMessage
                                             id='config.error.heading'
                                             defaultMessage='Configuration Error !'
@@ -302,14 +332,16 @@ class APIMTotalErrorRateWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                            + 'Created widget'}
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Total Error Rate widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMTotalErrorRate {...apiCreatedProps} />
+                            <APIMTotalErrorRate
+                                {...apiCreatedProps}
+                            />
                         )
                     }
                 </MuiThemeProvider>

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -21,16 +21,17 @@ import React from 'react';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import PlayCircleFilled from '@material-ui/icons/PlayCircleFilled';
 import ApiIcon from './ApiIcon';
 
 /**
- * React Component for APIM Api Created widget body
+ * React Component for APIM Total Request Count widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Api Created Count widget body
+ * @returns {ReactElement} Render the APIM Total Request Count widget body
  */
 export default function APIMTotalRequestCount(props) {
-    const { themeName, totalCount, timeFrom, timeTo } = props;
+    const {
+        themeName, totalCount, timeFrom, timeTo,
+    } = props;
     const styles = {
         headingWrapper: {
             height: '10%',
@@ -75,7 +76,23 @@ export default function APIMTotalRequestCount(props) {
             bottom: '13%',
             right: '8%',
         },
+        h3: {
+            borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
+            paddingBottom: '10px',
+            margin: 'auto',
+            textAlign: 'left',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        },
+        h1: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontSize: '300%',
+            display: 'inline',
+            color: themeName === 'dark' ? '#fff' : '#2571a7',
+        },
     };
+
     return (
         <div
             style={{
@@ -88,17 +105,11 @@ export default function APIMTotalRequestCount(props) {
             }}
         >
             <div style={styles.headingWrapper}>
-                <h3
-                    style={{
-                        borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                >
-                    <FormattedMessage id='widget.heading' defaultMessage='TOTAL REQUEST COUNT' />
+                <h3 style={styles.h3}>
+                    <FormattedMessage
+                        id='widget.heading'
+                        defaultMessage='TOTAL REQUEST COUNT'
+                    />
                 </h3>
             </div>
             <div style={styles.iconWrapper}>
@@ -110,25 +121,57 @@ export default function APIMTotalRequestCount(props) {
                 />
             </div>
             <div style={styles.dataWrapper}>
-                <h1
-                    style={{
-                        margin: 'auto',
-                        textAlign: 'center',
-                        fontSize: '300%',
-                        display: 'inline',
-                        color: themeName === 'dark' ? '#fff' : '#2571a7',
-                    }}
-                >
+                <h1 style={styles.h1}>
                     {totalCount}
                 </h1>
                 <h3 style={styles.typeText}>
-                    {totalCount === '01' ?
-                        <FormattedMessage id='request' defaultMessage='HIT' /> :
-                        <FormattedMessage id='requests' defaultMessage='HITS' /> }
+                    {totalCount === '01'
+                        ? (
+                            <FormattedMessage
+                                id='request'
+                                defaultMessage='HIT'
+                            />
+                        )
+                        : (
+                            <FormattedMessage
+                                id='requests'
+                                defaultMessage='HITS'
+                            />
+                        ) }
                 </h3>
                 <p style={styles.reqcount}>
                     [
-                    {' '} {totalCount} {' '} {totalCount === '01' ? 'HIT' : 'HITS'} {' '} {'WITHIN'} {Moment(timeFrom).format('YYYY-MMM')} {' TO '} {Moment(timeTo).format('YYYY-MMM')} {' '}
+                    {' '}
+                    {totalCount}
+                    {' '}
+                    {totalCount === '01'
+                        ? (
+                            <FormattedMessage
+                                id='request'
+                                defaultMessage='HIT'
+                            />
+                        )
+                        : (
+                            <FormattedMessage
+                                id='requests'
+                                defaultMessage='HITS'
+                            />
+                        ) }
+                    {' '}
+                    {<FormattedMessage
+                        id='within.text'
+                        defaultMessage='WITHIN'
+                    />}
+                    {' '}
+                    {Moment(timeFrom).format('YYYY-MMM')}
+                    {' '}
+                    {<FormattedMessage
+                        id='to.text'
+                        defaultMessage='TO'
+                    />}
+                    {' '}
+                    {Moment(timeTo).format('YYYY-MMM')}
+                    {' '}
                     ]
                 </p>
             </div>
@@ -139,4 +182,6 @@ export default function APIMTotalRequestCount(props) {
 APIMTotalRequestCount.propTypes = {
     themeName: PropTypes.string.isRequired,
     totalCount: PropTypes.string.isRequired,
+    timeFrom: PropTypes.number.isRequired,
+    timeTo: PropTypes.number.isRequired,
 };

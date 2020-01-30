@@ -64,9 +64,13 @@ const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
  * @extends {Widget}
  */
 class APIMApiErrorRateWidget extends Widget {
+    /**
+     * Creates an instance of APIMApiErrorRateWidget.
+     * @param {any} props @inheritDoc
+     * @memberof APIMApiErrorRateWidget
+     */
     constructor(props) {
         super(props);
-
         this.styles = {
             paper: {
                 padding: '5%',
@@ -83,14 +87,13 @@ class APIMApiErrorRateWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             errorCount: null,
-            totalReqCount: null,
+            totalRequestCount: null,
             localeMessages: null,
-            sorteddata: null,
-            errorpercentage: null,
-            isloading: true,
+            sortedData: null,
+            errorPercentage: null,
+            inProgress: true,
             legendData: null,
             tableData: null,
-
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -103,11 +106,11 @@ class APIMApiErrorRateWidget extends Widget {
 
         this.assembleTotalRequestCount = this.assembleTotalRequestCount.bind(this);
         this.assembleTotalErrorCountQuery = this.assembleTotalErrorCountQuery.bind(this);
-        this.handleTotalReqCountReceived = this.handleTotalReqCountReceived.bind(this);
+        this.handletotalRequestCountReceived = this.handletotalRequestCountReceived.bind(this);
         this.handleTotalErrorCountReceived = this.handleTotalErrorCountReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
-        this.analyzeerrorrate = this.analyzeerrorrate.bind(this);
+        this.analyzeErrorRate = this.analyzeErrorRate.bind(this);
     }
 
     componentWillMount() {
@@ -141,8 +144,12 @@ class APIMApiErrorRateWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
-
-    // Load Locale file
+    /**
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMApiErrorRateWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -157,21 +164,27 @@ class APIMApiErrorRateWidget extends Widget {
         });
     }
 
-    // Receive parameters from date time picker
+    /**
+     * Retrieve params from publisher - DateTimeRange
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
+     * @memberof APIMApiErrorRateWidget
+   */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-            isloading: true,
-            errorCount: null,
-            totalReqCount: null,
-            sorteddata: null,
-            errorpercentage: null,
+            inProgress: !sync,
         }, this.assembleTotalErrorCountQuery);
     }
 
-    // Retrieve total error count for APIs
+    /**
+     * Retrieve total error count for APIs
+     * @memberof APIMApiErrorRateWidget
+     */
     assembleTotalErrorCountQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
@@ -185,12 +198,16 @@ class APIMApiErrorRateWidget extends Widget {
             '{{to}}': timeTo,
             '{{per}}': perValue,
         };
-        this.setState({ isloading: true });
+        this.setState({ inProgress: true });
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleTotalErrorCountReceived, dataProviderConfigs);
     }
 
-    // format the total error count received
+    /**
+     * Formats data retrieved from assembleTotalErrorCountQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMApiErrorRateWidget
+     * */
     handleTotalErrorCountReceived(message) {
         const { data } = message;
         const { id } = this.props;
@@ -199,13 +216,15 @@ class APIMApiErrorRateWidget extends Widget {
         this.assembleTotalRequestCount();
     }
 
-    // Retrieve the total request count for APIs
+    /**
+     * Retrieve the total request count for APIs
+     * @memberof APIMApiErrorRateWidget
+     */
     assembleTotalRequestCount() {
         const {
             timeFrom, timeTo, providerConfig, perValue,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
-
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'totalReqCountQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -214,88 +233,98 @@ class APIMApiErrorRateWidget extends Widget {
             '{{per}}': perValue,
         };
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleTotalReqCountReceived, dataProviderConfigs);
+            .subscribeWidget(id, widgetName, this.handletotalRequestCountReceived, dataProviderConfigs);
     }
 
-    // Format the total request count received
-    handleTotalReqCountReceived(message) {
+    /**
+     * Formats data retrieved from assembleTotalRequestCount
+     * @param {object} message - data retrieved
+     * @memberof APIMApiErrorRateWidget
+     * */
+    handletotalRequestCountReceived(message) {
         const { data } = message;
         const { id } = this.props;
-        this.setState({ totalReqCount: data });
-
+        this.setState({ totalRequestCount: data });
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.analyzeerrorrate();
+        this.analyzeErrorRate();
     }
 
-    // Calculate the error percentage
-    analyzeerrorrate() {
-        const { errorCount, totalReqCount } = this.state;
-        const sorteddata = [];
+    /**
+     * Calculate the error percentage
+     * @memberof APIMApiErrorRateWidget
+     */
+    analyzeErrorRate() {
+        const { errorCount, totalRequestCount } = this.state;
+        const sortedData = [];
         const legendData = [];
         const tableData = [];
-        let totalhits = 0;
-        let totalerrors = 0;
-        let errorpercentage = 0;
+        let totalHits = 0;
+        let totalErrors = 0;
+        let errorPercentage = 0;
 
-        totalReqCount.forEach((element) => {
-            totalhits += element[2];
-        });
+        totalHits = totalRequestCount.reduce((totalCount, dataUnit) => totalCount + dataUnit[2], 0);
+        totalErrors = errorCount.reduce((totalCount, dataUnit) => totalCount + dataUnit[2], 0);
+        errorPercentage = ((totalErrors / totalHits) * 100).toPrecision(3);
 
-        errorCount.forEach((element) => {
-            totalerrors += element[2];
-        });
-
-        errorpercentage = ((totalerrors / totalhits) * 100).toPrecision(3);
-
-        totalReqCount.forEach((dataUnit) => {
-            for (let err = 0; err < errorCount.length; err++) {
-                if (dataUnit[0] === errorCount[err][0] && dataUnit[1] === errorCount[err][1]) {
-                    const percentage = (errorCount[err][2] / dataUnit[2]) * 100;
-                    sorteddata.push({
-                        apiName: errorCount[err][0] + '(' + errorCount[err][1] + ')' + percentage.toPrecision(3) + '%',
-                        count: percentage.toPrecision(3),
+        totalRequestCount.forEach((dataUnit) => {
+            errorCount.forEach((array) => {
+                if (dataUnit[0] === array[0] && dataUnit[1] === array[1]) {
+                    const percentage = (array[2] / dataUnit[2]) * 100;
+                    sortedData.push({
+                        x: array[0] + '(' + array[1] + ')' + percentage.toPrecision(3) + '%',
+                        y: percentage,
                     });
-
                     legendData.push({
-                        name: errorCount[err][0] + '(' + errorCount[err][1] + ')',
+                        name: array[0] + '(' + array[1] + ')',
                     });
-
                     tableData.push({
-                        apiName: errorCount[err][0],
-                        version: errorCount[err][1],
+                        apiName: array[0],
+                        version: array[1],
                         count: percentage.toPrecision(3) + ' % ',
                     });
                 }
-            }
+            });
         });
 
         this.setState({
-            sorteddata, legendData, tableData, errorpercentage, isloading: false,
+            sortedData, legendData, tableData, errorPercentage, inProgress: false,
         });
     }
 
+    /**
+     * @inheritDoc
+     * @returns {ReactElement} Render the APIMApiErrorRateWidget
+     * @memberof APIMApiErrorRateWidget
+     */
     render() {
         const {
-            width, height, localeMessages, faultyProviderConf, sorteddata, errorpercentage,
-            isloading, legendData, tableData,
+            width, height, localeMessages, faultyProviderConf, sortedData, errorPercentage,
+            inProgress, legendData, tableData,
         } = this.state;
-        const {
-            paper, paperWrapper,
-        } = this.styles;
+        const { paper, paperWrapper } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiErrorRateProps = {
-            width, height, themeName, sorteddata, errorpercentage, legendData, tableData, isloading,
+            width, height, themeName, sortedData, errorPercentage, legendData, tableData, inProgress,
         };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider
+                locale={language}
+                messages={localeMessages}
+            >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
                             <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h4' component='h3'>
+                                <Paper
+                                    elevation={1}
+                                    style={paper}
+                                >
+                                    <Typography
+                                        variant='h4'
+                                        component='h3'
+                                    >
                                         <FormattedMessage
                                             id='config.error.heading'
                                             defaultMessage='Configuration Error !'
@@ -305,13 +334,15 @@ class APIMApiErrorRateWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                            + 'Created widget'}
+                                            + 'Error Rate Widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiErrorRate {...apiErrorRateProps} />
+                            <APIMApiErrorRate
+                                {...apiErrorRateProps}
+                            />
                         )
                     }
                 </MuiThemeProvider>

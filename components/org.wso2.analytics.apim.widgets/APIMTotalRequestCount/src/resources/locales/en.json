@@ -1,8 +1,10 @@
 {
   "request": "HIT",
   "requests": "HITS",
+  "within.text": "WITHIN",
   "config.error.heading": "Configuration Error !",
-  "config.error.body": "Cannot fetch provider configuration for APIM Api Created widget",
+  "config.error.body": "Cannot fetch provider configuration for APIM Total Request Count widget",
   "widget.heading": "TOTAL REQUEST COUNT",
-  "within.week.text": "REQUESTS WITHIN ALL TIME"
+  "within.week.text": "REQUESTS WITHIN ALL TIME",
+  "to.text": "TO"
 }

@@ -29,7 +29,9 @@ import ApiIcon from './ApiIcon';
  * @returns {ReactElement} Render the APIM Total Error Count widget body
  */
 export default function APIMTotalErrorCount(props) {
-    const { themeName, totalCount, timeFrom, timeTo } = props;
+    const {
+        themeName, totalCount, timeFrom, timeTo,
+    } = props;
     const styles = {
         headingWrapper: {
             height: '10%',
@@ -74,30 +76,39 @@ export default function APIMTotalErrorCount(props) {
             bottom: '13%',
             right: '8%',
         },
+        h3: {
+            borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
+            paddingBottom: '10px',
+            margin: 'auto',
+            textAlign: 'left',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        },
+        h1: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontSize: '300%',
+            display: 'inline',
+            color: themeName === 'dark' ? '#fff' : '#2571a7',
+        },
     };
     return (
         <div
-        style={{
-            width: '90%',
-            height: '85%',
-            margin: '5% 5%',
-            background: themeName === 'dark'
-                ? 'linear-gradient(to right, rgb(3, 8, 68) 0%, rgb(47, 93, 197) 46%, rgb(42, 49, 101) 100%)'
-                : '#fff',
-        }}
+            style={{
+                width: '90%',
+                height: '85%',
+                margin: '5% 5%',
+                background: themeName === 'dark'
+                    ? 'linear-gradient(to right, rgb(3, 8, 68) 0%, rgb(47, 93, 197) 46%, rgb(42, 49, 101) 100%)'
+                    : '#fff',
+            }}
         >
             <div style={styles.headingWrapper}>
-                <h3
-                    style={{
-                        borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                >
-                    <FormattedMessage id='widget.heading' defaultMessage='TOTAL REQUEST COUNT' />
+                <h3 style={styles.h3}>
+                    <FormattedMessage
+                        id='widget.heading'
+                        defaultMessage='TOTAL ERROR COUNT'
+                    />
                 </h3>
             </div>
             <div style={styles.iconWrapper}>
@@ -109,25 +120,57 @@ export default function APIMTotalErrorCount(props) {
                 />
             </div>
             <div style={styles.dataWrapper}>
-                <h1
-                    style={{
-                        margin: 'auto',
-                        textAlign: 'center',
-                        fontSize: '300%',
-                        display: 'inline',
-                        color: themeName === 'dark' ? '#fff' : '#2571a7',
-                    }}
-                >
+                <h1 style={styles.h1}>
                     {totalCount}
                 </h1>
                 <h3 style={styles.typeText}>
-                    {totalCount === '01' ?
-                        <FormattedMessage id='api' defaultMessage='ERROR' /> :
-                        <FormattedMessage id='apis' defaultMessage='ERRORS' /> }
+                    {totalCount === '01'
+                        ? (
+                            <FormattedMessage
+                                id='error.name'
+                                defaultMessage='ERROR'
+                            />
+                        )
+                        : (
+                            <FormattedMessage
+                                id='errors.name'
+                                defaultMessage='ERRORS'
+                            />
+                        ) }
                 </h3>
                 <p style={styles.errorcount}>
                     [
-                    {' '} {totalCount} {' '} {totalCount === '01' ? 'ERROR' : 'ERRORS'} {' '} {'WITHIN'} {Moment(timeFrom).format('YYYY-MMM')} {' TO '} {Moment(timeTo).format('YYYY-MMM')} {' '}
+                    {' '}
+                    {totalCount}
+                    {' '}
+                    {totalCount === '01'
+                        ? (
+                            <FormattedMessage
+                                id='error.name'
+                                defaultMessage='ERROR'
+                            />
+                        )
+                        : (
+                            <FormattedMessage
+                                id='errors.name'
+                                defaultMessage='ERRORS'
+                            />
+                        ) }
+                    {' '}
+                    {<FormattedMessage
+                        id='within.text'
+                        defaultMessage='WITHIN'
+                    />}
+                    {' '}
+                    {Moment(timeFrom).format('YYYY-MMM')}
+                    {' '}
+                    {<FormattedMessage
+                        id='to.text'
+                        defaultMessage='TO'
+                    />}
+                    {' '}
+                    {Moment(timeTo).format('YYYY-MMM')}
+                    {' '}
                     ]
                 </p>
             </div>
@@ -138,4 +181,6 @@ export default function APIMTotalErrorCount(props) {
 APIMTotalErrorCount.propTypes = {
     themeName: PropTypes.string.isRequired,
     totalCount: PropTypes.string.isRequired,
+    timeFrom: PropTypes.number.isRequired,
+    timeTo: PropTypes.number.isRequired,
 };

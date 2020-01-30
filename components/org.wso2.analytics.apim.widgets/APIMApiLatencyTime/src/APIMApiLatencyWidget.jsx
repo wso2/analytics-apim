@@ -561,8 +561,6 @@ class APIMApiLatencyWidget extends Widget {
             const queryCondition = ' AND (apiName==\'' + apiSelected + '\' AND apiVersion==\''
                 + apiVersion + '\' AND (' + resources + '))';
 
-            console.log(queryCondition);
-
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{timeFrom}}': timeFrom,
                 '{{timeTo}}': timeTo,
@@ -584,7 +582,6 @@ class APIMApiLatencyWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        console.log(data);
         if (data) {
             const {
                 apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected,

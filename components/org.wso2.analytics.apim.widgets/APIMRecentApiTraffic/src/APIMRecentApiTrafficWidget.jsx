@@ -47,16 +47,34 @@ const lightTheme = createMuiTheme({
     },
 });
 
+/**
+ * Query parameter key
+ * @type {string}
+ */
+const queryParamKey = 'recentApiTraffic';
 
+/**
+ * Language
+ * @type {string}
+ */
 const language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
 
-
+/**
+ * Language without region code
+ */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
-const queryParamKey = 'appCreators';
-
-// Create react component for the APIM Recent Api Traffic
+/**
+ * Widget to display API recent traffic
+ * @class APIMRecentApiTrafficWidget
+ * @extends {Widget}
+ */
 class APIMRecentApiTrafficWidget extends Widget {
+    /**
+     * Creates an instance of APIMRecentApiTrafficWidget.
+     * @param {any} props @inheritDoc
+     * @memberof APIMRecentApiTrafficWidget
+     */
     constructor(props) {
         super(props);
         this.styles = {
@@ -71,14 +89,13 @@ class APIMRecentApiTrafficWidget extends Widget {
             },
         };
 
-
         this.state = {
             width: this.props.width,
             height: this.props.height,
             usageData: [],
             localeMessages: null,
             limit: 5,
-            isloading: true,
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -105,7 +122,6 @@ class APIMRecentApiTrafficWidget extends Widget {
         });
     }
 
-
     componentDidMount() {
         const { widgetID } = this.props;
         super.getWidgetConfiguration(widgetID)
@@ -123,9 +139,16 @@ class APIMRecentApiTrafficWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
+    /**
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMRecentApiTrafficWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -140,21 +163,36 @@ class APIMRecentApiTrafficWidget extends Widget {
         });
     }
 
-    // Set Query Param key
+    /**
+     * set limit to the query parameter key
+     * @param {string} limit data display limit
+     * @memberof APIMRecentApiTrafficWidget
+     */
     setQueryParam(limit) {
         super.setGlobalState(queryParamKey, { limit });
     }
 
-    // Set the date time range
+    /**
+     * Retrieve params from publisher - DateTimeRange
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
+     * @memberof APIMRecentApiTrafficWidget
+    */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
+            inProgress: !sync,
         }, this.assembleApiUsageQuery);
     }
 
-    // Format the siddhi query
+    /**
+     * Retreive traffic data for APIs
+     * @memberof APIMRecentApiTrafficWidget
+     */
     assembleApiUsageQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
@@ -178,8 +216,11 @@ class APIMRecentApiTrafficWidget extends Widget {
             .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
     }
 
-
-    // format the query data
+    /**
+     * Formats data retrieved from assembleApiUsageQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMRecentApiTrafficWidget
+     * */
     handleApiUsageReceived(message) {
         const { data } = message;
         if (data) {
@@ -190,25 +231,28 @@ class APIMRecentApiTrafficWidget extends Widget {
                     API: dataUnit[0] + '(' + dataUnit[1] + ')', Traffic: dataUnit[2],
                 });
             });
-            this.setState({ usageData, isloading: false });
+            this.setState({ usageData, inProgress: false });
         }
     }
 
-    // Handle on change of limit
+    /**
+     * Handle API Data display limit
+     * @param {Event} event - listened event
+     * @memberof APIMRecentApiTrafficWidget
+     * */
     handleLimitChange(event) {
         const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ isloading: false, limit });
+            this.setState({ inProgress: false, limit });
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleApiUsageQuery();
         } else {
             this.setState({ limit });
         }
     }
-
 
     /**
      * @inheritDoc
@@ -217,7 +261,7 @@ class APIMRecentApiTrafficWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, usageData, isloading, limit,
+            localeMessages, faultyProviderConfig, height, usageData, inProgress, limit,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -225,17 +269,28 @@ class APIMRecentApiTrafficWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
-            themeName, height, usageData, limit, isloading,
+            themeName, height, usageData, limit, inProgress,
         };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
-                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+            <IntlProvider
+                locale={language}
+                messages={localeMessages}
+            >
+                <MuiThemeProvider
+                    theme={themeName === 'dark' ? darkTheme : lightTheme}
+                >
                     {
                         faultyProviderConfig ? (
                             <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
+                                <Paper
+                                    elevation={1}
+                                    style={paper}
+                                >
+                                    <Typography
+                                        variant='h5'
+                                        component='h3'
+                                    >
                                         <FormattedMessage
                                             id='config.error.heading'
                                             defaultMessage='Configuration Error !'

@@ -3,6 +3,9 @@
   "config.error.body": "Cannot fetch provider configuration for APIM Api Alerts widget",
   "widget.heading": "API ALERTS",
   "nodata.error.heading": "No Data Available!",
-  "nodata.error.body": "No data available for the selected options!"
-  
+  "nodata.error.body": "No data available for the selected options!",
+  "alerts.heading":"Total Alerts",
+  "name.column":"Api Name",
+  "version.column":"Version",
+  "alerts.column":"Alerts"
 }

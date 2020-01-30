@@ -29,7 +29,9 @@ import ApiIcon from './ApiIcon';
  * @returns {ReactElement} Render the APIM Error Rate widget body
  */
 export default function APIMTotalErrorRate(props) {
-    const { themeName, errorpercentage, timeFrom, timeTo } = props;
+    const {
+        themeName, errorPercentage, timeFrom, timeTo,
+    } = props;
     const styles = {
         headingWrapper: {
             height: '10%',
@@ -74,7 +76,23 @@ export default function APIMTotalErrorRate(props) {
             bottom: '13%',
             right: '8%',
         },
+        h3: {
+            borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
+            paddingBottom: '10px',
+            margin: 'auto',
+            textAlign: 'left',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        },
+        h1: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontSize: '300%',
+            display: 'inline',
+            color: themeName === 'dark' ? '#fff' : '#2571a7',
+        },
     };
+
     return (
         <div
             style={{
@@ -87,17 +105,11 @@ export default function APIMTotalErrorRate(props) {
             }}
         >
             <div style={styles.headingWrapper}>
-                <h3
-                    style={{
-                        borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                >
-                    <FormattedMessage id='widget.heading' defaultMessage='TOTAL ERROR PERCECNTAGE' />
+                <h3 style={styles.h3}>
+                    <FormattedMessage
+                        id='widget.heading'
+                        defaultMessage='TOTAL ERROR PERCECNTAGE'
+                    />
                 </h3>
             </div>
             <div style={styles.iconWrapper}>
@@ -109,23 +121,33 @@ export default function APIMTotalErrorRate(props) {
                 />
             </div>
             <div style={styles.dataWrapper}>
-                <h1
-                    style={{
-                        margin: 'auto',
-                        textAlign: 'center',
-                        fontSize: '300%',
-                        display: 'inline',
-                        color: themeName === 'dark' ? '#fff' : '#2571a7',
-                    }}
-                >
-                    {errorpercentage}
+                <h1 style={styles.h1}>
+                    {errorPercentage}
                 </h1>
                 <h3 style={styles.typeText}>
-                        <FormattedMessage id='error' defaultMessage='%' /> 
+                     %
                 </h3>
                 <p style={styles.errorcount}>
                     [
-                    {' '} {errorpercentage} {' '} {'%'} {'ERRORS'} {' '} {'WITHIN'} {Moment(timeFrom).format('YYYY-MMM')} {' TO '} {Moment(timeTo).format('YYYY-MMM')} {' '}
+                    {' '}
+                    {errorPercentage}
+                    {' '}
+                    {'%'}
+                    {' '}
+                    {<FormattedMessage
+                        id='within.text'
+                        defaultMessage='WITHIN'
+                    />}
+                    {' '}
+                    {Moment(timeFrom).format('YYYY-MMM')}
+                    {' '}
+                    {<FormattedMessage
+                        id='to.text'
+                        defaultMessage='TO'
+                    />}
+                    {' '}
+                    {Moment(timeTo).format('YYYY-MMM')}
+                    {' '}
                     ]
                 </p>
             </div>
@@ -135,5 +157,7 @@ export default function APIMTotalErrorRate(props) {
 
 APIMTotalErrorRate.propTypes = {
     themeName: PropTypes.string.isRequired,
-    totalCount: PropTypes.string.isRequired,
+    errorPercentage: PropTypes.number.isRequired,
+    timeFrom: PropTypes.number.isRequired,
+    timeTo: PropTypes.number.isRequired,
 };

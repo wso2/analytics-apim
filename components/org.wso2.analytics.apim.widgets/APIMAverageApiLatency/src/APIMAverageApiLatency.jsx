@@ -28,17 +28,29 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import TrafficChart from './TrafficChart';
+import { VictoryBar, VictoryChart, VictoryAxis } from 'victory';
 
 /**
- * React Component for Recent Api Traffic widget body
+ * React Component for Api Latency widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Recent Api Traffic widget body
+ * @returns {ReactElement} Render the Api Latency widget body
  */
-export default function APIMRecentApiTraffic(props) {
+export default function APIMAverageApiLatency(props) {
     const {
-        themeName, usageData, handleLimitChange, limit, height, inProgress,
+        themeName, latancyData, handleLimitChange, limit, height, inProgress,
     } = props;
+    const chartTheme = {
+        axis: {
+            style: {
+                tickLabels: {
+                    fill: themeName === 'dark' ? '#fff' : '#02212f',
+                    fontSize: '8px',
+                    angle: 45,
+                },
+                grid: { stroke: 'none' },
+            },
+        },
+    };
     const styles = {
         headingWrapper: {
             margin: 'auto',
@@ -88,6 +100,18 @@ export default function APIMRecentApiTraffic(props) {
             display: 'block',
             overflow: 'hidden',
         },
+        victorybar: {
+            display: 'flex',
+            flexWrap: 'wrap',
+            data: { fill: 'rgb(0, 107, 201)', width: 5 },
+        },
+        victoryaxis: {
+            axisLabel: {
+                padding: 30,
+                fill: themeName === 'dark' ? '#fff' : '#02212f',
+                fontSize: '8px',
+            },
+        },
     };
 
     return (
@@ -97,7 +121,7 @@ export default function APIMRecentApiTraffic(props) {
                     <h3 style={styles.h3}>
                         <FormattedMessage
                             id='widget.heading'
-                            defaultMessage='TOTAL TRAFFIC'
+                            defaultMessage='AVERAGE LAATENCY'
                         />
                     </h3>
                 </div>
@@ -107,12 +131,17 @@ export default function APIMRecentApiTraffic(props) {
                     </div>
                 ) : (
                     <div>
-                        { usageData.length !== 0 ? (
+                        { latancyData.length !== 0 ? (
                             <div>
                                 <FormControl style={styles.formControl}>
                                     <Tooltip
                                         placement='top'
-                                        title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                        title={(
+                                            <FormattedMessage
+                                                id='limit'
+                                                defaultMessage='Limit :'
+                                            />
+                                        )}
                                     >
                                         <InputLabel
                                             shrink
@@ -134,10 +163,34 @@ export default function APIMRecentApiTraffic(props) {
                                     />
                                 </FormControl>
                                 <div style={styles.dataWrapper}>
-                                    <TrafficChart
-                                        data={usageData}
-                                        themeName={themeName}
-                                    />
+                                    <VictoryChart
+                                        theme={chartTheme}
+                                        domainPadding={{ x: 30 }}
+                                        maxDomain={{ x: 5 }}
+                                        height={245}
+                                    >
+                                        <VictoryBar
+                                            barWidth={6}
+                                            cornerRadius={{ topRight: 5 }}
+                                            style={styles.victorybar}
+                                            animate={{
+                                                duration: 1000,
+                                                onLoad: { duration: 500 },
+                                            }}
+                                            data={latancyData}
+                                            x='ApiName'
+                                            y='AvgLatency'
+                                        />
+                                        <VictoryAxis
+                                            label='Api Name'
+                                            style={styles.victoryaxis}
+                                        />
+                                        <VictoryAxis
+                                            dependentAxis
+                                            label='Average Latency (ms)'
+                                            style={styles.victoryaxis}
+                                        />
+                                    </VictoryChart>
                                 </div>
                             </div>
                         ) : (
@@ -146,10 +199,7 @@ export default function APIMRecentApiTraffic(props) {
                                     elevation={1}
                                     style={styles.paper}
                                 >
-                                    <Typography
-                                        variant='h5'
-                                        component='h3'
-                                    >
+                                    <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='nodata.error.heading'
                                             defaultMessage='No Data Available !'
@@ -171,11 +221,11 @@ export default function APIMRecentApiTraffic(props) {
     );
 }
 
-APIMRecentApiTraffic.propTypes = {
+APIMAverageApiLatency.propTypes = {
     themeName: PropTypes.string.isRequired,
-    usageData: PropTypes.instanceOf(Object).isRequired,
+    height: PropTypes.string.isRequired,
+    latancyData: PropTypes.instanceOf(Object).isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     limit: PropTypes.string.isRequired,
     inProgress: PropTypes.bool.isRequired,
-    height: PropTypes.number.isRequired,
 };

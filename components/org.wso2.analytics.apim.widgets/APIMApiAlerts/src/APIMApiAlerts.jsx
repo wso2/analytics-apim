@@ -25,7 +25,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
-import CustomTable from './CustomTable'
+import MUIDataTable from 'mui-datatables';
 
 /**
  * Display API Alerts details
@@ -34,7 +34,7 @@ import CustomTable from './CustomTable'
  */
 export default function APIMApiAlerts(props) {
     const {
-        themeName, finaldataset, width, height, isloading,legandDataSet,tableDataSet,totalcount 
+        themeName, finalDataSet, width, height, inProgress, legandDataSet, tableDataSet, totalCount,
     } = props;
     const styles = {
         headingWrapper: {
@@ -50,7 +50,7 @@ export default function APIMApiAlerts(props) {
             width: '75%',
             padding: '4%',
             border: '1.5px solid',
-            marginLeft:'5%',
+            marginLeft: '5%',
             marginTop: '5%',
         },
         inProgress: {
@@ -110,7 +110,36 @@ export default function APIMApiAlerts(props) {
             width: '95%',
             paddingTop: '20px',
             fontWeight: 'normal',
-        }
+        },
+    };
+    const columns = [
+        {
+            name: 'name',
+            label: <FormattedMessage id='name.column' defaultMessage='Api Name' />,
+            options: {
+                filter: true,
+                sort: true,
+            },
+        },
+        {
+            name: 'version',
+            label: <FormattedMessage id='version.column' defaultMessage='Version' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+        {
+            name: 'hits',
+            label: <FormattedMessage id='alerts.column' defaultMessage='Alerts' />,
+            options: {
+                filter: true,
+                sort: false,
+            },
+        },
+    ];
+    const options = {
+        selectableRows: 'none',
     };
 
     return (
@@ -121,17 +150,21 @@ export default function APIMApiAlerts(props) {
                         <FormattedMessage id='widget.heading' defaultMessage='API ALERTS' />
                     </h3>
                 </div>
-                { isloading ? (
+                { inProgress ? (
                     <div style={styles.inProgress}>
                         <CircularProgress />
                     </div>
                 ) : (
                     <div>
-                        { finaldataset.length > 0 ? (
+                        { finalDataSet.length > 0 ? (
                             <div style={styles.statDiv}>
-                                    <h3 style={styles.countdiv}>
-                                        Total Alerts : {totalcount}
-                                    </h3>
+                                <h3 style={styles.countdiv}>
+                                    <FormattedMessage
+                                        id='alerts.heading'
+                                        defaultMessage='Total Alerts'
+                                    />
+                                    {' ' + totalCount}
+                                </h3>
                                 <div style={styles.pieDiv}>
                                     <svg viewBox='-50 0 1000 500'>
                                         <VictoryPie
@@ -149,7 +182,7 @@ export default function APIMApiAlerts(props) {
                                             standalone={false}
                                             padding={50}
                                             colorScale='blue'
-                                            data={finaldataset}
+                                            data={finalDataSet}
                                             x={d => d.apiName}
                                             y={d => d.hits}
                                         />
@@ -166,8 +199,10 @@ export default function APIMApiAlerts(props) {
                                     </svg>
                                 </div>
                                 <div style={styles.tableDiv}>
-                                    <CustomTable
+                                    <MUIDataTable
                                         data={tableDataSet}
+                                        columns={columns}
+                                        options={options}
                                     />
                                 </div>
                             </div>
@@ -177,7 +212,10 @@ export default function APIMApiAlerts(props) {
                                     elevation={1}
                                     style={styles.paper}
                                 >
-                                    <Typography variant='h5' component='h3'>
+                                    <Typography
+                                        variant='h5'
+                                        component='h3'
+                                    >
                                         <FormattedMessage
                                             id='nodata.error.heading'
                                             defaultMessage='No Data Available !'
@@ -191,8 +229,7 @@ export default function APIMApiAlerts(props) {
                                     </Typography>
                                 </Paper>
                             </div>
-                        )
-                        }
+                        )}
                     </div>
                 )}
             </div>
@@ -204,8 +241,9 @@ APIMApiAlerts.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
-    finaldataset: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
-    totalcount: PropTypes.number.isRequired,
-    isloading: PropTypes.bool.isRequired,
+    finalDataSet: PropTypes.instanceOf(Object).isRequired,
+    legandDataSet: PropTypes.instanceOf(Object).isRequired,
+    tableDataSet: PropTypes.instanceOf(Object).isRequired,
+    totalCount: PropTypes.number.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

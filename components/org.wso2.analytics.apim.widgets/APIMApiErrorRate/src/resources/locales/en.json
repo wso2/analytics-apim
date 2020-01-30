@@ -2,5 +2,9 @@
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for API Error Rate Widget widget",
   "widget.heading": "API ERROR PERCENTAGE",
-  "nodata.error.heading": "No Data Available!"
+  "nodata.error.heading": "No Data Available!",
+  "errorrate.heading": "Total Error Percentage :",
+  "name.column": "Api Name",
+  "version.column": "Version",
+  "count.column": "Error Percentage"
 }

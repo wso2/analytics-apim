@@ -27,7 +27,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import APIMApiLatency from './APIMApiLatency';
+import APIMAverageApiLatency from './APIMAverageApiLatency';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -47,19 +47,47 @@ const lightTheme = createMuiTheme({
     },
 });
 
+/**
+ * Query parameter key
+ * @type {string}
+ */
 const queryParamKey = 'apilatency';
 
-
+/**
+ * Language
+ * @type {string}
+ */
 const language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
 
+/**
+ * Language without region code
+ */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
-
-// create react component for the APIM Api Latency Widget
-class APIMApiLatencyWidget extends Widget {
-
+/**
+ * Widget to display Api response latency time
+ * @class APIMAverageApiLatencyWidget
+ * @extends {Widget}
+ */
+class APIMAverageApiLatencyWidget extends Widget {
+    /**
+     * Creates an instance of APIMAverageApiLatencyWidget.
+     * @param {any} props @inheritDoc
+     * @memberof APIMAverageApiLatencyWidget
+     */
     constructor(props) {
         super(props);
+        this.styles = {
+            paper: {
+                padding: '5%',
+                border: '2px solid #4555BB',
+            },
+            paperWrapper: {
+                margin: 'auto',
+                width: '50%',
+                marginTop: '20%',
+            },
+        };
 
         this.state = {
             width: this.props.width,
@@ -67,19 +95,7 @@ class APIMApiLatencyWidget extends Widget {
             localeMessages: null,
             latancyData: [],
             limit: 5,
-            isloading: true,
-        };
-
-        this.styles = {
-            paper: {
-                padding: '5%',
-                border: '10px solid #4555BB',
-            },
-            paperWrapper: {
-                margin: 'auto',
-                width: '50%',
-                marginTop: '20%',
-            },
+            inProgress: true,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -90,9 +106,8 @@ class APIMApiLatencyWidget extends Widget {
             }));
         }
 
-
-        this.assemblelatencyQuery = this.assemblelatencyQuery.bind(this);
-        this.handleTotallatencyReceived = this.handleTotallatencyReceived.bind(this);
+        this.assembleLatencyQuery = this.assembleLatencyQuery.bind(this);
+        this.handleTotalLatencyReceived = this.handleTotalLatencyReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
@@ -108,7 +123,7 @@ class APIMApiLatencyWidget extends Widget {
     }
 
     componentDidMount() {
-        const { widgetID, id } = this.props;
+        const { widgetID } = this.props;
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 this.setState({
@@ -128,10 +143,16 @@ class APIMApiLatencyWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
+    /**
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMAverageApiLatencyWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiLatency/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMAverageApiLatency/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -142,24 +163,41 @@ class APIMApiLatencyWidget extends Widget {
         });
     }
 
-    // Set Query Param key
+    /**
+     * set limit to the query parameter key
+     * @param {string} limit data display limit
+     * @memberof APIMAverageApiLatencyWidget
+     */
     setQueryParam(limit) {
         super.setGlobalState(queryParamKey, { limit });
     }
 
-     //Set the date time range
-     handlePublisherParameters(receivedMsg) {
+    /**
+     * Retrieve params from publisher - DateTimeRange
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
+     * @memberof APIMAverageApiLatencyWidget
+   */
+    handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-        }, this.assemblelatencyQuery);
+            inProgress: !sync,
+        }, this.assembleLatencyQuery);
     }
 
-    //Retreive latency data
-    assemblelatencyQuery() {
+    /**
+     * Retreive response latency data for APIs
+     * @memberof APIMAverageApiLatencyWidget
+     */
+    assembleLatencyQuery() {
         const { id, widgetID: widgetName } = this.props;
-        const {timeFrom, timeTo, perValue, providerConfig} = this.state;
+        const {
+            timeFrom, timeTo, perValue, providerConfig,
+        } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
 
@@ -175,60 +213,83 @@ class APIMApiLatencyWidget extends Widget {
             '{{limit}}': limit,
         };
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleTotallatencyReceived, dataProviderConfigs);
+            .subscribeWidget(id, widgetName, this.handleTotalLatencyReceived, dataProviderConfigs);
     }
 
-    //Format the data received from the query
-    handleTotallatencyReceived(message) {
+    /**
+     * Formats data retrieved from LatencyQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMAverageApiLatencyWidget
+     * */
+    handleTotalLatencyReceived(message) {
         const { data } = message;
         const latancyData = [];
-        
+
         if (data) {
-            data.forEach(dataunit => {
+            data.forEach((dataunit) => {
                 latancyData.push({
-                    ApiName: dataunit[0]+'('+dataunit[3]+')', AvgLatency: (dataunit[1]/dataunit[2])})
-                
+                    ApiName: dataunit[0] + '(' + dataunit[3] + ')',
+                    AvgLatency: (dataunit[1] / dataunit[2]),
+                });
             });
         }
-
-        this.setState({latancyData, isloading: false});
+        this.setState({ latancyData, inProgress: false });
     }
 
-    // Handle on change of limit
+    /**
+     * Handle API Data display limit
+     * @param {Event} event - listened event
+     * @memberof APIMAverageApiLatencyWidget
+     * */
     handleLimitChange(event) {
         const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
-
         this.setQueryParam(parseInt(limit, 10));
+
         if (limit) {
             this.setState({ limit });
             super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assemblelatencyQuery();
+            this.assembleLatencyQuery();
         } else {
             this.setState({ limit });
         }
     }
 
-    //Render the Apim Latency Widget
+    /**
+     * @inheritDoc
+     * @returns {ReactElement} Render the APIMAverageApiLatencyWidget
+     * @memberof APIMAverageApiLatencyWidget
+     */
     render() {
         const {
-            localeMessages, faultyProviderConf, latancyData, height, isloading, limit
+            localeMessages, faultyProviderConf, latancyData, height, inProgress, limit,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, inProgress,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiLatancyProps = { themeName, latancyData, height, isloading, limit };
+        const apiLatancyProps = {
+            themeName, latancyData, height, inProgress, limit,
+        };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider
+                locale={language}
+                messages={localeMessages}
+            >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
                             <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h4' component='h3'>
+                                <Paper
+                                    elevation={1}
+                                    style={paper}
+                                >
+                                    <Typography
+                                        variant='h4'
+                                        component='h3'
+                                    >
                                         <FormattedMessage
                                             id='config.error.heading'
                                             defaultMessage='Configuration Error !'
@@ -237,15 +298,16 @@ class APIMApiLatencyWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                            + 'Created widget'}
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Average Api Latency Widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiLatency {...apiLatancyProps}
-                            handleLimitChange={this.handleLimitChange}
+                            <APIMAverageApiLatency
+                                {...apiLatancyProps}
+                                handleLimitChange={this.handleLimitChange}
                             />
                         )
                     }
@@ -255,4 +317,4 @@ class APIMApiLatencyWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMApiLatency', APIMApiLatencyWidget);
+global.dashboard.registerWidget('APIMAverageApiLatency', APIMAverageApiLatencyWidget);

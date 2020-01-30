@@ -1,4 +1,3 @@
-
 /*
  *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -48,7 +47,6 @@ const lightTheme = createMuiTheme({
     },
 });
 
-
 /**
  * Language
  * @type {string}
@@ -61,14 +59,18 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Widget for displaying API alerts of APIs
- * @class APIMAppApiUsageWidget
+ * Widget for displaying total alerts for APIs
+ * @class APIMApiAlertsWidget
  * @extends {Widget}
  */
 class APIMApiAlertsWidget extends Widget {
+    /**
+     * Creates an instance of APIMApiAlertsWidget.
+     * @param {any} props @inheritDoc
+     * @memberof APIMApiAlertsWidget
+     */
     constructor(props) {
         super(props);
-
         this.styles = {
             paper: {
                 padding: '5%',
@@ -85,13 +87,13 @@ class APIMApiAlertsWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             localeMessages: null,
-            backendalert: null,
-            responsealert: null,
-            reqalert: null,
-            sortedarray: null,
-            finaldataset: null,
-            totalcount: null,
-            isloading: true,
+            backendAlert: null,
+            responseAlert: null,
+            requestAlerts: null,
+            sortedArray: null,
+            finalDataSet: null,
+            totalCount: null,
+            inProgress: true,
             legandDataSet: null,
             tableDataSet: null,
         };
@@ -103,14 +105,16 @@ class APIMApiAlertsWidget extends Widget {
                 height: this.props.glContainer.height,
             }));
         }
-        this.assemblereqalertquery = this.assemblereqalertquery.bind(this);
-        this.assemblereqalertreceived = this.assemblereqalertreceived.bind(this);
-        this.assembleresponsealertquery = this.assembleresponsealertquery.bind(this);
-        this.assembleresponsealertreceived = this.assembleresponsealertreceived.bind(this);
-        this.assemblebackendalertquery = this.assemblebackendalertquery.bind(this);
-        this.assemblebackendalertreceived = this.assemblebackendalertreceived.bind(this);
+        this.assembleAlertQuery = this.assembleAlertQuery.bind(this);
+        this.assembleRequestAlertReceived = this.assembleRequestAlertReceived.bind(this);
+        this.assembleResponseAlertQuery = this.assembleResponseAlertQuery.bind(this);
+        this.assembleResponseAlertReceived = this.assembleResponseAlertReceived.bind(this);
+        this.assembleBackendAlertQuery = this.assembleBackendAlertQuery.bind(this);
+        this.assembleBackendAlertReceived = this.assembleBackendAlertReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
+        this.analyzeAlertData = this.analyzeAlertData.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.convertToJsonObject = this.convertToJsonObject.bind(this);
     }
 
     componentWillMount() {
@@ -121,7 +125,6 @@ class APIMApiAlertsWidget extends Widget {
             });
         });
     }
-
 
     componentDidMount() {
         const { widgetID } = this.props;
@@ -145,13 +148,12 @@ class APIMApiAlertsWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
-
-     /**
-     * Load locale file.
-     *
-     * @param {string} locale Locale name
-     * @memberof APIMApiAlertsWidget
-     */
+    /**
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMApiAlertsWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -168,34 +170,29 @@ class APIMApiAlertsWidget extends Widget {
 
     /**
      * Retrieve params from publisher - DateTimeRange
-     *
-     * @param receivedMsg  message received from subscribed widgets
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
      * @memberof APIMApiAlertsWidget
-     * */
+   */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
-            isloading: true,
-            backendalert: null,
-            responsealert: null,
-            reqalert: null,
-            sortedarray: null,
-            finaldataset: null,
-            totalcount: null,
-        }, this.assemblereqalertquery);
+            inProgress: !sync,
+        }, this.assembleAlertQuery);
     }
-  
+
     /**
      * Retrieve No of abnormal request count alerts, for APIs
      * @memberof APIMApiAlertsWidget
      * */
-    assemblereqalertquery() {
+    assembleAlertQuery() {
         const { timeFrom, timeTo, providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-
         dataProviderConfigs.configs.config.incrementalColumn = 'requestCountPerMin';
         dataProviderConfigs.configs.config.queryData.queryName = 'alert';
         dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -204,38 +201,34 @@ class APIMApiAlertsWidget extends Widget {
             '{{to}}': timeTo,
             '{{Domain}}': 'tenantDomain',
         };
-
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.assemblereqalertreceived, dataProviderConfigs);
+            .subscribeWidget(id, widgetName, this.assembleRequestAlertReceived, dataProviderConfigs);
     }
 
-
     /**
-     * Format the data received
+     * Formats data retrieved from assembleAlertQuery
+     * @param {object} message - data retrieved
      * @memberof APIMApiAlertsWidget
      * */
-    assemblereqalertreceived(message) {
+    assembleRequestAlertReceived(message) {
         const { data } = message;
         const { id } = this.props;
 
         if (data.length !== 0) {
-            this.setState({ reqalert: data });
+            this.setState({ requestAlerts: data });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleresponsealertquery();
+        this.assembleResponseAlertQuery();
     }
 
-
-     /**
+    /**
      * Retrieve No of response alert count, for APIs
      * @memberof APIMApiAlertsWidget
      * */
-    assembleresponsealertquery() {
+    assembleResponseAlertQuery() {
         const { timeFrom, timeTo, providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
-
         const dataProviderConfigs = cloneDeep(providerConfig);
-
         dataProviderConfigs.configs.config.incrementalColumn = 'responseTime';
         dataProviderConfigs.configs.config.queryData.queryName = 'alert';
         dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -244,36 +237,34 @@ class APIMApiAlertsWidget extends Widget {
             '{{to}}': timeTo,
             '{{Domain}}': 'apiCreatorTenantDomain',
         };
-
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.assembleresponsealertreceived, dataProviderConfigs);
+            .subscribeWidget(id, widgetName, this.assembleResponseAlertReceived, dataProviderConfigs);
     }
 
     /**
-     * Format the data received
+     * Formats data retrieved from assembleResponseAlertQuery
+     * @param {object} message - data retrieved
      * @memberof APIMApiAlertsWidget
      * */
-    assembleresponsealertreceived(message) {
+    assembleResponseAlertReceived(message) {
         const { data } = message;
         const { id } = this.props;
 
         if (data.length !== 0) {
-            this.setState({ responsealert: data });
+            this.setState({ responseAlert: data });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assemblebackendalertquery();
+        this.assembleBackendAlertQuery();
     }
 
     /**
     * Retrieve No of abnormal backend alert count, for APIs
     * @memberof APIMApiAlertsWidget
     * */
-    assemblebackendalertquery() {
+    assembleBackendAlertQuery() {
         const { timeFrom, timeTo, providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
-
         const dataProviderConfigs = cloneDeep(providerConfig);
-
         dataProviderConfigs.configs.config.incrementalColumn = 'backendTime';
         dataProviderConfigs.configs.config.queryData.queryName = 'alert';
         dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -282,115 +273,84 @@ class APIMApiAlertsWidget extends Widget {
             '{{to}}': timeTo,
             '{{Domain}}': 'apiCreatorTenantDomain',
         };
-
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.assemblebackendalertreceived, dataProviderConfigs);
+            .subscribeWidget(id, widgetName, this.assembleBackendAlertReceived, dataProviderConfigs);
     }
 
-
     /**
-     * Format the data received
+     * Formats data retrieved from assembleBackendAlertQuery
+     * @param {object} message - data retrieved
      * @memberof APIMApiAlertsWidget
      * */
-    assemblebackendalertreceived(message) {
+    assembleBackendAlertReceived(message) {
         const { data } = message;
         const { id } = this.props;
 
         if (data.length !== 0) {
-            this.setState({ backendalert: data });
+            this.setState({ backendAlert: data });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.analyzealertdata();
+        this.analyzeAlertData();
     }
-
 
     /**
     * Analyze the total errors received
     * @memberof APIMApiAlertsWidget
     * */
-    analyzealertdata() {
-       var { backendalert, responsealert, reqalert } = this.state;
-       let sortedarray = [];
-       var totalcount = 0;
+    analyzeAlertData() {
+        const { backendAlert, responseAlert, requestAlerts } = this.state;
+        const allAlerts = [...backendAlert, ...responseAlert, ...requestAlerts];
+        const alertMap = [];
+        const finalArray = [];
+        let totalAlertCount = 0;
 
-        if (backendalert != null) {
-            for (var i in backendalert) {
-                sortedarray.push(backendalert[i]);
+        allAlerts.forEach((alert) => {
+            const filteredAlerts = allAlerts.filter(data => data[0] === alert[0] && data[2] === alert[2]);
+            if (!alertMap.includes(alert[0] + ':::' + alert[2])) {
+                alertMap.push(alert[0] + ':::' + alert[2]);
+                const count = filteredAlerts.reduce((totalCount, dataUnit) => totalCount + dataUnit[1], 0);
+                finalArray.push([alert[0], count, alert[2]]);
             }
-        }
-
-        if (responsealert != null) {
-            for (var i in responsealert) {
-                var matchFoun = false;
-                for (var n in sortedarray) {
-                    if (responsealert[i][0] == sortedarray[n][0]) {
-                        sortedarray[n][1] += responsealert[i][1];
-                        matchFoun = true;
-                        break;
-                    }
-                }
-                if (matchFoun == false) {
-                    sortedarray.push(responsealert[i]);
-                }
-            }
-       }
-
-        if (reqalert != null) {
-            for (var i in reqalert) {
-                var matchFoun = false;
-                for (var n in sortedarray) {
-                    if (reqalert[i][0] == sortedarray[n][0]) {
-                        sortedarray[n][1] += reqalert[i][1];
-                        matchFoun = true;
-                        break;
-                    }
-                }
-                if (matchFoun == false) {
-                    sortedarray.push(reqalert[i]);
-                }
-            }
-        }
-
-
-        sortedarray.forEach((element) => {
-            totalcount += element[1];
         });
 
-       this.setState({ sortedarray, totalcount });
-       this.sortedarray = null;
-       this.converttojsonobject();
+        finalArray.forEach((element) => {
+            totalAlertCount += element[1];
+        });
+
+        this.setState({ sortedArray: finalArray, totalCount: totalAlertCount });
+        this.convertToJsonObject();
     }
 
     /**
      * Convert the final dataset to json object
      * @memberof APIMApiAlertsWidget
      * */
-    converttojsonobject() {
-        const { sortedarray } = this.state;
-        let { finaldataset, legandDataSet, tableDataSet } = [];
+    convertToJsonObject() {
+        const { sortedArray } = this.state;
+        let { finalDataSet, legandDataSet, tableDataSet } = [];
 
-        finaldataset = sortedarray.map((x) => {
-            return{
-                "apiName": x[0] +'(' + x[2] + ')'+ ' ' + x[1],
-                "hits": x[1]
+        finalDataSet = sortedArray.map((data) => {
+            return {
+                apiName: data[0] + '(' + data[2] + ')' + data[1],
+                hits: data[1],
+            };
+        });
+        legandDataSet = sortedArray.map((legandData) => {
+            return {
+                name: legandData[0] + '(' + legandData[2] + ')',
+            };
+        });
+        tableDataSet = sortedArray.map((sortedData) => {
+            return {
+                name: sortedData[0],
+                version: sortedData[2],
+                hits: sortedData[1],
             };
         });
 
-        legandDataSet = sortedarray.map((x) => {
-            return{
-                "name": x[0] +'(' + x[2] + ')'
-            };
+        this.setState({
+            finalDataSet, tableDataSet, inProgress: false, legandDataSet,
         });
-
-        tableDataSet = sortedarray.map((x) => {
-            return{
-                "name": x[0],
-                "version": x[2],
-                "hits": x[1]
-            };
-        });
-        
-        this.setState({ finaldataset,tableDataSet, isloading: false, legandDataSet});
     }
 
     /**
@@ -400,17 +360,20 @@ class APIMApiAlertsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConf, height, width, finaldataset, totalcount, isloading,legandDataSet,tableDataSet
+            localeMessages, faultyProviderConf, height, width, finalDataSet, totalCount,
+            inProgress, legandDataSet, tableDataSet,
         } = this.state;
         const {
             paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apialertProps = { themeName, finaldataset, totalcount, width, height, isloading,legandDataSet,tableDataSet };
+        const apialertProps = {
+            themeName, finalDataSet, totalCount, width, height, inProgress, legandDataSet, tableDataSet,
+        };
 
         return (
-            <IntlProvider locale={languageWithoutRegionCode} messages={localeMessages}>
+            <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
@@ -440,4 +403,5 @@ class APIMApiAlertsWidget extends Widget {
         );
     }
 }
+
 global.dashboard.registerWidget('APIMApiAlerts', APIMApiAlertsWidget);

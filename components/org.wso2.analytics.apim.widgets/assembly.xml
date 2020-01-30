@@ -176,7 +176,7 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>APIMApiLatency/dist</directory>
+            <directory>APIMAverageApiLatency/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>

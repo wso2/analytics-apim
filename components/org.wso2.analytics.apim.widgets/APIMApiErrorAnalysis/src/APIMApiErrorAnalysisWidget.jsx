@@ -30,7 +30,6 @@ import Widget from '@wso2-dashboards/widget';
 import Moment from 'moment';
 import APIMApiErrorAnalysis from './APIMApiErrorAnalysis';
 
-
 const darkTheme = createMuiTheme({
     palette: {
         type: 'dark',
@@ -79,7 +78,6 @@ class APIMApiErrorAnalysisWidget extends Widget {
      */
     constructor(props) {
         super(props);
-
         this.styles = {
             formControl: {
                 margin: 5,
@@ -119,11 +117,11 @@ class APIMApiErrorAnalysisWidget extends Widget {
             height: this.props.height,
             apiSelected: '',
             apiVersion: '',
-            versionlist: [],
+            versionList: [],
             versionMap: {},
-            apilist: [],
+            apiList: [],
             apiDataList: [],
-            resultdata: [],
+            resultData: [],
             apiFullData: [],
             resourceList: [],
             operationSelected: [],
@@ -192,10 +190,11 @@ class APIMApiErrorAnalysisWidget extends Widget {
     }
 
     /**
-     * Load locale file.
-     * @param {string} locale Locale name
-     * @memberof APIMApiErrorAnalysisWidget
-     */
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMApiErrorAnalysisWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
@@ -212,14 +211,18 @@ class APIMApiErrorAnalysisWidget extends Widget {
 
     /**
      * Retrieve params from publisher - DateTimeRange
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
      * @memberof APIMApiErrorAnalysisWidget
-     * */
+    */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
-            inProgress: true,
+            inProgress: !sync,
         }, this.assembleApiListQuery);
     }
 
@@ -228,18 +231,17 @@ class APIMApiErrorAnalysisWidget extends Widget {
      * @memberof APIMApiErrorAnalysisWidget
      * */
     resetState() {
-        this.setState({ inProgress: true, resultdata: [] });
+        this.setState({ inProgress: true, resultData: [] });
         const queryParam = super.getGlobalState(queryParamKey);
         let {
             apiSelected, apiVersion, operationSelected, resourceSelected,
         } = queryParam;
-
-        const { apilist, versionMap } = this.state;
+        const { apiList, versionMap } = this.state;
         let versions;
 
-        if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
-            if (apilist.length > 0) {
-                apiSelected = apilist[0];
+        if (!apiSelected || (apiList && !apiList.includes(apiSelected))) {
+            if (apiList.length > 0) {
+                [apiSelected] = apiList;
             }
         }
         if (versionMap && apiSelected in versionMap) {
@@ -249,7 +251,7 @@ class APIMApiErrorAnalysisWidget extends Widget {
         }
         if (!apiVersion || !versions.includes(apiVersion)) {
             if (versions.length > 0) {
-                apiVersion = versions[0];
+                [apiVersion] = versions;
             } else {
                 apiVersion = '';
             }
@@ -262,7 +264,7 @@ class APIMApiErrorAnalysisWidget extends Widget {
         }
 
         this.setState({
-            apiSelected, apiVersion, operationSelected, resourceSelected, versionlist: versions,
+            apiSelected, apiVersion, operationSelected, resourceSelected, versionList: versions,
         });
         this.setQueryParam(apiSelected, apiVersion, operationSelected, resourceSelected);
     }
@@ -296,6 +298,7 @@ class APIMApiErrorAnalysisWidget extends Widget {
     handleApiListReceived(data) {
         const { id } = this.props;
         const { list } = data;
+
         if (list) {
             this.setState({ apiDataList: list });
         }
@@ -314,13 +317,11 @@ class APIMApiErrorAnalysisWidget extends Widget {
 
         if (apiDataList && apiDataList.length > 0) {
             const apiList = [...apiDataList];
-
             let apiCondition = apiList.map((api) => {
                 return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
                     + '\')';
             });
             apiCondition = apiCondition.join(' OR ');
-
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -329,7 +330,7 @@ class APIMApiErrorAnalysisWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, resultdata: [] });
+            this.setState({ inProgress: false, resultData: [] });
         }
     }
 
@@ -345,19 +346,19 @@ class APIMApiErrorAnalysisWidget extends Widget {
         const { data } = message;
 
         if (data && data.length > 0) {
-            let apilist = [];
+            let apiList = [];
             const versionMap = {};
             data.forEach((dataUnit) => {
-                apilist.push(dataUnit[1]);
+                apiList.push(dataUnit[1]);
                 // retrieve all entries for the api and get the api versions list
                 const versions = data.filter(d => d[1] === dataUnit[1]);
-                const versionlist = versions.map((ver) => { return ver[2]; });
-                versionMap[dataUnit[1]] = versionlist;
+                const versionList = versions.map((ver) => { return ver[2]; });
+                versionMap[dataUnit[1]] = versionList;
             });
-            apilist = [...new Set(apilist)];
-            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+            apiList = [...new Set(apiList)];
+            apiList.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             this.setState({
-                apilist, versionMap, apiFullData: data, apiSelected,
+                apiList, versionMap, apiFullData: data, apiSelected,
             });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -377,7 +378,6 @@ class APIMApiErrorAnalysisWidget extends Widget {
 
         if (apiFullData && apiFullData.length > 0) {
             const api = apiFullData.filter(apiData => apiSelected === apiData[1] && apiVersion === apiData[2])[0];
-
             if (api) {
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'resourcequery';
@@ -387,10 +387,10 @@ class APIMApiErrorAnalysisWidget extends Widget {
                 super.getWidgetChannelManager()
                     .subscribeWidget(id, widgetName, this.handleResourceReceived, dataProviderConfigs);
             } else {
-                this.setState({ inProgress: false, resultdata: [] });
+                this.setState({ inProgress: false, resultData: [] });
             }
         } else {
-            this.setState({ inProgress: false, resultdata: [] });
+            this.setState({ inProgress: false, resultData: [] });
         }
     }
 
@@ -473,7 +473,7 @@ class APIMApiErrorAnalysisWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, resultdata: [] });
+            this.setState({ inProgress: false, resultData: [] });
         }
     }
 
@@ -483,7 +483,7 @@ class APIMApiErrorAnalysisWidget extends Widget {
      * @memberof APIMApiErrorAnalysisWidget
      * */
     handleDataReceived(message) {
-        const resultdata = [];
+        const resultData = [];
         const { data } = message;
 
         if (data) {
@@ -491,15 +491,14 @@ class APIMApiErrorAnalysisWidget extends Widget {
                 apiSelected, apiVersion, operationSelected, resourceSelected,
             } = this.state;
             data.forEach((element) => {
-                resultdata.push([Moment(element[1]).format('YYYY/MM/DD hh:mm'), element[3], element[0]]);
+                resultData.push([Moment(element[1]).format('YYYY/MM/DD hh:mm'), element[3], element[0]]);
             });
-
             this.setState({
-                resultdata, inProgress: false,
+                resultData, inProgress: false,
             });
             this.setQueryParam(apiSelected, apiVersion, operationSelected, resourceSelected);
         } else {
-            this.setState({ inProgress: false, resultdata: [] });
+            this.setState({ inProgress: false, resultData: [] });
         }
     }
 
@@ -508,6 +507,7 @@ class APIMApiErrorAnalysisWidget extends Widget {
      * @param {string} apiSelected - API Name menu option selected
      * @param {string} apiVersion - API Version menu option selected
      * @param {string} operationSelected - Resources selected
+     * @param {string} resourceSelected - Resource selected
      * @memberof APIMApiErrorAnalysisWidget
      * */
     setQueryParam(apiSelected, apiVersion, operationSelected, resourceSelected) {
@@ -526,7 +526,8 @@ class APIMApiErrorAnalysisWidget extends Widget {
      * */
     apiCreatedHandleChange(event) {
         const { id } = this.props;
-        this.setQueryParam(event.target.value, '', '', []);
+        const { value } = event.target;
+        this.setQueryParam(value, '', '', []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({ inProgress: true }, this.assembleApiIdQuery);
     }
@@ -538,11 +539,12 @@ class APIMApiErrorAnalysisWidget extends Widget {
      * */
     apiSelectedHandleChange(event) {
         const { id } = this.props;
-        this.setQueryParam(event.target.value, '', []);
+        const { value } = event.target;
+        this.setQueryParam(value, '', []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({
-            apiSelected: event.target.value,
-            versionlist: [],
+            apiSelected: value,
+            versionList: [],
             resourceList: [],
             inProgress: true,
         }, this.assembleResourceQuery);
@@ -556,11 +558,11 @@ class APIMApiErrorAnalysisWidget extends Widget {
     apiVersionHandleChange(event) {
         const { apiSelected } = this.state;
         const { id } = this.props;
-
-        this.setQueryParam(apiSelected, event.target.value, []);
+        const { value } = event.target;
+        this.setQueryParam(apiSelected, value, []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({
-            apiVersion: event.target.value,
+            apiVersion: value,
             inProgress: true,
             resourceList: [],
         }, this.assembleResourceQuery);
@@ -573,14 +575,16 @@ class APIMApiErrorAnalysisWidget extends Widget {
      * */
     apiOperationHandleChange(event) {
         const { id } = this.props;
+        const { value } = event.target;
         const queryParam = super.getGlobalState(queryParamKey);
         const {
             apiSelected, apiVersion, operationSelected,
         } = this.state;
-        if (queryParam.operationSelected.includes(event.target.value)) {
-            operationSelected.splice(operationSelected.indexOf(event.target.value), 1);
+
+        if (queryParam.operationSelected.includes(value)) {
+            operationSelected.splice(operationSelected.indexOf(value), 1);
         } else {
-            operationSelected.push(event.target.value);
+            operationSelected.push(value);
         }
         this.setState({ operationSelected, inProgress: true });
         this.setQueryParam(apiSelected, apiVersion, operationSelected);
@@ -589,35 +593,32 @@ class APIMApiErrorAnalysisWidget extends Widget {
     }
 
     /**
-         * Handle operation select change
-         * @param {Event} event - listened event
-         * @memberof APIMApiErrorAnalysisWidget
-         * */
+    * Handle operation select change
+    * @param {Event} event - listened event
+    * @memberof APIMApiErrorAnalysisWidget
+    * */
     apiResourceHandleChange(event) {
         const { id } = this.props;
-        const {
-            apiSelected, apiVersion,
-        } = this.state;
+        const { value } = event.target;
+        const { apiSelected, apiVersion } = this.state;
+        this.state.resourceSelected = value;
 
-        const resourceSelected = event.target.value;
-        this.state.resourceSelected = resourceSelected;
-
-        this.setState({ resourceSelected, inProgress: true });
-        this.setQueryParam(apiSelected, apiVersion, [], resourceSelected);
+        this.setState({ resourceSelected: value, inProgress: true });
+        this.setQueryParam(apiSelected, apiVersion, [], value);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Api Latency Time widget
+     * @returns {ReactElement} Render the APIM Api Error Analysis Widget
      * @memberof APIMApiErrorAnalysisWidget
      */
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
             localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, proxyError,
-            apiSelected, apiVersion, resultdata, apilist, versionlist, resourceList,
+            apiSelected, apiVersion, resultData, apiList, versionList, resourceList,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -633,9 +634,9 @@ class APIMApiErrorAnalysisWidget extends Widget {
             width,
             apiSelected,
             apiVersion,
-            resultdata,
-            apilist,
-            versionlist,
+            resultData,
+            apiList,
+            versionList,
             resourceList,
             inProgress,
         };

@@ -11,7 +11,7 @@
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the 
+ *  KIND, either express or implied.  See the License for the
  *  specific language governing permissions and limitations
  *  under the License.
  *
@@ -23,11 +23,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     context: path.resolve(__dirname, './src'),
     entry: {
-        index: './APIMApiLatencyWidget.jsx',
+        index: './APIMAverageApiLatencyWidget.jsx',
     },
     output: {
-        path: path.resolve(__dirname, './dist/APIMApiLatency'),
-        filename: 'APIMApiLatency.js',
+        path: path.resolve(__dirname, './dist/APIMAverageApiLatency'),
+        filename: 'APIMAverageApiLatency.js',
     },
     module: {
         rules: [
