@@ -29,7 +29,9 @@ import Moment from 'moment';
  * @returns {ReactElement} Render the Error Percentage component
  */
 export default function TotalErrorCount(props) {
-    const { totalErrorCount, timeFrom, timeTo } = props;
+    const {
+        totalErrorCount, timeFrom, timeTo, themeName,
+    } = props;
     const styles = {
         headingWrapper: {
             height: '10%',
@@ -72,7 +74,9 @@ export default function TotalErrorCount(props) {
             fontSize: 'small',
         },
         mainWrapper: {
-            background: 'linear-gradient(to right, rgb(3, 8, 68) 0%, rgb(47, 93, 197) 46%, rgb(42, 49, 101) 100%)',
+            background: themeName === 'dark'
+                ? 'linear-gradient(to right, rgb(3, 8, 68) 0%, rgb(47, 93, 197) 46%, rgb(42, 49, 101) 100%)'
+                : '#E8E8E8',
             maxWidth: 'auto',
             maxHeight: '200px',
             minWidth: 'auto',
@@ -81,7 +85,7 @@ export default function TotalErrorCount(props) {
             marginLeft: '2px',
         },
         h3: {
-            borderBottom: '1.5px solid #fff',
+            borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
             paddingBottom: '10px',
             margin: 'auto',
             textAlign: 'left',
@@ -93,7 +97,7 @@ export default function TotalErrorCount(props) {
             textAlign: 'center',
             fontSize: '300%',
             display: 'inline',
-            color: '#fff',
+            color: themeName === 'dark' ? '#fff' : '#2571a7',
         },
     };
 
@@ -170,6 +174,7 @@ export default function TotalErrorCount(props) {
 }
 
 TotalErrorCount.propTypes = {
+    themeName: PropTypes.string.isRequired,
     totalErrorCount: PropTypes.number.isRequired,
     timeFrom: PropTypes.number.isRequired,
     timeTo: PropTypes.number.isRequired,

@@ -30,17 +30,19 @@ import { FormattedMessage } from 'react-intl';
  * @returns {ReactElement} Render the Traffic Chart component
  */
 export default function Trafficchart(props) {
-    const { trafficData } = props;
+    const { trafficData, themeName } = props;
     const styles = {
         input: {
             display: 'none',
         },
         paper: {
-            background: '#040b4b',
-            width: '75%',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
+            width: '50%',
             padding: '4%',
             margin: 'auto',
-            paddingTop: '150px',
+            marginTop: '5%',
+            border: '1.5px solid',
         },
         headingWrapper: {
             height: '5%',
@@ -49,7 +51,7 @@ export default function Trafficchart(props) {
             width: '90%',
         },
         h3: {
-            borderBottom: '1.5px solid #fff',
+            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
             paddingBottom: '7px',
             paddingTop: '7px',
             margin: 'auto',
@@ -64,14 +66,19 @@ export default function Trafficchart(props) {
             minWidth: '50%',
             minHeight: '420px',
             marginRight: '2px',
-            backgroundColor: '#040b4b',
+            backgroundColor: themeName === 'dark' ? '#040b4b' : '#E8E8E8',
             marginTop: '5px',
         },
         victry: {
             axisLabel: {
                 padding: 30,
-                fill: '#ffffff',
+                fill: themeName === 'dark' ? '#fff' : '#02212f',
                 fontSize: '8px',
+            },
+        },
+        victoryArea: {
+            data: {
+                fill: themeName === 'dark' ? '#0e0e24' : '#2571a7',
             },
         },
     };
@@ -79,7 +86,7 @@ export default function Trafficchart(props) {
         axis: {
             style: {
                 tickLabels: {
-                    fill: 'white',
+                    fill: themeName === 'dark' ? '#fff' : '#02212f',
                     fontSize: '8px',
                     angle: 25,
                 },
@@ -144,7 +151,7 @@ export default function Trafficchart(props) {
                                 duration: 2000,
                                 onLoad: { duration: 1000 },
                             }}
-                            style={{ data: { fill: '#0e0e24' } }}
+                            style={styles.victoryArea}
                             data={trafficData}
                         />
                         <VictoryAxis
@@ -165,4 +172,5 @@ export default function Trafficchart(props) {
 
 Trafficchart.propTypes = {
     trafficData: PropTypes.instanceOf(Object).isRequired,
+    themeName: PropTypes.string.isRequired,
 };

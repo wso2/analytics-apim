@@ -29,7 +29,9 @@ import Moment from 'moment';
  * @returns {ReactElement} Render the total Request count component
  */
 export default function TotalReqcount(props) {
-    const { totalRequestCount, timeFrom, timeTo } = props;
+    const {
+        totalRequestCount, themeName, timeFrom, timeTo,
+    } = props;
     const styles = {
         headingWrapper: {
             height: '10%',
@@ -72,7 +74,9 @@ export default function TotalReqcount(props) {
             fontSize: 'small',
         },
         mainWrapper: {
-            background: 'linear-gradient(to right, rgb(4, 31, 51) 0%, rgb(37, 113, 167) 46%, rgb(42, 71, 101) 100%',
+            background: themeName === 'dark'
+                ? 'linear-gradient(to right, rgb(4, 31, 51) 0%, rgb(37, 113, 167) 46%, rgb(42, 71, 101) 100%'
+                : '#E8E8E8',
             maxWidth: 'auto',
             maxHeight: '200px',
             minWidth: 'auto',
@@ -81,7 +85,7 @@ export default function TotalReqcount(props) {
             marginLeft: '2px',
         },
         h3: {
-            borderBottom: '1.5px solid #fff',
+            borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
             paddingBottom: '10px',
             margin: 'auto',
             textAlign: 'left',
@@ -93,7 +97,7 @@ export default function TotalReqcount(props) {
             textAlign: 'center',
             fontSize: '300%',
             display: 'inline',
-            color: '#fff',
+            color: themeName === 'dark' ? '#fff' : '#2571a7',
         },
     };
 
@@ -171,6 +175,7 @@ export default function TotalReqcount(props) {
 }
 
 TotalReqcount.propTypes = {
+    themeName: PropTypes.string.isRequired,
     totalRequestCount: PropTypes.number.isRequired,
     timeFrom: PropTypes.number.isRequired,
     timeTo: PropTypes.number.isRequired,

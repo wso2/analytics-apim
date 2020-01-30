@@ -30,17 +30,19 @@ import { FormattedMessage } from 'react-intl';
  * @returns {ReactElement} Render the Error analysis chart component
  */
 export default function ErrorAnalysisChart(props) {
-    const { sortedData } = props;
+    const { sortedData, themeName } = props;
     const styles = {
         input: {
             display: 'none',
         },
         paper: {
-            background: '#040b4b',
-            width: '75%',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
+            width: '50%',
             padding: '4%',
             margin: 'auto',
-            paddingTop: '150px',
+            marginTop: '5%',
+            border: '1.5px solid',
         },
         headingWrapper: {
             height: '5%',
@@ -49,7 +51,7 @@ export default function ErrorAnalysisChart(props) {
             width: '90%',
         },
         h3: {
-            borderBottom: '1.5px solid #fff',
+            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
             paddingBottom: '7px',
             paddingTop: '7px',
             margin: 'auto',
@@ -64,18 +66,18 @@ export default function ErrorAnalysisChart(props) {
             minWidth: '50%',
             minHeight: '420px',
             marginRight: '2px',
-            backgroundColor: '#040b4b',
+            backgroundColor: themeName === 'dark' ? '#040b4b' : '#E8E8E8',
             marginTop: '5px',
         },
         victry: {
             axisLabel: {
                 padding: 30,
-                fill: '#ffffff',
+                fill: themeName === 'dark' ? '#fff' : '#02212f',
                 fontSize: '8px',
             },
         },
         victrypie: {
-            labels: { fontSize: 8, fill: 'white' },
+            labels: { fontSize: 8, fill: themeName === 'dark' ? '#fff' : '#02212f' },
         },
     };
 
@@ -143,4 +145,5 @@ export default function ErrorAnalysisChart(props) {
 
 ErrorAnalysisChart.propTypes = {
     sortedData: PropTypes.instanceOf(Object).isRequired,
+    themeName: PropTypes.string.isRequired,
 };

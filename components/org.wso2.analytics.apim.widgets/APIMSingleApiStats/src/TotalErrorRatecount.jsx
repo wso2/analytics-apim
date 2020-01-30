@@ -29,7 +29,9 @@ import Moment from 'moment';
  * @returns {ReactElement} Render the Error Percentage component
  */
 export default function TotalLatencycount(props) {
-    const { formattedErrorPercentage, timeFrom, timeTo } = props;
+    const {
+        formattedErrorPercentage, themeName, timeFrom, timeTo,
+    } = props;
     const styles = {
         headingWrapper: {
             height: '10%',
@@ -72,7 +74,9 @@ export default function TotalLatencycount(props) {
             fontSize: 'small',
         },
         mainWrapper: {
-            background: 'linear-gradient(to right, rgb(17, 2, 41) 0%, rgb(117, 39, 188) 46%, rgb(84, 42, 101) 100%)',
+            background: themeName === 'dark'
+                ? 'linear-gradient(to right, rgb(17, 2, 41) 0%, rgb(117, 39, 188) 46%, rgb(84, 42, 101) 100%)'
+                : '#E8E8E8',
             maxWidth: 'auto',
             maxHeight: '200px',
             minWidth: 'auto',
@@ -81,7 +85,7 @@ export default function TotalLatencycount(props) {
             marginLeft: '2px',
         },
         h3: {
-            borderBottom: '1.5px solid #fff',
+            borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
             paddingBottom: '10px',
             margin: 'auto',
             textAlign: 'left',
@@ -93,7 +97,7 @@ export default function TotalLatencycount(props) {
             textAlign: 'center',
             fontSize: '300%',
             display: 'inline',
-            color: '#fff',
+            color: themeName === 'dark' ? '#fff' : '#2571a7',
         },
     };
 
@@ -149,6 +153,7 @@ export default function TotalLatencycount(props) {
 }
 
 TotalLatencycount.propTypes = {
+    themeName: PropTypes.string.isRequired,
     formattedErrorPercentage: PropTypes.string.isRequired,
     timeFrom: PropTypes.number.isRequired,
     timeTo: PropTypes.number.isRequired,

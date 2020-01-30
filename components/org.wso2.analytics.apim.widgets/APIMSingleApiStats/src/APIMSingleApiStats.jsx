@@ -105,6 +105,7 @@ export default function APIMSingleApiStats(props) {
                                             totalRequestCount={totalRequestCount}
                                             timeFrom={timeFrom}
                                             timeTo={timeTo}
+                                            themeName={themeName}
                                         />
                                     </div>
                                     <div style={styles.divdata}>
@@ -112,6 +113,7 @@ export default function APIMSingleApiStats(props) {
                                             totalErrorCount={totalErrorCount}
                                             timeFrom={timeFrom}
                                             timeTo={timeTo}
+                                            themeName={themeName}
                                         />
                                     </div>
                                     <div style={styles.divdata}>
@@ -119,6 +121,7 @@ export default function APIMSingleApiStats(props) {
                                             formattedErrorPercentage={formattedErrorPercentage}
                                             timeFrom={timeFrom}
                                             timeTo={timeTo}
+                                            themeName={themeName}
                                         />
                                     </div>
                                     <div style={styles.divdata}>
@@ -126,27 +129,32 @@ export default function APIMSingleApiStats(props) {
                                             averageLatency={averageLatency}
                                             timeFrom={timeFrom}
                                             timeTo={timeTo}
+                                            themeName={themeName}
                                         />
                                     </div>
                                 </div>
                                 <div style={styles.chart}>
                                     <Trafficchart
                                         trafficData={trafficData}
+                                        themeName={themeName}
                                     />
                                 </div>
                                 <div style={styles.chart}>
                                     <LatencyChart
                                         latencyData={latencyData}
+                                        themeName={themeName}
                                     />
                                 </div>
                                 <div style={styles.chart}>
                                     <ErrorDetailChart
                                         errorData={errorData}
+                                        themeName={themeName}
                                     />
                                 </div>
                                 <div style={styles.chart}>
                                     <ErrorAnalysisChart
                                         sortedData={sortedData}
+                                        themeName={themeName}
                                     />
                                 </div>
                             </div>
