@@ -17,8 +17,8 @@
  */
 package org.wso2.analytics.apim.idp.client.token;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.TimerTask;
  */
 public class TokenDataMapCleaner extends TimerTask {
 
-    private static final Log log = LogFactory.getLog(TokenDataMapCleaner.class);
+    private static final Logger log = LoggerFactory.getLogger(TokenDataMapCleaner.class);
 
     @Override
     public void run() {
@@ -41,11 +41,11 @@ public class TokenDataMapCleaner extends TimerTask {
     private void cleanTokenDataMap() {
         long currentTimestamp = System.currentTimeMillis();
         Map<String, TokenData> tokenDataMap = TokenDataHolder.getInstance().getTokenMap();
-        Iterator it = tokenDataMap.entrySet().iterator();
+        Iterator<Map.Entry<String, TokenData>> it = tokenDataMap.entrySet().iterator();
         int count = 0;
         while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            TokenData tokenData = (TokenData) entry.getValue();
+            Map.Entry<String, TokenData> entry = it.next();
+            TokenData tokenData = entry.getValue();
             long expiryTime = tokenData.getExpireTimestamp() * 1000;
             if (currentTimestamp > expiryTime) { // if token is expired, remove token data from the tokeData map
                 it.remove();

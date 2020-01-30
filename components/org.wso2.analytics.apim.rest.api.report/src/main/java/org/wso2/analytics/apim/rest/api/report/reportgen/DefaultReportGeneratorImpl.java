@@ -57,7 +57,7 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
     private int numOfPages;
     private final String[] months = {"January", "February", "March", "April", "May", "June", "July", "August",
             "September", "October", "November", "December"};
-    private static SiddhiAppRuntime siddhiAppRuntime = null;
+    private SiddhiAppRuntime siddhiAppRuntime = null;
 
     /**
      * The default implementation of Monthly request report.
@@ -67,19 +67,20 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
      */
     public DefaultReportGeneratorImpl(String year, String month, String tenantDomain) throws IOException {
 
-        initializeSiddhiAPPRuntime();
         this.table = getRecordsFromAggregations(year, month, tenantDomain);
-        String[] columnHeaders = {"#", "API Name", "Version", "Application Name", "Application Owner",
-                "Request Count"};
-        table.setColumnHeaders(columnHeaders);
-        String monthName = months[Integer.parseInt(month) - 1];
-        this.period = monthName + " " + year;
-        this.numOfPages = ReportGeneratorUtil.getNumberOfPages(table.getRows().size());
-        this.document = initializePages();
-        this.recordsPerPageList = ReportGeneratorUtil.getRecordsPerPage(table.getRows().size());
+        if (table.getRows().size() > 0) {
+            String[] columnHeaders = {"#", "API Name", "Version", "Application Name", "Application Owner",
+                    "Request Count"};
+            table.setColumnHeaders(columnHeaders);
+            String monthName = months[Integer.parseInt(month) - 1];
+            this.period = monthName + " " + year;
+            this.numOfPages = ReportGeneratorUtil.getNumberOfPages(table.getRows().size());
+            this.document = initializePages();
+            this.recordsPerPageList = ReportGeneratorUtil.getRecordsPerPage(table.getRows().size());
+        }
     }
 
-    private static void initializeSiddhiAPPRuntime() throws IOException {
+    private void initializeSiddhiAPPRuntime() throws IOException {
         InputStream inputStream = DefaultReportGeneratorImpl.class.
                 getResourceAsStream(REQUEST_SUMMARY_MONTHLY_APP_NAME);
         String siddhiApp = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
@@ -145,7 +146,9 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
                 "RequestCount group by " +
                 "apiName, apiVersion, applicationName, applicationOwner order by RequestCount desc";
 
+        initializeSiddhiAPPRuntime();
         Event[] events = siddhiAppRuntime.query(requestCountQuery);
+        siddhiAppRuntime.shutdown();
         if (events == null) {
             return table; // no data found
         }

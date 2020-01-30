@@ -18,4 +18,8 @@
   -->
 
 <FindBugsFilter>
+    <Match>
+        <Class name="org.wso2.analytics.apim.idp.client.dao.OAuthAppDAO"/>
+        <Bug pattern="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"/>
+    </Match>
 </FindBugsFilter>

@@ -26,6 +26,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.analytics.apim.idp.client.dao.OAuthAppDAO;
 import org.wso2.analytics.apim.idp.client.token.TokenDataMapCleaner;
 import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderService;
 import org.wso2.carbon.analytics.idp.client.core.api.IdPClient;
@@ -40,11 +41,7 @@ import org.wso2.carbon.config.ConfigurationException;
 import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.kernel.config.model.CarbonConfiguration;
-import org.wso2.carbon.secvault.SecretRepository;
-import org.wso2.carbon.utils.StringUtils;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +55,6 @@ import java.util.Map;
 public class ApimIdPClientFactory implements IdPClientFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClientFactory.class);
     private DataSourceService dataSourceService;
-    private SecretRepository secretRepository;
     private boolean isHostnameVerifierEnabled;
     private AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService;
 
@@ -99,31 +95,6 @@ public class ApimIdPClientFactory implements IdPClientFactory {
      */
     protected void unregisterDataSourceService(DataSourceService dataSourceService) {
         this.dataSourceService = null;
-    }
-
-    /**
-     * Register secret repository.
-     *
-     * @param secretRepository
-     */
-    @Reference(
-            name = "org.wso2.carbon.secvault.repository.DefaultSecretRepository",
-            service = SecretRepository.class,
-            cardinality = ReferenceCardinality.MANDATORY,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterSecretRepository"
-    )
-    protected void registerSecretRepository(SecretRepository secretRepository) {
-        this.secretRepository = secretRepository;
-    }
-
-    /**
-     * Unregister secret repository.
-     *
-     * @param secretRepository
-     */
-    protected void unregisterSecretRepository(SecretRepository secretRepository) {
-        this.secretRepository = null;
     }
 
     @Reference(
@@ -176,10 +147,6 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         Map<String, String> properties = idPClientConfiguration.getProperties();
         String adminServiceUsername = properties.getOrDefault(ApimIdPClientConstants.ADMIN_USERNAME,
                 ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_USERNAME);
-        String adminServicePassword = properties.getOrDefault(ApimIdPClientConstants.ADMIN_PASSWORD,
-                ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_PASSWORD);
-        String adminServiceBaseUrl = properties.getOrDefault(ApimIdPClientConstants.ADMIN_SERVICE_BASE_URL,
-                ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_BASE_URL);
         String adminScopeName = properties.getOrDefault(ApimIdPClientConstants.ADMIN_SCOPE,
                 ApimIdPClientConstants.DEFAULT_ADMIN_SCOPE);
         String allScopes = properties.getOrDefault(ApimIdPClientConstants.ALL_SCOPES,
@@ -228,28 +195,6 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         oAuthAppInfoMap.put(portalAppContext, portalOAuthApp);
         oAuthAppInfoMap.put(businessAppContext, businessOAuthApp);
 
-        if (StringUtils.isNullOrEmpty(adminServiceBaseUrl)) {
-            String error = "Admin service base url cannot be empty. Please provide an admin service base url in the " +
-                    "deployment.yaml file.";
-            LOG.error(error);
-            throw new IdPClientException(error);
-        }
-        URI uri;
-        try {
-            uri = new URI(adminServiceBaseUrl);
-        } catch (URISyntaxException e) {
-            String error = "Error occurred while creating uri from given admin service base url: "
-                    + adminServiceBaseUrl;
-            LOG.error(error);
-            throw new IdPClientException(error, e);
-        }
-        String uriHost = uri.getHost();
-        if (uriHost == null) {
-            String error = "Cannot get the uri host for the given admin service base url: " + adminServiceBaseUrl;
-            LOG.error(error);
-            throw new IdPClientException(error);
-        }
-
         int cacheTimeout, connectionTimeout, readTimeout;
         try {
             cacheTimeout = Integer.parseInt(properties.getOrDefault(ApimIdPClientConstants.CACHE_TIMEOUT,
@@ -279,6 +224,11 @@ public class ApimIdPClientFactory implements IdPClientFactory {
             throw new IdPClientException(error, e);
         }
 
+        String databaseName = properties.getOrDefault(ApimIdPClientConstants.DATABASE_NAME,
+                ApimIdPClientConstants.DEFAULT_DATABASE_NAME);
+        OAuthAppDAO oAuthAppDAO = new OAuthAppDAO(this.dataSourceService, databaseName,
+                idPClientConfiguration.getQueries());
+
         DCRMServiceStub dcrmServiceStub = this.analyticsHttpClientBuilderService
                 .build(kmUsername, kmPassword, connectionTimeout, readTimeout, DCRMServiceStub.class, dcrEndpoint);
         OAuth2ServiceStubs keyManagerServiceStubs = new OAuth2ServiceStubs(
@@ -289,7 +239,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         String targetURIForRedirection = properties.getOrDefault(ApimIdPClientConstants.EXTERNAL_SSO_LOGOUT_URL,
                             ApimIdPClientConstants.DEFAULT_EXTERNAL_SSO_LOGOUT_URL);
 
-        return new ApimIdPClient(adminServiceBaseUrl, adminServiceUsername, adminServicePassword, uriHost, baseUrl,
+        return new ApimIdPClient(adminServiceUsername, baseUrl, oAuthAppDAO,
                 kmTokenUrlForRedirectUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType, adminScopeName,
                 allScopes, oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub, keyManagerServiceStubs,
                 idPClientConfiguration.isSsoEnabled(), targetURIForRedirection, this.isHostnameVerifierEnabled);

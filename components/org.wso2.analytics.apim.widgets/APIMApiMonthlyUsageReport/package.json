@@ -1,5 +1,5 @@
 {
-    "name": "apim-admin-reports",
+    "name": "api-usage-report",
     "version": "1.0.0",
     "private": true,
     "dependencies": {

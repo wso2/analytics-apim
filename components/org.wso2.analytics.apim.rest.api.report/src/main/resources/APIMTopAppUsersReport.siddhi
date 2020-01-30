@@ -9,6 +9,7 @@ protocol string, responseCode int, destination string, securityLatency long, thr
 responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
 
 @store(type = 'rdbms', datasource ='APIM_ANALYTICS_DB')
+@purge(enable='false')
 define aggregation ApiUserPerAppAgg from Request select apiName,apiVersion, apiContext, apiCreator,
 apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain,
 count() as totalRequestCount, gatewayType, label,'default' as regionalID group by apiContext,apiHostname, applicationId,
