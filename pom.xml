@@ -805,7 +805,12 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.dashboards</artifactId>
+                <artifactId>org.wso2.analytics.apim.dashboards.core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.dashboards.theme.config.provider</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
