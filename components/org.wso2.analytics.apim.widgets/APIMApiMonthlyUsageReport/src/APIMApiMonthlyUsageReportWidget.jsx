@@ -236,6 +236,7 @@ class APIMApiMonthlyUsageReportWidget extends Widget {
                                 <div>
                                     <PDFView
                                         src={`${pdfBaseUrl}?year=${this.state.year}&month=${monthString}`}
+                                        themeName={themeName}
                                     />
                                 </div>
                             </div>
