@@ -24,84 +24,13 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.analytics.apim.dashboards</artifactId>
-    <packaging>bundle</packaging>
-    <name>APIM Analytics Dashboard Services</name>
-    <description>Services for APIM Analytics Dashboard</description>
-    <url>http://wso2.org</url>
+    <artifactId>analytics-apim-dashboards-components</artifactId>
+    <packaging>pom</packaging>
+    <name>APIM Analytics Dashboard Components</name>
 
-    <dependencies>
-        <!--Dashboard-->
-        <dependency>
-            <groupId>org.wso2.carbon.dashboards</groupId>
-            <artifactId>org.wso2.carbon.dashboards.core</artifactId>
-        </dependency>
-
-        <!--Analytics-->
-        <dependency>
-            <groupId>org.wso2.carbon.analytics</groupId>
-            <artifactId>org.wso2.carbon.data.provider</artifactId>
-        </dependency>
-
-        <!-- Analytics common -->
-        <dependency>
-            <groupId>org.wso2.carbon.analytics-common</groupId>
-            <artifactId>org.wso2.carbon.analytics.idp.client</artifactId>
-        </dependency>
-
-        <!--Gson-->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
-
-        <!--Carbon Config-->
-        <dependency>
-            <groupId>org.wso2.carbon.config</groupId>
-            <artifactId>org.wso2.carbon.config</artifactId>
-        </dependency>
-
-        <!--OSGi-->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.eclipse.osgi</groupId>
-            <artifactId>org.eclipse.osgi.services</artifactId>
-        </dependency>
-
-        <!--Logging-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-
-    </dependencies>
-
-    <properties>
-        <export.package>
-            !org.wso2.analytics.apim.dashboards.internal*,
-            org.wso2.analytics.apim.dashboards.*; version="${project.version}"
-        </export.package>
-        <private.package>
-            org.wso2.analytics.apim.dashboards.internal.*,
-        </private.package>
-        <import.package>
-            org.wso2.carbon.dashboards.core.*; version="${carbon.dashboards.version.range.version}",
-            org.wso2.carbon.datasource.core.*; version="${org.wso2.carbon.datasource.version.range}",
-            org.wso2.carbon.config.*; version="${carbon.config.version.range}",
-            org.wso2.carbon.data.provider.*; version="${carbon.analytics.version.range}",
-            org.wso2.carbon.analytics.idp.client.*; version="${carbon.analytics-common.version.range}",
-            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
-            org.slf4j.*; version="${slf4j.logging.package.import.version.range}",
-            com.google.gson.*; version="${gson.import.version.range}",
-            feign.*; version="${feign.version}",
-        </import.package>
-    </properties>
+    <modules>
+        <module>org.wso2.analytics.apim.dashboards.core</module>
+        <module>org.wso2.analytics.apim.dashboards.theme.config.provider</module>
+    </modules>
 
 </project>
