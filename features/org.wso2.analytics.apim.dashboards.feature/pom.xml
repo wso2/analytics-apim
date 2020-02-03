@@ -59,7 +59,11 @@
                             </adviceFileContents>
                             <bundles>
                                 <bundle>
-                                    <symbolicName>org.wso2.analytics.apim.dashboards</symbolicName>
+                                    <symbolicName>org.wso2.analytics.apim.dashboards.core</symbolicName>
+                                    <version>${project.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.wso2.analytics.apim.dashboards.theme.config.provider</symbolicName>
                                     <version>${project.version}</version>
                                 </bundle>
                             </bundles>

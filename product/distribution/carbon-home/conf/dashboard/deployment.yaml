@@ -403,3 +403,4 @@ wso2.dashboard:
   roles:
     creators:
       - apim_analytics:admin_carbon.super
+  themeConfigProviderClass: org.wso2.carbon.dashboards.core.DefaultDashboardThemeConfigProvider
