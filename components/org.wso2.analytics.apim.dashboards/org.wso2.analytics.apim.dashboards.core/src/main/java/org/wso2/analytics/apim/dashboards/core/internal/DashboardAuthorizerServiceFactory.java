@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.analytics.apim.dashboards.internal;
+package org.wso2.analytics.apim.dashboards.core.internal;
 
 import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderService;
 
