@@ -17,7 +17,7 @@
             "resourcequery": "from AM_API_URL_MAPPING on API_ID=={{apiID}} select URL_PATTERN,HTTP_METHOD;",
             "mainquery":"from ApiErroranalysisAgg on {{querystring}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select AGG_TIMESTAMP, sum(totalRequestCount) as reqcount group by AGG_TIMESTAMP having  str:charFrequency(apiResourceTemplate,',') == {{numberOfCommas}} order by AGG_TIMESTAMP;"
           },
-          "publishingInterval": 60
+          "publishingInterval": 60000
         }
       }
     },

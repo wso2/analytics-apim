@@ -588,32 +588,37 @@ class APIMApiTrafficTrendsWidget extends Widget {
         } else {
             operationSelected.push(event.target.value);
         }
+        if (operationSelected.length === 0) {
+            this.setState({ operationSelected: [], inProgress: false, dataarray: [] });
+            this.setQueryParam(apiSelected, apiVersion, operationSelected);
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+        } else {
+            const operations = [];
+            const operationTypes = [];
+            let method = '';
+            const legenddata = [];
 
-        const operations = [];
-        const operationTypes = [];
-        let method = '';
-        const legenddata = [];
+            operationSelected.forEach((element) => {
+                const resFormat = element.split(' (');
+                operations.push(resFormat[0]);
+                method = resFormat[1].replace(')', '');
+                operationTypes.push(method);
+            });
 
-        operationSelected.forEach((element) => {
-            const resFormat = element.split(' (');
-            operations.push(resFormat[0]);
-            method = resFormat[1].replace(')', '');
-            operationTypes.push(method);
-        });
+            operations.forEach((element) => {
+                legenddata.push(
+                    { name: element },
+                );
+            });
+            this.setState({
+                operationSelected, inProgress: true, dataarray: [], legandDataSet: legenddata,
+            });
+            this.setQueryParam(apiSelected, apiVersion, operationSelected);
+            super.getWidgetChannelManager().unsubscribeWidget(id);
 
-        operations.forEach((element) => {
-            legenddata.push(
-                { name: element },
-            );
-        });
-        this.setState({
-            operationSelected, inProgress: true, dataarray: [], legandDataSet: legenddata,
-        });
-        this.setQueryParam(apiSelected, apiVersion, operationSelected);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-
-        for (let index = 0; index < operations.length; index++) {
-            this.assembleMainQuery(operations[index], operationTypes[index]);
+            for (let index = 0; index < operations.length; index++) {
+                this.assembleMainQuery(operations[index], operationTypes[index]);
+            }
         }
     }
 

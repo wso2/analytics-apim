@@ -265,7 +265,7 @@ export default function APIMApiTrafficTrends(props) {
                             </div>
                         ) : (
                             <div>
-                                { !dataarray || dataarray.length === 0 ? (
+                                { !dataarray || dataarray.length === 0 || queryParam.operationSelected.length === 0 ? (
                                     <div style={styles.paperWrapper}>
                                         <Paper
                                             elevation={1}
