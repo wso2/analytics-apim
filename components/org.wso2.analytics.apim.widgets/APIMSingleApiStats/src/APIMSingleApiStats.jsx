@@ -44,6 +44,7 @@ export default function APIMSingleApiStats(props) {
         themeName, height, apiname, totalRequestCount, trafficData, latencyData,
         totalErrorCount, errorData, averageLatency, formattedErrorPercentage, sortedData, timeFrom,
         timeTo, apiVersion, apiList, apiSelected, apiSelectedHandleChange, inProgress,
+        xAxisTicks, errorCountxAxisTicks,
     } = props;
 
     const styles = {
@@ -137,18 +138,21 @@ export default function APIMSingleApiStats(props) {
                                     <Trafficchart
                                         trafficData={trafficData}
                                         themeName={themeName}
+                                        xAxisTicks={xAxisTicks}
                                     />
                                 </div>
                                 <div style={styles.chart}>
                                     <LatencyChart
                                         latencyData={latencyData}
                                         themeName={themeName}
+                                        xAxisTicks={xAxisTicks}
                                     />
                                 </div>
                                 <div style={styles.chart}>
                                     <ErrorDetailChart
                                         errorData={errorData}
                                         themeName={themeName}
+                                        xAxisTicks={errorCountxAxisTicks}
                                     />
                                 </div>
                                 <div style={styles.chart}>
@@ -189,6 +193,8 @@ export default function APIMSingleApiStats(props) {
 APIMSingleApiStats.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    xAxisTicks: PropTypes.instanceOf(Object).isRequired,
+    errorCountxAxisTicks: PropTypes.instanceOf(Object).isRequired,
     errorData: PropTypes.instanceOf(Object).isRequired,
     trafficData: PropTypes.instanceOf(Object).isRequired,
     latencyData: PropTypes.instanceOf(Object).isRequired,

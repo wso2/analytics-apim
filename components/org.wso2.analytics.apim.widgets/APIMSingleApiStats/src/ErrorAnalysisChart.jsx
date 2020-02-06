@@ -62,9 +62,9 @@ export default function ErrorAnalysisChart(props) {
         },
         maindiv: {
             maxWidth: '100%',
-            maxHeight: '420px',
+            maxHeight: '450px',
             minWidth: '50%',
-            minHeight: '420px',
+            minHeight: '450px',
             marginRight: '2px',
             backgroundColor: themeName === 'dark' ? '#040b4b' : '#E8E8E8',
             marginTop: '5px',
@@ -122,7 +122,7 @@ export default function ErrorAnalysisChart(props) {
                         />
                     </h3>
                 </div>
-                <svg viewBox='-150 0 500 200'>
+                <svg viewBox='-150 5 500 200'>
                     <VictoryPie
                         animate={{
                             duration: 2000,

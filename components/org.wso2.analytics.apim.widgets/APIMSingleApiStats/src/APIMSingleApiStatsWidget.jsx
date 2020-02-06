@@ -27,7 +27,6 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import Moment from 'moment';
 import APIMSingleApiStats from './APIMSingleApiStats';
 
 const darkTheme = createMuiTheme({
@@ -120,11 +119,12 @@ class APIMSingleApiStatsWidget extends Widget {
             sortedData: null,
             formattedErrorPercentage: null,
             xAxisTicks: null,
-            maxCount: null,
+            errorCountxAxisTicks: null,
             inProgress: true,
             urlAvailable: true,
             apiList: [],
             apiSelected: null,
+            trafficDataArray: [],
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -335,23 +335,37 @@ class APIMSingleApiStatsWidget extends Widget {
         const { data } = message;
         const { id } = this.props;
 
-        if (data) {
+        if (data.length !== 0) {
             const trafficData = [];
+            const xAxisTicks = [];
             let totalRequestCount = 0;
 
-            data.forEach((e) => {
-                totalRequestCount += e[2];
+            data.forEach((dataUnit) => {
                 trafficData.push({
-                    x: Moment(e[1])
-                        .format('YYYY/MM/DD hh:mm'),
-                    y: e[2],
+                    x: new Date(dataUnit[1]).getTime(),
+                    y: dataUnit[2],
                 });
+                totalRequestCount += dataUnit[2];
             });
 
-            this.setState({ trafficData, totalRequestCount });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleLatencyQuery();
+            const first = new Date(trafficData[0].x).getTime();
+            const last = new Date(trafficData[trafficData.length - 1].x).getTime();
+            const interval = (last - first) / 4;
+            let duration = 0;
+            xAxisTicks.push(first);
+            for (let i = 1; i <= 4; i++) {
+                duration = interval * i;
+                xAxisTicks.push(new Date(first + duration).getTime());
+            }
+
+            this.setState({
+                trafficData, xAxisTicks, totalRequestCount,
+            });
+        } else {
+            this.setState({ totalRequestCount: 0, trafficData: [] });
         }
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+        this.assembleLatencyQuery();
     }
 
     /**
@@ -387,7 +401,7 @@ class APIMSingleApiStatsWidget extends Widget {
     handleLatencyReceived(message) {
         const { data } = message;
         const { id } = this.props;
-        if (data) {
+        if (data.length !== 0) {
             const latencyData = [];
             let totalLatencyCount = 0;
             let totallatencytime = 0;
@@ -396,24 +410,19 @@ class APIMSingleApiStatsWidget extends Widget {
             data.forEach((e) => {
                 totalLatencyCount += e[2];
                 latencyData.push({
-                    x: Moment(e[1])
-                        .format('YYYY/MM/DD hh:mm'),
+                    x: new Date(e[1]).getTime(),
                     y: (e[3] / e[2]),
                 });
                 totallatencytime += e[3];
             });
 
             averageLatency = Math.floor(totallatencytime / totalLatencyCount);
-
-            if (isNaN(averageLatency)) {
-                this.setState({ latencyData, averageLatency: 0 });
-            } else {
-                this.setState({ latencyData, averageLatency });
-            }
-
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleErrorsQuery();
+            this.setState({ latencyData, averageLatency });
+        } else {
+            this.setState({ latencyData: [], averageLatency: 0 });
         }
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+        this.assembleErrorsQuery();
     }
 
     /**
@@ -449,24 +458,35 @@ class APIMSingleApiStatsWidget extends Widget {
     handlEerrorsReceived(message) {
         const { data } = message;
         const { id } = this.props;
-        if (data) {
+
+        if (data.length !== 0) {
             const errorData = [];
+            const errorCountxAxisTicks = [];
             let totalErrorCount = 0;
 
             data.forEach((e) => {
                 totalErrorCount += e[2];
                 errorData.push({
-                    x: Moment(e[3])
-                        .format('YYYY/MM/DD hh:mm'),
+                    x: new Date(e[3]).getTime(),
                     y: (e[2]),
                 });
             });
 
-            this.setState({ totalErrorCount, errorData });
-
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.errorPercentageQuery();
+            const first = new Date(errorData[0].x).getTime();
+            const last = new Date(errorData[errorData.length - 1].x).getTime();
+            const interval = (last - first) / 4;
+            let duration = 0;
+            errorCountxAxisTicks.push(first);
+            for (let i = 1; i <= 4; i++) {
+                duration = interval * i;
+                errorCountxAxisTicks.push(new Date(first + duration).getTime());
+            }
+            this.setState({ totalErrorCount, errorData, errorCountxAxisTicks });
+        } else {
+            this.setState({ totalErrorCount: 0, errorData: [] });
         }
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+        this.errorPercentageQuery();
     }
 
     /**
@@ -603,7 +623,8 @@ class APIMSingleApiStatsWidget extends Widget {
         const {
             localeMessages, faultyProviderConfig, height, apiname, apiVersion, totalRequestCount,
             trafficData, latencyData, totalLatencyCount, timeFrom, timeTo, totalErrorCount,
-            errorData, averageLatency, formattedErrorPercentage, sortedData, inProgress, apiList, apiSelected,
+            errorData, averageLatency, formattedErrorPercentage, sortedData, inProgress, apiList,
+            apiSelected, xAxisTicks, errorCountxAxisTicks,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -629,6 +650,8 @@ class APIMSingleApiStatsWidget extends Widget {
             apiList,
             apiSelected,
             inProgress,
+            xAxisTicks,
+            errorCountxAxisTicks,
         };
 
         return (

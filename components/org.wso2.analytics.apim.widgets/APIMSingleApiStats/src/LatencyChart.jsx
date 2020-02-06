@@ -20,9 +20,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
-import { VictoryChart, VictoryArea, VictoryAxis } from 'victory';
+import {
+    VictoryChart, VictoryArea, VictoryAxis, VictoryLabel,
+} from 'victory';
 import Paper from '@material-ui/core/Paper';
 import { FormattedMessage } from 'react-intl';
+import Moment from 'moment';
 
 /**
  * Display the latency data categorized by timestamp
@@ -30,7 +33,7 @@ import { FormattedMessage } from 'react-intl';
  * @returns {ReactElement} Render the latencyChart component
  */
 export default function latencyChart(props) {
-    const { latencyData, themeName } = props;
+    const { latencyData, themeName, xAxisTicks } = props;
     const styles = {
         input: {
             display: 'none',
@@ -62,16 +65,16 @@ export default function latencyChart(props) {
         },
         maindiv: {
             maxWidth: '100%',
-            maxHeight: '420px',
+            maxHeight: '450px',
             minWidth: '50%',
-            minHeight: '420px',
+            minHeight: '450px',
             marginRight: '2px',
             backgroundColor: themeName === 'dark' ? '#040b4b' : '#E8E8E8',
             marginTop: '5px',
         },
         victry: {
             axisLabel: {
-                padding: 30,
+                padding: 40,
                 fill: themeName === 'dark' ? '#fff' : '#02212f',
                 fontSize: '8px',
             },
@@ -80,6 +83,27 @@ export default function latencyChart(props) {
             data: {
                 fill: themeName === 'dark' ? '#0e0e24' : '#2571a7',
             },
+        },
+        axisStyles: {
+            grid: {
+                stroke: 'none',
+            },
+            axis: {
+                stroke: themeName === 'dark' ? '#0e0e24' : '#000',
+                strokeWidth: 1,
+            },
+        },
+        tickLabel: {
+            fill: themeName === 'dark'
+                ? '#fff' : '#000',
+            fontFamily: themeName === 'dark'
+                ? '#fff' : '#000',
+            fontSize: 8,
+        },
+        axisLabel: {
+            fill: themeName === 'dark' ? '#fff' : '#000',
+            fontFamily: 'inherit',
+            fontSize: 8,
         },
     };
     const chartTheme = {
@@ -138,8 +162,7 @@ export default function latencyChart(props) {
                         />
                     </h3>
                 </div>
-                <svg viewBox='-50 1 500 200'>
-                    <h6>Traffic Vs Time</h6>
+                <svg viewBox='-50 5 500 200'>
                     <VictoryChart
                         theme={chartTheme}
                         standalone={false}
@@ -155,8 +178,31 @@ export default function latencyChart(props) {
                             data={latencyData}
                         />
                         <VictoryAxis
+                            scale='time'
+                            standalone={false}
+                            width={700}
+                            style={styles.axisStyles}
                             label='Time'
-                            style={styles.victry}
+                            tickValues={xAxisTicks}
+                            tickFormat={
+                                (x) => {
+                                    return Moment(x).format('YY/MM/DD hh:mm');
+                                }
+                            }
+                            tickLabelComponent={(
+                                <VictoryLabel
+                                    dx={-5}
+                                    dy={-5}
+                                    angle={35}
+                                    style={styles.tickLabel}
+                                />
+                            )}
+                            axisLabelComponent={(
+                                <VictoryLabel
+                                    dy={20}
+                                    style={styles.axisLabel}
+                                />
+                            )}
                         />
                         <VictoryAxis
                             dependentAxis
@@ -172,5 +218,6 @@ export default function latencyChart(props) {
 
 latencyChart.propTypes = {
     latencyData: PropTypes.instanceOf(Object).isRequired,
+    xAxisTicks: PropTypes.instanceOf(Object).isRequired,
     themeName: PropTypes.string.isRequired,
 };
