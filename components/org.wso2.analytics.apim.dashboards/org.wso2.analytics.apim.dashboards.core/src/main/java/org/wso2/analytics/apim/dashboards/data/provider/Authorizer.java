@@ -46,6 +46,8 @@ import org.wso2.carbon.data.provider.bean.DataProviderConfigRoot;
 import org.wso2.carbon.data.provider.exception.DataProviderException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -357,13 +359,14 @@ public class Authorizer implements DataProviderAuthorizer {
             throw new DataProviderException(error);
         }
         try {
+            String encodedUsername = Base64.getEncoder().encodeToString(username.getBytes(StandardCharsets.UTF_8));
             Response response = DashboardAuthorizerServiceFactory
                     .getAuthorizerHttpsClient(
                             this.clientBuilderService,
                             (adminServiceUrl + "/api/am/admin/v0.16/tenant-info"),
                             adminUsername,
                             adminPassword)
-                    .getTenantId(username);
+                    .getTenantId(encodedUsername);
             if (response == null) {
                 String error = "Response returned from the admin rest api is null.";
                 LOGGER.error(error);
