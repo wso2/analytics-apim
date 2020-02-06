@@ -363,7 +363,7 @@ wso2.transport.http:
 
 ## Dashboard data provider authorization
 data.provider.configs:
-  authorizingClass: org.wso2.carbon.dashboards.core.DashboardDataProviderAuthorizer
+  authorizingClass: org.wso2.analytics.apim.dashboards.data.provider.Authorizer
 
 ## Additional APIs that needs to be added to the server.
 ## Should be provided as a key value pairs { API context path: Microservice implementation class }
@@ -403,3 +403,4 @@ wso2.dashboard:
   roles:
     creators:
       - apim_analytics:admin_carbon.super
+  themeConfigProviderClass: org.wso2.carbon.dashboards.core.DefaultDashboardThemeConfigProvider

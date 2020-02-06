@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~ Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,24 +18,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.analytics.apim</groupId>
-        <artifactId>analytics-apim</artifactId>
+        <artifactId>analytics-apim-components</artifactId>
         <version>3.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
+    <artifactId>analytics-apim-dashboards-components</artifactId>
     <packaging>pom</packaging>
-    <name>Apim Analytics Components</name>
-    <artifactId>analytics-apim-components</artifactId>
+    <name>APIM Analytics Dashboard Components</name>
 
     <modules>
-        <module>org.wso2.sp.extension.siddhi.io.mgwfile</module>
-        <module>org.wso2.analytics.apim.rest.api.file</module>
-        <module>org.wso2.analytics.apim.idp.client</module>
-        <module>org.wso2.analytics.apim.rest.api.proxy</module>
-        <module>org.wso2.analytics.apim.rest.api.report</module>
-        <module>org.wso2.analytics.mgw.grpc.service</module>
-        <module>org.wso2.analytics.apim.dashboards</module>
-        <module>org.wso2.analytics.apim.widgets</module>
+        <module>org.wso2.analytics.apim.dashboards.core</module>
+        <module>org.wso2.analytics.apim.dashboards.theme.config.provider</module>
     </modules>
 
 </project>

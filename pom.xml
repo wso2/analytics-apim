@@ -653,6 +653,11 @@
             <!-- Data Provider -->
             <dependency>
                 <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.data.provider</artifactId>
+                <version>${carbon.analytics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
                 <artifactId>org.wso2.carbon.data.provider.feature</artifactId>
                 <version>${carbon.analytics.version}</version>
                 <type>zip</type>
@@ -724,6 +729,14 @@
                 <artifactId>org.wso2.carbon.database.query.manager</artifactId>
                 <version>${carbon.analytics-common.version}</version>
             </dependency>
+
+            <!--Dashboard-->
+            <dependency>
+                <groupId>org.wso2.carbon.dashboards</groupId>
+                <artifactId>org.wso2.carbon.dashboards.core</artifactId>
+                <version>${carbon.dashboards.version}</version>
+            </dependency>
+
             <!-- Datasources -->
             <dependency>
                 <groupId>org.wso2.carbon.datasources</groupId>
@@ -789,6 +802,22 @@
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>jempbox</artifactId>
                 <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.dashboards.core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.dashboards.theme.config.provider</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.analytics.apim</groupId>
+                <artifactId>org.wso2.analytics.apim.dashboards.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
             </dependency>
 
             <!-- Microgateway gRPC service related -->
@@ -983,6 +1012,7 @@
     <properties>
 
         <carbon.analytics.version>3.0.23</carbon.analytics.version>
+        <carbon.analytics.version.range>[3.0.0, 4.0.0)</carbon.analytics.version.range>
         <siddhi.version>5.1.12</siddhi.version>
         <siddhi.core.import.version.range>[5.1,6.0]</siddhi.core.import.version.range>
         <carbon.analytics-common.version>6.1.41</carbon.analytics-common.version>
@@ -1014,7 +1044,7 @@
         <carbon.deployment.version>5.2.1</carbon.deployment.version>
 
         <carbon.datasources.version>1.1.4</carbon.datasources.version>
-        <org.wso2.carbon.datasource.version.range>[1.0.0, 2.0.0)</org.wso2.carbon.datasource.version.range>
+        <org.wso2.carbon.datasource.version.range>[1.1.1, 2.0.0)</org.wso2.carbon.datasource.version.range>
         <carbon.metrics.version>2.3.8</carbon.metrics.version>
         <carbon.jndi.version>1.0.5</carbon.jndi.version>
 
@@ -1033,7 +1063,8 @@
         <pdfbox.version>1.8.16</pdfbox.version>
         <pdfbox.import.version.range>[1.8,2.0)</pdfbox.import.version.range>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.13</carbon.dashboards.version>
+        <carbon.dashboards.version>4.1.14</carbon.dashboards.version>
+        <carbon.dashboards.version.range.version>[4.1,4.2)</carbon.dashboards.version.range.version>
         <carbon.uis.version>1.0.4</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
