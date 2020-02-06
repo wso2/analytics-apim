@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.analytics.apim.dashboards.data.provider;
+package org.wso2.analytics.apim.dashboards.core.data.provider;
 
 import com.google.gson.JsonElement;
 import feign.Response;
@@ -27,8 +27,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.analytics.apim.dashboards.bean.TenantIdInfo;
-import org.wso2.analytics.apim.dashboards.internal.DashboardAuthorizerServiceFactory;
+import org.wso2.analytics.apim.dashboards.core.bean.TenantIdInfo;
+import org.wso2.analytics.apim.dashboards.core.internal.DashboardAuthorizerServiceFactory;
 import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderService;
 import org.wso2.carbon.config.ConfigurationException;
 import org.wso2.carbon.config.provider.ConfigProvider;
