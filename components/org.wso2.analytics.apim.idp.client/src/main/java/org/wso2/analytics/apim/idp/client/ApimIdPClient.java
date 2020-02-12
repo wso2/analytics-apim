@@ -196,8 +196,10 @@ public class ApimIdPClient extends ExternalIdPClient {
         TokenData tokenData = TokenDataHolder.getInstance().getTokenMap().get(name);
         ArrayList<Role> roles;
         if (tokenData == null) {
-            LOG.debug("Cannot find the token data for the user: " + name + " in the token data map. Hence, cannot " +
-                    "retrieve user scopes. Empty array returned for roles.");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Cannot find the token data for the user: " + name + " in the token data map. Hence, cannot" +
+                        " retrieve user scopes. Empty array returned for roles.");
+            }
             roles = new ArrayList<>();
         } else {
             String scopes = tokenData.getScopes();
