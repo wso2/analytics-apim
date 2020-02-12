@@ -20,6 +20,7 @@ package org.wso2.analytics.apim.idp.client;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
+import com.oracle.tools.packager.Log;
 import feign.Response;
 import feign.gson.GsonDecoder;
 import org.slf4j.Logger;
@@ -755,6 +756,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             try {
                 customUrlInfo = (CustomUrlInfo) new GsonDecoder().decode(response,
                         CustomUrlInfo.class);
+                LOG.debug(customUrlInfo.toString());
             } catch (IOException e) {
                 String error = "Error occurred while parsing the Custom Url info response for tenant :" + tenantDomain +
                         ". message. Response: '" + response.body().toString() + "'.";

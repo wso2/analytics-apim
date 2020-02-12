@@ -30,7 +30,7 @@ public class ApimAdminApiClientHolder {
                                                                         String url, String username, String password) {
 
         if (instance == null) {
-            instance = service.build(username, password, 000, 1000, ApimAdminApiClient.class, url);
+            instance = service.build(username, password, 2000, 2000, ApimAdminApiClient.class, url);
         }
         return instance;
     }

@@ -72,4 +72,15 @@ public class CustomUrlInfo {
 
         this.devPortalUrlDTO = devPortalUrlDTO;
     }
+
+    @Override
+    public String toString() {
+
+        return "CustomUrlInfo{" +
+                "tenantDomain='" + tenantDomain + '\'' +
+                ", tenantAdminUsername='" + tenantAdminUsername + '\'' +
+                ", isEnabled=" + isEnabled +
+                ", devPortalUrl=" + devPortalUrlDTO.getUrl() +
+                '}';
+    }
 }
