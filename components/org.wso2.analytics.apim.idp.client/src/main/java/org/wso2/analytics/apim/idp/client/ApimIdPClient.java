@@ -309,7 +309,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         if (isCustomUrlApplicable) {
             baseUrl =  customUrlInfo.getDevPortalUrlDTO().getUrl();
             oAuthAppContext = oAuthAppContext + "_" + customUrlInfo.getTenantDomain();
-            authorizationUrl = baseUrl + "/oauth2" + ApimIdPClientConstants.AUTHORIZE_POSTFIX;
+            authorizationUrl = baseUrl + ApimIdPClientConstants.OAUTH2_POSTFIX +
+                    ApimIdPClientConstants.AUTHORIZE_POSTFIX;
         }
         String username = properties.get(IdPClientConstants.USERNAME);
         if (IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE.equals(grantType)) {
@@ -437,7 +438,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         if (isCustomUrlApplicable) {
             oAuthAppContext = oAuthAppContext + "_" + customUrlInfo.getTenantDomain();
             baseUrl = customUrlInfo.getDevPortalUrlDTO().getUrl();
-            ssoLogoutURL = baseUrl + "/oidc/logout";
+            ssoLogoutURL = baseUrl + ApimIdPClientConstants.OIDC_LOGOUT_POSTFIX;
         }
         oAuth2ServiceStubs.getRevokeServiceStub().revokeAccessToken(
                 token,
@@ -638,10 +639,10 @@ public class ApimIdPClient extends ExternalIdPClient {
      * @param appContext  context of the application
      * @param clientName name of the client
      * @param kmUserName username of the key manager
+     * @param customUrlInfo CustomUrlinfo for the tenant domain
      * @throws IdPClientException thrown when an error occurred when sending the DCR call or retrieving application
      * data using OAuthAdminService service
      */
-    //todo change javadoc
     private void registerApplication(String appContext, String clientName, String kmUserName, CustomUrlInfo
             customUrlInfo) throws IdPClientException {
 

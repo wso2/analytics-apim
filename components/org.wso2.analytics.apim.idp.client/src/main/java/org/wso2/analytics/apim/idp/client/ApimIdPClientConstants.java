@@ -96,6 +96,8 @@ public class ApimIdPClientConstants {
     public static final String TOKEN_POSTFIX = "/token";
     public static final String INTROSPECT_POSTFIX = "/introspect";
     public static final String AUTHORIZE_POSTFIX = "/authorize";
+    public static final String OAUTH2_POSTFIX = "/oauth2";
+    public static final String OIDC_LOGOUT_POSTFIX = "/oidc/logout";
 
     public static final String ANY_TENANT_DOMAIN_SCOPE_POSTFIX = "_any";
     public static final String UNDERSCORE = "_";
