@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-@App:name("APIM_EVENT_RECEIVER_310")
+@App:name("APIM_EVENT_RECEIVER_3.1.0")
 @App:description("Receive the 3.1.0 streams and passes it for in-memory sinks.")
 
 @source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.1.0', @map(type = 'wso2event'))
