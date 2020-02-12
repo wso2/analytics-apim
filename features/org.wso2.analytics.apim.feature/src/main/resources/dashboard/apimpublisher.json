@@ -29,15 +29,14 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 23.292402731148837,
-                      "height": 100,
+                      "width": 25.220140057284585,
                       "content": [
                         {
-                          "title": "[APIM Api Created]",
+                          "title": "[APIM Api Usage Summary]",
                           "type": "component",
-                          "component": "APIMApiCreated",
+                          "component": "APIMApiUsageSummary",
                           "props": {
-                            "id": "fc2f6271-4062-44d1-b011-8b50d60f3605",
+                            "id": "105cf666-d42e-49c8-aec4-aea7fd139825",
                             "configs": {
                               "pubsub": {
                                 "types": [
@@ -50,7 +49,7 @@
                                 "header": true
                               }
                             },
-                            "widgetID": "APIMApiCreated"
+                            "widgetID": "APIMApiUsageSummary"
                           },
                           "isClosable": false,
                           "header": {
@@ -64,27 +63,26 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 23.582652679348584,
+                      "width": 25.29424191286367,
                       "content": [
                         {
-                          "title": "[APIM App Created]",
+                          "title": "[APIM Faults Summary]",
                           "type": "component",
-                          "component": "APIMAppCreated",
+                          "component": "APIMApiFaultsSummary",
                           "props": {
-                            "id": "c9068e52-f0f6-45a7-8976-cabaf3b46364",
+                            "id": "ccebd0d2-fa9b-42b8-ba82-72701399ad39",
                             "configs": {
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ],
-                                "publishers": []
+                                ]
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": true
                               }
                             },
-                            "widgetID": "APIMAppCreated"
+                            "widgetID": "APIMApiFaultsSummary"
                           },
                           "isClosable": false,
                           "header": {
@@ -98,7 +96,40 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 27.363077918022785,
+                      "width": 25.29424191286367,
+                      "content": [
+                        {
+                          "title": "[APIM Throttled Api Summary]",
+                          "type": "component",
+                          "component": "APIMApiThrottledSummary",
+                          "props": {
+                            "id": "326d7bcf-297d-45de-bcc2-c642d3494ca6",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true
+                              }
+                            },
+                            "widgetID": "APIMApiThrottledSummary"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 24.19137611698806,
                       "content": [
                         {
                           "title": "[APIM Subscriptions]",
@@ -119,40 +150,6 @@
                               }
                             },
                             "widgetID": "APIMSubscriptions"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "width": 25.761866671479783,
-                      "content": [
-                        {
-                          "title": "[APIM Developer Signups]",
-                          "type": "component",
-                          "component": "APIMDeveloperSignups",
-                          "props": {
-                            "id": "3ada6870-9cef-44f4-98fa-e2b4734e41ad",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": []
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true
-                              }
-                            },
-                            "widgetID": "APIMDeveloperSignups"
                           },
                           "isClosable": false,
                           "header": {
@@ -1427,25 +1424,25 @@
       "APIMApiResourceUsageSummary",
       "APIMApiUsage",
       "APIMApiVersionUsageSummary",
-      "APIMApiCreated",
       "APIMTopThrottledOutApis",
       "APIMApiCreatedAnalytics",
       "APIMTopUserAgents",
       "APIMApiRatings",
       "DateRangePicker",
       "APIMApiLatencyTime",
-      "APIMDeveloperSignups",
+      "APIMApiFaultsSummary",
+      "APIMApiThrottledSummary",
       "APIMOverallApiUsage",
       "APIMTopAppCreators",
       "APIMAppCreatedAnalytics",
       "APIMTopApiUsers",
       "APIMTopFaultyApis",
-      "APIMAppCreated",
       "APIMApiLastAccessSummary",
       "APIMSubscriptions",
       "APIMTopSubscribers",
       "APIMSubscriptionsAnalytics",
       "APIMTopApiCreators",
+      "APIMApiUsageSummary",
       "APIMGeoBasedInvocations"
     ]
   },
