@@ -19,10 +19,9 @@
 
 import React from 'react';
 import {
-    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
+    addLocaleData, defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
 import Axios from 'axios';
-import cloneDeep from 'lodash/cloneDeep';
 import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -30,6 +29,9 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
 import APIMSubscriptions from './APIMSubscriptions';
+
+const LAST_WEEK = 'last-week';
+const THIS_WEEK = 'this-week';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -55,13 +57,17 @@ const lightTheme = createMuiTheme({
  */
 const language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
 
+let refreshIntervalId1 = null;
+let refreshIntervalId2 = null;
+
+
 /**
  * Language without region code
  */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Subscriptions
+ * Create React Component for APIM Api Created
  * @class APIMSubscriptionsWidget
  * @extends {Widget}
  */
@@ -77,11 +83,11 @@ class APIMSubscriptionsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            totalCount: 0,
-            weekCount: 0,
-            localeMessages: null,
+            lastWeekCount: 0,
+            thisWeekCount: 0,
+            messages: null,
+            refreshInterval: 60000, // 1min
             refreshIntervalId: null,
-            refreshInterval: 60000, // refresh in 1 min
             inProgress: true,
         };
 
@@ -114,13 +120,14 @@ class APIMSubscriptionsWidget extends Widget {
                 height: this.props.glContainer.height,
             }));
         }
-
-        this.assembleWeekQuery = this.assembleWeekQuery.bind(this);
-        this.assembleTotalQuery = this.assembleTotalQuery.bind(this);
-        this.handleWeekCountReceived = this.handleWeekCountReceived.bind(this);
-        this.handleTotalCountReceived = this.handleTotalCountReceived.bind(this);
+        this.assembleUsageCountQuery = this.assembleUsageCountQuery.bind(this);
+        this.handleUsageCountReceived = this.handleUsageCountReceived.bind(this);
     }
 
+    /**
+     *
+     * @param {any} props @inheritDoc
+     */
     componentWillMount() {
         const locale = (languageWithoutRegionCode || language || 'en');
         this.loadLocale(locale).catch(() => {
@@ -130,24 +137,40 @@ class APIMSubscriptionsWidget extends Widget {
         });
     }
 
+    /**
+     *
+     * @param {any} props @inheritDoc
+     */
     componentDidMount() {
         const { widgetID, id } = this.props;
         const { refreshInterval } = this.state;
-        const locale = languageWithoutRegionCode || language;
-        this.loadLocale(locale);
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 // set an interval to periodically retrieve data
                 const refresh = () => {
-                    super.getWidgetChannelManager().unsubscribeWidget(id);
-                    this.assembleTotalQuery();
+                    super.getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
+                    this.assembleUsageCountQuery(LAST_WEEK, message.data.configs.providerConfig);
                 };
-                const refreshIntervalId = setInterval(refresh, refreshInterval);
+                refreshIntervalId1 = setInterval(refresh, refreshInterval);
+                this.assembleUsageCountQuery(LAST_WEEK, message.data.configs.providerConfig);
+            })
+            .catch((error) => {
+                console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
                 this.setState({
-                    providerConfig: message.data.configs.providerConfig,
-                    refreshIntervalId,
-                }, this.assembleTotalQuery);
+                    faultyProviderConfig: true,
+                });
+            });
+
+        super.getWidgetConfiguration(widgetID)
+            .then((message) => {
+                // set an interval to periodically retrieve data
+                const refresh = () => {
+                    super.getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
+                    this.assembleUsageCountQuery(THIS_WEEK, message.data.configs.providerConfig);
+                };
+                refreshIntervalId2 = setInterval(refresh, refreshInterval);
+                this.assembleUsageCountQuery(THIS_WEEK, message.data.configs.providerConfig);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -157,19 +180,23 @@ class APIMSubscriptionsWidget extends Widget {
             });
     }
 
+    /**
+     *
+     * @param {any} props @inheritDoc
+     */
     componentWillUnmount() {
         const { id } = this.props;
-        const { refreshIntervalId } = this.state;
-        clearInterval(refreshIntervalId);
-        this.setState({
-            refreshIntervalId: null,
-        });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        clearInterval(refreshIntervalId1);
+        clearInterval(refreshIntervalId2);
+        super.getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
     }
 
     /**
      * Load locale file.
      * @memberof APIMSubscriptionsWidget
+     * @param {String} locale - locale
+     * @returns {Promise}
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
@@ -178,7 +205,7 @@ class APIMSubscriptionsWidget extends Widget {
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
-                    this.setState({ localeMessages: defineMessages(response.data) });
+                    this.setState({ messages: defineMessages(response.data) });
                     resolve();
                 })
                 .catch(error => reject(error));
@@ -187,63 +214,56 @@ class APIMSubscriptionsWidget extends Widget {
 
     /**
      * Formats the siddhi query
+     * @param {string} week - This week/Last week
+     * @param {object} dataProviderConfigs - Data provider configurations
      * @memberof APIMSubscriptionsWidget
      * */
-    assembleTotalQuery() {
-        const { providerConfig } = this.state;
+    assembleUsageCountQuery(week, dataProviderConfigs) {
         const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'query';
 
-        dataProviderConfigs.configs.config.queryData.queryName = 'totalQuery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleTotalCountReceived, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data received from assembleTotalQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMSubscriptionsWidget
-     * */
-    handleTotalCountReceived(message) {
-        const { data } = message;
-        const { id } = this.props;
-
-        if (data) {
-            this.setState({ totalCount: data.length < 10 ? ('0' + data.length) : data.length });
+        let timeTo = new Date().getTime();
+        let timeFrom = Moment(timeTo).subtract(7, 'days').toDate().getTime();
+        if (week === LAST_WEEK) {
+            timeTo = timeFrom;
+            timeFrom = Moment(timeTo).subtract(7, 'days').toDate().getTime();
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleWeekQuery();
-    }
 
-    /**
-     * Formats the siddhi query using selected options
-     * @memberof APIMSubscriptionsWidget
-     * */
-    assembleWeekQuery() {
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-        const weekStart = Moment().subtract(7, 'days');
-        const dataProviderConfigs = cloneDeep(providerConfig);
-
-        dataProviderConfigs.configs.config.queryData.queryName = 'weekQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{weekStart}}': Moment(weekStart).format('YYYY-MM-DD HH:mm:ss'),
-            '{{weekEnd}}': Moment().format('YYYY-MM-DD HH:mm:ss'),
+            '{{apiCreator}}': '',
+            '{{weekStart}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+            '{{weekEnd}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+            '{{per}}': 'day',
         };
+
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleWeekCountReceived, dataProviderConfigs);
+            .subscribeWidget(id + week, widgetName, (message) => {
+                this.handleUsageCountReceived(week, message);
+            }, dataProviderConfigs);
     }
 
     /**
-     * Formats data received from assembleWeekQuery
+     * Formats data received from assembleweekQuery
+     * @param {string} week - This week/Last week
      * @param {object} message - data retrieved
      * @memberof APIMSubscriptionsWidget
      * */
-    handleWeekCountReceived(message) {
+    handleUsageCountReceived(week, message) {
         const { data } = message;
-
-        if (data) {
-            this.setState({ weekCount: data.length < 10 ? ('0' + data.length) : data.length, inProgress: false });
+        const count = data[0] || [];
+        if (count.length) {
+            if (week === THIS_WEEK) {
+                this.setState({
+                    thisWeekCount: count[0] || 0,
+                    inProgress: false,
+                });
+            }
+            if (week === LAST_WEEK) {
+                this.setState({
+                    lastWeekCount: count[0] || 0,
+                    inProgress: false,
+                });
+            }
         } else {
             this.setState({ inProgress: false });
         }
@@ -251,19 +271,19 @@ class APIMSubscriptionsWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Subscriptions widget
+     * @returns {ReactElement} Render the APIM Api Created widget
      * @memberof APIMSubscriptionsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConf, totalCount, weekCount, inProgress,
+            messages, faultyProviderConf, lastWeekCount, thisWeekCount, inProgress,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const subscriptionsProps = { themeName, totalCount, weekCount };
+        const apiCreatedProps = { themeName, lastWeekCount, thisWeekCount };
 
         if (inProgress) {
             return (
@@ -273,7 +293,7 @@ class APIMSubscriptionsWidget extends Widget {
             );
         }
         return (
-            <IntlProvider locale={language} messages={localeMessages}>
+            <IntlProvider locale={language} messages={messages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
@@ -288,14 +308,14 @@ class APIMSubscriptionsWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM'
-                                        + ' Subscriptions widget'}
+                                            defaultMessage={'Cannot fetch provider configuration for APIM Api '
+                                                + 'Created widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMSubscriptions {...subscriptionsProps} />
+                            <APIMSubscriptions {...apiCreatedProps} />
                         )
                     }
                 </MuiThemeProvider>
