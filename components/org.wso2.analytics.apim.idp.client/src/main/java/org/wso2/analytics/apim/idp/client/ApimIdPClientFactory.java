@@ -57,6 +57,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
     private DataSourceService dataSourceService;
     private boolean isHostnameVerifierEnabled;
     private AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService;
+    private static final String CUSTOM_URL_API_ENDPOINT = "/api/am/admin/v0.16/custom-urls";
 
     @Activate
     protected void activate(BundleContext bundleContext) {
@@ -147,6 +148,10 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         Map<String, String> properties = idPClientConfiguration.getProperties();
         String adminServiceUsername = properties.getOrDefault(ApimIdPClientConstants.ADMIN_USERNAME,
                 ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_USERNAME);
+        String adminServicePassword = properties.getOrDefault(ApimIdPClientConstants.ADMIN_PASSWORD,
+                ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_PASSWORD);
+        String adminServiceBaseUrl = properties.getOrDefault(ApimIdPClientConstants.ADMIN_SERVICE_BASE_URL_KEY,
+                ApimIdPClientConstants.DEFAULT_ADMIN_SERVICE_BASE_URL);
         String adminScopeName = properties.getOrDefault(ApimIdPClientConstants.ADMIN_SCOPE,
                 ApimIdPClientConstants.DEFAULT_ADMIN_SCOPE);
         String allScopes = properties.getOrDefault(ApimIdPClientConstants.ALL_SCOPES,
@@ -239,9 +244,29 @@ public class ApimIdPClientFactory implements IdPClientFactory {
         String targetURIForRedirection = properties.getOrDefault(ApimIdPClientConstants.EXTERNAL_SSO_LOGOUT_URL,
                             ApimIdPClientConstants.DEFAULT_EXTERNAL_SSO_LOGOUT_URL);
 
-        return new ApimIdPClient(adminServiceUsername, baseUrl, oAuthAppDAO,
-                kmTokenUrlForRedirectUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX, grantType, adminScopeName,
-                allScopes, oAuthAppInfoMap, cacheTimeout, dcrAppOwner, dcrmServiceStub, keyManagerServiceStubs,
-                idPClientConfiguration.isSsoEnabled(), targetURIForRedirection, this.isHostnameVerifierEnabled);
+        String adminServiceForCustomUrl = adminServiceBaseUrl + CUSTOM_URL_API_ENDPOINT;
+        ApimAdminApiClient apimAdminApiClient = ApimAdminApiClientHolder.
+                getApimAdminApiClient(analyticsHttpClientBuilderService, adminServiceForCustomUrl, adminServiceUsername,
+                        adminServicePassword);
+
+        // Using builder pattern to create ApimIdpClient object.
+        return new ApimIdPClientBuilder()
+                .setAdminServiceUsername(adminServiceUsername)
+                .setBaseUrl(baseUrl).setoAuthAppDAO(oAuthAppDAO)
+                .setAuthorizeEndpoint(kmTokenUrlForRedirectUrl + ApimIdPClientConstants.AUTHORIZE_POSTFIX)
+                .setGrantType(grantType)
+                .setAdminScopeName(adminScopeName)
+                .setAllScopes(allScopes)
+                .setoAuthAppInfoMap(oAuthAppInfoMap)
+                .setCacheTimeout(cacheTimeout)
+                .setKmUserName(dcrAppOwner)
+                .setDcrmServiceStub(dcrmServiceStub)
+                .setoAuth2ServiceStubs(keyManagerServiceStubs)
+                .setIsSSOEnabled(idPClientConfiguration.isSsoEnabled())
+                .setSsoLogoutURL(targetURIForRedirection)
+                .setIsHostnameVerifierEnabled(this.isHostnameVerifierEnabled)
+                .setApimAdminApiClient(apimAdminApiClient)
+                .setPortalAppContext(portalAppContext)
+                .createApimIdPClient();
     }
 }

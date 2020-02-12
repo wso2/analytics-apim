@@ -25,6 +25,8 @@ public class ApimIdPClientConstants {
     public static final String EXTERNAL_IDP_CLIENT_TYPE = "apim";
 
     public static final String ADMIN_USERNAME = "adminUsername";
+    public static final String ADMIN_PASSWORD = "adminPassword";
+    public static final String ADMIN_SERVICE_BASE_URL_KEY = "adminServiceBaseUrl";
     public static final String ADMIN_SCOPE = "adminScope";
     public static final String ALL_SCOPES = "allScopes";
     public static final String BASE_URL = "baseUrl";
@@ -50,6 +52,8 @@ public class ApimIdPClientConstants {
     public static final String EXTERNAL_SSO_LOGOUT_URL = "externalLogoutUrl";
 
     public static final String DEFAULT_ADMIN_SERVICE_USERNAME = "admin";
+    public static final String DEFAULT_ADMIN_SERVICE_PASSWORD = "admin";
+    public static final String DEFAULT_ADMIN_SERVICE_BASE_URL = "https://localhost:9443";
     public static final String DEFAULT_ADMIN_SCOPE = "apim_analytics:admin_carbon.super";
     public static final String DEFAULT_ALL_SCOPES = "apim_analytics:admin apim_analytics:product_manager " +
             "apim_analytics:api_developer apim_analytics:app_developer apim_analytics:devops_engineer " +
@@ -107,6 +111,7 @@ public class ApimIdPClientConstants {
     public static final String OAUTHAPP_TABLE_CONSUMER_SECRET_COLUMN = "CONSUMER_SECRET";
     public static final String OAUTH_APP_TABLE_CHECK = "OAUTH_APP_TABLE_CHECK";
     public static final String RETRIEVE_OAUTH_APP_TEMPLATE = "RETRIEVE_OAUTH_APP";
+    public static final String INSERT_SYSTEM_APP = "INSERT_SYSTEM_APP";
 
     private ApimIdPClientConstants() {
     }
