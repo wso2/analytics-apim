@@ -1,2 +1,3 @@
 import CustomTableToolbar from './CustomTableToolbar';
-export {CustomTableToolbar};
+import SummaryWidget from './SummaryWidget';
+export {CustomTableToolbar, SummaryWidget};
