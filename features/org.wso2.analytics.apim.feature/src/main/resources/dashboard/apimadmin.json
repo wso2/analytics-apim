@@ -22,27 +22,138 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "width": 100,
-                  "height": 100,
+                  "width": 26.381773243126172,
                   "content": [
                     {
-                      "title": "[APIM Monthly API Usage Report]",
+                      "title": "[Placeholder]",
                       "type": "component",
-                      "component": "APIMApiMonthlyUsageReport",
+                      "component": "APIMPlaceholder",
                       "props": {
-                        "id": "619033ff-10ee-4174-97a0-064bc59260cb",
+                        "id": "29e54c4a-b35f-463d-accf-eff2d221915d",
                         "configs": {
                           "pubsub": {
                             "types": [
                               "subscriber"
-                            ]
+                            ],
+                            "publishers": []
                           },
                           "isGenerated": false,
                           "options": {
-                            "header": true
+                            "header": false
                           }
                         },
-                        "widgetID": "APIMApiMonthlyUsageReport"
+                        "widgetID": "APIMPlaceholder"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "column",
+                  "isClosable": true,
+                  "title": "",
+                  "width": 42.47139791239078,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 25,
+                      "height": 36.60990712074303,
+                      "content": [
+                        {
+                          "title": "[APIM Monthly API Usage Report]",
+                          "type": "component",
+                          "component": "APIMApiMonthlyUsageReport",
+                          "props": {
+                            "id": "619033ff-10ee-4174-97a0-064bc59260cb",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true
+                              }
+                            },
+                            "widgetID": "APIMApiMonthlyUsageReport"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 63.39009287925697,
+                      "content": [
+                        {
+                          "title": "[Placeholder]",
+                          "type": "component",
+                          "component": "APIMPlaceholder",
+                          "props": {
+                            "id": "c5763e06-e483-4520-83c3-b175862beb4f",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false
+                              }
+                            },
+                            "widgetID": "APIMPlaceholder"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "width": 31.146828844483053,
+                  "content": [
+                    {
+                      "title": "[Placeholder]",
+                      "type": "component",
+                      "component": "APIMPlaceholder",
+                      "props": {
+                        "id": "1be440e0-b8d1-4848-8d88-f54e706438c9",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": []
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": false
+                          }
+                        },
+                        "widgetID": "APIMPlaceholder"
                       },
                       "isClosable": false,
                       "header": {
@@ -55,7 +166,7 @@
               ]
             }
           ],
-          "height": 888
+          "height": 1297
         }
       ]
     },
@@ -66,6 +177,7 @@
   "widgets": {
     "generated": [],
     "custom": [
+      "APIMPlaceholder",
       "APIMApiMonthlyUsageReport"
     ]
   },
