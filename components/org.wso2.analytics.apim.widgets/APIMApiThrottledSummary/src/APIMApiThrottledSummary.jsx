@@ -20,10 +20,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import MoreIcon from '@material-ui/icons/More';
-import Button from '@material-ui/core/Button';
 import { SummaryWidget } from '@analytics-apim/common-lib';
-
+import './styles.css';
 
 /**
  * React Component for APIM Api Usage widget body
@@ -36,6 +34,7 @@ export default function APIMApiThrottledSummary(props) {
         root: {
             backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
             height: '100%',
+            cursor: 'pointer',
         },
         heading: {
             margin: 'auto',
@@ -63,10 +62,23 @@ export default function APIMApiThrottledSummary(props) {
             marginTop: 10,
             marginRight: 20,
         },
+        subheading: {
+            textAlign: 'center',
+            margin: 5,
+            fontSize: 14,
+            color: '#b5b5b5',
+        },
     };
     return (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
             style={styles.root}
+            className={`over-wrapper ${themeName}`}
+            onClick={() => {
+                window.location.href = window.contextPath
+                    // eslint-disable-next-line max-len
+                    + '/dashboards/apimpublisher/faults#{"dtrp":{"tr":"7days","g":"day","sync":false},"faultyapis":{"limit":5},"throttledapis":{"limit":5}}';
+            }}
         >
             <div style={styles.headingWrapper}>
                 <h3
@@ -74,6 +86,9 @@ export default function APIMApiThrottledSummary(props) {
                 >
                     <FormattedMessage id='widget.heading' defaultMessage='API THROTTLED SUMMARY' />
                 </h3>
+                <p style={styles.subheading}>
+                    <FormattedMessage id='widget.subheading' defaultMessage='(Last 7 Days)' />
+                </p>
             </div>
             <div style={styles.dataWrapper}>
                 <SummaryWidget
@@ -90,21 +105,6 @@ export default function APIMApiThrottledSummary(props) {
                         )
                     }
                 />
-                <div style={{ float: 'right' }}>
-                    <Button
-                        variant='outlined'
-                        size='small'
-                        style={styles.moreButton}
-                        onClick={() => {
-                            window.location.href = window.contextPath
-                                // eslint-disable-next-line max-len
-                                + '/dashboards/apimpublisher/faults#{"dtrp":{"tr":"3months","g":"month","sync":false},"faultyapis":{"limit":5},"throttledapis":{"limit":5}}';
-                        }}
-                    >
-                        <MoreIcon style={{ marginRight: 5, transform: 'scaleX(-1)' }} />
-                        More
-                    </Button>
-                </div>
             </div>
         </div>
     );

@@ -4,5 +4,6 @@
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Api Created widget",
   "widget.heading": "API USAGE SUMMARY",
-  "widget.tooltip": "Increase/decrease compared to last week"
+  "widget.tooltip": "Increase/decrease compared to last week",
+  "subheading": "(Last 7 Days)"
 }
