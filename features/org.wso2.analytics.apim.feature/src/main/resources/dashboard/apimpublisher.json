@@ -23,7 +23,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 12.934501606930786,
+                  "height": 11.485658684898329,
                   "content": [
                     {
                       "type": "stack",
@@ -46,7 +46,7 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": true
+                                "header": false
                               }
                             },
                             "widgetID": "APIMApiUsageSummary"
@@ -75,11 +75,12 @@
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": true
+                                "header": false
                               }
                             },
                             "widgetID": "APIMApiFaultsSummary"
@@ -108,11 +109,12 @@
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": true
+                                "header": false
                               }
                             },
                             "widgetID": "APIMApiThrottledSummary"
@@ -146,7 +148,7 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": true
+                                "header": false
                               }
                             },
                             "widgetID": "APIMSubscriptions"
@@ -165,7 +167,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 51.90389419491463,
+                  "height": 53.352737116947075,
                   "content": [
                     {
                       "type": "stack",
