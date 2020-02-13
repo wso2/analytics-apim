@@ -20,6 +20,7 @@ package org.wso2.analytics.apim.idp.client;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
+import com.oracle.tools.packager.Log;
 import feign.Response;
 import feign.gson.GsonDecoder;
 import org.slf4j.Logger;
@@ -61,6 +62,7 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.POST_LOG
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE_END;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SPACE;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SP_APP_NAME;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SUBSCRIBE_SCOPE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SUPER_TENANT_DOMAIN;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.UNDERSCORE;
@@ -123,7 +125,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         this.portalAppContext = portalAppContext;
     }
 
-    public void init(String kmUserName, CustomUrlInfo customUrlInfo) throws IdPClientException {
+    public void init(String kmUserName, CustomUrlInfo customUrlInfo, String appContext) throws IdPClientException {
         if (!isHostnameVerifierEnabled) {
             System.setProperty("httpclient.hostnameVerifier", "AllowAll");
         }
@@ -134,39 +136,45 @@ public class ApimIdPClient extends ExternalIdPClient {
             LOG.error(error);
             throw new IdPClientException(error);
         }
-        Map<String, OAuthApplicationInfo> currentOauthAppsMap = new HashMap<>(oAuthAppInfoMap);
-        for (Map.Entry<String, OAuthApplicationInfo> entry : currentOauthAppsMap.entrySet()) {
-            String appContext = entry.getKey();
-            OAuthApplicationInfo oAuthApp = entry.getValue();
-            String clientName = oAuthApp.getClientName();
-            String tenantDomain = SUPER_TENANT_DOMAIN;
-            String appOwner = kmUserName;
-            if (appContext.contains("_") && clientName.equals (ApimIdPClientConstants.PORTAL_APP_NAME)) {
-                // tenant based service provider for 'sp_analytics_dashboard' is already in oAuthAppInfoMap
-                tenantDomain = appContext.substring(appContext.indexOf('_') + 1);
-                appOwner = customUrlInfoMap.get(tenantDomain).getTenantAdminUsername();
+        String clientName = getClientName(appContext);
+        String tenantDomain = SUPER_TENANT_DOMAIN;
+        String appOwner = kmUserName;
+
+        boolean isCustomUrlApplicable = customUrlInfo.isEnabled() && clientName.equals
+                (ApimIdPClientConstants.PORTAL_APP_NAME);
+        if (isCustomUrlApplicable) {
+            tenantDomain = customUrlInfo.getTenantDomain();
+            appOwner = customUrlInfo.getTenantAdminUsername();
+        }
+
+        OAuthApplicationInfo persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName, tenantDomain);
+        if (persistedOAuthApp == null) {
+            synchronized (OAuthAppCreationLock) {
+                persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName, tenantDomain);
+                if(LOG.isDebugEnabled()) {
+                    Log.debug("System app not found in database for client name: " + clientName + " tenant : " +
+                            tenantDomain + ". Hence creating service provider via DCR.");
+                }
+                if (persistedOAuthApp == null) {
+                    registerApplication(appContext, clientName, appOwner, customUrlInfo);
+                }
             }
-            boolean isCustomUrlApplicable = customUrlInfo.isEnabled() && clientName.equals
-                    (ApimIdPClientConstants.PORTAL_APP_NAME);
+        } else {
             if (isCustomUrlApplicable) {
-                tenantDomain = customUrlInfo.getTenantDomain();
-                appOwner = customUrlInfo.getTenantAdminUsername();
+                appContext = appContext + "_" + customUrlInfo.getTenantDomain();
             }
-            OAuthApplicationInfo persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName, tenantDomain);
-            if (persistedOAuthApp == null) {
-                synchronized (OAuthAppCreationLock) {
-                    persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName, tenantDomain);
-                    if (persistedOAuthApp == null) {
-                        registerApplication(appContext, clientName, appOwner, customUrlInfo);
-                    }
-                }
-            } else {
-                if (isCustomUrlApplicable && !appContext.contains("_")) {
-                    appContext = appContext + "_" + customUrlInfo.getTenantDomain();
-                }
-                this.oAuthAppInfoMap.put(appContext, persistedOAuthApp);
-                this.customUrlInfoMap.put(customUrlInfo.getTenantDomain(), customUrlInfo);
-            }
+            this.oAuthAppInfoMap.put(appContext, persistedOAuthApp);
+            this.customUrlInfoMap.put(customUrlInfo.getTenantDomain(), customUrlInfo);
+        }
+    }
+
+    private String getClientName(String appContext) {
+        if (ApimIdPClientConstants.DEFAULT_PORTAL_APP_CONTEXT.equals(appContext)) {
+            return ApimIdPClientConstants.PORTAL_APP_NAME;
+        } else if (ApimIdPClientConstants.DEFAULT_BR_DB_APP_CONTEXT.equals(appContext)) {
+            return ApimIdPClientConstants.BR_DB_APP_NAME;
+        } else {
+            return SP_APP_NAME;
         }
     }
 
@@ -297,11 +305,11 @@ public class ApimIdPClient extends ExternalIdPClient {
             throw new IdPClientException("Unable to retrieve custom url info from APIM Admin API");
         }
         String grantType = properties.getOrDefault(IdPClientConstants.GRANT_TYPE, this.grantType);
+        String oAuthAppContext = properties.get(IdPClientConstants.APP_NAME);
         if (!IdPClientConstants.REFRESH_GRANT_TYPE.equals(grantType)) {
-            this.init(this.kmUserName, customUrlInfo);
+            this.init(this.kmUserName, customUrlInfo, oAuthAppContext);
         }
         Response response;
-        String oAuthAppContext = properties.get(IdPClientConstants.APP_NAME);
         //Checking if these are the frontend-if not use sp
         if (!this.oAuthAppInfoMap.containsKey(oAuthAppContext)) {
             oAuthAppContext = ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT;
