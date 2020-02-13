@@ -14,38 +14,48 @@
           "name": "Home",
           "content": [
             {
-              "type": "stack",
+              "type": "row",
               "isClosable": true,
               "title": "",
               "content": [
                 {
-                  "title": "[APIM Monthly API Usage Report]",
-                  "type": "component",
-                  "component": "APIMApiMonthlyUsageReport",
-                  "props": {
-                    "id": "619033ff-10ee-4174-97a0-064bc59260cb",
-                    "configs": {
-                      "pubsub": {
-                        "types": [
-                          "subscriber"
-                        ]
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "width": 100,
+                  "height": 100,
+                  "content": [
+                    {
+                      "title": "[APIM Monthly API Usage Report]",
+                      "type": "component",
+                      "component": "APIMApiMonthlyUsageReport",
+                      "props": {
+                        "id": "619033ff-10ee-4174-97a0-064bc59260cb",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true
+                          }
+                        },
+                        "widgetID": "APIMApiMonthlyUsageReport"
                       },
-                      "isGenerated": false,
-                      "options": {
-                        "header": true
-                      }
-                    },
-                    "widgetID": "APIMApiMonthlyUsageReport"
-                  },
-                  "isClosable": false,
-                  "header": {
-                    "show": true
-                  },
-                  "componentName": "lm-react-component"
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
                 }
               ]
             }
-          ]
+          ],
+          "height": 888
         }
       ]
     },

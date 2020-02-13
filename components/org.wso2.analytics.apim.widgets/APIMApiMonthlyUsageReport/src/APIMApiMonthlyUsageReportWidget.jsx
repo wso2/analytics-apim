@@ -207,7 +207,6 @@ class APIMApiMonthlyUsageReportWidget extends Widget {
                                 </h3>
 
                                 <form
-                                    
                                     noValidate
                                     autoComplete='off'
                                     method='get'
