@@ -140,7 +140,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             String appContext = entry.getKey();
             OAuthApplicationInfo oAuthApp = entry.getValue();
             String clientName = oAuthApp.getClientName();
-            String tenantDomain = "carbon.super";
+            String tenantDomain = SUPER_TENANT_DOMAIN;
             String appOwner = kmUserName;
             boolean isCustomUrlApplicable = customUrlInfo.isEnabled() && clientName.equals
                     (ApimIdPClientConstants.PORTAL_APP_NAME);
