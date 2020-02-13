@@ -14,56 +14,56 @@
           "name": "Home",
           "content": [
             {
-              "type": "row",
+              "type": "column",
               "isClosable": true,
               "title": "",
+              "width": 100,
               "content": [
                 {
-                  "type": "stack",
+                  "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "width": 26.381773243126172,
-                  "content": [
-                    {
-                      "title": "[Placeholder]",
-                      "type": "component",
-                      "component": "APIMPlaceholder",
-                      "props": {
-                        "id": "29e54c4a-b35f-463d-accf-eff2d221915d",
-                        "configs": {
-                          "pubsub": {
-                            "types": [
-                              "subscriber"
-                            ],
-                            "publishers": []
-                          },
-                          "isGenerated": false,
-                          "options": {
-                            "header": false
-                          }
-                        },
-                        "widgetID": "APIMPlaceholder"
-                      },
-                      "isClosable": false,
-                      "header": {
-                        "show": true
-                      },
-                      "componentName": "lm-react-component"
-                    }
-                  ]
-                },
-                {
-                  "type": "column",
-                  "isClosable": true,
-                  "title": "",
-                  "width": 42.47139791239078,
+                  "height": 45.31615925058548,
                   "content": [
                     {
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 25,
-                      "height": 36.60990712074303,
+                      "width": 31.334906936682735,
+                      "content": [
+                        {
+                          "title": "[Placeholder]",
+                          "type": "component",
+                          "component": "APIMPlaceholder",
+                          "props": {
+                            "id": "4bd58a2b-f95c-42a5-a01b-5d9f088dd3ac",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false
+                              }
+                            },
+                            "widgetID": "APIMPlaceholder"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 39.34887685981369,
+                      "height": 45.31615925058548,
                       "content": [
                         {
                           "title": "[APIM Monthly API Usage Report]",
@@ -97,20 +97,19 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 63.39009287925697,
+                      "width": 29.316216203503583,
                       "content": [
                         {
                           "title": "[Placeholder]",
                           "type": "component",
                           "component": "APIMPlaceholder",
                           "props": {
-                            "id": "c5763e06-e483-4520-83c3-b175862beb4f",
+                            "id": "3346d57d-9b30-48b0-be3b-afc44cd8bd46",
                             "configs": {
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ],
-                                "publishers": []
+                                ]
                               },
                               "isGenerated": false,
                               "options": {
@@ -133,14 +132,14 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "width": 31.146828844483053,
+                  "height": 54.68384074941453,
                   "content": [
                     {
                       "title": "[Placeholder]",
                       "type": "component",
                       "component": "APIMPlaceholder",
                       "props": {
-                        "id": "1be440e0-b8d1-4848-8d88-f54e706438c9",
+                        "id": "c5763e06-e483-4520-83c3-b175862beb4f",
                         "configs": {
                           "pubsub": {
                             "types": [
@@ -166,7 +165,7 @@
               ]
             }
           ],
-          "height": 1297
+          "height": 897
         }
       ]
     },
