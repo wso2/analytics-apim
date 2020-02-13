@@ -77,7 +77,7 @@ export default function APIMSubscriptions(props) {
             onClick={() => {
                 window.location.href = window.contextPath
                     // eslint-disable-next-line max-len
-                    + '/dashboards/apimpublisher/usage-summary#{"dtrp":{"tr":"7days","g":"day","sync":false},"apibackendusage":{"apiCreatedBy":"All","limit":5},"apiUsers":{"apiCreatedBy":"All","apiSelected":"All","apiVersion":"All","limit":5},"apiversionusage":{"apiCreatedBy":"All","limit":5},"apiresourceusage":{"apiCreatedBy":"All","limit":5},"apilastaccess":{"apiCreatedBy":"All","limit":5},"overallapiusage":{"apiCreatedBy":"all","limit":5}}';
+                    + '/dashboards/apimpublisher/developer-stats#{"dtrp":{"tr":"7days","g":"day","sync":false},"subscriptions":{"apiCreatedBy":"All","subscribedTo":"All"}}';
             }}
         >
             <div style={styles.headingWrapper}>
