@@ -267,6 +267,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
                 .setIsHostnameVerifierEnabled(this.isHostnameVerifierEnabled)
                 .setApimAdminApiClient(apimAdminApiClient)
                 .setPortalAppContext(portalAppContext)
+                .setBrAppContext(businessAppContext)
                 .createApimIdPClient();
     }
 }

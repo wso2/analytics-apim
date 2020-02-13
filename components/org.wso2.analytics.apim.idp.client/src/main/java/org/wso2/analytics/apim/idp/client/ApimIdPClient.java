@@ -20,7 +20,6 @@ package org.wso2.analytics.apim.idp.client;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
-import com.oracle.tools.packager.Log;
 import feign.Response;
 import feign.gson.GsonDecoder;
 import org.slf4j.Logger;
@@ -75,6 +74,7 @@ public class ApimIdPClient extends ExternalIdPClient {
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClient.class);
     private static final Object OAuthAppCreationLock = new Object();
     private final String portalAppContext;
+    private final String brAppContext;
     private Map<String, CustomUrlInfo> customUrlInfoMap = new HashMap<>();
 
     private DCRMServiceStub dcrmServiceStub;
@@ -101,7 +101,7 @@ public class ApimIdPClient extends ExternalIdPClient {
                          Map<String, OAuthApplicationInfo> oAuthAppInfoMap, int cacheTimeout, String kmUserName,
                          DCRMServiceStub dcrmServiceStub, OAuth2ServiceStubs oAuth2ServiceStubs,
                          boolean isSSOEnabled, String ssoLogoutURL, boolean isHostnameVerifierEnabled,
-                         ApimAdminApiClient apimAdminApiClient, String portalAppContext) {
+                         ApimAdminApiClient apimAdminApiClient, String portalAppContext, String brAppContext) {
         super(baseUrl, authorizeEndpoint, grantType, null, adminScopeName, oAuthAppInfoMap,
                 cacheTimeout, null, dcrmServiceStub, oAuth2ServiceStubs, null, null, isSSOEnabled, ssoLogoutURL);
         this.adminServiceUsername = adminServiceUsername;
@@ -123,6 +123,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         this.isHostnameVerifierEnabled = isHostnameVerifierEnabled;
         this.apimAdminApiClient = apimAdminApiClient;
         this.portalAppContext = portalAppContext;
+        this.brAppContext = brAppContext;
     }
 
     public void init(String kmUserName, CustomUrlInfo customUrlInfo, String appContext) throws IdPClientException {
@@ -151,8 +152,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         if (persistedOAuthApp == null) {
             synchronized (OAuthAppCreationLock) {
                 persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName, tenantDomain);
-                if(LOG.isDebugEnabled()) {
-                    Log.debug("System app not found in database for client name: " + clientName + " tenant : " +
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("System app not found in database for client name: " + clientName + " tenant : " +
                             tenantDomain + ". Hence creating service provider via DCR.");
                 }
                 if (persistedOAuthApp == null) {
@@ -169,9 +170,9 @@ public class ApimIdPClient extends ExternalIdPClient {
     }
 
     private String getClientName(String appContext) {
-        if (ApimIdPClientConstants.DEFAULT_PORTAL_APP_CONTEXT.equals(appContext)) {
+        if (this.portalAppContext.equals(appContext)) {
             return ApimIdPClientConstants.PORTAL_APP_NAME;
-        } else if (ApimIdPClientConstants.DEFAULT_BR_DB_APP_CONTEXT.equals(appContext)) {
+        } else if (this.brAppContext.equals(appContext)) {
             return ApimIdPClientConstants.BR_DB_APP_NAME;
         } else {
             return SP_APP_NAME;

@@ -46,6 +46,7 @@ public class ApimIdPClientBuilder {
     private boolean isHostnameVerifierEnabled;
     private ApimAdminApiClient apimAdminApiClient;
     private String portalAppContext;
+    private String brAppContext;
 
     public ApimIdPClientBuilder setAdminServiceUsername(String adminServiceUsername) {
 
@@ -149,11 +150,19 @@ public class ApimIdPClientBuilder {
         return this;
     }
 
+    public ApimIdPClientBuilder setBrAppContext(String brAppContext) {
+
+        this.brAppContext = brAppContext;
+        return this;
+    }
+
     public ApimIdPClient createApimIdPClient() {
 
         return new ApimIdPClient(adminServiceUsername, baseUrl, oAuthAppDAO, authorizeEndpoint, grantType,
                 adminScopeName, allScopes, oAuthAppInfoMap, cacheTimeout, kmUserName, dcrmServiceStub,
                 oAuth2ServiceStubs, isSSOEnabled, ssoLogoutURL, isHostnameVerifierEnabled, apimAdminApiClient,
-                portalAppContext);
+                portalAppContext, brAppContext);
     }
+
+
 }
