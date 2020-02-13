@@ -20,7 +20,6 @@ package org.wso2.analytics.apim.idp.client;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
-import com.oracle.tools.packager.Log;
 import feign.Response;
 import feign.gson.GsonDecoder;
 import org.slf4j.Logger;
