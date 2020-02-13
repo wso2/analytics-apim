@@ -141,6 +141,11 @@ public class ApimIdPClient extends ExternalIdPClient {
             String clientName = oAuthApp.getClientName();
             String tenantDomain = SUPER_TENANT_DOMAIN;
             String appOwner = kmUserName;
+            if (appContext.contains("_") && clientName.equals (ApimIdPClientConstants.PORTAL_APP_NAME)) {
+                // tenant based service provider for 'sp_analytics_dashboard' is already in oAuthAppInfoMap
+                tenantDomain = appContext.substring(appContext.indexOf('_') + 1);
+                appOwner = customUrlInfoMap.get(tenantDomain).getTenantAdminUsername();
+            }
             boolean isCustomUrlApplicable = customUrlInfo.isEnabled() && clientName.equals
                     (ApimIdPClientConstants.PORTAL_APP_NAME);
             if (isCustomUrlApplicable) {
@@ -756,7 +761,9 @@ public class ApimIdPClient extends ExternalIdPClient {
             try {
                 customUrlInfo = (CustomUrlInfo) new GsonDecoder().decode(response,
                         CustomUrlInfo.class);
-                LOG.debug(customUrlInfo.toString());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(customUrlInfo.toString());
+                }
             } catch (IOException e) {
                 String error = "Error occurred while parsing the Custom Url info response for tenant :" + tenantDomain +
                         ". message. Response: '" + response.body().toString() + "'.";
