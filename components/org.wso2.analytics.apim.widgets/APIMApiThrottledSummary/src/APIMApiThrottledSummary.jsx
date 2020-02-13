@@ -73,11 +73,11 @@ export default function APIMApiThrottledSummary(props) {
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
             style={styles.root}
-            className={`over-wrapper ${themeName}`}
+            className={`overview-wrapper ${themeName}`}
             onClick={() => {
                 window.location.href = window.contextPath
-                    // eslint-disable-next-line max-len
-                    + '/dashboards/apimpublisher/faults#{"dtrp":{"tr":"7days","g":"day","sync":false},"faultyapis":{"limit":5},"throttledapis":{"limit":5}}';
+                    + '/dashboards/apimpublisher/faults#{"dtrp":{"tr":"7days","g":"day","sync":false},'
+                    + '"faultyapis":{"limit":5},"throttledapis":{"limit":5}}';
             }}
         >
             <div style={styles.headingWrapper}>

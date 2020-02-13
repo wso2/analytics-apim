@@ -73,18 +73,18 @@ export default function APIMSubscriptions(props) {
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
             style={styles.root}
-            className={`over-wrapper ${themeName}`}
+            className={`overview-wrapper ${themeName}`}
             onClick={() => {
                 window.location.href = window.contextPath
-                    // eslint-disable-next-line max-len
-                    + '/dashboards/apimpublisher/developer-stats#{"dtrp":{"tr":"7days","g":"day","sync":false},"subscriptions":{"apiCreatedBy":"All","subscribedTo":"All"}}';
+                    + '/dashboards/apimpublisher/developer-stats#{"dtrp":{"tr":"7days","g":"day","sync":false},'
+                    + '"subscriptions":{"apiCreatedBy":"All","subscribedTo":"All"}}';
             }}
         >
             <div style={styles.headingWrapper}>
                 <h3
                     style={styles.heading}
                 >
-                    <FormattedMessage id='widget.heading' defaultMessage='API USAGE SUMMARY' />
+                    <FormattedMessage id='widget.heading' defaultMessage='SUBSCRIPTIONS SUMMARY' />
                 </h3>
                 <p style={styles.subheading}>
                     <FormattedMessage id='widget.subheading' defaultMessage='(Last 7 Days)' />

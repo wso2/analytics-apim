@@ -3,7 +3,7 @@
   "subscriptions": "SUBSCRIPTIONS",
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Subscriptions widget",
-  "widget.heading": "TOTAL SUBSCRIPTIONS",
+  "widget.heading": "SUBSCRIPTIONS SUMMARY",
   "widget.tooltip": "Increase/decrease compared to last week",
   "subheading": "(Last 7 Days)"
 }

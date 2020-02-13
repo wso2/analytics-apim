@@ -60,7 +60,6 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 let refreshIntervalId1 = null;
 let refreshIntervalId2 = null;
 
-
 /**
  * Language without region code
  */

@@ -73,11 +73,11 @@ export default function APIMApiUsageSummary(props) {
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
             style={styles.root}
-            className={`over-wrapper ${themeName}`}
+            className={`overview-wrapper ${themeName}`}
             onClick={() => {
                 window.location.href = window.contextPath
-                    // eslint-disable-next-line max-len
-                    + '/dashboards/apimpublisher/usage-summary#{"dtrp":{"tr":"7days","g":"day","sync":false},"apibackendusage":{"apiCreatedBy":"All","limit":5},"apiUsers":{"apiCreatedBy":"All","apiSelected":"All","apiVersion":"All","limit":5},"apiversionusage":{"apiCreatedBy":"All","limit":5},"apiresourceusage":{"apiCreatedBy":"All","limit":5},"apilastaccess":{"apiCreatedBy":"All","limit":5},"overallapiusage":{"apiCreatedBy":"all","limit":5}}';
+                    + '/dashboards/apimpublisher/usage-summary#{"dtrp":{"tr":"7days","g":"day","sync":false},'
+                    + '"apibackendusage":{"apiCreatedBy":"All","limit":5},"apiUsers":{"apiCreatedBy":"All","apiSelected":"All","apiVersion":"All","limit":5},"apiversionusage":{"apiCreatedBy":"All","limit":5},"apiresourceusage":{"apiCreatedBy":"All","limit":5},"apilastaccess":{"apiCreatedBy":"All","limit":5},"overallapiusage":{"apiCreatedBy":"all","limit":5}}';
             }}
         >
             <div style={styles.headingWrapper}>
