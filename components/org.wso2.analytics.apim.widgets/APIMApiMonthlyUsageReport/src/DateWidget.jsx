@@ -28,13 +28,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 
 const styles = {
-    headingWrapper: {
-        margin: 'auto',
-        width: '95%',
-    },
     formControl: {
-        marginTop: '2%',
         minWidth: 120,
+        marginTop: 25,
     },
 };
 
