@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.analytics.apim.dashboards.internal;
+package org.wso2.analytics.apim.dashboards.core.internal;
 
 import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderService;
 
@@ -28,6 +28,6 @@ public class DashboardAuthorizerServiceFactory {
                                                                           String url,
                                                                           String username,
                                                                           String password) {
-        return service.build(username, password, 1000, 1000, DashboardAuthorizerServiceStub.class, url);
+        return service.build(username, password, 2000, 2000, DashboardAuthorizerServiceStub.class, url);
     }
 }

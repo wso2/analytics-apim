@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.analytics.apim.dashboards.bean;
+package org.wso2.analytics.apim.dashboards.core.bean;
 
 import com.google.gson.annotations.SerializedName;
 

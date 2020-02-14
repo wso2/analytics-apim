@@ -12,8 +12,7 @@
         "config" : {
           "datasourceName": "AM_DB",
           "queryData" : {
-            "totalQuery": "select count(sub.SUBSCRIPTION_ID) as count, SUBSCRIPTION_ID from AM_SUBSCRIPTION sub where sub.API_ID IN (select api.API_ID from AM_API api where api.CONTEXT {{contextCondition}}) group by sub.SUBSCRIPTION_ID",
-            "weekQuery" : "select count(sub.SUBSCRIPTION_ID) as count, SUBSCRIPTION_ID from AM_SUBSCRIPTION sub where sub.API_ID IN (select api.API_ID from AM_API api where api.CONTEXT {{contextCondition}}) AND sub.CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}' group by sub.SUBSCRIPTION_ID"
+            "query" : "select count(sub.SUBSCRIPTION_ID) as count, SUBSCRIPTION_ID from AM_SUBSCRIPTION sub where sub.API_ID IN (select api.API_ID from AM_API api where api.CONTEXT {{contextCondition}}) AND sub.CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}' group by sub.SUBSCRIPTION_ID"
           },
           "tableName": "AM_DB",
           "incrementalColumn": "SUBSCRIPTION_ID",
@@ -34,7 +33,7 @@
             false
           ]
         },
-        "defaultValue" : true
+        "defaultValue" : false
       }
     ]
   }

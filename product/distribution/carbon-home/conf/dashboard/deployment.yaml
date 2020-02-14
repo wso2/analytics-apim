@@ -363,7 +363,7 @@ wso2.transport.http:
 
 ## Dashboard data provider authorization
 data.provider.configs:
-  authorizingClass: org.wso2.analytics.apim.dashboards.data.provider.Authorizer
+  authorizingClass: org.wso2.analytics.apim.dashboards.core.data.provider.Authorizer
 
 ## Additional APIs that needs to be added to the server.
 ## Should be provided as a key value pairs { API context path: Microservice implementation class }

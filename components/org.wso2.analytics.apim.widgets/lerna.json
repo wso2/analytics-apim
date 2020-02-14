@@ -21,6 +21,9 @@
     "APIMSubscriptionsAnalytics",
     "APIMSignupsAnalytics",
     "APIMTopApiUsers",
+    "APIMApiUsageSummary",
+    "APIMApiThrottledSummary",
+    "APIMApiFaultsSummary",
     "APIMApiVersionUsageSummary",
     "APIMApiResourceUsageSummary",
     "APIMApiBackendUsageSummary",
@@ -34,7 +37,8 @@
     "APIMApiLatencyTime",
     "APIMGeoBasedInvocations",
     "APIMApiUsage",
-    "DateTimeRangePicker"
+    "DateTimeRangePicker",
+    "APIMPlaceholder"
   ],
   "version": "1.0.0"
 }

@@ -25,6 +25,7 @@ import feign.gson.GsonDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.analytics.apim.idp.client.dao.OAuthAppDAO;
+import org.wso2.analytics.apim.idp.client.dto.CustomUrlInfo;
 import org.wso2.analytics.apim.idp.client.dto.DCRClientInfo;
 import org.wso2.analytics.apim.idp.client.dto.DCRClientResponse;
 import org.wso2.analytics.apim.idp.client.dto.DCRError;
@@ -60,6 +61,7 @@ import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.POST_LOG
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.REGEX_BASE_END;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SPACE;
+import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SP_APP_NAME;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SUBSCRIBE_SCOPE;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.SUPER_TENANT_DOMAIN;
 import static org.wso2.analytics.apim.idp.client.ApimIdPClientConstants.UNDERSCORE;
@@ -71,6 +73,9 @@ public class ApimIdPClient extends ExternalIdPClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApimIdPClient.class);
     private static final Object OAuthAppCreationLock = new Object();
+    private final String portalAppContext;
+    private final String brAppContext;
+    private Map<String, CustomUrlInfo> customUrlInfoMap = new HashMap<>();
 
     private DCRMServiceStub dcrmServiceStub;
     private OAuth2ServiceStubs oAuth2ServiceStubs;
@@ -86,6 +91,7 @@ public class ApimIdPClient extends ExternalIdPClient {
     private boolean isSSOEnabled;
     private String ssoLogoutURL;
     private boolean isHostnameVerifierEnabled;
+    private ApimAdminApiClient apimAdminApiClient;
 
     // Here the user given context are mapped to the OAuthApp Info.
     private Map<String, OAuthApplicationInfo> oAuthAppInfoMap;
@@ -94,7 +100,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                          String grantType, String adminScopeName, String allScopes,
                          Map<String, OAuthApplicationInfo> oAuthAppInfoMap, int cacheTimeout, String kmUserName,
                          DCRMServiceStub dcrmServiceStub, OAuth2ServiceStubs oAuth2ServiceStubs,
-                         boolean isSSOEnabled, String ssoLogoutURL, boolean isHostnameVerifierEnabled) {
+                         boolean isSSOEnabled, String ssoLogoutURL, boolean isHostnameVerifierEnabled,
+                         ApimAdminApiClient apimAdminApiClient, String portalAppContext, String brAppContext) {
         super(baseUrl, authorizeEndpoint, grantType, null, adminScopeName, oAuthAppInfoMap,
                 cacheTimeout, null, dcrmServiceStub, oAuth2ServiceStubs, null, null, isSSOEnabled, ssoLogoutURL);
         this.adminServiceUsername = adminServiceUsername;
@@ -114,36 +121,61 @@ public class ApimIdPClient extends ExternalIdPClient {
         this.isSSOEnabled = isSSOEnabled;
         this.ssoLogoutURL = ssoLogoutURL;
         this.isHostnameVerifierEnabled = isHostnameVerifierEnabled;
+        this.apimAdminApiClient = apimAdminApiClient;
+        this.portalAppContext = portalAppContext;
+        this.brAppContext = brAppContext;
     }
 
-    @Override
-    public void init(String kmUserName) throws IdPClientException {
+    public void init(String kmUserName, CustomUrlInfo customUrlInfo, String appContext) throws IdPClientException {
         if (!isHostnameVerifierEnabled) {
             System.setProperty("httpclient.hostnameVerifier", "AllowAll");
         }
         this.oAuthAppDAO.init();
-        if (!this.oAuthAppDAO.tableExists()) {
+        if (!this.oAuthAppDAO.systemAppsTableExists()) {
             String error
                     = OAUTHAPP_TABLE + " does not exists in the " + this.oAuthAppDAO.getDatabaseName() + " database.";
             LOG.error(error);
             throw new IdPClientException(error);
         }
+        String clientName = getClientName(appContext);
+        String tenantDomain = SUPER_TENANT_DOMAIN;
+        String appOwner = kmUserName;
 
-        for (Map.Entry<String, OAuthApplicationInfo> entry : this.oAuthAppInfoMap.entrySet()) {
-            String appContext = entry.getKey();
-            OAuthApplicationInfo oAuthApp = entry.getValue();
-            String clientName = oAuthApp.getClientName();
-            OAuthApplicationInfo persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName);
-            if (persistedOAuthApp == null) {
-                synchronized (OAuthAppCreationLock) {
-                    persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName);
-                    if (persistedOAuthApp == null) {
-                        registerApplication(appContext, clientName, kmUserName);
-                    }
+        boolean isCustomUrlApplicable = customUrlInfo.isEnabled() && clientName.equals
+                (ApimIdPClientConstants.PORTAL_APP_NAME);
+        if (isCustomUrlApplicable) {
+            tenantDomain = customUrlInfo.getTenantDomain();
+            appOwner = customUrlInfo.getTenantAdminUsername();
+        }
+
+        OAuthApplicationInfo persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName, tenantDomain);
+        if (persistedOAuthApp == null) {
+            synchronized (OAuthAppCreationLock) {
+                persistedOAuthApp = this.oAuthAppDAO.getOAuthApp(clientName, tenantDomain);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("System app not found in database for client name: " + clientName + " tenant : " +
+                            tenantDomain + ". Hence creating service provider via DCR.");
                 }
-            } else {
-                this.oAuthAppInfoMap.replace(appContext, persistedOAuthApp);
+                if (persistedOAuthApp == null) {
+                    registerApplication(appContext, clientName, appOwner, customUrlInfo);
+                }
             }
+        } else {
+            if (isCustomUrlApplicable) {
+                appContext = appContext + "_" + customUrlInfo.getTenantDomain();
+            }
+            this.oAuthAppInfoMap.put(appContext, persistedOAuthApp);
+            this.customUrlInfoMap.put(customUrlInfo.getTenantDomain(), customUrlInfo);
+        }
+    }
+
+    private String getClientName(String appContext) {
+        if (this.portalAppContext.equals(appContext)) {
+            return ApimIdPClientConstants.PORTAL_APP_NAME;
+        } else if (this.brAppContext.equals(appContext)) {
+            return ApimIdPClientConstants.BR_DB_APP_NAME;
+        } else {
+            return SP_APP_NAME;
         }
     }
 
@@ -196,8 +228,10 @@ public class ApimIdPClient extends ExternalIdPClient {
         TokenData tokenData = TokenDataHolder.getInstance().getTokenMap().get(name);
         ArrayList<Role> roles;
         if (tokenData == null) {
-            LOG.debug("Cannot find the token data for the user: " + name + " in the token data map. Hence, cannot " +
-                    "retrieve user scopes. Empty array returned for roles.");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Cannot find the token data for the user: " + name + " in the token data map. Hence, cannot" +
+                        " retrieve user scopes. Empty array returned for roles.");
+            }
             roles = new ArrayList<>();
         } else {
             String scopes = tokenData.getScopes();
@@ -264,35 +298,44 @@ public class ApimIdPClient extends ExternalIdPClient {
 
     @Override
     public Map<String, String> login(Map<String, String> properties) throws IdPClientException {
+
         Map<String, String> returnProperties = new HashMap<>();
-        String grantType = properties.getOrDefault(IdPClientConstants.GRANT_TYPE, this.grantType);
-        if (!IdPClientConstants.REFRESH_GRANT_TYPE.equals(grantType)) {
-            this.init(this.kmUserName);
+        CustomUrlInfo customUrlInfo = getCustomUrlInfo(properties.getOrDefault(IdPClientConstants.DOMAIN,
+                SUPER_TENANT_DOMAIN));
+        if (customUrlInfo == null) {
+            throw new IdPClientException("Unable to retrieve custom url info from APIM Admin API");
         }
-
-        Response response;
+        String grantType = properties.getOrDefault(IdPClientConstants.GRANT_TYPE, this.grantType);
         String oAuthAppContext = properties.get(IdPClientConstants.APP_NAME);
-
+        if (!IdPClientConstants.REFRESH_GRANT_TYPE.equals(grantType)) {
+            this.init(this.kmUserName, customUrlInfo, oAuthAppContext);
+        }
+        Response response;
         //Checking if these are the frontend-if not use sp
         if (!this.oAuthAppInfoMap.containsKey(oAuthAppContext)) {
             oAuthAppContext = ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT;
         }
-
+        boolean isCustomUrlApplicable = customUrlInfo.isEnabled() &&
+                oAuthAppContext.equals(this.portalAppContext);
+        String baseUrl = this.baseUrl;
+        String authorizationUrl = this.authorizeEndpoint;
+        if (isCustomUrlApplicable) {
+            baseUrl =  customUrlInfo.getDevPortalUrlDTO().getUrl();
+            oAuthAppContext = oAuthAppContext + "_" + customUrlInfo.getTenantDomain();
+            authorizationUrl = baseUrl + ApimIdPClientConstants.OAUTH2_POSTFIX +
+                    ApimIdPClientConstants.AUTHORIZE_POSTFIX;
+        }
         String username = properties.get(IdPClientConstants.USERNAME);
         if (IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE.equals(grantType)) {
             String callbackUrl = properties.get(IdPClientConstants.CALLBACK_URL);
             returnProperties.put(IdPClientConstants.LOGIN_STATUS, IdPClientConstants.LoginStatus.LOGIN_REDIRECTION);
+            returnProperties.put(IdPClientConstants.REDIRECTION_URL, authorizationUrl);
+            returnProperties.put(IdPClientConstants.CALLBACK_URL, baseUrl +
+                    ApimIdPClientConstants.CALLBACK_URL + callbackUrl +
+                    ApimIdPClientConstants.CALLBACK_URL_SUFFIX);
             returnProperties.put(IdPClientConstants.CLIENT_ID, this.oAuthAppInfoMap.get(oAuthAppContext).getClientId());
-            returnProperties.put(IdPClientConstants.REDIRECTION_URL, this.authorizeEndpoint);
-            returnProperties.put(IdPClientConstants.CALLBACK_URL, this.baseUrl +
-                    ApimIdPClientConstants.CALLBACK_URL + callbackUrl + ApimIdPClientConstants.CALLBACK_URL_SUFFIX);
             returnProperties.put(IdPClientConstants.SCOPE, this.allScopes);
             return returnProperties;
-        } else if (IdPClientConstants.PASSWORD_GRANT_TYPE.equals(grantType)) {
-            response = oAuth2ServiceStubs.getTokenServiceStub().generatePasswordGrantAccessToken(
-                    username, properties.get(IdPClientConstants.PASSWORD),
-                    properties.get(IdPClientConstants.APP_ID), this.oAuthAppInfoMap.get(oAuthAppContext).getClientId(),
-                    this.oAuthAppInfoMap.get(oAuthAppContext).getClientSecret());
         } else {
             response = oAuth2ServiceStubs.getTokenServiceStub().generateRefreshGrantAccessToken(
                     properties.get(IdPClientConstants.REFRESH_TOKEN), null,
@@ -375,6 +418,7 @@ public class ApimIdPClient extends ExternalIdPClient {
 
     @Override
     public Map<String, String> logout(Map<String, String> properties) throws IdPClientException {
+        String tenantDomain = properties.getOrDefault(IdPClientConstants.DOMAIN, "");
         String token = properties.get(IdPClientConstants.ACCESS_TOKEN);
         String oAuthAppContext = properties.getOrDefault(IdPClientConstants.APP_NAME,
                 ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT);
@@ -397,6 +441,18 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
         TokenDataHolder.getInstance().removeTokenDataFromMap(username);
         tokenCache.invalidate(token);
+
+        CustomUrlInfo customUrlInfo = customUrlInfoMap.get(tenantDomain);
+        String baseUrl = this.baseUrl;
+        String ssoLogoutURL = this.ssoLogoutURL;
+        boolean isCustomUrlApplicable = customUrlInfo != null && customUrlInfo.isEnabled() &&
+                oAuthAppContext.equals(this.portalAppContext);
+        String originalOauthAppContext = oAuthAppContext;
+        if (isCustomUrlApplicable) {
+            oAuthAppContext = oAuthAppContext + "_" + customUrlInfo.getTenantDomain();
+            baseUrl = customUrlInfo.getDevPortalUrlDTO().getUrl();
+            ssoLogoutURL = baseUrl + ApimIdPClientConstants.OIDC_LOGOUT_POSTFIX;
+        }
         oAuth2ServiceStubs.getRevokeServiceStub().revokeAccessToken(
                 token,
                 this.oAuthAppInfoMap.get(oAuthAppContext).getClientId(),
@@ -407,8 +463,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         if (!isSSOEnabled || idToken == null) {
             returnProperties.put(IdPClientConstants.RETURN_LOGOUT_PROPERTIES, "false");
         } else {
-            String postLogoutRedirectUrl = this.baseUrl + FORWARD_SLASH + oAuthAppContext;
-
+            String postLogoutRedirectUrl = baseUrl + FORWARD_SLASH + originalOauthAppContext;
             returnProperties.put(IdPClientConstants.RETURN_LOGOUT_PROPERTIES, "true");
             String targetURIForRedirection = ssoLogoutURL
                     .concat(ApimIdPClientConstants.SSO_LOGING_ID_TOKEN_TAIL)
@@ -421,15 +476,35 @@ public class ApimIdPClient extends ExternalIdPClient {
     }
 
     @Override
-    public Map<String, String> authCodeLogin(String appContext, String code) throws IdPClientException {
+    public Map<String, String> authCodeLogin(String appContext, String code)  throws IdPClientException {
+
+        Map<String, String> properties = new HashMap<>();
+        return authCodeLogin(appContext, code, properties);
+    }
+
+    @Override
+    public Map<String, String> authCodeLogin(String appContext, String code, Map<String, String> properties)
+            throws IdPClientException {
+
         Map<String, String> returnProperties = new HashMap<>();
         String oAuthAppContext = appContext.split("/\\|?")[0];
         if (!this.oAuthAppInfoMap.containsKey(oAuthAppContext)) {
             oAuthAppContext = ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT;
         }
-        OAuthApplicationInfo oAuthApplicationInfo = this.oAuthAppInfoMap.get(oAuthAppContext);
+        OAuthApplicationInfo oAuthApplicationInfo;
+        String baseUrl;
+        String tenantDomain = properties.getOrDefault(IdPClientConstants.DOMAIN, SUPER_TENANT_DOMAIN);
+        CustomUrlInfo customUrlInfo = customUrlInfoMap.get(tenantDomain);
+        if (customUrlInfo != null && customUrlInfo.isEnabled() &&
+                oAuthAppContext.equals(this.portalAppContext)) {
+            oAuthApplicationInfo = this.oAuthAppInfoMap.get(oAuthAppContext + "_" + tenantDomain);
+            baseUrl = customUrlInfo.getDevPortalUrlDTO().getUrl();
+        } else {
+            oAuthApplicationInfo = this.oAuthAppInfoMap.get(oAuthAppContext);
+            baseUrl = this.baseUrl;
+        }
         Response response = oAuth2ServiceStubs.getTokenServiceStub().generateAuthCodeGrantAccessToken(code,
-                this.baseUrl + ApimIdPClientConstants.CALLBACK_URL + oAuthAppContext +
+                baseUrl + ApimIdPClientConstants.CALLBACK_URL + oAuthAppContext +
                         ApimIdPClientConstants.CALLBACK_URL_SUFFIX, null,
                 oAuthApplicationInfo.getClientId(), oAuthApplicationInfo.getClientSecret());
         if (response == null) {
@@ -454,7 +529,7 @@ public class ApimIdPClient extends ExternalIdPClient {
                 returnProperties.put(IdPClientConstants.VALIDITY_PERIOD,
                         Long.toString(oAuth2TokenInfo.getExpiresIn()));
                 returnProperties.put(ApimIdPClientConstants.REDIRECT_URL,
-                        this.baseUrl + (this.baseUrl.endsWith("/") ? appContext : "/" + appContext));
+                        baseUrl + (baseUrl.endsWith("/") ? appContext : "/" + appContext));
                 Response introspectTokenResponse = oAuth2ServiceStubs.getIntrospectionServiceStub()
                         .introspectAccessToken(oAuth2TokenInfo.getAccessToken());
                 String authUser = null;
@@ -577,20 +652,29 @@ public class ApimIdPClient extends ExternalIdPClient {
      * @param appContext  context of the application
      * @param clientName name of the client
      * @param kmUserName username of the key manager
+     * @param customUrlInfo CustomUrlinfo for the tenant domain
      * @throws IdPClientException thrown when an error occurred when sending the DCR call or retrieving application
      * data using OAuthAdminService service
      */
-    private void registerApplication(String appContext, String clientName, String kmUserName)
-            throws IdPClientException {
+    private void registerApplication(String appContext, String clientName, String kmUserName, CustomUrlInfo
+            customUrlInfo) throws IdPClientException {
 
         String grantType =
                 IdPClientConstants.PASSWORD_GRANT_TYPE + SPACE + IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE +
                         SPACE + IdPClientConstants.REFRESH_GRANT_TYPE;
         String callBackUrl;
         String postLogoutRedirectUrl = this.baseUrl + FORWARD_SLASH + appContext;
+        boolean isCustomUrlApplicable = clientName.equals(ApimIdPClientConstants.PORTAL_APP_NAME) &&
+                customUrlInfo.isEnabled();
         if (clientName.equals(ApimIdPClientConstants.DEFAULT_SP_APP_CONTEXT)) {
             callBackUrl = ApimIdPClientConstants.REGEX_BASE_START + this.baseUrl +
                     ApimIdPClientConstants.CALLBACK_URL + REGEX_BASE + postLogoutRedirectUrl + REGEX_BASE_END;
+        } else if (isCustomUrlApplicable) {
+            // custom url should be added to the callback url only for analytics dashboard
+            postLogoutRedirectUrl = customUrlInfo.getDevPortalUrlDTO().getUrl() + FORWARD_SLASH + appContext;
+            callBackUrl = ApimIdPClientConstants.REGEX_BASE_START + customUrlInfo.getDevPortalUrlDTO().getUrl() +
+                    ApimIdPClientConstants.CALLBACK_URL + appContext + ApimIdPClientConstants.CALLBACK_URL_SUFFIX +
+                    REGEX_BASE + postLogoutRedirectUrl + REGEX_BASE_END;
         } else {
             callBackUrl = ApimIdPClientConstants.REGEX_BASE_START + this.baseUrl +
                     ApimIdPClientConstants.CALLBACK_URL + appContext + ApimIdPClientConstants.CALLBACK_URL_SUFFIX +
@@ -621,9 +705,19 @@ public class ApimIdPClient extends ExternalIdPClient {
                 OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo(
                         clientName, dcrClientInfoResponse.getClientId(), dcrClientInfoResponse.getClientSecret()
                 );
-                this.oAuthAppInfoMap.replace(appContext, oAuthApplicationInfo);
+                String tenantDomain = SUPER_TENANT_DOMAIN;
+                if (isCustomUrlApplicable) {
+                    appContext = appContext + "_" + customUrlInfo.getTenantDomain();
+                    tenantDomain = customUrlInfo.getTenantDomain();
+                }
+                this.oAuthAppInfoMap.put(appContext, oAuthApplicationInfo);
+                this.customUrlInfoMap.put(customUrlInfo.getTenantDomain(), customUrlInfo);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("OAuth2 application created: " + oAuthApplicationInfo.toString());
+                }
+                oAuthAppDAO.insertSystemApp(dcrClientInfoResponse, clientName,  tenantDomain);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("System app created: " + oAuthApplicationInfo.toString());
                 }
             } catch (IOException e) {
                 String error = "Error occurred while parsing the DCR application creation response " +
@@ -658,5 +752,35 @@ public class ApimIdPClient extends ExternalIdPClient {
             str = str.replace('\n', '_').replace('\r', '_');
         }
         return str;
+    }
+
+    private CustomUrlInfo getCustomUrlInfo(String tenantDomain) throws IdPClientException {
+
+        Response response = apimAdminApiClient.getCustomUrlInfo(tenantDomain);
+        CustomUrlInfo customUrlInfo;
+        if (response == null) {
+            String error = "Error occurred while fetching custom url info for tenant :" + tenantDomain;
+            LOG.error(error);
+            throw new IdPClientException(error);
+        }
+        if (response.status() == 200) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Successfully fetched custom url info for tenant :" + tenantDomain);
+            }
+            try {
+                customUrlInfo = (CustomUrlInfo) new GsonDecoder().decode(response,
+                        CustomUrlInfo.class);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(customUrlInfo.toString());
+                }
+            } catch (IOException e) {
+                String error = "Error occurred while parsing the Custom Url info response for tenant :" + tenantDomain +
+                        ". message. Response: '" + response.body().toString() + "'.";
+                LOG.error(error, e);
+                throw new IdPClientException(error, e);
+            }
+            return customUrlInfo;
+        }
+        return null;
     }
 }

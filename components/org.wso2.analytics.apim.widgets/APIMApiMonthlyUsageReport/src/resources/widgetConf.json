@@ -1,6 +1,6 @@
 {
-  "name": "APIM Admin Reports",
-  "id": "APIMAdminReports",
+  "name": "Monthly Usage Report",
+  "id": "APIMApiMonthlyUsageReport",
   "thumbnailURL": "",
   "configs": {
     "pubsub": {

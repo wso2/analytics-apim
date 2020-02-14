@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.analytics.apim.dashboards.data.provider;
+package org.wso2.analytics.apim.dashboards.core.data.provider;
 
 import com.google.gson.JsonElement;
 import feign.Response;
@@ -27,8 +27,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.analytics.apim.dashboards.bean.TenantIdInfo;
-import org.wso2.analytics.apim.dashboards.internal.DashboardAuthorizerServiceFactory;
+import org.wso2.analytics.apim.dashboards.core.bean.TenantIdInfo;
+import org.wso2.analytics.apim.dashboards.core.internal.DashboardAuthorizerServiceFactory;
 import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderService;
 import org.wso2.carbon.config.ConfigurationException;
 import org.wso2.carbon.config.provider.ConfigProvider;
@@ -46,6 +46,8 @@ import org.wso2.carbon.data.provider.bean.DataProviderConfigRoot;
 import org.wso2.carbon.data.provider.exception.DataProviderException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -357,13 +359,14 @@ public class Authorizer implements DataProviderAuthorizer {
             throw new DataProviderException(error);
         }
         try {
+            String encodedUsername = Base64.getEncoder().encodeToString(username.getBytes(StandardCharsets.UTF_8));
             Response response = DashboardAuthorizerServiceFactory
                     .getAuthorizerHttpsClient(
                             this.clientBuilderService,
                             (adminServiceUrl + "/api/am/admin/v0.16/tenant-info"),
                             adminUsername,
                             adminPassword)
-                    .getTenantId(username);
+                    .getTenantId(encodedUsername);
             if (response == null) {
                 String error = "Response returned from the admin rest api is null.";
                 LOGGER.error(error);

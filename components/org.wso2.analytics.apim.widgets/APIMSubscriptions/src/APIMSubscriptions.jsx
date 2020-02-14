@@ -20,44 +20,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import SubIcon from './SubIcon';
+import { SummaryWidget } from '@analytics-apim/common-lib';
+import './styles.css';
 
 /**
- * React Component for APIM Subscriptions widget body
+ * React Component for APIM Api Usage widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Subscriptions widget body
+ * @returns {ReactElement} Render the APIM Api Usage Count widget body
  */
 export default function APIMSubscriptions(props) {
-    const { themeName, totalCount, weekCount } = props;
+    const { themeName, thisWeekCount, lastWeekCount } = props;
     const styles = {
+        root: {
+            backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
+            height: '100%',
+            cursor: 'pointer',
+        },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        },
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            paddingTop: '15px',
-            width: '90%',
-        },
-        cIconWrapper: {
-            float: 'left',
-            width: '30%',
-            height: '62%',
-        },
-        cIcon: {
-            display: 'block',
-            margin: 'auto',
-            marginTop: '25%',
+            paddingTop: 30,
         },
         dataWrapper: {
-            float: 'left',
-            width: '60%',
-            height: '50%',
-            paddingTop: '8%',
-        },
-        weekCount: {
-            margin: 0,
-            marginTop: '5%',
-            color: 'rgb(215, 189, 218)',
-            letterSpacing: 1,
-            fontSize: '80%',
+            paddingTop: 10,
         },
         typeText: {
             textAlign: 'left',
@@ -68,72 +58,52 @@ export default function APIMSubscriptions(props) {
             letterSpacing: 1.5,
             fontSize: 'small',
         },
-        icon: {
-            position: 'absolute',
-            bottom: '13%',
-            right: '8%',
+        moreButton: {
+            marginTop: 10,
+            marginRight: 20,
+        },
+        subheading: {
+            textAlign: 'center',
+            margin: 5,
+            fontSize: 14,
+            color: '#b5b5b5',
         },
     };
     return (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
-            style={{
-                width: '90%',
-                height: '85%',
-                margin: '5% 5%',
-                background: themeName === 'dark'
-                    ? 'linear-gradient(to right, rgb(17, 2, 41) 0%, rgb(117, 39, 188) 46%, rgb(84, 42, 101) 100%)'
-                    : '#fff',
+            style={styles.root}
+            className={`overview-wrapper ${themeName}`}
+            onClick={() => {
+                window.location.href = window.contextPath
+                    + '/dashboards/apimpublisher/developer-stats#{"dtrp":{"tr":"7days","g":"day","sync":false},'
+                    + '"subscriptions":{"apiCreatedBy":"All","subscribedTo":"All"}}';
             }}
         >
             <div style={styles.headingWrapper}>
                 <h3
-                    style={{
-                        borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #59057b',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
+                    style={styles.heading}
                 >
-                    <FormattedMessage id='widget.heading' defaultMessage='TOTAL SUBSCRIPTIONS' />
+                    <FormattedMessage id='widget.heading' defaultMessage='SUBSCRIPTIONS SUMMARY' />
                 </h3>
-            </div>
-            <div style={styles.cIconWrapper}>
-                <SubIcon
-                    strokeColor={themeName === 'dark' ? '#fff' : '#59057b'}
-                    width='50%'
-                    height='50%'
-                    style={styles.cIcon}
-                />
+                <p style={styles.subheading}>
+                    <FormattedMessage id='widget.subheading' defaultMessage='(Last 7 Days)' />
+                </p>
             </div>
             <div style={styles.dataWrapper}>
-                <h1
-                    style={{
-                        margin: 'auto',
-                        textAlign: 'center',
-                        fontSize: '300%',
-                        display: 'inline',
-                        color: themeName === 'dark' ? '#fff' : '#59057b',
-                    }}
-                >
-                    {totalCount}
-                </h1>
-                <h3 style={styles.typeText}>
-                    {totalCount === '01'
-                        ? <FormattedMessage id='subscription' defaultMessage='SUBSCRIPTION' />
-                        : <FormattedMessage id='subscriptions' defaultMessage='SUBSCRIPTIONS' />}
-                </h3>
-                <p style={styles.weekCount}>
-                    [
-                    {' '}
-                    {weekCount}
-                    {' '}
-                    {weekCount === '01' ? 'SUBSCRIPTION' : 'SUBSCRIPTIONS'}
-                    {' '}
-                    <FormattedMessage id='within.week.text' defaultMessage='WITHIN LAST WEEK ' />
-                    ]
-                </p>
+                <SummaryWidget
+                    themeName={themeName}
+                    thisWeekCount={thisWeekCount}
+                    lastWeekCount={lastWeekCount}
+                    tooltip={
+                        (
+                            <FormattedMessage
+                                id='widget.tooltip'
+                                defaultMessage='Increase/Decrease compared to last week'
+                            />
+                        )
+                    }
+                />
             </div>
         </div>
     );
@@ -141,6 +111,6 @@ export default function APIMSubscriptions(props) {
 
 APIMSubscriptions.propTypes = {
     themeName: PropTypes.string.isRequired,
-    totalCount: PropTypes.string.isRequired,
-    weekCount: PropTypes.string.isRequired,
+    thisWeekCount: PropTypes.string.isRequired,
+    lastWeekCount: PropTypes.string.isRequired,
 };

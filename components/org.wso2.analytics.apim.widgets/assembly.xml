@@ -140,6 +140,18 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>APIMApiUsageSummary/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMApiThrottledSummary/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMApiFaultsSummary/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>APIMTopUserAgents/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
@@ -161,6 +173,10 @@
         </fileSet>
         <fileSet>
             <directory>DateTimeRangePicker/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMPlaceholder/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
     </fileSets>

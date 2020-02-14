@@ -16,5 +16,7 @@
   "devDependencies": {
     "@babel/cli": "^7.7.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "short-number": "^1.0.7"
+  }
 }
