@@ -106,6 +106,7 @@ define stream InComingFaultStream(
     properties string
 );
 
+@sink(type='inMemory' , topic='ThrottledOutStream')
 define stream ThrottledOutStream(
     meta_clientType string,
     username string,
@@ -124,7 +125,7 @@ define stream ThrottledOutStream(
     hostname string
 );
 
-
+@sink(type='inMemory' , topic='APIM_REQUEST')
 define stream Request (meta_clientType string,
     applicationConsumerKey string,
     applicationName string,
@@ -163,7 +164,7 @@ define stream Request (meta_clientType string,
     gatewayType string,
     label string);
 
-
+@sink(type='inMemory', topic='FaultStream')
 define stream FaultStream(
     meta_clientType string,
     applicationConsumerKey string,

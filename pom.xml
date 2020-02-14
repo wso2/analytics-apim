@@ -1132,14 +1132,14 @@
         <siddhi.execution.string.version>5.0.9</siddhi.execution.string.version>
         <siddhi.execution.time.version>5.0.4</siddhi.execution.time.version>
         <siddhi.execution.markov.version>5.0.1</siddhi.execution.markov.version>
-        <siddhi.execution.geo.version>5.0.0</siddhi.execution.geo.version>
+        <siddhi.execution.geo.version>5.0.1</siddhi.execution.geo.version>
         <siddhi.execution.regex.version>5.0.5</siddhi.execution.regex.version>
         <siddhi.execution.env.version>2.0.0</siddhi.execution.env.version>
-        <siddhi.io.wso2event.version>5.0.0</siddhi.io.wso2event.version>
+        <siddhi.io.wso2event.version>5.0.1</siddhi.io.wso2event.version>
         <siddhi.io.email.version>2.0.5</siddhi.io.email.version>
         <siddhi.map.json.version>5.0.6</siddhi.map.json.version>
         <siddhi.map.text.version>2.0.4</siddhi.map.text.version>
-        <siddhi.map.wso2event.version>5.0.1</siddhi.map.wso2event.version>
+        <siddhi.map.wso2event.version>5.0.2</siddhi.map.wso2event.version>
         <siddhi.map.protobuf.version>1.0.4</siddhi.map.protobuf.version>
         <siddhi.store.rdbms.version>7.0.5</siddhi.store.rdbms.version>
         <siddhi.io.grpc.version>1.0.8</siddhi.io.grpc.version>

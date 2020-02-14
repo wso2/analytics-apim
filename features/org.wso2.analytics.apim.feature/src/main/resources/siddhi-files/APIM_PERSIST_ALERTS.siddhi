@@ -52,22 +52,22 @@ define table ApimAllAlert (type string, tenantDomain string, message string, sev
 define table ApimAbnormalBackendTimeAlert (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long,
  message string, severity int, alertTimestamp long);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "message:3000")
 define table ApimAbnormalReqAlert(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int, message string, severity int, alertTimestamp long);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "message:3000")
 define table ApimAbnormalResponseTimeAlert( apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, responseTime long,thresholdResponseTime long, message string, severity int, alertTimestamp long);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "message:3000")
 define table ApimIPAccessAbnormalityAlert (type string, message string, severity int, ip string, applicationName string, applicationOwner string, username string,tenantDomain string, requestTimestamp long, alertTimestamp long);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "message:3000")
 define table ApimRequestPatternChangedAlert (username string, applicationName string, applicationOwner string, tenantDomain string, message string, severity int, alertTimestamp long);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "message:3000")
 define table ApimApiHealthMonitorAlert(apiName string,apiVersion string,apiCreator string, apiCreatorTenantDomain string, message string, severity int, alertTimestamp long);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "message:3000")
 define table ApimTierLimitHittingAlert (subscriber string, apiCreator string, apiName string, applicationId string, applicationName string, apiCreatorTenantDomain string, userTenantDomain string, message string, severity int, alertTimestamp long);
 
 @info(name = 'AbnormalBackendTimeAlert insert to ApimAllAlert')
