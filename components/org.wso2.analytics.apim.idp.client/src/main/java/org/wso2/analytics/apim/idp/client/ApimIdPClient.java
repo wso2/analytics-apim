@@ -301,7 +301,7 @@ public class ApimIdPClient extends ExternalIdPClient {
 
         Map<String, String> returnProperties = new HashMap<>();
         CustomUrlInfo customUrlInfo = getCustomUrlInfo(properties.getOrDefault(IdPClientConstants.DOMAIN,
-                "carbon.super"));
+                SUPER_TENANT_DOMAIN));
         if (customUrlInfo == null) {
             throw new IdPClientException("Unable to retrieve custom url info from APIM Admin API");
         }
@@ -493,7 +493,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
         OAuthApplicationInfo oAuthApplicationInfo;
         String baseUrl;
-        String tenantDomain = properties.getOrDefault(IdPClientConstants.DOMAIN, "carbon.super");
+        String tenantDomain = properties.getOrDefault(IdPClientConstants.DOMAIN, SUPER_TENANT_DOMAIN);
         CustomUrlInfo customUrlInfo = customUrlInfoMap.get(tenantDomain);
         if (customUrlInfo != null && customUrlInfo.isEnabled() &&
                 oAuthAppContext.equals(this.portalAppContext)) {
@@ -705,7 +705,7 @@ public class ApimIdPClient extends ExternalIdPClient {
                 OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo(
                         clientName, dcrClientInfoResponse.getClientId(), dcrClientInfoResponse.getClientSecret()
                 );
-                String tenantDomain = "carbon.super";
+                String tenantDomain = SUPER_TENANT_DOMAIN;
                 if (isCustomUrlApplicable) {
                     appContext = appContext + "_" + customUrlInfo.getTenantDomain();
                     tenantDomain = customUrlInfo.getTenantDomain();
