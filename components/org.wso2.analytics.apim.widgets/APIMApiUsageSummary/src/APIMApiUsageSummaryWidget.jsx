@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -28,7 +28,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import APIMSubscriptions from './APIMSubscriptions';
+import APIMApiUsageSummary from './APIMApiUsageSummary';
 
 const LAST_WEEK = 'last-week';
 const THIS_WEEK = 'this-week';
@@ -67,14 +67,14 @@ const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
  * Create React Component for APIM Api Created
- * @class APIMSubscriptionsWidget
+ * @class APIMApiUsageSummaryWidget
  * @extends {Widget}
  */
-class APIMSubscriptionsWidget extends Widget {
+class APIMApiUsageSummaryWidget extends Widget {
     /**
-     * Creates an instance of APIMSubscriptionsWidget.
+     * Creates an instance of APIMApiUsageSummaryWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMSubscriptionsWidget
+     * @memberof APIMApiUsageSummaryWidget
      */
     constructor(props) {
         super(props);
@@ -193,14 +193,14 @@ class APIMSubscriptionsWidget extends Widget {
 
     /**
      * Load locale file.
-     * @memberof APIMSubscriptionsWidget
+     * @memberof APIMApiUsageSummaryWidget
      * @param {String} locale - locale
      * @returns {Promise}
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMSubscriptions/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiUsageSummary/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -215,7 +215,7 @@ class APIMSubscriptionsWidget extends Widget {
      * Formats the siddhi query
      * @param {string} week - This week/Last week
      * @param {object} dataProviderConfigs - Data provider configurations
-     * @memberof APIMSubscriptionsWidget
+     * @memberof APIMApiUsageSummaryWidget
      * */
     assembleUsageCountQuery(week, dataProviderConfigs) {
         const { id, widgetID: widgetName } = this.props;
@@ -230,8 +230,8 @@ class APIMSubscriptionsWidget extends Widget {
 
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{apiCreator}}': '',
-            '{{weekStart}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-            '{{weekEnd}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+            '{{from}}': timeFrom,
+            '{{to}}': timeTo,
             '{{per}}': 'day',
         };
 
@@ -245,7 +245,7 @@ class APIMSubscriptionsWidget extends Widget {
      * Formats data received from assembleweekQuery
      * @param {string} week - This week/Last week
      * @param {object} message - data retrieved
-     * @memberof APIMSubscriptionsWidget
+     * @memberof APIMApiUsageSummaryWidget
      * */
     handleUsageCountReceived(week, message) {
         const { data } = message;
@@ -271,7 +271,7 @@ class APIMSubscriptionsWidget extends Widget {
     /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Api Created widget
-     * @memberof APIMSubscriptionsWidget
+     * @memberof APIMApiUsageSummaryWidget
      */
     render() {
         const {
@@ -314,7 +314,7 @@ class APIMSubscriptionsWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMSubscriptions {...apiCreatedProps} />
+                            <APIMApiUsageSummary {...apiCreatedProps} />
                         )
                     }
                 </MuiThemeProvider>
@@ -323,4 +323,4 @@ class APIMSubscriptionsWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMSubscriptions', APIMSubscriptionsWidget);
+global.dashboard.registerWidget('APIMApiUsageSummary', APIMApiUsageSummaryWidget);

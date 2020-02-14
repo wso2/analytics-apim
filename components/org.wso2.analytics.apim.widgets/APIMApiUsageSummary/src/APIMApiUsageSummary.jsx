@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -28,7 +28,7 @@ import './styles.css';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the APIM Api Usage Count widget body
  */
-export default function APIMSubscriptions(props) {
+export default function APIMApiUsageSummary(props) {
     const { themeName, thisWeekCount, lastWeekCount } = props;
     const styles = {
         root: {
@@ -76,15 +76,15 @@ export default function APIMSubscriptions(props) {
             className={`overview-wrapper ${themeName}`}
             onClick={() => {
                 window.location.href = window.contextPath
-                    + '/dashboards/apimpublisher/developer-stats#{"dtrp":{"tr":"7days","g":"day","sync":false},'
-                    + '"subscriptions":{"apiCreatedBy":"All","subscribedTo":"All"}}';
+                    + '/dashboards/apimpublisher/usage-summary#{"dtrp":{"tr":"7days","g":"day","sync":false},'
+                    + '"apibackendusage":{"apiCreatedBy":"All","limit":5},"apiUsers":{"apiCreatedBy":"All","apiSelected":"All","apiVersion":"All","limit":5},"apiversionusage":{"apiCreatedBy":"All","limit":5},"apiresourceusage":{"apiCreatedBy":"All","limit":5},"apilastaccess":{"apiCreatedBy":"All","limit":5},"overallapiusage":{"apiCreatedBy":"all","limit":5}}';
             }}
         >
             <div style={styles.headingWrapper}>
                 <h3
                     style={styles.heading}
                 >
-                    <FormattedMessage id='widget.heading' defaultMessage='SUBSCRIPTIONS SUMMARY' />
+                    <FormattedMessage id='widget.heading' defaultMessage='API USAGE SUMMARY' />
                 </h3>
                 <p style={styles.subheading}>
                     <FormattedMessage id='widget.subheading' defaultMessage='(Last 7 Days)' />
@@ -109,7 +109,7 @@ export default function APIMSubscriptions(props) {
     );
 }
 
-APIMSubscriptions.propTypes = {
+APIMApiUsageSummary.propTypes = {
     themeName: PropTypes.string.isRequired,
     thisWeekCount: PropTypes.string.isRequired,
     lastWeekCount: PropTypes.string.isRequired,

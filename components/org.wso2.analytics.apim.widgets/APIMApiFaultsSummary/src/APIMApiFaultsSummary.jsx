@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -23,12 +23,13 @@ import { FormattedMessage } from 'react-intl';
 import { SummaryWidget } from '@analytics-apim/common-lib';
 import './styles.css';
 
+
 /**
  * React Component for APIM Api Usage widget body
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the APIM Api Usage Count widget body
  */
-export default function APIMSubscriptions(props) {
+export default function APIMApiFaultsSummary(props) {
     const { themeName, thisWeekCount, lastWeekCount } = props;
     const styles = {
         root: {
@@ -76,15 +77,15 @@ export default function APIMSubscriptions(props) {
             className={`overview-wrapper ${themeName}`}
             onClick={() => {
                 window.location.href = window.contextPath
-                    + '/dashboards/apimpublisher/developer-stats#{"dtrp":{"tr":"7days","g":"day","sync":false},'
-                    + '"subscriptions":{"apiCreatedBy":"All","subscribedTo":"All"}}';
+                    + '/dashboards/apimpublisher/faults#{"dtrp":{"tr":"7days","g":"day","sync":false},'
+                    + '"faultyapis":{"limit":5},"throttledapis":{"limit":5}}';
             }}
         >
             <div style={styles.headingWrapper}>
                 <h3
                     style={styles.heading}
                 >
-                    <FormattedMessage id='widget.heading' defaultMessage='SUBSCRIPTIONS SUMMARY' />
+                    <FormattedMessage id='widget.heading' defaultMessage='API FAULTS SUMMARY' />
                 </h3>
                 <p style={styles.subheading}>
                     <FormattedMessage id='widget.subheading' defaultMessage='(Last 7 Days)' />
@@ -95,6 +96,7 @@ export default function APIMSubscriptions(props) {
                     themeName={themeName}
                     thisWeekCount={thisWeekCount}
                     lastWeekCount={lastWeekCount}
+                    negative
                     tooltip={
                         (
                             <FormattedMessage
@@ -109,7 +111,7 @@ export default function APIMSubscriptions(props) {
     );
 }
 
-APIMSubscriptions.propTypes = {
+APIMApiFaultsSummary.propTypes = {
     themeName: PropTypes.string.isRequired,
     thisWeekCount: PropTypes.string.isRequired,
     lastWeekCount: PropTypes.string.isRequired,
