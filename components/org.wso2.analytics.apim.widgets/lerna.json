@@ -37,7 +37,8 @@
     "APIMApiLatencyTime",
     "APIMGeoBasedInvocations",
     "APIMApiUsage",
-    "DateTimeRangePicker"
+    "DateTimeRangePicker",
+    "APIMPlaceholder"
   ],
   "version": "1.0.0"
 }

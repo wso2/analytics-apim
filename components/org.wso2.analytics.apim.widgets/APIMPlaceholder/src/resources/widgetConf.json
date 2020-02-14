@@ -1,6 +1,6 @@
 {
-  "name": "Monthly Usage Report",
-  "id": "APIMApiMonthlyUsageReport",
+  "name": "Placeholder",
+  "id": "APIMPlaceholder",
   "thumbnailURL": "",
   "configs": {
     "pubsub": {
@@ -21,7 +21,7 @@
             false
           ]
         },
-        "defaultValue": true
+        "defaultValue": false
       }
     ]
   }

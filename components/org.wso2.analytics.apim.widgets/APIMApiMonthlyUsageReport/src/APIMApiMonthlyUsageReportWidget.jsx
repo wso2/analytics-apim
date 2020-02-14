@@ -23,12 +23,12 @@ import Axios from 'axios';
 import Widget from '@wso2-dashboards/widget';
 import { Scrollbars } from 'react-custom-scrollbars';
 import FormControl from '@material-ui/core/FormControl';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import {
     defineMessages, IntlProvider, addLocaleData, FormattedMessage,
 } from 'react-intl';
 import { createMuiTheme, MuiThemeProvider, Button } from '@material-ui/core';
 import DateWidget from './DateWidget';
-import PDFView from './PDFView';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -52,7 +52,7 @@ const styles = {
     headingWrapper: {
         margin: 'auto',
         width: '95%',
-        maxWidth: '800px',
+        maxWidth: 600,
     },
     formWrapper: {
         marginBottom: '5%',
@@ -61,10 +61,11 @@ const styles = {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    formControl: {
-        marginLeft: '2%',
-        marginTop: '2%',
-        minWidth: 120,
+    downloadButton: {
+        marginTop: 25,
+    },
+    downloadIcon: {
+        marginRight: 20,
     },
 };
 
@@ -206,7 +207,6 @@ class APIMApiMonthlyUsageReportWidget extends Widget {
                                 </h3>
 
                                 <form
-                                    style={styles.form}
                                     noValidate
                                     autoComplete='off'
                                     method='get'
@@ -215,30 +215,27 @@ class APIMApiMonthlyUsageReportWidget extends Widget {
                                 >
                                     <input type='hidden' name='year' value={this.state.year} />
                                     <input type='hidden' name='month' value={monthString} />
-                                    <DateWidget
-                                        year={this.state.year}
-                                        month={this.state.month}
-                                        setMonth={year => this.setMonth(year)}
-                                        setYear={year => this.setYear(year)}
-                                    />
-                                    <FormControl style={styles.formControl}>
+                                    <div style={styles.form}>
+                                        <DateWidget
+                                            year={this.state.year}
+                                            month={this.state.month}
+                                            setMonth={year => this.setMonth(year)}
+                                            setYear={year => this.setYear(year)}
+                                        />
+                                    </div>
+                                    <FormControl>
                                         <Button
-                                            size='small'
+                                            size='large'
                                             variant='outlined'
                                             type='submit'
-                                            style={{ bottom: 0, position: 'absolute' }}
+                                            style={styles.downloadButton}
                                         >
+                                            <CloudDownloadIcon style={styles.downloadIcon} />
                                             <FormattedMessage id='download' defaultMessage='Download' />
                                         </Button>
                                     </FormControl>
                                 </form>
                                 <br />
-                                <div>
-                                    <PDFView
-                                        src={`${pdfBaseUrl}?year=${this.state.year}&month=${monthString}`}
-                                        themeName={themeName}
-                                    />
-                                </div>
                             </div>
                         </div>
                     </Scrollbars>

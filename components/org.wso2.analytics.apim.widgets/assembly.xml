@@ -175,5 +175,9 @@
             <directory>DateTimeRangePicker/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>APIMPlaceholder/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>
