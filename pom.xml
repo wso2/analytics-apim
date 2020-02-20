@@ -1011,7 +1011,7 @@
 
     <properties>
 
-        <carbon.analytics.version>3.0.26</carbon.analytics.version>
+        <carbon.analytics.version>3.0.27</carbon.analytics.version>
         <carbon.analytics.version.range>[3.0.0, 4.0.0)</carbon.analytics.version.range>
         <siddhi.version>5.1.12</siddhi.version>
         <siddhi.core.import.version.range>[5.1,6.0]</siddhi.core.import.version.range>
