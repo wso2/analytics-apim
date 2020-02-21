@@ -14,7 +14,7 @@
           "queryData": {
             "mainquery": "from GeoLocationAgg on apiCreatorTenantDomain=='{{tenantDomain}}' {{querystring}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select sum(totalCount) as count,country group by country;"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

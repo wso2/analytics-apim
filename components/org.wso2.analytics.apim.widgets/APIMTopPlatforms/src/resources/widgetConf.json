@@ -14,7 +14,7 @@
           "queryData": {
             "mainquery": "from ApiUserBrowserAgg on apiCreatorTenantDomain=='{{tenantDomain}}' {{querystring}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select operatingSystem,sum(totalRequestCount) as RequestCount group by operatingSystem order by RequestCount desc limit {{limit}};"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

@@ -15,7 +15,7 @@
             "consumerAppsQuery": "from IDN_OAUTH_CONSUMER_APPS on {{query}} select CONSUMER_KEY,ID;",
             "accessTokenQuery": "from IDN_OAUTH2_ACCESS_TOKEN on {{query}} select CONSUMER_KEY_ID,AUTHZ_USER;"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },
