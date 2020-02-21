@@ -123,7 +123,7 @@ public class MGWFileSourceDAO {
                         .prepareStatement(MGWFileSourceConstants.GET_NEXT_FILES_TO_PROCESS_QUERY_DEFAULT);
             }
             selectStatement.setInt(1, limit);
-            resultSet = selectStatement .executeQuery();
+            resultSet = selectStatement.executeQuery();
             while (resultSet.next()) {
                 String fileName = resultSet.getString("FILE_NAME");
                 long timeStamp = resultSet.getTimestamp("FILE_TIMESTAMP").getTime();
