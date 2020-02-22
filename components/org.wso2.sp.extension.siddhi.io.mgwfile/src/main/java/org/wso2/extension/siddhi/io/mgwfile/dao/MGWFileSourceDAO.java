@@ -107,12 +107,6 @@ public class MGWFileSourceDAO {
         List<MGWFileInfoDTO> usageFileList = new ArrayList<>();
         try {
             connection = MGWFileSourceDBUtil.getConnection();
-            if (!isUsageTableExist(connection)) {
-                log.debug("Table 'AM_USAGE_UPLOADED_FILES' not found in '" + MGWFileSourceDBUtil.getDatasourceName()
-                        + "'. Skip publishing usage data assuming Micro GW is not configured.");
-                return Collections.emptyList();
-            }
-
             autoCommitStatus = connection.getAutoCommit();
             connection.setAutoCommit(false);
             if ((connection.getMetaData().getDriverName()).contains("Oracle")) {

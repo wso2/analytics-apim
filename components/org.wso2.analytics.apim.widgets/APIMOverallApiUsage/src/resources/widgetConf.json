@@ -16,7 +16,7 @@
             "apisubquery": "from AM_SUBSCRIPTION on {{apiList}} select API_ID,count() AS count group by API_ID;",
             "apiusagequery": "from ApiUserPerAppAgg on apiCreatorTenantDomain=='{{tenantDomain}}' {{apiCreator}} within {{from}}L, {{to}}L per \"{{per}}s\" select apiName,apiCreator,sum(totalRequestCount) as RequestCount,apiVersion group by apiName,apiCreator,apiVersion order by RequestCount desc limit {{limit}};"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

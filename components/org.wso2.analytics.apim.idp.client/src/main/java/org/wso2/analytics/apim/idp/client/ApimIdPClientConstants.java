@@ -67,7 +67,7 @@ public class ApimIdPClientConstants {
     public static final String DEFAULT_SP_APP_CONTEXT = "sp";
     public static final String DEFAULT_PORTAL_APP_CONTEXT = "analytics-dashboard";
     public static final String DEFAULT_BR_DB_APP_CONTEXT = "business-rules";
-    public static final String DEFAULT_CACHE_TIMEOUT = "900";
+    public static final String DEFAULT_CACHE_TIMEOUT = "30";
     public static final String DEFAULT_DATABASE_NAME = "AM_DB";
     public static final String DEFAULT_CONNECTION_TIMEOUT = "10000";
     public static final String DEFAULT_READ_TIMEOUT = "60000";

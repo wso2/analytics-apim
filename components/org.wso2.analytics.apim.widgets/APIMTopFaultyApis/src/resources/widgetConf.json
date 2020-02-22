@@ -14,7 +14,7 @@
           "queryData": {
             "query": "from ApiFaultyInvocationAgg on apiCreatorTenantDomain=='{{tenantDomain}}' within {{from}}L, {{to}}L per \"{{per}}s\" select apiName,apiVersion,apiCreator,apiContext,sum(totalFaultCount) as FaultCount group by apiName,apiVersion,apiCreator,apiContext order by FaultCount desc limit {{limit}};"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

@@ -14,7 +14,7 @@
           "queryData": {
             "mainquery": "from ApiUserPerAppAgg on apiCreatorTenantDomain=='{{tenantDomain}}' {{querystring}} within {{from}}L, {{to}}L per \"{{per}}s\" select username,sum(totalRequestCount) as RequestCount group by username order by RequestCount desc limit {{limit}};"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },
