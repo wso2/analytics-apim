@@ -12,10 +12,10 @@
         "config" : {
           "datasourceName": "AM_DB",
           "queryData" : {
-            "query" : "select count(sub.SUBSCRIPTION_ID) as count, SUBSCRIPTION_ID from AM_SUBSCRIPTION sub where sub.API_ID IN (select api.API_ID from AM_API api where api.CONTEXT {{contextCondition}}) AND sub.CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}' group by sub.SUBSCRIPTION_ID"
+            "query" : "select count(sub.SUBSCRIPTION_ID) as count from AM_SUBSCRIPTION sub where sub.API_ID IN (select api.API_ID from AM_API api where api.CONTEXT {{contextCondition}}) AND sub.CREATED_TIME between '{{weekStart}}' and '{{weekEnd}}'"
           },
           "tableName": "AM_DB",
-          "incrementalColumn": "SUBSCRIPTION_ID",
+          "incrementalColumn": "count",
           "publishingLimit": 2147483647,
           "publishingInterval": 2147483647,
           "isPurgingEnable": false
