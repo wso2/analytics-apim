@@ -618,7 +618,11 @@ class APIMApiLatencyWidget extends Widget {
         const { id } = this.props;
         this.setQueryParam(event.target.value, '', '', []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ apiCreatedBy: event.target.value, inProgress: true }, this.assembleApiIdQuery);
+        this.setState({
+            apiCreatedBy: event.target.value,
+            inProgress: true,
+            resourceList: [],
+        }, this.assembleApiIdQuery);
     }
 
     /**
@@ -650,7 +654,11 @@ class APIMApiLatencyWidget extends Widget {
 
         this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ apiVersion: event.target.value, inProgress: true }, this.assembleResourceQuery);
+        this.setState({
+            apiVersion: event.target.value,
+            inProgress: true,
+            resourceList: [],
+        }, this.assembleResourceQuery);
     }
 
     /**

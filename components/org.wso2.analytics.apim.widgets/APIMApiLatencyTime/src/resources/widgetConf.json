@@ -16,7 +16,7 @@
             "resourcequery": "from AM_API_URL_MAPPING on API_ID=={{apiID}} select URL_PATTERN,HTTP_METHOD;",
             "mainquery": "from ApiExeTime on apiCreatorTenantDomain=='{{tenantDomain}}' {{querystring}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select responseTime,securityLatency,throttlingLatency,requestMedLat,responseMedLat,backendLatency,otherLatency,AGG_TIMESTAMP,apiResourceTemplate having  str:charFrequency(apiResourceTemplate,',') == {{numberOfCommas}}"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

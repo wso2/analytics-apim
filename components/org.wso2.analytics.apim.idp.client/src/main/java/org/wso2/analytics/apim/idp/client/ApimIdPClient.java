@@ -227,6 +227,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         String tenantDomain = extractTenantDomainFromUserName(name);
         TokenData tokenData = TokenDataHolder.getInstance().getTokenMap().get(name);
         ArrayList<Role> roles;
+        Map<String, String> properties = new HashMap<>();
         if (tokenData == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Cannot find the token data for the user: " + name + " in the token data map. Hence, cannot" +
@@ -246,7 +247,6 @@ public class ApimIdPClient extends ExternalIdPClient {
             }
             roles = getRolesFromArray(newScopes.toArray(new String[0]));
         }
-        Map<String, String> properties = new HashMap<>();
         return new User(name, properties, roles);
     }
 

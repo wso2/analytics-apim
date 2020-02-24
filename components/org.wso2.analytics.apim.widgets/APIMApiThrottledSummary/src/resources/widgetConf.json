@@ -14,7 +14,7 @@
           "queryData": {
             "query": "from ApiThrottledOutAgg on apiCreatorTenantDomain=='{{tenantDomain}}' within {{from}}L, {{to}}L per \"{{per}}s\" select sum(throttledOutCount) as ThrottledCount;"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

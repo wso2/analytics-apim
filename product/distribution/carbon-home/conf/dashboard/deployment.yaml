@@ -392,7 +392,7 @@ auth.configs:
     kmPassword: admin
     portalAppContext: analytics-dashboard
     businessRulesAppContext : business-rules
-    cacheTimeout: 900
+    cacheTimeout: 30
     baseUrl: https://localhost:9643
     grantType: authorization_code
     publisherUrl: https://localhost:9443

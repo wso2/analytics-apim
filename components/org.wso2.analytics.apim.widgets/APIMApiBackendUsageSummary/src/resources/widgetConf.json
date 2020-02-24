@@ -14,7 +14,7 @@
           "queryData": {
             "apiusagequery": "from ApiPerDestinationAgg on apiCreatorTenantDomain=='{{tenantDomain}}' {{creator}} within {{from}}L, {{to}}L per \"{{per}}s\" select apiName,apiVersion,apiCreator,apiContext,destination,sum(totalRequestCount) as RequestCount group by apiName,apiVersion,apiCreator,apiContext,destination order by RequestCount desc limit {{limit}};"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },
