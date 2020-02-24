@@ -396,7 +396,7 @@ auth.configs:
     baseUrl: https://localhost:9643
     grantType: authorization_code
     publisherUrl: https://localhost:9443
-    #storeUrl: https://localhost:9443
+    #devPortalUrl: https://localhost:9443
     externalLogoutUrl: https://localhost:9443/oidc/logout
 
 wso2.dashboard:
