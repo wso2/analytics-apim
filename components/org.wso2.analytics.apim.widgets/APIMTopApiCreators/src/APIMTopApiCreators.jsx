@@ -201,7 +201,7 @@ export default function APIMTopApiCreators(props) {
                                 ) : (
                                     <div style={styles.statDiv}>
                                         <div style={styles.pieDiv}>
-                                            <svg viewBox='0 0 700 500'>
+                                            <svg viewBox='-50 0 700 500'>
                                                 <VictoryPie
                                                     labelComponent={(
                                                         <VictoryTooltip
