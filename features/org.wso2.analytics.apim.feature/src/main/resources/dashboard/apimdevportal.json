@@ -22,13 +22,13 @@
                   "type": "column",
                   "isClosable": true,
                   "title": "",
-                  "width": 70.86419753086419,
+                  "width": 69.44983818770226,
                   "content": [
                     {
                       "type": "row",
                       "isClosable": true,
                       "title": "",
-                      "height": 47.092894624875896,
+                      "height": 45.519947678221065,
                       "content": [
                         {
                           "type": "stack",
@@ -109,7 +109,7 @@
                       "type": "row",
                       "isClosable": true,
                       "title": "",
-                      "height": 52.9071053751241,
+                      "height": 54.480052321778935,
                       "content": [
                         {
                           "type": "stack",
@@ -184,14 +184,14 @@
                   "type": "column",
                   "isClosable": true,
                   "title": "",
-                  "width": 29.135802469135808,
+                  "width": 30.550161812297738,
                   "content": [
                     {
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
                       "width": 33.03162090399518,
-                      "height": 17.180094786729857,
+                      "height": 8.923303834808259,
                       "content": [
                         {
                           "title": "[Date Time Range]",
@@ -232,7 +232,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 82.81990521327013,
+                      "height": 91.07669616519173,
                       "content": [
                         {
                           "title": "[APIM Application Api Usage]",
@@ -268,7 +268,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "height": 1361
         }
       ]
     },
