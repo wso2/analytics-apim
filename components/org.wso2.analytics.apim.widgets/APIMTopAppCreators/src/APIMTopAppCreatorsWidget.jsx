@@ -286,7 +286,7 @@ class APIMTopAppCreatorsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, creatorData, legendData, inProgress, limit,
+            localeMessages, faultyProviderConfig, height, creatorData, legendData, inProgress, limit, width,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -294,7 +294,7 @@ class APIMTopAppCreatorsWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const appCreatorsProps = {
-            themeName, height, creatorData, legendData, inProgress, limit,
+            themeName, height, creatorData, legendData, inProgress, limit, width,
         };
 
         return (

@@ -335,7 +335,7 @@ class APIMTopSubscribersWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress,
+            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress, width,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -343,7 +343,7 @@ class APIMTopSubscribersWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const subscribersProps = {
-            themeName, height, limit, creatorData, legendData, inProgress,
+            themeName, height, limit, creatorData, legendData, inProgress, width,
         };
 
         return (

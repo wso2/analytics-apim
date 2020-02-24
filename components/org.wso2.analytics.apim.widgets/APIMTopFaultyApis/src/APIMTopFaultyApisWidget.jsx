@@ -275,7 +275,7 @@ class APIMTopFaultyApisWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, faultData, legendData, inProgress,
+            localeMessages, faultyProviderConfig, height, limit, faultData, legendData, inProgress, width,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -283,7 +283,7 @@ class APIMTopFaultyApisWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const faultyApisProps = {
-            themeName, height, limit, faultData, legendData, inProgress,
+            themeName, height, limit, faultData, legendData, inProgress, width,
         };
 
         return (
