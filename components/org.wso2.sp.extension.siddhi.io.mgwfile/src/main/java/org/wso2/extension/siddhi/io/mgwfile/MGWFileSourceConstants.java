@@ -78,7 +78,7 @@ public class MGWFileSourceConstants {
 
     public static final String DATASOURCE_PROPERTY = "usage.datasource.name";
 
-    public static final String TABLE_EXISTENCE_SQL = "select 1 from ";
+    public static final String TABLE_EXISTENCE_SQL = "SELECT 1 FROM AM_USAGE_UPLOADED_FILES";
 
     // Separators used for persisting events
     public static final String EVENT_SEPARATOR = "-ES-";

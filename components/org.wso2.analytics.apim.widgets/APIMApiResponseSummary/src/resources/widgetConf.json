@@ -15,7 +15,7 @@
             "apilistquery": "from AM_API select API_NAME,API_VERSION,CREATED_BY;",
             "mainquery": "from ApiResponseSummary {{querystring}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select apiName,apiVersion,apiCreator,sum(totalResponseCount) as TotalResponseCount,sum(TwoxxCount) as TwoxxCount,sum(FourxxCount) as FourxxCount,sum(FivexxCount) as FivexxCount;"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

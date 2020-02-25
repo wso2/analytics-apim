@@ -34,7 +34,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -107,12 +106,6 @@ public class MGWFileSourceDAO {
         List<MGWFileInfoDTO> usageFileList = new ArrayList<>();
         try {
             connection = MGWFileSourceDBUtil.getConnection();
-            if (!isUsageTableExist(connection)) {
-                log.debug("Table 'AM_USAGE_UPLOADED_FILES' not found in '" + MGWFileSourceDBUtil.getDatasourceName()
-                        + "'. Skip publishing usage data assuming Micro GW is not configured.");
-                return Collections.emptyList();
-            }
-
             autoCommitStatus = connection.getAutoCommit();
             connection.setAutoCommit(false);
             if ((connection.getMetaData().getDriverName()).contains("Oracle")) {

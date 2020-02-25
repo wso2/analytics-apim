@@ -15,7 +15,7 @@
             "applicationQuery": "from AM_APPLICATION on {{applicationUUID}} select APPLICATION_ID,UUID;",
             "faultyQuery": "from ApiFaultyInvocationAgg on  {{application}} within {{from}}L, {{to}}L per '{{per}}s' select apiName,apiVersion,apiCreator,sum(totalFaultCount) as RequestCount group by apiCreator,apiName,apiVersion order by RequestCount desc limit {{limit}};"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

@@ -15,7 +15,7 @@
             "applicationQuery": "from AM_APPLICATION on {{applicationUUID}} select APPLICATION_ID,UUID;",
             "appUsageQuery": "from ApiUserPerAppAgg on {{application}} within {{from}}L, {{to}}L per '{{per}}s' select username,sum(totalRequestCount) as RequestCount group by username order by RequestCount desc limit {{limit}};"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

@@ -58,7 +58,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopAppCreators(props) {
     const {
-        themeName, height, creatorData, legendData, handleChange, limit, inProgress,
+        themeName, height, width, creatorData, legendData, handleChange, limit, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -85,6 +85,17 @@ export default function APIMTopAppCreators(props) {
             marginTop: '5%',
             display: 'flex',
             flexWrap: 'wrap',
+        },
+        statDiv: {
+            display: 'flex',
+            flexWrap: 'wrap',
+        },
+        pieDiv: {
+            width: width > 1000 ? '50%' : '100%',
+            paddingTop: 30,
+        },
+        tableDiv: {
+            width: width > 1000 ? '50%' : '100%',
         },
         textField: {
             marginLeft: 8,
@@ -186,55 +197,58 @@ export default function APIMTopAppCreators(props) {
                                         </Paper>
                                     </div>
                                 ) : (
-                                    <div>
-
-                                        <svg viewBox='0 0 700 500'>
-                                            <VictoryPie
-                                                labelComponent={(
-                                                    <VictoryTooltip
-                                                        orientation='right'
-                                                        pointerLength={0}
-                                                        cornerRadius={2}
-                                                        flyoutStyle={{
-                                                            fill: '#000',
-                                                            fillOpacity: '0.5',
-                                                            strokeWidth: 1,
-                                                        }}
-                                                        style={{ fill: '#fff', fontSize: 25 }}
-                                                    />
-                                                )}
-                                                width={500}
-                                                height={500}
-                                                standalone={false}
-                                                padding={{
-                                                    left: 50, bottom: 50, top: 50, right: 50,
-                                                }}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
-                                                    '#e01171', '#ffe2ff']}
-                                                data={creatorData}
-                                                x={d => d.creator}
-                                                y={d => d.appcount}
-                                                labels={d => `${d.creator} : ${((d.appcount
-                                                    / (sumBy(creatorData, o => o.appcount))) * 100).toFixed(2)}%`}
-                                            />
-                                            <VictoryLegend
-                                                standalone={false}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
-                                                    '#e01171', '#ffe2ff']}
-                                                x={450}
-                                                y={20}
-                                                gutter={20}
-                                                rowGutter={{ top: 0, bottom: -10 }}
-                                                style={{
-                                                    labels: {
-                                                        fill: '#9e9e9e',
-                                                        fontSize: 25,
-                                                    },
-                                                }}
-                                                data={legendData}
-                                            />
-                                        </svg>
-                                        <CustomTable data={creatorData} />
+                                    <div style={styles.statDiv}>
+                                        <div style={styles.pieDiv}>
+                                            <svg viewBox='-50 0 700 500'>
+                                                <VictoryPie
+                                                    labelComponent={(
+                                                        <VictoryTooltip
+                                                            orientation='right'
+                                                            pointerLength={0}
+                                                            cornerRadius={2}
+                                                            flyoutStyle={{
+                                                                fill: '#000',
+                                                                fillOpacity: '0.5',
+                                                                strokeWidth: 1,
+                                                            }}
+                                                            style={{ fill: '#fff', fontSize: 25 }}
+                                                        />
+                                                    )}
+                                                    width={500}
+                                                    height={500}
+                                                    standalone={false}
+                                                    padding={{
+                                                        left: 50, bottom: 50, top: 50, right: 50,
+                                                    }}
+                                                    colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                        '#e01171', '#ffe2ff']}
+                                                    data={creatorData}
+                                                    x={d => d.creator}
+                                                    y={d => d.appcount}
+                                                    labels={d => `${d.creator} : ${((d.appcount
+                                                        / (sumBy(creatorData, o => o.appcount))) * 100).toFixed(2)}%`}
+                                                />
+                                                <VictoryLegend
+                                                    standalone={false}
+                                                    colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                        '#e01171', '#ffe2ff']}
+                                                    x={450}
+                                                    y={20}
+                                                    gutter={20}
+                                                    rowGutter={{ top: 0, bottom: -10 }}
+                                                    style={{
+                                                        labels: {
+                                                            fill: '#9e9e9e',
+                                                            fontSize: 25,
+                                                        },
+                                                    }}
+                                                    data={legendData}
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div style={styles.tableDiv}>
+                                            <CustomTable data={creatorData} />
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -249,6 +263,7 @@ export default function APIMTopAppCreators(props) {
 APIMTopAppCreators.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,

@@ -281,7 +281,7 @@ class APIMTopThrottledApisWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, throttledData, legendData, inProgress,
+            localeMessages, faultyProviderConfig, height, limit, throttledData, legendData, inProgress, width,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -289,7 +289,7 @@ class APIMTopThrottledApisWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const throttledApisProps = {
-            themeName, height, limit, throttledData, legendData, inProgress,
+            themeName, height, limit, throttledData, legendData, inProgress, width,
         };
 
         return (

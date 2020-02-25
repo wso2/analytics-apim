@@ -14,7 +14,7 @@
           "queryData": {
             "apiusagequery": "from ApiUserPerAppAgg on apiCreatorTenantDomain=='{{tenantDomain}}' {{apiCreator}} within {{from}}L, {{to}}L per \"{{per}}s\" select apiName,apiVersion,apiCreator,sum(totalRequestCount) as RequestCount group by apiName,apiCreator,apiVersion order by RequestCount desc limit {{limit}};"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },
