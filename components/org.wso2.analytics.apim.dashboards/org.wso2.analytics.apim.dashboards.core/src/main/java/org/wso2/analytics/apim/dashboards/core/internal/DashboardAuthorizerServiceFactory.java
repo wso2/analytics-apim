@@ -28,6 +28,6 @@ public class DashboardAuthorizerServiceFactory {
                                                                           String url,
                                                                           String username,
                                                                           String password) {
-        return service.build(username, password, 5000, 2000, DashboardAuthorizerServiceStub.class, url);
+        return service.build(username, password, 5000, 5000, DashboardAuthorizerServiceStub.class, url);
     }
 }
