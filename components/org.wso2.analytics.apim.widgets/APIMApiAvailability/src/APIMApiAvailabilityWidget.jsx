@@ -176,14 +176,28 @@ class APIMApiAvailabilityWidget extends Widget {
      * */
     handleApiAvailableReceived(message) {
         const { data } = message;
+        const legendData = [{name : "Available"}, {name : "Response time is high"}, {name : "Server error occurred"}];
 
         if (data) {
-            const legendData = [];
+
+            let availableCount = 0;
+            let responseHighCount = 0;
+            let serverErrorCount = 0;
             data.forEach((dataUnit) => {
-                if (!legendData.includes({ name: dataUnit[0] })) {
-                    legendData.push({ name: dataUnit[0] });
+                if (dataUnit[0].includes(legendData[0].name)) {
+                    availableCount++;
+                } else if (dataUnit[0].includes(legendData[1].name)){
+                    responseHighCount++;
+                } else if (dataUnit[0].includes(legendData[2].name)) {
+                    serverErrorCount++;
                 }
             });
+
+            let dataModified = [];
+            dataModified[0] = [legendData[0].name , availableCount];
+            dataModified[1] = [legendData[1].name , responseHighCount];
+            dataModified[2] = [legendData[2].name , serverErrorCount];
+
             this.setState({ legendData, availableApiData: data, inProgress: false });
         } else {
             this.setState({ inProgress: false });
