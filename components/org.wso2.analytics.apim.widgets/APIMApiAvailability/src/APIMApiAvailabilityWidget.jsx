@@ -187,7 +187,8 @@ class APIMApiAvailabilityWidget extends Widget {
                 if (dataUnit[0].includes(legendData[0].name)) {
                     availableCount = dataUnit[1];
                 } else if (dataUnit[0].includes(legendData[1].name)){ // Response time high messages are not unique
-                    responseHighCount++;
+                    let currentKeyResponseHighCount = dataUnit[1];
+                    responseHighCount += currentKeyResponseHighCount;
                 } else if (dataUnit[0].includes(legendData[2].name)) {
                     serverErrorCount = dataUnit[1] ;
                 }
