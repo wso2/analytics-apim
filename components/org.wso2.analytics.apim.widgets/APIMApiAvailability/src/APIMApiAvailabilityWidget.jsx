@@ -185,11 +185,11 @@ class APIMApiAvailabilityWidget extends Widget {
             let serverErrorCount = 0;
             data.forEach((dataUnit) => {
                 if (dataUnit[0].includes(legendData[0].name)) {
-                    availableCount++;
-                } else if (dataUnit[0].includes(legendData[1].name)){
+                    availableCount = dataUnit[1];
+                } else if (dataUnit[0].includes(legendData[1].name)){ // Response time high messages are not unique
                     responseHighCount++;
                 } else if (dataUnit[0].includes(legendData[2].name)) {
-                    serverErrorCount++;
+                    serverErrorCount = dataUnit[1] ;
                 }
             });
 
@@ -198,7 +198,7 @@ class APIMApiAvailabilityWidget extends Widget {
             dataModified[1] = [legendData[1].name , responseHighCount];
             dataModified[2] = [legendData[2].name , serverErrorCount];
 
-            this.setState({ legendData, availableApiData: data, inProgress: false });
+            this.setState({ legendData, availableApiData: dataModified, inProgress: false });
         } else {
             this.setState({ inProgress: false });
         }

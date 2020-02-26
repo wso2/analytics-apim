@@ -24,10 +24,10 @@ import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderS
  */
 public class DashboardAuthorizerServiceFactory {
 
-    public static DashboardAuthorizerServiceStub getAuthorizerHttpsClient(AnalyticsHttpClientBuilderService service,
+    public static DashboardAuthorizerServiceStub geAuthorizerHttpsClient(AnalyticsHttpClientBuilderService service,
                                                                           String url,
                                                                           String username,
                                                                           String password) {
-        return service.build(username, password, 2000, 2000, DashboardAuthorizerServiceStub.class, url);
+        return service.build(username, password, 5000, 2000, DashboardAuthorizerServiceStub.class, url);
     }
 }
