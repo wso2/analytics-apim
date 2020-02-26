@@ -1063,7 +1063,7 @@
         <pdfbox.version>1.8.16</pdfbox.version>
         <pdfbox.import.version.range>[1.8,2.0)</pdfbox.import.version.range>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.16-SNAPSHOT</carbon.dashboards.version>
+        <carbon.dashboards.version>4.1.16</carbon.dashboards.version>
         <carbon.dashboards.version.range.version>[4.1,4.2)</carbon.dashboards.version.range.version>
         <carbon.uis.version>1.0.5</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
