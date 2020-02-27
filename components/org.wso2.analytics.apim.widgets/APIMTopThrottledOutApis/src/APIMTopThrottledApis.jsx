@@ -55,7 +55,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopThrottledApis(props) {
     const {
-        themeName, height, limit, throttledData, legendData, handleChange, inProgress,
+        themeName, height, limit, throttledData, legendData, handleChange, inProgress, width,
     } = props;
     const styles = {
         headingWrapper: {
@@ -79,6 +79,17 @@ export default function APIMTopThrottledApis(props) {
         form: {
             display: 'flex',
             flexWrap: 'wrap',
+        },
+        statDiv: {
+            display: 'flex',
+            flexWrap: 'wrap',
+        },
+        pieDiv: {
+            width: width > 1000 ? '50%' : '100%',
+            paddingTop: 30,
+        },
+        tableDiv: {
+            width: width > 1000 ? '50%' : '100%',
         },
         formControl: {
             marginLeft: '5%',
@@ -169,57 +180,59 @@ export default function APIMTopThrottledApis(props) {
                                         </Paper>
                                     </div>
                                 ) : (
-                                    <div>
-                                        <svg viewBox='-50 0 1000 500'>
-                                            <VictoryPie
-                                                labelComponent={(
-                                                    <VictoryTooltip
-                                                        orientation='right'
-                                                        pointerLength={0}
-                                                        cornerRadius={2}
-                                                        flyoutStyle={{
-                                                            fill: '#000',
-                                                            fillOpacity: '0.5',
-                                                            strokeWidth: 1,
-                                                        }}
-                                                        style={{ fill: '#fff', fontSize: 25 }}
-                                                    />
-                                                )}
-                                                width={500}
-                                                height={500}
-                                                standalone={false}
-                                                padding={{
-                                                    left: 50, bottom: 50, top: 50, right: 50,
-                                                }}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
-                                                    '#e01171', '#ffe2ff']}
-                                                data={throttledData}
-                                                x={d => d.apiname}
-                                                y={d => d.throttledcount}
-                                                labels={d => `${d.apiname} : ${((d.throttledcount
-                                                    / (sumBy(throttledData, o => o.throttledcount))) * 100)
-                                                    .toFixed(2)}%`}
-                                            />
-                                            <VictoryLegend
-                                                standalone={false}
-                                                colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
-                                                    '#e01171', '#ffe2ff']}
-                                                x={450}
-                                                y={20}
-                                                gutter={20}
-                                                rowGutter={{ top: 0, bottom: -10 }}
-                                                style={{
-                                                    labels: {
-                                                        fill: '#9e9e9e',
-                                                        fontSize: 25,
-                                                    },
-                                                }}
-                                                data={legendData}
-                                            />
-                                        </svg>
-                                        <CustomTable
-                                            data={throttledData}
-                                        />
+                                    <div style={styles.statDiv}>
+                                        <div style={styles.pieDiv}>
+                                            <svg viewBox='-50 0 1000 500'>
+                                                <VictoryPie
+                                                    labelComponent={(
+                                                        <VictoryTooltip
+                                                            orientation='right'
+                                                            pointerLength={0}
+                                                            cornerRadius={2}
+                                                            flyoutStyle={{
+                                                                fill: '#000',
+                                                                fillOpacity: '0.5',
+                                                                strokeWidth: 1,
+                                                            }}
+                                                            style={{ fill: '#fff', fontSize: 25 }}
+                                                        />
+                                                    )}
+                                                    width={500}
+                                                    height={500}
+                                                    standalone={false}
+                                                    padding={{
+                                                        left: 50, bottom: 50, top: 50, right: 50,
+                                                    }}
+                                                    colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                        '#e01171', '#ffe2ff']}
+                                                    data={throttledData}
+                                                    x={d => d.apiname}
+                                                    y={d => d.throttledcount}
+                                                    labels={d => `${d.apiname} : ${((d.throttledcount
+                                                        / (sumBy(throttledData, o => o.throttledcount))) * 100)
+                                                        .toFixed(2)}%`}
+                                                />
+                                                <VictoryLegend
+                                                    standalone={false}
+                                                    colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
+                                                        '#e01171', '#ffe2ff']}
+                                                    x={450}
+                                                    y={20}
+                                                    gutter={20}
+                                                    rowGutter={{ top: 0, bottom: -10 }}
+                                                    style={{
+                                                        labels: {
+                                                            fill: '#9e9e9e',
+                                                            fontSize: 25,
+                                                        },
+                                                    }}
+                                                    data={legendData}
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div style={styles.tableDiv}>
+                                            <CustomTable data={throttledData} />
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -234,6 +247,7 @@ export default function APIMTopThrottledApis(props) {
 APIMTopThrottledApis.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     throttledData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,

@@ -310,7 +310,7 @@ class APIMTopApiCreatorsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress, proxyError,
+            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress, proxyError, width,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -318,7 +318,7 @@ class APIMTopApiCreatorsWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatorsProps = {
-            themeName, height, limit, creatorData, legendData, inProgress,
+            themeName, height, limit, creatorData, legendData, inProgress, width,
         };
 
         if (proxyError) {
