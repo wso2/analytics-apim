@@ -24,7 +24,7 @@ import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderS
  */
 public class DashboardAuthorizerServiceFactory {
 
-    public static DashboardAuthorizerServiceStub geAuthorizerHttpsClient(AnalyticsHttpClientBuilderService service,
+    public static DashboardAuthorizerServiceStub getAuthorizerHttpsClient(AnalyticsHttpClientBuilderService service,
                                                                           String url,
                                                                           String username,
                                                                           String password) {
