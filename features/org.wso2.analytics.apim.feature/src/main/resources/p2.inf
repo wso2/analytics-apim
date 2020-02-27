@@ -36,6 +36,8 @@ org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../resource
 org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim_${feature.version}/email-notification-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
 org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim_${feature.version}/bot-detection-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
 org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim_${feature.version}/monetization-summary-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
+org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim_${feature.version}/abnormal-access-pattern-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
+org.wso2.carbon.extensions.touchpoint.copy(source:${installFolder}/../lib/features/org.wso2.analytics.apim_${feature.version}/unusual-ip-access-siddhi-file/,target:${installFolder}/../../resources/apim-analytics/,overwrite:true);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/resources/dashboards/);\
 org.wso2.carbon.extensions.touchpoint.mkdir(path:${installFolder}/../../wso2/dashboard/deployment/);\
