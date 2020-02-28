@@ -48,7 +48,7 @@ define stream IpAccessAbnormalityAlertStream(type string, message string, severi
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "message:3000")
 define table ApimAllAlert (type string, tenantDomain string, message string, severity int, alertTimestamp long);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = "message:3000")
 define table ApimAbnormalBackendTimeAlert (apiName string, apiVersion string, apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, backendTime long, thresholdBackendTime long,
  message string, severity int, alertTimestamp long);
 
