@@ -1,0 +1,28 @@
+{
+  "name" : "<%= className %>",
+  "id" : "<%= widgetId %>",
+  "thumbnailURL" : "",
+  "configs" : {
+    "pubsub" : {
+      "types" : ["<%= widgetType %>"]
+    }, 
+    "providerConfig" : {
+      "configs" : {
+        "type" : "RDBMSStreamingDataProvider",
+        "config" : {
+          "datasourceName": "APIM_ANALYTICS_DB",
+          "queryData" : {
+            "alertQuery": "select count(type) as totalCount from ApimAllAlert WHERE alertTimestamp BETWEEN '{{weekStart}}' and '{{weekEnd}}'"
+          },
+          "tableName": "ApimAllAlert",
+          "incrementalColumn": "severity",
+          "publishingLimit": 2147483647,
+          "isPurgingEnable": false
+        }
+      }
+    },
+    "options": [
+    ]
+  }
+}
+  
