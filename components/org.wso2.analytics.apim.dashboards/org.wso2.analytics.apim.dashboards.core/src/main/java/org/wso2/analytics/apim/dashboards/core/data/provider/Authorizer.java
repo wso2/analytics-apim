@@ -67,7 +67,7 @@ public class Authorizer implements DataProviderAuthorizer {
     private static final Logger LOGGER = LoggerFactory.getLogger(Authorizer.class);
     private static final String AUTH_CONFIGS_HEADER = "auth.configs";
     private static final String AUTH_CONFIGS_PROPERTIES_HEADER = "properties";
-    private static final String ADMIN_SERVICE_BASE_URL_KEY = "adminServiceBaseUrl";
+    private static final String ADMIN_SERVICE_BASE_URL_KEY = "publisherUrl";
     private static final String ADMIN_USERNAME_KEY = "adminUsername";
     private static final String ADMIN_PASSWORD_KEY = "adminPassword";
     private static final String MAIN_CONFIG = "configs";
