@@ -26,7 +26,7 @@ public class ApimIdPClientConstants {
 
     public static final String ADMIN_USERNAME = "adminUsername";
     public static final String ADMIN_PASSWORD = "adminPassword";
-    public static final String ADMIN_SERVICE_BASE_URL_KEY = "adminServiceBaseUrl";
+    public static final String ADMIN_SERVICE_BASE_URL_KEY = "publisherUrl";
     public static final String ADMIN_SCOPE = "adminScope";
     public static final String ALL_SCOPES = "allScopes";
     public static final String BASE_URL = "baseUrl";
