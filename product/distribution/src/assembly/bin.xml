@@ -93,7 +93,7 @@
         </fileSet>
           <fileSet>
             <directory>carbon-home/generator-widgetgenerator</directory>
-            <outputDirectory>wso2/tools/generator-widgetgenerator</outputDirectory>
+            <outputDirectory>wso2/tools/generator-widget</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
         <fileSet>
