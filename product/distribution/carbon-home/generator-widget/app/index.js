@@ -1,3 +1,22 @@
+/*
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
+
 var Generator = require('yeoman-generator');
 module.exports = class extends Generator {
   constructor(args, opts) {
@@ -41,42 +60,47 @@ module.exports = class extends Generator {
       this.fs.copyTpl(
         this.templatePath('subscriber.jsx'),
         this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/${this.answers.widgetName}widget.jsx`),
-        { className: `${this.answers.widgetName}widget`,
+        { 
+          className: `${this.answers.widgetName}widget`,
           widgetId: this.answers.widgetName,
         }
       );
       if (this.options.dataProvider === 'SiddhiDataProvider') {
         this.fs.copyTpl(
-          this.templatePath('resources/widgetConf-Siddhi.json'),
+          this.templatePath('resources/widgetConfSiddhi.json'),
           this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/resources/widgetConf.json`),
-          { className: `${this.answers.widgetName}widget`,
+          { 
+            className: `${this.answers.widgetName}widget`,
             widgetId: this.answers.widgetName,
             widgetType: 'subscriber',
           }
         );
       } else {
         this.fs.copyTpl(
-          this.templatePath('resources/widgetConf-Rdbms.json'),
+          this.templatePath('resources/widgetConfRdbms.json'),
           this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/resources/widgetConf.json`),
-          { className: `${this.answers.widgetName}widget`,
+          { 
+            className: `${this.answers.widgetName}widget`,
             widgetId: this.answers.widgetName,
             widgetType: 'subscriber',
           }
         );
       }
-    }else if (this.options.widgetType == 'publisher'){
+    } else if (this.options.widgetType === 'publisher') {
       this.fs.copyTpl(
         this.templatePath('publisher.jsx'),
         this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/${this.answers.widgetName}widget.jsx`),
-        { className: `${this.answers.widgetName}widget`,
+        { 
+          className: `${this.answers.widgetName}widget`,
           widgetId: this.answers.widgetName
         }
       );
-      if (this.options.dataProvider == 'SiddhiDataProvider') {
+      if (this.options.dataProvider === 'SiddhiDataProvider') {
         this.fs.copyTpl(
-          this.templatePath('resources/widgetConf-Siddhi.json'),
+          this.templatePath('resources/widgetConfSiddhi.json'),
           this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/resources/widgetConf.json`),
-          { className: `${this.answers.widgetName}widget`,
+          { 
+            className: `${this.answers.widgetName}widget`,
             widgetId: this.answers.widgetName,
             dataProvider: 'SiddhiStoreDataProvider',
             widgetType: 'publisher'
@@ -84,28 +108,31 @@ module.exports = class extends Generator {
         );
       } else {
         this.fs.copyTpl(
-          this.templatePath('resources/widgetConf-Rdbms.json'),
+          this.templatePath('resources/widgetConfRdbms.json'),
           this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/resources/widgetConf.json`),
-          { className: `${this.answers.widgetName}widget`,
+          { 
+            className: `${this.answers.widgetName}widget`,
             widgetId: this.answers.widgetName,
             dataProvider: 'RDBMSStreamingDataProvider',
             widgetType: 'publisher'
           }
         );
       }
-    }else{
+    } else {
       this.fs.copyTpl(
         this.templatePath('standalone.jsx'),
         this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/${this.answers.widgetName}widget.jsx`),
-        { className: this.answers.widgetName+'widget',
+        { 
+          className: this.answers.widgetName+'widget',
           widgetId: this.answers.widgetName
         }
       );
       if (this.options.dataProvider == 'SiddhiDataProvider') {
         this.fs.copyTpl(
-          this.templatePath('resources/widgetConf-Siddhi.json'),
+          this.templatePath('resources/widgetConfSiddhi.json'),
           this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/resources/widgetConf.json`),
-          { className: `${this.answers.widgetName}widget`,
+          { 
+            className: `${this.answers.widgetName}widget`,
             widgetId: this.answers.widgetName,
             dataProvider: 'SiddhiStoreDataProvider',
             widgetType: 'subscriber'
@@ -113,9 +140,10 @@ module.exports = class extends Generator {
         );
       } else {
         this.fs.copyTpl(
-          this.templatePath('resources/widgetConf-Rdbms.json'),
+          this.templatePath('resources/widgetConfRdbms.json'),
           this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/resources/widgetConf.json`),
-          { className: `${this.answers.widgetName}widget`,
+          { 
+            className: `${this.answers.widgetName}widget`,
             widgetId: this.answers.widgetName,
             dataProvider: 'RDBMSStreamingDataProvider',
             widgetType: 'subscriber'
@@ -127,12 +155,13 @@ module.exports = class extends Generator {
     this.fs.copyTpl(
       this.templatePath('resources/locales/en.json'),
       this.destinationPath(`widgetTemplates/${this.answers.widgetName}/src/resources/locales/en.json`),
-      { widgetHeading: this.answers.widgetHeading}
+      { widgetHeading: this.answers.widgetHeading }
     );
     this.fs.copyTpl(
       this.templatePath('webpack.config.js'),
       this.destinationPath(`widgetTemplates/${this.answers.widgetName}/webpack.config.js`),
-      { className: `${this.answers.widgetName}widget`,
+      { 
+        className: `${this.answers.widgetName}widget`,
         widgetId: this.answers.widgetName,
         dataProvider: this.answers.dataProvider,
         widgetType: this.options.widgetType

@@ -120,7 +120,7 @@ class <%= className %> extends Widget {
     componentDidMount() {
         const { widgetID, id } = this.props;
         const { refreshInterval } = this.state;
-        // This method is mandatory and used to load the providerConfig of widgetConf.json file.
+        //This function retrieves the provider configuration defined in the widgetConf.json file and make it available to be used inside the widget
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 // set an interval to periodically retrieve data
@@ -186,6 +186,7 @@ class <%= className %> extends Widget {
             '{{weekStart}}': (Date.now() - 604800),
             '{{weekEnd}}': Date.now(),
         };
+         // Use this method to subscribe to the endpoint via web socket connection
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleQueryResults, dataProviderConfigs);
     }

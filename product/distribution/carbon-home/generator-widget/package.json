@@ -1,5 +1,5 @@
 {
-  "name": "generator-widgetgenerator",
+  "name": "generator-widget",
   "version": "1.0.0",
   "description": "Widget generator for WSO2 analytics-dashboard",
   "files": [
@@ -22,5 +22,8 @@
     "createwidget--widgettype:stand-alone": "yo widgetgenerator standalone SiddhiDataProvider",
     "createwidget--widgettype:stand-alone--dataprovider:SiddhiDataProvider": "yo widgetgenerator standalone SiddhiDataProvider",
     "createwidget--widgettype:stand-alone--dataprovider:RDBMSDataProvider": "yo widgetgenerator standalone RDBMSDataProvider"
+  },
+  "devDependencies": {
+    "yo": "^3.1.1"
   }
 }
