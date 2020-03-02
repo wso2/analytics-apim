@@ -46,6 +46,8 @@ public class ApimApiServiceImpl extends ApimApiService {
     private static final String ENDPOINT = "{serverUrl}/api/am/{serverName}/v1";
     private static final String PUBLISHER = "publisher";
     private static final String STORE = "store";
+    private static final String PUBLISHER_URL = "publisherUrl";
+    private static final String DEV_PORTAL_URL = "devPortalUrl";
     private final Util util = new Util();
 
     /**
@@ -140,12 +142,12 @@ public class ApimApiServiceImpl extends ApimApiService {
             LinkedHashMap properties = (LinkedHashMap) authConfig.get("properties");
             if (properties != null) {
                 if (serverName.equalsIgnoreCase(PUBLISHER)) {
-                    return (String) properties.get("publisherUrl");
+                    return (String) properties.get(PUBLISHER_URL);
                 } else {
-                    if (properties.get("storeUrl") != null) {
-                        return (String) properties.get("storeUrl");
+                    if (properties.get(DEV_PORTAL_URL) != null) {
+                        return (String) properties.get(DEV_PORTAL_URL);
                     } else {
-                        return (String) properties.get("publisherUrl");
+                        return (String) properties.get(PUBLISHER_URL);
                     }
                 }
             }
