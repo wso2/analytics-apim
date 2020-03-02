@@ -200,7 +200,6 @@ class APIMApiAvailabilityWidget extends Widget {
             const legendData = [];
             legendData.push(legend[0]);
             dataModified[0] = [legend[0].name, availableCount];
-       
             if (responseHighCount > 0) {
                 legendData.push(legend[1]);
                 dataModified[dataModified.length] = [legend[1].name, responseHighCount];
