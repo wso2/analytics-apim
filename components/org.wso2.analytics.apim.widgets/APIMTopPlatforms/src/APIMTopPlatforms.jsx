@@ -32,7 +32,11 @@ import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
+import {
+    VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
+} from 'victory';
+import { colorScale } from '@analytics-apim/common-lib';
+
 
 /**
  * React Component for Top Platforms widget body
@@ -44,6 +48,7 @@ export default function APIMTopPlatforms(props) {
         themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, legendData, platformData, apilist, versionlist,
         apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange, handleLimitChange, inProgress,
     } = props;
+    const fontSize = 16;
     const styles = {
         headingWrapper: {
             margin: 'auto',
@@ -80,6 +85,21 @@ export default function APIMTopPlatforms(props) {
             alignItems: 'center',
             justifyContent: 'center',
             height,
+        },
+        victoryTooltip: {
+            fill: '#fff',
+            fontSize,
+        },
+        victoryLegend: {
+            labels: {
+                fill: '#9e9e9e',
+                fontSize,
+            },
+        },
+        flyoutStyle: {
+            fill: '#000',
+            fillOpacity: '0.5',
+            strokeWidth: 1,
         },
     };
 
@@ -246,21 +266,18 @@ export default function APIMTopPlatforms(props) {
                                                 orientation='right'
                                                 pointerLength={0}
                                                 cornerRadius={2}
-                                                flyoutStyle={{
-                                                    fill: '#000',
-                                                    fillOpacity: '0.5',
-                                                    strokeWidth: 1,
-                                                }}
-                                                style={{ fill: '#fff', fontSize: 25 }}
+                                                flyoutStyle={styles.flyoutStyle}
+                                                style={styles.victoryTooltip}
+                                                theme={VictoryTheme.material}
                                             />
                                         )}
                                         width={500}
                                         height={500}
                                         standalone={false}
-                                        padding={{
-                                            left: 50, bottom: 50, top: 50, right: 50,
-                                        }}
-                                        colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                                        innerRadius={130}
+                                        padding={50}
+                                        theme={VictoryTheme.material}
+                                        colorScale={colorScale}
                                         data={platformData}
                                         x={d => d.platform}
                                         y={d => d.reqCount}
@@ -269,17 +286,13 @@ export default function APIMTopPlatforms(props) {
                                     />
                                     <VictoryLegend
                                         standalone={false}
-                                        colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
-                                        x={450}
+                                        theme={VictoryTheme.material}
+                                        colorScale={colorScale}
+                                        x={500}
                                         y={20}
                                         gutter={20}
-                                        rowGutter={{ top: 0, bottom: -10 }}
-                                        style={{
-                                            labels: {
-                                                fill: '#9e9e9e',
-                                                fontSize: 25,
-                                            },
-                                        }}
+                                        rowGutter={styles.rowGutter}
+                                        style={styles.victoryLegend}
                                         data={legendData}
                                     />
                                 </svg>

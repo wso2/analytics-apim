@@ -25,7 +25,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import sumBy from 'lodash/sumBy';
-import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
+import {
+    VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
+} from 'victory';
+import { colorScale } from '@analytics-apim/common-lib';
 import CustomTable from './CustomTable';
 
 /**
@@ -37,6 +40,7 @@ export default function APIMRegisteredAppUsers(props) {
     const {
         themeName, height, width, usageData, legendData, inProgress,
     } = props;
+    const fontSize = width < 1000 ? 25 : 18;
     const styles = {
         headingWrapper: {
             margin: 'auto',
@@ -66,7 +70,6 @@ export default function APIMRegisteredAppUsers(props) {
         },
         pieDiv: {
             width: width > 1000 ? '50%' : '100%',
-            paddingTop: 30,
         },
         tableDiv: {
             width: width > 1000 ? '50%' : '100%',
@@ -90,20 +93,24 @@ export default function APIMRegisteredAppUsers(props) {
             fill: '#fff',
             fontSize: 25,
         },
-        flyoutStyle: {
-            fill: '#000',
-            fillOpacity: '0.5',
-            strokeWidth: 1,
-        },
         rowGutter: {
             top: 0,
             bottom: -10,
         },
+        victoryTooltip: {
+            fill: '#fff',
+            fontSize,
+        },
         victoryLegend: {
             labels: {
                 fill: '#9e9e9e',
-                fontSize: 25,
+                fontSize,
             },
+        },
+        flyoutStyle: {
+            fill: '#000',
+            fillOpacity: '0.5',
+            strokeWidth: 1,
         },
     };
 
@@ -136,15 +143,17 @@ export default function APIMRegisteredAppUsers(props) {
                                                     pointerLength={0}
                                                     cornerRadius={2}
                                                     flyoutStyle={styles.flyoutStyle}
-                                                    style={styles.victoryToolTip}
+                                                    style={styles.victoryTooltip}
+                                                    theme={VictoryTheme.material}
                                                 />
                                             )}
                                             width={500}
                                             height={500}
                                             standalone={false}
+                                            innerRadius={130}
                                             padding={50}
-                                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
-                                                '#ffe2ff']}
+                                            theme={VictoryTheme.material}
+                                            colorScale={colorScale}
                                             data={usageData}
                                             x={d => d.applicationName}
                                             y={d => d.users}
@@ -153,9 +162,9 @@ export default function APIMRegisteredAppUsers(props) {
                                         />
                                         <VictoryLegend
                                             standalone={false}
-                                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
-                                                '#ffe2ff']}
-                                            x={450}
+                                            theme={VictoryTheme.material}
+                                            colorScale={colorScale}
+                                            x={460}
                                             y={20}
                                             gutter={20}
                                             rowGutter={styles.rowGutter}

@@ -128,9 +128,6 @@ export default function APIMApiAvailability(props) {
                                     <div>
                                         <div style={{
                                             marginTop: '5%',
-                                            // marginBottom: '5%',
-                                            background: themeName === 'dark' ? '#162638' : '#f7f7f7',
-                                            padding: '5%',
                                         }}
                                         >
                                             <ApiAvailability {...availabilityProps} />

@@ -69,7 +69,6 @@ export default function APIMAppResourceUsage(props) {
         table: {
             paddingTop: 35,
             margin: 'auto',
-            width: '90%',
         },
         div: {
             backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
