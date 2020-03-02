@@ -217,7 +217,6 @@ class APIMTopFaultyApisWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-
         if (data) {
             const faultData = [];
             const legendData = [];

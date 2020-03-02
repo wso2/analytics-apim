@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "private": true,
     "dependencies": {
-        "victory": "^31.0.2"
+        "victory": "^31.0.2",
+        "@analytics-apim/common-lib": "^1.0.0"
     },
     "scripts": {
         "build": "../node_modules/.bin/webpack -p",

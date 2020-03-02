@@ -31,7 +31,10 @@ import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import sumBy from 'lodash/sumBy';
-import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
+import {
+    VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
+} from 'victory';
+import { colorScale } from '@analytics-apim/common-lib';
 import CustomTable from './CustomTable';
 
 /**
@@ -44,6 +47,7 @@ export default function APIMTopAppUsers(props) {
         themeName, height, width, limit, applicationSelected, usageData, legendData, applicationList,
         applicationSelectedHandleChange, handleLimitChange, inProgress,
     } = props;
+    const fontSize = width < 1000 ? 25 : 18;
     const styles = {
         headingWrapper: {
             margin: 'auto',
@@ -105,24 +109,9 @@ export default function APIMTopAppUsers(props) {
             fontWeight: 'normal',
             letterSpacing: 1.5,
         },
-        flyoutStyle: {
-            fill: '#000',
-            fillOpacity: '0.5',
-            strokeWidth: 1,
-        },
-        victoryTooltip: {
-            fill: '#fff',
-            fontSize: 25,
-        },
         rowGutter: {
             top: 0,
             bottom: -10,
-        },
-        victoryLegend: {
-            labels: {
-                fill: '#9e9e9e',
-                fontSize: 25,
-            },
         },
         formLabel: {
             whiteSpace: 'nowrap',
@@ -130,6 +119,21 @@ export default function APIMTopAppUsers(props) {
             width: '100%',
             display: 'block',
             overflow: 'hidden',
+        },
+        victoryTooltip: {
+            fill: '#fff',
+            fontSize,
+        },
+        victoryLegend: {
+            labels: {
+                fill: '#9e9e9e',
+                fontSize,
+            },
+        },
+        flyoutStyle: {
+            fill: '#000',
+            fillOpacity: '0.5',
+            strokeWidth: 1,
         },
     };
 
@@ -241,14 +245,16 @@ export default function APIMTopAppUsers(props) {
                                                     cornerRadius={2}
                                                     flyoutStyle={styles.flyoutStyle}
                                                     style={styles.victoryTooltip}
+                                                    theme={VictoryTheme.material}
                                                 />
                                             )}
                                             width={500}
                                             height={500}
                                             standalone={false}
                                             padding={50}
-                                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
-                                                '#ffe2ff']}
+                                            innerRadius={130}
+                                            theme={VictoryTheme.material}
+                                            colorScale={colorScale}
                                             data={usageData}
                                             x={d => d.username}
                                             y={d => d.hits}
@@ -257,12 +263,12 @@ export default function APIMTopAppUsers(props) {
                                         />
                                         <VictoryLegend
                                             standalone={false}
-                                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
-                                                '#ffe2ff']}
-                                            x={450}
+                                            theme={VictoryTheme.material}
+                                            colorScale={colorScale}
+                                            x={460}
                                             y={20}
                                             gutter={20}
-                                            rowGutter={{ top: 0, bottom: -10 }}
+                                            rowGutter={styles.rowGutter}
                                             style={styles.victoryLegend}
                                             data={legendData}
                                         />
