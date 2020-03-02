@@ -197,17 +197,17 @@ class APIMApiAvailabilityWidget extends Widget {
                 }
             });
 
-            dataModified[0] = [legend[0].name, availableCount];
-            dataModified[1] = [legend[1].name, responseHighCount];
-            dataModified[2] = [legend[2].name, serverErrorCount];
-
             const legendData = [];
             legendData.push(legend[0]);
+            dataModified[0] = [legend[0].name, availableCount];
+       
             if (responseHighCount > 0) {
                 legendData.push(legend[1]);
+                dataModified[dataModified.length] = [legend[1].name, responseHighCount];
             }
             if (serverErrorCount > 0) {
                 legendData.push(legend[2]);
+                dataModified[dataModified.length] = [legend[2].name, serverErrorCount];
             }
             this.setState({ legendData, availableApiData: dataModified, inProgress: false });
         } else {
