@@ -2,7 +2,9 @@
     "name": "apim-api-availability",
     "version": "1.0.0",
     "private": true,
-    "dependencies": {},
+    "dependencies": {
+        "@analytics-apim/common-lib": "^1.0.0"
+    },
     "scripts": {
         "build": "../node_modules/.bin/webpack -p",
         "clean": "rimraf dist",
