@@ -53,6 +53,7 @@ export default function ApiAvailability(props) {
                     labelComponent={(
                         <VictoryTooltip
                             orientation='right'
+                            theme={VictoryTheme.material}
                             pointerLength={0}
                             cornerRadius={2}
                             flyoutStyle={{
