@@ -71,7 +71,6 @@ export default function APIMFaultyPerApp(props) {
         table: {
             paddingTop: 35,
             margin: 'auto',
-            width: '90%',
         },
         h3: {
             borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
