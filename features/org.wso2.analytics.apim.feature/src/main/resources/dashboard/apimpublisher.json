@@ -167,7 +167,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 53.352737116947075,
+                  "height": 45.39604458829571,
                   "content": [
                     {
                       "type": "stack",
@@ -278,7 +278,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 35.16160419815459,
+                  "height": 43.11829672680595,
                   "content": [
                     {
                       "type": "stack",
@@ -367,7 +367,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 8.175355450236966,
+                  "height": 12.562189054726367,
                   "content": [
                     {
                       "title": "[Date Time Range]",
@@ -409,7 +409,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 91.82464454976302,
+                  "height": 87.43781094527363,
                   "content": [
                     {
                       "type": "stack",
@@ -503,7 +503,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 8.293838862559245,
+                  "height": 12.313432835820901,
                   "content": [
                     {
                       "title": "[Date Time Range]",
@@ -545,7 +545,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 91.70616113744079,
+                  "height": 87.68656716417915,
                   "content": [
                     {
                       "type": "stack",
@@ -645,7 +645,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 3.4942880540421357,
+                      "height": 4.239484183345542,
                       "content": [
                         {
                           "title": "[Date Time Range]",
@@ -687,7 +687,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 39.32878450500374,
+                      "height": 38.58358837570034,
                       "width": 100,
                       "content": [
                         {
@@ -965,7 +965,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 7.8677309007981755,
+                  "height": 10.946408209806156,
                   "content": [
                     {
                       "title": "[Date Time Range]",
@@ -1007,7 +1007,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 92.13226909920182,
+                  "height": 89.05359179019383,
                   "content": [
                     {
                       "type": "stack",
@@ -1102,7 +1102,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 13.097949886104784,
+                  "height": 11.731207289293849,
                   "width": 100,
                   "content": [
                     {
@@ -1145,7 +1145,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 86.90205011389521,
+                  "height": 88.26879271070615,
                   "content": [
                     {
                       "title": "[APIM Api Latency Time]",
@@ -1195,7 +1195,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 8.175355450236966,
+                  "height": 12.189054726368157,
                   "content": [
                     {
                       "title": "[Date Time Range]",
@@ -1237,7 +1237,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 91.82464454976302,
+                  "height": 87.81094527363183,
                   "content": [
                     {
                       "type": "stack",
