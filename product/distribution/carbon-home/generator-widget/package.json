@@ -3,27 +3,28 @@
   "version": "1.0.0",
   "description": "Widget generator for WSO2 analytics-dashboard",
   "files": [
-    "generators",
     "app"
   ],
   "keywords": [
     "yeoman-generator"
   ],
   "dependencies": {
-    "yeoman-generator": "^1.1.1"
+    "yeoman-generator": "^4.6.0"
   },
   "scripts": {
-    "createwidget": "yo widgetgenerator subscriber SiddhiDataProvider",
-    "createwidget--widgettype:subscriber--dataprovider:SiddhiDataProvider": "yo widgetgenerator subscriber SiddhiDataProvider",
-    "createwidget--widgettype:subscriber--dataprovider:RDBMSDataProvider": "yo widgetgenerator subscriber RDBMSDataProvider",
-    "createwidget--widgettype:publisher": "yo widgetgenerator publisher SiddhiDataProvider",
-    "createwidget--widgettype:publisher--dataprovider:SiddhiDataProvider": "yo widgetgenerator publisher SiddhiDataProvider",
-    "createwidget--widgettype:publisher --dataprovider:RDBMSDataProvider": "yo widgetgenerator publisher RDBMSDataProvider",
-    "createwidget--widgettype:stand-alone": "yo widgetgenerator standalone SiddhiDataProvider",
-    "createwidget--widgettype:stand-alone--dataprovider:SiddhiDataProvider": "yo widgetgenerator standalone SiddhiDataProvider",
-    "createwidget--widgettype:stand-alone--dataprovider:RDBMSDataProvider": "yo widgetgenerator standalone RDBMSDataProvider"
+    "init": "npm i && npm link",
+    "createwidget": "yo widget subscriber SiddhiDataProvider",
+    "createwidget--widgettype:subscriber--dataprovider:SiddhiDataProvider": "yo widget subscriber SiddhiDataProvider",
+    "createwidget--widgettype:subscriber--dataprovider:RDBMSDataProvider": "yo widget subscriber RDBMSDataProvider",
+    "createwidget--widgettype:publisher": "yo widget publisher SiddhiDataProvider",
+    "createwidget--widgettype:publisher--dataprovider:SiddhiDataProvider": "yo widget publisher SiddhiDataProvider",
+    "createwidget--widgettype:publisher --dataprovider:RDBMSDataProvider": "yo widget publisher RDBMSDataProvider",
+    "createwidget--widgettype:stand-alone": "yo widget standalone SiddhiDataProvider",
+    "createwidget--widgettype:stand-alone--dataprovider:SiddhiDataProvider": "yo widget standalone SiddhiDataProvider",
+    "createwidget--widgettype:stand-alone--dataprovider:RDBMSDataProvider": "yo widget standalone RDBMSDataProvider"
   },
   "devDependencies": {
     "yo": "^3.1.1"
-  }
+  },
+  "private": true
 }

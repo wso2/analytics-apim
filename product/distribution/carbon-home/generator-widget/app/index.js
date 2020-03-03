@@ -177,44 +177,40 @@ module.exports = class extends Generator {
       version: '1.0.0',
       private: true,
       dependencies: {
-        'react-scripts': '3.3.1',
         '@material-ui/core': '^3.9.0',
         '@material-ui/icons': '^3.0.2',
         '@wso2-dashboards/widget': '^1.4.0',
-        'axios': '^0.16.2',
-        'lodash': '^4.17.11',
         'react': '^16.7.0',
         'react-dom': '^16.7.0',
-        'react-custom-scrollbars': '^4.2.1',
         'react-intl': '^2.8.0'
       },
       devDependencies: {
         '@babel/core': '^7.7.2',
         '@babel/plugin-proposal-class-properties': '^7.7.0',
         '@babel/preset-env': '^7.7.1',
-        '@babel/preset-es2015': '^7.0.0-beta.53',
         '@babel/preset-react': '^7.7.0',
         '@babel/register': '^7.7.0',
         'babel-eslint': '^10.0.3',
         'babel-loader': '^8.0.6',
-        'copy-webpack-plugin': '^4.2.0',
-        'css-loader': '^0.28.11',
+        'copy-webpack-plugin': '^5.1.1',
+        'css-loader': '^3.4.2',
         'eslint': '^5.10.0',
         'eslint-config-airbnb': '^17.1.0',
         'eslint-plugin-import': '^2.14.0',
         'eslint-plugin-jsx-a11y': '^6.1.2',
         'eslint-plugin-react': '^7.11.1',
-        'style-loader': '^0.20.3',
-        'webpack': '^4.41.2',
         'rimraf': '^2.6.3',
+        'style-loader': '^0.20.3',
+        'symlink-dir': '^3.1.2',
+        'webpack': '^4.41.2',
         'webpack-cli': '^3.3.10'
       },
-      scripts: {
+      'scripts': {
         'build': 'node_modules/.bin/webpack -p',
-        "postbuild": "cp -r dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets",
+        'postbuild': 'cp -r dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets',
         'clean': 'rimraf dist',
-        'dev': 'NODE_ENV=development node_modules/.bin/webpack -d --config webpack.config.js --watch --progress',
-        "symlink": "ln -s -r dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets"
+        'dev': 'npm run build & npm run symlink && NODE_ENV=development node_modules/.bin/webpack -d --config webpack.config.js --watch --progress',
+        'symlink': 'symlink-dir ./dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/APIMSample'
       }
     };
   
@@ -225,6 +221,10 @@ module.exports = class extends Generator {
   install() {
     let npmdir = this.destinationRoot(`widgetTemplates/${this.answers.widgetName}`);
     process.chdir(npmdir);	    
-    this.installDependencies();
+    this.installDependencies({
+      npm: true,
+      bower: false,
+      yarn: false
+    });
   }
 };
