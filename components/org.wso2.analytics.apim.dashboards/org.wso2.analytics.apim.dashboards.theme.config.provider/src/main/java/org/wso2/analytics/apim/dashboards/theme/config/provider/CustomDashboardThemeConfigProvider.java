@@ -23,12 +23,15 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.analytics.idp.client.core.utils.config.IdPClientConfiguration;
 import org.wso2.carbon.config.ConfigurationException;
 import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.carbon.dashboards.core.DashboardThemeConfigProvider;
 import org.wso2.carbon.dashboards.core.bean.DashboardConfigurations;
 import org.wso2.carbon.dashboards.core.exception.DashboardException;
 
+import java.io.File;
+import java.util.Map;
 
 /**
  * Default implementation for Default Dashboard Theme Config Provider.
@@ -41,8 +44,24 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomDashboardThemeConfigProvider.class);
     private static final String AT = "@";
-    private static final String IMAGES_DIR = "/analytics/images/";
 
+    private static final String THEME_DIR = File.separator + "wso2" + File.separator + "dashboard" + File.separator +
+            "deployment" + File.separator + "web-ui-apps" + File.separator + "analytics-dashboard" + File.separator +
+            "public";
+    private static final String IMAGES_DIR = File.separator + "analytics" + File.separator + "images" + File.separator;
+    private static final String THEME_URL = "/public/app";
+
+    private static final String DEFAULT_IMAGE_DIR = File.separator + "public" + File.separator + "app" +
+            File.separator + "images" + File.separator;
+    private static final String DEFAULT_FAVICON_FILE = "favicon.ico";
+    private static final String DEFAULT_LOGO_FILE = "logo.svg";
+
+    public static final String BASE_URL = "baseUrl";
+    public static final String DEFAULT_BASE_URL = "https://localhost:9643";
+    public static final String PORTAL_APP_CONTEXT = "portalAppContext";
+    public static final String DEFAULT_PORTAL_APP_CONTEXT = "analytics-dashboard";
+
+    private IdPClientConfiguration idPClientConfiguration;
     private DashboardConfigurations dashboardConfigurations;
 
     @Reference(service = ConfigProvider.class,
@@ -51,9 +70,11 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
             unbind = "unsetConfigProvider")
     protected void setConfigProvider(ConfigProvider configProvider) {
         try {
+            this.idPClientConfiguration = configProvider.getConfigurationObject(IdPClientConfiguration.class);
             this.dashboardConfigurations = configProvider.getConfigurationObject(DashboardConfigurations.class);
         } catch (ConfigurationException e) {
-            LOGGER.error("Cannot load dashboard configurations from 'deployment.yaml'. Falling-back to defaults.", e);
+            LOGGER.error("Cannot load configurations from 'deployment.yaml'. Falling-back to defaults.", e);
+            this.idPClientConfiguration = new IdPClientConfiguration();
             this.dashboardConfigurations = new DashboardConfigurations();
         }
     }
@@ -65,34 +86,36 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
 
     @Override
     public String getFaviconPath(String username) throws DashboardException {
-        String themeConfigResourcesPath = this.dashboardConfigurations.getThemeConfigResourcesPath();
-        if (themeConfigResourcesPath == null || themeConfigResourcesPath.isEmpty()) {
-            String error = "The themeConfigResourcesPath property cannot be found from the deployment.yaml file.";
-            LOGGER.error(error);
-            throw new DashboardException(error);
-        }
         String tenantDomain = extractTenantDomainFromUserName(username);
-        String path = themeConfigResourcesPath + "/" + tenantDomain + IMAGES_DIR +
+        String faviconPath = File.separator + tenantDomain + IMAGES_DIR +
                 this.dashboardConfigurations.getFaviconFileName();
-        LOGGER.debug("Custom theme resources path returned via '{}' class for user: '{}.'",
-                this.getClass().getName(), username);
-        return path;
+
+        File faviconFile = new File(System.getProperty("carbon.home") + THEME_DIR + faviconPath);
+        if (faviconFile.exists()) {
+            LOGGER.debug("Custom favicon file '{}' returned via '{}' class for user: '{}.'",
+                    faviconPath, this.getClass().getName(), username);
+            return getAppUrl() + THEME_URL + faviconPath;
+        } else {
+            LOGGER.debug("Custom favicon file doesn't exist and falling back to defaults");
+            return getAppUrl() + DEFAULT_IMAGE_DIR + DEFAULT_FAVICON_FILE;
+        }
     }
 
     @Override
     public String getLogoPath(String username) throws DashboardException {
-        String themeConfigResourcesPath = this.dashboardConfigurations.getThemeConfigResourcesPath();
-        if (themeConfigResourcesPath == null || themeConfigResourcesPath.isEmpty()) {
-            String error = "The themeConfigResourcesPath property cannot be found from the deployment.yaml file.";
-            LOGGER.error(error);
-            throw new DashboardException(error);
-        }
         String tenantDomain = extractTenantDomainFromUserName(username);
-        String path = themeConfigResourcesPath + "/" + tenantDomain + IMAGES_DIR +
+        String logoPath = File.separator + tenantDomain + IMAGES_DIR +
                 this.dashboardConfigurations.getLogoFileName();
-        LOGGER.debug("Custom theme resources path returned via '{}' class for user: '{}.'",
-                this.getClass().getName(), username);
-        return path;
+
+        File logoFile = new File(System.getProperty("carbon.home") + THEME_DIR + logoPath);
+        if (logoFile.exists()) {
+            LOGGER.debug("Custom logo file '{}' returned via '{}' class for user: '{}.'",
+                    logoPath, this.getClass().getName(), username);
+            return getAppUrl() + THEME_URL + logoPath;
+        } else {
+            LOGGER.debug("Custom logo file doesn't exist and falling back to defaults");
+            return getAppUrl() + DEFAULT_IMAGE_DIR + DEFAULT_LOGO_FILE;
+        }
     }
 
     /**
@@ -117,5 +140,16 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
             throw new DashboardException(error);
         }
         return tenantDomain;
+    }
+
+    /**
+     * This method returns the analytics dashboard app url by combining the base url and the app context
+     * configured in the deployment.yaml (ex: https://localhost:9643/analytics-dashboard)
+     * @return application url
+     */
+    private String getAppUrl() {
+        Map<String, String> properties = idPClientConfiguration.getProperties();
+        return properties.getOrDefault(BASE_URL, DEFAULT_BASE_URL) + "/" +
+                properties.getOrDefault(PORTAL_APP_CONTEXT, DEFAULT_PORTAL_APP_CONTEXT);
     }
 }
