@@ -205,12 +205,12 @@ module.exports = class extends Generator {
         'webpack': '^4.41.2',
         'webpack-cli': '^3.3.10'
       },
-      "scripts": {
-        "build": "node_modules/.bin/webpack -p",
-        "postbuild": "cp -r dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets",
-        "clean": "rimraf dist",
-        "dev": "npm run build & npm run symlink && NODE_ENV=development node_modules/.bin/webpack -d --config webpack.config.js --watch --progress",
-        "symlink": "symlink-dir ./dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/APIMSample"
+      'scripts': {
+        'build': 'node_modules/.bin/webpack -p',
+        'postbuild': 'cp -r dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets',
+        'clean': 'rimraf dist',
+        'dev': 'npm run build & npm run symlink && NODE_ENV=development node_modules/.bin/webpack -d --config webpack.config.js --watch --progress',
+        'symlink': 'symlink-dir ./dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/APIMSample'
       }
     };
   
