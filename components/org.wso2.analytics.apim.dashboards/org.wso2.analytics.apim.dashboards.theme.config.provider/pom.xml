@@ -43,6 +43,11 @@
             <artifactId>org.wso2.carbon.config</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.analytics.idp.client</artifactId>
+        </dependency>
+
         <!--OSGi-->
         <dependency>
             <groupId>org.osgi</groupId>
@@ -72,6 +77,7 @@
         <private.package>
         </private.package>
         <import.package>
+            org.wso2.carbon.analytics.idp.client.*; version="${carbon.analytics-common.version.range}",
             org.wso2.carbon.dashboards.core.*; version="${carbon.dashboards.version.range.version}",
             org.wso2.carbon.config.*; version="${carbon.config.version.range}",
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
