@@ -31,7 +31,6 @@
     <url>http://wso2.org</url>
 
     <dependencies>
-
         <!--Dashboard-->
         <dependency>
             <groupId>org.wso2.carbon.dashboards</groupId>
