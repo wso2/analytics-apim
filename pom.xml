@@ -1011,11 +1011,11 @@
 
     <properties>
 
-        <carbon.analytics.version>3.0.28</carbon.analytics.version>
+        <carbon.analytics.version>3.0.29</carbon.analytics.version>
         <carbon.analytics.version.range>[3.0.0, 4.0.0)</carbon.analytics.version.range>
         <siddhi.version>5.1.12</siddhi.version>
         <siddhi.core.import.version.range>[5.1,6.0]</siddhi.core.import.version.range>
-        <carbon.analytics-common.version>6.1.44</carbon.analytics-common.version>
+        <carbon.analytics-common.version>6.1.45</carbon.analytics-common.version>
         <carbon.analytics-common.version.range>[6.1.41,7.0.0)</carbon.analytics-common.version.range>
         <!-- Maven plugins -->
         <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
@@ -1063,9 +1063,9 @@
         <pdfbox.version>1.8.16</pdfbox.version>
         <pdfbox.import.version.range>[1.8,2.0)</pdfbox.import.version.range>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.16</carbon.dashboards.version>
+        <carbon.dashboards.version>4.1.17</carbon.dashboards.version>
         <carbon.dashboards.version.range.version>[4.1,4.2)</carbon.dashboards.version.range.version>
-        <carbon.uis.version>1.0.5</carbon.uis.version>
+        <carbon.uis.version>1.0.6</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 
@@ -1111,7 +1111,7 @@
         <common.collections4.version>4.0</common.collections4.version>
 
         <!--MSF4J related-->
-        <msf4j.version>2.7.3</msf4j.version>
+        <msf4j.version>2.7.7</msf4j.version>
         <com.fasterxml.jackson.core.version>2.8.9</com.fasterxml.jackson.core.version>
         <io.swagger.version>1.5.22</io.swagger.version>
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
@@ -1174,7 +1174,7 @@
         <org.snakeyaml.version>1.17</org.snakeyaml.version>
         <mysql.con.version>6.0.5</mysql.con.version>
         <googlecode.json-simple.version>1.1.wso2v1</googlecode.json-simple.version>
-        <io.netty.version>4.1.19.Final</io.netty.version>
+        <io.netty.version>4.1.34.Final</io.netty.version>
         <log4j.version>1.2.17</log4j.version>
         <commons-codec.wso2.version>1.3.0.wso2v1</commons-codec.wso2.version>
 
