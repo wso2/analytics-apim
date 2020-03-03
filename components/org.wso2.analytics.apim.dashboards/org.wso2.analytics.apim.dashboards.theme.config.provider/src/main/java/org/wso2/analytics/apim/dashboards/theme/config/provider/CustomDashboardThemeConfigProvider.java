@@ -41,6 +41,7 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomDashboardThemeConfigProvider.class);
     private static final String AT = "@";
+    private static final String IMAGES_DIR = "/analytics/images/";
 
     private DashboardConfigurations dashboardConfigurations;
 
@@ -63,7 +64,7 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
     }
 
     @Override
-    public String getPath(String username) throws DashboardException {
+    public String getFaviconPath(String username) throws DashboardException {
         String themeConfigResourcesPath = this.dashboardConfigurations.getThemeConfigResourcesPath();
         if (themeConfigResourcesPath == null || themeConfigResourcesPath.isEmpty()) {
             String error = "The themeConfigResourcesPath property cannot be found from the deployment.yaml file.";
@@ -71,7 +72,24 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
             throw new DashboardException(error);
         }
         String tenantDomain = extractTenantDomainFromUserName(username);
-        String path = themeConfigResourcesPath + "/" + tenantDomain;
+        String path = themeConfigResourcesPath + "/" + tenantDomain + IMAGES_DIR +
+                this.dashboardConfigurations.getFaviconFileName();
+        LOGGER.debug("Custom theme resources path returned via '{}' class for user: '{}.'",
+                this.getClass().getName(), username);
+        return path;
+    }
+
+    @Override
+    public String getLogoPath(String username) throws DashboardException {
+        String themeConfigResourcesPath = this.dashboardConfigurations.getThemeConfigResourcesPath();
+        if (themeConfigResourcesPath == null || themeConfigResourcesPath.isEmpty()) {
+            String error = "The themeConfigResourcesPath property cannot be found from the deployment.yaml file.";
+            LOGGER.error(error);
+            throw new DashboardException(error);
+        }
+        String tenantDomain = extractTenantDomainFromUserName(username);
+        String path = themeConfigResourcesPath + "/" + tenantDomain + IMAGES_DIR +
+                this.dashboardConfigurations.getLogoFileName();
         LOGGER.debug("Custom theme resources path returned via '{}' class for user: '{}.'",
                 this.getClass().getName(), username);
         return path;
