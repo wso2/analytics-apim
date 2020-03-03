@@ -7,6 +7,7 @@
     "landingPage": "analytics",
     "parentId": "0",
     "content": {
+      "readOnly": true,
       "properties": {},
       "pages": [
         {
