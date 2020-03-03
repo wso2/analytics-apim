@@ -31,7 +31,9 @@ import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import sumBy from 'lodash/sumBy';
-import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
+import {
+    VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
+} from 'victory';
 import CustomTable from './CustomTable';
 
 /**
@@ -44,6 +46,7 @@ export default function APIMAppApiUsage(props) {
         themeName, height, width, limit, applicationSelected, usageData, legendData, applicationList,
         applicationSelectedHandleChange, handleLimitChange, inProgress,
     } = props;
+    const fontSize = width < 1000 ? 25 : 18;
     const styles = {
         headingWrapper: {
             margin: 'auto',
@@ -51,14 +54,12 @@ export default function APIMAppApiUsage(props) {
         },
         paperWrapper: {
             height: '75%',
+            width: '95%',
+            margin: 'auto',
         },
         paper: {
-            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
-            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
-            width: '75%',
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-            border: '1.5px solid',
-            marginLeft: '5%',
         },
         form: {
             display: 'flex',
@@ -98,7 +99,6 @@ export default function APIMAppApiUsage(props) {
         },
         pieDiv: {
             width: width > 1000 ? '50%' : '100%',
-            paddingTop: 30,
         },
         tableDiv: {
             width: width > 1000 ? '50%' : '100%',
@@ -119,7 +119,7 @@ export default function APIMAppApiUsage(props) {
         },
         victoryTooltip: {
             fill: '#fff',
-            fontSize: 25,
+            fontSize,
         },
         rowGutter: {
             top: 0,
@@ -128,7 +128,7 @@ export default function APIMAppApiUsage(props) {
         victoryLegend: {
             labels: {
                 fill: '#9e9e9e',
-                fontSize: 25,
+                fontSize,
             },
         },
         formLabel: {
@@ -243,14 +243,29 @@ export default function APIMAppApiUsage(props) {
                                                     cornerRadius={2}
                                                     flyoutStyle={styles.flyoutStyle}
                                                     style={styles.victoryTooltip}
+                                                    theme={VictoryTheme.material}
                                                 />
                                             )}
                                             width={500}
                                             height={500}
+                                            innerRadius={130}
                                             standalone={false}
                                             padding={50}
-                                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
-                                                '#ffe2ff']}
+                                            theme={VictoryTheme.material}
+                                            colorScale={
+                                                [
+                                                    '#45b29d',
+                                                    '#ff9800',
+                                                    '#b71c1c',
+                                                    '#3f51b5',
+                                                    '#673ab7',
+                                                    '#00bcd4',
+                                                    '#cddc39',
+                                                    '#3e2723',
+                                                    '#607d8b',
+                                                    '#e91e63',
+                                                ]
+                                            }
                                             data={usageData}
                                             x={d => d.apiName}
                                             y={d => d.hits}
@@ -259,9 +274,22 @@ export default function APIMAppApiUsage(props) {
                                         />
                                         <VictoryLegend
                                             standalone={false}
-                                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
-                                                '#ffe2ff']}
-                                            x={450}
+                                            theme={VictoryTheme.material}
+                                            colorScale={
+                                                [
+                                                    '#45b29d',
+                                                    '#ff9800',
+                                                    '#b71c1c',
+                                                    '#3f51b5',
+                                                    '#673ab7',
+                                                    '#00bcd4',
+                                                    '#cddc39',
+                                                    '#3e2723',
+                                                    '#607d8b',
+                                                    '#e91e63',
+                                                ]
+                                            }
+                                            x={460}
                                             y={20}
                                             gutter={20}
                                             rowGutter={styles.rowGutter}

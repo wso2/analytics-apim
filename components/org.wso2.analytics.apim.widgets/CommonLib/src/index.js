@@ -19,4 +19,16 @@
 
 import CustomTableToolbar from './CustomTableToolbar';
 import SummaryWidget from './SummaryWidget';
-export {CustomTableToolbar, SummaryWidget};
+const colorScale = [
+    '#45b29d',
+    '#ff9800',
+    '#b71c1c',
+    '#3f51b5',
+    '#673ab7',
+    '#00bcd4',
+    '#cddc39',
+    '#3e2723',
+    '#607d8b',
+    '#e91e63',
+];
+export {CustomTableToolbar, SummaryWidget, colorScale};

@@ -29,7 +29,10 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
+import {
+    VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
+} from 'victory';
+import { colorScale } from '@analytics-apim/common-lib';
 import sumBy from 'lodash/sumBy';
 import CustomTable from './CustomTable';
 
@@ -60,6 +63,7 @@ export default function APIMTopAppCreators(props) {
     const {
         themeName, height, width, creatorData, legendData, handleChange, limit, inProgress,
     } = props;
+    const fontSize = width < 1000 ? 25 : 18;
     const styles = {
         headingWrapper: {
             margin: 'auto',
@@ -67,14 +71,12 @@ export default function APIMTopAppCreators(props) {
         },
         paperWrapper: {
             height: '75%',
+            width: '95%',
+            margin: 'auto',
         },
         paper: {
-            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
-            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
-            width: '75%',
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-            border: '1.5px solid',
-            marginLeft: '5%',
         },
         formWrapper: {
             marginBottom: '5%',
@@ -92,7 +94,6 @@ export default function APIMTopAppCreators(props) {
         },
         pieDiv: {
             width: width > 1000 ? '50%' : '100%',
-            paddingTop: 30,
         },
         tableDiv: {
             width: width > 1000 ? '50%' : '100%',
@@ -114,6 +115,21 @@ export default function APIMTopAppCreators(props) {
         },
         formLabel: {
             whiteSpace: 'nowrap',
+        },
+        victoryTooltip: {
+            fill: '#fff',
+            fontSize,
+        },
+        victoryLegend: {
+            labels: {
+                fill: '#9e9e9e',
+                fontSize,
+            },
+        },
+        flyoutStyle: {
+            fill: '#000',
+            fillOpacity: '0.5',
+            strokeWidth: 1,
         },
     };
 
@@ -199,29 +215,25 @@ export default function APIMTopAppCreators(props) {
                                 ) : (
                                     <div style={styles.statDiv}>
                                         <div style={styles.pieDiv}>
-                                            <svg viewBox='-50 0 700 500'>
+                                            <svg viewBox='-50 0 1000 500'>
                                                 <VictoryPie
                                                     labelComponent={(
                                                         <VictoryTooltip
                                                             orientation='right'
                                                             pointerLength={0}
                                                             cornerRadius={2}
-                                                            flyoutStyle={{
-                                                                fill: '#000',
-                                                                fillOpacity: '0.5',
-                                                                strokeWidth: 1,
-                                                            }}
-                                                            style={{ fill: '#fff', fontSize: 25 }}
+                                                            flyoutStyle={styles.flyoutStyle}
+                                                            style={styles.victoryTooltip}
+                                                            theme={VictoryTheme.material}
                                                         />
                                                     )}
                                                     width={500}
                                                     height={500}
                                                     standalone={false}
-                                                    padding={{
-                                                        left: 50, bottom: 50, top: 50, right: 50,
-                                                    }}
-                                                    colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
-                                                        '#e01171', '#ffe2ff']}
+                                                    innerRadius={130}
+                                                    padding={50}
+                                                    theme={VictoryTheme.material}
+                                                    colorScale={colorScale}
                                                     data={creatorData}
                                                     x={d => d.creator}
                                                     y={d => d.appcount}
@@ -230,18 +242,13 @@ export default function APIMTopAppCreators(props) {
                                                 />
                                                 <VictoryLegend
                                                     standalone={false}
-                                                    colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86',
-                                                        '#e01171', '#ffe2ff']}
-                                                    x={450}
+                                                    theme={VictoryTheme.material}
+                                                    colorScale={colorScale}
+                                                    x={460}
                                                     y={20}
                                                     gutter={20}
-                                                    rowGutter={{ top: 0, bottom: -10 }}
-                                                    style={{
-                                                        labels: {
-                                                            fill: '#9e9e9e',
-                                                            fontSize: 25,
-                                                        },
-                                                    }}
+                                                    rowGutter={styles.rowGutter}
+                                                    style={styles.victoryLegend}
                                                     data={legendData}
                                                 />
                                             </svg>

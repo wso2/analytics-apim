@@ -50,15 +50,12 @@ export default function APIMOverallApiUsage(props) {
         },
         paperWrapper: {
             height: '75%',
+            width: '95%',
+            margin: 'auto',
         },
         paper: {
-            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
-            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
-            width: '75%',
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-            border: '1.5px solid',
-            marginLeft: '5%',
-            marginBottom: 30,
         },
         formWrapper: {
             marginBottom: '5%',

@@ -176,29 +176,40 @@ class APIMApiAvailabilityWidget extends Widget {
      * */
     handleApiAvailableReceived(message) {
         const { data } = message;
-        const legendData = [{name : "Available"}, {name : "Response time is high"}, {name : "Server error occurred"}];
+        const legend = [{ name: 'Available' }, { name: 'Response time is high' },
+            { name: 'Server error occurred' }];
 
         if (data) {
-
             let availableCount = 0;
             let responseHighCount = 0;
             let serverErrorCount = 0;
+            const dataModified = [];
             data.forEach((dataUnit) => {
-                if (dataUnit[0].includes(legendData[0].name)) {
+                if (dataUnit[0].includes(legend[0].name)) {
+                    // eslint-disable-next-line prefer-destructuring
                     availableCount = dataUnit[1];
-                } else if (dataUnit[0].includes(legendData[1].name)){ // Response time high messages are not unique
-                    let currentKeyResponseHighCount = dataUnit[1];
+                } else if (dataUnit[0].includes(legend[1].name)) { // Response time high messages are not unique
+                    const currentKeyResponseHighCount = dataUnit[1];
                     responseHighCount += currentKeyResponseHighCount;
-                } else if (dataUnit[0].includes(legendData[2].name)) {
-                    serverErrorCount = dataUnit[1] ;
+                } else if (dataUnit[0].includes(legend[2].name)) {
+                    // eslint-disable-next-line prefer-destructuring
+                    serverErrorCount = dataUnit[1];
                 }
             });
 
-            let dataModified = [];
-            dataModified[0] = [legendData[0].name , availableCount];
-            dataModified[1] = [legendData[1].name , responseHighCount];
-            dataModified[2] = [legendData[2].name , serverErrorCount];
-
+            const legendData = [];
+            if (availableCount > 0) {
+                legendData.push(legend[0]);
+                dataModified[0] = [legend[0].name, availableCount];
+            }   
+            if (responseHighCount > 0) {
+                legendData.push(legend[1]);
+                dataModified[dataModified.length] = [legend[1].name, responseHighCount];
+            }
+            if (serverErrorCount > 0) {
+                legendData.push(legend[2]);
+                dataModified[dataModified.length] = [legend[2].name, serverErrorCount];
+            }
             this.setState({ legendData, availableApiData: dataModified, inProgress: false });
         } else {
             this.setState({ inProgress: false });
