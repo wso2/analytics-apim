@@ -71,7 +71,6 @@ export default function APIMFaultyPerApp(props) {
         table: {
             paddingTop: 35,
             margin: 'auto',
-            width: '90%',
         },
         h3: {
             borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -84,14 +83,12 @@ export default function APIMFaultyPerApp(props) {
         },
         paperWrapper: {
             height: '75%',
+            width: '95%',
+            margin: 'auto',
         },
         paper: {
-            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
-            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
-            width: '75%',
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-            border: '1.5px solid',
-            marginLeft: '5%',
         },
         inProgress: {
             display: 'flex',

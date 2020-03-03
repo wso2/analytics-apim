@@ -19,8 +19,10 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
-import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
+import {
+    VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme, VictoryContainer,
+} from 'victory';
+import { colorScale } from '@analytics-apim/common-lib';
 import sumBy from 'lodash/sumBy';
 
 /**
@@ -30,24 +32,28 @@ import sumBy from 'lodash/sumBy';
  */
 export default function ApiAvailability(props) {
     const { availableApiData, legendData } = props;
-    const styles = {
-        chartTitle: {
-            height: '15%',
-            display: 'flex',
-            marginRight: 'auto',
-        },
-    };
-
     return (
         <div>
-            <div style={styles.chartTitle}>
-                <FormattedMessage id='chart.heading' defaultMessage='API AVAILABILITY :' />
-            </div>
-            <svg viewBox='0 0 600 400'>
+            <VictoryContainer height={400}>
+                <VictoryLegend
+                    standalone={false}
+                    theme={VictoryTheme.material}
+                    colorScale={['#45b29d', '#ff9800', '#ef5350']}
+                    x={380}
+                    y={20}
+                    gutter={20}
+                    style={{
+                        labels: {
+                            fill: '#9e9e9e',
+                        },
+                    }}
+                    data={legendData}
+                />
                 <VictoryPie
                     labelComponent={(
                         <VictoryTooltip
                             orientation='right'
+                            theme={VictoryTheme.material}
                             pointerLength={0}
                             cornerRadius={2}
                             flyoutStyle={{
@@ -55,37 +61,19 @@ export default function ApiAvailability(props) {
                                 fillOpacity: '0.5',
                                 strokeWidth: 1,
                             }}
-                            style={{ fill: '#fff', fontSize: 25 }}
+                            style={{ fill: '#fff' }}
                         />
                     )}
-                    width={400}
-                    height={400}
+                    innerRadius={80}
+                    theme={VictoryTheme.material}
                     standalone={false}
-                    padding={{
-                        left: 50, bottom: 50, top: 50, right: 50,
-                    }}
-                    colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
+                    colorScale={colorScale}
                     data={availableApiData}
                     x={0}
                     y={1}
                     labels={d => `${d[0]} : ${((d[1] / (sumBy(availableApiData, o => o[1]))) * 100).toFixed(2)}%`}
                 />
-                <VictoryLegend
-                    standalone={false}
-                    colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171', '#ffe2ff']}
-                    x={400}
-                    y={20}
-                    gutter={20}
-                    rowGutter={{ top: 0, bottom: -10 }}
-                    style={{
-                        labels: {
-                            fill: '#9e9e9e',
-                            fontSize: 25,
-                        },
-                    }}
-                    data={legendData}
-                />
-            </svg>
+            </VictoryContainer>
         </div>
     );
 }

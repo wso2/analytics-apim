@@ -1,0 +1,29 @@
+{
+  "name": "generator-widget",
+  "version": "1.0.0",
+  "description": "Widget generator for WSO2 analytics-dashboard",
+  "files": [
+    "generators",
+    "app"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "yeoman-generator": "^1.1.1"
+  },
+  "scripts": {
+    "createwidget": "yo widgetgenerator subscriber SiddhiDataProvider",
+    "createwidget--widgettype:subscriber--dataprovider:SiddhiDataProvider": "yo widgetgenerator subscriber SiddhiDataProvider",
+    "createwidget--widgettype:subscriber--dataprovider:RDBMSDataProvider": "yo widgetgenerator subscriber RDBMSDataProvider",
+    "createwidget--widgettype:publisher": "yo widgetgenerator publisher SiddhiDataProvider",
+    "createwidget--widgettype:publisher--dataprovider:SiddhiDataProvider": "yo widgetgenerator publisher SiddhiDataProvider",
+    "createwidget--widgettype:publisher --dataprovider:RDBMSDataProvider": "yo widgetgenerator publisher RDBMSDataProvider",
+    "createwidget--widgettype:stand-alone": "yo widgetgenerator standalone SiddhiDataProvider",
+    "createwidget--widgettype:stand-alone--dataprovider:SiddhiDataProvider": "yo widgetgenerator standalone SiddhiDataProvider",
+    "createwidget--widgettype:stand-alone--dataprovider:RDBMSDataProvider": "yo widgetgenerator standalone RDBMSDataProvider"
+  },
+  "devDependencies": {
+    "yo": "^3.1.1"
+  }
+}

@@ -303,6 +303,7 @@ do
     -Djavax.net.ssl.keyStorePassword="wso2carbon" \
     -Djavax.net.ssl.trustStore="$CARBON_HOME/resources/security/client-truststore.jks" \
     -Djavax.net.ssl.trustStorePassword="wso2carbon" \
+    -Dio.netty.tryReflectionSetAccessible=false \
     org.wso2.carbon.launcher.Main $*
     status=$?
 done
