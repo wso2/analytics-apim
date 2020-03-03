@@ -48,8 +48,5 @@ Tool generates three types of widget templates which supports both RDBMS Data Pr
 
 7. Restart the analytics dashboard profile to load the newly created widget to the dashboard. 
 
-8. Additionally, to start a node development environment and create a symlink from `<WIDGET_ROOT>` directory to `<HOME>/wso2/...widgets`  directory, Open a terminal in the `<WIDGET_ROOT>` directory and issue following commands.
+8. Additionally, to start a node development environment and create a symlink from `<WIDGET_ROOT>` directory to `<HOME>/wso2/...widgets`  directory, Open a terminal in the `<WIDGET_ROOT>` directory and issue following command.
       - `$npm run dev`
-      - `$npm run symlink`
-
-    > If you already build the widget, navigate to `<HOME>/wso2/dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets` directory and remove the `<WIDGET_ROOT>` directory before you issue the above commands.
