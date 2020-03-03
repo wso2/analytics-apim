@@ -79,14 +79,12 @@ export default function APIMApiResponse(props) {
         },
         paperWrapper: {
             height: '75%',
+            width: '95%',
+            margin: 'auto',
         },
         paper: {
-            background: '#969696',
-            width: '75%',
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-            border: '1.5px solid #fff',
-            margin: 'auto',
-            marginTop: '5%',
         },
         loadingIcon: {
             margin: 'auto',
