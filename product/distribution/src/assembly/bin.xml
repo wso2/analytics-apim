@@ -91,6 +91,11 @@
             <outputDirectory>resources/security</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+          <fileSet>
+            <directory>carbon-home/generator-widget</directory>
+            <outputDirectory>wso2/tools/generator-widget</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
         <fileSet>
             <directory>carbon-home/bin</directory>
             <outputDirectory>bin</outputDirectory>
