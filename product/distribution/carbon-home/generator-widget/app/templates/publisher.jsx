@@ -62,8 +62,7 @@ class <%= className %> extends Widget {
         this.styles = {
             // Insert styles Here
             mainDiv: {
-                backgroundColor: '#0e1e33',
-                margin: '10px',
+                backgroundColor: '#0e1e33',                
                 padding: '20px',
             },
             h3: {

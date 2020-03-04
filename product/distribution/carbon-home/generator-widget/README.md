@@ -15,13 +15,16 @@ Tool generates three types of widget templates which supports both RDBMS Data Pr
 
 # Quick Start Guide
 
-## How to use the tool?
-1. Navigate to the <ANALYTICS_HOME>/wso2/tools/generator-widget directory and issue the following command to install dependencies.
-   - `$ sudo npm install`
-  
-    Above directory will be hereafter referred as <TOOL_HOME>
+## Setting up the generator
+Navigate to the <ANALYTICS_HOME>/wso2/tools/generator-widget directory and run following command to initialize the widget generator.
 
-2. Open a terminal in the <TOOL_HOME> directory and Use following commands to create your preffered widget skeleton.
+      `$ npm run init`
+
+`<ANALYTICS_HOME>/wso2/tools/generator-widget` directory will be hereafter referred as <TOOL_HOME>
+
+## How to use the tool?
+
+1. Open a terminal in the <TOOL_HOME> directory and Use following commands to create your preffered widget skeleton.
     -  Issue the following command To create a default widget (Subscriber widget using SIddhiStoreDataProvider).
       
        `$ npm run createwidget`
@@ -37,19 +40,16 @@ Tool generates three types of widget templates which supports both RDBMS Data Pr
     - For example following command will create a publisher widget template with RDBMS Data Provider.
 
       `$npm run createwidget--widgettype:publisher --dataprovider:RDBMSDataProvider`
-3. Enter your widget name and widget heading to the terminal.
+2. Enter your widget name and widget heading to the terminal.
 
-4. Based on the preferences, new widget skeleton will be created inside the `<TOOL_HOME>/widgetTemplates` directory and the relevent dependencies will be installed to the `<TOOL_HOME>/widgetTemplates/<WIDGET_ROOT>` directory.
+3. Based on the preferences, new widget skeleton will be created inside the `<TOOL_HOME>/widgetTemplates` directory and the relevent dependencies will be installed to the `<TOOL_HOME>/widgetTemplates/<WIDGET_ROOT>` directory.
 
-5. Navigate to the `<WIDGET_ROOT>` directory and modify the file content to create your own widget.
+4. Navigate to the `<WIDGET_ROOT>` directory and modify the file content to create your own widget.
 
-6. Navigate to the `<WIDGET_ROOT>` directory and Issue the following command to build the widget.
+5. Navigate to the `<WIDGET_ROOT>` directory and Issue the following command to build the widget.
       - `$npm run build`
 
-7. Restart the analytics dashboard profile to load the newly created widget to the dashboard. 
+6. Restart the analytics dashboard profile to load the newly created widget to the dashboard. 
 
-8. Additionally, to start a node development environment and create a symlink from `<WIDGET_ROOT>` directory to `<HOME>/wso2/...widgets`  directory, Open a terminal in the `<WIDGET_ROOT>` directory and issue following commands.
+7. Additionally, to start a development environment and create a symlink from `<WIDGET_ROOT>` directory to `<HOME>/wso2/...widgets`  directory, Open a terminal in the `<WIDGET_ROOT>` directory and issue following command.
       - `$npm run dev`
-      - `$npm run symlink`
-
-    > If you already build the widget, navigate to `<HOME>/wso2/dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets` directory and remove the `<WIDGET_ROOT>` directory before you issue the above commands.

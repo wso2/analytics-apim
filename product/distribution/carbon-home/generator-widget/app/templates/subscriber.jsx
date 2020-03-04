@@ -60,7 +60,6 @@ class <%= className %> extends Widget {
             // Insert styles Here
             mainDiv: {
                 backgroundColor: '#0e1e33',
-                margin: '10px',
                 padding: '20px',
             },
             h3: {
