@@ -294,8 +294,8 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             }
 
             let apiCondition = apiList.map((api) => {
-                return '(api.API_NAME===\'' + api.name + '\' AND api.API_VERSION==\'' + api.version
-                    + '\' AND api.API_PROVIDER==\'' + api.provider + '\')';
+                return '(api.API_NAME=\'' + api.name + '\' AND api.API_VERSION=\'' + api.version
+                    + '\' AND api.API_PROVIDER=\'' + api.provider + '\')';
             });
             apiCondition = apiCondition.join(' OR ');
             apiCondition.unshift('AND ');

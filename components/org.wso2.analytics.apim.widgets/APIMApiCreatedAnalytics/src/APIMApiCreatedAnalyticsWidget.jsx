@@ -280,8 +280,8 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             }
 
             let apiCondition = apiList.map((api) => {
-                return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
-                    + '\' AND API_PROVIDER==\'' + api.provider + '\')';
+                return '(API_NAME=\'' + api.name + '\' AND API_VERSION=\'' + api.version
+                    + '\' AND API_PROVIDER=\'' + api.provider + '\')';
             });
             apiCondition = apiCondition.join(' OR ');
             apiCondition.unshift('AND ');
