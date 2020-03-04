@@ -16,11 +16,11 @@ Tool generates three types of widget templates which supports both RDBMS Data Pr
 # Quick Start Guide
 
 ## Setting up the generator
-Run following command to initialize the widget generator.
+Navigate to the <ANALYTICS_HOME>/wso2/tools/generator-widget directory and run following command to initialize the widget generator.
 
       `$ npm run init`
 
-Above directory will be hereafter referred as <TOOL_HOME>
+`<ANALYTICS_HOME>/wso2/tools/generator-widget` directory will be hereafter referred as <TOOL_HOME>
 
 ## How to use the tool?
 
