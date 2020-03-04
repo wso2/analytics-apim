@@ -88,6 +88,17 @@ class APIMTopAppCreatorsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
+            },
         };
 
         this.state = {
@@ -99,6 +110,7 @@ class APIMTopAppCreatorsWidget extends Widget {
             limit: 5,
             localeMessages: null,
             inProgress: true,
+            proxyError: false,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -114,6 +126,8 @@ class APIMTopAppCreatorsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleSubscriberDataReceived = this.handleSubscriberDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.assembleAppQuery = this.assembleAppQuery.bind(this);
+        this.handleAppDataReceived = this.handleAppDataReceived.bind(this);
     }
 
     componentWillMount() {
@@ -191,7 +205,40 @@ class APIMTopAppCreatorsWidget extends Widget {
         if (data) {
             const subscribers = data.map((dataUnit) => { return dataUnit[0]; });
             super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.setState({ subscribers }, this.assembleQuery);
+            this.setState({ subscribers }, this.assembleAppQuery);
+        } else {
+            this.setState({ inProgress: false, creatorData: [] });
+        }
+    }
+
+    /**
+     * Retrieve applications for subscriber
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    assembleAppQuery() {
+        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/applications`)
+            .then((response) => {
+                this.setState({ proxyError: false });
+                this.handleAppDataReceived(response.data);
+            })
+            .catch((error) => {
+                this.setState({ proxyError: true, inProgress: false });
+                console.error(error);
+            });
+    }
+
+    /**
+     * Formats applciations data retrieved from APIM server
+     * @param {object} data - data retrieved
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    handleAppDataReceived(data) {
+        const { list } = data;
+
+        if (list && list.length > 0) {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ appList: list }, this.assembleQuery);
         } else {
             this.setState({ inProgress: false, creatorData: [] });
         }
@@ -202,7 +249,7 @@ class APIMTopAppCreatorsWidget extends Widget {
      * @memberof APIMTopAppCreatorsWidget
      * */
     assembleQuery() {
-        const { providerConfig, subscribers } = this.state;
+        const { providerConfig, subscribers, appList } = this.state;
         const { id, widgetID: widgetName } = this.props;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
@@ -211,11 +258,22 @@ class APIMTopAppCreatorsWidget extends Widget {
             limit = 5;
         }
         if (subscribers && subscribers.length > 0) {
-            const dataProviderConfigs = cloneDeep(providerConfig);
+            let appCondition = '';
+            if (appList && appList.length > 0) {
+                appCondition = appList.map((app) => {
+                    return '(NAME==\'' + app.name + '\' AND CREATED_BY==\'' + app.owner + '\')';
+                });
+                appCondition = appCondition.join(' OR ');
+                appCondition.unshift('AND ');
+            }
+
             let subs = subscribers.map((sub) => { return 'SUBSCRIBER_ID==' + sub; });
             subs = subs.join(' OR ');
+
+            const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'appQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{appCondition}}': appCondition,
                 '{{subscriberId}}': subs,
                 '{{limit}}': limit,
             };
@@ -286,16 +344,44 @@ class APIMTopAppCreatorsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, creatorData, legendData, inProgress, limit, width,
+            localeMessages, faultyProviderConfig, height, creatorData, legendData, inProgress, limit, width, proxyError,
         } = this.state;
         const {
-            paper, paperWrapper,
+            paper, paperWrapper, proxyPaperWrapper, proxyPaper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const appCreatorsProps = {
             themeName, height, creatorData, legendData, inProgress, limit, width,
         };
+
+        if (proxyError) {
+            return (
+                <IntlProvider locale={language} messages={localeMessages}>
+                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!'
+                                    />
+                                </Typography>
+                                <Typography component='p'>
+                                    <FormattedMessage
+                                        id='apim.server.error'
+                                        defaultMessage='Error occurred while retrieving application list.'
+                                    />
+                                </Typography>
+                            </Paper>
+                        </div>
+                    </MuiThemeProvider>
+                </IntlProvider>
+            );
+        }
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>

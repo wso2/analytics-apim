@@ -1,4 +1,6 @@
 {
+  "apim.server.error.heading" : "Error !",
+  "apim.server.error" : "Error occurred while retrieving application list.",
   "config.error.body": "Cannot fetch provider configuration for APIM Top App Creators widget",
   "config.error.heading": "Configuration Error !",
   "filter.column.menu.heading": "Column Name",

@@ -98,6 +98,17 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
+            },
         };
 
         this.state = {
@@ -118,6 +129,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             localeMessages: null,
             username: null,
             inProgress: true,
+            proxyError: false,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -299,49 +311,46 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     }
 
     /**
-     * Formats the siddhi query - apilistquery
+     * Get API list from Publisher
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
     assembleApiListQuery() {
         this.resetState();
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy } = queryParam;
-        const { providerConfig, username } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        const { config } = dataProviderConfigs.configs;
-
-        config.tableName = 'AM_API';
-        config.incrementalColumn = 'API_ID';
-        config.queryData.queryName = 'apilistquery';
-        config.queryData.queryValues = {
-            '{{createdBy}}': apiCreatedBy === createdByKeys.Me ? 'AND CREATED_BY=\'{{creator}}\'' : '',
-            '{{creator}}': username,
-        };
-        dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName,
-            this.handleApiListReceived, dataProviderConfigs);
+        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
+            .then((response) => {
+                this.setState({ proxyError: false });
+                this.handleApiListReceived(response.data);
+            })
+            .catch((error) => {
+                this.setState({ proxyError: true, inProgress: false });
+                console.error(error);
+            });
     }
 
     /**
      * Formats data retrieved from assembleApiListQuery
-     * @param {object} message - data retrieved
+     * @param {object} data - data retrieved
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
-    handleApiListReceived(message) {
-        const { data } = message;
+    handleApiListReceived(data) {
         const { id } = this.props;
-        const { apiCreatedBy, appCreatedBy, subscribedTo } = this.state;
+        const { username } = this.state;
+        const { list } = data;
+        const queryParam = super.getGlobalState(queryParamKey);
+        const { apiCreatedBy } = queryParam;
 
-        if (data) {
-            let apilist = data.map((dataUnit) => {
-                return dataUnit[0];
-            });
+        if (list && list.length > 0) {
+            let apilist = list;
+
+            if (apiCreatedBy !== 'All') {
+                apilist = apilist.filter((api) => { return api.provider === username; });
+            }
+
+            apilist = apilist.map((api) => { return api.name; });
             apilist = [...new Set(apilist)];
             apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             apilist.unshift('All');
-            this.setState({ apilist });
-            this.setQueryParam(apiCreatedBy, appCreatedBy, subscribedTo);
+            this.setState({ apilist, apiDataList: list });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
@@ -356,31 +365,53 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiCreatedBy, appCreatedBy, subscribedTo } = queryParam;
         const {
-            providerConfig, timeFrom, timeTo, username, sublist,
+            providerConfig, timeFrom, timeTo, username, sublist, apiDataList,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        const { config } = dataProviderConfigs.configs;
-        config.queryData.queryName = 'mainquery';
 
-        config.tableName = 'AM_APPLICATION';
-        config.incrementalColumn = 'CREATED_TIME';
-        config.queryData.queryValues = {
-            '{{subscriptionTable}}':
-                (appCreatedBy !== 'All' || subscribedTo !== 'All') ? ', AM_API api, AM_SUBSCRIPTION subc' : '',
-            '{{subscription}}': (appCreatedBy !== 'All' || subscribedTo !== 'All')
-                ? 'AND api.API_ID=subc.API_ID and app.APPLICATION_ID=subc.APPLICATION_ID' : '',
-            '{{apiName}}': subscribedTo !== 'All' ? 'AND api.API_NAME = \'' + subscribedTo + '\'' : '',
-            '{{apiProvider}}':
-                (appCreatedBy !== 'All' || subscribedTo !== 'All') ? 'AND api.API_PROVIDER {{providerCondition}}' : '',
-            '{{providerCondition}}':
-            apiCreatedBy === 'All' ? 'in (\'' + sublist.slice(1).join('\', \'') + '\')' : '= \'' + username + '\'',
-            '{{subscriberId}}': appCreatedBy !== 'All' ? 'and sub.USER_ID = \'' + appCreatedBy + '\'' : '',
-            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
-        };
-        dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        if (apiDataList && apiDataList.length > 0) {
+            let apiList = [...apiDataList];
+
+            if (apiCreatedBy !== 'All') {
+                apiList = apiList.filter((api) => { return api.provider === username; });
+            }
+
+            let apiCondition = apiList.map((api) => {
+                return '(api.API_NAME = \'' + api.name + '\' AND api.API_VERSION = \'' + api.version
+                    + '\' AND api.API_PROVIDER = \'' + api.provider + '\')';
+            });
+            apiCondition = apiCondition.join(' OR ');
+            apiCondition.unshift('AND ');
+
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            const { config } = dataProviderConfigs.configs;
+            config.queryData.queryName = 'mainquery';
+
+            config.tableName = 'AM_APPLICATION';
+            config.incrementalColumn = 'CREATED_TIME';
+            config.queryData.queryValues = {
+                '{{subscriptionTable}}':
+                    (appCreatedBy !== 'All' || subscribedTo !== 'All') ? ', AM_API api, AM_SUBSCRIPTION subc' : '',
+                '{{subscription}}': (appCreatedBy !== 'All' || subscribedTo !== 'All')
+                    ? 'AND api.API_ID=subc.API_ID and app.APPLICATION_ID=subc.APPLICATION_ID' : '',
+                '{{apiName}}': subscribedTo !== 'All' ? 'AND api.API_NAME = \'' + subscribedTo + '\'' : '',
+                '{{apiProvider}}':
+                    (appCreatedBy !== 'All' || subscribedTo !== 'All') ? 'AND api.API_PROVIDER {{providerCondition}}'
+                        : '',
+                '{{providerCondition}}':
+                    apiCreatedBy === 'All' ? 'in (\'' + sublist.slice(1).join('\', \'') + '\')' : '= \'' + username
+                        + '\'',
+                '{{subscriberId}}': appCreatedBy !== 'All' ? 'and sub.USER_ID = \'' + appCreatedBy + '\'' : '',
+                '{{apiCondition}}': apiCondition,
+                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+            };
+            dataProviderConfigs.configs.config = config;
+            super.getWidgetChannelManager().subscribeWidget(id, widgetName,
+                this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, chartData: [], tableData: [] });
+        }
     }
 
     /**
@@ -498,10 +529,10 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, apiCreatedBy, appCreatedBy, subscribedTo, apilist, sublist,
-            chartData, tableData, xAxisTicks, maxCount, inProgress,
+            chartData, tableData, xAxisTicks, maxCount, inProgress, proxyError,
         } = this.state;
         const {
-            paper, paperWrapper,
+            paper, paperWrapper, proxyPaperWrapper, proxyPaper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -519,6 +550,34 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             maxCount,
             inProgress,
         };
+
+        if (proxyError) {
+            return (
+                <IntlProvider locale={language} messages={localeMessages}>
+                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!'
+                                    />
+                                </Typography>
+                                <Typography component='p'>
+                                    <FormattedMessage
+                                        id='apim.server.error'
+                                        defaultMessage='Error occurred while retrieving API list.'
+                                    />
+                                </Typography>
+                            </Paper>
+                        </div>
+                    </MuiThemeProvider>
+                </IntlProvider>
+            );
+        }
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>

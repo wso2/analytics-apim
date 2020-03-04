@@ -1,6 +1,8 @@
 {
   "all.menuItem": "All",
   "api.createdBy.label": "API Created By",
+  "apim.server.error.heading" : "Error !",
+  "apim.server.error" : "Error occurred while retrieving API list.",
   "back.btn": "BACK",
   "config.error.body": "Cannot fetch provider configuration for APIM Subscriptions Analytics widget",
   "config.error.heading": "Configuration Error !",

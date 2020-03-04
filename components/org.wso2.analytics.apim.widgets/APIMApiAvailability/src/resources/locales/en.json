@@ -1,4 +1,6 @@
 {
+  "apim.server.error.heading" : "Error !",
+  "apim.server.error" : "Error occurred while retrieving API list.",
   "chart.heading": "API AVAILABILITY :",
   "chart.helper.text": "Please note that API availability is accurately shown only when alerts are enabled. If alerts are disabled, the chart will show 100% availability.",
   "config.error.body": "Cannot fetch provider configuration for APIM Api Availability widget",

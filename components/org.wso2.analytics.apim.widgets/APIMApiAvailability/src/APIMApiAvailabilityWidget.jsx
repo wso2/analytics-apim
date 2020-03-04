@@ -79,6 +79,7 @@ class APIMApiAvailabilityWidget extends Widget {
             legendData: [],
             localeMessages: null,
             inProgress: true,
+            proxyError: false,
         };
 
         this.styles = {
@@ -90,6 +91,17 @@ class APIMApiAvailabilityWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
+            },
+            proxyPaperWrapper: {
+                height: '75%',
+            },
+            proxyPaper: {
+                background: '#969696',
+                width: '75%',
+                padding: '4%',
+                border: '1.5px solid #fff',
+                margin: 'auto',
+                marginTop: '5%',
             },
         };
 
@@ -103,6 +115,8 @@ class APIMApiAvailabilityWidget extends Widget {
 
         this.assembleApiAvailableQuery = this.assembleApiAvailableQuery.bind(this);
         this.handleApiAvailableReceived = this.handleApiAvailableReceived.bind(this);
+        this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
+        this.handleApiListReceived = this.handleApiListReceived.bind(this);
     }
 
     componentWillMount() {
@@ -121,7 +135,7 @@ class APIMApiAvailabilityWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleApiAvailableQuery);
+                }, this.assembleApiListQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -156,17 +170,63 @@ class APIMApiAvailabilityWidget extends Widget {
     }
 
     /**
+     * Get API list from Publisher
+     * @memberof APIMApiAvailabilityWidget
+     * */
+    assembleApiListQuery() {
+        this.resetState();
+        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
+            .then((response) => {
+                this.setState({ proxyError: false });
+                this.handleApiListReceived(response.data);
+            })
+            .catch((error) => {
+                this.setState({ proxyError: true, inProgress: false });
+                console.error(error);
+            });
+    }
+
+    /**
+     * Formats data retrieved from assembleApiListQuery
+     * @param {object} data - data retrieved
+     * @memberof APIMApiAvailabilityWidget
+     * */
+    handleApiListReceived(data) {
+        const { id } = this.props;
+        const { list } = data;
+        if (list && list.length > 0) {
+            this.setState({ apiDataList: list });
+        }
+        super.getWidgetChannelManager().unsubscribeWidget(id);
+        this.assembleApiAvailableQuery();
+    }
+
+    /**
      * Formats the siddhi query - apiavailablequery
      * @memberof APIMApiAvailabilityWidget
      * */
     assembleApiAvailableQuery() {
-        const { providerConfig } = this.state;
+        const { providerConfig, apiDataList } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apiavailablequery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiAvailableReceived, dataProviderConfigs);
+        if (apiDataList && apiDataList.length > 0) {
+            let apiCondition = apiDataList.map((api) => {
+                return '(apiName==\'' + api.name + '\' AND apiVersion==\'' + api.version
+                    + '\' AND apiCreator==\'' + api.provider + '\')';
+            });
+            apiCondition = apiCondition.join(' OR ');
+            apiCondition.unshift('AND ');
+
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'apiavailablequery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{apiCondition}}': apiCondition,
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleApiAvailableReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, availableApiData: [], legendData: [] });
+        }
     }
 
     /**
@@ -212,7 +272,7 @@ class APIMApiAvailabilityWidget extends Widget {
             }
             this.setState({ legendData, availableApiData: dataModified, inProgress: false });
         } else {
-            this.setState({ inProgress: false });
+            this.setState({ inProgress: false, availableApiData: [], legendData: [] });
         }
     }
 
@@ -223,16 +283,44 @@ class APIMApiAvailabilityWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, availableApiData, legendData, inProgress,
+            localeMessages, faultyProviderConfig, height, availableApiData, legendData, inProgress, proxyError,
         } = this.state;
         const {
-            paper, paperWrapper,
+            paper, paperWrapper, proxyPaperWrapper, proxyPaper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiAvailabilityProps = {
             themeName, height, availableApiData, legendData, inProgress,
         };
+
+        if (proxyError) {
+            return (
+                <IntlProvider locale={language} messages={localeMessages}>
+                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                        <div style={proxyPaperWrapper}>
+                            <Paper
+                                elevation={1}
+                                style={proxyPaper}
+                            >
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='apim.server.error.heading'
+                                        defaultMessage='Error!'
+                                    />
+                                </Typography>
+                                <Typography component='p'>
+                                    <FormattedMessage
+                                        id='apim.server.error'
+                                        defaultMessage='Error occurred while retrieving API list.'
+                                    />
+                                </Typography>
+                            </Paper>
+                        </div>
+                    </MuiThemeProvider>
+                </IntlProvider>
+            );
+        }
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>

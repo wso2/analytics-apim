@@ -12,7 +12,7 @@
         "config": {
           "siddhiApp": "@App:name('APIMApiAvailabilitySiddhi') @store(type='rdbms' , datasource='APIM_ANALYTICS_DB') define table ApimApiAvailabilityInfo(apiName string,apiVersion string,apiCreator string,tenantDomain string,status string);",
           "queryData": {
-            "apiavailablequery": "from ApimApiAvailabilityInfo on tenantDomain=='{{tenantDomain}}' select status,count(apiName) as count group by status;"
+            "apiavailablequery": "from ApimApiAvailabilityInfo on tenantDomain=='{{tenantDomain}}' {{apiCondition}} select status,count(apiName) as count group by status;"
           },
           "publishingInterval": 60
         }

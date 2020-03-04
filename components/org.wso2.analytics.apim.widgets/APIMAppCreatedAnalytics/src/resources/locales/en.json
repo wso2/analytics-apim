@@ -1,6 +1,8 @@
 {
   "all.menuItem": "All",
   "api.createdBy.label": "API Created By",
+  "apim.server.error.heading" : "Error !",
+  "apim.server.error" : "Error occurred while retrieving API list.",
   "app.createdBy.label": "APP Created By",
   "back.btn": "BACK",
   "config.error.body": "Cannot fetch provider configuration for APIM App Created Analytics widget",

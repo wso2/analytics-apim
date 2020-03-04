@@ -13,7 +13,7 @@
           "siddhiApp": "@App:name('APIMTopAppCreatorsSiddhi') @primaryKey('SUBSCRIBER_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_SUBSCRIBER(SUBSCRIBER_ID int,USER_ID string, TENANT_ID int, EMAIL_ADDRESS string, DATE_SUBSCRIBED string, CREATED_BY string,CREATED_TIME string, UPDATED_BY string, UPDATED_TIME string); @primaryKey('APPLICATION_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_APPLICATION(APPLICATION_ID int,NAME string,SUBSCRIBER_ID int,APPLICATION_TIER string,CALLBACK_URL string,DESCRIPTION string,APPLICATION_STATUS string,GROUP_ID string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string,UUID string,TOKEN_TYPE string);",
           "queryData": {
             "subscriberQuery": "from AM_SUBSCRIBER on TENANT_ID=={{tenantId}} select SUBSCRIBER_ID",
-            "appQuery": "from AM_APPLICATION on {{subscriberId}} select CREATED_BY,count(APPLICATION_ID) AS count group by CREATED_BY order by count desc limit {{limit}}"
+            "appQuery": "from AM_APPLICATION on {{subscriberId}} {{appCondition}} select CREATED_BY,count(APPLICATION_ID) AS count group by CREATED_BY order by count desc limit {{limit}}"
           },
           "publishingInterval": 60
         }
