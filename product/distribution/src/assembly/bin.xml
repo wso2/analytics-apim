@@ -208,6 +208,13 @@
             <outputDirectory>wso2/dashboard/deployment/web-ui-apps/policies</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+
+        <!-- Copying the call home jar-->
+        <fileSet>
+            <directory>target/callhome/</directory>
+            <outputDirectory>lib/</outputDirectory>
+            <fileMode>744</fileMode>
+        </fileSet>
     </fileSets>
     <files>
         <file>
