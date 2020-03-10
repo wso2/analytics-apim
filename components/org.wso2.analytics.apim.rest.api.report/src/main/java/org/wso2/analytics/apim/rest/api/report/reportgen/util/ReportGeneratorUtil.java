@@ -170,7 +170,7 @@ public class ReportGeneratorUtil {
         contentStream.beginText();
         contentStream.moveTextPositionByAmount(positionX, positionY);
         // trimming the text which are longer than 20 characters
-        if (text != null && text.length() >= 20) {
+        if (text != null && text.length() >= 22) {
             text = text.substring(0, 20);
             text = text + "...";
         }
