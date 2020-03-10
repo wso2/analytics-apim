@@ -182,7 +182,7 @@ public class ReportGeneratorUtil {
      * @param rowEntries list of rows.
      * @throws IOException
      */
-    public static void  writeRowsContent(String[] columnHeaders, float[] columnWidths, PDDocument document, Map<Integer,
+    public static void writeRowsContent(String[] columnHeaders, float[] columnWidths, PDDocument document, Map<Integer,
             PDPage> pageMap, List<RowEntry> rowEntries) throws IOException {
 
         float startX = CELL_MARGIN + CELL_PADDING; // space between entry and the column line
