@@ -115,7 +115,7 @@ public class ReportGeneratorUtil {
     public static void insertReportTitleToHeader(PDPageContentStream contentStream, String title) throws IOException {
 
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
-        writeContent(contentStream, CELL_MARGIN, 770, title);
+        writeContent(contentStream, CELL_MARGIN, 790, title);
     }
 
     /**
@@ -128,7 +128,21 @@ public class ReportGeneratorUtil {
             throws IOException {
 
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 14);
-        writeContent(contentStream, CELL_MARGIN, 750, period);
+        writeContent(contentStream, CELL_MARGIN, 770, period);
+    }
+
+    /**
+     * Inserts total request count of the report on the header.
+     * @param contentStream content stream of the page.
+     * @param totalRequestCount total aggregated count.
+     * @throws IOException
+     */
+    public static void insertTotalRequestCountToHeader(PDPageContentStream contentStream, Long totalRequestCount)
+            throws IOException {
+
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE);
+        writeContent(contentStream, CELL_MARGIN, 735, "Total Request count : " +
+                totalRequestCount.toString());
     }
 
     /**
@@ -139,7 +153,7 @@ public class ReportGeneratorUtil {
     public static void insertReportGeneratedTimeToHeader(PDPageContentStream contentStream) throws IOException {
 
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE);
-        writeContent(contentStream, CELL_MARGIN, 730, "Report generated on : " + new Date().toString());
+        writeContent(contentStream, CELL_MARGIN, 750, "Report generated on : " + new Date().toString());
     }
 
     /**
@@ -168,7 +182,7 @@ public class ReportGeneratorUtil {
      * @param rowEntries list of rows.
      * @throws IOException
      */
-    public static void writeRowsContent(String[] columnHeaders, float[] columnWidths, PDDocument document, Map<Integer,
+    public static void  writeRowsContent(String[] columnHeaders, float[] columnWidths, PDDocument document, Map<Integer,
             PDPage> pageMap, List<RowEntry> rowEntries) throws IOException {
 
         float startX = CELL_MARGIN + CELL_PADDING; // space between entry and the column line
@@ -202,6 +216,7 @@ public class ReportGeneratorUtil {
             startY -= ROW_HEIGHT;
             startX = CELL_MARGIN + CELL_PADDING;
         }
+        contentStream.close();
     }
 
     /**
