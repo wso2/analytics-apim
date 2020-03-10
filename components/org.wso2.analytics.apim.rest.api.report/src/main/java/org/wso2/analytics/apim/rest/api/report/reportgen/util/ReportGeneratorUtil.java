@@ -39,7 +39,7 @@ import java.util.Map;
 public class ReportGeneratorUtil {
 
     private static final float ROW_HEIGHT = 25;
-    private static final float CELL_PADDING = 10;
+    private static final float CELL_PADDING = 5;
     private static final float CELL_MARGIN = 40; // margin on left side;
     private static final float TABLE_WIDTH = 500;
     private static final float TABLE_TOP_Y = 700;
@@ -169,6 +169,11 @@ public class ReportGeneratorUtil {
 
         contentStream.beginText();
         contentStream.moveTextPositionByAmount(positionX, positionY);
+        // trimming the text which are longer than 20 characters
+        if (text != null && text.length() >= 20) {
+            text = text.substring(0, 20);
+            text = text + "...";
+        }
         contentStream.drawString(text != null ? text : "");
         contentStream.endText();
     }
