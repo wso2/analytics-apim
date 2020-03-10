@@ -1088,7 +1088,7 @@
               ]
             }
           ],
-          "height": 882
+          "height": 988
         },
         {
           "id": "api-performance",
@@ -1181,7 +1181,7 @@
               ]
             }
           ],
-          "height": 883
+          "height": 1192
         },
         {
           "id": "faults",
@@ -1409,7 +1409,7 @@
               ]
             }
           ],
-          "height": 888
+          "height": 952
         }
       ]
     },
