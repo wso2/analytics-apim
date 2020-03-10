@@ -58,6 +58,7 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
     private final String[] months = {"January", "February", "March", "April", "May", "June", "July", "August",
             "September", "October", "November", "December"};
     private SiddhiAppRuntime siddhiAppRuntime = null;
+    private long totalRequestCount;
 
     /**
      * The default implementation of Monthly request report.
@@ -124,6 +125,13 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
                     table.getRows().size());
             ReportGeneratorUtil.writeRowsContent(table.getColumnHeaders(), columnWidths, document, pageMap,
                     table.getRows());
+
+            // write total request count to the header.
+            PDPageContentStream contentStreamForInitialPage = new PDPageContentStream(document, pageMap.get(1),
+                    true, false);
+            ReportGeneratorUtil.insertTotalRequestCountToHeader(contentStreamForInitialPage, totalRequestCount);
+            contentStreamForInitialPage.close();
+
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             document.save(out);
             document.close();
@@ -162,6 +170,7 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
             entry.setEntry(event.getData(2).toString());
             entry.setEntry(event.getData(3).toString());
             entry.setEntry(event.getData(4).toString());
+            totalRequestCount += (Long) event.getData(4);
             rowData.add(entry);
             table.setRows(rowData);
             recordNumber += 1;
