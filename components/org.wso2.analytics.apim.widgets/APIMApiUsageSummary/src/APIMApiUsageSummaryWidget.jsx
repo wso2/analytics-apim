@@ -229,7 +229,6 @@ class APIMApiUsageSummaryWidget extends Widget {
         }
 
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{apiCreator}}': '',
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': 'day',
