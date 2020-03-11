@@ -4,6 +4,9 @@ package org.wso2.analytics.apim.rest.api.proxy.dto;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.wso2.analytics.apim.rest.api.proxy.StringUtil;
+import org.wso2.carbon.utils.StringUtils;
+
 import java.util.Objects;
 
 /**
@@ -17,7 +20,7 @@ public class APIInfoDTO   {
   private String name = null;
 
   @SerializedName("version")
-  private String version = null;
+  private String version = "1.0.0"; // setting default value to support api-products
 
   @SerializedName("provider")
   private String provider = null;
