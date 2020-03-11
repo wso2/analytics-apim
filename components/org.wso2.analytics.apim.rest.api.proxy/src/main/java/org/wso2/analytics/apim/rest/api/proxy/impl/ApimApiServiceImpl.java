@@ -19,6 +19,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import feign.gson.GsonDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.analytics.apim.rest.api.proxy.APIMServiceStubs;
 import org.wso2.analytics.apim.rest.api.proxy.ApimApiService;
 import org.wso2.analytics.apim.rest.api.proxy.NotFoundException;
@@ -50,6 +52,7 @@ public class ApimApiServiceImpl extends ApimApiService {
     private static final String PUBLISHER_URL = "publisherUrl";
     private static final String DEV_PORTAL_URL = "devPortalUrl";
     private final Util util = new Util();
+    private static final Logger log = LoggerFactory.getLogger(ApimApiServiceImpl.class);
 
     /**
      * Retrieve the list of APIs from APIM Publisher.
@@ -74,26 +77,28 @@ public class ApimApiServiceImpl extends ApimApiService {
 
                 if (responseOfApiList.status() == 200) {
                     APIListDTO apisDetails = (APIListDTO) new GsonDecoder().decode(responseOfApiList, APIListDTO.class);
-                    responseOfApiList.close();
                     aggregatedList.setList(apisDetails.getList());
-
-                    // if api list retrieval is successful, continue with fetching products list
-                    feign.Response responseOfProductList = serviceStubs.getPublisherServiceStub().
-                            getApiProducts(authToken);
-                    if (responseOfProductList.status() == 200) {
-                        APIListDTO productDetails = (APIListDTO) new GsonDecoder().decode(responseOfProductList,
-                                APIListDTO.class);
-                        responseOfProductList.close();
-                        for (APIInfoDTO apiInfoDTO : productDetails.getList()) {
-                            aggregatedList.addListItem(apiInfoDTO);
-                        }
-                        return Response.status(200).entity(aggregatedList).build(); // return the aggregated list
-                    }
-                    responseOfProductList.close();
-                    util.handleInternalServerError("Unable to retrieve API Product list.");
+                } else {
+                    log.error("Unable to retrieve API list via publisher API.");
                 }
                 responseOfApiList.close();
-                util.handleInternalServerError("Unable to retrieve API list.");
+
+                feign.Response responseOfProductList = serviceStubs.getPublisherServiceStub().
+                        getApiProducts(authToken);
+                if (responseOfProductList.status() == 200) {
+                    APIListDTO productDetails = (APIListDTO) new GsonDecoder().decode(responseOfProductList,
+                            APIListDTO.class);
+                    for (APIInfoDTO apiInfoDTO : productDetails.getList()) {
+                        aggregatedList.addListItem(apiInfoDTO);
+                    }
+                } else {
+                    log.error("Unable to retrieve API Product list via publisher API.");
+                }
+                responseOfProductList.close();
+                if (responseOfApiList.status() == 200 || responseOfProductList.status() == 200) {
+                    return Response.status(200).entity(aggregatedList).build(); // return the aggregated list
+                }
+                util.handleInternalServerError("Unable to retrieve API/Products list.");
             } else {
                 util.handleBadRequest("Unable to find Publisher server URL.");
             }
