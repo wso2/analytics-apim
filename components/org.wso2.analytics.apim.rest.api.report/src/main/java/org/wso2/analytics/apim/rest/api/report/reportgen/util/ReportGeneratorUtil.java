@@ -329,7 +329,7 @@ public class ReportGeneratorUtil {
     }
 
     /**
-     * Trims long texts to match length ion pdf table cell.
+     * Trims long texts to match length in pdf table cell.
      * @param data
      * @return
      */
