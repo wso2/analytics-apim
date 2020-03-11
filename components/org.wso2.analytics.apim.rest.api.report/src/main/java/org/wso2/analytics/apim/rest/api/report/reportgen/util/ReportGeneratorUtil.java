@@ -169,11 +169,6 @@ public class ReportGeneratorUtil {
 
         contentStream.beginText();
         contentStream.moveTextPositionByAmount(positionX, positionY);
-        // trimming the text which are longer than 20 characters
-        if (text != null && text.length() >= 22) {
-            text = text.substring(0, 20);
-            text = text + "...";
-        }
         contentStream.drawString(text != null ? text : "");
         contentStream.endText();
     }
@@ -331,6 +326,20 @@ public class ReportGeneratorUtil {
     public static int getNumberOfPages(int numberOfRows) {
 
         return (int) Math.ceil(numberOfRows / RECORD_COUNT_PER_PAGE);
+    }
+
+    /**
+     * Trims long texts to match length in pdf table cell.
+     * @param data
+     * @return
+     */
+    public static String trimLongEntry(String data) {
+
+        if (data != null && data.length() >= 22) {
+            data = data.substring(0, 20);
+            data = data + "...";
+        }
+        return data;
     }
 
 }
