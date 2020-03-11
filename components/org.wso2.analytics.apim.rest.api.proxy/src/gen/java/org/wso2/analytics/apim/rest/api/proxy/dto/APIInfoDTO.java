@@ -4,8 +4,6 @@ package org.wso2.analytics.apim.rest.api.proxy.dto;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.analytics.apim.rest.api.proxy.StringUtil;
-import org.wso2.carbon.utils.StringUtils;
 
 import java.util.Objects;
 
