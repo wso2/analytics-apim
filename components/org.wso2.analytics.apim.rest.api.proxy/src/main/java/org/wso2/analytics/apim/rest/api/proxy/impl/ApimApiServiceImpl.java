@@ -79,7 +79,8 @@ public class ApimApiServiceImpl extends ApimApiService {
                     APIListDTO apisDetails = (APIListDTO) new GsonDecoder().decode(responseOfApiList, APIListDTO.class);
                     aggregatedList.setList(apisDetails.getList());
                 } else {
-                    log.error("Unable to retrieve API list via publisher API. Reason :" , responseOfApiList.status());
+                    log.error("Unable to retrieve API list via publisher API. Response status :" ,
+                            responseOfApiList.status());
                 }
                 responseOfApiList.close();
 
@@ -92,8 +93,8 @@ public class ApimApiServiceImpl extends ApimApiService {
                         aggregatedList.addListItem(apiInfoDTO);
                     }
                 } else {
-                    log.error("Unable to retrieve API Product list via publisher API.Reason :" , responseOfProductList.
-                            status());
+                    log.error("Unable to retrieve API Product list via publisher API. Response status :" ,
+                            responseOfProductList.status());
                 }
                 responseOfProductList.close();
                 if (responseOfApiList.status() == 200 || responseOfProductList.status() == 200) {
