@@ -70,14 +70,31 @@ public class APIMServiceStubs {
         @RequestLine("GET /apis?offset={offset}&limit={limit}")
         Response getApis(@Param("auth_token") String authToken, @Param("offset") int offset, @Param("limit") int limit);
 
+        @Headers("Authorization: Bearer {auth_token}")
+        @RequestLine("GET /api-products?offset={offset}&limit={limit}")
+        Response getApiProducts(@Param("auth_token") String authToken, @Param("offset") int offset, @Param("limit")
+                int limit);
+
         /**
          * Get list of APIs.
          *
          * @param authToken access token
          * @return the list of APIs
          */
-        public default Response getApis(String authToken) {
+        default Response getApis(String authToken) {
+
             return getApis(authToken, 0, Integer.MAX_VALUE);
+        }
+
+        /**
+         * Get list of Products.
+         *
+         * @param authToken access token
+         * @return the list of APIs
+         */
+        default Response getApiProducts(String authToken) {
+
+            return getApiProducts(authToken, 0, Integer.MAX_VALUE);
         }
     }
 

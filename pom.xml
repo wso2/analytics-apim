@@ -28,7 +28,7 @@
     <groupId>org.wso2.analytics.apim</groupId>
     <artifactId>analytics-apim</artifactId>
     <packaging>pom</packaging>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.1-SNAPSHOT</version>
     <name>WSO2 Analytics for API Manager - Aggregator Module</name>
     <description>WSO2 Analytics for API Manager</description>
     <url>https://wso2.com/products/api-manager</url>
@@ -1063,7 +1063,7 @@
         <pdfbox.version>1.8.16</pdfbox.version>
         <pdfbox.import.version.range>[1.8,2.0)</pdfbox.import.version.range>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.18</carbon.dashboards.version>
+        <carbon.dashboards.version>4.1.20</carbon.dashboards.version>
         <carbon.dashboards.version.range.version>[4.1,4.2)</carbon.dashboards.version.range.version>
         <carbon.uis.version>1.0.6</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
@@ -1185,6 +1185,9 @@
 
         <!-- Forget me tool -->
         <forgetme.tool.version>1.1.21</forgetme.tool.version>
+
+        <!-- CallHome version -->
+        <callhome.version>5.x.x_1.0.4</callhome.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

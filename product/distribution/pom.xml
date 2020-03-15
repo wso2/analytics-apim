@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.analytics.apim</groupId>
         <artifactId>analytics-apim</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -508,6 +508,27 @@
                             <outputDirectory>${project.build.directory}/java-dependencies</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                    <!-- Download callhome jar from nexus and copy to the callhome folder-->
+                    <execution>
+                        <id>download-callhome-jar</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wso2.carbon.callhome</groupId>
+                                    <artifactId>callhome</artifactId>
+                                    <version>${callhome.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/callhome</outputDirectory>
+                                    <includes>**/*.jar</includes>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
@@ -1199,20 +1220,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
-                    <execution>
-                        <id>add-in-place-tool</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <!-- download file -->
-                                <get src="https://product-dist.wso2.com/downloads/in-place/release/update.zip" dest="${project.build.directory}/update.zip" verbose="false" usetimestamp="true" />
-                                <unzip src="${project.build.directory}/update.zip" dest="${project.build.directory}" />
-                            </target>
-                        </configuration>
-                    </execution>
                     <execution>
                         <phase>package</phase>
                         <configuration>

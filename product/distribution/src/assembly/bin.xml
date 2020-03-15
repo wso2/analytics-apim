@@ -209,10 +209,10 @@
             <fileMode>644</fileMode>
         </fileSet>
 
-        <!-- Copying the in-place update tools-->
+        <!-- Copying the call home jar-->
         <fileSet>
-            <directory>target/update/</directory>
-            <outputDirectory>bin/</outputDirectory>
+            <directory>target/callhome/</directory>
+            <outputDirectory>lib/</outputDirectory>
             <fileMode>744</fileMode>
         </fileSet>
     </fileSets>

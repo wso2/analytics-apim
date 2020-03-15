@@ -19,10 +19,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import feign.gson.GsonDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.analytics.apim.rest.api.proxy.APIMServiceStubs;
 import org.wso2.analytics.apim.rest.api.proxy.ApimApiService;
 import org.wso2.analytics.apim.rest.api.proxy.NotFoundException;
 import org.wso2.analytics.apim.rest.api.proxy.Util;
+import org.wso2.analytics.apim.rest.api.proxy.dto.APIInfoDTO;
 import org.wso2.analytics.apim.rest.api.proxy.dto.APIListDTO;
 import org.wso2.analytics.apim.rest.api.proxy.dto.ApplicationListDTO;
 import org.wso2.analytics.apim.rest.api.proxy.internal.ServiceHolder;
@@ -49,6 +52,7 @@ public class ApimApiServiceImpl extends ApimApiService {
     private static final String PUBLISHER_URL = "publisherUrl";
     private static final String DEV_PORTAL_URL = "devPortalUrl";
     private final Util util = new Util();
+    private static final Logger log = LoggerFactory.getLogger(ApimApiServiceImpl.class);
 
     /**
      * Retrieve the list of APIs from APIM Publisher.
@@ -67,16 +71,36 @@ public class ApimApiServiceImpl extends ApimApiService {
                         .replace("{serverName}", PUBLISHER);
                 APIMServiceStubs serviceStubs = new APIMServiceStubs(publisherEndpoint, null);
                 String authToken = getAccessToken(request.getHeader("Cookie"));
-                feign.Response response = serviceStubs.getPublisherServiceStub().getApis(authToken);
+                feign.Response responseOfApiList = serviceStubs.getPublisherServiceStub().getApis(authToken);
 
-                if (response.status() == 200) {
-                    APIListDTO apisDetails = (APIListDTO) new GsonDecoder().decode(response, APIListDTO.class);
-                    int status = response.status();
-                    response.close();
-                    return Response.status(status).entity(apisDetails).build();
+                APIListDTO aggregatedList = new APIListDTO();
+
+                if (responseOfApiList.status() == 200) {
+                    APIListDTO apisDetails = (APIListDTO) new GsonDecoder().decode(responseOfApiList, APIListDTO.class);
+                    aggregatedList.setList(apisDetails.getList());
+                } else {
+                    log.error("Unable to retrieve API list via publisher API. Response status :" ,
+                            responseOfApiList.status());
                 }
-                response.close();
-                util.handleInternalServerError("Unable to retrieve API list.");
+                responseOfApiList.close();
+
+                feign.Response responseOfProductList = serviceStubs.getPublisherServiceStub().
+                        getApiProducts(authToken);
+                if (responseOfProductList.status() == 200) {
+                    APIListDTO productDetails = (APIListDTO) new GsonDecoder().decode(responseOfProductList,
+                            APIListDTO.class);
+                    for (APIInfoDTO apiInfoDTO : productDetails.getList()) {
+                        aggregatedList.addListItem(apiInfoDTO);
+                    }
+                } else {
+                    log.error("Unable to retrieve API Product list via publisher API. Response status :" ,
+                            responseOfProductList.status());
+                }
+                responseOfProductList.close();
+                if (responseOfApiList.status() == 200 || responseOfProductList.status() == 200) {
+                    return Response.status(200).entity(aggregatedList).build(); // return the aggregated list
+                }
+                util.handleInternalServerError("Unable to retrieve API/Products list.");
             } else {
                 util.handleBadRequest("Unable to find Publisher server URL.");
             }

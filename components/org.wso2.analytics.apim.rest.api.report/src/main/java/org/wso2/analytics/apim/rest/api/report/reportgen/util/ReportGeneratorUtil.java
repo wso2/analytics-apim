@@ -39,7 +39,7 @@ import java.util.Map;
 public class ReportGeneratorUtil {
 
     private static final float ROW_HEIGHT = 25;
-    private static final float CELL_PADDING = 10;
+    private static final float CELL_PADDING = 5;
     private static final float CELL_MARGIN = 40; // margin on left side;
     private static final float TABLE_WIDTH = 500;
     private static final float TABLE_TOP_Y = 700;
@@ -115,7 +115,7 @@ public class ReportGeneratorUtil {
     public static void insertReportTitleToHeader(PDPageContentStream contentStream, String title) throws IOException {
 
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
-        writeContent(contentStream, CELL_MARGIN, 770, title);
+        writeContent(contentStream, CELL_MARGIN, 790, title);
     }
 
     /**
@@ -128,7 +128,21 @@ public class ReportGeneratorUtil {
             throws IOException {
 
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 14);
-        writeContent(contentStream, CELL_MARGIN, 750, period);
+        writeContent(contentStream, CELL_MARGIN, 770, period);
+    }
+
+    /**
+     * Inserts total request count of the report on the header.
+     * @param contentStream content stream of the page.
+     * @param totalRequestCount total aggregated count.
+     * @throws IOException
+     */
+    public static void insertTotalRequestCountToHeader(PDPageContentStream contentStream, Long totalRequestCount)
+            throws IOException {
+
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE);
+        writeContent(contentStream, CELL_MARGIN, 735, "Total Request count : " +
+                totalRequestCount.toString());
     }
 
     /**
@@ -139,7 +153,7 @@ public class ReportGeneratorUtil {
     public static void insertReportGeneratedTimeToHeader(PDPageContentStream contentStream) throws IOException {
 
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE);
-        writeContent(contentStream, CELL_MARGIN, 730, "Report generated on : " + new Date().toString());
+        writeContent(contentStream, CELL_MARGIN, 750, "Report generated on : " + new Date().toString());
     }
 
     /**
@@ -180,6 +194,8 @@ public class ReportGeneratorUtil {
         // write table column headers
         writeColumnHeader(contentStream, columnWidths, startX, startY, columnHeaders);
 
+        PDPageContentStream contentStreamForData = new PDPageContentStream(document, pageMap.get(1), true, false);
+        contentStreamForData.setFont(TEXT_FONT, FONT_SIZE);
         startY -= ROW_HEIGHT;
         startX = CELL_MARGIN + CELL_PADDING;
 
@@ -189,19 +205,20 @@ public class ReportGeneratorUtil {
         for (RowEntry entry : rowEntries) {
             rowNum += 1;
             if (rowNum > RECORD_COUNT_PER_PAGE) {
-                contentStream.close();
+                contentStreamForData.close();
                 currentPageNum += 1;
-                contentStream = new PDPageContentStream(document, pageMap.get(currentPageNum), true, false);
-                contentStream.setFont(TEXT_FONT, FONT_SIZE);
+                contentStreamForData = new PDPageContentStream(document, pageMap.get(currentPageNum), true, false);
+                contentStreamForData.setFont(TEXT_FONT, FONT_SIZE);
                 startY = TABLE_TOP_Y - (ROW_HEIGHT / 2)
                         - ((TEXT_FONT.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * FONT_SIZE) / 4);
                 startX = CELL_MARGIN + CELL_PADDING;
                 rowNum = 1;
             }
-            writeToRow(contentStream, columnWidths, startX, startY, entry);
+            writeToRow(contentStreamForData, columnWidths, startX, startY, entry);
             startY -= ROW_HEIGHT;
             startX = CELL_MARGIN + CELL_PADDING;
         }
+        contentStreamForData.close();
     }
 
     /**
@@ -221,7 +238,6 @@ public class ReportGeneratorUtil {
             writeContent(contentStream, positionX, positionY, entry.getEntries().get(i));
             positionX += columnWidths[i];
         }
-        contentStream.close();
     }
 
     /**
@@ -311,6 +327,20 @@ public class ReportGeneratorUtil {
     public static int getNumberOfPages(int numberOfRows) {
 
         return (int) Math.ceil(numberOfRows / RECORD_COUNT_PER_PAGE);
+    }
+
+    /**
+     * Trims long texts to match length in pdf table cell.
+     * @param data
+     * @return
+     */
+    public static String trimLongEntry(String data) {
+
+        if (data != null && data.length() >= 22) {
+            data = data.substring(0, 20);
+            data = data + "...";
+        }
+        return data;
     }
 
 }

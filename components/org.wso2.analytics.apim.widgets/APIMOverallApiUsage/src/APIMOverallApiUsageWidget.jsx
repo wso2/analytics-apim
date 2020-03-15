@@ -430,28 +430,33 @@ class APIMOverallApiUsageWidget extends Widget {
             const {
                 usageData, apiIdMap, apiIdMapGlobal,
             } = this.state;
-
             const usageData1 = [];
             const usageData2 = [];
-            data.forEach((dataUnit) => {
-                if (apiIdMap[dataUnit[0]]) {
-                    const { apiname, creator, version } = apiIdMap[dataUnit[0]];
-                    const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator
-                        && usage.version === version);
-
-                    if (hits.length > 0) {
-                        usageData1.push(
-                            [hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1], hits[0].version],
-                        );
+            usageData.forEach((dataUnit) => {
+                const {
+                    apiname, provider, version, hits
+                } = dataUnit;
+                const idArray = Object.keys(apiIdMapGlobal);
+                const apiID = idArray.find(id => apiIdMapGlobal[id].apiname === apiname
+                    && apiIdMapGlobal[id].creator === provider && apiIdMapGlobal[id].version === version);
+                if (apiID) {
+                    let subCount = data.reduce((result, item) => {
+                        const [aID, count] = item;
+                        if (aID == apiID) {
+                            result = count;
+                        }
+                        return result;
+                    }, null);
+                    if (!subCount) {
+                        subCount = 0;
                     }
-                } else {
-                    const { apiname, creator, version } = apiIdMapGlobal[dataUnit[0]];
-                    const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator
-                        && usage.version === version);
-
-                    if (hits.length > 0) {
+                    if (apiIdMap[apiID]) {
+                        usageData1.push(
+                            [apiname, provider, hits, subCount, version],
+                        );
+                    } else {
                         usageData2.push(
-                            [hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1], hits[0].version],
+                            [apiname, provider, hits, subCount, version],
                         );
                     }
                 }
