@@ -194,6 +194,8 @@ public class ReportGeneratorUtil {
         // write table column headers
         writeColumnHeader(contentStream, columnWidths, startX, startY, columnHeaders);
 
+        PDPageContentStream contentStreamForData = new PDPageContentStream(document, pageMap.get(1), true, false);
+        contentStreamForData.setFont(TEXT_FONT, FONT_SIZE);
         startY -= ROW_HEIGHT;
         startX = CELL_MARGIN + CELL_PADDING;
 
@@ -203,20 +205,20 @@ public class ReportGeneratorUtil {
         for (RowEntry entry : rowEntries) {
             rowNum += 1;
             if (rowNum > RECORD_COUNT_PER_PAGE) {
-                contentStream.close();
+                contentStreamForData.close();
                 currentPageNum += 1;
-                contentStream = new PDPageContentStream(document, pageMap.get(currentPageNum), true, false);
-                contentStream.setFont(TEXT_FONT, FONT_SIZE);
+                contentStreamForData = new PDPageContentStream(document, pageMap.get(currentPageNum), true, false);
+                contentStreamForData.setFont(TEXT_FONT, FONT_SIZE);
                 startY = TABLE_TOP_Y - (ROW_HEIGHT / 2)
                         - ((TEXT_FONT.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * FONT_SIZE) / 4);
                 startX = CELL_MARGIN + CELL_PADDING;
                 rowNum = 1;
             }
-            writeToRow(contentStream, columnWidths, startX, startY, entry);
+            writeToRow(contentStreamForData, columnWidths, startX, startY, entry);
             startY -= ROW_HEIGHT;
             startX = CELL_MARGIN + CELL_PADDING;
         }
-        contentStream.close();
+        contentStreamForData.close();
     }
 
     /**
@@ -236,7 +238,6 @@ public class ReportGeneratorUtil {
             writeContent(contentStream, positionX, positionY, entry.getEntries().get(i));
             positionX += columnWidths[i];
         }
-        contentStream.close();
     }
 
     /**
