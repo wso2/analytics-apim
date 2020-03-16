@@ -23,7 +23,7 @@ define stream BotDetectionStream(request_time long, message_id string, http_meth
 @sink(type='email', content.type="text/html", @map(type ='text', @payload('<strong>Message ID:</strong>{{message_id}} <br><br> <strong>Http method:</strong>{{http_method}} <br><br><strong>Headers:</strong>{{headers}} <br><br> <strong>Message Body:</strong>{{message_body}} <br><br> <strong>Client IP:</strong>{{client_ip}}')),subject='Bot detection alert from WSO2 APIM Analytics',to='{{subscriber_address}}')
 define stream EmailNotificationStream (request_time long, message_id string, http_method string, headers string, message_body string, client_ip string, subscriber_address string);
 
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB', field.length = 'headers:2000')
 @PrimaryKey('message_id')
 define table AM_BOT_DATA (request_time long, message_id string, http_method string, headers string, message_body string, client_ip string);
 
