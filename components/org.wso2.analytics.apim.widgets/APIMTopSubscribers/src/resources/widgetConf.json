@@ -16,7 +16,7 @@
           },
           "publishingInterval": 360000,
           "tableName": "AM_API",
-          "incrementalColumn": "API_CREATED_BY",
+          "incrementalColumn": "count",
           "publishingLimit": 2147483647,
           "isPurgingEnable": false
         }

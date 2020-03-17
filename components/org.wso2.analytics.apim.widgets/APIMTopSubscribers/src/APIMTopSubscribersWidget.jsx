@@ -183,6 +183,7 @@ class APIMTopSubscribersWidget extends Widget {
         this.setQueryParam(limit);
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
+        dataProviderConfigs.configs.config.publishingLimit = limit;
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{limit}}': limit,
         };
