@@ -400,7 +400,7 @@ class APIMApiLatencyWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         let { apiDataList=[]} = this.state;
-        if (apiCreatedBy !== 'All' && apiDataList && apiDataList.length > 0) {
+        if (apiCreatedBy !== 'All') {
             apiDataList = apiDataList.filter((api) => { return api.provider === username; });
         }
 
