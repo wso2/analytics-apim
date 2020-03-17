@@ -403,3 +403,12 @@ wso2.dashboard:
     creators:
       - apim_analytics:admin_carbon.super
   themeConfigProviderClass: org.wso2.carbon.dashboards.core.DefaultDashboardThemeConfigProvider
+
+## RDBMS Data Provider configuration
+#wso2.rdbms.data.provider:
+#  timeTypes:
+#    - DATE
+#    - TIME
+#    - DATETIME
+#    - TIMESTAMP
+#    - TIMESTAMP WITHOUT TIME ZONE
