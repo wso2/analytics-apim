@@ -193,6 +193,7 @@ module.exports = class extends Generator {
         'babel-eslint': '^10.0.3',
         'babel-loader': '^8.0.6',
         'copy-webpack-plugin': '^5.1.1',
+        "cpr": "^3.0.1",
         'css-loader': '^3.4.2',
         'eslint': '^5.10.0',
         'eslint-config-airbnb': '^17.1.0',
@@ -207,10 +208,10 @@ module.exports = class extends Generator {
       },
       'scripts': {
         'build': 'node_modules/.bin/webpack -p',
-        'postbuild': 'cp -r dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets',
+        'postbuild': `cpr ./dist/${this.answers.widgetName} ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/${this.answers.widgetName} -o`,
         'clean': 'rimraf dist',
         'dev': 'npm run build & npm run symlink && NODE_ENV=development node_modules/.bin/webpack -d --config webpack.config.js --watch --progress',
-        'symlink': 'symlink-dir ./dist/APIMSample ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/APIMSample'
+        'symlink': `symlink-dir ./dist/${this.answers.widgetName} ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/${this.answers.widgetName}`
       }
     };
   
