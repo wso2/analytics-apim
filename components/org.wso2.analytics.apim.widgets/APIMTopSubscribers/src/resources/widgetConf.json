@@ -8,15 +8,17 @@
     },
     "providerConfig" : {
       "configs": {
-        "type": "SiddhiStoreDataProvider",
+        "type": "RDBMSStreamingDataProvider",
         "config": {
-          "siddhiApp": "@App:name('APIMTopSubscribersSiddhi') @primaryKey('SUBSCRIBER_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_SUBSCRIBER(SUBSCRIBER_ID int,USER_ID string, TENANT_ID int, EMAIL_ADDRESS string, DATE_SUBSCRIBED string, CREATED_BY string,CREATED_TIME string, UPDATED_BY string, UPDATED_TIME string); @primaryKey('SUBSCRIPTION_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_SUBSCRIPTION(SUBSCRIPTION_ID int,TIER_ID string,API_ID int,LAST_ACCESSED string,APPLICATION_ID int,SUB_STATUS string,SUBS_CREATE_STATE string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string,UUID string); @primaryKey('APPLICATION_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_APPLICATION(APPLICATION_ID int,NAME string,SUBSCRIBER_ID int,APPLICATION_TIER string,CALLBACK_URL string,DESCRIPTION string,APPLICATION_STATUS string,GROUP_ID string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string,UUID string,TOKEN_TYPE string);",
+          "datasourceName": "AM_DB",
           "queryData": {
-            "subscriberquery": "from AM_SUBSCRIBER on TENANT_ID=={{tenantId}} select SUBSCRIBER_ID",
-            "applicationquery": "from AM_APPLICATION on {{subscriberId}} select APPLICATION_ID",
-            "subscriptionquery": "from AM_SUBSCRIPTION on {{applicationId}} select CREATED_BY,count(SUBSCRIPTION_ID) AS count group by CREATED_BY order by count desc limit {{limit}};"
+            "query": "select api.CREATED_BY as API_CREATED_BY, count(subc.SUBSCRIPTION_ID) as count from AM_API api, AM_SUBSCRIPTION subc where api.API_ID=subc.API_ID AND api.CONTEXT {{contextCondition}} group by api.CREATED_BY"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000,
+          "tableName": "AM_API",
+          "incrementalColumn": "count",
+          "publishingLimit": 2147483647,
+          "isPurgingEnable": false
         }
       }
     },

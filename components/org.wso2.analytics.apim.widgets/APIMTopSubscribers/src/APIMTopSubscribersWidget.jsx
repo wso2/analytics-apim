@@ -113,10 +113,6 @@ class APIMTopSubscribersWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.assembleSubscriberQuery = this.assembleSubscriberQuery.bind(this);
-        this.handleSubscriberDataReceived = this.handleSubscriberDataReceived.bind(this);
-        this.assembleApplicationQuery = this.assembleApplicationQuery.bind(this);
-        this.handleApplicationDataReceived = this.handleApplicationDataReceived.bind(this);
     }
 
     componentWillMount() {
@@ -135,7 +131,7 @@ class APIMTopSubscribersWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleSubscriberQuery);
+                }, this.assembleQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -170,82 +166,11 @@ class APIMTopSubscribersWidget extends Widget {
     }
 
     /**
-     * Formats the siddhi query to retrieve subscribers
-     * @memberof APIMTopSubscribersWidget
-     * */
-    assembleSubscriberQuery() {
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'subscriberquery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleSubscriberDataReceived, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data retrieved and loads to the widget
-     * @param {object} message - data retrieved
-     * @memberof APIMTopSubscribersWidget
-     * */
-    handleSubscriberDataReceived(message) {
-        const { data } = message;
-        const { id } = this.props;
-
-        if (data) {
-            const subscribers = data.map((dataUnit) => { return dataUnit[0]; });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.setState({ subscribers }, this.assembleApplicationQuery);
-        } else {
-            this.setState({ inProgress: false, creatorData: [] });
-        }
-    }
-
-    /**
-     * Formats the siddhi query to retrieve application id
-     * @memberof APIMTopSubscribersWidget
-     * */
-    assembleApplicationQuery() {
-        const { providerConfig, subscribers } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-        if (subscribers && subscribers.length > 0) {
-            let subs = subscribers.map((sub) => { return 'SUBSCRIBER_ID==' + sub; });
-            subs = subs.join(' OR ');
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'applicationquery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{subscriberId}}': subs,
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleApplicationDataReceived, dataProviderConfigs);
-        } else {
-            this.setState({ inProgress: false, creatorData: [] });
-        }
-    }
-
-    /**
-     * Formats data retrieved and loads to the widget
-     * @param {object} message - data retrieved
-     * @memberof APIMTopSubscribersWidget
-     * */
-    handleApplicationDataReceived(message) {
-        const { data } = message;
-        const { id } = this.props;
-
-        if (data) {
-            const applications = data.map((dataUnit) => { return dataUnit[0]; });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.setState({ applications }, this.assembleQuery);
-        } else {
-            this.setState({ inProgress: false, creatorData: [] });
-        }
-    }
-
-    /**
-     * Formats the siddhi query using selected options
+     * Formats the rdbms query using selected options
      * @memberof APIMTopSubscribersWidget
      * */
     assembleQuery() {
-        const { providerConfig, applications } = this.state;
+        const { providerConfig } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
         let { limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
@@ -256,20 +181,14 @@ class APIMTopSubscribersWidget extends Widget {
 
         this.setState({ limit, creatorData: [] });
         this.setQueryParam(limit);
-        if (applications && applications.length > 0) {
-            let apps = applications.map((app) => { return 'APPLICATION_ID==' + app; });
-            apps = apps.join(' OR ');
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'subscriptionquery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{limit}}': limit,
-                '{{applicationId}}': apps,
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
-        } else {
-            this.setState({ inProgress: false, creatorData: [] });
-        }
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'query';
+        dataProviderConfigs.configs.config.publishingLimit = limit;
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{limit}}': limit,
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
