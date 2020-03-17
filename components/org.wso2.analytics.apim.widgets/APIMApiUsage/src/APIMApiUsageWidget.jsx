@@ -328,7 +328,7 @@ class APIMApiUsageWidget extends Widget {
         const { apiSelected, apiVersion, limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apilist && apilist.length > 0) {
+        if (apilist && apilist.length > 1) {
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
 
