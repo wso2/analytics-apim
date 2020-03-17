@@ -396,15 +396,16 @@ class APIMApiLatencyWidget extends Widget {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiCreatedBy } = queryParam;
-        const { providerConfig, apiDataList, username } = this.state;
+        const { providerConfig, username } = this.state;
         const { id, widgetID: widgetName } = this.props;
+
+        let { apiDataList=[]} = this.state;
+        if (apiCreatedBy !== 'All') {
+            apiDataList = apiDataList.filter((api) => { return api.provider === username; });
+        }
 
         if (apiDataList && apiDataList.length > 0) {
             let apiList = [...apiDataList];
-
-            if (apiCreatedBy !== 'All') {
-                apiList = apiList.filter((api) => { return api.provider === username; });
-            }
 
             let apiCondition = apiList.map((api) => {
                 return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
@@ -420,7 +421,7 @@ class APIMApiLatencyWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, latencyData: [] });
+            this.setState({ inProgress: false, latencyData: [], apilist:[], versionlist: [], apiSelected:'' });
         }
     }
 

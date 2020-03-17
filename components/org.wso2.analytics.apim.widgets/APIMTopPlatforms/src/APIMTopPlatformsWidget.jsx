@@ -334,7 +334,7 @@ class APIMTopPlatformsWidget extends Widget {
         const { apiSelected, apiVersion, limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apilist && apilist.length > 0) {
+        if (apilist && apilist.length > 1) {
             let queryString = '';
             if (apiSelected === 'All' && apiVersion === 'All') {
                 let apis = apilist.slice(1).map((api) => { return 'apiName==\'' + api + '\''; });
