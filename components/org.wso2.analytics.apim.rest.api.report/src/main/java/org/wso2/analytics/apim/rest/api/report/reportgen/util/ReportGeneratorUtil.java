@@ -334,10 +334,10 @@ public class ReportGeneratorUtil {
      * @param data
      * @return
      */
-    public static String trimLongEntry(String data) {
+    public static String trimLongEntry(String data, int maxLength) {
 
-        if (data != null && data.length() >= 22) {
-            data = data.substring(0, 20);
+        if (data != null && data.length() >= maxLength) {
+            data = data.substring(0, maxLength - 2);
             data = data + "...";
         }
         return data;
