@@ -165,11 +165,11 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
         for (Event event : events) {
             RowEntry entry = new RowEntry();
             entry.setEntry(recordNumber + ")");
-            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(0).toString()));
-            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(1).toString()));
-            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(2).toString()));
-            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(3).toString()));
-            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(4).toString()));
+            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(0).toString(), 21));
+            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(1).toString(), 9));
+            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(2).toString(), 21));
+            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(3).toString(), 21));
+            entry.setEntry(ReportGeneratorUtil.trimLongEntry(event.getData(4).toString(), 21));
             totalRequestCount += (Long) event.getData(4);
             rowData.add(entry);
             table.setRows(rowData);
