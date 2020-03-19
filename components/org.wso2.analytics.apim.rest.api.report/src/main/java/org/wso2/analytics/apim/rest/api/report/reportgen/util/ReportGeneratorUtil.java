@@ -336,8 +336,8 @@ public class ReportGeneratorUtil {
      */
     public static String trimLongEntry(String data) {
 
-        if (data != null && data.length() >= 22) {
-            data = data.substring(0, 20);
+        if (data != null && data.length() >= 21) {
+            data = data.substring(0, 19);
             data = data + "...";
         }
         return data;
