@@ -35,7 +35,7 @@ import Typography from '@material-ui/core/Typography';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
 } from 'victory';
-import { colorScale } from '@analytics-apim/common-lib';
+import { colorScale, Utils } from '@analytics-apim/common-lib';
 
 
 /**
@@ -45,7 +45,7 @@ import { colorScale } from '@analytics-apim/common-lib';
  */
 export default function APIMTopPlatforms(props) {
     const {
-        themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, legendData, platformData, apilist, versionlist,
+        themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, platformData, apilist, versionlist,
         apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange, handleLimitChange, inProgress,
     } = props;
     const fontSize = 16;
@@ -100,6 +100,8 @@ export default function APIMTopPlatforms(props) {
             strokeWidth: 1,
         },
     };
+
+    const { pieChartData, legendData } = Utils.summarizePieData(platformData, 'platform', 'reqCount');
 
     return (
         <Scrollbars style={{
@@ -258,6 +260,17 @@ export default function APIMTopPlatforms(props) {
                         ) : (
                             <div style={styles.dataWrapper}>
                                 <svg viewBox='-100 -20 1000 800'>
+                                    <VictoryLegend
+                                        standalone={false}
+                                        theme={VictoryTheme.material}
+                                        colorScale={colorScale}
+                                        x={500}
+                                        y={20}
+                                        gutter={20}
+                                        rowGutter={styles.rowGutter}
+                                        style={styles.victoryLegend}
+                                        data={legendData}
+                                    />
                                     <VictoryPie
                                         labelComponent={(
                                             <VictoryTooltip
@@ -276,22 +289,11 @@ export default function APIMTopPlatforms(props) {
                                         padding={50}
                                         theme={VictoryTheme.material}
                                         colorScale={colorScale}
-                                        data={platformData}
+                                        data={pieChartData}
                                         x={d => d.platform}
                                         y={d => d.reqCount}
                                         labels={d => `${d.platform} : ${((d.reqCount
-                                            / (sumBy(platformData, o => o.reqCount))) * 100).toFixed(2)}%`}
-                                    />
-                                    <VictoryLegend
-                                        standalone={false}
-                                        theme={VictoryTheme.material}
-                                        colorScale={colorScale}
-                                        x={500}
-                                        y={20}
-                                        gutter={20}
-                                        rowGutter={styles.rowGutter}
-                                        style={styles.victoryLegend}
-                                        data={legendData}
+                                            / (sumBy(pieChartData, o => o.reqCount))) * 100).toFixed(2)}%`}
                                     />
                                 </svg>
                             </div>
@@ -312,7 +314,6 @@ APIMTopPlatforms.propTypes = {
     apiVersion: PropTypes.string.isRequired,
     apilist: PropTypes.instanceOf(Object).isRequired,
     versionlist: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
     platformData: PropTypes.instanceOf(Object).isRequired,
     apiCreatedHandleChange: PropTypes.func.isRequired,
     apiSelectedHandleChange: PropTypes.func.isRequired,

@@ -32,7 +32,7 @@ import Typography from '@material-ui/core/Typography';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
 } from 'victory';
-import { colorScale } from '@analytics-apim/common-lib';
+import { colorScale, Utils } from '@analytics-apim/common-lib';
 import sumBy from 'lodash/sumBy';
 import CustomTable from './CustomTable';
 
@@ -61,7 +61,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopSubscribers(props) {
     const {
-        themeName, height, limit, creatorData, legendData, handleChange, inProgress, width,
+        themeName, height, limit, creatorData, handleChange, inProgress, width,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -133,6 +133,7 @@ export default function APIMTopSubscribers(props) {
         },
     };
 
+    const { pieChartData, legendData } = Utils.summarizePieData(creatorData, 'creator', 'subcount');
     return (
         <MuiThemeProvider
             theme={themeName === 'dark' ? darkTheme : lightTheme}
@@ -217,6 +218,17 @@ export default function APIMTopSubscribers(props) {
                                     <div style={styles.statDiv}>
                                         <div style={styles.pieDiv}>
                                             <svg viewBox='-50 0 1000 500'>
+                                                <VictoryLegend
+                                                    standalone={false}
+                                                    theme={VictoryTheme.material}
+                                                    colorScale={colorScale}
+                                                    x={460}
+                                                    y={20}
+                                                    gutter={20}
+                                                    rowGutter={styles.rowGutter}
+                                                    style={styles.victoryLegend}
+                                                    data={legendData}
+                                                />
                                                 <VictoryPie
                                                     labelComponent={(
                                                         <VictoryTooltip
@@ -235,22 +247,11 @@ export default function APIMTopSubscribers(props) {
                                                     padding={50}
                                                     theme={VictoryTheme.material}
                                                     colorScale={colorScale}
-                                                    data={creatorData}
+                                                    data={pieChartData}
                                                     x={d => d.creator}
                                                     y={d => d.subcount}
                                                     labels={d => `${d.creator} : ${((d.subcount
-                                                        / (sumBy(creatorData, o => o.subcount))) * 100).toFixed(2)}%`}
-                                                />
-                                                <VictoryLegend
-                                                    standalone={false}
-                                                    theme={VictoryTheme.material}
-                                                    colorScale={colorScale}
-                                                    x={460}
-                                                    y={20}
-                                                    gutter={20}
-                                                    rowGutter={styles.rowGutter}
-                                                    style={styles.victoryLegend}
-                                                    data={legendData}
+                                                        / (sumBy(pieChartData, o => o.subcount))) * 100).toFixed(2)}%`}
                                                 />
                                             </svg>
                                         </div>
@@ -275,7 +276,6 @@ APIMTopSubscribers.propTypes = {
     height: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     creatorData: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

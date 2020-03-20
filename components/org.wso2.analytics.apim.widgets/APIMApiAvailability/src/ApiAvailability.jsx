@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme, VictoryContainer,
 } from 'victory';
-import { colorScale } from '@analytics-apim/common-lib';
+import { colorScale, Utils } from '@analytics-apim/common-lib';
 import sumBy from 'lodash/sumBy';
 
 /**

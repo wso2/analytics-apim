@@ -28,7 +28,7 @@ import sumBy from 'lodash/sumBy';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
 } from 'victory';
-import { colorScale } from '@analytics-apim/common-lib';
+import { colorScale, Utils } from '@analytics-apim/common-lib';
 import CustomTable from './CustomTable';
 
 /**
@@ -38,7 +38,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMRegisteredAppUsers(props) {
     const {
-        themeName, height, width, usageData, legendData, inProgress,
+        themeName, height, width, usageData = [], inProgress,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -110,6 +110,7 @@ export default function APIMRegisteredAppUsers(props) {
             strokeWidth: 1,
         },
     };
+    const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'applicationName', 'users');
 
     return (
         <Scrollbars style={{
@@ -129,10 +130,21 @@ export default function APIMRegisteredAppUsers(props) {
                     </div>
                 ) : (
                     <div>
-                        {usageData.length > 0 ? (
+                        {pieChartData.length > 0 ? (
                             <div style={styles.statDiv}>
                                 <div style={styles.pieDiv}>
                                     <svg viewBox='-50 0 1000 500'>
+                                        <VictoryLegend
+                                            standalone={false}
+                                            theme={VictoryTheme.material}
+                                            colorScale={colorScale}
+                                            x={460}
+                                            y={20}
+                                            gutter={20}
+                                            rowGutter={styles.rowGutter}
+                                            style={styles.victoryLegend}
+                                            data={legendData}
+                                        />
                                         <VictoryPie
                                             labelComponent={(
                                                 <VictoryTooltip
@@ -151,22 +163,11 @@ export default function APIMRegisteredAppUsers(props) {
                                             padding={50}
                                             theme={VictoryTheme.material}
                                             colorScale={colorScale}
-                                            data={usageData}
+                                            data={pieChartData}
                                             x={d => d.applicationName}
                                             y={d => d.users}
                                             labels={d => `${d.applicationName} : ${((d.users
-                                                / (sumBy(usageData, o => o.users))) * 100).toFixed(2)}%`}
-                                        />
-                                        <VictoryLegend
-                                            standalone={false}
-                                            theme={VictoryTheme.material}
-                                            colorScale={colorScale}
-                                            x={460}
-                                            y={20}
-                                            gutter={20}
-                                            rowGutter={styles.rowGutter}
-                                            style={styles.victoryLegend}
-                                            data={legendData}
+                                                / (sumBy(pieChartData, o => o.users))) * 100).toFixed(2)}%`}
                                         />
                                     </svg>
                                 </div>
@@ -210,6 +211,5 @@ APIMRegisteredAppUsers.propTypes = {
     height: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
 };
