@@ -29,7 +29,7 @@ import Typography from '@material-ui/core/Typography';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
 } from 'victory';
-import { colorScale } from '@analytics-apim/common-lib';
+import { colorScale, Utils } from '@analytics-apim/common-lib';
 import sumBy from 'lodash/sumBy';
 import CustomTable from './CustomTable';
 
@@ -58,7 +58,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopFaultyApis(props) {
     const {
-        themeName, height, limit, faultData, legendData, handleChange, inProgress, width,
+        themeName, height, limit, faultData, handleChange, inProgress, width,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -123,6 +123,8 @@ export default function APIMTopFaultyApis(props) {
             strokeWidth: 1,
         },
     };
+
+    const { pieChartData, legendData } = Utils.summarizePieData(faultData, 'apiname', 'faultcount');
 
     return (
         <MuiThemeProvider
@@ -199,6 +201,17 @@ export default function APIMTopFaultyApis(props) {
                                     <div style={styles.statDiv}>
                                         <div style={styles.pieDiv}>
                                             <svg viewBox='-50 0 1000 500'>
+                                                <VictoryLegend
+                                                    standalone={false}
+                                                    theme={VictoryTheme.material}
+                                                    colorScale={colorScale}
+                                                    x={460}
+                                                    y={20}
+                                                    gutter={20}
+                                                    rowGutter={styles.rowGutter}
+                                                    style={styles.victoryLegend}
+                                                    data={legendData}
+                                                />
                                                 <VictoryPie
                                                     labelComponent={(
                                                         <VictoryTooltip
@@ -217,22 +230,13 @@ export default function APIMTopFaultyApis(props) {
                                                     padding={50}
                                                     theme={VictoryTheme.material}
                                                     colorScale={colorScale}
-                                                    data={faultData}
+                                                    data={pieChartData}
                                                     x={d => d.apiname}
                                                     y={d => d.faultcount}
-                                                    labels={d => `${d.apiname} : ${((d.faultcount
-                                                        / (sumBy(faultData, o => o.faultcount))) * 100).toFixed(2)}%`}
-                                                />
-                                                <VictoryLegend
-                                                    standalone={false}
-                                                    theme={VictoryTheme.material}
-                                                    colorScale={colorScale}
-                                                    x={460}
-                                                    y={20}
-                                                    gutter={20}
-                                                    rowGutter={styles.rowGutter}
-                                                    style={styles.victoryLegend}
-                                                    data={legendData}
+                                                    labels={
+                                                        d => `${d.apiname} : ${((d.faultcount
+                                                        / (sumBy(pieChartData, o => o.faultcount))) * 100).toFixed(2)}%`
+                                                    }
                                                 />
                                             </svg>
                                         </div>
@@ -258,7 +262,6 @@ APIMTopFaultyApis.propTypes = {
     width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     faultData: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

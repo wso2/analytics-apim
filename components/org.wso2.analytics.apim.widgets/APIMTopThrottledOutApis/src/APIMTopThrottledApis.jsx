@@ -29,7 +29,7 @@ import Typography from '@material-ui/core/Typography';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
 } from 'victory';
-import { colorScale } from '@analytics-apim/common-lib';
+import { colorScale, Utils } from '@analytics-apim/common-lib';
 import sumBy from 'lodash/sumBy';
 import CustomTable from './CustomTable';
 
@@ -58,7 +58,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopThrottledApis(props) {
     const {
-        themeName, height, limit, throttledData, legendData, handleChange, inProgress, width,
+        themeName, height, limit, throttledData, handleChange, inProgress, width,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -123,6 +123,8 @@ export default function APIMTopThrottledApis(props) {
             strokeWidth: 1,
         },
     };
+
+    const { pieChartData, legendData } = Utils.summarizePieData(throttledData, 'apiname', 'throttledcount');
 
     return (
         <MuiThemeProvider
@@ -199,6 +201,17 @@ export default function APIMTopThrottledApis(props) {
                                     <div style={styles.statDiv}>
                                         <div style={styles.pieDiv}>
                                             <svg viewBox='-50 0 1000 500'>
+                                                <VictoryLegend
+                                                    standalone={false}
+                                                    theme={VictoryTheme.material}
+                                                    colorScale={colorScale}
+                                                    x={460}
+                                                    y={20}
+                                                    gutter={20}
+                                                    rowGutter={styles.rowGutter}
+                                                    style={styles.victoryLegend}
+                                                    data={legendData}
+                                                />
                                                 <VictoryPie
                                                     labelComponent={(
                                                         <VictoryTooltip
@@ -217,23 +230,12 @@ export default function APIMTopThrottledApis(props) {
                                                     padding={50}
                                                     theme={VictoryTheme.material}
                                                     colorScale={colorScale}
-                                                    data={throttledData}
+                                                    data={pieChartData}
                                                     x={d => d.apiname}
                                                     y={d => d.throttledcount}
                                                     labels={d => `${d.apiname} : ${((d.throttledcount
-                                                        / (sumBy(throttledData, o => o.throttledcount))) * 100)
+                                                        / (sumBy(pieChartData, o => o.throttledcount))) * 100)
                                                         .toFixed(2)}%`}
-                                                />
-                                                <VictoryLegend
-                                                    standalone={false}
-                                                    theme={VictoryTheme.material}
-                                                    colorScale={colorScale}
-                                                    x={460}
-                                                    y={20}
-                                                    gutter={20}
-                                                    rowGutter={styles.rowGutter}
-                                                    style={styles.victoryLegend}
-                                                    data={legendData}
                                                 />
                                             </svg>
                                         </div>
@@ -257,7 +259,6 @@ APIMTopThrottledApis.propTypes = {
     width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     throttledData: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

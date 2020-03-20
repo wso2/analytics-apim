@@ -34,6 +34,7 @@ import sumBy from 'lodash/sumBy';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
 } from 'victory';
+import { colorScale, Utils } from '@analytics-apim/common-lib';
 import CustomTable from './CustomTable';
 
 /**
@@ -43,7 +44,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMAppApiUsage(props) {
     const {
-        themeName, height, width, limit, applicationSelected, usageData, legendData, applicationList,
+        themeName, height, width, limit, applicationSelected, usageData, applicationList,
         applicationSelectedHandleChange, handleLimitChange, inProgress,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
@@ -140,6 +141,7 @@ export default function APIMAppApiUsage(props) {
         },
     };
 
+    const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'apiName', 'hits');
     return (
         <Scrollbars style={{
             height,
@@ -235,6 +237,17 @@ export default function APIMAppApiUsage(props) {
                             <div style={styles.statDiv}>
                                 <div style={styles.pieDiv}>
                                     <svg viewBox='-50 0 1000 500'>
+                                        <VictoryLegend
+                                            standalone={false}
+                                            theme={VictoryTheme.material}
+                                            colorScale={colorScale}
+                                            x={460}
+                                            y={20}
+                                            gutter={20}
+                                            rowGutter={styles.rowGutter}
+                                            style={styles.victoryLegend}
+                                            data={legendData}
+                                        />
                                         <VictoryPie
                                             labelComponent={(
                                                 <VictoryTooltip
@@ -252,49 +265,12 @@ export default function APIMAppApiUsage(props) {
                                             standalone={false}
                                             padding={50}
                                             theme={VictoryTheme.material}
-                                            colorScale={
-                                                [
-                                                    '#45b29d',
-                                                    '#ff9800',
-                                                    '#b71c1c',
-                                                    '#3f51b5',
-                                                    '#673ab7',
-                                                    '#00bcd4',
-                                                    '#cddc39',
-                                                    '#3e2723',
-                                                    '#607d8b',
-                                                    '#e91e63',
-                                                ]
-                                            }
-                                            data={usageData}
+                                            colorScale={colorScale}
+                                            data={pieChartData}
                                             x={d => d.apiName}
                                             y={d => d.hits}
                                             labels={d => `${d.apiName} : ${((d.hits
-                                                / (sumBy(usageData, o => o.hits))) * 100).toFixed(2)}%`}
-                                        />
-                                        <VictoryLegend
-                                            standalone={false}
-                                            theme={VictoryTheme.material}
-                                            colorScale={
-                                                [
-                                                    '#45b29d',
-                                                    '#ff9800',
-                                                    '#b71c1c',
-                                                    '#3f51b5',
-                                                    '#673ab7',
-                                                    '#00bcd4',
-                                                    '#cddc39',
-                                                    '#3e2723',
-                                                    '#607d8b',
-                                                    '#e91e63',
-                                                ]
-                                            }
-                                            x={460}
-                                            y={20}
-                                            gutter={20}
-                                            rowGutter={styles.rowGutter}
-                                            style={styles.victoryLegend}
-                                            data={legendData}
+                                                / (sumBy(pieChartData, o => o.hits))) * 100).toFixed(2)}%`}
                                         />
                                     </svg>
                                 </div>
@@ -342,7 +318,6 @@ APIMAppApiUsage.propTypes = {
     applicationSelected: PropTypes.number.isRequired,
     applicationList: PropTypes.instanceOf(Object).isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
     applicationSelectedHandleChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,

@@ -32,7 +32,7 @@ import Typography from '@material-ui/core/Typography';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
 } from 'victory';
-import { colorScale } from '@analytics-apim/common-lib';
+import { colorScale, Utils } from '@analytics-apim/common-lib';
 import sumBy from 'lodash/sumBy';
 import CustomTable from './CustomTable';
 
@@ -61,7 +61,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopAppCreators(props) {
     const {
-        themeName, height, width, creatorData, legendData, handleChange, limit, inProgress,
+        themeName, height, width, creatorData, handleChange, limit, inProgress,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -132,7 +132,7 @@ export default function APIMTopAppCreators(props) {
             strokeWidth: 1,
         },
     };
-
+    const { pieChartData, legendData } = Utils.summarizePieData(creatorData, 'creator', 'appcount');
     return (
         <MuiThemeProvider
             theme={themeName === 'dark' ? darkTheme : lightTheme}
@@ -216,6 +216,17 @@ export default function APIMTopAppCreators(props) {
                                     <div style={styles.statDiv}>
                                         <div style={styles.pieDiv}>
                                             <svg viewBox='-50 0 1000 500'>
+                                                <VictoryLegend
+                                                    standalone={false}
+                                                    theme={VictoryTheme.material}
+                                                    colorScale={colorScale}
+                                                    x={460}
+                                                    y={20}
+                                                    gutter={20}
+                                                    rowGutter={styles.rowGutter}
+                                                    style={styles.victoryLegend}
+                                                    data={legendData}
+                                                />
                                                 <VictoryPie
                                                     labelComponent={(
                                                         <VictoryTooltip
@@ -234,22 +245,11 @@ export default function APIMTopAppCreators(props) {
                                                     padding={50}
                                                     theme={VictoryTheme.material}
                                                     colorScale={colorScale}
-                                                    data={creatorData}
+                                                    data={pieChartData}
                                                     x={d => d.creator}
                                                     y={d => d.appcount}
                                                     labels={d => `${d.creator} : ${((d.appcount
-                                                        / (sumBy(creatorData, o => o.appcount))) * 100).toFixed(2)}%`}
-                                                />
-                                                <VictoryLegend
-                                                    standalone={false}
-                                                    theme={VictoryTheme.material}
-                                                    colorScale={colorScale}
-                                                    x={460}
-                                                    y={20}
-                                                    gutter={20}
-                                                    rowGutter={styles.rowGutter}
-                                                    style={styles.victoryLegend}
-                                                    data={legendData}
+                                                        / (sumBy(pieChartData, o => o.appcount))) * 100).toFixed(2)}%`}
                                                 />
                                             </svg>
                                         </div>
@@ -275,5 +275,4 @@ APIMTopAppCreators.propTypes = {
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     creatorData: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
 };

@@ -34,7 +34,7 @@ import sumBy from 'lodash/sumBy';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme,
 } from 'victory';
-import { colorScale } from '@analytics-apim/common-lib';
+import { colorScale, Utils } from '@analytics-apim/common-lib';
 import CustomTable from './CustomTable';
 
 /**
@@ -44,7 +44,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMTopAppUsers(props) {
     const {
-        themeName, height, width, limit, applicationSelected, usageData, legendData, applicationList,
+        themeName, height, width, limit, applicationSelected, usageData, applicationList,
         applicationSelectedHandleChange, handleLimitChange, inProgress,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
@@ -134,6 +134,8 @@ export default function APIMTopAppUsers(props) {
             strokeWidth: 1,
         },
     };
+
+    const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'username', 'hits');
 
     return (
         <Scrollbars style={{
@@ -235,6 +237,17 @@ export default function APIMTopAppUsers(props) {
                             <div style={styles.statDiv}>
                                 <div style={styles.pieDiv}>
                                     <svg viewBox='-50 0 1000 500'>
+                                        <VictoryLegend
+                                            standalone={false}
+                                            theme={VictoryTheme.material}
+                                            colorScale={colorScale}
+                                            x={460}
+                                            y={20}
+                                            gutter={20}
+                                            rowGutter={styles.rowGutter}
+                                            style={styles.victoryLegend}
+                                            data={legendData}
+                                        />
                                         <VictoryPie
                                             labelComponent={(
                                                 <VictoryTooltip
@@ -253,22 +266,11 @@ export default function APIMTopAppUsers(props) {
                                             innerRadius={130}
                                             theme={VictoryTheme.material}
                                             colorScale={colorScale}
-                                            data={usageData}
+                                            data={pieChartData}
                                             x={d => d.username}
                                             y={d => d.hits}
                                             labels={d => `${d.username} : ${((d.hits
-                                                / (sumBy(usageData, o => o.hits))) * 100).toFixed(2)}%`}
-                                        />
-                                        <VictoryLegend
-                                            standalone={false}
-                                            theme={VictoryTheme.material}
-                                            colorScale={colorScale}
-                                            x={460}
-                                            y={20}
-                                            gutter={20}
-                                            rowGutter={styles.rowGutter}
-                                            style={styles.victoryLegend}
-                                            data={legendData}
+                                                / (sumBy(pieChartData, o => o.hits))) * 100).toFixed(2)}%`}
                                         />
                                     </svg>
                                 </div>
@@ -316,7 +318,6 @@ APIMTopAppUsers.propTypes = {
     applicationSelected: PropTypes.number.isRequired,
     applicationList: PropTypes.instanceOf(Object).isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
     applicationSelectedHandleChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
