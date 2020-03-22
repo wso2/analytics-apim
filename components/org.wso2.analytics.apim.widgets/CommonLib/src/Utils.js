@@ -19,6 +19,8 @@
 
 function summarizePieData(data=[], nameField, countField) {
     const PIE_CHART_LIMIT = 8;
+    // data could be null
+    data = (data === null) ? [] : data;
     const pieChartData = data.sort((a, b) => {
         return b[countField] - a[countField];
     });
@@ -31,7 +33,6 @@ function summarizePieData(data=[], nameField, countField) {
 
         pieChartData.splice(PIE_CHART_LIMIT, pieChartData.length, otherPieChartData);
     }
-    console.log(pieChartData);
     const legendData = pieChartData.map((item) => {
         return { name: item[nameField] };
     });
