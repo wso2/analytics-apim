@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.analytics.apim.idp.client.dao.OAuthAppDAO;
 import org.wso2.analytics.apim.idp.client.dto.CustomUrlInfo;
+import org.wso2.analytics.apim.idp.client.dto.CustomUrlInfoDevPortalDTO;
 import org.wso2.analytics.apim.idp.client.dto.DCRClientInfo;
 import org.wso2.analytics.apim.idp.client.dto.DCRClientResponse;
 import org.wso2.analytics.apim.idp.client.dto.DCRError;
@@ -770,6 +771,11 @@ public class ApimIdPClient extends ExternalIdPClient {
             try {
                 customUrlInfo = (CustomUrlInfo) new GsonDecoder().decode(response,
                         CustomUrlInfo.class);
+                if (customUrlInfo != null && customUrlInfo.isEnabled()) {
+                    CustomUrlInfoDevPortalDTO customUrlInfoDevPortalDTO = customUrlInfo.getDevPortalUrlDTO();
+                    String customUrl = "https://" + customUrlInfoDevPortalDTO.getUrl();
+                    customUrlInfoDevPortalDTO.setUrl(customUrl);
+                }
                 if (LOG.isDebugEnabled()) {
                     LOG.debug(customUrlInfo.toString());
                 }
