@@ -166,7 +166,6 @@ class APIMGeoInvocationsWidget extends Widget {
         this.apiVersionHandleChange = this.apiVersionHandleChange.bind(this);
         this.resetState = this.resetState.bind(this);
         this.getUsername = this.getUsername.bind(this);
-        this.setchloropethRangeUpperbound = this.setchloropethRangeUpperbound.bind(this);
     }
 
     componentWillMount() {
@@ -385,28 +384,12 @@ class APIMGeoInvocationsWidget extends Widget {
 
         if (data) {
             const { apiCreatedBy, apiSelected, apiVersion } = this.state;
-            this.setchloropethRangeUpperbound(data);
+            const maxCount = data.reduce((acc,cur) => cur[0] > acc ? acc = cur[0] : acc, 0);
+            this.chartConfig.chloropethRangeUpperbound = [maxCount];
             this.setState({ geoData: data, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
         } else {
             this.setState({ inProgress: false, geoData: [] });
-        }
-    }
-
-    /**
-     * Sets the upper bound for geochart range
-     * @param {object} data - data for the geochart
-     * @memberof APIMGeoInvocationsWidget
-     */
-    setchloropethRangeUpperbound(data) {
-        let maxCount = 1;
-        if (data.length > 0) {
-            data.map((dataPoint) => {
-                if (dataPoint[0] > maxCount) {
-                    maxCount = dataPoint[0];
-                }
-            });
-            this.chartConfig.chloropethRangeUpperbound = [maxCount];
         }
     }
 
