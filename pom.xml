@@ -245,6 +245,12 @@
                 <artifactId>mockito-all</artifactId>
                 <version>${mockito.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${org.snakeyaml.version}</version>
+            </dependency>
+
 
             <!-- Metrics related -->
             <dependency>
@@ -1193,6 +1199,7 @@
     </properties>
 
     <modules>
+        <module>clients</module>
         <module>components</module>
         <module>features</module>
         <module>product/distribution</module>

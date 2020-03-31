@@ -1,0 +1,74 @@
+################################################################################
+#   Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved
+#
+#   Licensed under the Apache License, Version 2.0 (the \"License\");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an \"AS IS\" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+################################################################################
+
+# Carbon Configuration Parameters
+wso2.gdpr:
+  # username which the PII data should be deleted
+  username: admin
+  # salt values which is used to replace instead of the username
+  saltValue: aad#4few5
+  # tenant domain of the user
+  tenantDomain: carbon.super
+  # tenant id of the user's tenant
+  tenantId: '-1234'
+  # databases which includes the username entries in its tables
+  databases:
+    - databaseName: APIM_ANALYTICS_DB
+      tableEntries:
+        - tableName: APIUSERPERAPPAGG_SECONDS
+          usernameWithTenantDomain: true
+          columnName: USERNAME
+          tenantDomainColumnName: USERTENANTDOMAIN
+        - tableName: APIUSERPERAPPAGG_SECONDS
+          usernameWithTenantDomain: false
+          columnName: APICREATOR
+          tenantDomainColumnName: APICREATORTENANTDOMAIN
+        - tableName: APIUSERPERAPPAGG_SECONDS
+          usernameWithTenantDomain: false
+          columnName: APPLICATIONOWNER
+          tenantDomainColumnName: USERTENANTDOMAIN
+  # database query map
+  queries: []
+
+  # Datasource Configurations
+wso2.datasources:
+  dataSources:
+    - name: APIM_ANALYTICS_DB
+      description: "The datasource used for APIM statistics aggregated data."
+      definition:
+        type: RDBMS
+        configuration:
+          jdbcUrl: 'jdbc:h2:/Users/raveen/Desktop/GDPR/PackTest/Test1/wso2am-analytics-3.1.0/wso2/worker/database/APIM_ANALYTICS_DB;AUTO_SERVER=TRUE'
+          username: wso2carbon
+          password: wso2carbon
+          driverClassName: org.h2.Driver
+          maxPoolSize: 50
+          idleTimeout: 60000
+          connectionTestQuery: SELECT 1
+          validationTimeout: 30000
+          isAutoCommit: false
+
+wso2.securevault:
+  secretRepository:
+    type: org.wso2.carbon.secvault.repository.DefaultSecretRepository
+    parameters:
+      privateKeyAlias: wso2carbon
+      keystoreLocation: /Users/raveen/Desktop/GDPR/PackTest/Test1/wso2am-analytics-3.1.0/resources/security/securevault.jks
+      secretPropertiesFile: /Users/raveen/Desktop/GDPR/PackTest/Test1/wso2am-analytics-3.1.0/conf/worker/secrets.properties
+  masterKeyReader:
+    type: org.wso2.carbon.secvault.reader.DefaultMasterKeyReader
+    parameters:
+      masterKeyReaderFile: /Users/raveen/Desktop/GDPR/PackTest/Test1/wso2am-analytics-3.1.0/conf/worker/master-keys.yaml
