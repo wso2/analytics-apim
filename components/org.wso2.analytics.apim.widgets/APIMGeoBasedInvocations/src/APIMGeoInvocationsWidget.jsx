@@ -384,6 +384,8 @@ class APIMGeoInvocationsWidget extends Widget {
 
         if (data) {
             const { apiCreatedBy, apiSelected, apiVersion } = this.state;
+            const maxCount = data.reduce((acc,cur) => cur[0] > acc ? acc = cur[0] : acc, 0);
+            this.chartConfig.chloropethRangeUpperbound = [maxCount];
             this.setState({ geoData: data, inProgress: false });
             this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
         } else {
