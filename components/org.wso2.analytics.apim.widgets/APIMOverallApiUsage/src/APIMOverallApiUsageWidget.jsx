@@ -136,7 +136,7 @@ class APIMOverallApiUsageWidget extends Widget {
             apiDataList: [],
             metadata: this.metadata,
             chartConfig: this.chartConfig,
-            limit: 0,
+            limit: 5,
             localeMessages: null,
             inProgress: true,
             proxyError: false,

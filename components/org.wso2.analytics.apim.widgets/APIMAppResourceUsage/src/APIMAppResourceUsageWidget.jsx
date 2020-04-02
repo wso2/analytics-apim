@@ -327,7 +327,13 @@ class APIMAppResourceUsageWidget extends Widget {
             timeFrom, timeTo, perValue, providerConfig, applicationList,
         } = this.state;
         const queryParam = super.getGlobalState(queryParamKey);
-        const { applicationSelected, limit } = queryParam;
+        let { applicationSelected, limit } = queryParam;
+
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+
+        this.setState({ limit });
 
         if (applicationSelected && limit) {
             const { id, widgetID: widgetName } = this.props;

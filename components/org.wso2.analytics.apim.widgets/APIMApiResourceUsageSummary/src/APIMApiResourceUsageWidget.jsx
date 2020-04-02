@@ -102,7 +102,7 @@ class APIMApiResourceUsageWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             apiCreatedBy: 'All',
-            limit: 0,
+            limit: 5,
             usageData: null,
             localeMessages: null,
             inProgress: true,

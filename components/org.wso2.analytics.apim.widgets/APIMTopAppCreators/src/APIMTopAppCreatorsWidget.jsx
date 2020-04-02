@@ -210,6 +210,9 @@ class APIMTopAppCreatorsWidget extends Widget {
         if (!limit || limit < 0) {
             limit = 5;
         }
+
+        this.setState({ limit });
+
         if (subscribers && subscribers.length > 0) {
             const dataProviderConfigs = cloneDeep(providerConfig);
             let subs = subscribers.map((sub) => { return 'SUBSCRIBER_ID==' + sub; });

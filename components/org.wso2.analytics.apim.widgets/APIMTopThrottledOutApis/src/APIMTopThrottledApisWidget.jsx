@@ -95,7 +95,7 @@ class APIMTopThrottledApisWidget extends Widget {
             height: this.props.height,
             throttledData: null,
             legendData: null,
-            limit: 0,
+            limit: 5,
             localeMessages: null,
             inProgress: true,
         };
