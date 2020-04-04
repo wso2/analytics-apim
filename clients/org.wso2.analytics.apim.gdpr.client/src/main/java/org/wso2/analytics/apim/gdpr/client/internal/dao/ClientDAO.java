@@ -85,9 +85,7 @@ public class ClientDAO {
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return true;
-                }
+                return true;
             }
         } catch (SQLException | GDPRClientException e) {
             LOG.debug("Table '{}' assumed to not exist since its existence check query {} resulted "
