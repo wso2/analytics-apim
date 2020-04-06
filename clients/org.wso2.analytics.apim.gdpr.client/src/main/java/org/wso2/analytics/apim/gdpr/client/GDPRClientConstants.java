@@ -23,24 +23,33 @@ package org.wso2.analytics.apim.gdpr.client;
 public class GDPRClientConstants {
 
     public static final String AT = "@";
+    public static final String CONF_FOLDER = "conf";
+    public static final String FILE_NAME = "deployment.yaml";
+    public static final String SUPER_TENANT_DOMAIN = "carbon.super";
     public static final String TABLE_NAME_PLACEHOLDER = "{{TABLE_NAME}}";
-    public static final String USERNAME_COLUMN_NAME_PLACEHOLDER = "{{USERNAME_COLUMN_NAME}}";
-    public static final String CURRENT_USERNAME_VALUE_PLACEHOLDER = "{{CURRENT_USERNAME_VALUE}}";
-    public static final String PSEUDONYM_USERNAME_VALUE_PLACEHOLDER = "{{PSEUDONYM_USERNAME_VALUE}}";
-    public static final String TENANT_DOMAIN_COLUMN_NAME_PLACEHOLDER = "{{TENANT_DOMAIN_COLUMN_NAME}}";
-    public static final String TENANT_DOMAIN_VALUE_PLACEHOLDER = "{{TENANT_DOMAIN_VALUE}}";
-    public static final String TENANT_ID_PLACEHOLDER = "{{TENANT_ID}";
+    public static final String COLUMN_NAME_PLACEHOLDER = "{{COLUMN_NAME}}";
+    public static final String IP_COLUMN_NAME_PLACEHOLDER = "{{IP_COLUMN_NAME}}";
+    public static final String IP_USERNAME_COLUMN_NAME_PLACEHOLDER = "{{IP_USERNAME_COLUMN_NAME}}";
+    public static final String CURRENT_VALUE_PLACEHOLDER = "{{CURRENT_VALUE}}";
+    public static final String PSEUDONYM_VALUE_PLACEHOLDER = "{{PSEUDONYM_VALUE}}";
+    public static final String IP_PSEUDONYM_VALUE_PLACEHOLDER = "{{IP_PSEUDONYM_VALUE}}";
+    public static final String CURRENT_IP_VALUE_PLACEHOLDER = "{{CURRENT_IP_VALUE}}";
+    public static final String CURRENT_IP_USERNAME_VALUE_PLACEHOLDER = "{{CURRENT_IP_USERNAME_VALUE}}";
+    public static final String PRE_REPLACE_TEXT_VALUE_PLACEHOLDER = "{{PRE_REPLACE_TEXT_VALUE}}";
+    public static final String POST_REPLACE_TEXT_VALUE_PLACEHOLDER = "{{POST_REPLACE_TEXT_VALUE}}";
+    public static final String REPLACE_VALUE_PLACEHOLDER = "{{REPLACE_VALUE}}";
     public static final String TABLE_CHECK_QUERY = "TABLE_CHECK";
-    public static final String UPDATE_USERNAME_WITH_TENANT_DOMAIN_QUERY = "UPDATE_USERNAME_WITH_TENANT_DOMAIN";
-    public static final String UPDATE_USERNAME_WITHOUT_TENANT_DOMAIN_QUERY = "UPDATE_USERNAME_WITHOUT_TENANT_DOMAIN";
-    public static final String UPDATE_USERNAME_WITH_TENANT_DOMAIN_WHERE_TENANT_DOMAIN_QUERY
-            = "UPDATE_USERNAME_WITH_TENANT_DOMAIN_WHERE_TENANT_DOMAIN";
-    public static final String UPDATE_USERNAME_WITHOUT_TENANT_DOMAIN_WHERE_TENANT_DOMAIN_QUERY
-            = "UPDATE_USERNAME_WITHOUT_TENANT_DOMAIN_WHERE_TENANT_DOMAIN_QUERY";
-    public static final String UPDATE_USERNAME_WITH_TENANT_DOMAIN_WHERE_TENANT_ID_QUERY
-            = "UPDATE_USERNAME_WITH_TENANT_DOMAIN_WHERE_TENANT_ID";
-    public static final String UPDATE_USERNAME_WITHOUT_TENANT_DOMAIN_WHERE_TENANT_ID_QUERY
-            = "UPDATE_USERNAME_WITHOUT_TENANT_DOMAIN_WHERE_TENANT_ID_QUERY";
+    public static final String UPDATE_QUERY = "UPDATE";
+    public static final String REPLACE_AND_UPDATE_QUERY = "REPLACE_AND_UPDATE";
+    public static final String IP_AND_USERNAME_UPDATE_QUERY = "IP_AND_USERNAME_UPDATE";
+    public static final String REPLACE_EMAIL_AND_UPDATE_QUERY = "REPLACE_EMAIL_AND_UPDATE";
+
+    /**
+     * Enum to define the supportive column types.
+     */
+    public enum ColumnTypes {
+        EMAIL, TEXT, IP
+    }
 
     private GDPRClientConstants() {
 

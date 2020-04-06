@@ -17,6 +17,7 @@
  */
 package org.wso2.analytics.apim.gdpr.client.bean;
 
+import org.wso2.analytics.apim.gdpr.client.GDPRClientConstants;
 import org.wso2.carbon.config.annotation.Element;
 
 /**
@@ -25,16 +26,28 @@ import org.wso2.carbon.config.annotation.Element;
 public class TableEntryInfo {
 
     @Element(description = "Table name", required = true)
-    private String tableName = "";
+    private String tableName;
 
-    @Element(description = "Column name which includes the username", required = true)
-    private String columnName = "";
+    @Element(description = "Column name which includes either the username or the email", required = true)
+    private String columnName;
 
-    @Element(description = "Is the username includes the tenant domain")
-    private boolean usernameWithTenantDomain = false;
+    @Element(description = "Is the super tenant's username includes the tenant domain", required = true)
+    private boolean isSuperTenantUsernameHasTenantDomain = false;
 
-    @Element(description = "Column name which has the tenant domain")
-    private String tenantDomainColumnName = "";
+    @Element(description = "Type of the column", required = true)
+    private GDPRClientConstants.ColumnTypes columnType = GDPRClientConstants.ColumnTypes.TEXT;
+
+    @Element(description = "Column name which includes the username associated to IP address")
+    private String ipUsernameColumnName;
+
+    @Element(description = "Is the column needs a text replace")
+    private boolean isTextReplace = false;
+
+    @Element(description = "Text which needs to be append before the replacing text in sql LIKE clause")
+    private String preReplaceText;
+
+    @Element(description = "Text which needs to be append after the replacing text in sql LIKE clause")
+    private String postReplaceText;
 
     public String getTableName() {
         return tableName;
@@ -52,19 +65,65 @@ public class TableEntryInfo {
         this.columnName = columnName;
     }
 
-    public boolean isUsernameWithTenantDomain() {
-        return usernameWithTenantDomain;
+    public boolean isSuperTenantUsernameHasTenantDomain() {
+        return isSuperTenantUsernameHasTenantDomain;
     }
 
-    public void setUsernameWithTenantDomain(boolean usernameWithTenantDomain) {
-        this.usernameWithTenantDomain = usernameWithTenantDomain;
+    public void setSuperTenantUsernameHasTenantDomain(boolean superTenantUsernameHasTenantDomain) {
+        isSuperTenantUsernameHasTenantDomain = superTenantUsernameHasTenantDomain;
     }
 
-    public String getTenantDomainColumnName() {
-        return tenantDomainColumnName;
+    public GDPRClientConstants.ColumnTypes getColumnType() {
+        return columnType;
     }
 
-    public void setTenantDomainColumnName(String tenantDomainColumnName) {
-        this.tenantDomainColumnName = tenantDomainColumnName;
+    public void setColumnType(GDPRClientConstants.ColumnTypes columnType) {
+        this.columnType = columnType;
+    }
+
+    public String getIpUsernameColumnName() {
+        return ipUsernameColumnName;
+    }
+
+    public void setIpUsernameColumnName(String ipUsernameColumnName) {
+        this.ipUsernameColumnName = ipUsernameColumnName;
+    }
+
+    public boolean isTextReplace() {
+        return isTextReplace;
+    }
+
+    public void setTextReplace(boolean textReplace) {
+        isTextReplace = textReplace;
+    }
+
+    public String getPreReplaceText() {
+        return preReplaceText;
+    }
+
+    public void setPreReplaceText(String preReplaceText) {
+        this.preReplaceText = preReplaceText;
+    }
+
+    public String getPostReplaceText() {
+        return postReplaceText;
+    }
+
+    public void setPostReplaceText(String postReplaceText) {
+        this.postReplaceText = postReplaceText;
+    }
+
+    @Override
+    public String toString() {
+        return "TableEntryInfo{" +
+                "tableName='" + tableName + '\'' +
+                ", columnName='" + columnName + '\'' +
+                ", isSuperTenantUsernameHasTenantDomain=" + isSuperTenantUsernameHasTenantDomain +
+                ", columnType=" + columnType +
+                ", ipUsernameColumnName='" + ipUsernameColumnName + '\'' +
+                ", isTextReplace=" + isTextReplace +
+                ", preReplaceText='" + preReplaceText + '\'' +
+                ", postReplaceText='" + postReplaceText + '\'' +
+                '}';
     }
 }

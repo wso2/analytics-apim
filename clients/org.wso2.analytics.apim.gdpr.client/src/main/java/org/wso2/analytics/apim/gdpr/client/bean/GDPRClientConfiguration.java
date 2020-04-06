@@ -31,16 +31,19 @@ import java.util.List;
 public class GDPRClientConfiguration {
 
     @Element(description = "username which the PII data should be deleted", required = true)
-    private String username = "username";
+    private String username;
 
-    @Element(description = "salt values which is used to replace instead of the username", required = true)
-    private String saltValue = "aad#4few5";
+    @Element(description = "pseudonym which is used to replace the username")
+    private String pseudonym;
 
-    @Element(description = "tenant domain of the user", required = true)
+    @Element(description = "tenant domain of the user")
     private String tenantDomain = "carbon.super";
 
-    @Element(description = "tenant id of the user's tenant", required = true)
-    private String tenantId = "-1234";
+    @Element(description = "email of the user")
+    private String userEmail;
+
+    @Element(description = "ip address of the user")
+    private String userIP;
 
     @Element(description = "databases which includes the username entries in its tables", required = true)
     private List<DatabaseInfo> databases = new ArrayList<>();
@@ -56,12 +59,12 @@ public class GDPRClientConfiguration {
         this.username = username;
     }
 
-    public String getSaltValue() {
-        return saltValue;
+    public String getPseudonym() {
+        return pseudonym;
     }
 
-    public void setSaltValue(String saltValue) {
-        this.saltValue = saltValue;
+    public void setPseudonym(String pseudonym) {
+        this.pseudonym = pseudonym;
     }
 
     public String getTenantDomain() {
@@ -72,12 +75,20 @@ public class GDPRClientConfiguration {
         this.tenantDomain = tenantDomain;
     }
 
-    public String getTenantId() {
-        return tenantId;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+    public String getUserIP() {
+        return userIP;
+    }
+
+    public void setUserIP(String userIP) {
+        this.userIP = userIP;
     }
 
     public List<DatabaseInfo> getDatabases() {

@@ -251,7 +251,6 @@
                 <version>${org.snakeyaml.version}</version>
             </dependency>
 
-
             <!-- Metrics related -->
             <dependency>
                 <groupId>org.wso2.carbon.metrics</groupId>
