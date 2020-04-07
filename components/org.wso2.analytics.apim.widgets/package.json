@@ -5,7 +5,9 @@
     "build": "lerna run build --stream",
     "clean": "lerna clean -y",
     "bootstrap": "lerna bootstrap",
-    "dev": "lerna run dev --parallel"
+    "dev": "lerna run dev --parallel",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "@material-ui/core": "^3.9.0",
@@ -13,9 +15,10 @@
     "@wso2-dashboards/widget": "^1.4.0",
     "axios": "^0.16.2",
     "lodash": "^4.17.11",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
+    "moment": "^2.24.0",
+    "react": "^16.13.1",
     "react-custom-scrollbars": "^4.2.1",
+    "react-dom": "^16.13.1",
     "react-intl": "^2.8.0",
     "rimraf": "^2.6.3",
     "victory": "^31.0.2"
@@ -27,6 +30,10 @@
     "@babel/preset-es2015": "^7.0.0-beta.53",
     "@babel/preset-react": "^7.7.0",
     "@babel/register": "^7.7.0",
+    "@storybook/addon-actions": "^5.3.18",
+    "@storybook/addon-links": "^5.3.18",
+    "@storybook/addons": "^5.3.18",
+    "@storybook/react": "^5.3.18",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^4.2.0",
