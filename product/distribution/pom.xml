@@ -354,6 +354,14 @@
                                     <overWrite>true</overWrite>
                                     <outputDirectory>target/forget-me</outputDirectory>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.wso2.analytics.apim</groupId>
+                                    <artifactId>org.wso2.analytics.apim.gdpr.client</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target/gdpr-client</outputDirectory>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
