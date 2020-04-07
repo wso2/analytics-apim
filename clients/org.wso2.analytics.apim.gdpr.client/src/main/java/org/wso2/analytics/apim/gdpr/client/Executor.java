@@ -85,7 +85,8 @@ public class Executor {
                         String tableName = tableEntry.getTableName();
                         boolean isTableExists = clientDAO.checkTableExists(tableName);
                         if (!isTableExists) {
-                            LOG.warn("Table {} does not exists in the database {}.", tableName, databaseName);
+                            LOG.warn("Skipping table entry update as the table {} does not exists in the database {}.",
+                                    tableName, databaseName);
                             continue;
                         }
                         String columnName = tableEntry.getColumnName();
@@ -186,6 +187,8 @@ public class Executor {
                             if (isTextReplace) {
                                 // skip update query for email entries if user email is not provided
                                 if (StringUtils.isEmpty(userEmail)) {
+                                    LOG.warn("Skipping update for table entry: [" + tableEntry.toString() + "] in " +
+                                            "database: " + databaseName + " as the user email is not provided.");
                                     continue;
                                 }
                                 String preReplaceText = tableEntry.getPreReplaceText();
@@ -218,8 +221,10 @@ public class Executor {
                         if (isTextReplace) {
                             String preReplaceText = tableEntry.getPreReplaceText();
                             String postReplaceText = tableEntry.getPostReplaceText();
-                            // replace only the username as the user ip is not provided.
                             if (StringUtils.isEmpty(userIP)) {
+                                // replace only the username as the user ip is not provided.
+                                LOG.warn("Updating only USERNAME for table entry: [" + tableEntry.toString() + "] in " +
+                                        "database: " + databaseName + " as the user ip is not provided.");
                                 String currentValue = postReplaceText.replace(CURRENT_IP_USERNAME_VALUE_PLACEHOLDER,
                                         usernameWithTenantDomain);
                                 String replaceValue = postReplaceText.replace(CURRENT_IP_USERNAME_VALUE_PLACEHOLDER,
@@ -249,6 +254,8 @@ public class Executor {
                         String ipUsernameColumnName = tableEntry.getIpUsernameColumnName();
                         if (StringUtils.isEmpty(userIP)) {
                             // replace only the username as the user ip is not provided.
+                            LOG.warn("Updating only USERNAME for table entry: [" + tableEntry.toString() + "] in " +
+                                    "database: " + databaseName + " as the user ip is not provided.");
                             clientDAO.updateTableEntry(tableName, ipUsernameColumnName, usernameWithTenantDomain,
                                     pseudonymWithTenantDomain);
                             continue;
