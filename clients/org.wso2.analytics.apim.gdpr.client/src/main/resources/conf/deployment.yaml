@@ -22,7 +22,7 @@ wso2.datasources:
       definition:
         type: RDBMS
         configuration:
-          jdbcUrl: 'jdbc:h2:/Users/raveen/Desktop/GDPR/PackTest/Test1/wso2am-analytics-3.1.0/wso2/tools/gdpr-client/DB/APIM_ANALYTICS_DB;AUTO_SERVER=TRUE'
+          jdbcUrl: 'jdbc:h2:<PATH_TO_API-M_ANALYTICS_HOME>/wso2/worker/database/APIM_ANALYTICS_DB;AUTO_SERVER=TRUE'
           username: wso2carbon
           password: wso2carbon
           driverClassName: org.h2.Driver
@@ -37,25 +37,15 @@ wso2.securevault:
     type: org.wso2.carbon.secvault.repository.DefaultSecretRepository
     parameters:
       privateKeyAlias: wso2carbon
-      keystoreLocation: /Users/raveen/Desktop/GDPR/PackTest/Test1/wso2am-analytics-3.1.0/resources/security/securevault.jks
-      secretPropertiesFile: /Users/raveen/Desktop/GDPR/PackTest/Test1/wso2am-analytics-3.1.0/conf/worker/secrets.properties
+      keystoreLocation: <PATH_TO_API-M_ANALYTICS_HOME>/resources/security/securevault.jks
+      secretPropertiesFile: <PATH_TO_API-M_ANALYTICS_HOME>/conf/worker/secrets.properties
   masterKeyReader:
     type: org.wso2.carbon.secvault.reader.DefaultMasterKeyReader
     parameters:
-      masterKeyReaderFile: /Users/raveen/Desktop/GDPR/PackTest/Test1/wso2am-analytics-3.1.0/conf/worker/master-keys.yaml
+      masterKeyReaderFile: <PATH_TO_API-M_ANALYTICS_HOME>/conf/worker/master-keys.yaml
 
 # GDPR Client Configuration Parameters
 wso2.gdpr:
-  # username which the PII data should be deleted
-  username: john
-  # pseudonym which is used to replace the username
-  pseudonym: aad#4few5
-  # tenant domain of the user
-  tenantDomain: carbon.super
-  # email of the user
-  userEmail: admin@wso2.com
-  # ip address of the user
-  userIP: 127.0.0.1
   # databases which includes the username entries in its tables
   databases:
     - databaseName: APIM_ANALYTICS_DB
