@@ -27,6 +27,7 @@ public class GDPRClientConstants {
     public static final String FILE_NAME = "deployment.yaml";
     public static final String HELP_FILE_NAME = "help.md";
     public static final String SUPER_TENANT_DOMAIN = "carbon.super";
+    public static final String CMD_OPTION_CONFIG_DIR = "D";
     public static final String CMD_OPTION_CONFIG_USER_NAME = "U";
     public static final String CMD_OPTION_CONFIG_USER_PSEUDONYM = "pu";
     public static final String CMD_OPTION_CONFIG_TENANT_DOMAIN = "T";

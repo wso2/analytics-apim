@@ -53,6 +53,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
+import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.CMD_OPTION_CONFIG_DIR;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.CMD_OPTION_CONFIG_TENANT_DOMAIN;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.CMD_OPTION_CONFIG_USER_EMAIL;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.CMD_OPTION_CONFIG_USER_IP;
@@ -77,6 +78,7 @@ public class GDPRTool {
 
     public static void main(String[] args) throws Exception {
         Options options = new Options();
+        options.addOption(CMD_OPTION_CONFIG_DIR, true, "Directory where deployment.yaml file located (mandatory)");
         options.addOption(CMD_OPTION_CONFIG_USER_NAME, true, "User Name (mandatory)");
         options.addOption(CMD_OPTION_CONFIG_USER_PSEUDONYM, true,
                 "Pseudonym, which the user name to be replaced with (optional)");
@@ -88,20 +90,30 @@ public class GDPRTool {
         options.addOption(CMD_OPTION_ENABLE_SHA256_HASHING, false,
                 "Enable SHA256 hashing for anonymizing the ID attribute (optional)");
 
-        String homeDirPath;
-        try {
-            homeDirPath = Paths.get(System.getProperty("user.dir")).getParent().toString();
-        } catch (NullPointerException e) {
-            throw new GDPRClientException("Error occurred while getting the parent directory of the current " +
-                    "directory.");
-        }
-
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
 
         if (cmd.hasOption(CMD_OPTION_HELP)) {
             emitHelp();
             return;
+        }
+
+        String configFilePath;
+        if (cmd.hasOption(CMD_OPTION_CONFIG_DIR)) {
+            configFilePath = cmd.getOptionValue(CMD_OPTION_CONFIG_DIR);
+        } else {
+            /*
+            * If config file path is not provided, then it is assumed that the gdpr client is running from the client
+            * bin directory.
+            * ex: <Path_to_API_M_ANALYTICS_HOME>/wso2/tools/gdpr-client/bin
+            */
+            try {
+                String homeDirPath = Paths.get(System.getProperty("user.dir")).getParent().toString();
+                configFilePath = homeDirPath + File.separator + CONF_FOLDER;
+            } catch (NullPointerException e) {
+                throw new GDPRClientException("Error occurred while getting the parent directory of the current " +
+                        "directory.");
+            }
         }
 
         User user;
@@ -118,7 +130,7 @@ public class GDPRTool {
             return;
         }
         GDPRTool tool = new GDPRTool();
-        tool.process(homeDirPath, user);
+        tool.process(configFilePath, user);
     }
 
     /**
@@ -160,8 +172,7 @@ public class GDPRTool {
         formatter.printHelp(COMMAND_NAME, options);
     }
 
-    public void process(String homePath, User user) {
-        String configFilePath = homePath + File.separator + CONF_FOLDER;
+    public void process(String configFilePath, User user) {
         Path deploymentConfigPath = Paths.get(configFilePath, FILE_NAME);
         ConfigProvider configProvider;
         try {
