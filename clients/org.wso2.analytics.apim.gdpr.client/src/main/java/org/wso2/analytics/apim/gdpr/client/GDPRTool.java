@@ -209,7 +209,7 @@ public class GDPRTool {
         String ipPseudonym = ClientUtils.generateRandomIP(IP_MIN, IP_MAX);
 
         // validate user provided user ip address
-        if (!StringUtils.isEmpty(userIP) && ClientUtils.isIPValid(userIP)) {
+        if (!StringUtils.isEmpty(userIP) && !ClientUtils.isIPValid(userIP)) {
             throw new CommandLineException("Provided user IP address is invalid: " + userIP);
         }
 
