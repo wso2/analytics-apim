@@ -30,66 +30,11 @@ import java.util.List;
 @Configuration(namespace = "wso2.gdpr", description = "GDPR Client Configuration Parameters")
 public class GDPRClientConfiguration {
 
-    @Element(description = "username which the PII data should be deleted", required = true)
-    private String username;
-
-    @Element(description = "pseudonym which is used to replace the username")
-    private String pseudonym;
-
-    @Element(description = "tenant domain of the user")
-    private String tenantDomain = "carbon.super";
-
-    @Element(description = "email of the user")
-    private String userEmail;
-
-    @Element(description = "ip address of the user")
-    private String userIP;
-
     @Element(description = "databases which includes the username entries in its tables", required = true)
     private List<DatabaseInfo> databases = new ArrayList<>();
 
     @Element(description = "database query map")
     private List<Queries> queries = new ArrayList<>();
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPseudonym() {
-        return pseudonym;
-    }
-
-    public void setPseudonym(String pseudonym) {
-        this.pseudonym = pseudonym;
-    }
-
-    public String getTenantDomain() {
-        return tenantDomain;
-    }
-
-    public void setTenantDomain(String tenantDomain) {
-        this.tenantDomain = tenantDomain;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-    }
-
-    public String getUserIP() {
-        return userIP;
-    }
-
-    public void setUserIP(String userIP) {
-        this.userIP = userIP;
-    }
 
     public List<DatabaseInfo> getDatabases() {
         return databases;

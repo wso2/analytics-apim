@@ -24,8 +24,18 @@ public class GDPRClientConstants {
 
     public static final String AT = "@";
     public static final String CONF_FOLDER = "conf";
+    public static final String LIB_FOLDER = "lib";
     public static final String FILE_NAME = "deployment.yaml";
+    public static final String HELP_FILE_NAME = "help.md";
     public static final String SUPER_TENANT_DOMAIN = "carbon.super";
+    public static final String CMD_OPTION_CONFIG_USER_NAME = "U";
+    public static final String CMD_OPTION_CONFIG_USER_PSEUDONYM = "pu";
+    public static final String CMD_OPTION_CONFIG_TENANT_DOMAIN = "T";
+    public static final String CMD_OPTION_CONFIG_USER_EMAIL = "E";
+    public static final String CMD_OPTION_CONFIG_USER_IP = "I";
+    public static final String CMD_OPTION_HELP = "help";
+    public static final String CMD_OPTION_ENABLE_SHA256_HASHING = "sha256";
+    public static final String COMMAND_NAME = "gdpr-client";
     public static final String TABLE_NAME_PLACEHOLDER = "{{TABLE_NAME}}";
     public static final String COLUMN_NAME_PLACEHOLDER = "{{COLUMN_NAME}}";
     public static final String IP_COLUMN_NAME_PLACEHOLDER = "{{IP_COLUMN_NAME}}";
@@ -43,9 +53,11 @@ public class GDPRClientConstants {
     public static final String REPLACE_AND_UPDATE_QUERY = "REPLACE_AND_UPDATE";
     public static final String IP_AND_USERNAME_UPDATE_QUERY = "IP_AND_USERNAME_UPDATE";
     public static final String REPLACE_EMAIL_AND_UPDATE_QUERY = "REPLACE_EMAIL_AND_UPDATE";
+    public static final int IP_MAX = 999;
+    public static final int IP_MIN = 256;
 
     /**
-     * Enum to define the supportive column types.
+     * Enum to define the supported column types.
      */
     public enum ColumnTypes {
         EMAIL, TEXT, IP
