@@ -61,10 +61,15 @@ const styles = theme => ({
 
 /**
  * Create React Component for Custom Table Toolbar
+ * @param {Object} props - Widget options
+ * @returns {ReactNode}
+ *
  */
 function CustomTableToolbar(props) {
     const {
-        classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, query, title, menuItems
+        classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, query,
+        title,
+        menuItems,
     } = props;
 
     return (
@@ -143,6 +148,8 @@ CustomTableToolbar.propTypes = {
     handleExpandClick: PropTypes.func.isRequired,
     handleColumnSelect: PropTypes.func.isRequired,
     handleQueryChange: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    menuItems: PropTypes.element.isRequired,
 };
 
 export default withStyles(styles)(CustomTableToolbar);

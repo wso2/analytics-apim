@@ -17,17 +17,17 @@
  *
  */
 
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
-    addLocaleData, defineMessages, IntlProvider, FormattedMessage,
+    FormattedMessage,
 } from 'react-intl';
-import Axios from 'axios';
 import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Widget from '@wso2-dashboards/widget';
+import withWrappedWidget from '@analytics-apim/common-lib/src/WrappedWidget';
 import APIMApiUsageSummary from './APIMApiUsageSummary';
 
 const LAST_WEEK = 'last-week';
@@ -51,26 +51,15 @@ const lightTheme = createMuiTheme({
     },
 });
 
-/**
- * Language
- * @type {string}
- */
-const language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
-
-let refreshIntervalId1 = null;
-let refreshIntervalId2 = null;
-
-/**
- * Language without region code
- */
-const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
+let refreshIntervalId = null;
+const refreshInterval = 60000; // 1min
 
 /**
  * Create React Component for APIM Api Created
  * @class APIMApiUsageSummaryWidget
  * @extends {Widget}
  */
-class APIMApiUsageSummaryWidget extends Widget {
+class APIMApiUsageSummaryWidget extends Component {
     /**
      * Creates an instance of APIMApiUsageSummaryWidget.
      * @param {any} props @inheritDoc
@@ -80,16 +69,12 @@ class APIMApiUsageSummaryWidget extends Widget {
         super(props);
 
         this.state = {
-            width: this.props.width,
-            height: this.props.height,
             lastWeekCount: 0,
             thisWeekCount: 0,
-            messages: null,
-            refreshInterval: 60000, // 1min
-            refreshIntervalId: null,
-            inProgress: true,
+            inProgress: false,
         };
 
+        const { height } = props;
         this.styles = {
             loadingIcon: {
                 margin: 'auto',
@@ -108,17 +93,10 @@ class APIMApiUsageSummaryWidget extends Widget {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: this.props.height,
+                height,
             },
         };
 
-        // This will re-size the widget when the glContainer's width is changed.
-        if (this.props.glContainer !== undefined) {
-            this.props.glContainer.on('resize', () => this.setState({
-                width: this.props.glContainer.width,
-                height: this.props.glContainer.height,
-            }));
-        }
         this.assembleUsageCountQuery = this.assembleUsageCountQuery.bind(this);
         this.handleUsageCountReceived = this.handleUsageCountReceived.bind(this);
     }
@@ -127,56 +105,22 @@ class APIMApiUsageSummaryWidget extends Widget {
      *
      * @param {any} props @inheritDoc
      */
-    componentWillMount() {
-        const locale = (languageWithoutRegionCode || language || 'en');
-        this.loadLocale(locale).catch(() => {
-            this.loadLocale().catch(() => {
-                // TODO: Show error message.
-            });
-        });
-    }
+    componentDidUpdate(prevProps) {
+        const {
+            id, getWidgetChannelManager, widgetConf,
+        } = this.props;
 
-    /**
-     *
-     * @param {any} props @inheritDoc
-     */
-    componentDidMount() {
-        const { widgetID, id } = this.props;
-        const { refreshInterval } = this.state;
-
-        super.getWidgetConfiguration(widgetID)
-            .then((message) => {
-                // set an interval to periodically retrieve data
-                const refresh = () => {
-                    super.getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
-                    this.assembleUsageCountQuery(LAST_WEEK, message.data.configs.providerConfig);
-                };
-                refreshIntervalId1 = setInterval(refresh, refreshInterval);
-                this.assembleUsageCountQuery(LAST_WEEK, message.data.configs.providerConfig);
-            })
-            .catch((error) => {
-                console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
-                this.setState({
-                    faultyProviderConfig: true,
-                });
-            });
-
-        super.getWidgetConfiguration(widgetID)
-            .then((message) => {
-                // set an interval to periodically retrieve data
-                const refresh = () => {
-                    super.getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
-                    this.assembleUsageCountQuery(THIS_WEEK, message.data.configs.providerConfig);
-                };
-                refreshIntervalId2 = setInterval(refresh, refreshInterval);
-                this.assembleUsageCountQuery(THIS_WEEK, message.data.configs.providerConfig);
-            })
-            .catch((error) => {
-                console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
-                this.setState({
-                    faultyProviderConfig: true,
-                });
-            });
+        if (JSON.stringify(widgetConf) !== JSON.stringify(prevProps.widgetConf)) {
+            const refresh = () => {
+                getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
+                getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
+                this.assembleUsageCountQuery(THIS_WEEK);
+                this.assembleUsageCountQuery(LAST_WEEK);
+            };
+            refreshIntervalId = setInterval(refresh, refreshInterval);
+            this.assembleUsageCountQuery(THIS_WEEK);
+            this.assembleUsageCountQuery(LAST_WEEK);
+        }
     }
 
     /**
@@ -184,31 +128,10 @@ class APIMApiUsageSummaryWidget extends Widget {
      * @param {any} props @inheritDoc
      */
     componentWillUnmount() {
-        const { id } = this.props;
-        clearInterval(refreshIntervalId1);
-        clearInterval(refreshIntervalId2);
-        super.getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
-        super.getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
-    }
-
-    /**
-     * Load locale file.
-     * @memberof APIMApiUsageSummaryWidget
-     * @param {String} locale - locale
-     * @returns {Promise}
-     */
-    loadLocale(locale = 'en') {
-        return new Promise((resolve, reject) => {
-            Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiUsageSummary/locales/${locale}.json`)
-                .then((response) => {
-                    // eslint-disable-next-line global-require, import/no-dynamic-require
-                    addLocaleData(require(`react-intl/locale-data/${locale}`));
-                    this.setState({ messages: defineMessages(response.data) });
-                    resolve();
-                })
-                .catch(error => reject(error));
-        });
+        const { id, getWidgetChannelManager } = this.props;
+        clearInterval(refreshIntervalId);
+        getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
+        getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
     }
 
     /**
@@ -217,8 +140,11 @@ class APIMApiUsageSummaryWidget extends Widget {
      * @param {object} dataProviderConfigs - Data provider configurations
      * @memberof APIMApiUsageSummaryWidget
      * */
-    assembleUsageCountQuery(week, dataProviderConfigs) {
-        const { id, widgetID: widgetName } = this.props;
+    assembleUsageCountQuery(week) {
+        const {
+            id, widgetID: widgetName, widgetConf, getWidgetChannelManager,
+        } = this.props;
+        const dataProviderConfigs = widgetConf.configs.providerConfig;
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
 
         let timeTo = new Date().getTime();
@@ -234,10 +160,9 @@ class APIMApiUsageSummaryWidget extends Widget {
             '{{per}}': 'day',
         };
 
-        super.getWidgetChannelManager()
-            .subscribeWidget(id + week, widgetName, (message) => {
-                this.handleUsageCountReceived(week, message);
-            }, dataProviderConfigs);
+        getWidgetChannelManager().subscribeWidget(id + week, widgetName, (message) => {
+            this.handleUsageCountReceived(week, message);
+        }, dataProviderConfigs);
     }
 
     /**
@@ -274,7 +199,7 @@ class APIMApiUsageSummaryWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, lastWeekCount, thisWeekCount, inProgress,
+            faultyProviderConf, lastWeekCount, thisWeekCount, inProgress,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
@@ -291,35 +216,53 @@ class APIMApiUsageSummaryWidget extends Widget {
             );
         }
         return (
-            <IntlProvider locale={language} messages={messages}>
-                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConf ? (
-                            <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                                + 'Created widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMApiUsageSummary {...apiCreatedProps} />
-                        )
-                    }
-                </MuiThemeProvider>
-            </IntlProvider>
+            <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                {
+                    faultyProviderConf ? (
+                        <div style={paperWrapper}>
+                            <Paper elevation={1} style={paper}>
+                                <Typography variant='h5' component='h3'>
+                                    <FormattedMessage
+                                        id='config.error.heading'
+                                        defaultMessage='Configuration Error !'
+                                    />
+                                </Typography>
+                                <Typography component='p'>
+                                    <FormattedMessage
+                                        id='config.error.body'
+                                        defaultMessage={'Cannot fetch provider configuration for APIM Api '
+                                            + 'Created widget'}
+                                    />
+                                </Typography>
+                            </Paper>
+                        </div>
+                    ) : (
+                        <APIMApiUsageSummary {...apiCreatedProps} />
+                    )
+                }
+            </MuiThemeProvider>
         );
     }
 }
 
-global.dashboard.registerWidget('APIMApiUsageSummary', APIMApiUsageSummaryWidget);
+APIMApiUsageSummaryWidget.propTypes = {
+    height: PropTypes.number,
+    getWidgetChannelManager: PropTypes.func,
+    id: PropTypes.string,
+    widgetID: PropTypes.string,
+    widgetConf: PropTypes.instanceOf(Object),
+    muiTheme: PropTypes.instanceOf(Object),
+};
+
+APIMApiUsageSummaryWidget.defaultProps = {
+    height: 0,
+    getWidgetChannelManager: () => {},
+    id: null,
+    widgetID: null,
+    widgetConf: {},
+    muiTheme: {},
+};
+
+withWrappedWidget(APIMApiUsageSummaryWidget, 'APIMApiUsageSummary');
+
+export default APIMApiUsageSummaryWidget;

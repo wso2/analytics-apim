@@ -1,3 +1,6 @@
+// This is not a component so prop validation isnt applicable.
+/* eslint-disable react/prop-types */
+
 /*
  *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -19,18 +22,20 @@
 
 import React from 'react';
 
-import { green } from '@material-ui/core/colors';
-import { red } from '@material-ui/core/colors';
+import { green, red } from '@material-ui/core/colors';
+
 import { withStyles } from '@material-ui/core/styles';
 import shortNumber from 'short-number';
 import Tooltip from '@material-ui/core/Tooltip';
 
-const styles = theme => ({
+const styles = () => ({
 
 });
 
 /**
- * Create React Component for Custom Table Toolbar
+ * Create React Component for Custom Table Toolbar.
+ * @param {Object} props - Widget options
+ * @returns {ReactNode}
  */
 function SummaryWidget(props) {
     const {
@@ -38,7 +43,7 @@ function SummaryWidget(props) {
         lastWeekCount,
         thisWeekCount,
         negative,
-        tooltip
+        tooltip,
     } = props;
     let diff = thisWeekCount - lastWeekCount;
     if (negative) {
@@ -46,7 +51,7 @@ function SummaryWidget(props) {
     }
     const diffColor = diff < 0 ? red[500] : green[500];
     let arrow = thisWeekCount > lastWeekCount ? '▲' : '▼';
-    if(diff === 0) {
+    if (diff === 0) {
         arrow = '';
     }
     return (
@@ -62,9 +67,12 @@ function SummaryWidget(props) {
             <span>{shortNumber(thisWeekCount)}</span>
 
             <Tooltip title={tooltip}>
-                <span style={{ fontSize: 20, color: diffColor }}>{arrow}{shortNumber(Math.abs(diff))}</span>
-            </Tooltip> 
-      
+                <span style={{ fontSize: 20, color: diffColor }}>
+                    {arrow}
+                    {shortNumber(Math.abs(diff))}
+                </span>
+            </Tooltip>
+
         </div>
     );
 }

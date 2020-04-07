@@ -17,7 +17,14 @@
  *
  */
 
-function summarizePieData(data=[], nameField, countField) {
+/**
+ *
+ * @param {[Object]} data - Array of Data
+ * @param {*} nameField - Name field of a element of Data Array
+ * @param {*} countField - Count field of a element of Data Array
+ * @returns {Object} - pieChartData and legendData
+ */
+function summarizePieData(data = [], nameField, countField) {
     const PIE_CHART_LIMIT = 8;
     // data could be null
     data = (data === null) ? [] : data;
@@ -28,8 +35,8 @@ function summarizePieData(data=[], nameField, countField) {
     if (data.length > PIE_CHART_LIMIT) {
         const otherPieChartData = pieChartData.slice(PIE_CHART_LIMIT, pieChartData.length)
             .reduce((accumulator, currentValue) => {
-                return { [nameField]: ['Other'],[countField]: accumulator[countField] + currentValue[countField] };
-            }, { [nameField]: ['Other'],[countField]: 0 });
+                return { [nameField]: ['Other'], [countField]: accumulator[countField] + currentValue[countField] };
+            }, { [nameField]: ['Other'], [countField]: 0 });
 
         pieChartData.splice(PIE_CHART_LIMIT, pieChartData.length, otherPieChartData);
     }
@@ -38,10 +45,10 @@ function summarizePieData(data=[], nameField, countField) {
     });
     return {
         pieChartData,
-        legendData
+        legendData,
     };
 }
 
 export default {
-    summarizePieData
-}
+    summarizePieData,
+};
