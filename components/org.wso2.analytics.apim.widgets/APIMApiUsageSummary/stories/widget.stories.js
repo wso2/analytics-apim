@@ -12,9 +12,30 @@ export default {
 export const darkTheme = () => (
     <APIMApiUsageSummaryWidget
         muiTheme={{ name: 'dark' }}
+        widgetConf={{
+            configs: {
+                pubsub: {
+                    types: ['subscriber'],
+                },
+                providerConfig: {
+                    configs: {
+                        config: {
+                            siddhiApp: '',
+                            queryData: {
+                                query: '',
+                            },
+                            publishingInterval: 360000,
+                        },
+                    },
+                },
+            },
+        }}
         getWidgetChannelManager={() => {
             return {
                 unsubscribeWidget: () => { return Promise.resolve(''); },
+                subscribeWidget: () => {
+                    return Promise.resolve(null);
+                },
             };
         }}
     />
@@ -24,9 +45,30 @@ export const lightTheme = () => (
     <MuiThemeProvider>
         <APIMApiUsageSummaryWidget
             muiTheme={{ name: 'light' }}
+            widgetConf={{
+                configs: {
+                    pubsub: {
+                        types: ['subscriber'],
+                    },
+                    providerConfig: {
+                        configs: {
+                            config: {
+                                siddhiApp: '',
+                                queryData: {
+                                    query: '',
+                                },
+                                publishingInterval: 360000,
+                            },
+                        },
+                    },
+                },
+            }}
             getWidgetChannelManager={() => {
                 return {
                     unsubscribeWidget: () => { return Promise.resolve(''); },
+                    subscribeWidget: () => {
+                        return Promise.resolve(null);
+                    },
                 };
             }}
         />

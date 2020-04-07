@@ -105,22 +105,19 @@ class APIMApiUsageSummaryWidget extends Component {
      *
      * @param {any} props @inheritDoc
      */
-    componentDidUpdate(prevProps) {
+    componentDidMount() {
         const {
-            id, getWidgetChannelManager, widgetConf,
+            id, getWidgetChannelManager,
         } = this.props;
-
-        if (JSON.stringify(widgetConf) !== JSON.stringify(prevProps.widgetConf)) {
-            const refresh = () => {
-                getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
-                getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
-                this.assembleUsageCountQuery(THIS_WEEK);
-                this.assembleUsageCountQuery(LAST_WEEK);
-            };
-            refreshIntervalId = setInterval(refresh, refreshInterval);
+        const refresh = () => {
+            getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
+            getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
             this.assembleUsageCountQuery(THIS_WEEK);
             this.assembleUsageCountQuery(LAST_WEEK);
-        }
+        };
+        refreshIntervalId = setInterval(refresh, refreshInterval);
+        this.assembleUsageCountQuery(THIS_WEEK);
+        this.assembleUsageCountQuery(LAST_WEEK);
     }
 
     /**
