@@ -17,7 +17,6 @@
  */
 package org.wso2.analytics.apim.gdpr.client;
 
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -45,9 +44,6 @@ import org.wso2.carbon.datasource.core.impl.DataSourceServiceImpl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -55,7 +51,6 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.CMD_OPTION_CONFIG_TENANT_DOMAIN;
@@ -71,7 +66,6 @@ import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.FILE_NAME;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.HELP_FILE_NAME;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.IP_MAX;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.IP_MIN;
-import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.LIB_FOLDER;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.SUPER_TENANT_DOMAIN;
 
 /**
@@ -101,9 +95,6 @@ public class GDPRTool {
             throw new GDPRClientException("Error occurred while getting the parent directory of the current " +
                     "directory.");
         }
-
-        String libFilePath = homeDirPath + File.separator + LIB_FOLDER;
-        addJarFileUrls(new File(libFilePath));
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
@@ -219,35 +210,5 @@ public class GDPRTool {
         user.setUserIP(userIP);
         user.setIpPseudonym(ipPseudonym);
         return user;
-    }
-
-    /**
-     * Add JAR files found in the given directory to the Classpath. This fix is done due to terminal's argument
-     * character limitation.
-     *
-     * @param root the directory to recursively search for JAR files.
-     * @throws java.net.MalformedURLException If a provided JAR file URL is malformed
-     */
-    private static void addJarFileUrls(File root) throws Exception {
-        File[] children = root.listFiles();
-        if (children == null) {
-            return;
-        }
-        for (File child : children) {
-            if (child.isFile() && child.canRead() && !child.getName().contains("slf4j")
-                    && child.getName().toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
-                addPath(child.getPath());
-            }
-        }
-    }
-
-    private static void addPath(String s) throws Exception {
-        File f = new File(s);
-        URL u = f.toURI().toURL();
-        URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-        Class<URLClassLoader> urlClass = URLClassLoader.class;
-        Method method = urlClass.getDeclaredMethod("addURL", URL.class);
-        method.setAccessible(true);
-        method.invoke(urlClassLoader, u);
     }
 }
