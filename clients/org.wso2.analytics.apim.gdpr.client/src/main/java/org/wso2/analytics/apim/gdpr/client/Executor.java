@@ -143,7 +143,7 @@ public class Executor {
                              * This method covers two scenarios.
                              * Scenario 4:
                              * User is in the super tenant space. Super tenant's username is saved with the
-                             * tenant domain(ex: admin@carbon.super, usera@carbon.super) with other text in the same
+                             * tenant domain(ex: admin@carbon.super, usera@carbon.super) with other texts in the same
                              * field.
                              * ex: In APIMALLALERT table username is saved like this in the message field ->
                              * "User admin@carbon.super frequently crosses the limit set." So, a string replace is
@@ -154,12 +154,17 @@ public class Executor {
                              *
                              * Scenario 5:
                              * User is not in the super tenant space(is in some other tenant). Other tenant's
-                             * username is saved with the tenant domain.
-                             * ex: admin@abc.com, usera@abc.com
+                             * username is saved with the tenant domain(ex: admin@abc.com, usera@abc.com) with other
+                             * texts in the same field.
+                             *
+                             * ex: In APIMALLALERT table username is saved like this in the message field ->
+                             * "User user1@abc.com frequently crosses the limit set." So, a string replace is
+                             * performed.
+                             *
                              * NOTE: There is no scenario where other tenant's username is saved without the
                              * tenant domain.
                              * */
-                            if (isUserInSuperTenantDomain && isSuperTenantUsernameHasTenantDomain) {
+                            if (isSuperTenantUsernameHasTenantDomain || !isUserInSuperTenantDomain) {
                                 String currentValue
                                         = preReplaceText.concat(usernameWithTenantDomain).concat(postReplaceText);
                                 String replaceValue
