@@ -166,6 +166,9 @@ export default function withWrappedWidget(WrappedComponent, componentName) {
                         faultyProviderConfig={faultyProviderConfig}
                         data={data}
                         subscribeWidget={this.subscribeWidget}
+                        publish={(...args) => super.publish(...args)}
+                        subscribe={(...args) => super.subscribe(...args)}
+                        getGlobalState={(...args) => super.getGlobalState(...args)}
                     />
                 </IntlProvider>
             );
