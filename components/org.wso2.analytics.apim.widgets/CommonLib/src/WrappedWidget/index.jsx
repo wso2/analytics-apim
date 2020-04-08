@@ -120,7 +120,10 @@ export default function withWrappedWidget(WrappedComponent, componentName) {
                 });
         }
 
-        // eslint-disable-next-line require-jsdoc
+        /**
+         * @param {String} widgetId - Widget ID
+         * @param {Object} dataProviderConfigs - dataProviderConfigs width data provide queries
+         */
         subscribeWidget(widgetId, dataProviderConfigs) {
             const { widgetConf, data } = this.state;
             if (!widgetConf) {
