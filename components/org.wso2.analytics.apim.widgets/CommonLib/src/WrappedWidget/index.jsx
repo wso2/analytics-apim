@@ -58,6 +58,7 @@ export default function withWrappedWidget(WrappedComponent, componentName) {
                 messages: null,
                 faultyProviderConfig: false,
                 widgetConf: null,
+                data: {},
             };
             // This will re-size the widget when the glContainer's width is changed.
             if (glContainer !== undefined) {
@@ -66,6 +67,7 @@ export default function withWrappedWidget(WrappedComponent, componentName) {
                     height: glContainer.height,
                 }));
             }
+            this.subscribeWidget = this.subscribeWidget.bind(this);
         }
 
         /**
@@ -118,6 +120,29 @@ export default function withWrappedWidget(WrappedComponent, componentName) {
                 });
         }
 
+        // eslint-disable-next-line require-jsdoc
+        subscribeWidget(widgetId, dataProviderConfigs) {
+            const { widgetConf, data } = this.state;
+            if (!widgetConf) {
+                return;
+            }
+            this.setState({
+                inProgress: true,
+            });
+            const callback = (message) => {
+                this.setState({
+                    data: {
+                        ...data,
+                        [widgetId]: message.data,
+                    },
+                    inProgress: false,
+                });
+            };
+            super.getWidgetChannelManager().subscribeWidget(
+                widgetId, componentName, callback, dataProviderConfigs,
+            );
+        }
+
         /**
          * @inheritDoc
          * @returns {ReactElement}
@@ -125,7 +150,7 @@ export default function withWrappedWidget(WrappedComponent, componentName) {
          */
         render() {
             const {
-                messages, width, height, widgetConf, faultyProviderConfig,
+                messages, width, height, widgetConf, faultyProviderConfig, data,
             } = this.state;
             return (
                 <IntlProvider locale={language} messages={messages}>
@@ -136,6 +161,8 @@ export default function withWrappedWidget(WrappedComponent, componentName) {
                         getWidgetChannelManager={(...args) => super.getWidgetChannelManager(...args)}
                         widgetConf={widgetConf}
                         faultyProviderConfig={faultyProviderConfig}
+                        data={data}
+                        subscribeWidget={this.subscribeWidget}
                     />
                 </IntlProvider>
             );

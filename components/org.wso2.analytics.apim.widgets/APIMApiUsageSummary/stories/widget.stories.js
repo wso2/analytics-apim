@@ -31,6 +31,7 @@ export default {
 export const darkTheme = () => (
     <APIMApiUsageSummaryWidget
         muiTheme={{ name: 'dark' }}
+        inProgress={false}
         widgetConf={{
             configs: {
                 pubsub: {
@@ -64,6 +65,7 @@ export const lightTheme = () => (
     <MuiThemeProvider>
         <APIMApiUsageSummaryWidget
             muiTheme={{ name: 'light' }}
+            inProgress={false}
             widgetConf={{
                 configs: {
                     pubsub: {

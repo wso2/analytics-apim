@@ -68,10 +68,9 @@ class APIMApiUsageSummaryWidget extends Component {
     constructor(props) {
         super(props);
 
+        const { inProgress } = this.props;
         this.state = {
-            lastWeekCount: 0,
-            thisWeekCount: 0,
-            inProgress: true,
+            inProgress,
         };
 
         const { height } = props;
@@ -96,9 +95,6 @@ class APIMApiUsageSummaryWidget extends Component {
                 height,
             },
         };
-
-        this.assembleUsageCountQuery = this.assembleUsageCountQuery.bind(this);
-        this.handleUsageCountReceived = this.handleUsageCountReceived.bind(this);
     }
 
     /**
@@ -141,7 +137,7 @@ class APIMApiUsageSummaryWidget extends Component {
      * */
     assembleUsageCountQuery(week) {
         const {
-            id, widgetID: widgetName, widgetConf, getWidgetChannelManager,
+            id, widgetConf, subscribeWidget,
         } = this.props;
         const dataProviderConfigs = widgetConf.configs.providerConfig;
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
@@ -159,36 +155,7 @@ class APIMApiUsageSummaryWidget extends Component {
             '{{per}}': 'day',
         };
 
-        getWidgetChannelManager().subscribeWidget(id + week, widgetName, (message) => {
-            this.handleUsageCountReceived(week, message);
-        }, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data received from assembleweekQuery
-     * @param {string} week - This week/Last week
-     * @param {object} message - data retrieved
-     * @memberof APIMApiUsageSummaryWidget
-     * */
-    handleUsageCountReceived(week, message) {
-        const { data } = message;
-        const count = data[0] || [];
-        if (count.length) {
-            if (week === THIS_WEEK) {
-                this.setState({
-                    thisWeekCount: count[0] || 0,
-                    inProgress: false,
-                });
-            }
-            if (week === LAST_WEEK) {
-                this.setState({
-                    lastWeekCount: count[0] || 0,
-                    inProgress: false,
-                });
-            }
-        } else {
-            this.setState({ inProgress: false });
-        }
+        subscribeWidget(id + week, dataProviderConfigs);
     }
 
     /**
@@ -198,7 +165,14 @@ class APIMApiUsageSummaryWidget extends Component {
      */
     render() {
         const {
-            faultyProviderConf, lastWeekCount, thisWeekCount, inProgress,
+            id, data,
+        } = this.props;
+
+        // Received data is in a two dimentional array, unwind it to get counts
+        const thisWeekCount = ([data[id + THIS_WEEK] || []][0] || [])[0] || 0;
+        const lastWeekCount = ([data[id + LAST_WEEK] || []][0] || [])[0] || 0;
+        const {
+            faultyProviderConf, inProgress,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
@@ -251,6 +225,9 @@ APIMApiUsageSummaryWidget.propTypes = {
     widgetID: PropTypes.string,
     widgetConf: PropTypes.instanceOf(Object),
     muiTheme: PropTypes.instanceOf(Object),
+    data: PropTypes.instanceOf(Object),
+    inProgress: PropTypes.bool,
+    subscribeWidget: PropTypes.func.isRequired,
 };
 
 APIMApiUsageSummaryWidget.defaultProps = {
@@ -260,6 +237,8 @@ APIMApiUsageSummaryWidget.defaultProps = {
     widgetID: null,
     widgetConf: {},
     muiTheme: {},
+    data: {},
+    inProgress: false,
 };
 
 withWrappedWidget(APIMApiUsageSummaryWidget, 'APIMApiUsageSummary');
