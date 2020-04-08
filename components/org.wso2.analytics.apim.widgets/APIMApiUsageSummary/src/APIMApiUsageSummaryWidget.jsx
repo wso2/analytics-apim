@@ -71,7 +71,7 @@ class APIMApiUsageSummaryWidget extends Component {
         this.state = {
             lastWeekCount: 0,
             thisWeekCount: 0,
-            inProgress: false,
+            inProgress: true,
         };
 
         const { height } = props;
@@ -105,19 +105,21 @@ class APIMApiUsageSummaryWidget extends Component {
      *
      * @param {any} props @inheritDoc
      */
-    componentDidMount() {
+    componentDidUpdate(prevProps) {
         const {
-            id, getWidgetChannelManager,
+            id, getWidgetChannelManager, widgetConf,
         } = this.props;
-        const refresh = () => {
-            getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
-            getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
+        if (JSON.stringify(widgetConf) !== JSON.stringify(prevProps.widgetConf)) {
+            const refresh = () => {
+                getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
+                getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
+                this.assembleUsageCountQuery(THIS_WEEK);
+                this.assembleUsageCountQuery(LAST_WEEK);
+            };
+            refreshIntervalId = setInterval(refresh, refreshInterval);
             this.assembleUsageCountQuery(THIS_WEEK);
             this.assembleUsageCountQuery(LAST_WEEK);
-        };
-        refreshIntervalId = setInterval(refresh, refreshInterval);
-        this.assembleUsageCountQuery(THIS_WEEK);
-        this.assembleUsageCountQuery(LAST_WEEK);
+        }
     }
 
     /**
@@ -169,6 +171,7 @@ class APIMApiUsageSummaryWidget extends Component {
      * @memberof APIMApiUsageSummaryWidget
      * */
     handleUsageCountReceived(week, message) {
+        console.log(message)
         const { data } = message;
         const count = data[0] || [];
         if (count.length) {

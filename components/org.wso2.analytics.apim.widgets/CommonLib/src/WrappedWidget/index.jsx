@@ -57,7 +57,7 @@ export default function withWrappedWidget(WrappedComponent, componentName) {
                 height,
                 messages: null,
                 faultyProviderConfig: false,
-                widgetConf: {},
+                widgetConf: null,
             };
             // This will re-size the widget when the glContainer's width is changed.
             if (glContainer !== undefined) {
@@ -147,7 +147,7 @@ export default function withWrappedWidget(WrappedComponent, componentName) {
         glContainer: PropTypes.instanceOf(Object).isRequired,
         widgetID: PropTypes.string.isRequired,
     };
-    component.defautProps = {
+    component.defaultProps = {
 
     };
     if (global.dashboard) {
