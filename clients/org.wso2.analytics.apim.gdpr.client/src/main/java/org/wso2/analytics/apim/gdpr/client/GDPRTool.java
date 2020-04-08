@@ -77,8 +77,10 @@ public class GDPRTool {
     private static final Logger LOG = LoggerFactory.getLogger(GDPRTool.class);
 
     public static void main(String[] args) throws Exception {
+        LOG.info("GDPR client started.");
+
         Options options = new Options();
-        options.addOption(CMD_OPTION_CONFIG_DIR, true, "Directory where deployment.yaml file located (mandatory)");
+        options.addOption(CMD_OPTION_CONFIG_DIR, true, "Directory where deployment.yaml file located (optional)");
         options.addOption(CMD_OPTION_CONFIG_USER_NAME, true, "User Name (mandatory)");
         options.addOption(CMD_OPTION_CONFIG_USER_PSEUDONYM, true,
                 "Pseudonym, which the user name to be replaced with (optional)");
@@ -131,6 +133,8 @@ public class GDPRTool {
         }
         GDPRTool tool = new GDPRTool();
         tool.process(configFilePath, user);
+
+        LOG.info("GDPR client stopped.");
     }
 
     /**
