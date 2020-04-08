@@ -171,7 +171,6 @@ class APIMApiUsageSummaryWidget extends Component {
      * @memberof APIMApiUsageSummaryWidget
      * */
     handleUsageCountReceived(week, message) {
-        console.log(message)
         const { data } = message;
         const count = data[0] || [];
         if (count.length) {
