@@ -40,7 +40,7 @@ import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.IP_MIN;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.SUPER_TENANT_DOMAIN;
 
 /**
- * Main class for APIM GDPR client.
+ * Class which decides which update query to be used for a given table entry.
  */
 public class Executor {
 
@@ -145,7 +145,7 @@ public class Executor {
                              * User is in the super tenant space. Super tenant's username is saved with the
                              * tenant domain(ex: admin@carbon.super, usera@carbon.super) with other texts in the same
                              * field.
-                             * ex: In APIMALLALERT table username is saved like this in the message field ->
+                             * ex: In ApimAllAlert table username is saved like this in the message field ->
                              * "User admin@carbon.super frequently crosses the limit set." So, a string replace is
                              * performed.
                              *
@@ -157,7 +157,7 @@ public class Executor {
                              * username is saved with the tenant domain(ex: admin@abc.com, usera@abc.com) with other
                              * texts in the same field.
                              *
-                             * ex: In APIMALLALERT table username is saved like this in the message field ->
+                             * ex: In ApimAllAlert table username is saved like this in the message field ->
                              * "User user1@abc.com frequently crosses the limit set." So, a string replace is
                              * performed.
                              *
@@ -183,11 +183,11 @@ public class Executor {
                             /*
                              * Scenario 6:
                              * Replace the email stored in the emails field.
-                             * ex: In APIMALERTSTAKEHOLDERINFO table emails are stored like this ->
+                             * ex: In ApimAlertStakeholderInfo table emails are stored like this ->
                              * "user1@abc.com, user2@abc.com, user3@abc.com". In here we need to do perform a
                              * string replace to replace the email value with the pseudonym value.
-                             * NOTE: This scenario is a special case where it only applicable for APIMALLALERT
-                             * table.
+                             * NOTE: This scenario is a special case where it only applicable for
+                             * ApimAlertStakeholderInfo table.
                              * */
                             if (isTextReplace) {
                                 // skip update query for email entries if user email is not provided
@@ -216,12 +216,12 @@ public class Executor {
                         /*
                          * Scenario 7:
                          * Replace the ip address and username stored in the message field.
-                         * ex: In APIMALLALERT table, ip address is stored like this ->
+                         * ex: In ApimAllAlert table, ip address is stored like this ->
                          * "A request from a old IP (127.0.0.1) detected by user:john@abc.com using
                          * application:DefaultApplication owned by george@abc.com.". In here we need to do perform a
                          * string replace to replace the ip address and the username with the pseudonym value. If IP
                          * is not provided, then only username will be replaced.
-                         * NOTE: This scenario is a special case where it only applicable for APIMALLALERT table.
+                         * NOTE: This scenario is a special case where it only applicable for ApimAllAlert table.
                          * */
                         if (isTextReplace) {
                             String preReplaceText = tableEntry.getPreReplaceText();
