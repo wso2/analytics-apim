@@ -176,9 +176,6 @@ wso2.gdpr:
           columnName: APICREATOR
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApimTierLimitHittingAlert
-          columnName: SUBSCRIBER
-          isSuperTenantUsernameHasTenantDomain: true
-        - tableName: ApimTierLimitHittingAlert
           columnName: MESSAGE
           isSuperTenantUsernameHasTenantDomain: true
           isTextReplace: true
