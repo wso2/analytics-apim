@@ -168,6 +168,7 @@ public class GDPRTool {
     public void process(String configFilePath, User user) {
         Path configurationFilePath = Paths.get(configFilePath, FILE_NAME);
         ConfigProvider configProvider;
+        Executor executor = null;
         try {
             configProvider = ConfigProviderFactory.getConfigProvider(configurationFilePath);
             GDPRClientConfiguration gdprClientConfiguration
@@ -182,14 +183,18 @@ public class GDPRTool {
             // load and initialize the data sources defined in configuration file
             dataSourceManager.initDataSources(configProvider);
 
-            Executor executor = new Executor(gdprClientConfiguration, dataSources, dataSourceService, user);
+            executor = new Executor(gdprClientConfiguration, dataSources, dataSourceService, user);
             executor.execute();
         } catch (ConfigurationException e) {
             LOG.error("Error in getting configuration", e);
         } catch (DataSourceException e) {
             LOG.error("Error occurred while initialising data sources.", e);
-        } catch (GDPRClientException e) {
-            LOG.error("Error occurred while updating the table entries.", e);
+        } catch (Exception e) {
+            // If any error occurred in the executor class, db connections are rollback and closed.
+            if (executor != null) {
+                executor.rollbackAndCloseAllConnections();
+            }
+            throw e;
         }
     }
 

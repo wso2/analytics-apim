@@ -63,6 +63,7 @@ public class ClientDAO {
     private QueryManager queryManager;
     private DataSource dataSource;
     private String databaseName;
+    private Connection connection;
     private List<Queries> deploymentQueries;
 
     public ClientDAO(DataSourceService dataSourceService, String databaseName, List<Queries> deploymentQueries) {
@@ -72,11 +73,14 @@ public class ClientDAO {
     }
 
     public void init() throws GDPRClientException {
-        try (Connection conn = getConnection()) {
-            DatabaseMetaData databaseMetaData = conn.getMetaData();
+        try {
+            this.connection = getDataSource().getConnection();
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
             this.queryManager = new QueryManager(databaseMetaData.getDatabaseProductName(),
                     databaseMetaData.getDatabaseProductVersion(), this.deploymentQueries);
+            connection.setAutoCommit(false);
         } catch (SQLException | IOException | QueryMappingNotAvailableException e) {
+            closeConnection();
             throw new GDPRClientException("Error initializing connection.", e);
         }
     }
@@ -90,16 +94,14 @@ public class ClientDAO {
     public boolean checkTableExists(String tableName) {
         String query = this.queryManager.getQuery(TABLE_CHECK_QUERY);
         query = query.replace(TABLE_NAME_PLACEHOLDER, tableName);
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                return true;
-            }
-        } catch (SQLException | GDPRClientException e) {
-            LOG.debug("Table '{}' assumed to not exist since its existence check query {} resulted "
-                    + "in exception {}.", tableName, query, e.getMessage());
+        try (PreparedStatement ps = this.connection.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            return true;
+        } catch (SQLException e) {
+            LOG.debug("Table '{}' assumed to not exist since its existence check query {} resulted in exception {}.",
+                    tableName, query, e.getMessage());
+            return false;
         }
-        return false;
     }
 
     /**
@@ -206,17 +208,20 @@ public class ClientDAO {
 
     public boolean executeUpdateQuery(String tableName, String query) throws GDPRClientException {
         boolean result;
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            conn.setAutoCommit(false);
+        PreparedStatement ps = null;
+        try {
+            ps = this.connection.prepareStatement(query);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Executing query: " + query);
             }
-            result = ps.executeUpdate() == 1;
-            conn.commit();
-            LOG.info("Update query successfully executed for table {} of {} database.", tableName, this.databaseName);
+            int updatedTableEntries =  ps.executeUpdate();
+            result = updatedTableEntries >= 1;
+            LOG.info("Update query successfully executed by updating {} number of rows for table: {} in {} database.",
+                    updatedTableEntries, tableName, this.databaseName);
         } catch (SQLException e) {
             throw new GDPRClientException("Error occurred while performing the update. [Query=" + query + "]", e);
+        } finally {
+            closeStatement(ps);
         }
         return result;
     }
@@ -239,11 +244,47 @@ public class ClientDAO {
         return this.dataSource;
     }
 
-    private Connection getConnection() throws SQLException, GDPRClientException {
-        return getDataSource().getConnection();
+    private void closeStatement(PreparedStatement preparedStatement) {
+        if (preparedStatement != null) {
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                throw new GDPRClientException("Error occurred while closing the prepared statement.", e);
+            }
+        }
+
     }
 
-    public String getDatabaseName() {
-        return this.databaseName;
+    public void closeConnection() {
+        try {
+            if (this.connection != null) {
+                this.connection.close();
+                LOG.info("Database connection closed for database: {}.", this.databaseName);
+            }
+        } catch (SQLException e) {
+            throw new GDPRClientException("Error occurred while closing the database connection.", e);
+        }
+    }
+
+    public void commitConnection() {
+        try {
+            if (this.connection != null) {
+                this.connection.commit();
+                LOG.info("Database connection committed for database: {}.", this.databaseName);
+            }
+        } catch (SQLException e) {
+            throw new GDPRClientException("Error occurred while committing the database connection.", e);
+        }
+    }
+
+    public void rollbackConnection() {
+        try {
+            if (this.connection != null) {
+                this.connection.rollback();
+                LOG.warn("Executed database connection rollback for database: {}.", this.databaseName);
+            }
+        } catch (SQLException e) {
+            throw new GDPRClientException("Error occurred while rollback the database connection.", e);
+        }
     }
 }

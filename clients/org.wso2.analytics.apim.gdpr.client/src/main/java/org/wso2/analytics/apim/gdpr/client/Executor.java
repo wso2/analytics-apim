@@ -31,6 +31,7 @@ import org.wso2.carbon.database.query.manager.config.Queries;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.beans.DataSourceMetadata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.AT;
@@ -46,6 +47,7 @@ public class Executor {
 
     private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
 
+    private List<ClientDAO> clientDAOs = new ArrayList<>();
     private GDPRClientConfiguration gdprClientConfiguration;
     private List<DataSourceMetadata> dataSources;
     private DataSourceService dataSourceService;
@@ -77,6 +79,7 @@ public class Executor {
             String databaseName = dataSource.getName();
             ClientDAO clientDAO = new ClientDAO(this.dataSourceService, databaseName, configQueries);
             clientDAO.init();
+            this.clientDAOs.add(clientDAO);
 
             for (DatabaseInfo databaseEntry : databaseInfo) {
                 if (databaseEntry.getDatabaseName().equalsIgnoreCase(databaseName)) {
@@ -271,6 +274,18 @@ public class Executor {
                     break;
                 }
             }
+        }
+        // commit and close all the data source connections.
+        for (ClientDAO dao: this.clientDAOs) {
+            dao.commitConnection();
+            dao.closeConnection();
+        }
+    }
+
+    public void rollbackAndCloseAllConnections() {
+        for (ClientDAO dao: this.clientDAOs) {
+            dao.rollbackConnection();
+            dao.closeConnection();
         }
     }
 }
