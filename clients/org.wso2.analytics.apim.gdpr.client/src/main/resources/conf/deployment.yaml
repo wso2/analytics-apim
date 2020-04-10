@@ -52,49 +52,34 @@ wso2.gdpr:
       tableEntries:
         - tableName: ApiCreatorAlertConfiguration
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiExeTime_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiExeTime_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiExeTime_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiExeTime_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiExeTime_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiExeTime_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiFaultyInvocationAgg_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiFaultyInvocationAgg_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiFaultyInvocationAgg_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiFaultyInvocationAgg_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiFaultyInvocationAgg_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiFaultyInvocationAgg_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiLastAccessSummary
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiLastAccessSummary
           columnName: APPLICATIONOWNER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApimAbnormalBackendTimeAlert
           columnName: APICREATOR
           isSuperTenantUsernameHasTenantDomain: true
@@ -183,256 +168,189 @@ wso2.gdpr:
           postReplaceText: " frequently"
         - tableName: APIM_ReqCountAgg_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: APIM_ReqCountAgg_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: APIM_ReqCountAgg_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: APIM_ReqCountAgg_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: APIM_ReqCountAgg_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: APIM_ReqCountAgg_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiPerDestinationAgg_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiPerDestinationAgg_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiPerDestinationAgg_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiPerDestinationAgg_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiPerDestinationAgg_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiPerDestinationAgg_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiResPathPerApp_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiResPathPerApp_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiResPathPerApp_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiResPathPerApp_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiResPathPerApp_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiResPathPerApp_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiSubAlertConf
           columnName: SUBSCRIBER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_DAYS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiThrottledOutAgg_DAYS
           columnName: SUBSCRIBER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_HOURS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiThrottledOutAgg_HOURS
           columnName: SUBSCRIBER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_MINUTES
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiThrottledOutAgg_MINUTES
           columnName: SUBSCRIBER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_MONTHS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiThrottledOutAgg_MONTHS
           columnName: SUBSCRIBER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_SECONDS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiThrottledOutAgg_SECONDS
           columnName: SUBSCRIBER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiThrottledOutAgg_YEARS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiThrottledOutAgg_YEARS
           columnName: SUBSCRIBER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserBrowserAgg_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserBrowserAgg_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserBrowserAgg_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserBrowserAgg_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserBrowserAgg_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserBrowserAgg_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_DAYS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiUserPerAppAgg_DAYS
           columnName: APPLICATIONOWNER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_HOURS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiUserPerAppAgg_HOURS
           columnName: APPLICATIONOWNER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_MINUTES
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiUserPerAppAgg_MINUTES
           columnName: APPLICATIONOWNER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_MONTHS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiUserPerAppAgg_MONTHS
           columnName: APPLICATIONOWNER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_SECONDS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiUserPerAppAgg_SECONDS
           columnName: APPLICATIONOWNER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiUserPerAppAgg_YEARS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: ApiUserPerAppAgg_YEARS
           columnName: APPLICATIONOWNER
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiVersionPerAppAgg_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiVersionPerAppAgg_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiVersionPerAppAgg_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiVersionPerAppAgg_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiVersionPerAppAgg_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: ApiVersionPerAppAgg_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: GeoLocationAgg_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: GeoLocationAgg_DAYS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: GeoLocationAgg_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: GeoLocationAgg_HOURS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: GeoLocationAgg_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: GeoLocationAgg_MINUTES
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: GeoLocationAgg_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: GeoLocationAgg_MONTHS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: GeoLocationAgg_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: GeoLocationAgg_SECONDS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: GeoLocationAgg_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: GeoLocationAgg_YEARS
           columnName: USERNAME
           isSuperTenantUsernameHasTenantDomain: true
         - tableName: MonetizationAgg_DAYS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: MonetizationAgg_HOURS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: MonetizationAgg_MINUTES
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: MonetizationAgg_MONTHS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: MonetizationAgg_SECONDS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
         - tableName: MonetizationAgg_YEARS
           columnName: APICREATOR
-          isSuperTenantUsernameHasTenantDomain: false
