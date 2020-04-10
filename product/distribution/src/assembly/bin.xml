@@ -360,7 +360,7 @@
         </file>
 
         <file>
-            <source>target/gdpr-client/gdpr-client-${project.version}/conf/deployment.yaml</source>
+            <source>target/gdpr-client/gdpr-client-${project.version}/conf/conf.yaml</source>
             <outputDirectory>wso2/tools/gdpr-client/conf/</outputDirectory>
             <fileMode>644</fileMode>
         </file>
