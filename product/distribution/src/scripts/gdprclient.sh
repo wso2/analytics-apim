@@ -34,4 +34,4 @@ PRGDIR=`dirname "$PRG"`
 [ -z "$CARBON_HOME" ] && CARBON_HOME=`cd "$PRGDIR/.." ; pwd`
 
 cd $CARBON_HOME/wso2/tools/gdpr-client/bin/
-sh gdprclient.sh -D $CARBON_HOME/wso2/tools/gdpr-client/conf $@
+sh gdprclient.sh $@
