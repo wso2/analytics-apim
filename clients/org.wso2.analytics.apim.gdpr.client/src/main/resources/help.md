@@ -12,12 +12,6 @@ User Name (mandatory)
 example
 >-U john
 
-###### Option D
-Configuration Directory (optional)
-
-example
->-D /Users/john/wso2am-analytics-3.1.0/wso2/tools/gdpr-client/conf
-
 ##### Option T
 Tenant Domain (optional) Default = “carbon.super”
 
