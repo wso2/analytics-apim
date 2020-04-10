@@ -32,6 +32,21 @@ wso2.datasources:
           validationTimeout: 30000
           isAutoCommit: false
 
+    - name: WSO2_DASHBOARD_DB
+      description: "The datasource used for dashboard feature"
+      definition:
+        type: RDBMS
+        configuration:
+          jdbcUrl: 'jdbc:h2:<PATH_TO_API-M_ANALYTICS_HOME>/wso2/dashboard/database/DASHBOARD_DB;AUTO_SERVER=TRUE'
+          username: wso2carbon
+          password: wso2carbon
+          driverClassName: org.h2.Driver
+          maxPoolSize: 20
+          idleTimeout: 60000
+          connectionTestQuery: SELECT 1
+          validationTimeout: 30000
+          isAutoCommit: false
+
 wso2.securevault:
   secretRepository:
     type: org.wso2.carbon.secvault.repository.DefaultSecretRepository
@@ -354,3 +369,9 @@ wso2.gdpr:
           columnName: APICREATOR
         - tableName: MonetizationAgg_YEARS
           columnName: APICREATOR
+
+    - databaseName: WSO2_DASHBOARD_DB
+      tableEntries:
+        - tableName: DASHBOARD_RESOURCE
+          columnName: OWNER
+          isSuperTenantUsernameHasTenantDomain: true
