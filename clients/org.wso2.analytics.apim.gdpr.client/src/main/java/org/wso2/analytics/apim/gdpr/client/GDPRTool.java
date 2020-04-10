@@ -123,7 +123,7 @@ public class GDPRTool {
             try {
                 user = createUser(cmd);
             } catch (CommandLineException e) {
-                LOG.error(e.getMessage());
+                LOG.error(e.getMessage(), e);
                 printError(options);
                 return;
             }
@@ -163,10 +163,10 @@ public class GDPRTool {
         if (StringUtils.isEmpty(pseudonym) && cmd.hasOption(CMD_OPTION_ENABLE_SHA256_HASHING)) {
             String userName = cmd.getOptionValue(CMD_OPTION_CONFIG_USER_NAME);
             pseudonym = DigestUtils.sha256Hex(userName);
-            LOG.info("Generated SHA256 hash for the given ID attribute : " + pseudonym);
+            LOG.info("Generated SHA256 hash for the given ID attribute.");
         } else if (StringUtils.isEmpty(pseudonym)) {
             pseudonym = UUID.randomUUID().toString();
-            LOG.info("Generating pseudonym as pseudonym is not provided : " + pseudonym);
+            LOG.info("Generating pseudonym as pseudonym is not provided.");
         }
         return pseudonym;
     }
