@@ -136,8 +136,8 @@ public class Executor {
                                 continue;
                             }
 
-                            String preReplaceText = tableEntry.getPreReplaceText();
-                            String postReplaceText = tableEntry.getPostReplaceText();
+                            String replaceTextPrefix = tableEntry.getReplaceTextPrefix();
+                            String replaceTextSuffix = tableEntry.getReplaceTextSuffix();
 
                             /*
                              * This method covers two scenarios.
@@ -166,9 +166,9 @@ public class Executor {
                              * */
                             if (isSuperTenantUsernameHasTenantDomain || !isUserInSuperTenantDomain) {
                                 String currentValue
-                                        = preReplaceText.concat(usernameWithTenantDomain).concat(postReplaceText);
+                                        = replaceTextPrefix.concat(usernameWithTenantDomain).concat(replaceTextSuffix);
                                 String replaceValue
-                                        = preReplaceText.concat(pseudonymWithTenantDomain).concat(postReplaceText);
+                                        = replaceTextPrefix.concat(pseudonymWithTenantDomain).concat(replaceTextSuffix);
                                 // perform string replace to replace user ip address
                                 clientDAO.performStringReplaceAndUpdateTableEntry(tableName, columnName,
                                         currentValue, replaceValue);
@@ -196,11 +196,11 @@ public class Executor {
                                             "database: " + databaseName + " as the user email is not provided.");
                                     continue;
                                 }
-                                String preReplaceText = tableEntry.getPreReplaceText();
-                                String postReplaceText = tableEntry.getPostReplaceText();
+                                String replaceTextPrefix = tableEntry.getReplaceTextPrefix();
+                                String replaceTextSuffix = tableEntry.getReplaceTextSuffix();
                                 // perform string replace to replace user email value
                                 clientDAO.performStringReplaceAndUpdateEmailTableEntry(tableName, columnName,
-                                        userEmail, pseudonym, preReplaceText, postReplaceText);
+                                        userEmail, pseudonym, replaceTextPrefix, replaceTextSuffix);
                                 continue;
                             }
 
@@ -224,24 +224,24 @@ public class Executor {
                          * NOTE: This scenario is a special case where it only applicable for ApimAllAlert table.
                          * */
                         if (isTextReplace) {
-                            String preReplaceText = tableEntry.getPreReplaceText();
-                            String postReplaceText = tableEntry.getPostReplaceText();
+                            String replaceTextPrefix = tableEntry.getReplaceTextPrefix();
+                            String replaceTextSuffix = tableEntry.getReplaceTextSuffix();
                             if (StringUtils.isEmpty(userIP)) {
                                 // replace only the username as the user ip is not provided.
                                 LOG.warn("Updating only USERNAME for table entry: [" + tableEntry.toString() + "] in " +
                                         "database: " + databaseName + " as the user ip is not provided.");
-                                String currentValue = postReplaceText.replace(CURRENT_IP_USERNAME_VALUE_PLACEHOLDER,
+                                String currentValue = replaceTextSuffix.replace(CURRENT_IP_USERNAME_VALUE_PLACEHOLDER,
                                         usernameWithTenantDomain);
-                                String replaceValue = postReplaceText.replace(CURRENT_IP_USERNAME_VALUE_PLACEHOLDER,
+                                String replaceValue = replaceTextSuffix.replace(CURRENT_IP_USERNAME_VALUE_PLACEHOLDER,
                                         pseudonymWithTenantDomain);
                                 // perform string replace to replace user ip address
                                 clientDAO.performStringReplaceAndUpdateTableEntry(tableName, columnName,
                                         currentValue, replaceValue);
                                 continue;
                             }
-                            String currentValue = preReplaceText.concat(userIP).concat(postReplaceText)
+                            String currentValue = replaceTextPrefix.concat(userIP).concat(replaceTextSuffix)
                                     .replace(CURRENT_IP_USERNAME_VALUE_PLACEHOLDER, usernameWithTenantDomain);
-                            String replaceValue = preReplaceText.concat(ipPseudonym).concat(postReplaceText)
+                            String replaceValue = replaceTextPrefix.concat(ipPseudonym).concat(replaceTextSuffix)
                                     .replace(CURRENT_IP_USERNAME_VALUE_PLACEHOLDER, pseudonymWithTenantDomain);
                             // perform string replace to replace user ip address
                             clientDAO.performStringReplaceAndUpdateTableEntry(tableName, columnName, currentValue,

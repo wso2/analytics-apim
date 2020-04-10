@@ -44,10 +44,10 @@ public class TableEntryInfo {
     private boolean isTextReplace = false;
 
     @Element(description = "Text which needs to be append before the replacing text in sql LIKE clause")
-    private String preReplaceText;
+    private String replaceTextPrefix;
 
     @Element(description = "Text which needs to be append after the replacing text in sql LIKE clause")
-    private String postReplaceText;
+    private String replaceTextSuffix;
 
     public String getTableName() {
         return tableName;
@@ -97,20 +97,20 @@ public class TableEntryInfo {
         isTextReplace = textReplace;
     }
 
-    public String getPreReplaceText() {
-        return preReplaceText;
+    public String getReplaceTextPrefix() {
+        return replaceTextPrefix;
     }
 
-    public void setPreReplaceText(String preReplaceText) {
-        this.preReplaceText = preReplaceText;
+    public void setReplaceTextPrefix(String replaceTextPrefix) {
+        this.replaceTextPrefix = replaceTextPrefix;
     }
 
-    public String getPostReplaceText() {
-        return postReplaceText;
+    public String getReplaceTextSuffix() {
+        return replaceTextSuffix;
     }
 
-    public void setPostReplaceText(String postReplaceText) {
-        this.postReplaceText = postReplaceText;
+    public void setReplaceTextSuffix(String replaceTextSuffix) {
+        this.replaceTextSuffix = replaceTextSuffix;
     }
 
     @Override
@@ -122,8 +122,8 @@ public class TableEntryInfo {
                 ", columnType=" + columnType +
                 ", ipUsernameColumnName='" + ipUsernameColumnName + '\'' +
                 ", isTextReplace=" + isTextReplace +
-                ", preReplaceText='" + preReplaceText + '\'' +
-                ", postReplaceText='" + postReplaceText + '\'' +
+                ", replaceTextPrefix='" + replaceTextPrefix + '\'' +
+                ", replaceTextSuffix='" + replaceTextSuffix + '\'' +
                 '}';
     }
 }

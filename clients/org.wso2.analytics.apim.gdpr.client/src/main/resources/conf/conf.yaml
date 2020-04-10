@@ -111,39 +111,39 @@ wso2.gdpr:
           columnName: EMAILS
           columnType: EMAIL
           isTextReplace: true
-          preReplaceText: ","
-          postReplaceText: ","
+          replaceTextPrefix: ","
+          replaceTextSuffix: ","
         - tableName: ApimAllAlert
           columnName: MESSAGE
           isSuperTenantUsernameHasTenantDomain: true
           isTextReplace: true
-          preReplaceText: "owned by "
-          postReplaceText: " for api"
+          replaceTextPrefix: "owned by "
+          replaceTextSuffix: " for api"
         - tableName: ApimAllAlert
           columnName: MESSAGE
           isSuperTenantUsernameHasTenantDomain: true
           columnType: IP
           isTextReplace: true
-          preReplaceText: "IP ("
-          postReplaceText: ") detected by user:{{CURRENT_IP_USERNAME_VALUE}} using"
+          replaceTextPrefix: "IP ("
+          replaceTextSuffix: ") detected by user:{{CURRENT_IP_USERNAME_VALUE}} using"
         - tableName: ApimAllAlert
           columnName: MESSAGE
           isSuperTenantUsernameHasTenantDomain: true
           isTextReplace: true
-          preReplaceText: "owned by "
-          postReplaceText: "."
+          replaceTextPrefix: "owned by "
+          replaceTextSuffix: "."
         - tableName: ApimAllAlert
           columnName: MESSAGE
           isSuperTenantUsernameHasTenantDomain: true
           isTextReplace: true
-          preReplaceText: "User "
-          postReplaceText: " frequently"
+          replaceTextPrefix: "User "
+          replaceTextSuffix: " frequently"
         - tableName: ApimAllAlert
           columnName: MESSAGE
           isSuperTenantUsernameHasTenantDomain: true
           isTextReplace: true
-          preReplaceText: "detected by user :"
-          postReplaceText: " using application"
+          replaceTextPrefix: "detected by user :"
+          replaceTextSuffix: " using application"
         - tableName: ApimApiAvailabilityInfo
           columnName: APICREATOR
           isSuperTenantUsernameHasTenantDomain: true
@@ -179,8 +179,8 @@ wso2.gdpr:
           columnName: MESSAGE
           isSuperTenantUsernameHasTenantDomain: true
           isTextReplace: true
-          preReplaceText: "User "
-          postReplaceText: " frequently"
+          replaceTextPrefix: "User "
+          replaceTextSuffix: " frequently"
         - tableName: APIM_ReqCountAgg_DAYS
           columnName: APICREATOR
         - tableName: APIM_ReqCountAgg_HOURS
