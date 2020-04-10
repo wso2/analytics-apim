@@ -80,7 +80,7 @@ public class GDPRTool {
         LOG.info("GDPR client started.");
 
         Options options = new Options();
-        options.addOption(CMD_OPTION_CONFIG_DIR, true, "Directory where deployment.yaml file located (optional)");
+        options.addOption(CMD_OPTION_CONFIG_DIR, true, "Directory where conf.yaml file located (optional)");
         options.addOption(CMD_OPTION_CONFIG_USER_NAME, true, "User Name (mandatory)");
         options.addOption(CMD_OPTION_CONFIG_USER_PSEUDONYM, true,
                 "Pseudonym, which the user name to be replaced with (optional)");
@@ -177,10 +177,10 @@ public class GDPRTool {
     }
 
     public void process(String configFilePath, User user) {
-        Path deploymentConfigPath = Paths.get(configFilePath, FILE_NAME);
+        Path configurationFilePath = Paths.get(configFilePath, FILE_NAME);
         ConfigProvider configProvider;
         try {
-            configProvider = ConfigProviderFactory.getConfigProvider(deploymentConfigPath);
+            configProvider = ConfigProviderFactory.getConfigProvider(configurationFilePath);
             GDPRClientConfiguration gdprClientConfiguration
                     = configProvider.getConfigurationObject(GDPRClientConfiguration.class);
             DataSourcesConfiguration dataSourcesConfiguration

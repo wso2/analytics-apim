@@ -70,12 +70,12 @@ public class Executor {
         String usernameWithTenantDomain = username.concat(AT).concat(tenantDomain);
         String pseudonymWithTenantDomain = pseudonym.concat(AT).concat(tenantDomain);
 
-        List<Queries> deploymentQueries = this.gdprClientConfiguration.getQueries();
+        List<Queries> configQueries = this.gdprClientConfiguration.getQueries();
         List<DatabaseInfo> databaseInfo = this.gdprClientConfiguration.getDatabases();
 
         for (DataSourceMetadata dataSource : this.dataSources) {
             String databaseName = dataSource.getName();
-            ClientDAO clientDAO = new ClientDAO(this.dataSourceService, databaseName, deploymentQueries);
+            ClientDAO clientDAO = new ClientDAO(this.dataSourceService, databaseName, configQueries);
             clientDAO.init();
 
             for (DatabaseInfo databaseEntry : databaseInfo) {
