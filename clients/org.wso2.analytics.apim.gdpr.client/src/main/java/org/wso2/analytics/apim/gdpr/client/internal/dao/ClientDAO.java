@@ -258,6 +258,10 @@ public class ClientDAO {
     public void closeConnection() {
         try {
             if (this.connection != null) {
+                if (this.connection.isClosed()) {
+                    LOG.warn("Database connection is already closed for database: {}.", this.databaseName);
+                    return;
+                }
                 this.connection.close();
                 LOG.info("Database connection closed for database: {}.", this.databaseName);
             }
@@ -269,6 +273,10 @@ public class ClientDAO {
     public void commitConnection() {
         try {
             if (this.connection != null) {
+                if (this.connection.isClosed()) {
+                    LOG.warn("Database connection is closed for database: {}.", this.databaseName);
+                    return;
+                }
                 this.connection.commit();
                 LOG.info("Database connection committed for database: {}.", this.databaseName);
             }
@@ -280,6 +288,10 @@ public class ClientDAO {
     public void rollbackConnection() {
         try {
             if (this.connection != null) {
+                if (this.connection.isClosed()) {
+                    LOG.warn("Database connection is closed for database: {}.", this.databaseName);
+                    return;
+                }
                 this.connection.rollback();
                 LOG.warn("Executed database connection rollback for database: {}.", this.databaseName);
             }

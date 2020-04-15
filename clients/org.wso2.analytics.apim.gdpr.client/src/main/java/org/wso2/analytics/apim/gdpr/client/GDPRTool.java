@@ -190,9 +190,9 @@ public class GDPRTool {
         } catch (DataSourceException e) {
             LOG.error("Error occurred while initialising data sources.", e);
         } catch (Exception e) {
-            // If any error occurred in the executor class, db connections are rollback and closed.
+            // If any error occurred in the executor class, current db connection is rolled back and closed.
             if (executor != null) {
-                executor.rollbackAndCloseAllConnections();
+                executor.rollbackAndCloseCurrentDBConnection();
             }
             throw e;
         }
