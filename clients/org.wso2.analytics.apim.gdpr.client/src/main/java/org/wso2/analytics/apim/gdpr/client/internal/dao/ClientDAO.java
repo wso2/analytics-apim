@@ -274,7 +274,8 @@ public class ClientDAO {
         try {
             if (this.connection != null) {
                 if (this.connection.isClosed()) {
-                    LOG.warn("Database connection is closed for database: {}.", this.databaseName);
+                    LOG.warn("Database connection is closed for database: {}. " +
+                            "Hence, cannot commit the connection.", this.databaseName);
                     return;
                 }
                 this.connection.commit();
@@ -289,11 +290,12 @@ public class ClientDAO {
         try {
             if (this.connection != null) {
                 if (this.connection.isClosed()) {
-                    LOG.warn("Database connection is closed for database: {}.", this.databaseName);
+                    LOG.warn("Database connection is closed for database: {}. " +
+                            "Hence, cannot rollback the connection.", this.databaseName);
                     return;
                 }
                 this.connection.rollback();
-                LOG.warn("Executed database connection rollback for database: {}.", this.databaseName);
+                LOG.warn("Database connection rolled back for database: {}.", this.databaseName);
             }
         } catch (SQLException e) {
             throw new GDPRClientException("Error occurred while rollback the database connection.", e);
