@@ -99,13 +99,13 @@ public class GDPRTool {
         }
 
         String configFilePath;
-        try {
-            String homeDirPath = Paths.get(System.getProperty("user.dir")).getParent().toString();
-            configFilePath = homeDirPath + File.separator + CONF_FOLDER;
-        } catch (NullPointerException e) {
+        Path userHomePath = Paths.get(System.getProperty("user.dir")).getParent();
+        if (userHomePath == null) {
             throw new GDPRClientException("Error occurred while getting the parent directory of the current " +
                     "directory.");
         }
+        String homeDirPath = userHomePath.toString();
+        configFilePath = homeDirPath + File.separator + CONF_FOLDER;
 
         User user;
         if (cmd.hasOption(CMD_OPTION_CONFIG_USER_NAME)) {
