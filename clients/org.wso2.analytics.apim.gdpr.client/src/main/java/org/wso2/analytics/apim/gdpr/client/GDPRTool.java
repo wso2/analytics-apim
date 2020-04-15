@@ -22,6 +22,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -77,7 +78,7 @@ public class GDPRTool {
 
     private static final Logger LOG = LoggerFactory.getLogger(GDPRTool.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws ParseException, GDPRClientException {
         LOG.info("GDPR client started.");
 
         Options options = new Options();
@@ -175,7 +176,7 @@ public class GDPRTool {
         formatter.printHelp(COMMAND_NAME, options);
     }
 
-    public void process(String configFilePath, User user) {
+    public void process(String configFilePath, User user) throws GDPRClientException {
         Path configurationFilePath = Paths.get(configFilePath, FILE_NAME);
         ConfigProvider configProvider;
         Executor executor = null;

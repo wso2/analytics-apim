@@ -22,7 +22,7 @@ package org.wso2.analytics.apim.gdpr.client.exceptions;
 /**
  * GDPR client exception class.
  */
-public class GDPRClientException extends RuntimeException {
+public class GDPRClientException extends Exception {
 
     /**
      * Constructor with message.

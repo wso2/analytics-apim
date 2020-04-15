@@ -244,7 +244,7 @@ public class ClientDAO {
         return this.dataSource;
     }
 
-    private void closeStatement(PreparedStatement preparedStatement) {
+    private void closeStatement(PreparedStatement preparedStatement) throws GDPRClientException {
         if (preparedStatement != null) {
             try {
                 preparedStatement.close();
@@ -255,7 +255,7 @@ public class ClientDAO {
 
     }
 
-    public void closeConnection() {
+    public void closeConnection() throws GDPRClientException {
         try {
             if (this.connection != null) {
                 if (this.connection.isClosed()) {
@@ -270,7 +270,7 @@ public class ClientDAO {
         }
     }
 
-    public void commitConnection() {
+    public void commitConnection() throws GDPRClientException {
         try {
             if (this.connection != null) {
                 if (this.connection.isClosed()) {
@@ -285,7 +285,7 @@ public class ClientDAO {
         }
     }
 
-    public void rollbackConnection() {
+    public void rollbackConnection() throws GDPRClientException {
         try {
             if (this.connection != null) {
                 if (this.connection.isClosed()) {

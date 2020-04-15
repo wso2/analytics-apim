@@ -284,7 +284,7 @@ public class Executor {
      * In an error scenario(or when an exception occurred) this method rolls back and closes the current database
      * connection.
      * **/
-    public void rollbackAndCloseCurrentDBConnection() {
+    public void rollbackAndCloseCurrentDBConnection() throws GDPRClientException {
         if (this.currentClientDAO != null) {
             this.currentClientDAO.rollbackConnection();
             this.currentClientDAO.closeConnection();
