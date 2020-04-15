@@ -43,8 +43,7 @@ import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.IP_AND_USE
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.IP_COLUMN_NAME_PLACEHOLDER;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.IP_PSEUDONYM_VALUE_PLACEHOLDER;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.IP_USERNAME_COLUMN_NAME_PLACEHOLDER;
-import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.POST_REPLACE_TEXT_VALUE_PLACEHOLDER;
-import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.PRE_REPLACE_TEXT_VALUE_PLACEHOLDER;
+import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.LIKE_VALUE_PLACEHOLDER;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.PSEUDONYM_VALUE_PLACEHOLDER;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.REPLACE_AND_UPDATE_QUERY;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.REPLACE_EMAIL_AND_UPDATE_QUERY;
@@ -163,23 +162,21 @@ public class ClientDAO {
      * @param columnName name of the column which contains the email value in the table
      * @param currentValue current value for email
      * @param pseudonym pseudonym value which will be used to replace the email
-     * @param preReplaceText text which needs to be appended(to sql query) before the replacing value
-     * @param postReplaceText text which needs to be appended(to sql query) after the replacing value
+     * @param likeValue text which needs to used for the LIKE operator in the update query
      * @return boolean returns whether the update is successful
      * @throws GDPRClientException throws when an error occurred while performing update query
      */
     public boolean performStringReplaceAndUpdateEmailTableEntry(String tableName, String columnName,
                                                                 String currentValue, String pseudonym,
-                                                                String preReplaceText, String postReplaceText)
+                                                                String likeValue)
             throws GDPRClientException {
         boolean result;
         String query = this.queryManager.getQuery(REPLACE_EMAIL_AND_UPDATE_QUERY);
         query = query.replace(TABLE_NAME_PLACEHOLDER, tableName)
                 .replace(COLUMN_NAME_PLACEHOLDER, columnName)
-                .replace(PRE_REPLACE_TEXT_VALUE_PLACEHOLDER, preReplaceText)
                 .replace(CURRENT_VALUE_PLACEHOLDER, currentValue)
-                .replace(POST_REPLACE_TEXT_VALUE_PLACEHOLDER, postReplaceText)
-                .replace(PSEUDONYM_VALUE_PLACEHOLDER, pseudonym);
+                .replace(PSEUDONYM_VALUE_PLACEHOLDER, pseudonym)
+                .replace(LIKE_VALUE_PLACEHOLDER, likeValue);
         result = executeUpdateQuery(tableName, query);
         return result;
     }

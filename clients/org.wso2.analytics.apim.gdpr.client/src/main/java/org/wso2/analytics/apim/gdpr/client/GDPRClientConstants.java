@@ -23,6 +23,7 @@ package org.wso2.analytics.apim.gdpr.client;
 public class GDPRClientConstants {
 
     public static final String AT = "@";
+    public static final String PERCENTAGE = "%";
     public static final String CONF_FOLDER = "conf";
     public static final String FILE_NAME = "conf.yaml";
     public static final String HELP_FILE_NAME = "help.md";
@@ -44,9 +45,8 @@ public class GDPRClientConstants {
     public static final String IP_PSEUDONYM_VALUE_PLACEHOLDER = "{{IP_PSEUDONYM_VALUE}}";
     public static final String CURRENT_IP_VALUE_PLACEHOLDER = "{{CURRENT_IP_VALUE}}";
     public static final String CURRENT_IP_USERNAME_VALUE_PLACEHOLDER = "{{CURRENT_IP_USERNAME_VALUE}}";
-    public static final String PRE_REPLACE_TEXT_VALUE_PLACEHOLDER = "{{PRE_REPLACE_TEXT_VALUE}}";
-    public static final String POST_REPLACE_TEXT_VALUE_PLACEHOLDER = "{{POST_REPLACE_TEXT_VALUE}}";
     public static final String REPLACE_VALUE_PLACEHOLDER = "{{REPLACE_VALUE}}";
+    public static final String LIKE_VALUE_PLACEHOLDER = "{{LIKE_VALUE}}";
     public static final String TABLE_CHECK_QUERY = "TABLE_CHECK";
     public static final String UPDATE_QUERY = "UPDATE";
     public static final String REPLACE_AND_UPDATE_QUERY = "REPLACE_AND_UPDATE";

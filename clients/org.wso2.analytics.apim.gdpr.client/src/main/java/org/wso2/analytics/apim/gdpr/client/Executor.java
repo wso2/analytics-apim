@@ -37,6 +37,7 @@ import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.AT;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.CURRENT_IP_USERNAME_VALUE_PLACEHOLDER;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.IP_MAX;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.IP_MIN;
+import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.PERCENTAGE;
 import static org.wso2.analytics.apim.gdpr.client.GDPRClientConstants.SUPER_TENANT_DOMAIN;
 
 /**
@@ -199,11 +200,47 @@ public class Executor {
                                             "database: " + databaseName + " as the user email is not provided.");
                                     continue;
                                 }
+                                String likeOperatorValue;
+                                String currentValue;
+                                String replaceValue;
                                 String replaceTextPrefix = tableEntry.getReplaceTextPrefix();
                                 String replaceTextSuffix = tableEntry.getReplaceTextSuffix();
-                                // perform string replace to replace user email value
+
+                                // Sub scenario 1: only the user email is exists in the column ex: "replaceUser@abc.com"
+                                likeOperatorValue = userEmail;
+                                clientDAO.performStringReplaceAndUpdateEmailTableEntry(tableName, columnName, userEmail,
+                                        pseudonym, likeOperatorValue);
+
+                                /*
+                                * Sub scenario 2: User email exists with other emails and user email is defined as the
+                                * first email. ex: "replaceUser@abc.com,user2@abc.com"
+                                */
+                                currentValue = userEmail + replaceTextSuffix;
+                                replaceValue = pseudonym + replaceTextSuffix;
+                                likeOperatorValue = userEmail + replaceTextSuffix + PERCENTAGE;
                                 clientDAO.performStringReplaceAndUpdateEmailTableEntry(tableName, columnName,
-                                        userEmail, pseudonym, replaceTextPrefix, replaceTextSuffix);
+                                        currentValue, replaceValue, likeOperatorValue);
+
+                                /*
+                                 * Sub scenario 3: User email exists with other emails and user email is defined as the
+                                 * last email. ex: "user2@abc.com,replaceUser@abc.com"
+                                 */
+                                currentValue = replaceTextPrefix + userEmail;
+                                replaceValue = replaceTextPrefix + pseudonym;
+                                likeOperatorValue = PERCENTAGE + replaceTextPrefix + userEmail;
+                                clientDAO.performStringReplaceAndUpdateEmailTableEntry(tableName, columnName,
+                                        currentValue, replaceValue, likeOperatorValue);
+
+                                /*
+                                 * Sub scenario 4: User email exists with other emails and user email is defined in the
+                                 * middle with other emails. ex: "user2@abc.com,replaceUser@abc.com,user3@abc.com"
+                                 */
+                                currentValue = replaceTextPrefix + userEmail + replaceTextSuffix;
+                                replaceValue = replaceTextPrefix + pseudonym + replaceTextSuffix;
+                                likeOperatorValue
+                                        = PERCENTAGE + replaceTextPrefix + userEmail + replaceTextSuffix + PERCENTAGE;
+                                clientDAO.performStringReplaceAndUpdateEmailTableEntry(tableName, columnName,
+                                        currentValue, replaceValue, likeOperatorValue);
                                 continue;
                             }
 
