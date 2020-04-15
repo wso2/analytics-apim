@@ -50,6 +50,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -149,13 +151,21 @@ public class GDPRTool {
 
     private static String createPseudonym(CommandLine cmd) {
         String pseudonym = cmd.getOptionValue(CMD_OPTION_CONFIG_USER_PSEUDONYM);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Date date;
         if (StringUtils.isEmpty(pseudonym) && cmd.hasOption(CMD_OPTION_ENABLE_SHA256_HASHING)) {
             String userName = cmd.getOptionValue(CMD_OPTION_CONFIG_USER_NAME);
             pseudonym = DigestUtils.sha256Hex(userName);
             LOG.info("Generated SHA256 hash for the given ID attribute.");
+            date = new Date();
+            System.out.println("[" + sdf.format(date) + "]  INFO {" + GDPRTool.class.getName()
+                    + "} - Generated SHA256 hash value: " + pseudonym);
         } else if (StringUtils.isEmpty(pseudonym)) {
             pseudonym = UUID.randomUUID().toString();
             LOG.info("Generating pseudonym as pseudonym is not provided.");
+            date = new Date();
+            System.out.println("[" + sdf.format(date) + "]  INFO {" + GDPRTool.class.getName()
+                    + "} - Generated pseudonym value: " + pseudonym);
         }
         return pseudonym;
     }
