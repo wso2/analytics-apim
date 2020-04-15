@@ -79,6 +79,7 @@ public class Executor {
             ClientDAO clientDAO = new ClientDAO(this.dataSourceService, databaseName, configQueries);
             clientDAO.init();
             this.currentClientDAO = clientDAO;
+            LOG.info("Table entries updating process for database: {} started.", databaseName);
 
             for (DatabaseInfo databaseEntry : databaseInfo) {
                 if (databaseEntry.getDatabaseName().equalsIgnoreCase(databaseName)) {
