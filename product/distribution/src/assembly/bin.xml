@@ -202,6 +202,14 @@
             <fileMode>644</fileMode>
         </fileSet>
 
+        <!-- GDPR client-->
+        <!-- This includes only the relevant dependencies -->
+        <fileSet>
+            <directory>target/gdpr-client/gdpr-client-${project.version}/</directory>
+            <outputDirectory>wso2/tools/gdpr-client/</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
+
         <!--Privacy policy app -->
         <fileSet>
             <directory>src/policies/</directory>
@@ -323,6 +331,37 @@
             <source>target/forget-me/identity-anonymization-tool-${forgetme.tool.version}/conf/product-config/config-sp.json</source>
             <outputDirectory>wso2/tools/identity-anonymization-tool/conf/</outputDirectory>
             <destName>config.json</destName>
+            <fileMode>644</fileMode>
+        </file>
+
+        <!-- GDPR client -->
+        <file>
+            <source>src/scripts/gdprclient.sh</source>
+            <outputDirectory>bin/</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+
+        <file>
+            <source>src/scripts/gdprclient.bat</source>
+            <outputDirectory>bin/</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+
+        <file>
+            <source>target/gdpr-client/gdpr-client-${project.version}/bin/gdprclient.sh</source>
+            <outputDirectory>wso2/tools/gdpr-client/bin/</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+
+        <file>
+            <source>target/gdpr-client/gdpr-client-${project.version}/bin/gdprclient.bat</source>
+            <outputDirectory>wso2/tools/gdpr-client/bin/</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+
+        <file>
+            <source>target/gdpr-client/gdpr-client-${project.version}/conf/conf.yaml</source>
+            <outputDirectory>wso2/tools/gdpr-client/conf/</outputDirectory>
             <fileMode>644</fileMode>
         </file>
 

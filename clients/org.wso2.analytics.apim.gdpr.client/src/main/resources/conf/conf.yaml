@@ -1,0 +1,377 @@
+################################################################################
+#   Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved
+#
+#   Licensed under the Apache License, Version 2.0 (the \"License\");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an \"AS IS\" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+################################################################################
+
+# Datasource Configurations
+wso2.datasources:
+  dataSources:
+    - name: APIM_ANALYTICS_DB
+      description: "The datasource used for APIM statistics aggregated data."
+      definition:
+        type: RDBMS
+        configuration:
+          jdbcUrl: 'jdbc:h2:<PATH_TO_API-M_ANALYTICS_HOME>/wso2/worker/database/APIM_ANALYTICS_DB;AUTO_SERVER=TRUE'
+          username: wso2carbon
+          password: wso2carbon
+          driverClassName: org.h2.Driver
+          maxPoolSize: 1
+          idleTimeout: 60000
+          connectionTestQuery: SELECT 1
+          validationTimeout: 30000
+          isAutoCommit: false
+
+    - name: WSO2_DASHBOARD_DB
+      description: "The datasource used for dashboard feature"
+      definition:
+        type: RDBMS
+        configuration:
+          jdbcUrl: 'jdbc:h2:<PATH_TO_API-M_ANALYTICS_HOME>/wso2/dashboard/database/DASHBOARD_DB;AUTO_SERVER=TRUE'
+          username: wso2carbon
+          password: wso2carbon
+          driverClassName: org.h2.Driver
+          maxPoolSize: 1
+          idleTimeout: 60000
+          connectionTestQuery: SELECT 1
+          validationTimeout: 30000
+          isAutoCommit: false
+
+wso2.securevault:
+  secretRepository:
+    type: org.wso2.carbon.secvault.repository.DefaultSecretRepository
+    parameters:
+      privateKeyAlias: wso2carbon
+      keystoreLocation: <PATH_TO_API-M_ANALYTICS_HOME>/resources/security/securevault.jks
+      secretPropertiesFile: <PATH_TO_API-M_ANALYTICS_HOME>/conf/worker/secrets.properties
+  masterKeyReader:
+    type: org.wso2.carbon.secvault.reader.DefaultMasterKeyReader
+    parameters:
+      masterKeyReaderFile: <PATH_TO_API-M_ANALYTICS_HOME>/conf/worker/master-keys.yaml
+
+# GDPR Client Configuration Parameters
+wso2.gdpr:
+  # databases which includes the username entries in its tables
+  databases:
+    - databaseName: APIM_ANALYTICS_DB
+      tableEntries:
+        - tableName: ApiCreatorAlertConfiguration
+          columnName: APICREATOR
+        - tableName: ApiExeTime_DAYS
+          columnName: APICREATOR
+        - tableName: ApiExeTime_HOURS
+          columnName: APICREATOR
+        - tableName: ApiExeTime_MINUTES
+          columnName: APICREATOR
+        - tableName: ApiExeTime_MONTHS
+          columnName: APICREATOR
+        - tableName: ApiExeTime_SECONDS
+          columnName: APICREATOR
+        - tableName: ApiExeTime_YEARS
+          columnName: APICREATOR
+        - tableName: ApiFaultyInvocationAgg_DAYS
+          columnName: APICREATOR
+        - tableName: ApiFaultyInvocationAgg_HOURS
+          columnName: APICREATOR
+        - tableName: ApiFaultyInvocationAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: ApiFaultyInvocationAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: ApiFaultyInvocationAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: ApiFaultyInvocationAgg_YEARS
+          columnName: APICREATOR
+        - tableName: ApiLastAccessSummary
+          columnName: APICREATOR
+        - tableName: ApiLastAccessSummary
+          columnName: APPLICATIONOWNER
+        - tableName: ApimAbnormalBackendTimeAlert
+          columnName: APICREATOR
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimAbnormalReqAlert
+          columnName: APPLICATIONOWNER
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimAbnormalResponseTimeAlert
+          columnName: APICREATOR
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimAlertStakeholderInfo
+          columnName: USERID
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimAlertStakeholderInfo
+          columnName: EMAILS
+          columnType: EMAIL
+          isTextReplace: true
+          replaceTextPrefix: ","
+          replaceTextSuffix: ","
+        - tableName: ApimAllAlert
+          columnName: MESSAGE
+          isSuperTenantUsernameHasTenantDomain: true
+          isTextReplace: true
+          replaceTextPrefix: "owned by "
+          replaceTextSuffix: " for api"
+        - tableName: ApimAllAlert
+          columnName: MESSAGE
+          isSuperTenantUsernameHasTenantDomain: true
+          columnType: IP
+          isTextReplace: true
+          replaceTextPrefix: "IP ("
+          replaceTextSuffix: ") detected by user:{{CURRENT_IP_USERNAME_VALUE}} using"
+        - tableName: ApimAllAlert
+          columnName: MESSAGE
+          isSuperTenantUsernameHasTenantDomain: true
+          isTextReplace: true
+          replaceTextPrefix: "owned by "
+          replaceTextSuffix: "."
+        - tableName: ApimAllAlert
+          columnName: MESSAGE
+          isSuperTenantUsernameHasTenantDomain: true
+          isTextReplace: true
+          replaceTextPrefix: "User "
+          replaceTextSuffix: " frequently"
+        - tableName: ApimAllAlert
+          columnName: MESSAGE
+          isSuperTenantUsernameHasTenantDomain: true
+          isTextReplace: true
+          replaceTextPrefix: "detected by user :"
+          replaceTextSuffix: " using application"
+        - tableName: ApimApiAvailabilityInfo
+          columnName: APICREATOR
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimApiHealthMonitorAlert
+          columnName: APICREATOR
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimIPAccessAbnormalityAlert
+          columnName: APPLICATIONOWNER
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimIPAccessAbnormalityAlert
+          columnName: IP
+          columnType: IP
+          ipUsernameColumnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimIPAccessAlertCount
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimIPAccessSummary
+          columnName: IP
+          columnType: IP
+          ipUsernameColumnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimRequestPatternChangedAlert
+          columnName: APPLICATIONOWNER
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimTierLimitHittingAlert
+          columnName: SUBSCRIBER
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimTierLimitHittingAlert
+          columnName: APICREATOR
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApimTierLimitHittingAlert
+          columnName: MESSAGE
+          isSuperTenantUsernameHasTenantDomain: true
+          isTextReplace: true
+          replaceTextPrefix: "User "
+          replaceTextSuffix: " frequently"
+        - tableName: APIM_ReqCountAgg_DAYS
+          columnName: APICREATOR
+        - tableName: APIM_ReqCountAgg_HOURS
+          columnName: APICREATOR
+        - tableName: APIM_ReqCountAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: APIM_ReqCountAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: APIM_ReqCountAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: APIM_ReqCountAgg_YEARS
+          columnName: APICREATOR
+        - tableName: ApiPerDestinationAgg_DAYS
+          columnName: APICREATOR
+        - tableName: ApiPerDestinationAgg_HOURS
+          columnName: APICREATOR
+        - tableName: ApiPerDestinationAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: ApiPerDestinationAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: ApiPerDestinationAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: ApiPerDestinationAgg_YEARS
+          columnName: APICREATOR
+        - tableName: ApiResPathPerApp_DAYS
+          columnName: APICREATOR
+        - tableName: ApiResPathPerApp_HOURS
+          columnName: APICREATOR
+        - tableName: ApiResPathPerApp_MINUTES
+          columnName: APICREATOR
+        - tableName: ApiResPathPerApp_MONTHS
+          columnName: APICREATOR
+        - tableName: ApiResPathPerApp_SECONDS
+          columnName: APICREATOR
+        - tableName: ApiResPathPerApp_YEARS
+          columnName: APICREATOR
+        - tableName: ApiSubAlertConf
+          columnName: SUBSCRIBER
+        - tableName: ApiThrottledOutAgg_DAYS
+          columnName: APICREATOR
+        - tableName: ApiThrottledOutAgg_DAYS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiThrottledOutAgg_DAYS
+          columnName: SUBSCRIBER
+        - tableName: ApiThrottledOutAgg_HOURS
+          columnName: APICREATOR
+        - tableName: ApiThrottledOutAgg_HOURS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiThrottledOutAgg_HOURS
+          columnName: SUBSCRIBER
+        - tableName: ApiThrottledOutAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: ApiThrottledOutAgg_MINUTES
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiThrottledOutAgg_MINUTES
+          columnName: SUBSCRIBER
+        - tableName: ApiThrottledOutAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: ApiThrottledOutAgg_MONTHS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiThrottledOutAgg_MONTHS
+          columnName: SUBSCRIBER
+        - tableName: ApiThrottledOutAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: ApiThrottledOutAgg_SECONDS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiThrottledOutAgg_SECONDS
+          columnName: SUBSCRIBER
+        - tableName: ApiThrottledOutAgg_YEARS
+          columnName: APICREATOR
+        - tableName: ApiThrottledOutAgg_YEARS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiThrottledOutAgg_YEARS
+          columnName: SUBSCRIBER
+        - tableName: ApiUserBrowserAgg_DAYS
+          columnName: APICREATOR
+        - tableName: ApiUserBrowserAgg_HOURS
+          columnName: APICREATOR
+        - tableName: ApiUserBrowserAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: ApiUserBrowserAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: ApiUserBrowserAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: ApiUserBrowserAgg_YEARS
+          columnName: APICREATOR
+        - tableName: ApiUserPerAppAgg_DAYS
+          columnName: APICREATOR
+        - tableName: ApiUserPerAppAgg_DAYS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiUserPerAppAgg_DAYS
+          columnName: APPLICATIONOWNER
+        - tableName: ApiUserPerAppAgg_HOURS
+          columnName: APICREATOR
+        - tableName: ApiUserPerAppAgg_HOURS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiUserPerAppAgg_HOURS
+          columnName: APPLICATIONOWNER
+        - tableName: ApiUserPerAppAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: ApiUserPerAppAgg_MINUTES
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiUserPerAppAgg_MINUTES
+          columnName: APPLICATIONOWNER
+        - tableName: ApiUserPerAppAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: ApiUserPerAppAgg_MONTHS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiUserPerAppAgg_MONTHS
+          columnName: APPLICATIONOWNER
+        - tableName: ApiUserPerAppAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: ApiUserPerAppAgg_SECONDS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiUserPerAppAgg_SECONDS
+          columnName: APPLICATIONOWNER
+        - tableName: ApiUserPerAppAgg_YEARS
+          columnName: APICREATOR
+        - tableName: ApiUserPerAppAgg_YEARS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: ApiUserPerAppAgg_YEARS
+          columnName: APPLICATIONOWNER
+        - tableName: ApiVersionPerAppAgg_DAYS
+          columnName: APICREATOR
+        - tableName: ApiVersionPerAppAgg_HOURS
+          columnName: APICREATOR
+        - tableName: ApiVersionPerAppAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: ApiVersionPerAppAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: ApiVersionPerAppAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: ApiVersionPerAppAgg_YEARS
+          columnName: APICREATOR
+        - tableName: GeoLocationAgg_DAYS
+          columnName: APICREATOR
+        - tableName: GeoLocationAgg_DAYS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: GeoLocationAgg_HOURS
+          columnName: APICREATOR
+        - tableName: GeoLocationAgg_HOURS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: GeoLocationAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: GeoLocationAgg_MINUTES
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: GeoLocationAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: GeoLocationAgg_MONTHS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: GeoLocationAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: GeoLocationAgg_SECONDS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: GeoLocationAgg_YEARS
+          columnName: APICREATOR
+        - tableName: GeoLocationAgg_YEARS
+          columnName: USERNAME
+          isSuperTenantUsernameHasTenantDomain: true
+        - tableName: MonetizationAgg_DAYS
+          columnName: APICREATOR
+        - tableName: MonetizationAgg_HOURS
+          columnName: APICREATOR
+        - tableName: MonetizationAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: MonetizationAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: MonetizationAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: MonetizationAgg_YEARS
+          columnName: APICREATOR
+
+    - databaseName: WSO2_DASHBOARD_DB
+      tableEntries:
+        - tableName: DASHBOARD_RESOURCE
+          columnName: OWNER
+          isSuperTenantUsernameHasTenantDomain: true

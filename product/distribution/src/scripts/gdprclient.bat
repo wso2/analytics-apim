@@ -1,5 +1,5 @@
 @echo off
-REM Copyright 2018 WSO2, Inc. (http://wso2.com)
+REM Copyright 2020 WSO2, Inc. (http://wso2.com)
 REM Licensed to the Apache Software Foundation (ASF) under one
 REM or more contributor license agreements.  See the NOTICE file
 REM distributed with this work for additional information
@@ -18,7 +18,7 @@ REM specific language governing permissions and limitations
 REM under the License.
 
 rem ---------------------------------------------------------------------------
-rem Startup script for the ciphertool
+rem Startup script for the gdprclient
 rem
 rem Environment Variable Prerequisites
 rem
@@ -36,5 +36,5 @@ if "%CARBON_HOME%"=="" set CARBON_HOME=%~sdp0..
 SET curDrive=%cd:~0,1%
 SET wsasDrive=%CARBON_HOME:~0,1%
 if not "%curDrive%" == "%wsasDrive%" %wsasDrive%:
-cd %CARBON_HOME%
-call %CARBON_HOME%\wso2\tools\identity-anonymization-tool\bin\forgetme.bat %*
+cd %CARBON_HOME%\wso2\tools\gdpr-client\bin\
+call gdprclient.bat  %*

@@ -1,7 +1,7 @@
 #!/bin/sh
-# forget-me.sh
+# gdprclient.sh
 # ----------------------------------------------------------------------------
-#  Copyright 2018 WSO2, Inc. http://www.wso2.org
+#  Copyright 2020 WSO2, Inc. http://www.wso2.org
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -33,5 +33,5 @@ PRGDIR=`dirname "$PRG"`
 
 [ -z "$CARBON_HOME" ] && CARBON_HOME=`cd "$PRGDIR/.." ; pwd`
 
-cd $CARBON_HOME
-sh $CARBON_HOME/wso2/tools/identity-anonymization-tool/bin/forgetme.sh -d $CARBON_HOME/wso2/tools/identity-anonymization-tool/conf $@
+cd $CARBON_HOME/wso2/tools/gdpr-client/bin/
+sh gdprclient.sh $@
