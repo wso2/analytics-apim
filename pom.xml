@@ -424,11 +424,6 @@
                 <version>${org.apache.commons.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${com.h2database.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>commons-validator</groupId>
                 <artifactId>commons-validator</artifactId>
                 <version>${org.apache.commons.version}</version>
@@ -1152,7 +1147,6 @@
         <commons-codec.version>1.4</commons-codec.version>
         <org.apache.commons.version>1.6</org.apache.commons.version>
         <appasembler.plugin.version>2.1.0</appasembler.plugin.version>
-        <com.h2database.version>1.2.140</com.h2database.version>
 
         <!--MSF4J related-->
         <msf4j.version>2.7.7</msf4j.version>
