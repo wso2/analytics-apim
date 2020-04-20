@@ -40,7 +40,8 @@
     "DateTimeRangePicker",
     "APIMPlaceholder",
     "ApiThrottleAnalytics",
-    "ApiFaultAnalytics"
+    "ApiFaultAnalytics",
+    "APIMDimensionSelector"
   ],
   "version": "1.0.0"
 }
