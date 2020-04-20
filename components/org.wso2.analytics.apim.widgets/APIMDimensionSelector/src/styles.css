@@ -1,0 +1,6 @@
+.overview-wrapper.light:hover{
+    background-color: #e6e8ff !important;
+}
+.overview-wrapper.dark:hover{
+    background-color: #192c46 !important;
+}

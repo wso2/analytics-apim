@@ -1,0 +1,25 @@
+{
+  "name" : "APIM Dimension Selector",
+  "id" : "APIMDimensionSelector",
+  "thumbnailURL" : "",
+  "configs" : {
+    "pubsub" : {
+      "types": ["publisher"],
+      "publisherWidgetOutputs": ["dimension", "selection"]
+    },
+    "options": [
+      {
+        "id" : "header",
+        "title" : "Header",
+        "type" : {
+          "name" : "BOOLEAN",
+          "possibleValues" : [
+            true,
+            false
+          ]
+        },
+        "defaultValue": false
+      }
+    ]
+  }
+}
