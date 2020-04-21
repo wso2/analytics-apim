@@ -213,7 +213,7 @@ class APIMDimensionSelectorWidget extends Widget {
 
     /**
      * Publishing the selected options
-     * @param {String} message : Selected options
+     * @param {{dm, op: *}} message : Selected options
      */
     publishSelection(message) {
         super.publish(message);
@@ -262,7 +262,7 @@ class APIMDimensionSelectorWidget extends Widget {
      * */
     handleApiListReceived(data) {
         let {
-            options, optionLabel, dimension, textLabel, noOptionsText,
+            options, optionLabel, dimension, noOptionsText,
         } = { ...this.state };
         const { dm, op } = this.getqueryParam();
         const { list } = data;
@@ -274,10 +274,8 @@ class APIMDimensionSelectorWidget extends Widget {
         }
 
         if (dimension === DIMENSION_API) {
-            textLabel = 'API';
             noOptionsText = 'No APIs available';
         } else if (dimension === DIMENSION_PROVIDER) {
-            textLabel = 'API Provider';
             noOptionsText = 'No providers available';
         }
 
@@ -304,12 +302,12 @@ class APIMDimensionSelectorWidget extends Widget {
                 providers,
                 options,
                 optionLabel,
-                textLabel,
                 noOptionsText,
                 inProgress: false,
                 selectedOptions,
             });
             this.setQueryParam(dimension, selectedOptions);
+            this.publishSelection({ dm: dimension, op: selectedOptions });
         } else {
             this.setState({
                 dimension,
@@ -318,11 +316,11 @@ class APIMDimensionSelectorWidget extends Widget {
                 options: [],
                 optionLabel: option => option,
                 noOptionsText,
-                textLabel,
                 selectedOptions: [],
                 inProgress: false,
             });
             this.setQueryParam(dimension, []);
+            this.publishSelection({ dm: dimension, op: selectedOptions });
         }
     }
 
@@ -334,15 +332,17 @@ class APIMDimensionSelectorWidget extends Widget {
         const filteredSelection = [];
         if (dimension === DIMENSION_API) {
             selection.forEach((selc) => {
-                if (options.some(opt => opt.name === selc.name && opt.version === selc.version
-                    && opt.provider === selc.provider)) {
-                    filteredSelection.push(selc);
+                const selcOpt = options.find(opt => opt.name === selc.name && opt.version === selc.version
+                    && opt.provider === selc.provider);
+                if (selcOpt) {
+                    filteredSelection.push(selcOpt);
                 }
             });
         } else if (dimension === DIMENSION_PROVIDER) {
             selection.forEach((selc) => {
-                if (options.some(opt => opt === selc)) {
-                    filteredSelection.push(selc);
+                const selcOpt = options.find(opt => opt === selc);
+                if (selcOpt) {
+                    filteredSelection.push(selcOpt);
                 }
             });
         }
@@ -357,18 +357,15 @@ class APIMDimensionSelectorWidget extends Widget {
     handleChangeDimension(dimension) {
         const { apis, providers } = this.state;
 
-        let textLabel = '';
         let noOptionsText = '';
         let options = [];
         let optionLabel;
 
         if (dimension === DIMENSION_API) {
-            textLabel = 'API';
             noOptionsText = 'No APIs available';
             options = apis;
             optionLabel = option => option.name + ' :: ' + option.version + ' (' + option.provider + ')';
         } else if (dimension === DIMENSION_PROVIDER) {
-            textLabel = 'API Provider';
             noOptionsText = 'No providers available';
             options = providers;
             optionLabel = option => option;
@@ -380,12 +377,11 @@ class APIMDimensionSelectorWidget extends Widget {
             dimension,
             options,
             optionLabel,
-            textLabel,
             noOptionsText,
             selectedOptions,
             inProgress: false,
         });
-        super.publish({ dimension, selectedOptions });
+        this.publishSelection({ dm: dimension, op: selectedOptions });
         this.setQueryParam(dimension, selectedOptions);
     }
 
@@ -396,7 +392,7 @@ class APIMDimensionSelectorWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, options, optionLabel, textLabel, inProgress, proxyError, noOptionsText,
+            messages, faultyProviderConf, options, optionLabel, inProgress, proxyError, noOptionsText,
             selectedOptions, dimension,
         } = this.state;
         const {
@@ -471,7 +467,7 @@ class APIMDimensionSelectorWidget extends Widget {
                                         <Tooltip title={(
                                             <FormattedMessage
                                                 id='dimension.api.tooltip'
-                                                defaultMessage={"Currently viewing stats by 'API'. "
+                                                defaultMessage={"Viewing stats by 'API'. "
                                                 + "Click to change the view to 'API Provider'."}
                                             />
                                         )}
@@ -492,8 +488,8 @@ class APIMDimensionSelectorWidget extends Widget {
                                     ) : (
                                         <Tooltip title={(
                                             <FormattedMessage
-                                                id='dimension.api.tooltip'
-                                                defaultMessage={"Currently viewing stats by 'API Provider'. "
+                                                id='dimension.provider.tooltip'
+                                                defaultMessage={"Viewing stats by 'API Provider'. "
                                                 + "Click to change the view to 'API'."}
                                             />
                                         )}
@@ -515,33 +511,45 @@ class APIMDimensionSelectorWidget extends Widget {
                                     }
                                 </div>
                                 <div style={search}>
-                                    <Autocomplete
-                                        multiple
-                                        filterSelectedOptions
-                                        id='tags-standard'
-                                        options={options}
-                                        getOptionLabel={optionLabel}
-                                        renderInput={params => (
-                                            <TextField
-                                                {...params}
-                                                variant='outlined'
-                                                fullWidth
-                                                // label={textLabel}
-                                            />
-                                        )}
-                                        value={selectedOptions}
-                                        onChange={(event, value) => {
-                                            this.setState({ selectedOptions: value });
-                                            this.setQueryParam(dimension, value);
-                                        }}
-                                        noOptionsText={noOptionsText}
-                                        loadingText={(
-                                            <FormattedMessage
-                                                id='search.loading'
-                                                defaultMessage='Loading options...'
-                                            />
-                                        )}
-                                    />
+                                    <Tooltip title={dimension === DIMENSION_API ? (
+                                        <FormattedMessage
+                                            id='search.tooltip'
+                                            defaultMessage='Select API(s) to view stats'
+                                        />
+                                    ) : (
+                                        <FormattedMessage
+                                            id='search.tooltip'
+                                            defaultMessage='Select API Provider(s) to view stats'
+                                        />
+                                    )}
+                                    >
+                                        <Autocomplete
+                                            multiple
+                                            filterSelectedOptions
+                                            id='tags-standard'
+                                            options={options}
+                                            getOptionLabel={optionLabel}
+                                            renderInput={params => (
+                                                <TextField
+                                                    {...params}
+                                                    variant='outlined'
+                                                    fullWidth
+                                                />
+                                            )}
+                                            value={selectedOptions}
+                                            onChange={(event, value) => {
+                                                this.setState({ selectedOptions: value });
+                                                this.setQueryParam(dimension, value);
+                                            }}
+                                            noOptionsText={noOptionsText}
+                                            loadingText={(
+                                                <FormattedMessage
+                                                    id='search.loading'
+                                                    defaultMessage='Loading options...'
+                                                />
+                                            )}
+                                        />
+                                    </Tooltip>
                                 </div>
                             </div>
                         )
