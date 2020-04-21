@@ -146,7 +146,7 @@ class APIMDimensionSelectorWidget extends Widget {
                 padding: '10px',
             },
             button: {
-                minHeight: '55px',
+                height: '55px',
                 minWidth: '120px',
             },
         };
