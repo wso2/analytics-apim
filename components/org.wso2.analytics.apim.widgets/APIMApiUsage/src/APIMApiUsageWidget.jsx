@@ -136,6 +136,7 @@ class APIMApiUsageWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -176,6 +177,19 @@ class APIMApiUsageWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMApiUsageWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMApiUsageWidget
      * */
@@ -209,20 +223,11 @@ class APIMApiUsageWidget extends Widget {
      * */
     assembleMainQuery() {
         const {
-            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions,
+            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions, limit
         } = this.state;
-        let { limit } = super.getGlobalState(queryParamKey);
         const { id, widgetID: widgetName } = this.props;
 
-        if (!limit || limit < 0) {
-            limit = 5;
-            this.setQueryParam(limit);
-        }
-
         if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-
             let filterCondition = '';
 
             if (dimension === 'api') {
@@ -237,6 +242,8 @@ class APIMApiUsageWidget extends Widget {
             }
             filterCondition = filterCondition.join(' OR ');
 
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{from}}': timeFrom,
                 '{{to}}': timeTo,
