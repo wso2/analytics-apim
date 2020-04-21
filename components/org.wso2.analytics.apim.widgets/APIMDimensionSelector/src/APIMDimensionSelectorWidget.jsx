@@ -513,12 +513,12 @@ class APIMDimensionSelectorWidget extends Widget {
                                 <div style={search}>
                                     <Tooltip title={dimension === DIMENSION_API ? (
                                         <FormattedMessage
-                                            id='search.tooltip'
+                                            id='search.tooltip.api'
                                             defaultMessage='Select API(s) to view stats'
                                         />
                                     ) : (
                                         <FormattedMessage
-                                            id='search.tooltip'
+                                            id='search.tooltip.provider'
                                             defaultMessage='Select API Provider(s) to view stats'
                                         />
                                     )}
@@ -540,6 +540,7 @@ class APIMDimensionSelectorWidget extends Widget {
                                             onChange={(event, value) => {
                                                 this.setState({ selectedOptions: value });
                                                 this.setQueryParam(dimension, value);
+                                                this.publishSelection({ dm: dimension, op: value });
                                             }}
                                             noOptionsText={noOptionsText}
                                             loadingText={(
