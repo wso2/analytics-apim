@@ -23,8 +23,6 @@ import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
@@ -40,8 +38,8 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiUsage(props) {
     const {
-        themeName, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig,
-        apiCreatedHandleChange, limitHandleChange, inProgress, selectedAPIChangeCallback,
+        themeName, width, height, limit, usageData1, usageData2, metadata, chartConfig,
+        limitHandleChange, inProgress, selectedAPIChangeCallback,
     } = props;
     const styles = {
         headingWrapper: {
@@ -136,34 +134,6 @@ export default function APIMOverallApiUsage(props) {
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
-                                title={<FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='api-createdBy-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiCreatedBy}
-                                onChange={apiCreatedHandleChange}
-                                input={<Input name='api-createdBy' id='api-createdBy-label-placeholder' />}
-                                displayEmpty
-                                name='apiCreatedBy'
-                            >
-                                <MenuItem value='all'>
-                                    <FormattedMessage id='all.menuItem' defaultMessage='All' />
-                                </MenuItem>
-                                <MenuItem value='me'>
-                                    <FormattedMessage id='me.menuItem' defaultMessage='Me' />
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
                                 title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
                             >
                                 <InputLabel
@@ -248,12 +218,10 @@ APIMOverallApiUsage.propTypes = {
     width: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
-    apiCreatedBy: PropTypes.string.isRequired,
     usageData1: PropTypes.instanceOf(Object).isRequired,
     usageData2: PropTypes.instanceOf(Object).isRequired,
     metadata: PropTypes.instanceOf(Object).isRequired,
     chartConfig: PropTypes.instanceOf(Object).isRequired,
-    apiCreatedHandleChange: PropTypes.func.isRequired,
     limitHandleChange: PropTypes.func.isRequired,
     selectedAPIChangeCallback: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,

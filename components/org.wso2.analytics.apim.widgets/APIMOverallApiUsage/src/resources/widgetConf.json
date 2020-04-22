@@ -14,7 +14,7 @@
           "queryData": {
             "apiidquery": "from AM_API on ({{apiCondition}}) select API_ID,API_NAME,API_PROVIDER,API_VERSION",
             "apisubquery": "from AM_SUBSCRIPTION on {{apiList}} select API_ID,count() AS count group by API_ID;",
-            "apiusagequery": "from ApiUserPerAppAgg on apiCreatorTenantDomain=='{{tenantDomain}}' {{apiCreator}} within {{from}}L, {{to}}L per \"{{per}}s\" select apiName,apiCreator,sum(totalRequestCount) as RequestCount,apiVersion group by apiName,apiCreator,apiVersion order by RequestCount desc limit {{limit}};"
+            "apiusagequery": "from ApiUserPerAppAgg on apiCreatorTenantDomain=='{{tenantDomain}}' AND {{filterCondition}} within {{from}}L, {{to}}L per \"{{per}}s\" select apiName,apiCreator,sum(totalRequestCount) as RequestCount,apiVersion group by apiName,apiCreator,apiVersion order by RequestCount desc limit {{limit}};"
           },
           "publishingInterval": 360000
         }
