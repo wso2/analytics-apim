@@ -210,7 +210,6 @@ class APIMDimensionSelectorWidget extends Widget {
         clearInterval(refreshIntervalId);
     }
 
-
     /**
      * Publishing the selected options
      * @param {{dm, op: *}} message : Selected options
@@ -218,7 +217,6 @@ class APIMDimensionSelectorWidget extends Widget {
     publishSelection(message) {
         super.publish(message);
     }
-
 
     /**
      * Registering global parameters in the dashboard
@@ -296,6 +294,10 @@ class APIMDimensionSelectorWidget extends Widget {
             }
 
             const selectedOptions = this.filterSelectedOption(dimension, options, op);
+            let publishOptions = selectedOptions;
+            if (dimension === DIMENSION_PROVIDER) {
+                publishOptions = apis.filter(api => selectedOptions.includes(api.provider));
+            }
             this.setState({
                 dimension,
                 apis,
@@ -307,7 +309,7 @@ class APIMDimensionSelectorWidget extends Widget {
                 selectedOptions,
             });
             this.setQueryParam(dimension, selectedOptions);
-            this.publishSelection({ dm: dimension, op: selectedOptions });
+            this.publishSelection({ dm: dimension, op: publishOptions });
         } else {
             this.setState({
                 dimension,
@@ -320,10 +322,18 @@ class APIMDimensionSelectorWidget extends Widget {
                 inProgress: false,
             });
             this.setQueryParam(dimension, []);
-            this.publishSelection({ dm: dimension, op: selectedOptions });
+            this.publishSelection({ dm: dimension, op: [] });
         }
     }
 
+
+    /**
+     * Filter the options selected in query param
+     * @param {String} dimension - selected dimension
+     * @param {Array} options - available options
+     * @param {Array} selection - selected options
+     * @memberof APIMDimensionSelectorWidget
+     * */
     filterSelectedOption(dimension, options, selection) {
         if (!selection || selection.length === 0) {
             return [options[0]];
@@ -354,6 +364,11 @@ class APIMDimensionSelectorWidget extends Widget {
         }
     }
 
+    /**
+     * Handle onChange of dimension
+     * @param {String} dimension - selected dimension
+     * @memberof APIMDimensionSelectorWidget
+     * */
     handleChangeDimension(dimension) {
         const { apis, providers } = this.state;
 
@@ -372,6 +387,11 @@ class APIMDimensionSelectorWidget extends Widget {
         }
 
         const selectedOptions = options.length > 0 ? [options[0]] : [];
+        let publishOptions = selectedOptions;
+
+        if (dimension === DIMENSION_PROVIDER) {
+            publishOptions = apis.filter(api => selectedOptions.includes(api.provider));
+        }
 
         this.setState({
             dimension,
@@ -381,8 +401,27 @@ class APIMDimensionSelectorWidget extends Widget {
             selectedOptions,
             inProgress: false,
         });
-        this.publishSelection({ dm: dimension, op: selectedOptions });
+        this.publishSelection({ dm: dimension, op: publishOptions });
         this.setQueryParam(dimension, selectedOptions);
+    }
+
+    /**
+     * Handle onChange of selected values
+     * @param {Array} value - selected options
+     * @memberof APIMDimensionSelectorWidget
+     * */
+    handleChangeSelection(value) {
+        const { apis, dimension } = this.state;
+
+        this.setState({ selectedOptions: value });
+        this.setQueryParam(dimension, value);
+
+        if (dimension === DIMENSION_API) {
+            this.publishSelection({ dm: dimension, op: value });
+        } else if (dimension === DIMENSION_PROVIDER) {
+            const selection = apis.filter(api => value.includes(api.provider));
+            this.publishSelection({ dm: dimension, op: selection });
+        }
     }
 
     /**
@@ -537,11 +576,7 @@ class APIMDimensionSelectorWidget extends Widget {
                                                 />
                                             )}
                                             value={selectedOptions}
-                                            onChange={(event, value) => {
-                                                this.setState({ selectedOptions: value });
-                                                this.setQueryParam(dimension, value);
-                                                this.publishSelection({ dm: dimension, op: value });
-                                            }}
+                                            onChange={(event, value) => this.handleChangeSelection(value)}
                                             noOptionsText={noOptionsText}
                                             loadingText={(
                                                 <FormattedMessage
