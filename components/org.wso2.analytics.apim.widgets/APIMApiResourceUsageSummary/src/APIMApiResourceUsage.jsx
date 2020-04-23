@@ -23,8 +23,6 @@ import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -39,7 +37,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMApiResourceUsage(props) {
     const {
-        themeName, height, limit, apiCreatedBy, usageData, apiCreatedHandleChange, handleChange, inProgress,
+        themeName, height, limit, usageData, handleChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -116,34 +114,6 @@ export default function APIMApiResourceUsage(props) {
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
-                                title={<FormattedMessage id='createdBy.label' defaultMessage='API Created By' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='api-createdBy-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiCreatedBy}
-                                onChange={apiCreatedHandleChange}
-                                input={<Input name='apiCreatedBy' id='api-createdBy-label-placeholder' />}
-                                displayEmpty
-                                name='apiCreatedBy'
-                            >
-                                <MenuItem value='All'>
-                                    <FormattedMessage id='all.menuItem' defaultMessage='All' />
-                                </MenuItem>
-                                <MenuItem value='Me'>
-                                    <FormattedMessage id='me.menuItem' defaultMessage='Me' />
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
                                 title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
                             >
                                 <InputLabel
@@ -204,9 +174,7 @@ APIMApiResourceUsage.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
-    apiCreatedBy: PropTypes.string.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
-    apiCreatedHandleChange: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };
