@@ -40,8 +40,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMTopApiUsers(props) {
     const {
-        themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, userData, apilist, versionlist,
-        apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange, handleLimitChange, inProgress,
+        themeName, height, limit, userData, handleLimitChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -79,13 +78,6 @@ export default function APIMTopApiUsers(props) {
             justifyContent: 'center',
             height,
         },
-        formLabel: {
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-            width: '100%',
-            display: 'block',
-            overflow: 'hidden',
-        },
         heading: {
             margin: 'auto',
             textAlign: 'center',
@@ -112,99 +104,6 @@ export default function APIMTopApiUsers(props) {
                     <h3 style={styles.heading}>
                         <FormattedMessage id='widget.heading' defaultMessage='TOP API USERS' />
                     </h3>
-                </div>
-                <div style={styles.formWrapper}>
-                    <form style={styles.form}>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={<FormattedMessage id='createdBy.label' defaultMessage='API Created By' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='api-createdBy-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiCreatedBy}
-                                onChange={apiCreatedHandleChange}
-                                input={<Input name='apiCreatedBy' id='api-createdBy-label-placeholder' />}
-                                displayEmpty
-                                name='apiCreatedBy'
-                                style={styles.selectEmpty}
-                            >
-                                <MenuItem value='All'>
-                                    <FormattedMessage id='all.menuItem' defaultMessage='All' />
-                                </MenuItem>
-                                <MenuItem value='Me'>
-                                    <FormattedMessage id='me.menuItem' defaultMessage='Me' />
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={<FormattedMessage id='apiName.label' defaultMessage='API Name' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='apiSelected-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='apiName.label' defaultMessage='API Name' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiSelected}
-                                onChange={apiSelectedHandleChange}
-                                input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
-                                displayEmpty
-                                name='apiSelected'
-                                style={styles.selectEmpty}
-                            >
-                                {
-                                    apilist.map(option => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))
-                                }
-                            </Select>
-                        </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={<FormattedMessage id='apiVersion.label' defaultMessage='API Version' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='apiVersion-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiVersion}
-                                onChange={apiVersionHandleChange}
-                                input={<Input name='apiVersion' id='apiVersion-label-placeholder' />}
-                                displayEmpty
-                                name='apiVersion'
-                                style={styles.selectEmpty}
-                            >
-                                {
-                                    versionlist.map(option => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))
-                                }
-                            </Select>
-                        </FormControl>
-                    </form>
                 </div>
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
@@ -264,15 +163,7 @@ APIMTopApiUsers.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
-    apiCreatedBy: PropTypes.string.isRequired,
-    apiSelected: PropTypes.string.isRequired,
-    apiVersion: PropTypes.string.isRequired,
-    apilist: PropTypes.instanceOf(Object).isRequired,
-    versionlist: PropTypes.instanceOf(Object).isRequired,
     userData: PropTypes.instanceOf(Object).isRequired,
-    apiCreatedHandleChange: PropTypes.func.isRequired,
-    apiSelectedHandleChange: PropTypes.func.isRequired,
-    apiVersionHandleChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

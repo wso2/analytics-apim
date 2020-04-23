@@ -276,7 +276,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         if (dimension && timeFrom && !callbackFunction) {
-            if (selectedOptions && selectedOptions.length > 0) {
+            if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
                 callbackFunction = 'handleApiUsageReceived';
                 let filterCondition = selectedOptions.map((opt) => {
                     return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
