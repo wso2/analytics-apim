@@ -278,18 +278,10 @@ class APIMOverallApiUsageWidget extends Widget {
         if (dimension && timeFrom && !callbackFunction) {
             if (selectedOptions && selectedOptions.length > 0) {
                 callbackFunction = 'handleApiUsageReceived';
-                let filterCondition = '';
-
-                if (dimension === 'api') {
-                    filterCondition = selectedOptions.map((opt) => {
-                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
-                            + '\' AND apiCreator==\'' + opt.provider + '\')';
-                    });
-                } else {
-                    filterCondition = selectedOptions.map((opt) => {
-                        return '(apiCreator==\'' + opt + '\')';
-                    });
-                }
+                let filterCondition = selectedOptions.map((opt) => {
+                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                        + '\' AND apiCreator==\'' + opt.provider + '\')';
+                });
                 filterCondition = filterCondition.join(' OR ');
 
                 const dataProviderConfigs = cloneDeep(providerConfig);
