@@ -107,7 +107,7 @@ class APIMTopApiCreatorsWidget extends Widget {
             apiDataList: [],
             creatorData: [],
             legendData: [],
-            limit: 0,
+            limit: 5,
             localeMessages: null,
             inProgress: true,
             proxyError: false,
