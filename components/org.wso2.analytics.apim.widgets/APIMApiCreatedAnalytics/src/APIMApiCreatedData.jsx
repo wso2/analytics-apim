@@ -92,7 +92,7 @@ export default function APIMApiCreatedData(props) {
                                 fontSize: 8,
                                 fontStyle: 'italic',
                             }}
-                            text='COUNT'
+                            text='API COUNT'
                         />
                         <g transform='translate(0, 40)'>
                             <VictoryAxis

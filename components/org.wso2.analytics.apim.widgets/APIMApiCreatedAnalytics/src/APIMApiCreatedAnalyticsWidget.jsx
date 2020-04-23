@@ -49,21 +49,6 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * Query string parameter values
- * @type {object}
- */
-const createdByKeys = {
-    all: 'all',
-    me: 'me',
-};
-
-/**
- * Query string parameter
- * @type {string}
- */
-const queryParamKey = 'apis';
-
-/**
  * Language
  * @type {string}
  */
@@ -126,8 +111,6 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.getUsername = this.getUsername.bind(this);
     }
 
     componentWillMount() {
@@ -141,7 +124,6 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -182,31 +164,39 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     }
 
     /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
-    }
-
-    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMApiCreatedAnalyticsWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            inProgress: !sync,
-        }, this.assembleQuery);
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleQuery);
+        }
     }
 
     /**
@@ -215,27 +205,27 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      * */
     assembleQuery() {
         const {
-            providerConfig, timeFrom, timeTo, username,
+            providerConfig, timeFrom, timeTo, selectedOptions, dimension,
         } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { createdBy } = queryParam;
 
-        if (!createdBy || !(createdBy in createdByKeys)) {
-            createdBy = createdByKeys.all;
-            this.setState({ createdBy });
-            this.setQueryParam(createdBy);
+        if (dimension && timeFrom) {
+            const { id, widgetID: widgetName } = this.props;
+            let filterCondition = selectedOptions.map((opt) => {
+                return '(API_NAME=\'' + opt.name + '\' AND API_VERSION=\'' + opt.version
+                    + '\' AND CREATED_BY=\'' + opt.provider + '\')';
+            });
+            filterCondition = filterCondition.join(' OR ');
+
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'query';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+                '{{filterCondition}}': filterCondition,
+            };
+            super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived,
+                dataProviderConfigs);
         }
-
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
-            '{{createdBy}}': createdBy === createdByKeys.me ? "AND CREATED_BY='{{creator}}'" : '',
-            '{{creator}}': username,
-        };
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -245,7 +235,6 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const { createdBy } = this.state;
 
         if (data && data.length !== 0) {
             const xAxisTicks = [];
@@ -255,17 +244,17 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             let apiCount = 0;
 
             data.forEach((dataUnit) => {
-                apiCount += dataUnit[4];
+                apiCount++;
                 chartData.push({
-                    x: new Date(dataUnit[3]).getTime(),
+                    x: new Date(dataUnit[2]).getTime(),
                     y: apiCount,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[3])
+                    label: 'CREATED_TIME:' + Moment(dataUnit[2])
                         .format('YYYY-MMM-DD hh:mm:ss A') + '\nCOUNT:' + apiCount,
                 });
                 tableData.push({
-                    apiname: dataUnit[1] + ' (' + dataUnit[5] + ')',
-                    apiVersion: dataUnit[2],
-                    createdtime: Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss A'),
+                    apiname: dataUnit[0] + ' (' + dataUnit[3] + ')',
+                    apiVersion: dataUnit[1],
+                    createdtime: Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss A'),
                 });
             });
 
@@ -287,31 +276,6 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         } else {
             this.setState({ inProgress: false, chartData: [], tableData: [] });
         }
-
-        this.setQueryParam(createdBy);
-    }
-
-    /**
-     * Updates query param values
-     * @param {string} createdBy - API Created By menu option selected
-     * @memberof APIMApiCreatedAnalyticsWidget
-     * */
-    setQueryParam(createdBy) {
-        super.setGlobalState(queryParamKey, { createdBy });
-    }
-
-    /**
-     * Handle Select Change
-     * @param {Event} event - listened event
-     * @memberof APIMApiCreatedAnalyticsWidget
-     * */
-    handleChange(event) {
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value);
-        this.setState({ createdBy: event.target.value, inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleQuery();
     }
 
     /**
@@ -321,7 +285,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, createdBy, chartData, tableData, xAxisTicks, maxCount,
+            localeMessages, faultyProviderConfig, height, chartData, tableData, xAxisTicks, maxCount,
             inProgress,
         } = this.state;
         const {
@@ -330,7 +294,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatedProps = {
-            themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount, inProgress,
+            themeName, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
         };
 
         return (
@@ -356,7 +320,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiCreatedAnalytics {...apiCreatedProps} handleChange={this.handleChange} />
+                            <APIMApiCreatedAnalytics {...apiCreatedProps} />
                         )
                     }
                 </MuiThemeProvider>
