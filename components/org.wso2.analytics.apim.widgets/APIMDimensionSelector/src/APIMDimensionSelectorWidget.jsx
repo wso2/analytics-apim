@@ -21,6 +21,7 @@ import React from 'react';
 import {
     addLocaleData, defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
+import { Scrollbars } from 'react-custom-scrollbars';
 import Axios from 'axios';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Button from '@material-ui/core/Button';
@@ -431,7 +432,7 @@ class APIMDimensionSelectorWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, options, optionLabel, inProgress, proxyError, noOptionsText,
+            messages, faultyProviderConf, options, optionLabel, inProgress, proxyError, noOptionsText, height,
             selectedOptions, dimension,
         } = this.state;
         const {
@@ -500,94 +501,97 @@ class APIMDimensionSelectorWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <div style={root}>
-                                <div style={dimensionButton}>
-                                    { dimension === DIMENSION_API ? (
-                                        <Tooltip title={(
-                                            <FormattedMessage
-                                                id='dimension.api.tooltip'
-                                                defaultMessage={"Viewing stats by 'API'. "
+                            <Scrollbars style={{ height }}>
+                                <div style={root}>
+                                    <div style={dimensionButton}>
+                                        { dimension === DIMENSION_API ? (
+                                            <Tooltip title={(
+                                                <FormattedMessage
+                                                    id='dimension.api.tooltip'
+                                                    defaultMessage={"Viewing stats by 'API'. "
                                                 + "Click to change the view to 'API Provider'."}
-                                            />
-                                        )}
-                                        >
-                                            <Button
-                                                style={button}
-                                                variant='outlined'
-                                                fullWidth
-                                                startIcon={<CustomIcon strokeColor={muiTheme.palette.textColor} />}
-                                                onClick={() => this.handleChangeDimension(DIMENSION_PROVIDER)}
-                                            >
-                                                <FormattedMessage
-                                                    id='dimension.api'
-                                                    defaultMessage='API'
                                                 />
-                                            </Button>
-                                        </Tooltip>
-                                    ) : (
-                                        <Tooltip title={(
-                                            <FormattedMessage
-                                                id='dimension.provider.tooltip'
-                                                defaultMessage={"Viewing stats by 'API Provider'. "
-                                                + "Click to change the view to 'API'."}
-                                            />
-                                        )}
-                                        >
-                                            <Button
-                                                style={button}
-                                                variant='outlined'
-                                                fullWidth
-                                                startIcon={<PersonIcon />}
-                                                onClick={() => this.handleChangeDimension(DIMENSION_API)}
+                                            )}
                                             >
-                                                <FormattedMessage
-                                                    id='dimension.provider'
-                                                    defaultMessage='API Provider'
-                                                />
-                                            </Button>
-                                        </Tooltip>
-                                    )
-                                    }
-                                </div>
-                                <div style={search}>
-                                    <Tooltip title={dimension === DIMENSION_API ? (
-                                        <FormattedMessage
-                                            id='search.tooltip.api'
-                                            defaultMessage='Select API(s) to view stats'
-                                        />
-                                    ) : (
-                                        <FormattedMessage
-                                            id='search.tooltip.provider'
-                                            defaultMessage='Select API Provider(s) to view stats'
-                                        />
-                                    )}
-                                    >
-                                        <Autocomplete
-                                            multiple
-                                            filterSelectedOptions
-                                            id='tags-standard'
-                                            options={options}
-                                            getOptionLabel={optionLabel}
-                                            renderInput={params => (
-                                                <TextField
-                                                    {...params}
+                                                <Button
+                                                    style={button}
                                                     variant='outlined'
                                                     fullWidth
-                                                />
-                                            )}
-                                            value={selectedOptions}
-                                            onChange={(event, value) => this.handleChangeSelection(value)}
-                                            noOptionsText={noOptionsText}
-                                            loadingText={(
+                                                    startIcon={<CustomIcon strokeColor={muiTheme.palette.textColor} />}
+                                                    onClick={() => this.handleChangeDimension(DIMENSION_PROVIDER)}
+                                                >
+                                                    <FormattedMessage
+                                                        id='dimension.api'
+                                                        defaultMessage='API'
+                                                    />
+                                                </Button>
+                                            </Tooltip>
+                                        ) : (
+                                            <Tooltip title={(
                                                 <FormattedMessage
-                                                    id='search.loading'
-                                                    defaultMessage='Loading options...'
+                                                    id='dimension.provider.tooltip'
+                                                    defaultMessage={"Viewing stats by 'API Provider'. "
+                                                + "Click to change the view to 'API'."}
                                                 />
                                             )}
-                                        />
-                                    </Tooltip>
+                                            >
+                                                <Button
+                                                    style={button}
+                                                    variant='outlined'
+                                                    fullWidth
+                                                    startIcon={<PersonIcon />}
+                                                    onClick={() => this.handleChangeDimension(DIMENSION_API)}
+                                                >
+                                                    <FormattedMessage
+                                                        id='dimension.provider'
+                                                        defaultMessage='API Provider'
+                                                    />
+                                                </Button>
+                                            </Tooltip>
+                                        )
+                                        }
+                                    </div>
+                                    <div style={search}>
+                                        <Tooltip title={dimension === DIMENSION_API ? (
+                                            <FormattedMessage
+                                                id='search.tooltip.api'
+                                                defaultMessage='Select API(s) to view stats'
+                                            />
+                                        ) : (
+                                            <FormattedMessage
+                                                id='search.tooltip.provider'
+                                                defaultMessage='Select API Provider(s) to view stats'
+                                            />
+                                        )}
+                                        >
+                                            <Autocomplete
+                                                multiple
+                                                filterSelectedOptions
+                                                id='tags-standard'
+                                                ListboxProps={{ style: { maxHeight: 400, overflow: 'auto' } }}
+                                                options={options}
+                                                getOptionLabel={optionLabel}
+                                                renderInput={params => (
+                                                    <TextField
+                                                        {...params}
+                                                        variant='outlined'
+                                                        fullWidth
+                                                    />
+                                                )}
+                                                value={selectedOptions}
+                                                onChange={(event, value) => this.handleChangeSelection(value)}
+                                                noOptionsText={noOptionsText}
+                                                loadingText={(
+                                                    <FormattedMessage
+                                                        id='search.loading'
+                                                        defaultMessage='Loading options...'
+                                                    />
+                                                )}
+                                            />
+                                        </Tooltip>
+                                    </div>
                                 </div>
-                            </div>
+                            </Scrollbars>
                         )
                     }
                 </MuiThemeProvider>
