@@ -438,20 +438,21 @@ class APIMDimensionSelectorWidget extends Widget {
         const { apis, dimension } = this.state;
 
         this.setState({ selectedOptions: value });
-        this.setQueryParam(dimension, Array.isArray(value) ? value : [value]);
+        const publishValue = value === null ? [] : value;
+        this.setQueryParam(dimension, Array.isArray(publishValue) ? publishValue : [publishValue]);
 
         let publishOptions = [];
         if (dimension === DIMENSION_API) {
-            if (Array.isArray(value)) {
-                publishOptions = value;
+            if (Array.isArray(publishValue)) {
+                publishOptions = publishValue;
             } else {
-                publishOptions = [value];
+                publishOptions = [publishValue];
             }
         } else if (dimension === DIMENSION_PROVIDER) {
-            if (Array.isArray(value)) {
-                publishOptions = apis.filter(api => value.includes(api.provider));
+            if (Array.isArray(publishValue)) {
+                publishOptions = apis.filter(api => publishValue.includes(api.provider));
             } else {
-                publishOptions = apis.filter(api => value === api.provider);
+                publishOptions = apis.filter(api => publishValue === api.provider);
             }
         }
         this.publishSelection({ dm: dimension, op: publishOptions });
