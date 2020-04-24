@@ -89,11 +89,12 @@ class APIMDimensionSelectorWidget extends Widget {
             dimension: null,
             options: null,
             optionLabel: null,
-            refreshInterval: 60000, // 1min
+            refreshInterval: 3600000, // 1hr
             refreshIntervalId: null,
             inProgress: true,
             proxyError: false,
             selectedOptions: [],
+            selectMultiple: true,
         };
 
         this.styles = {
@@ -199,6 +200,22 @@ class APIMDimensionSelectorWidget extends Widget {
      * @param {any} props @inheritDoc
      */
     componentDidMount() {
+        const { refreshInterval } = this.state;
+        const { configs } = this.props;
+        let selectMultiple = true;
+
+        if (configs && configs.options) {
+            ({ selectMultiple } = configs.options);
+            if (selectMultiple === undefined) {
+                selectMultiple = true;
+            }
+        }
+
+        const refresh = () => {
+            this.assembleApiListQuery();
+        };
+        const refreshIntervalId = setInterval(refresh, refreshInterval);
+        this.setState({ refreshIntervalId, selectMultiple });
         this.assembleApiListQuery();
     }
 
@@ -213,7 +230,7 @@ class APIMDimensionSelectorWidget extends Widget {
 
     /**
      * Publishing the selected options
-     * @param {{dm, op: *}} message : Selected options
+     * @param {{dm, op}} message : Selected options
      */
     publishSelection(message) {
         super.publish(message);
@@ -261,11 +278,13 @@ class APIMDimensionSelectorWidget extends Widget {
      * */
     handleApiListReceived(data) {
         let {
-            options, optionLabel, dimension, noOptionsText,
+            options, optionLabel, noOptionsText,
         } = { ...this.state };
+        const { selectMultiple } = this.state;
         const { dm, op } = this.getqueryParam();
         const { list } = data;
 
+        let dimension;
         if (!dm || ![DIMENSION_API, DIMENSION_PROVIDER].includes(dm)) {
             dimension = DIMENSION_API;
         } else {
@@ -294,7 +313,7 @@ class APIMDimensionSelectorWidget extends Widget {
                 optionLabel = option => option;
             }
 
-            const selectedOptions = this.filterSelectedOption(dimension, options, op);
+            const selectedOptions = this.filterSelectedOption(dimension, options, op, selectMultiple);
             let publishOptions = selectedOptions;
             if (dimension === DIMENSION_PROVIDER) {
                 publishOptions = apis.filter(api => selectedOptions.includes(api.provider));
@@ -307,7 +326,7 @@ class APIMDimensionSelectorWidget extends Widget {
                 optionLabel,
                 noOptionsText,
                 inProgress: false,
-                selectedOptions,
+                selectedOptions: selectMultiple ? selectedOptions : selectedOptions[0],
             });
             this.setQueryParam(dimension, selectedOptions);
             this.publishSelection({ dm: dimension, op: publishOptions });
@@ -319,7 +338,7 @@ class APIMDimensionSelectorWidget extends Widget {
                 options: [],
                 optionLabel: option => option,
                 noOptionsText,
-                selectedOptions: [],
+                selectedOptions: selectMultiple ? [] : null,
                 inProgress: false,
             });
             this.setQueryParam(dimension, []);
@@ -333,10 +352,11 @@ class APIMDimensionSelectorWidget extends Widget {
      * @param {String} dimension - selected dimension
      * @param {Array} options - available options
      * @param {Array} selection - selected options
+     * @param {bool} selectMultiple - multiple selection enabled
      * @memberof APIMDimensionSelectorWidget
      * */
-    filterSelectedOption(dimension, options, selection) {
-        if (!selection || selection.length === 0) {
+    filterSelectedOption(dimension, options, selection, selectMultiple) {
+        if (!selection || selection.length === 0 || !Array.isArray(selection)) {
             return [options[0]];
         }
 
@@ -359,6 +379,9 @@ class APIMDimensionSelectorWidget extends Widget {
         }
 
         if (filteredSelection.length > 0) {
+            if (!selectMultiple) {
+                return [filteredSelection[0]];
+            }
             return filteredSelection;
         } else {
             return [options[0]];
@@ -371,7 +394,7 @@ class APIMDimensionSelectorWidget extends Widget {
      * @memberof APIMDimensionSelectorWidget
      * */
     handleChangeDimension(dimension) {
-        const { apis, providers } = this.state;
+        const { apis, providers, selectMultiple } = this.state;
 
         let noOptionsText = '';
         let options = [];
@@ -399,7 +422,7 @@ class APIMDimensionSelectorWidget extends Widget {
             options,
             optionLabel,
             noOptionsText,
-            selectedOptions,
+            selectedOptions: selectMultiple ? selectedOptions : selectedOptions[0],
             inProgress: false,
         });
         this.publishSelection({ dm: dimension, op: publishOptions });
@@ -415,14 +438,23 @@ class APIMDimensionSelectorWidget extends Widget {
         const { apis, dimension } = this.state;
 
         this.setState({ selectedOptions: value });
-        this.setQueryParam(dimension, value);
+        this.setQueryParam(dimension, Array.isArray(value) ? value : [value]);
 
+        let publishOptions = [];
         if (dimension === DIMENSION_API) {
-            this.publishSelection({ dm: dimension, op: value });
+            if (Array.isArray(value)) {
+                publishOptions = value;
+            } else {
+                publishOptions = [value];
+            }
         } else if (dimension === DIMENSION_PROVIDER) {
-            const selection = apis.filter(api => value.includes(api.provider));
-            this.publishSelection({ dm: dimension, op: selection });
+            if (Array.isArray(value)) {
+                publishOptions = apis.filter(api => value.includes(api.provider));
+            } else {
+                publishOptions = apis.filter(api => value === api.provider);
+            }
         }
+        this.publishSelection({ dm: dimension, op: publishOptions });
     }
 
     /**
@@ -433,7 +465,7 @@ class APIMDimensionSelectorWidget extends Widget {
     render() {
         const {
             messages, faultyProviderConf, options, optionLabel, inProgress, proxyError, noOptionsText, height,
-            selectedOptions, dimension,
+            selectedOptions, dimension, selectMultiple,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading, proxyPaper, proxyPaperWrapper, root, search,
@@ -565,7 +597,7 @@ class APIMDimensionSelectorWidget extends Widget {
                                         )}
                                         >
                                             <Autocomplete
-                                                multiple
+                                                multiple={selectMultiple}
                                                 filterSelectedOptions
                                                 id='tags-standard'
                                                 ListboxProps={{ style: { maxHeight: 400, overflow: 'auto' } }}

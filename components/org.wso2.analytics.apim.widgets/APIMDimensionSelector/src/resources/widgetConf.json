@@ -19,6 +19,18 @@
           ]
         },
         "defaultValue": false
+      },
+      {
+        "id" : "selectMultiple",
+        "title" : "Select Multiple",
+        "type" : {
+          "name" : "BOOLEAN",
+          "possibleValues" : [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
       }
     ]
   }
