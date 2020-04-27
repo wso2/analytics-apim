@@ -36,7 +36,7 @@ import Widget from '@wso2-dashboards/widget';
 import CustomIcon from './CustomIcon';
 
 const DIMENSION_API = 'api';
-const DIMENSION_PROVIDER = 'provider';
+const DIMENSION_PROVIDER = 'api provider';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -95,6 +95,9 @@ class APIMDimensionSelectorWidget extends Widget {
             proxyError: false,
             selectedOptions: [],
             selectMultiple: true,
+            selectedDimensions: [],
+            defaultDimension: null,
+            response: null,
         };
 
         this.styles = {
@@ -176,6 +179,40 @@ class APIMDimensionSelectorWidget extends Widget {
     }
 
     /**
+     *
+     * @param {any} props @inheritDoc
+     */
+    componentDidMount() {
+        const { refreshInterval } = this.state;
+        const refresh = () => {
+            this.assembleApiListQuery();
+        };
+        const refreshIntervalId = setInterval(refresh, refreshInterval);
+        this.setState({ refreshIntervalId });
+        this.loadDefaultValues();
+    }
+
+    /**
+     *
+     * @param {any} props @inheritDoc
+     */
+    componentDidUpdate() {
+        const { response } = this.state;
+        if (response) {
+            this.handleApiListReceived(response.data);
+        }
+    }
+
+    /**
+     *
+     * @param {any} props @inheritDoc
+     */
+    componentWillUnmount() {
+        const { refreshIntervalId } = this.state;
+        clearInterval(refreshIntervalId);
+    }
+
+    /**
      * Load locale file.
      * @memberof APIMDimensionSelectorWidget
      * @param {String} locale - locale
@@ -196,36 +233,32 @@ class APIMDimensionSelectorWidget extends Widget {
     }
 
     /**
-     *
+     * Load the default values based on widget config
      * @param {any} props @inheritDoc
      */
-    componentDidMount() {
-        const { refreshInterval } = this.state;
+    loadDefaultValues() {
         const { configs } = this.props;
         let selectMultiple = true;
+        let defaultDimension = DIMENSION_API;
+        let selectedDimensions = [DIMENSION_API, DIMENSION_PROVIDER];
 
         if (configs && configs.options) {
-            ({ selectMultiple } = configs.options);
-            if (selectMultiple === undefined) {
-                selectMultiple = true;
+            const { selectMultiple: multiSelect, defaultDimension: defaultDm, dimensions: dms } = configs.options;
+            // set default values
+            if (multiSelect !== undefined) {
+                selectMultiple = multiSelect;
+            }
+            if (dms !== undefined) {
+                selectedDimensions = dms.map((dm) => { return dm.toLowerCase(); });
+            }
+            if (defaultDm !== undefined) {
+                defaultDimension = selectedDimensions.includes(defaultDm.toLowerCase()) ? defaultDm.toLowerCase()
+                    : selectedDimensions[0];
             }
         }
-
-        const refresh = () => {
-            this.assembleApiListQuery();
-        };
-        const refreshIntervalId = setInterval(refresh, refreshInterval);
-        this.setState({ refreshIntervalId, selectMultiple });
-        this.assembleApiListQuery();
-    }
-
-    /**
-     *
-     * @param {any} props @inheritDoc
-     */
-    componentWillUnmount() {
-        const { refreshIntervalId } = this.state;
-        clearInterval(refreshIntervalId);
+        this.setState({
+            selectMultiple, defaultDimension, selectedDimensions,
+        }, this.assembleApiListQuery);
     }
 
     /**
@@ -262,8 +295,7 @@ class APIMDimensionSelectorWidget extends Widget {
     assembleApiListQuery() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
-                this.setState({ proxyError: false });
-                this.handleApiListReceived(response.data);
+                this.setState({ proxyError: false, response });
             })
             .catch((error) => {
                 this.setState({ proxyError: true, inProgress: false });
@@ -280,13 +312,13 @@ class APIMDimensionSelectorWidget extends Widget {
         let {
             options, optionLabel, noOptionsText,
         } = { ...this.state };
-        const { selectMultiple } = this.state;
+        const { selectMultiple, defaultDimension, selectedDimensions } = this.state;
         const { dm, op } = this.getqueryParam();
         const { list } = data;
 
         let dimension;
-        if (!dm || ![DIMENSION_API, DIMENSION_PROVIDER].includes(dm)) {
-            dimension = DIMENSION_API;
+        if (!dm || !selectedDimensions.includes(dm)) {
+            dimension = defaultDimension;
         } else {
             dimension = dm;
         }
@@ -299,11 +331,15 @@ class APIMDimensionSelectorWidget extends Widget {
 
         if (list && list.length > 0) {
             const apis = list.sort((a, b) => { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); });
-            let providers = list.map((dataUnit) => {
-                return dataUnit.provider;
-            });
-            providers = [...new Set(providers)];
-            providers.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+
+            let providers = [];
+            if (selectedDimensions.includes(DIMENSION_PROVIDER)) {
+                providers = list.map((dataUnit) => {
+                    return dataUnit.provider;
+                });
+                providers = [...new Set(providers)];
+                providers.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+            }
 
             if (dimension === DIMENSION_API) {
                 options = apis;
@@ -327,6 +363,7 @@ class APIMDimensionSelectorWidget extends Widget {
                 noOptionsText,
                 inProgress: false,
                 selectedOptions: selectMultiple ? selectedOptions : selectedOptions[0],
+                response: null,
             });
             this.setQueryParam(dimension, selectedOptions);
             this.publishSelection({ dm: dimension, op: publishOptions });
@@ -340,6 +377,7 @@ class APIMDimensionSelectorWidget extends Widget {
                 noOptionsText,
                 selectedOptions: selectMultiple ? [] : null,
                 inProgress: false,
+                response: null,
             });
             this.setQueryParam(dimension, []);
             this.publishSelection({ dm: dimension, op: [] });
@@ -466,14 +504,16 @@ class APIMDimensionSelectorWidget extends Widget {
     render() {
         const {
             messages, faultyProviderConf, options, optionLabel, inProgress, proxyError, noOptionsText, height,
-            selectedOptions, dimension, selectMultiple,
+            selectedOptions, dimension, selectMultiple, selectedDimensions,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading, proxyPaper, proxyPaperWrapper, root, search,
-            dimensionButton, button,
+            dimensionButton,
         } = this.styles;
+        const { button } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        button.color = muiTheme.palette.textColor;
 
         if (inProgress) {
             return (
@@ -539,17 +579,19 @@ class APIMDimensionSelectorWidget extends Widget {
                                     <div style={dimensionButton}>
                                         { dimension === DIMENSION_API ? (
                                             <Tooltip title={(
-                                                <FormattedMessage
-                                                    id='dimension.api.tooltip'
-                                                    defaultMessage={"Viewing stats by 'API'. "
-                                                + "Click to change the view to 'API Provider'."}
-                                                />
-                                            )}
+                                                selectedDimensions.includes(DIMENSION_PROVIDER) && (
+                                                    <FormattedMessage
+                                                        id='dimension.api.tooltip'
+                                                        defaultMessage={"Viewing stats by 'API'. Click to change the"
+                                                        + " view to 'API Provider'"}
+                                                    />
+                                                ))}
                                             >
                                                 <Button
                                                     style={button}
                                                     variant='outlined'
                                                     fullWidth
+                                                    disabled={!selectedDimensions.includes(DIMENSION_PROVIDER)}
                                                     startIcon={<CustomIcon strokeColor={muiTheme.palette.textColor} />}
                                                     onClick={() => this.handleChangeDimension(DIMENSION_PROVIDER)}
                                                 >
@@ -561,17 +603,19 @@ class APIMDimensionSelectorWidget extends Widget {
                                             </Tooltip>
                                         ) : (
                                             <Tooltip title={(
-                                                <FormattedMessage
-                                                    id='dimension.provider.tooltip'
-                                                    defaultMessage={"Viewing stats by 'API Provider'. "
-                                                + "Click to change the view to 'API'."}
-                                                />
-                                            )}
+                                                selectedDimensions.includes(DIMENSION_API) && (
+                                                    <FormattedMessage
+                                                        id='dimension.provider.tooltip'
+                                                        defaultMessage={"Viewing stats by 'API Provider'. Click to"
+                                                        + " change the view to 'API'."}
+                                                    />
+                                                ))}
                                             >
                                                 <Button
                                                     style={button}
                                                     variant='outlined'
                                                     fullWidth
+                                                    disabled={!selectedDimensions.includes(DIMENSION_API)}
                                                     startIcon={<PersonIcon />}
                                                     onClick={() => this.handleChangeDimension(DIMENSION_API)}
                                                 >

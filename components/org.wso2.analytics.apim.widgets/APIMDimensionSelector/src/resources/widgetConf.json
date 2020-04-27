@@ -31,6 +31,31 @@
           ]
         },
         "defaultValue": true
+      },
+      {
+        "id" : "dimensions",
+        "title" : "Dimension(s)",
+        "type" : {
+          "name" : "ENUM",
+          "multiple" : true,
+          "possibleValues" : [
+            "API",
+            "API Provider"
+          ]
+        },
+        "defaultValue": ["API", "API Provider"]
+      },
+      {
+        "id" : "defaultDimension",
+        "title" : "Default Dimension",
+        "type" : {
+          "name" : "ENUM",
+          "possibleValues" : [
+            "API",
+            "API Provider"
+          ]
+        },
+        "defaultValue": "API"
       }
     ]
   }
