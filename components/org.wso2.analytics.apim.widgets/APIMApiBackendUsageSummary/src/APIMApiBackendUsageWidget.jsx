@@ -117,11 +117,9 @@ class APIMApiBackendUsageWidget extends Widget {
         }
 
         this.handleChange = this.handleChange.bind(this);
-        this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.getUsername = this.getUsername.bind(this);
     }
 
     componentWillMount() {
@@ -135,7 +133,7 @@ class APIMApiBackendUsageWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -177,50 +175,52 @@ class APIMApiBackendUsageWidget extends Widget {
     }
 
     /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
-    }
-
-    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMApiBackendUsageWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleApiUsageQuery);
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleApiUsageQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleApiUsageQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleApiUsageQuery);
+        }
     }
 
     /**
-     * Reset the state according to queryParam
+     * Retrieve the limit from query param
      * @memberof APIMApiBackendUsageWidget
      * */
-    resetState() {
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy } = queryParam;
-        let { limit } = queryParam;
-        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
-            apiCreatedBy = 'All';
-        }
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
         if (!limit || limit < 0) {
             limit = 5;
         }
-        this.setState({ apiCreatedBy, limit });
-        this.setQueryParam(apiCreatedBy, limit);
+        this.setQueryParam(limit);
+        this.setState({ limit });
     }
 
     /**
@@ -228,25 +228,33 @@ class APIMApiBackendUsageWidget extends Widget {
      * @memberof APIMApiBackendUsageWidget
      * */
     assembleApiUsageQuery() {
-        this.resetState();
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { limit, apiCreatedBy } = queryParam;
         const {
-            timeFrom, timeTo, perValue, providerConfig, username,
+            timeFrom, timeTo, perValue, providerConfig, limit, dimension, selectedOptions,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
+                let filterCondition = selectedOptions.map((opt) => {
+                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                        + '\' AND apiCreator==\'' + opt.provider + '\')';
+                });
+                filterCondition = filterCondition.join(' OR ');
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{creator}}': apiCreatedBy !== 'All' ? 'AND apiCreator==\'' + username + '\'' : '',
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': perValue,
-            '{{limit}}': limit,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{filterCondition}}': filterCondition,
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
+            } else {
+                this.setState({ inProgress: false, usageData: [] });
+            }
+        }
     }
 
     /**
@@ -256,7 +264,6 @@ class APIMApiBackendUsageWidget extends Widget {
      * */
     handleApiUsageReceived(message) {
         const { data } = message;
-        const { apiCreatedBy, limit } = this.state;
 
         if (data) {
             const usageData = data.map((dataUnit) => {
@@ -269,7 +276,6 @@ class APIMApiBackendUsageWidget extends Widget {
                 };
             });
             this.setState({ usageData, inProgress: false });
-            this.setQueryParam(apiCreatedBy, limit);
         } else {
             this.setState({ inProgress: false, usageData: [] });
         }
@@ -277,12 +283,11 @@ class APIMApiBackendUsageWidget extends Widget {
 
     /**
      * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
      * @param {number} limit - data limitation value
      * @memberof APIMApiBackendUsageWidget
      * */
-    setQueryParam(apiCreatedBy, limit) {
-        super.setGlobalState(queryParamKey, { apiCreatedBy, limit });
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
     }
 
     /**
@@ -291,34 +296,16 @@ class APIMApiBackendUsageWidget extends Widget {
      * @memberof APIMApiBackendUsageWidget
      * */
     handleChange(event) {
-        const { apiCreatedBy } = this.state;
         const limit = (event.target.value).replace('-', '').split('.')[0];
         const { id } = this.props;
 
-        this.setQueryParam(apiCreatedBy, parseInt(limit, 10));
+        this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
             super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleApiUsageQuery();
+            this.setState({ inProgress: true, limit }, this.assembleApiUsageQuery);
         } else {
             this.setState({ limit });
         }
-    }
-
-    /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMApiBackendUsageWidget
-     * */
-    apiCreatedHandleChange(event) {
-        const { limit } = this.state;
-        const { value } = event.target;
-        const { id } = this.props;
-
-        this.setQueryParam(value, limit);
-        this.setState({ inProgress: true, apiCreatedBy: value });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiUsageQuery();
     }
 
     /**
@@ -328,7 +315,7 @@ class APIMApiBackendUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, usageData, inProgress,
+            localeMessages, faultyProviderConfig, height, limit, usageData, inProgress,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -336,7 +323,7 @@ class APIMApiBackendUsageWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const backendUsageProps = {
-            themeName, height, limit, apiCreatedBy, usageData, inProgress,
+            themeName, height, limit, usageData, inProgress,
         };
 
         return (
@@ -364,7 +351,6 @@ class APIMApiBackendUsageWidget extends Widget {
                         ) : (
                             <APIMApiBackendUsage
                                 {...backendUsageProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
                                 handleChange={this.handleChange}
                             />
                         )
