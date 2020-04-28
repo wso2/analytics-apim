@@ -33,6 +33,7 @@ import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
+import cloneDeep from 'lodash/cloneDeep';
 import CustomIcon from './CustomIcon';
 
 const DIMENSION_API = 'api';
@@ -97,7 +98,10 @@ class APIMDimensionSelectorWidget extends Widget {
             selectMultiple: true,
             selectedDimensions: [],
             defaultDimension: null,
-            response: null,
+            apiResponse: null,
+            roleValidationResponse: null,
+            isRoleValidated: false,
+            isManager: false,
         };
 
         this.styles = {
@@ -163,6 +167,9 @@ class APIMDimensionSelectorWidget extends Widget {
                 height: this.props.glContainer.height,
             }));
         }
+
+        this.formatPublisherApiList = this.formatPublisherApiList.bind(this);
+        this.handleApiDataReceived = this.handleApiDataReceived.bind(this);
     }
 
     /**
@@ -184,12 +191,25 @@ class APIMDimensionSelectorWidget extends Widget {
      */
     componentDidMount() {
         const { refreshInterval } = this.state;
-        const refresh = () => {
-            this.assembleApiListQuery();
-        };
-        const refreshIntervalId = setInterval(refresh, refreshInterval);
-        this.setState({ refreshIntervalId });
-        this.loadDefaultValues();
+        const { widgetID } = this.props;
+        this.validateLoggedInUserRole();
+        super.getWidgetConfiguration(widgetID)
+            .then((message) => {
+                const refresh = () => {
+                    this.loadAPIList();
+                };
+                const refreshIntervalId = setInterval(refresh, refreshInterval);
+                this.setState({
+                    providerConfig: message.data.configs.providerConfig,
+                    refreshIntervalId,
+                });
+            })
+            .catch((error) => {
+                console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
+                this.setState({
+                    faultyProviderConf: true,
+                });
+            });
     }
 
     /**
@@ -197,9 +217,12 @@ class APIMDimensionSelectorWidget extends Widget {
      * @param {any} props @inheritDoc
      */
     componentDidUpdate() {
-        const { response } = this.state;
-        if (response) {
-            this.handleApiListReceived(response.data);
+        const { apiResponse, roleValidationResponse } = this.state;
+        if (apiResponse) {
+            this.formatPublisherApiList(apiResponse);
+        }
+        if (roleValidationResponse) {
+            this.loadDefaultValues();
         }
     }
 
@@ -233,11 +256,27 @@ class APIMDimensionSelectorWidget extends Widget {
     }
 
     /**
+     * Get API list from Publisher
+     * @memberof APIMDimensionSelectorWidget
+     * */
+    validateLoggedInUserRole() {
+        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/isManager`)
+            .then((response) => {
+                this.setState({ proxyError: false, isRoleValidated: true, roleValidationResponse: response.data });
+            })
+            .catch((error) => {
+                this.setState({ proxyError: true, inProgress: false });
+                console.error(error);
+            });
+    }
+
+    /**
      * Load the default values based on widget config
      * @param {any} props @inheritDoc
      */
     loadDefaultValues() {
         const { configs } = this.props;
+        const { roleValidationResponse } = this.state;
         let selectMultiple = true;
         let defaultDimension = DIMENSION_API;
         let selectedDimensions = [DIMENSION_API, DIMENSION_PROVIDER];
@@ -256,9 +295,10 @@ class APIMDimensionSelectorWidget extends Widget {
                     : selectedDimensions[0];
             }
         }
+        const isManager = roleValidationResponse ? roleValidationResponse.isManager : false;
         this.setState({
-            selectMultiple, defaultDimension, selectedDimensions,
-        }, this.assembleApiListQuery);
+            selectMultiple, defaultDimension, selectedDimensions, roleValidationResponse: null, isManager,
+        }, this.loadAPIList);
     }
 
     /**
@@ -289,13 +329,28 @@ class APIMDimensionSelectorWidget extends Widget {
     }
 
     /**
+     * Load API list
+     * @memberof APIMDimensionSelectorWidget
+     * */
+    loadAPIList() {
+        const { isManager, isRoleValidated } = this.state;
+        if (isRoleValidated) {
+            if (isManager) {
+                this.getApiListFromDatabase();
+            } else {
+                this.getApiListFromPublisher();
+            }
+        }
+    }
+
+    /**
      * Get API list from Publisher
      * @memberof APIMDimensionSelectorWidget
      * */
-    assembleApiListQuery() {
+    getApiListFromPublisher() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
             .then((response) => {
-                this.setState({ proxyError: false, response });
+                this.setState({ proxyError: false, apiResponse: response.data });
             })
             .catch((error) => {
                 this.setState({ proxyError: true, inProgress: false });
@@ -304,17 +359,65 @@ class APIMDimensionSelectorWidget extends Widget {
     }
 
     /**
-     * Formats data retrieved from assembleApiListQuery
+     * Formats the API list retrieved from APIM publisher to remove API uuid
      * @param {object} data - data retrieved
      * @memberof APIMDimensionSelectorWidget
      * */
-    handleApiListReceived(data) {
+    formatPublisherApiList(data) {
+        const { list } = data;
+        let apis = [];
+
+        if (list && list.length > 0) {
+            apis = list.map(
+                (opt) => { return { name: opt.name, version: opt.version, provider: opt.provider }; },
+            );
+        }
+        this.setState({ apiResponse: null });
+        this.handleApiListReceived(apis);
+    }
+
+
+    /**
+     * Get API list from AM_DB
+     * @memberof APIMDimensionSelectorWidget
+     * */
+    getApiListFromDatabase() {
+        const { widgetID: widgetName, id } = this.props;
+        const { providerConfig } = this.state;
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apiquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id, widgetName, this.handleApiDataReceived, dataProviderConfigs);
+    }
+
+    /**
+     * Handle data received from getApiListFromDatabase
+     * @param {object} message - data retrieved
+     * @memberof APIMDimensionSelectorWidget
+     * */
+    handleApiDataReceived(message) {
+        const { data } = message;
+        let apis = [];
+
+        if (data && data.length > 0) {
+            apis = data.map(
+                (opt) => { return { name: opt[0], version: opt[1], provider: opt[2] }; },
+            );
+        }
+        this.handleApiListReceived(apis);
+    }
+
+    /**
+     * Formats API data retrieved
+     * @param {object} list - data retrieved
+     * @memberof APIMDimensionSelectorWidget
+     * */
+    handleApiListReceived(list) {
         let {
             options, optionLabel, noOptionsText,
         } = { ...this.state };
         const { selectMultiple, defaultDimension, selectedDimensions } = this.state;
         const { dm, op } = this.getqueryParam();
-        const { list } = data;
 
         let dimension;
         if (!dm || !selectedDimensions.includes(dm)) {
@@ -363,7 +466,6 @@ class APIMDimensionSelectorWidget extends Widget {
                 noOptionsText,
                 inProgress: false,
                 selectedOptions: selectMultiple ? selectedOptions : selectedOptions[0],
-                response: null,
             });
             this.setQueryParam(dimension, selectedOptions);
             this.publishSelection({ dm: dimension, op: publishOptions });
@@ -377,7 +479,6 @@ class APIMDimensionSelectorWidget extends Widget {
                 noOptionsText,
                 selectedOptions: selectMultiple ? [] : null,
                 inProgress: false,
-                response: null,
             });
             this.setQueryParam(dimension, []);
             this.publishSelection({ dm: dimension, op: [] });
