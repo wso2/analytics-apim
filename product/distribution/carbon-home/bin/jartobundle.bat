@@ -71,7 +71,7 @@ set CURRENT_DIR=%cd%
 cd %CARBON_HOME%\bin
 echo JAVA_HOME environment variable is set to %JAVA_HOME%
 echo CARBON_HOME environment variable is set to %CARBON_HOME%
-java -cp ".\*;..\bin\tools\*" -Dwso2.carbon.tool="jar-to-bundle-converter" org.wso2.carbon.tools.CarbonToolExecutor "%1" "%2" "%CURRENT_DIR%"
+"%JAVA_HOME%\bin\java" -cp ".\*;..\bin\tools\*" -Dwso2.carbon.tool="jar-to-bundle-converter" org.wso2.carbon.tools.CarbonToolExecutor "%1" "%2" "%CURRENT_DIR%"
 
 :end
 goto endlocal
