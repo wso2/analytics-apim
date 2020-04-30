@@ -202,7 +202,7 @@ class APIMDimensionSelectorWidget extends Widget {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
                     refreshIntervalId,
-                });
+                }, this.loadAPIList);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -384,10 +384,12 @@ class APIMDimensionSelectorWidget extends Widget {
     getApiListFromDatabase() {
         const { widgetID: widgetName, id } = this.props;
         const { providerConfig } = this.state;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apiquery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiDataReceived, dataProviderConfigs);
+        if (providerConfig) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'apiquery';
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleApiDataReceived, dataProviderConfigs);
+        }
     }
 
     /**
