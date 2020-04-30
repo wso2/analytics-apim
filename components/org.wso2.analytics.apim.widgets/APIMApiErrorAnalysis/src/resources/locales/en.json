@@ -1,0 +1,13 @@
+{
+  "all.menuItem": "All",
+  "apiName.label": "API Name",
+  "apiVersion.label": "API Version",
+  "apim.server.error.heading" : "Error !",
+  "nodata.error.body": "No data available for the selected options.",
+  "nodata.error.heading": "No Data Available !",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Error Analysis widget",
+  "config.error.heading": "Configuration Error !",
+  "resources.label": "Resources",
+  "widget.heading": "API ERROR ANALYSIS",
+  "legandData.heading": "Response codes of the API"
+}
