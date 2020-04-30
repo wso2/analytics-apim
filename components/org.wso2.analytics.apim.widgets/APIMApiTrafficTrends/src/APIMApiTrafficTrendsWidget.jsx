@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -27,7 +27,8 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Widget from '@wso2-dashboards/widget';
-import APIMApiLatency from './APIMApiLatency';
+import Moment from 'moment';
+import APIMApiTrafficTrends from './APIMApiTrafficTrends';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -48,19 +49,10 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * Query string parameter values
- * @type {object}
- */
-const createdByKeys = {
-    All: 'All',
-    Me: 'Me',
-};
-
-/**
  * Query string parameter
  * @type {string}
  */
-const queryParamKey = 'latencytime';
+const queryParamKey = 'trafficTrends';
 
 /**
  * Language
@@ -74,81 +66,18 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Api Latency Time widget
- * @class APIMApiLatencyWidget
+ * Create React Component for APIM Api Traffic Trends widget
+ * @class APIMApiTrafficTrendsWidget
  * @extends {Widget}
  */
-class APIMApiLatencyWidget extends Widget {
+class APIMApiTrafficTrendsWidget extends Widget {
     /**
-     * Creates an instance of APIMApiLatencyWidget.
+     * Creates an instance of APIMApiTrafficTrendsWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      */
     constructor(props) {
         super(props);
-
-        this.chartConfig = {
-            x: 'REQUEST_TIME',
-            charts: [
-                {
-                    type: 'line',
-                    y: 'Response Time',
-                    fill: '#1a911c',
-                },
-                {
-                    type: 'line',
-                    y: 'Security',
-                    fill: '#bb3a1c',
-                },
-                {
-                    type: 'line',
-                    y: 'Throttling',
-                    fill: '#aabb2e',
-                },
-                {
-                    type: 'line',
-                    y: 'Request Mediation',
-                    fill: '#33bbb5',
-                },
-                {
-                    type: 'line',
-                    y: 'Response Mediation',
-                    fill: '#b420bb',
-                },
-                {
-                    type: 'line',
-                    y: 'Backend',
-                    fill: '#bbb2b9',
-                },
-                {
-                    type: 'line',
-                    y: 'Other',
-                    fill: '#bb780f',
-                },
-            ],
-            maxLength: 60,
-            width: 800,
-            height: 400,
-            interactiveLegend: true,
-            legend: true,
-            timeFormat: '%Y-%m-%d %H:%M:%S',
-            tipTimeFormat: '%Y-%m-%d %H:%M:%S',
-            style: {
-                xAxisTickAngle: -8,
-                tickLabelColor: '#a7b0c8',
-                axisLabelColor: '#a7b0c8',
-                axisTextSize: 50,
-                legendTextColor: '#a7b0c8',
-                legendTextSize: 15,
-            },
-        };
-
-        this.metadata = {
-            names: ['Response Time', 'Security', 'Throttling', 'Request Mediation',
-                'Response Mediation', 'Backend', 'Other', 'REQUEST_TIME'],
-            types: ['linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'time'],
-        };
-
         this.styles = {
             formControl: {
                 margin: 5,
@@ -181,37 +110,30 @@ class APIMApiLatencyWidget extends Widget {
                 margin: 'auto',
                 marginTop: '5%',
             },
-            rowGutter: {
-                top: 0,
-                bottom: -10,
-            },
-            victoryLegend: {
-                labels: {
-                    fill: '#9e9e9e',
-                    fontSize: 19,
-                },
-            },
         };
 
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiCreatedBy: 'All',
             apiSelected: '',
             apiVersion: '',
             versionlist: [],
             versionMap: {},
             apilist: [],
             apiDataList: [],
-            latencyData: null,
+            resultdata: [],
             apiFullData: [],
             resourceList: [],
             operationSelected: [],
-            resourceSelected: '',
             inProgress: true,
-            metadata: this.metadata,
-            chartConfig: this.chartConfig,
             proxyError: false,
+            chartData: null,
+            xAxisTicks: null,
+            maxCount: 0,
+            apiresource: null,
+            apimethod: null,
+            dataarray: [],
+            legandDataSet: [],
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -231,13 +153,10 @@ class APIMApiLatencyWidget extends Widget {
         this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
         this.assembleResourceQuery = this.assembleResourceQuery.bind(this);
         this.handleResourceReceived = this.handleResourceReceived.bind(this);
-        this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.apiSelectedHandleChange = this.apiSelectedHandleChange.bind(this);
         this.apiVersionHandleChange = this.apiVersionHandleChange.bind(this);
         this.apiOperationHandleChange = this.apiOperationHandleChange.bind(this);
-        this.apiResourceHandleChange = this.apiResourceHandleChange.bind(this);
         this.resetState = this.resetState.bind(this);
-        this.getUsername = this.getUsername.bind(this);
     }
 
     componentWillMount() {
@@ -251,7 +170,6 @@ class APIMApiLatencyWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -273,14 +191,15 @@ class APIMApiLatencyWidget extends Widget {
     }
 
     /**
-     * Load locale file.
-     * @param {string} locale Locale name
-     * @memberof APIMApiLatencyWidget
-     */
+      * Load locale file
+      * @param {string} locale Locale name
+      * @memberof APIMApiTrafficTrendsWidget
+      * @returns {string}
+      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiLatencyTime/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiTrafficTrends/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -292,21 +211,9 @@ class APIMApiLatencyWidget extends Widget {
     }
 
     /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
-    }
-
-    /**
      * Retrieve params from publisher - DateTimeRange
-     * @memberof APIMApiLatencyWidget
+     * @param {object} receivedMsg timeFrom, TimeTo, perValue
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -322,20 +229,22 @@ class APIMApiLatencyWidget extends Widget {
 
     /**
      * Reset the state according to queryParam
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     resetState() {
-        this.setState({ inProgress: true, latencyData: [] });
+        this.setState({
+            inProgress: true,
+            resultdata: [],
+            chartData: null,
+            xAxisTicks: null,
+        });
         const queryParam = super.getGlobalState(queryParamKey);
         let {
-            apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected,
+            apiSelected, apiVersion, operationSelected,
         } = queryParam;
         const { apilist, versionMap } = this.state;
         let versions;
 
-        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
-            apiCreatedBy = 'All';
-        }
         if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
             if (apilist.length > 0) {
                 [apiSelected] = apilist;
@@ -356,19 +265,16 @@ class APIMApiLatencyWidget extends Widget {
         if (!operationSelected) {
             operationSelected = [];
         }
-        if (!resourceSelected) {
-            resourceSelected = '';
-        }
 
         this.setState({
-            apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected, versionlist: versions,
+            apiSelected, apiVersion, operationSelected, versionlist: versions,
         });
-        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected);
+        this.setQueryParam(apiSelected, apiVersion, operationSelected);
     }
 
     /**
      * Get API list from Publisher
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     assembleApiListQuery() {
         this.resetState();
@@ -386,13 +292,15 @@ class APIMApiLatencyWidget extends Widget {
     /**
      * Formats data retrieved from assembleApiListQuery
      * @param {object} data - data retrieved
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     handleApiListReceived(data) {
         const { id } = this.props;
         const { list } = data;
-        if (list && list.length > 0) {
+        if (list) {
             this.setState({ apiDataList: list });
+        } else {
+            this.setState({ inProgress: false });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleApiIdQuery();
@@ -400,29 +308,20 @@ class APIMApiLatencyWidget extends Widget {
 
     /**
      * Formats the siddhi query - apiidquery
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     assembleApiIdQuery() {
         this.resetState();
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy } = queryParam;
-        const { providerConfig, username } = this.state;
+        const { providerConfig, apiDataList } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        let { apiDataList=[]} = this.state;
-        if (apiCreatedBy !== 'All') {
-            apiDataList = apiDataList.filter((api) => { return api.provider === username; });
-        }
-
         if (apiDataList && apiDataList.length > 0) {
-            let apiList = [...apiDataList];
-
+            const apiList = [...apiDataList];
             let apiCondition = apiList.map((api) => {
                 return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
-                    + '\' AND API_PROVIDER==\'' + api.provider + '\')';
+                    + '\')';
             });
             apiCondition = apiCondition.join(' OR ');
-
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -431,14 +330,14 @@ class APIMApiLatencyWidget extends Widget {
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, latencyData: [], apilist:[], versionlist: [], apiSelected:'' });
+            this.setState({ inProgress: false, resultdata: [] });
         }
     }
 
     /**
      * Formats data retrieved from assembleApiIdQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     handleApiIdReceived(message) {
         const { id } = this.props;
@@ -451,7 +350,6 @@ class APIMApiLatencyWidget extends Widget {
             const versionMap = {};
             data.forEach((dataUnit) => {
                 apilist.push(dataUnit[1]);
-                // retrieve all entries for the api and get the api versions list
                 const versions = data.filter(d => d[1] === dataUnit[1]);
                 const versionlist = versions.map((ver) => { return ver[2]; });
                 versionMap[dataUnit[1]] = versionlist;
@@ -468,7 +366,7 @@ class APIMApiLatencyWidget extends Widget {
 
     /**
      * Formats the siddhi query - resourcequery
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     assembleResourceQuery() {
         this.resetState();
@@ -479,7 +377,6 @@ class APIMApiLatencyWidget extends Widget {
 
         if (apiFullData && apiFullData.length > 0) {
             const api = apiFullData.filter(apiData => apiSelected === apiData[1] && apiVersion === apiData[2])[0];
-
             if (api) {
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'resourcequery';
@@ -489,161 +386,165 @@ class APIMApiLatencyWidget extends Widget {
                 super.getWidgetChannelManager()
                     .subscribeWidget(id, widgetName, this.handleResourceReceived, dataProviderConfigs);
             } else {
-                this.setState({ inProgress: false, latencyData: [] });
+                this.setState({ inProgress: false, resultdata: [] });
             }
         } else {
-            this.setState({ inProgress: false, latencyData: [] });
+            this.setState({ inProgress: false, resultdata: [] });
         }
     }
 
     /**
      * Formats data retrieved from assembleResourceQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     handleResourceReceived(message) {
         const { data } = message;
         const { id } = this.props;
+        const { operationSelected } = this.state;
+        const queryParam = super.getGlobalState(queryParamKey);
+        const { apiSelected, apiVersion } = queryParam;
 
         if (data) {
+            const legenddata = [];
+            const operations = [];
+            const operationTypes = [];
+            let method = '';
             const resourceList = [];
+
             data.forEach((dataUnit) => {
                 resourceList.push([dataUnit[0] + ' (' + dataUnit[1]] + ')');
             });
             this.setState({ resourceList });
+
+            if (operationSelected && operationSelected.length > 0) {
+                operationSelected.forEach((element) => {
+                    const resFormat = element.split(' (');
+                    operations.push(resFormat[0]);
+                    method = resFormat[1].replace(')', '');
+                    operationTypes.push(method);
+                });
+
+                operations.forEach((element) => {
+                    legenddata.push(
+                        { name: element },
+                    );
+                });
+                this.setState({ legandDataSet: legenddata });
+
+                for (let index = 0; index < operations.length; index++) {
+                    this.setQueryParam(apiSelected, apiVersion, operationSelected);
+                    this.assembleMainQuery(operations[index], operationTypes[index]);
+                }
+            } else {
+                this.setGlobalState({ inProgress: false });
+                super.getWidgetChannelManager().unsubscribeWidget(id);
+                this.assembleMainQuery('', '');
+            }
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
     }
 
     /**
      * Formats the siddhi query - mainquery
-     * @memberof APIMApiLatencyWidget
+     * @param {string} apiresource - Selected Api Resource
+     * @param {string} apimethod - Selected Api Method
+     * @memberof APIMApiTrafficTrendsWidget
      * */
-    assembleMainQuery() {
-        this.resetState();
+    assembleMainQuery(apiresource, apimethod) {
         const queryParam = super.getGlobalState(queryParamKey);
         const { apiSelected, apiVersion } = queryParam;
         const {
-            providerConfig, timeFrom, timeTo, perValue, operationSelected, resourceSelected,
+            providerConfig, timeFrom, timeTo, perValue, operationSelected,
         } = this.state;
         const { widgetID: widgetName, id } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
 
-        if (apiSelected !== '' && apiVersion !== '' && (operationSelected.length > 0 || resourceSelected.length > 0)) {
-            let resources = '';
-            let numberOfSelectedElements = 0;
-
-            if (operationSelected.length > 0) {
-                const operations = [];
-                const operationTypes = [];
-                let operationsString = '';
-                let method = '';
-                operationSelected.forEach((res) => {
-                    const resFormat = res.split(' (');
-                    operations.push(resFormat[0]);
-                    method = resFormat[1].replace(')', '');
-                    operationTypes.push(method);
-                    numberOfSelectedElements += 1;
-                });
-
-                for (let i = 0; i < operations.length - 1; i++) {
-                    operationsString += 'str:contains(apiResourceTemplate,\'' + operations[i] + '\') AND ';
-                }
-                operationsString += 'str:contains(apiResourceTemplate,\'' + operations[operations.length - 1] + '\')';
-
-                resources = '((' + operationsString + ') AND apiMethod==\'' + method + '\')';
-            } else if (resourceSelected.length > 0) {
-                const resFormat = resourceSelected.split(' (');
-                const resource = resFormat[0];
-                const method = resFormat[1].replace(')', '');
-                numberOfSelectedElements = 1;
-                resources = '(apiResourceTemplate==\'' + resource + '\' AND apiMethod==\'' + method + '\')';
-            }
-
-            const queryCondition = ' AND (apiName==\'' + apiSelected + '\' AND apiVersion==\''
-                + apiVersion + '\' AND (' + resources + '))';
-
+        if (apiSelected !== '' && apiVersion !== '' && (operationSelected.length > 0) && apiresource !== '') {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'resourcedata';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
+                '{{from}}': timeFrom,
+                '{{to}}': timeTo,
                 '{{per}}': perValue,
-                '{{querystring}}': queryCondition,
-                '{{numberOfCommas}}': numberOfSelectedElements - 1,
+                '{{apiName}}': apiSelected,
+                '{{apiVersion}}': apiVersion,
+                '{{apiResource}}': apiresource,
+                '{{apiMethod}}': apimethod,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, latencyData: [] });
+            this.setState({ inProgress: false, dataarray: [] });
         }
     }
 
     /**
      * Formats data retrieved from assembleMainQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     handleDataReceived(message) {
         const { data } = message;
-        if (data) {
-            const {
-                apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected,
-            } = this.state;
-            const latencyData = data.map((dataUnit) => {
-                return ([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4],
-                    dataUnit[5], dataUnit[6], dataUnit[7]]);
+        let maxCount = 0;
+        const { dataarray } = this.state;
+        if (data && data.length !== 0) {
+            const chartData = [];
+            const xAxisTicks = [];
+
+            data.forEach((dataUnit) => {
+                chartData.push({
+                    x: new Date(dataUnit[0]).getTime(),
+                    y: dataUnit[1],
+                    label: 'CREATED_TIME:'
+                     + Moment(dataUnit[0]).format('YYYY-MMM-DD HH:mm:ss')
+                     + '\nCOUNT:' + dataUnit[1],
+                });
+                maxCount += dataUnit[1];
             });
-            this.setState({ latencyData, inProgress: false });
-            this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected);
+
+            const first = new Date(chartData[0].x).getTime();
+            const last = new Date(chartData[chartData.length - 1].x).getTime();
+            const interval = (last - first) / 10;
+            let duration = 0;
+            xAxisTicks.push(first);
+            for (let i = 1; i <= 10; i++) {
+                duration = interval * i;
+                xAxisTicks.push(new Date(first + duration).getTime());
+            }
+
+            dataarray.push(chartData);
+            this.setState({
+                dataarray, inProgress: false, xAxisTicks, maxCount,
+            });
+        } else if (dataarray.length > 0) {
+            this.setState({ inProgress: false });
         } else {
-            this.setState({ inProgress: false, latencyData: [] });
+            this.setState({ inProgress: false, dataarray: [] });
         }
     }
 
     /**
      * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
      * @param {string} apiSelected - API Name menu option selected
      * @param {string} apiVersion - API Version menu option selected
      * @param {string} operationSelected - Resources selected
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
-    setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected, resourceSelected) {
+    setQueryParam(apiSelected, apiVersion, operationSelected) {
         super.setGlobalState(queryParamKey, {
-            apiCreatedBy,
             apiSelected,
             apiVersion,
             operationSelected,
-            resourceSelected,
         });
-    }
-
-    /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMApiLatencyWidget
-     * */
-    apiCreatedHandleChange(event) {
-        const { id } = this.props;
-        this.setQueryParam(event.target.value, '', '', []);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({
-            apiCreatedBy: event.target.value,
-            inProgress: true,
-            resourceList: [],
-        }, this.assembleApiIdQuery);
     }
 
     /**
      * Handle API name menu select change
      * @param {Event} event - listened event
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     apiSelectedHandleChange(event) {
-        const { apiCreatedBy } = this.state;
         const { id } = this.props;
-        this.setQueryParam(apiCreatedBy, event.target.value, '', []);
+        this.setQueryParam(event.target.value, '', []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({
             apiSelected: event.target.value,
@@ -656,13 +557,13 @@ class APIMApiLatencyWidget extends Widget {
     /**
      * Handle API Version menu select change
      * @param {Event} event - listened event
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     apiVersionHandleChange(event) {
-        const { apiCreatedBy, apiSelected } = this.state;
+        const { apiSelected } = this.state;
         const { id } = this.props;
 
-        this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, []);
+        this.setQueryParam(apiSelected, event.target.value, []);
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({
             apiVersion: event.target.value,
@@ -674,55 +575,64 @@ class APIMApiLatencyWidget extends Widget {
     /**
      * Handle operation select change
      * @param {Event} event - listened event
-     * @memberof APIMApiLatencyWidget
+     * @memberof APIMApiTrafficTrendsWidget
      * */
     apiOperationHandleChange(event) {
         const { id } = this.props;
         const queryParam = super.getGlobalState(queryParamKey);
         const {
-            apiCreatedBy, apiSelected, apiVersion, operationSelected,
+            apiSelected, apiVersion, operationSelected,
         } = this.state;
         if (queryParam.operationSelected.includes(event.target.value)) {
             operationSelected.splice(operationSelected.indexOf(event.target.value), 1);
         } else {
             operationSelected.push(event.target.value);
         }
-        this.setState({ operationSelected, inProgress: true });
-        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, operationSelected);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
-    }
+        if (operationSelected.length === 0) {
+            this.setState({ operationSelected: [], inProgress: false, dataarray: [] });
+            this.setQueryParam(apiSelected, apiVersion, operationSelected);
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+        } else {
+            const operations = [];
+            const operationTypes = [];
+            let method = '';
+            const legenddata = [];
 
-    /**
-         * Handle operation select change
-         * @param {Event} event - listened event
-         * @memberof APIMApiLatencyWidget
-         * */
-    apiResourceHandleChange(event) {
-        const { id } = this.props;
-        const {
-            apiCreatedBy, apiSelected, apiVersion,
-        } = this.state;
+            operationSelected.forEach((element) => {
+                const resFormat = element.split(' (');
+                operations.push(resFormat[0]);
+                method = resFormat[1].replace(')', '');
+                operationTypes.push(method);
+            });
 
-        const resourceSelected = event.target.value;
-        this.state.resourceSelected = resourceSelected;
+            operations.forEach((element) => {
+                legenddata.push(
+                    { name: element },
+                );
+            });
+            this.setState({
+                operationSelected, inProgress: true, dataarray: [], legandDataSet: legenddata,
+            });
+            this.setQueryParam(apiSelected, apiVersion, operationSelected);
+            super.getWidgetChannelManager().unsubscribeWidget(id);
 
-        this.setState({ resourceSelected, inProgress: true });
-        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, [], resourceSelected);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
+            for (let index = 0; index < operations.length; index++) {
+                this.assembleMainQuery(operations[index], operationTypes[index]);
+            }
+        }
     }
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Api Latency Time widget
-     * @memberof APIMApiLatencyWidget
+     * @returns {ReactElement} Render the APIM Api Traffic Trends widget
+     * @memberof APIMApiTrafficTrendsWidget
      */
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, proxyError,
-            apiCreatedBy, apiSelected, apiVersion, latencyData, apilist, versionlist, resourceList,
+            localeMessages, faultyProviderConfig, height, width,
+            inProgress, proxyError, apiSelected, apiVersion, resultdata, apilist,
+            versionlist, resourceList, chartData, xAxisTicks, maxCount, dataarray, legandDataSet,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -732,18 +642,20 @@ class APIMApiLatencyWidget extends Widget {
         const latencyProps = {
             themeName,
             queryParam,
-            chartConfig,
-            metadata,
             height,
             width,
-            apiCreatedBy,
             apiSelected,
             apiVersion,
-            latencyData,
+            resultdata,
             apilist,
             versionlist,
             resourceList,
             inProgress,
+            chartData,
+            xAxisTicks,
+            maxCount,
+            dataarray,
+            legandDataSet,
         };
 
         return (
@@ -755,17 +667,17 @@ class APIMApiLatencyWidget extends Widget {
                                 elevation={1}
                                 style={proxyPaper}
                             >
-                                <Typography variant='h5' component='h3'>
+                                <Typography
+                                    variant='h5'
+                                    component='h3'
+                                >
                                     <FormattedMessage
                                         id='apim.server.error.heading'
                                         defaultMessage='Error!'
                                     />
                                 </Typography>
                                 <Typography component='p'>
-                                    <FormattedMessage
-                                        id='apim.server.error'
-                                        defaultMessage='Error occurred while retrieving API list.'
-                                    />
+                                    { proxyError }
                                 </Typography>
                             </Paper>
                         </div>
@@ -778,7 +690,10 @@ class APIMApiLatencyWidget extends Widget {
                                             elevation={1}
                                             style={paper}
                                         >
-                                            <Typography variant='h5' component='h3'>
+                                            <Typography
+                                                variant='h5'
+                                                component='h3'
+                                            >
                                                 <FormattedMessage
                                                     id='config.error.heading'
                                                     defaultMessage='Configuration Error !'
@@ -788,19 +703,17 @@ class APIMApiLatencyWidget extends Widget {
                                                 <FormattedMessage
                                                     id='config.error.body'
                                                     defaultMessage={'Cannot fetch provider configuration for APIM '
-                                                    + 'Api Latency Time widget'}
+                                                    + 'Api Traffic Trends widget'}
                                                 />
                                             </Typography>
                                         </Paper>
                                     </div>
                                 ) : (
-                                    <APIMApiLatency
+                                    <APIMApiTrafficTrends
                                         {...latencyProps}
-                                        apiCreatedHandleChange={this.apiCreatedHandleChange}
                                         apiSelectedHandleChange={this.apiSelectedHandleChange}
                                         apiVersionHandleChange={this.apiVersionHandleChange}
                                         apiOperationHandleChange={this.apiOperationHandleChange}
-                                        apiResourceHandleChange={this.apiResourceHandleChange}
                                     />
                                 )
                             }
@@ -812,4 +725,4 @@ class APIMApiLatencyWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMApiLatencyTime', APIMApiLatencyWidget);
+global.dashboard.registerWidget('APIMApiTrafficTrends', APIMApiTrafficTrendsWidget);
