@@ -1,0 +1,21 @@
+{
+  "processors" : [
+    "log-file"
+  ],
+  "directories": [
+    {
+      "dir": "worker-logs",
+      "type": "log-file",
+      "processor" : "log-file",
+      "log-file-path" : "<API-M_ANALYTICS_HOME>/wso2/worker/logs",
+      "log-file-name-regex" : "(.)*(log|out)"
+    },
+    {
+      "dir": "dashboard-logs",
+      "type": "log-file",
+      "processor" : "log-file",
+      "log-file-path" : "<API-M_ANALYTICS_HOME>/wso2/dashboard/logs",
+      "log-file-name-regex" : "(.)*(log|out)"
+    }
+  ]
+}

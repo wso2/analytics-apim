@@ -328,9 +328,8 @@
         </file>
 
         <file>
-            <source>target/forget-me/identity-anonymization-tool-${forgetme.tool.version}/conf/product-config/config-sp.json</source>
+            <source>src/forgetme-tool/config.json</source>
             <outputDirectory>wso2/tools/identity-anonymization-tool/conf/</outputDirectory>
-            <destName>config.json</destName>
             <fileMode>644</fileMode>
         </file>
 

@@ -116,7 +116,7 @@ class APIMTopPlatformsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            limit: 0,
+            limit: 5,
             apiCreatedBy: 'All',
             apiSelected: 'All',
             apiVersion: 'All',
