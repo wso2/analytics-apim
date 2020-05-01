@@ -214,23 +214,34 @@ class APIMOverallApiInfoWidget extends Widget {
     handleApiSubInfoReceived(message) {
         const { data } = message;
         const { id } = this.props;
-
+        const apiInfoData =[];
         if (data) {
             const usageData = [];
-            data.forEach((element) => {
-                const avglatency = element[5] / element[3];
-                if (element[4] > 399 && element[4] < 499) {
-                    usageData.push([element[0], element[1], element[2], element[3],
-                        0, element[3], parseInt(avglatency, 10), element[6]]);
-                } else if (element[4] > 499) {
-                    usageData.push([element[0], element[1], element[2], element[3], element[3],
-                        0, parseInt(avglatency, 10), element[6]]);
+            data.forEach((element, key) => {
+                const avglatency = element[5] / element[4];
+                if (element[6] > 399 && element[6] < 499) {
+                    usageData.push([element[0], element[1], element[2], element[3],element[4], element[4], 0,
+                        parseInt(avglatency, 10)]);
+                } else if (element[6] > 499) {
+                    usageData.push([element[0], element[1], element[2], element[3],element[4], 0, element[4],
+                        parseInt(avglatency, 10)]);
                 } else {
-                    usageData.push([element[0], element[1], element[2], element[3],
-                        0, 0, parseInt(avglatency, 10), element[6]]);
+                    usageData.push([element[0], element[1], element[2], element[3],element[4], 0, 0,
+                        parseInt(avglatency, 10)]);
+                }
+                const api = usageData[key];
+                apiInfoData[key] = {
+                    apiname: api[0],
+                    version: api[1],
+                    resourcetemplate: api[2],
+                    method: api[3],
+                    hits: api[4],
+                    error4xx: api[5],
+                    error5xx: api[6],
+                    avglatency: api[7],
                 }
             });
-            this.setState({ usageData, inProgress: false });
+            this.setState({ apiInfoData, inProgress: false });
             super.getWidgetChannelManager().unsubscribeWidget(id);
         }
     }
@@ -292,7 +303,7 @@ class APIMOverallApiInfoWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, usageData, totalcount, inProgress,
+            localeMessages, faultyProviderConfig, height, apiInfoData, inProgress,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -300,7 +311,7 @@ class APIMOverallApiInfoWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
-            themeName, height, usageData, totalcount, inProgress,
+            themeName, height, apiInfoData, inProgress,
         };
 
         return (
@@ -328,7 +339,7 @@ class APIMOverallApiInfoWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration forAPIM Overall '
+                                            defaultMessage={'Cannot fetch provider configuration for APIM Overall '
                                             + 'Api Info Widget'}
                                         />
                                     </Typography>

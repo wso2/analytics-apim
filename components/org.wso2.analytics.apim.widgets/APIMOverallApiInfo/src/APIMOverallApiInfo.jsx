@@ -24,7 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ApiInfoChart from './ApiInfoChart';
+import CustomTable from './CustomTable';
 
 /**
  * Display API Overall Info
@@ -33,112 +33,115 @@ import ApiInfoChart from './ApiInfoChart';
  */
 export default function APIMOverallApiInfo(props) {
     const {
-        height, usageData, totalcount, inProgress, themeName,
+        height, apiInfoData, inProgress, themeName,
     } = props;
     const styles = {
-        inProgress: {
+        headingWrapper: {
+            margin: 'auto',
+            width: '95%',
+        },
+        dataWrapper: {
+            height: '75%',
+            paddingTop: 35,
+            margin: 'auto',
+            width: '90%',
+        },
+        paperWrapper: {
+            height: '75%',
+            width: '95%',
+            margin: 'auto',
+        },
+        paper: {
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
+            padding: '4%',
+        },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             height,
         },
-        paperWrapper: {
-            height: '75%',
-        },
-        paper: {
-            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
-            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
-            width: '75%',
-            padding: '4%',
-            border: '1.5px solid',
-            marginLeft: '8%',
-            marginTop: '5%',
-        },
-        appBarColour: {
-            backgroundColor: themeName === 'dark' ? '#27296b' : '#E8E8E8',
-        },
-        headingWrapper: {
-            margin: 'auto',
-            width: '95%',
-            marginBottom: '10px',
-        },
-        h3: {
-            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-            paddingBottom: '10px',
-            margin: 'auto',
-            marginTop: '10px',
-            textAlign: 'left',
-            fontWeight: 'normal',
-            letterSpacing: 1.5,
-        },
-        mainDiv: {
-            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-            height,
-            margin: '10px',
-            padding: '20px',
-        },
     };
 
     return (
-        <div style={styles.mainDiv}>
-            <Scrollbars style={{ height }}>
+        <Scrollbars style={{
+            height,
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+        }}
+        >
+            <div style={{
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                margin: '10px',
+                padding: '20px',
+            }}
+            >
                 <div style={styles.headingWrapper}>
-                    <h3 style={styles.h3}>
-                        <FormattedMessage
-                            id='api.info.heading'
-                            defaultMessage='OVERALL API STATS'
-                        />
+                    <h3 style={{
+                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+                        paddingBottom: '10px',
+                        margin: 'auto',
+                        marginTop: 0,
+                        textAlign: 'left',
+                        fontWeight: 'normal',
+                        letterSpacing: 1.5,
+                    }}
+                    >
+                        <FormattedMessage id='api.info.heading' defaultMessage='OVERALL API INFO' />
                     </h3>
                 </div>
-                { inProgress ? (
-                    <div style={styles.inProgress}>
-                        <CircularProgress />
-                    </div>
-                ) : (
-                    <div>
-                        { usageData.length > 0 ? (
-                            <div>
-                                <ApiInfoChart
-                                    usageData={usageData}
-                                    totalcount={totalcount}
-                                    themeName={themeName}
-                                />
-                            </div>
-                        ) : (
-                            <div style={styles.paperWrapper}>
-                                <Paper
-                                    elevation={1}
-                                    style={styles.paper}
-                                >
-                                    <Typography
-                                        variant='h5'
-                                        component='h3'
-                                    >
-                                        <FormattedMessage
-                                            id='nodata.error.heading'
-                                            defaultMessage='No Data Available !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='nodata.error.body'
-                                            defaultMessage='No data available for the selected options.'
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </Scrollbars>
-        </div>
+                <div>
+                    { inProgress ? (
+                        <div style={styles.loading}>
+                            <CircularProgress style={styles.loadingIcon} />
+                        </div>
+                    ) : (
+                        <div>
+                            { apiInfoData.length === 0
+                                ? (
+                                    <div style={styles.dataWrapper}>
+                                        <Paper
+                                            elevation={1}
+                                            style={styles.paper}
+                                        >
+                                            <Typography variant='h5' component='h3'>
+                                                <FormattedMessage
+                                                    id='nodata.error.heading'
+                                                    defaultMessage='No Data Available !'
+                                                />
+                                            </Typography>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='nodata.error.body'
+                                                    defaultMessage={'No matching data available for the '
+                                                    + 'selected options.'}
+                                                />
+                                            </Typography>
+                                        </Paper>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <div style={{ marginTop: '5%' }}>
+                                            <CustomTable data={apiInfoData} loadingApiInfo={inProgress} />
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )}
+                </div>
+            </div>
+        </Scrollbars>
     );
 }
 
 APIMOverallApiInfo.propTypes = {
     height: PropTypes.string.isRequired,
-    usageData: PropTypes.instanceOf(Object).isRequired,
-    totalcount: PropTypes.instanceOf(Object).isRequired,
+    apiInfoData: PropTypes.instanceOf(Object).isRequired,
+    loadingApiInfo: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     themeName: PropTypes.string.isRequired,
 };
