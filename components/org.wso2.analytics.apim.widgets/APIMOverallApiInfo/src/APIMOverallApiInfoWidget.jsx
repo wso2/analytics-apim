@@ -110,10 +110,8 @@ class APIMOverallApiInfoWidget extends Widget {
             }));
         }
 
-        this.AssembleMainApiInfoQuery = this.AssembleMainApiInfoQuery.bind(this);
-        this.handleMainApiInfo = this.handleMainApiInfo.bind(this);
-        this.assembleApiSubInfo = this.assembleApiSubInfo.bind(this);
-        this.handleApiSubInfoReceived = this.handleApiSubInfoReceived.bind(this);
+        this.assembleApiInfo = this.assembleApiInfo.bind(this);
+        this.handleApiInfoReceived = this.handleApiInfoReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
     }
@@ -182,28 +180,28 @@ class APIMOverallApiInfoWidget extends Widget {
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
             inProgress: !sync,
-        }, this.AssembleMainApiInfoQuery);
+        }, this.assembleApiInfo);
     }
 
     /**
      * Retreive the API info for sub rows
      * @memberof APIMOverallApiInfoWidget
      * */
-    assembleApiSubInfo() {
+    assembleApiInfo() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'subapiinfoquery';
+        dataProviderConfigs.configs.config.queryData.queryName = 'infoquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
         };
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiSubInfoReceived, dataProviderConfigs);
+            .subscribeWidget(id, widgetName, this.handleApiInfoReceived, dataProviderConfigs);
     }
 
     /**
@@ -211,7 +209,7 @@ class APIMOverallApiInfoWidget extends Widget {
      * @param {object} message - data retrieved
      * @memberof APIMOverallApiInfoWidget
      * */
-    handleApiSubInfoReceived(message) {
+    handleApiInfoReceived(message) {
         const { data } = message;
         const { id } = this.props;
         const apiInfoData =[];
@@ -244,56 +242,6 @@ class APIMOverallApiInfoWidget extends Widget {
             this.setState({ apiInfoData, inProgress: false });
             super.getWidgetChannelManager().unsubscribeWidget(id);
         }
-    }
-
-    /**
-     * Retreive the API info for main rows
-     * @memberof APIMOverallApiInfoWidget
-     * */
-    AssembleMainApiInfoQuery() {
-        const {
-            timeFrom, timeTo, perValue, providerConfig,
-        } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'mainapiinfoquery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': perValue,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleMainApiInfo, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data retrieved from AssembleMainApiInfoQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMOverallApiInfoWidget
-     * */
-    handleMainApiInfo(message) {
-        const totalcount = [];
-        const { data } = message;
-        const { id, muiTheme } = this.props;
-        data.forEach((element) => {
-            totalcount.push([element[0], element[1], 'All', 'All', element[2],
-                '..', '..', parseInt(element[3] / element[2], 10),
-                <Button
-                    style={this.styles.button}
-                    variant='contained'
-                    color={muiTheme.name === 'dark' ? 'primary' : 'default'}
-                    onClick={() => {
-                        window.location.href = './single-api-stats#{"apidata":{"apiName":"'
-                        + element[0] + '","apiVersion":"' + element[1] + '","sync":false}}';
-                    }}
-                >
-                    <VisibilityOutlinedIcon />
-                </Button>]);
-        });
-        this.setState({ totalcount });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiSubInfo();
     }
 
     /**
