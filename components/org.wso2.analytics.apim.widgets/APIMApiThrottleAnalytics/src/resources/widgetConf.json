@@ -1,0 +1,36 @@
+{
+  "name": "APIM Api Throttle Analytics",
+  "id": "APIMApiThrottleAnalytics",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('APIMAPIThrottledOutAnalyticsxSiddhi') define stream ThrottledOutStream(meta_clientType string,username string,userTenantDomain string,apiName string,apiVersion string,apiContext string,apiCreator string,apiCreatorTenantDomain string,applicationId string,applicationName string,subscriber string,throttledOutReason string,gatewayType string,throttledOutTimestamp long,hostname string); @store(type='rdbms', datasource='APIM_ANALYTICS_DB') @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years')) define aggregation ApiThrottledOutAgg from ThrottledOutStream select apiName,apiVersion,apiContext,apiCreator,apiCreatorTenantDomain,username,userTenantDomain,applicationId,applicationName,subscriber,count() as throttledOutCount,throttledOutReason,gatewayType,hostname,'default' as regionalID group by apiContext,applicationId,throttledOutReason,hostname aggregate by throttledOutTimestamp every seconds...year;",
+          "queryData": {
+            "query": "from ApiThrottledOutAgg on apiCreatorTenantDomain=='{{tenantDomain}}' AND {{filterCondition}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select applicationName,throttledOutCount,throttledOutReason,AGG_TIMESTAMP order by AGG_TIMESTAMP asc;"
+          },
+          "publishingInterval": 360000
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": false
+      }
+    ]
+  }
+}
