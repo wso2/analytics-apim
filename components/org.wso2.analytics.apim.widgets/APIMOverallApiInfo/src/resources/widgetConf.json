@@ -33,7 +33,7 @@
       },
       {
         "id": "headerTitle",
-        "title": "Widget Display Name",
+        "title": "Overall Api Info",
         "type": {
           "name": "TEXT",
           "possibleValues": [
