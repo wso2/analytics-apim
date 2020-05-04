@@ -33,7 +33,7 @@ const styles = theme => ({
     root: {
         paddingRight: theme.spacing.unit,
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         width: '100%',
     },
     title: {
@@ -50,11 +50,13 @@ const styles = theme => ({
     },
     actions: {
         marginTop: '10px',
+
     },
     expand: {
         marginLeft: 'auto',
     },
     collapsef: {
+        marginBottom: 30,
         marginRight: 0,
     },
 });

@@ -35,9 +35,7 @@
         "id": "headerTitle",
         "title": "Overall Api Info",
         "type": {
-          "name": "TEXT",
-          "possibleValues": [
-          ]
+          "name": "TEXT"
         },
         "defaultValue": "Title1"
       }
