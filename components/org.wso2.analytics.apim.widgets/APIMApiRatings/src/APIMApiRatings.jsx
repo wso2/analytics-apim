@@ -89,7 +89,7 @@ export default function APIMApiRatings(props) {
             >
                 <div style={styles.headingWrapper}>
                     <h3 style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='API RATINGS' />
+                        <FormattedMessage id='widget.heading' defaultMessage='TOP RATED APIS' />
                     </h3>
                 </div>
                 <div>
