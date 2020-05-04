@@ -22,13 +22,11 @@ import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
-import cloneDeep from 'lodash/cloneDeep';
+import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import Button from '@material-ui/core/Button';
-import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import APIMOverallApiInfo from './APIMOverallApiInfo';
 
 const darkTheme = createMuiTheme({
@@ -61,6 +59,8 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
  * Language without region code
  */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
+
+let refreshIntervalId = null;
 
 /**
  * Create react component for the APIM Oerall Api Info widget
@@ -97,7 +97,8 @@ class APIMOverallApiInfoWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             usageData: null,
-            totalcount: null,
+            refreshInterval: 60000, // 1min
+            refreshIntervalId: null,
             localeMessages: null,
             inProgress: true,
         };
@@ -112,7 +113,6 @@ class APIMOverallApiInfoWidget extends Widget {
 
         this.assembleApiInfo = this.assembleApiInfo.bind(this);
         this.handleApiInfoReceived = this.handleApiInfoReceived.bind(this);
-        this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
     }
 
@@ -127,11 +127,16 @@ class APIMOverallApiInfoWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        const { refreshInterval } = this.state;
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
-                this.setState({
-                    providerConfig: message.data.configs.providerConfig,
-                }, () => super.subscribe(this.handlePublisherParameters));
+                // set an interval to periodically retrieve data
+                const refresh = () => {
+                    super.getWidgetChannelManager().unsubscribeWidget(widgetID);
+                    this.assembleApiInfo(message.data.configs.providerConfig);
+                };
+                refreshIntervalId = setInterval(refresh, refreshInterval);
+                this.assembleApiInfo(message.data.configs.providerConfig);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -143,6 +148,7 @@ class APIMOverallApiInfoWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
+        clearInterval(refreshIntervalId);
         super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
@@ -167,38 +173,20 @@ class APIMOverallApiInfoWidget extends Widget {
     }
 
     /**
-     * Retrieve params from publisher - DateTimeRange
-     * @param {object} receivedMsg timeFrom, TimeTo, perValue
-     * @memberof APIMOverallApiInfoWidget
-   */
-    handlePublisherParameters(receivedMsg) {
-        const queryParam = super.getGlobalState('dtrp');
-        const { sync } = queryParam;
-
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleApiInfo);
-    }
-
-    /**
      * Retreive the API info for sub rows
      * @memberof APIMOverallApiInfoWidget
      * */
-    assembleApiInfo() {
-        const {
-            timeFrom, timeTo, perValue, providerConfig,
-        } = this.state;
+    assembleApiInfo(dataProviderConfigs) {
         const { id, widgetID: widgetName } = this.props;
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'infoquery';
+
+        let timeTo = new Date().getTime();
+        let timeFrom = Moment(timeTo).subtract(7, 'days').toDate().getTime();
+
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
-            '{{per}}': perValue,
+            '{{per}}': 'day',
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiInfoReceived, dataProviderConfigs);

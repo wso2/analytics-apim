@@ -40,6 +40,14 @@ export default function APIMOverallApiInfo(props) {
             margin: 'auto',
             width: '95%',
         },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
+        },
         dataWrapper: {
             height: '75%',
             paddingTop: 35,
@@ -65,6 +73,12 @@ export default function APIMOverallApiInfo(props) {
             justifyContent: 'center',
             height,
         },
+        subheading: {
+            textAlign: 'center',
+            margin: 5,
+            fontSize: 14,
+            color: '#b5b5b5',
+        },
     };
 
     return (
@@ -80,18 +94,13 @@ export default function APIMOverallApiInfo(props) {
             }}
             >
                 <div style={styles.headingWrapper}>
-                    <h3 style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        marginTop: 0,
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
+                    <h3  style={styles.heading}
                     >
                         <FormattedMessage id='api.info.heading' defaultMessage='OVERALL API INFO' />
                     </h3>
+                    <p style={styles.subheading}>
+                        <FormattedMessage id='api.info.subheading' defaultMessage='(Last 7 Days)' />
+                    </p>
                 </div>
                 <div>
                     { inProgress ? (
@@ -124,7 +133,7 @@ export default function APIMOverallApiInfo(props) {
                                     </div>
                                 ) : (
                                     <div>
-                                        <div style={{ marginTop: '5%' }}>
+                                        <div style={{ marginTop: '2%' }}>
                                             <CustomTable data={apiInfoData} loadingApiInfo={inProgress} />
                                         </div>
                                     </div>
