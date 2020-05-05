@@ -233,7 +233,6 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='API THROTTLED OUT INVOCATIONS BY APPLICATION'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
