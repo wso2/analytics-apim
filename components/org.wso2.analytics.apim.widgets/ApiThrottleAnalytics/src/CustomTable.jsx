@@ -160,7 +160,7 @@ class CustomTable extends React.Component {
             orderBy: 'time',
             order: 'desc',
             expanded: false,
-            filterColumn: 'appname',
+            filterColumn: 'appName',
             query: '',
         };
     }
@@ -214,8 +214,8 @@ class CustomTable extends React.Component {
             <MenuItem value='time'>
                 <FormattedMessage id='table.heading.time' defaultMessage='TIME' />
             </MenuItem>,
-            <MenuItem value='appname'>
-                <FormattedMessage id='table.heading.appname' defaultMessage='APPLICATION NAME' />
+            <MenuItem value='appName'>
+                <FormattedMessage id='table.heading.appName' defaultMessage='APPLICATION NAME' />
             </MenuItem>,
             <MenuItem value='reason'>
                 <FormattedMessage id='table.heading.reason' defaultMessage='REASON' />
@@ -261,7 +261,7 @@ class CustomTable extends React.Component {
                                                 {n.time}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
-                                                {n.appname}
+                                                {n.appName}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
                                                 {n.reason}

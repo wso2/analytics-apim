@@ -31,7 +31,7 @@ const rows = [
         id: 'time', numeric: false, disablePadding: false, label: 'table.heading.time',
     },
     {
-        id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.appname',
+        id: 'appName', numeric: false, disablePadding: false, label: 'table.heading.appName',
     },
     {
         id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',

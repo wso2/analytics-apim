@@ -250,7 +250,7 @@ class ApiFaultAnalyticsWidget extends Widget {
         if (data && data.length > 0) {
             const tableData = data.map((dataUnit) => {
                 return ({
-                    appname: dataUnit[0],
+                    appName: dataUnit[0],
                     count: dataUnit[1],
                     time: Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss A'),
                 });

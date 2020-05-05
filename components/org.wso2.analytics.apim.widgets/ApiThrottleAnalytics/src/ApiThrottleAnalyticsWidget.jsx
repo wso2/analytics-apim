@@ -250,7 +250,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
         if (data && data.length > 0) {
             const tableData = data.map((dataUnit) => {
                 return ({
-                    appname: dataUnit[0],
+                    appName: dataUnit[0],
                     count: dataUnit[1],
                     reason: dataUnit[2].split('_').join(' ').toLowerCase(),
                     time: Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss A'),
