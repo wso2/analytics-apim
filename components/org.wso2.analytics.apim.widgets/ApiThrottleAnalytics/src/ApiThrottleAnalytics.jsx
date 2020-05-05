@@ -34,7 +34,7 @@ import CustomTable from './CustomTable';
  */
 export default function ApiThrottleAnalytics(props) {
     const {
-        themeName, chartConfig, metadata, height, width, inProgress, throttleData, tableData,
+        themeName, metadata, height, width, inProgress, throttleData, tableData,
     } = props;
     const styles = {
         headingWrapper: {
@@ -81,6 +81,28 @@ export default function ApiThrottleAnalytics(props) {
             marginTop: 0,
         },
     };
+    const chartConfig = {
+        x: 'REQUEST_TIME',
+        charts: [
+            {
+                type: 'line',
+                y: 'THROTTLE_COUNT',
+                fill: '#958E94',
+            },
+        ],
+        maxLength: 60,
+        width: 800,
+        height: 400,
+        timeFormat: '%d-%b-%y %H:%M',
+        tipTimeFormat: '%Y-%m-%d %H:%M:%S',
+        style: {
+            xAxisTickAngle: -8,
+            tickLabelColor: '#a7b0c8',
+            axisLabelColor: '#a7b0c8',
+            axisTextSize: 10,
+        },
+    };
+
 
     return (
         <Scrollbars style={{
@@ -152,7 +174,6 @@ export default function ApiThrottleAnalytics(props) {
 
 ApiThrottleAnalytics.propTypes = {
     themeName: PropTypes.string.isRequired,
-    chartConfig: PropTypes.instanceOf(Object).isRequired,
     metadata: PropTypes.instanceOf(Object).isRequired,
     height: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,

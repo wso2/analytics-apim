@@ -73,28 +73,6 @@ class ApiThrottleAnalyticsWidget extends Widget {
     constructor(props) {
         super(props);
 
-        this.chartConfig = {
-            x: 'REQUEST_TIME',
-            charts: [
-                {
-                    type: 'line',
-                    y: 'THROTTLE_COUNT',
-                    fill: '#958E94',
-                },
-            ],
-            maxLength: 60,
-            width: 800,
-            height: 400,
-            timeFormat: '%d-%b-%y %H:%M',
-            tipTimeFormat: '%Y-%m-%d %H:%M:%S',
-            style: {
-                xAxisTickAngle: -8,
-                tickLabelColor: '#a7b0c8',
-                axisLabelColor: '#a7b0c8',
-                axisTextSize: 10,
-            },
-        };
-
         this.metadata = {
             names: ['THROTTLE_COUNT', 'REQUEST_TIME'],
             types: ['linear', 'time'],
@@ -130,7 +108,6 @@ class ApiThrottleAnalyticsWidget extends Widget {
             tableData: null,
             inProgress: true,
             metadata: this.metadata,
-            chartConfig: this.chartConfig,
             dimension: null,
             selectedOptions: [],
         };
@@ -276,7 +253,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
                     appname: dataUnit[0],
                     count: dataUnit[1],
                     reason: dataUnit[2].split('_').join(' ').toLowerCase(),
-                    reqtime: Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss A'),
+                    time: Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss A'),
                 });
             });
             const dataGroupByTime = data.reduce((acc, obj) => {
@@ -297,41 +274,22 @@ class ApiThrottleAnalyticsWidget extends Widget {
     }
 
     /**
-     * Return the time format to be used in the time labels based on granularity
-     * @memberof ApiThrottleAnalyticsWidget
-     * */
-    getTimeLabelFormat() {
-        const { perValue } = this.state;
-        if (perValue === 'year') {
-            return '%Y';
-        } else if (perValue === 'month') {
-            return '%b-%Y';
-        } else if (perValue === 'day') {
-            return '%d-%b-%Y';
-        } else {
-            return '%d-%b-%y %H:%M';
-        }
-    }
-
-    /**
      * @inheritDoc
      * @returns {ReactElement} Render the Api Throttle Analytics widget
      * @memberof ApiThrottleAnalyticsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, throttleData,
+            localeMessages, faultyProviderConfig, metadata, height, width, inProgress, throttleData,
             tableData,
         } = this.state;
         const {
             paper, paperWrapper,
         } = this.styles;
-        chartConfig.timeFormat = this.getTimeLabelFormat();
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const faultProps = {
             themeName,
-            chartConfig,
             metadata,
             height,
             width,

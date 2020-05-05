@@ -157,7 +157,7 @@ class CustomTable extends React.Component {
             tableData: [],
             page: 0,
             rowsPerPage: 5,
-            orderBy: 'reqtime',
+            orderBy: 'time',
             order: 'desc',
             expanded: false,
             filterColumn: 'appname',
@@ -211,8 +211,8 @@ class CustomTable extends React.Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
         const menuItems = [
-            <MenuItem value='reqtime'>
-                <FormattedMessage id='table.heading.reqtime' defaultMessage='TIME' />
+            <MenuItem value='time'>
+                <FormattedMessage id='table.heading.time' defaultMessage='TIME' />
             </MenuItem>,
             <MenuItem value='appname'>
                 <FormattedMessage id='table.heading.appname' defaultMessage='APPLICATION NAME' />
@@ -258,7 +258,7 @@ class CustomTable extends React.Component {
                                             tabIndex={-1}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                {n.reqtime}
+                                                {n.time}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
                                                 {n.appname}
