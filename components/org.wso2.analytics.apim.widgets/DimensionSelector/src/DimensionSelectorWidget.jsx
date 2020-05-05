@@ -140,12 +140,11 @@ class DimensionSelectorWidget extends Widget {
                 paddingTop: '20px',
                 margin: 'auto',
                 display: 'flex',
-                // flexWrap: 'wrap',
+                flexWrap: 'wrap',
                 width: '95%',
             },
             search: {
-                paddingLeft: '20px',
-                width: '100%',
+                width: '80%',
                 margin: 'auto',
             },
             dimensionButton: {
@@ -153,10 +152,10 @@ class DimensionSelectorWidget extends Widget {
                 width: '15%',
                 margin: 'auto',
                 padding: '10px',
+                minWidth: '120px',
             },
             button: {
-                height: '55px',
-                minWidth: '120px',
+                minHeight: '55px',
             },
         };
 
