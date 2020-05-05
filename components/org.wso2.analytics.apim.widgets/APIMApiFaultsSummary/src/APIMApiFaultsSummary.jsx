@@ -42,6 +42,8 @@ export default function APIMApiFaultsSummary(props) {
             textAlign: 'center',
             fontWeight: 'normal',
             letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
         },
         headingWrapper: {
             margin: 'auto',

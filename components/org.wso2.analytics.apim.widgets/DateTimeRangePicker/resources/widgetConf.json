@@ -59,6 +59,14 @@
           "name": "TEXT"
         },
         "defaultValue": "30"
+      },
+      {
+        "id": "headerTitle",
+        "title": "Widget Title",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "Date Time Range"
       }
     ]
   }

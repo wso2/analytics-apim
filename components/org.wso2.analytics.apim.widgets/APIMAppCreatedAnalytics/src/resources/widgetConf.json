@@ -37,6 +37,14 @@
           ]
         },
         "defaultValue": true
+      },
+      {
+        "id": "headerTitle",
+        "title": "Widget Title",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "Applications Created Over Time"
       }
     ]
   }

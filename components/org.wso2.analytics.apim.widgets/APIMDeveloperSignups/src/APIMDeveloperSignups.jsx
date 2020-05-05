@@ -68,6 +68,14 @@ export default function APIMDeveloperSignups(props) {
             bottom: '13%',
             right: '8%',
         },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
+        },
     };
     return (
         <div style={{
@@ -80,16 +88,7 @@ export default function APIMDeveloperSignups(props) {
         }}
         >
             <div style={styles.headingWrapper}>
-                <h3 style={{
-                    borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #e01171',
-                    paddingBottom: '10px',
-                    margin: 'auto',
-                    marginTop: 0,
-                    textAlign: 'left',
-                    fontWeight: 'normal',
-                    letterSpacing: 1.5,
-                }}
-                >
+                <h3 style={styles.heading}>
                     <FormattedMessage id='widget.heading' defaultMessage='TOTAL SIGNUPS' />
                 </h3>
             </div>

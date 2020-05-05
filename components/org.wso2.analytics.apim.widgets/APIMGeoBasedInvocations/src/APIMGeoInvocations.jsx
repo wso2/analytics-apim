@@ -88,6 +88,14 @@ export default function APIMGeoInvocations(props) {
             display: 'block',
             overflow: 'hidden',
         },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
+        },
     };
 
     return (
@@ -104,16 +112,7 @@ export default function APIMGeoInvocations(props) {
                 }}
             >
                 <div style={styles.headingWrapper}>
-                    <div style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        marginTop: 0,
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                    >
+                    <div style={styles.heading}>
                         <FormattedMessage id='widget.heading' defaultMessage='GEO LOCATION BASED INVOCATIONS' />
                     </div>
                 </div>

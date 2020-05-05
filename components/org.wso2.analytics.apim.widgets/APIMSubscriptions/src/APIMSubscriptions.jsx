@@ -41,6 +41,8 @@ export default function APIMSubscriptions(props) {
             textAlign: 'center',
             fontWeight: 'normal',
             letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
         },
         headingWrapper: {
             margin: 'auto',

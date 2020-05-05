@@ -48,6 +48,14 @@ export default function APIMSignupsAnalytics(props) {
             justifyContent: 'center',
             height,
         },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
+        },
     };
     const signedDataProps = {
         themeName, chartData, tableData, xAxisTicks, maxCount,
@@ -66,15 +74,7 @@ export default function APIMSignupsAnalytics(props) {
                 }}
             >
                 <div style={styles.headingWrapper}>
-                    <div style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                    >
+                    <div style={styles.heading}>
                         <FormattedMessage id='widget.heading' defaultMessage='DEVELOPER SIGNUPS OVER TIME' />
                     </div>
                 </div>
