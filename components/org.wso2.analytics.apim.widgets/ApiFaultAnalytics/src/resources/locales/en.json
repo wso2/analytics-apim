@@ -1,0 +1,10 @@
+{
+  "nodata.error.body": "No data available for the selected options.",
+  "nodata.error.heading": "No Data Available !",
+  "config.error.body": "Cannot fetch provider configuration for Api Fault Analytics widget",
+  "config.error.heading": "Configuration Error !",
+  "table.heading.appname": "APPLICATION NAME",
+  "table.heading.count": "FAULT COUNT",
+  "table.heading.time": "TIME",
+  "widget.heading": "API FAULTY REQUESTS OVER TIME"
+}

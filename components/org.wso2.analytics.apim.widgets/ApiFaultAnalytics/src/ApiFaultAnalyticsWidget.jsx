@@ -28,7 +28,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Widget from '@wso2-dashboards/widget';
-import APIMApiFaultAnalytics from './APIMApiFaultAnalytics';
+import ApiFaultAnalytics from './ApiFaultAnalytics';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -60,47 +60,21 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Api Fault Analytics widget
- * @class APIMApiFaultAnalyticsWidget
+ * Create React Component for Api Fault Analytics widget
+ * @class ApiFaultAnalyticsWidget
  * @extends {Widget}
  */
-class APIMApiFaultAnalyticsWidget extends Widget {
+class ApiFaultAnalyticsWidget extends Widget {
     /**
-     * Creates an instance of APIMApiFaultAnalyticsWidget.
+     * Creates an instance of ApiFaultAnalyticsWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMApiFaultAnalyticsWidget
+     * @memberof ApiFaultAnalyticsWidget
      */
     constructor(props) {
         super(props);
 
-        this.chartConfig = {
-            x: 'REQUEST_TIME',
-            charts: [
-                {
-                    type: 'line',
-                    y: 'FAULTS',
-                    fill: '#958E94',
-                },
-            ],
-            maxLength: 60,
-            width: 800,
-            height: 400,
-            interactiveLegend: true,
-            legend: false,
-            timeFormat: '%d-%b-%y %H:%M',
-            tipTimeFormat: '%Y-%m-%d %H:%M:%S',
-            style: {
-                xAxisTickAngle: -10,
-                tickLabelColor: '#a7b0c8',
-                axisLabelColor: '#a7b0c8',
-                axisTextSize: 300,
-                legendTextColor: '#a7b0c8',
-                legendTextSize: 15,
-            },
-        };
-
         this.metadata = {
-            names: ['FAULTS', 'REQUEST_TIME'],
+            names: ['FAULT_COUNT', 'REQUEST_TIME'],
             types: ['linear', 'time'],
         };
 
@@ -134,7 +108,6 @@ class APIMApiFaultAnalyticsWidget extends Widget {
             tableData: null,
             inProgress: true,
             metadata: this.metadata,
-            chartConfig: this.chartConfig,
             dimension: null,
             selectedOptions: [],
         };
@@ -186,12 +159,12 @@ class APIMApiFaultAnalyticsWidget extends Widget {
     /**
      * Load locale file.
      * @param {string} locale Locale name
-     * @memberof APIMApiFaultAnalyticsWidget
+     * @memberof ApiFaultAnalyticsWidget
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiFaultAnalytics/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/ApiFaultAnalytics/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -204,7 +177,7 @@ class APIMApiFaultAnalyticsWidget extends Widget {
 
     /**
      * Retrieve params from publisher - DateTimeRange
-     * @memberof APIMApiFaultAnalyticsWidget
+     * @memberof ApiFaultAnalyticsWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -239,7 +212,7 @@ class APIMApiFaultAnalyticsWidget extends Widget {
 
     /**
      * Formats the siddhi query - mainquery
-     * @memberof APIMApiFaultAnalyticsWidget
+     * @memberof ApiFaultAnalyticsWidget
      * */
     assembleMainQuery() {
         const {
@@ -270,7 +243,7 @@ class APIMApiFaultAnalyticsWidget extends Widget {
     /**
      * Formats data retrieved from assembleMainQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiFaultAnalyticsWidget
+     * @memberof ApiFaultAnalyticsWidget
      * */
     handleDataReceived(message) {
         const { data } = message;
@@ -278,8 +251,8 @@ class APIMApiFaultAnalyticsWidget extends Widget {
             const tableData = data.map((dataUnit) => {
                 return ({
                     appname: dataUnit[0],
-                    faults: dataUnit[1],
-                    reqtime: Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss A'),
+                    count: dataUnit[1],
+                    time: Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss A'),
                 });
             });
             const faultData = data.map((dataUnit) => {
@@ -293,12 +266,12 @@ class APIMApiFaultAnalyticsWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Api Fault Analytics widget
-     * @memberof APIMApiFaultAnalyticsWidget
+     * @returns {ReactElement} Render the Api Fault Analytics widget
+     * @memberof ApiFaultAnalyticsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, faultData,
+            localeMessages, faultyProviderConfig, metadata, height, width, inProgress, faultData,
             tableData,
         } = this.state;
         const {
@@ -308,7 +281,6 @@ class APIMApiFaultAnalyticsWidget extends Widget {
         const themeName = muiTheme.name;
         const faultProps = {
             themeName,
-            chartConfig,
             metadata,
             height,
             width,
@@ -337,14 +309,14 @@ class APIMApiFaultAnalyticsWidget extends Widget {
                                         <Typography component='p'>
                                             <FormattedMessage
                                                 id='config.error.body'
-                                                defaultMessage={'Cannot fetch provider configuration for APIM '
+                                                defaultMessage={'Cannot fetch provider configuration for '
                                                 + 'Api Fault Analytics widget'}
                                             />
                                         </Typography>
                                     </Paper>
                                 </div>
                             ) : (
-                                <APIMApiFaultAnalytics
+                                <ApiFaultAnalytics
                                     {...faultProps}
                                 />
                             )
@@ -356,4 +328,4 @@ class APIMApiFaultAnalyticsWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMApiFaultAnalytics', APIMApiFaultAnalyticsWidget);
+global.dashboard.registerWidget('ApiFaultAnalytics', ApiFaultAnalyticsWidget);

@@ -28,13 +28,13 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 
 const rows = [
     {
-        id: 'reqtime', numeric: false, disablePadding: false, label: 'table.heading.reqtime',
+        id: 'time', numeric: false, disablePadding: false, label: 'table.heading.time',
     },
     {
         id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.appname',
     },
     {
-        id: 'faults', numeric: true, disablePadding: false, label: 'table.heading.faults',
+        id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',
     },
 ];
 

@@ -28,13 +28,13 @@ import VizG from 'react-vizgrammar';
 import CustomTable from './CustomTable';
 
 /**
- * React Component for APIM Api Fault Analytics widget body
+ * React Component for Api Fault Analytics widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Api Fault Analytics widget body
+ * @returns {ReactElement} Render the Api Fault Analytics widget body
  */
-export default function APIMApiFaultAnalytics(props) {
+export default function ApiFaultAnalytics(props) {
     const {
-        themeName, chartConfig, metadata, height, width, inProgress, faultData, tableData,
+        themeName, metadata, height, width, inProgress, faultData, tableData,
     } = props;
     const styles = {
         headingWrapper: {
@@ -68,6 +68,43 @@ export default function APIMApiFaultAnalytics(props) {
             justifyContent: 'center',
             height,
         },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
+        },
+        chartWrapper: {
+            paddingTop: '20px',
+            marginLeft: '10px',
+            width: '95%',
+        },
+    };
+    const chartConfig = {
+        x: 'REQUEST_TIME',
+        charts: [
+            {
+                type: 'line',
+                y: 'FAULT_COUNT',
+                fill: '#958E94',
+            },
+        ],
+        maxLength: 60,
+        width: 800,
+        height: 400,
+        legend: false,
+        timeFormat: '%d-%b-%y %H:%M',
+        tipTimeFormat: '%Y-%m-%d %H:%M:%S',
+        style: {
+            xAxisTickAngle: -10,
+            tickLabelColor: '#a7b0c8',
+            axisLabelColor: '#a7b0c8',
+            axisTextSize: 300,
+            legendTextColor: '#a7b0c8',
+            legendTextSize: 15,
+        },
     };
 
     return (
@@ -84,17 +121,8 @@ export default function APIMApiFaultAnalytics(props) {
                 }}
             >
                 <div style={styles.headingWrapper}>
-                    <div style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        marginTop: 0,
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                    >
-                        <FormattedMessage id='widget.heading' defaultMessage='API FAULTY INVOCATIONS OVER TIME' />
+                    <div style={styles.heading}>
+                        <FormattedMessage id='widget.heading' defaultMessage='API FAULTY REQUESTS OVER TIME' />
                     </div>
                 </div>
                 { inProgress ? (
@@ -125,12 +153,14 @@ export default function APIMApiFaultAnalytics(props) {
                             </div>
                         ) : (
                             <div style={styles.dataWrapper}>
-                                <VizG
-                                    config={chartConfig}
-                                    metadata={metadata}
-                                    data={faultData}
-                                    width={width}
-                                />
+                                <div style={styles.chartWrapper}>
+                                    <VizG
+                                        config={chartConfig}
+                                        metadata={metadata}
+                                        data={faultData}
+                                        width={width}
+                                    />
+                                </div>
                                 <div style={styles.tableWrapper}>
                                     <CustomTable
                                         data={tableData}
@@ -145,9 +175,8 @@ export default function APIMApiFaultAnalytics(props) {
     );
 }
 
-APIMApiFaultAnalytics.propTypes = {
+ApiFaultAnalytics.propTypes = {
     themeName: PropTypes.string.isRequired,
-    chartConfig: PropTypes.instanceOf(Object).isRequired,
     metadata: PropTypes.instanceOf(Object).isRequired,
     height: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,

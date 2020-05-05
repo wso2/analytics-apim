@@ -157,7 +157,7 @@ class CustomTable extends React.Component {
             tableData: [],
             page: 0,
             rowsPerPage: 5,
-            orderBy: 'createdtime',
+            orderBy: 'time',
             order: 'desc',
             expanded: false,
             filterColumn: 'appname',
@@ -211,14 +211,14 @@ class CustomTable extends React.Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
         const menuItems = [
-            <MenuItem value='reqtime'>
-                <FormattedMessage id='table.heading.reqtime' defaultMessage='REQUEST TIME' />
+            <MenuItem value='time'>
+                <FormattedMessage id='table.heading.time' defaultMessage='TIME' />
             </MenuItem>,
             <MenuItem value='appname'>
                 <FormattedMessage id='table.heading.appname' defaultMessage='APPLICATION NAME' />
             </MenuItem>,
-            <MenuItem value='faults'>
-                <FormattedMessage id='table.heading.faults' defaultMessage='FAULTS' />
+            <MenuItem value='count'>
+                <FormattedMessage id='table.heading.count' defaultMessage='FAULT COUNT' />
             </MenuItem>,
         ];
         return (
@@ -230,7 +230,6 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='API FAULTS BY APPLICATION'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
@@ -255,13 +254,13 @@ class CustomTable extends React.Component {
                                             tabIndex={-1}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                {n.reqtime}
+                                                {n.time}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
                                                 {n.appname}
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
-                                                {n.faults}
+                                                {n.count}
                                             </TableCell>
                                         </TableRow>
                                     );

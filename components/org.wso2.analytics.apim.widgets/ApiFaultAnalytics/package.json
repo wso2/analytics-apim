@@ -1,5 +1,5 @@
 {
-    "name": "apim-api-fault-analytics",
+    "name": "api-fault-analytics",
     "version": "1.0.0",
     "private": true,
     "dependencies": {
