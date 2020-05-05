@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiParam;
 import org.wso2.analytics.apim.rest.api.proxy.dto.APIListDTO;
 import org.wso2.analytics.apim.rest.api.proxy.dto.ApplicationListDTO;
 import org.wso2.analytics.apim.rest.api.proxy.dto.ErrorDTO;
+import org.wso2.analytics.apim.rest.api.proxy.dto.ManagerVerificationInfoDTO;
 import org.wso2.analytics.apim.rest.api.proxy.factories.ApimApiServiceFactory;
 
 import org.wso2.msf4j.Microservice;
@@ -53,7 +54,7 @@ public class ApimApi implements Microservice  {
     @Produces({ "application/json" })
     @io.swagger.annotations.ApiOperation(value = "Retrieve the APIs list ", notes = "Retrieve the APIs list from the APIM server ", response = APIListDTO.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok. REST API url successfully retrieved. ", response = APIListDTO.class),
+        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok. API list successfully retrieved. ", response = APIListDTO.class),
         
         @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request. Invalid request or validation error. ", response = APIListDTO.class) })
     public Response apimApisGet( @Context Request request)
@@ -68,12 +69,27 @@ public class ApimApi implements Microservice  {
     @Produces({ "application/json" })
     @io.swagger.annotations.ApiOperation(value = "Retrieve the Applications list ", notes = "Retrieve the Applications list from the APIM server ", response = ApplicationListDTO.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok. REST API url successfully retrieved. ", response = ApplicationListDTO.class),
+        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok. Application list successfully retrieved. ", response = ApplicationListDTO.class),
         
         @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request. Invalid request or validation error. ", response = ApplicationListDTO.class) })
     public Response apimApplicationsGet( @Context Request request)
     throws NotFoundException {
         
         return delegate.apimApplicationsGet(request);
+    }
+    
+    @GET
+    @Path("/isManager")
+    @Consumes({ "application/json" })
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "Verify whether the logged in user is a manager. ", notes = "Introspect the access token and verify whether the logged in user is a manager. ", response = ManagerVerificationInfoDTO.class, tags={  })
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok. User validated successfully retrieved. ", response = ManagerVerificationInfoDTO.class),
+        
+        @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request. Invalid request or validation error. ", response = ManagerVerificationInfoDTO.class) })
+    public Response apimIsManagerGet( @Context Request request)
+    throws NotFoundException {
+        
+        return delegate.apimIsManagerGet(request);
     }
 }

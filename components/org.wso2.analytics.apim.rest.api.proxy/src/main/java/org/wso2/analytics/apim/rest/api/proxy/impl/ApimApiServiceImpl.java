@@ -28,13 +28,19 @@ import org.wso2.analytics.apim.rest.api.proxy.Util;
 import org.wso2.analytics.apim.rest.api.proxy.dto.APIInfoDTO;
 import org.wso2.analytics.apim.rest.api.proxy.dto.APIListDTO;
 import org.wso2.analytics.apim.rest.api.proxy.dto.ApplicationListDTO;
+import org.wso2.analytics.apim.rest.api.proxy.dto.ManagerVerificationInfoDTO;
 import org.wso2.analytics.apim.rest.api.proxy.internal.ServiceHolder;
+import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderService;
+import org.wso2.carbon.analytics.idp.client.core.exception.IdPClientException;
+import org.wso2.carbon.analytics.idp.client.external.dto.OAuth2IntrospectionResponse;
+import org.wso2.carbon.analytics.idp.client.external.impl.OAuth2ServiceStubs;
 import org.wso2.carbon.config.ConfigurationException;
 import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.msf4j.Request;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.ws.rs.core.Response;
@@ -43,14 +49,36 @@ import javax.ws.rs.core.Response;
  * Proxy service for APIM REST APIs.
  */
 public class ApimApiServiceImpl extends ApimApiService {
-    private static final String DASHBOARD_USER = "DASHBOARD_USER=";
+    private OAuth2ServiceStubs oAuth2ServiceStubs;
     private static final String AM_COOKIE_P1 = "SDID";
     private static final String AM_COOKIE_P2 = "HID=";
-    private static final String ENDPOINT = "{serverUrl}/api/am/{serverName}/v1";
-    private static final String PUBLISHER = "publisher";
-    private static final String STORE = "store";
-    private static final String PUBLISHER_URL = "publisherUrl";
+    private static final String AUTH_CONFIGS = "auth.configs";
+    private static final String CONNECTION_TIMEOUT = "connectionTimeout";
+    private static final String COOKIE = "Cookie";
+    private static final String DASHBOARD_USER = "DASHBOARD_USER=";
+    private static final String DEFAULT_KM_USERNAME = "admin";
+    private static final String DEFAULT_KM_PASSWORD = "admin";
+    private static final String DEFAULT_CONNECTION_TIMEOUT = "10000";
+    private static final String DEFAULT_KM_TOKEN_URL = "https://localhost:9443/oauth2";
+    private static final String DEFAULT_READ_TIMEOUT = "60000";
     private static final String DEV_PORTAL_URL = "devPortalUrl";
+    private static final String ENDPOINT = "{serverUrl}/api/am/{serverName}/v1";
+    private static final String KM_PASSWORD = "kmPassword";
+    private static final String KM_TOKEN_URL = "kmTokenUrl";
+    private static final String KM_USERNAME = "kmUsername";
+    private static final String INTROSPECT_POSTFIX = "/introspect";
+    private static final String INTROSPECTION_URL = "introspectionUrl";
+    private static final String PROPERTIES = "properties";
+    private static final String PUBLISHER = "publisher";
+    private static final String PUBLISHER_URL = "publisherUrl";
+    private static final String READ_TIMEOUT = "readTimeout";
+    private static final String SCOPE_MONITORING_DASHBOARD = "apim_analytics:monitoring_dashboard";
+    private static final String SCOPE_MANAGER_DASHBOARD = "apim_analytics:manager_dashboard";
+    private static final String SERVER_NAME_TEMPLATE = "{serverName}";
+    private static final String SERVER_URL_TEMPLATE = "{serverUrl}";
+    private static final String STORE = "store";
+    private static final String TOKEN_POSTFIX = "/token";
+    private static final String REVOKE_POSTFIX = "/revoke";
     private final Util util = new Util();
     private static final Logger log = LoggerFactory.getLogger(ApimApiServiceImpl.class);
 
@@ -67,10 +95,10 @@ public class ApimApiServiceImpl extends ApimApiService {
             String publisherUrl = getServerURL(PUBLISHER);
 
             if (publisherUrl != null) {
-                String publisherEndpoint = ENDPOINT.replace("{serverUrl}", publisherUrl)
-                        .replace("{serverName}", PUBLISHER);
+                String publisherEndpoint = ENDPOINT.replace(SERVER_URL_TEMPLATE, publisherUrl)
+                        .replace(SERVER_NAME_TEMPLATE, PUBLISHER);
                 APIMServiceStubs serviceStubs = new APIMServiceStubs(publisherEndpoint, null);
-                String authToken = getAccessToken(request.getHeader("Cookie"));
+                String authToken = getAccessToken(request.getHeader(COOKIE));
                 feign.Response responseOfApiList = serviceStubs.getPublisherServiceStub().getApis(authToken);
 
                 APIListDTO aggregatedList = new APIListDTO();
@@ -125,10 +153,10 @@ public class ApimApiServiceImpl extends ApimApiService {
             String storeUrl = getServerURL(STORE);
 
             if (storeUrl != null) {
-                String storeEndpoint = ENDPOINT.replace("{serverUrl}", storeUrl)
-                        .replace("{serverName}", STORE);
+                String storeEndpoint = ENDPOINT.replace(SERVER_URL_TEMPLATE, storeUrl)
+                        .replace(SERVER_NAME_TEMPLATE, STORE);
                 APIMServiceStubs serviceStubs = new APIMServiceStubs(null, storeEndpoint);
-                String authToken = getAccessToken(request.getHeader("Cookie"));
+                String authToken = getAccessToken(request.getHeader(COOKIE));
                 feign.Response response = serviceStubs.getStoreServiceStub().getApplications(authToken);
 
                 if (response.status() == 200) {
@@ -151,6 +179,43 @@ public class ApimApiServiceImpl extends ApimApiService {
         return null;
     }
 
+    @Override
+    public Response apimIsManagerGet(Request request) throws NotFoundException {
+        String authToken = getAccessToken(request.getHeader(COOKIE));
+        try {
+            OAuth2ServiceStubs oAuth2Stub = getOAuth2ServiceStubs();
+            feign.Response introspectTokenResponse = oAuth2Stub.getIntrospectionServiceStub()
+                    .introspectAccessToken(authToken);
+            if (introspectTokenResponse.status() == 200) {   //200 - Success
+                OAuth2IntrospectionResponse introspectResponse = (OAuth2IntrospectionResponse) new GsonDecoder()
+                        .decode(introspectTokenResponse, OAuth2IntrospectionResponse.class);
+                String scopes = introspectResponse.getScope();
+                if (scopes != null) {
+                    ManagerVerificationInfoDTO managerVerificationInfoDTO = new ManagerVerificationInfoDTO();
+                    managerVerificationInfoDTO.setUsername(introspectResponse.getUsername());
+                    if (scopes.contains(SCOPE_MONITORING_DASHBOARD)
+                            || scopes.contains(SCOPE_MANAGER_DASHBOARD)) {
+                        managerVerificationInfoDTO.setIsManager(true);
+                    } else {
+                        managerVerificationInfoDTO.setIsManager(false);
+                    }
+                    introspectTokenResponse.close();
+                    return Response.status(introspectTokenResponse.status()).entity(managerVerificationInfoDTO).build();
+                } else {
+                    util.handleInternalServerError("Token introspection failed to return user scopes.");
+                }
+            }
+            introspectTokenResponse.close();
+            util.handleInternalServerError("Unable to retrieve scopes from token introspection." +
+                    " Response code:" + introspectTokenResponse.status());
+        } catch (ConfigurationException e) {
+            util.handleInternalServerError("Error occurred while retrieving key manager configuration.", e);
+        } catch (IdPClientException | IOException e) {
+            util.handleInternalServerError("Error occurred while introspecting the access token.", e);
+        }
+        return null;
+    }
+
     /**
      * Retrieve the server url from the deployment file.
      *
@@ -160,10 +225,10 @@ public class ApimApiServiceImpl extends ApimApiService {
      */
     private String getServerURL(String serverName) throws ConfigurationException {
         ConfigProvider configProvider = ServiceHolder.getInstance().getConfigProvider();
-        LinkedHashMap authConfig = (LinkedHashMap) configProvider.getConfigurationObject("auth.configs");
+        LinkedHashMap authConfig = (LinkedHashMap) configProvider.getConfigurationObject(AUTH_CONFIGS);
 
         if (authConfig != null) {
-            LinkedHashMap properties = (LinkedHashMap) authConfig.get("properties");
+            LinkedHashMap properties = (LinkedHashMap) authConfig.get(PROPERTIES);
             if (properties != null) {
                 if (serverName.equalsIgnoreCase(PUBLISHER)) {
                     return (String) properties.get(PUBLISHER_URL);
@@ -205,5 +270,67 @@ public class ApimApiServiceImpl extends ApimApiService {
 
         return accessTokenP1 + accessTokenP2;
     }
+
+    /**
+     * Get OAuth2ServiceStubs instance
+     *
+     * @return the an OAuth2ServiceStubs instance
+     */
+    private OAuth2ServiceStubs getOAuth2ServiceStubs() throws ConfigurationException {
+        if (oAuth2ServiceStubs != null) {
+            return oAuth2ServiceStubs;
+        } else {
+            HashMap<String, String> kmConfig = getKmConfig();
+            if (kmConfig != null) {
+                AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService =
+                        ServiceHolder.getInstance().getAnalyticsHttpClientBuilderService();
+                oAuth2ServiceStubs = new OAuth2ServiceStubs(
+                        analyticsHttpClientBuilderService, kmConfig.get(KM_TOKEN_URL) + TOKEN_POSTFIX,
+                        kmConfig.get(KM_TOKEN_URL) + REVOKE_POSTFIX, kmConfig.get(INTROSPECTION_URL),
+                        kmConfig.get(KM_USERNAME), kmConfig.get(KM_PASSWORD),
+                        Integer.parseInt(kmConfig.get(CONNECTION_TIMEOUT)),
+                        Integer.parseInt(kmConfig.get(READ_TIMEOUT)));
+                return oAuth2ServiceStubs;
+            } else {
+                util.handleInternalServerError("Unable to retrieve key manager configuration");
+            }
+
+        }
+        return null;
+    }
+
+    /**
+     * Get key manager configuration from auth.configs
+     *
+     * @return the an key manager configuration
+     */
+    private HashMap getKmConfig() throws ConfigurationException {
+        ConfigProvider configProvider = ServiceHolder.getInstance().getConfigProvider();
+        LinkedHashMap authConfig = (LinkedHashMap) configProvider.getConfigurationObject(AUTH_CONFIGS);
+
+        if (authConfig != null) {
+            LinkedHashMap<String, String> properties = (LinkedHashMap) authConfig.get(PROPERTIES);
+            if (properties != null) {
+                String kmTokenUrl = properties.getOrDefault(KM_TOKEN_URL, DEFAULT_KM_TOKEN_URL);
+                String introspectionUrl = properties.getOrDefault(INTROSPECTION_URL,
+                        kmTokenUrl + INTROSPECT_POSTFIX);
+                String kmUsername = properties.getOrDefault(KM_USERNAME, DEFAULT_KM_USERNAME);
+                String kmPassword = properties.getOrDefault(KM_PASSWORD, DEFAULT_KM_PASSWORD);
+                String connectionTimeout = properties.getOrDefault(CONNECTION_TIMEOUT, DEFAULT_CONNECTION_TIMEOUT);
+                String readTimeout = properties.getOrDefault(READ_TIMEOUT, DEFAULT_READ_TIMEOUT);
+
+                HashMap<String, String> kmConfig = new HashMap<>();
+                kmConfig.put(KM_TOKEN_URL, kmTokenUrl);
+                kmConfig.put(INTROSPECTION_URL, introspectionUrl);
+                kmConfig.put(KM_USERNAME, kmUsername);
+                kmConfig.put(KM_PASSWORD, kmPassword);
+                kmConfig.put(CONNECTION_TIMEOUT, connectionTimeout);
+                kmConfig.put(READ_TIMEOUT, readTimeout);
+                return kmConfig;
+            }
+        }
+        return null;
+    }
+
 
 }
