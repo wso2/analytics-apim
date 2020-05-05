@@ -69,15 +69,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Api Created
- * @class APIMDimensionSelectorWidget
+ * Create React Component for Dimension Selector Widget
+ * @class DimensionSelectorWidget
  * @extends {Widget}
  */
-class APIMDimensionSelectorWidget extends Widget {
+class DimensionSelectorWidget extends Widget {
     /**
-     * Creates an instance of APIMDimensionSelectorWidget.
+     * Creates an instance of DimensionSelectorWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      */
     constructor(props) {
         super(props);
@@ -237,14 +237,14 @@ class APIMDimensionSelectorWidget extends Widget {
 
     /**
      * Load locale file.
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * @param {String} locale - locale
      * @returns {Promise}
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiFaultsSummary/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/DimensionSelector/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -257,7 +257,7 @@ class APIMDimensionSelectorWidget extends Widget {
 
     /**
      * Get API list from Publisher
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     validateLoggedInUserRole() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/isManager`)
@@ -330,7 +330,7 @@ class APIMDimensionSelectorWidget extends Widget {
 
     /**
      * Load API list
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     loadAPIList() {
         const { isManager, isRoleValidated } = this.state;
@@ -345,7 +345,7 @@ class APIMDimensionSelectorWidget extends Widget {
 
     /**
      * Get API list from Publisher
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     getApiListFromPublisher() {
         Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
@@ -361,7 +361,7 @@ class APIMDimensionSelectorWidget extends Widget {
     /**
      * Formats the API list retrieved from APIM publisher to remove API uuid
      * @param {object} data - data retrieved
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     formatPublisherApiList(data) {
         const { list } = data;
@@ -379,7 +379,7 @@ class APIMDimensionSelectorWidget extends Widget {
 
     /**
      * Get API list from AM_DB
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     getApiListFromDatabase() {
         const { widgetID: widgetName, id } = this.props;
@@ -395,7 +395,7 @@ class APIMDimensionSelectorWidget extends Widget {
     /**
      * Handle data received from getApiListFromDatabase
      * @param {object} message - data retrieved
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     handleApiDataReceived(message) {
         const { data } = message;
@@ -412,7 +412,7 @@ class APIMDimensionSelectorWidget extends Widget {
     /**
      * Formats API data retrieved
      * @param {object} list - data retrieved
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     handleApiListReceived(list) {
         let {
@@ -494,7 +494,7 @@ class APIMDimensionSelectorWidget extends Widget {
      * @param {Array} options - available options
      * @param {Array} selection - selected options
      * @param {bool} selectMultiple - multiple selection enabled
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     filterSelectedOption(dimension, options, selection, selectMultiple) {
         if (!selection || selection.length === 0 || !Array.isArray(selection)) {
@@ -532,7 +532,7 @@ class APIMDimensionSelectorWidget extends Widget {
     /**
      * Handle onChange of dimension
      * @param {String} dimension - selected dimension
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     handleChangeDimension(dimension) {
         const { apis, providers, selectMultiple } = this.state;
@@ -573,7 +573,7 @@ class APIMDimensionSelectorWidget extends Widget {
     /**
      * Handle onChange of selected values
      * @param {Array} value - selected options
-     * @memberof APIMDimensionSelectorWidget
+     * @memberof DimensionSelectorWidget
      * */
     handleChangeSelection(value) {
         const { apis, dimension } = this.state;
@@ -601,8 +601,8 @@ class APIMDimensionSelectorWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Api Created widget
-     * @memberof APIMDimensionSelectorWidget
+     * @returns {ReactElement} Render the Dimension Selector widget
+     * @memberof DimensionSelectorWidget
      */
     render() {
         const {
@@ -670,7 +670,7 @@ class APIMDimensionSelectorWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM Dimension '
+                                            defaultMessage={'Cannot fetch provider configuration for Dimension '
                                             + 'Selector widget'}
                                         />
                                     </Typography>
@@ -780,4 +780,4 @@ class APIMDimensionSelectorWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMDimensionSelector', APIMDimensionSelectorWidget);
+global.dashboard.registerWidget('DimensionSelector', DimensionSelectorWidget);

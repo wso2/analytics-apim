@@ -188,7 +188,7 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>APIMDimensionSelector/dist</directory>
+            <directory>DimensionSelector/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
     </fileSets>

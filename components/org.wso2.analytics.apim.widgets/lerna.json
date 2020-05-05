@@ -41,7 +41,7 @@
     "APIMPlaceholder",
     "ApiThrottleAnalytics",
     "ApiFaultAnalytics",
-    "APIMDimensionSelector"
+    "DimensionSelector"
   ],
   "version": "1.0.0"
 }

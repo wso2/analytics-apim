@@ -23,11 +23,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     context: path.resolve(__dirname, './src'),
     entry: {
-        index: './APIMDimensionSelectorWidget.jsx',
+        index: './DimensionSelectorWidget.jsx',
     },
     output: {
-        path: path.resolve(__dirname, './dist/APIMDimensionSelector'),
-        filename: 'APIMDimensionSelector.js',
+        path: path.resolve(__dirname, './dist/DimensionSelector'),
+        filename: 'DimensionSelector.js',
     },
     module: {
         rules: [
