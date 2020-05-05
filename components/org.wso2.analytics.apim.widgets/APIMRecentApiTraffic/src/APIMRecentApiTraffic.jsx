@@ -97,7 +97,7 @@ export default function APIMRecentApiTraffic(props) {
                     <h3 style={styles.h3}>
                         <FormattedMessage
                             id='widget.heading'
-                            defaultMessage='TOTAL TRAFFIC'
+                            defaultMessage='RECENT API TRAFFIC'
                         />
                     </h3>
                 </div>

@@ -1,5 +1,5 @@
 {
-  "widget.heading": "TOTAL TRAFFIC",
+  "widget.heading": "RECENT API TRAFFIC",
   "config.error.heading": "Configuration Error!",
   "config.error.body": "Cannot fetch provider configuration for APIM Recent Api Traffic widget",
   "nodata.error.heading": "No Data Available!",
