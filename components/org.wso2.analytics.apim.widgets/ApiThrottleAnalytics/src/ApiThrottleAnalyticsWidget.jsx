@@ -28,7 +28,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Widget from '@wso2-dashboards/widget';
-import APIMApiThrottleAnalytics from './APIMApiThrottleAnalytics';
+import ApiThrottleAnalytics from './ApiThrottleAnalytics';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -60,15 +60,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Api Throttle Analytics widget
- * @class APIMApiThrottleAnalyticsWidget
+ * Create React Component for Api Throttle Analytics widget
+ * @class ApiThrottleAnalyticsWidget
  * @extends {Widget}
  */
-class APIMApiThrottleAnalyticsWidget extends Widget {
+class ApiThrottleAnalyticsWidget extends Widget {
     /**
-     * Creates an instance of APIMApiThrottleAnalyticsWidget.
+     * Creates an instance of ApiThrottleAnalyticsWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMApiThrottleAnalyticsWidget
+     * @memberof ApiThrottleAnalyticsWidget
      */
     constructor(props) {
         super(props);
@@ -182,12 +182,12 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
     /**
      * Load locale file.
      * @param {string} locale Locale name
-     * @memberof APIMApiThrottleAnalyticsWidget
+     * @memberof ApiThrottleAnalyticsWidget
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiThrottleAnalytics/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/ApiThrottleAnalytics/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -200,7 +200,7 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
 
     /**
      * Retrieve params from publisher - DateTimeRange
-     * @memberof APIMApiThrottleAnalyticsWidget
+     * @memberof ApiThrottleAnalyticsWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -235,7 +235,7 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
 
     /**
      * Formats the siddhi query - mainquery
-     * @memberof APIMApiThrottleAnalyticsWidget
+     * @memberof ApiThrottleAnalyticsWidget
      * */
     assembleMainQuery() {
         const {
@@ -266,7 +266,7 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
     /**
      * Formats data retrieved from assembleMainQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiThrottleAnalyticsWidget
+     * @memberof ApiThrottleAnalyticsWidget
      * */
     handleDataReceived(message) {
         const { data } = message;
@@ -274,7 +274,7 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
             const tableData = data.map((dataUnit) => {
                 return ({
                     appname: dataUnit[0],
-                    throttles: dataUnit[1],
+                    count: dataUnit[1],
                     reason: dataUnit[2].split('_').join(' ').toLowerCase(),
                     reqtime: Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss A'),
                 });
@@ -288,7 +288,8 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
                 return acc;
             }, {});
             const throttleData = Object.keys(dataGroupByTime).map((key) => {
-                return [dataGroupByTime[key], parseInt(key, 10)]; });
+                return [dataGroupByTime[key], parseInt(key, 10)];
+            });
             this.setState({ throttleData, tableData, inProgress: false });
         } else {
             this.setState({ inProgress: false, throttleData: [], tableData: [] });
@@ -296,9 +297,26 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
     }
 
     /**
+     * Return the time format to be used in the time labels based on granularity
+     * @memberof ApiThrottleAnalyticsWidget
+     * */
+    getTimeLabelFormat() {
+        const { perValue } = this.state;
+        if (perValue === 'year') {
+            return '%Y';
+        } else if (perValue === 'month') {
+            return '%b-%Y';
+        } else if (perValue === 'day') {
+            return '%d-%b-%Y';
+        } else {
+            return '%d-%b-%y %H:%M';
+        }
+    }
+
+    /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Api Throttle Analytics widget
-     * @memberof APIMApiThrottleAnalyticsWidget
+     * @returns {ReactElement} Render the Api Throttle Analytics widget
+     * @memberof ApiThrottleAnalyticsWidget
      */
     render() {
         const {
@@ -308,6 +326,7 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
         const {
             paper, paperWrapper,
         } = this.styles;
+        chartConfig.timeFormat = this.getTimeLabelFormat();
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const faultProps = {
@@ -341,14 +360,14 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
                                         <Typography component='p'>
                                             <FormattedMessage
                                                 id='config.error.body'
-                                                defaultMessage={'Cannot fetch provider configuration for APIM '
+                                                defaultMessage={'Cannot fetch provider configuration for '
                                                 + 'Api Throttle Analytics widget'}
                                             />
                                         </Typography>
                                     </Paper>
                                 </div>
                             ) : (
-                                <APIMApiThrottleAnalytics
+                                <ApiThrottleAnalytics
                                     {...faultProps}
                                 />
                             )
@@ -360,4 +379,4 @@ class APIMApiThrottleAnalyticsWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMApiThrottleAnalytics', APIMApiThrottleAnalyticsWidget);
+global.dashboard.registerWidget('ApiThrottleAnalytics', ApiThrottleAnalyticsWidget);

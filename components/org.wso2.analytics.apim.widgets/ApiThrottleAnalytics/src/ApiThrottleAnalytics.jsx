@@ -28,11 +28,11 @@ import VizG from 'react-vizgrammar';
 import CustomTable from './CustomTable';
 
 /**
- * React Component for APIM Api Throttle Analytics widget body
+ * React Component for Api Throttle Analytics widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Api Throttle Analytics widget body
+ * @returns {ReactElement} Render the Api Throttle Analytics widget body
  */
-export default function APIMApiThrottleAnalytics(props) {
+export default function ApiThrottleAnalytics(props) {
     const {
         themeName, chartConfig, metadata, height, width, inProgress, throttleData, tableData,
     } = props;
@@ -72,6 +72,14 @@ export default function APIMApiThrottleAnalytics(props) {
             justifyContent: 'center',
             height,
         },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
+        },
     };
 
     return (
@@ -88,17 +96,8 @@ export default function APIMApiThrottleAnalytics(props) {
                 }}
             >
                 <div style={styles.headingWrapper}>
-                    <div style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        marginTop: 0,
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                    >
-                        <FormattedMessage id='widget.heading' defaultMessage='API THROT ANALYTICS' />
+                    <div style={styles.heading}>
+                        <FormattedMessage id='widget.heading' defaultMessage='API THROTTLED OUT REQUESTS OVER TIME' />
                     </div>
                 </div>
                 { inProgress ? (
@@ -151,7 +150,7 @@ export default function APIMApiThrottleAnalytics(props) {
     );
 }
 
-APIMApiThrottleAnalytics.propTypes = {
+ApiThrottleAnalytics.propTypes = {
     themeName: PropTypes.string.isRequired,
     chartConfig: PropTypes.instanceOf(Object).isRequired,
     metadata: PropTypes.instanceOf(Object).isRequired,

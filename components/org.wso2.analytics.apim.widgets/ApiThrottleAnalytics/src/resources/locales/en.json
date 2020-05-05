@@ -1,11 +1,11 @@
 {
   "nodata.error.body": "No data available for the selected options.",
   "nodata.error.heading": "No Data Available !",
-  "config.error.body": "Cannot fetch provider configuration for APIM Api Throttle Analytics widget",
+  "config.error.body": "Cannot fetch provider configuration for Api Throttle Analytics widget",
   "config.error.heading": "Configuration Error !",
   "table.heading.appname": "APPLICATION NAME",
-  "table.heading.count": "COUNT",
-  "table.heading.reqtime": "REQUEST TIME",
+  "table.heading.count": "THROTTLE COUNT",
+  "table.heading.reqtime": "TIME",
   "table.heading.reason": "REASON",
-  "widget.heading": "API THROTTLE ANALYTICS"
+  "widget.heading": "API THROTTLED OUT REQUESTS OVER TIME"
 }

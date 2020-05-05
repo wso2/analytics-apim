@@ -212,7 +212,7 @@ class CustomTable extends React.Component {
 
         const menuItems = [
             <MenuItem value='reqtime'>
-                <FormattedMessage id='table.heading.reqtime' defaultMessage='REQUEST TIME' />
+                <FormattedMessage id='table.heading.reqtime' defaultMessage='TIME' />
             </MenuItem>,
             <MenuItem value='appname'>
                 <FormattedMessage id='table.heading.appname' defaultMessage='APPLICATION NAME' />
@@ -220,8 +220,8 @@ class CustomTable extends React.Component {
             <MenuItem value='reason'>
                 <FormattedMessage id='table.heading.reason' defaultMessage='REASON' />
             </MenuItem>,
-            <MenuItem value='throttles'>
-                <FormattedMessage id='table.heading.throttles' defaultMessage='THROTTLES' />
+            <MenuItem value='count'>
+                <FormattedMessage id='table.heading.count' defaultMessage='THROTTLE COUNT' />
             </MenuItem>,
         ];
         return (
@@ -241,8 +241,8 @@ class CustomTable extends React.Component {
                         <colgroup>
                             <col style={{ width: '25%' }} />
                             <col style={{ width: '25%' }} />
-                            <col style={{ width: '35%' }} />
-                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '25%' }} />
+                            <col style={{ width: '25%' }} />
                         </colgroup>
                         <CustomTableHead
                             order={order}
@@ -268,7 +268,7 @@ class CustomTable extends React.Component {
                                                 {n.reason}
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
-                                                {n.throttles}
+                                                {n.count}
                                             </TableCell>
                                         </TableRow>
                                     );

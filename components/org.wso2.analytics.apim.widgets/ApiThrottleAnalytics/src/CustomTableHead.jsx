@@ -37,7 +37,7 @@ const rows = [
         id: 'reason', numeric: false, disablePadding: false, label: 'table.heading.reason',
     },
     {
-        id: 'throttles', numeric: true, disablePadding: false, label: 'table.heading.throttles',
+        id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',
     },
 ];
 
