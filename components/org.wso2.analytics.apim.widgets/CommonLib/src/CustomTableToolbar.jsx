@@ -33,7 +33,7 @@ const styles = theme => ({
     root: {
         paddingRight: theme.spacing.unit,
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         width: '100%',
     },
     title: {
@@ -70,11 +70,6 @@ function CustomTableToolbar(props) {
     return (
         <Toolbar style={{ display: 'block' }}>
             <div className={classes.root}>
-                <div className={classes.title}>
-                    <Typography variant='h6' id='tableTitle'>
-                        <FormattedMessage id='widget.heading' defaultMessage={title} />
-                    </Typography>
-                </div>
                 <div className={classes.actions}>
                     <Tooltip title={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}>
                         <IconButton
