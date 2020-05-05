@@ -6,7 +6,6 @@
         "@material-ui/core": "^4.9.10",
         "@material-ui/icons": "^4.9.1",
         "@material-ui/lab": "^4.0.0-alpha.49",
-        "@analytics-apim/common-lib": "^1.0.0",
         "moment": "^2.24.0"
     },
     "devDependencies": {},
