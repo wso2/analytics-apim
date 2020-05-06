@@ -34,7 +34,7 @@ import CustomTable from './CustomTable';
  */
 export default function ApiThrottleAnalytics(props) {
     const {
-        themeName, metadata, height, width, inProgress, throttleData, tableData,
+        themeName, height, width, inProgress, throttleData, tableData,
     } = props;
     const styles = {
         headingWrapper: {
@@ -101,6 +101,10 @@ export default function ApiThrottleAnalytics(props) {
             axisLabelColor: '#a7b0c8',
             axisTextSize: 10,
         },
+    };
+    const metadata = {
+        names: ['COUNT', 'TIME'],
+        types: ['linear', 'time'],
     };
 
 
@@ -174,7 +178,6 @@ export default function ApiThrottleAnalytics(props) {
 
 ApiThrottleAnalytics.propTypes = {
     themeName: PropTypes.string.isRequired,
-    metadata: PropTypes.instanceOf(Object).isRequired,
     height: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
     throttleData: PropTypes.instanceOf(Object).isRequired,

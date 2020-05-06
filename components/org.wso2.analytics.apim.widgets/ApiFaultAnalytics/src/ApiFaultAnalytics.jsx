@@ -34,7 +34,7 @@ import CustomTable from './CustomTable';
  */
 export default function ApiFaultAnalytics(props) {
     const {
-        themeName, metadata, height, width, inProgress, faultData, tableData,
+        themeName, height, width, inProgress, faultData, tableData,
     } = props;
     const styles = {
         headingWrapper: {
@@ -105,6 +105,10 @@ export default function ApiFaultAnalytics(props) {
             legendTextColor: '#a7b0c8',
             legendTextSize: 15,
         },
+    };
+    const metadata = {
+        names: ['COUNT', 'TIME'],
+        types: ['linear', 'time'],
     };
 
     return (
@@ -177,7 +181,6 @@ export default function ApiFaultAnalytics(props) {
 
 ApiFaultAnalytics.propTypes = {
     themeName: PropTypes.string.isRequired,
-    metadata: PropTypes.instanceOf(Object).isRequired,
     height: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
     faultData: PropTypes.instanceOf(Object).isRequired,

@@ -73,11 +73,6 @@ class ApiFaultAnalyticsWidget extends Widget {
     constructor(props) {
         super(props);
 
-        this.metadata = {
-            names: ['COUNT', 'TIME'],
-            types: ['linear', 'time'],
-        };
-
         this.styles = {
             formControl: {
                 margin: 5,
@@ -107,7 +102,6 @@ class ApiFaultAnalyticsWidget extends Widget {
             faultData: null,
             tableData: null,
             inProgress: true,
-            metadata: this.metadata,
             dimension: null,
             selectedOptions: [],
         };
@@ -279,7 +273,7 @@ class ApiFaultAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, metadata, height, width, inProgress, faultData,
+            localeMessages, faultyProviderConfig, height, width, inProgress, faultData,
             tableData,
         } = this.state;
         const {
@@ -289,7 +283,6 @@ class ApiFaultAnalyticsWidget extends Widget {
         const themeName = muiTheme.name;
         const faultProps = {
             themeName,
-            metadata,
             height,
             width,
             faultData,

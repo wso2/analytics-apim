@@ -73,11 +73,6 @@ class ApiThrottleAnalyticsWidget extends Widget {
     constructor(props) {
         super(props);
 
-        this.metadata = {
-            names: ['COUNT', 'TIME'],
-            types: ['linear', 'time'],
-        };
-
         this.styles = {
             formControl: {
                 margin: 5,
@@ -107,7 +102,6 @@ class ApiThrottleAnalyticsWidget extends Widget {
             throttleData: null,
             tableData: null,
             inProgress: true,
-            metadata: this.metadata,
             dimension: null,
             selectedOptions: [],
         };
@@ -280,7 +274,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, metadata, height, width, inProgress, throttleData,
+            localeMessages, faultyProviderConfig, height, width, inProgress, throttleData,
             tableData,
         } = this.state;
         const {
@@ -290,7 +284,6 @@ class ApiThrottleAnalyticsWidget extends Widget {
         const themeName = muiTheme.name;
         const faultProps = {
             themeName,
-            metadata,
             height,
             width,
             throttleData,
