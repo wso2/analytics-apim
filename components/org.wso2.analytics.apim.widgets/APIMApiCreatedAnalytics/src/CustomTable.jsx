@@ -158,7 +158,7 @@ class CustomTable extends React.Component {
             page: 0,
             rowsPerPage: 5,
             orderBy: 'createdtime',
-            order: 'desc',
+            order: 'asc',
             expanded: false,
             filterColumn: 'apiname',
             query: '',
@@ -230,7 +230,6 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='API CREATION TIMES'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>

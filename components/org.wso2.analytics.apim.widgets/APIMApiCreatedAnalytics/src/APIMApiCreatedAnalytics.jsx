@@ -22,11 +22,6 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
 import APIMApiCreatedData from './APIMApiCreatedData';
 
 /**
@@ -36,7 +31,7 @@ import APIMApiCreatedData from './APIMApiCreatedData';
  */
 export default function APIMApiCreatedAnalytics(props) {
     const {
-        themeName, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
+        themeName, height, chartData, tableData, inProgress, width,
     } = props;
     const styles = {
         headingWrapper: {
@@ -64,7 +59,7 @@ export default function APIMApiCreatedAnalytics(props) {
         },
     };
     const createdDataProps = {
-        themeName, chartData, tableData, xAxisTicks, maxCount,
+        themeName, chartData, tableData, width,
     };
     return (
         <Scrollbars style={{
@@ -101,9 +96,8 @@ export default function APIMApiCreatedAnalytics(props) {
 APIMApiCreatedAnalytics.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    width: PropTypes.string.isRequired,
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
-    xAxisTicks: PropTypes.instanceOf(Object).isRequired,
-    maxCount: PropTypes.number.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

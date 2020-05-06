@@ -93,11 +93,11 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             timeFrom: null,
             chartData: null,
             tableData: null,
-            xAxisTicks: null,
-            maxCount: 0,
             localeMessages: null,
             username: null,
             inProgress: true,
+            dimension: null,
+            selectedOptions: [],
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -237,41 +237,24 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const { data } = message;
 
         if (data && data.length !== 0) {
-            const xAxisTicks = [];
             const chartData = [];
             const tableData = [];
             // use apiCount to keep aggregate API created count
             let apiCount = 0;
 
+            data.sort((a, b) => { return new Date(a[2]).getTime() - new Date(b[2]).getTime(); });
             data.forEach((dataUnit) => {
                 apiCount++;
-                chartData.push({
-                    x: new Date(dataUnit[2]).getTime(),
-                    y: apiCount,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[2])
-                        .format('YYYY-MMM-DD hh:mm:ss A') + '\nCOUNT:' + apiCount,
-                });
+                chartData.push([apiCount, new Date(dataUnit[2]).getTime()]);
+                chartData.sort((a, b) => { return a[1] - b[1]; });
                 tableData.push({
                     apiname: dataUnit[0] + ' (' + dataUnit[3] + ')',
                     apiVersion: dataUnit[1],
                     createdtime: Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss A'),
                 });
             });
-
-            const maxCount = chartData[chartData.length - 1].y;
-
-            const first = new Date(chartData[0].x).getTime();
-            const last = new Date(chartData[chartData.length - 1].x).getTime();
-            const interval = (last - first) / 10;
-            let duration = 0;
-            xAxisTicks.push(first);
-            for (let i = 1; i <= 10; i++) {
-                duration = interval * i;
-                xAxisTicks.push(new Date(first + duration).getTime());
-            }
-
             this.setState({
-                chartData, tableData, xAxisTicks, maxCount, inProgress: false,
+                chartData, tableData, inProgress: false,
             });
         } else {
             this.setState({ inProgress: false, chartData: [], tableData: [] });
@@ -285,7 +268,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, chartData, tableData, xAxisTicks, maxCount,
+            localeMessages, faultyProviderConfig, height, chartData, tableData, width,
             inProgress,
         } = this.state;
         const {
@@ -294,7 +277,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatedProps = {
-            themeName, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
+            themeName, height, chartData, tableData, inProgress, width,
         };
 
         return (
