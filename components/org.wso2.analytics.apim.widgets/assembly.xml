@@ -200,10 +200,6 @@
             <outputDirectory></outputDirectory>
         </fileSet>
          <fileSet>
-            <directory>APIMSingleApiStats/dist</directory>
-            <outputDirectory></outputDirectory>
-        </fileSet>
-         <fileSet>
             <directory>APIMApiErrorAnalysis/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
