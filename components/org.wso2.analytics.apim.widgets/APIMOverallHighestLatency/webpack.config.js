@@ -23,11 +23,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     context: path.resolve(__dirname, './src'),
     entry: {
-        index: './APIMOverallAvgLatencyWidget.jsx',
+        index: './APIMOverallHighestLatencyWidget.jsx',
     },
     output: {
-        path: path.resolve(__dirname, './dist/APIMOverallAvgLatency'),
-        filename: 'APIMOverallAvgLatency.js',
+        path: path.resolve(__dirname, './dist/APIMOverallHighestLatency'),
+        filename: 'APIMOverallHighestLatency.js',
     },
     module: {
         rules: [

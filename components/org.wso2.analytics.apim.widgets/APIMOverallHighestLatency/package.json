@@ -1,5 +1,5 @@
 {
-    "name": "apim-overall-avg-latency",
+    "name": "apim-overall-highest-latency",
     "version": "1.0.0",
     "private": true,
     "dependencies": {

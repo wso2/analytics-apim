@@ -1,6 +1,6 @@
 {
-  "name": "APIM Overall Avg Latency",
-  "id": "APIMOverallAvgLatency",
+  "name": "APIM Overall Highest Latency",
+  "id": "APIMOverallHighestLatency",
   "thumbnailURL": "", 
   "configs": {
     "pubsub": {

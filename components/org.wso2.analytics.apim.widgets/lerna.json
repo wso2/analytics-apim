@@ -48,7 +48,7 @@
     "APIMApiTrafficTrends",
     "APIMTotalRequestCount",
     "APIMTotalErrorCount",
-    "APIMOverallAvgLatency",
+    "APIMOverallHighestLatency",
     "APIMTotalErrorRate"
   ],
   "version": "1.0.0"

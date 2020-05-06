@@ -28,7 +28,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import APIMOverallAvgLatency from './APIMOverallAvgLatency';
+import APIMOverallHighestLatency from './APIMOverallHighestLatency';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -60,15 +60,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for Apim Overall Avg Latency widget
- * @class APIMOverallAvgLatencyWidget
+ * Create React Component for Apim Overall Highest Latency widget
+ * @class APIMOverallHighestLatencyWidget
  * @extends {Widget}
  */
-class APIMOverallAvgLatencyWidget extends Widget {
+class APIMOverallHighestLatencyWidget extends Widget {
     /**
-     * Creates an instance of APIMOverallAvgLatencyWidget.
+     * Creates an instance of APIMOverallHighestLatencyWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMOverallAvgLatencyWidget
+     * @memberof APIMOverallHighestLatencyWidget
      */
     constructor(props) {
         super(props);
@@ -154,13 +154,13 @@ class APIMOverallAvgLatencyWidget extends Widget {
     /**
       * Load locale file
       * @param {string} locale Locale name
-      * @memberof APIMOverallAvgLatencyWidget
+      * @memberof APIMOverallHighestLatencyWidget
       * @returns {string}
       */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMOverallAvgLatency/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMOverallHighestLatency/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -174,7 +174,7 @@ class APIMOverallAvgLatencyWidget extends Widget {
     /**
      * Retrieve params from publisher - DateTimeRange
      * @param {object} receivedMsg timeFrom, TimeTo, perValue
-     * @memberof APIMOverallAvgLatencyWidget
+     * @memberof APIMOverallHighestLatencyWidget
    */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -190,7 +190,7 @@ class APIMOverallAvgLatencyWidget extends Widget {
 
     /**
      * Formats the siddhi query
-     * @memberof APIMOverallAvgLatencyWidget
+     * @memberof APIMOverallHighestLatencyWidget
      * */
     assembleTotalQuery() {
         const {
@@ -212,7 +212,7 @@ class APIMOverallAvgLatencyWidget extends Widget {
     /**
      * Formats data received from assembleTotalQuery
      * @param {object} message - data retrieved
-     * @memberof APIMOverallAvgLatencyWidget
+     * @memberof APIMOverallHighestLatencyWidget
      * */
     handleTotalCountReceived(message) {
         const { data } = message;
@@ -229,7 +229,7 @@ class APIMOverallAvgLatencyWidget extends Widget {
 
     /**
      * Formats the siddhi query
-     * @memberof APIMOverallAvgLatencyWidget
+     * @memberof APIMOverallHighestLatencyWidget
      * */
     assembleLatencyQuery() {
         const {
@@ -251,7 +251,7 @@ class APIMOverallAvgLatencyWidget extends Widget {
     /**
      * Formats data received from assembleLatencyQuery
      * @param {object} message - data retrieved
-     * @memberof APIMOverallAvgLatencyWidget
+     * @memberof APIMOverallHighestLatencyWidget
      * */
     handleTotalLatencyReceived(message) {
         const { data } = message;
@@ -269,7 +269,7 @@ class APIMOverallAvgLatencyWidget extends Widget {
 
     /**
      * calculate the average Latency
-     * @memberof APIMOverallAvgLatencyWidget
+     * @memberof APIMOverallHighestLatencyWidget
      * */
     calculateAverageLatency() {
         const { totalCount, latency } = this.state;
@@ -284,8 +284,8 @@ class APIMOverallAvgLatencyWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Overall Avg Latency Widget
-     * @memberof APIMOverallAvgLatencyWidget
+     * @returns {ReactElement} Render the APIM Overall Highest Latency Widget
+     * @memberof APIMOverallHighestLatencyWidget
      */
     render() {
         const {
@@ -333,13 +333,13 @@ class APIMOverallAvgLatencyWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Overall Avg Latency Widget'}
+                                            + 'Overall Highest Latency Widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMOverallAvgLatency
+                            <APIMOverallHighestLatency
                                 {...apiCreatedProps}
                             />
                         )
@@ -350,4 +350,4 @@ class APIMOverallAvgLatencyWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMOverallAvgLatency', APIMOverallAvgLatencyWidget);
+global.dashboard.registerWidget('APIMOverallHighestLatency', APIMOverallHighestLatencyWidget);

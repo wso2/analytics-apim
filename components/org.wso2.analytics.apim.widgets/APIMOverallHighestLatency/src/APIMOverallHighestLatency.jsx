@@ -24,11 +24,11 @@ import { FormattedMessage } from 'react-intl';
 import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
 
 /**
- * React Component for APIM Overall Avg Latency widget body
+ * React Component for APIM Overall Highest Latency widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Avg Latency widget body
+ * @returns {ReactElement} Render the APIM Highest Latency widget body
  */
-export default function APIMOverallAvgLatency(props) {
+export default function APIMOverallHighestLatency(props) {
     const {
         themeName, avglatency, timeFrom, timeTo,
     } = props;
@@ -141,7 +141,7 @@ export default function APIMOverallAvgLatency(props) {
     );
 }
 
-APIMOverallAvgLatency.propTypes = {
+APIMOverallHighestLatency.propTypes = {
     themeName: PropTypes.string.isRequired,
     avglatency: PropTypes.number.isRequired,
     timeFrom: PropTypes.number.isRequired,

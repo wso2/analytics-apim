@@ -216,7 +216,7 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>APIMOverallAvgLatency/dist</directory>
+            <directory>APIMOverallHighestLatency/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
