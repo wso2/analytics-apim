@@ -294,7 +294,6 @@ public class ApimApiServiceImpl extends ApimApiService {
             } else {
                 util.handleInternalServerError("Unable to retrieve key manager configuration");
             }
-
         }
         return null;
     }
@@ -331,6 +330,5 @@ public class ApimApiServiceImpl extends ApimApiService {
         }
         return null;
     }
-
-
 }
+
