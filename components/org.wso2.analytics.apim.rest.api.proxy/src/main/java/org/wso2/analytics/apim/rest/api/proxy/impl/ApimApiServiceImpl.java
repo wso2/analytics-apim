@@ -186,6 +186,9 @@ public class ApimApiServiceImpl extends ApimApiService {
             OAuth2ServiceStubs oAuth2Stub = getOAuth2ServiceStubs();
             feign.Response introspectTokenResponse = oAuth2Stub.getIntrospectionServiceStub()
                     .introspectAccessToken(authToken);
+            if (introspectTokenResponse == null) {
+                util.handleInternalServerError("Error occurred while introspecting token. Response is null.");
+            }
             if (introspectTokenResponse.status() == 200) {   //200 - Success
                 OAuth2IntrospectionResponse introspectResponse = (OAuth2IntrospectionResponse) new GsonDecoder()
                         .decode(introspectTokenResponse, OAuth2IntrospectionResponse.class);
