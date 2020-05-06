@@ -46,8 +46,6 @@ export default function ApiThrottleAnalytics(props) {
 
         },
         chartWrapper: {
-            paddingTop: '20px',
-            marginLeft: '10px',
             width: '95%',
         },
         tableWrapper: {

@@ -77,8 +77,6 @@ export default function ApiFaultAnalytics(props) {
             marginTop: 0,
         },
         chartWrapper: {
-            paddingTop: '20px',
-            marginLeft: '10px',
             width: '95%',
         },
     };
