@@ -29,6 +29,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
@@ -139,6 +140,10 @@ const styles = theme => ({
     paginationActions: {
         marginLeft: 0,
     },
+    title: {
+        paddingLeft: 20,
+        paddingTop: 10,
+    },
 });
 
 /**
@@ -158,7 +163,7 @@ class CustomTable extends React.Component {
             page: 0,
             rowsPerPage: 5,
             orderBy: 'time',
-            order: 'desc',
+            order: 'asc',
             expanded: false,
             filterColumn: 'appName',
             query: '',
@@ -226,6 +231,11 @@ class CustomTable extends React.Component {
         ];
         return (
             <Paper className={classes.root}>
+                <div className={classes.title}>
+                    <Typography variant='subtitle1'>
+                        <FormattedMessage id='table.title' defaultMessage='THROTTLED OUT REQUESTS BY APPLICATION' />
+                    </Typography>
+                </div>
                 <CustomTableToolbar
                     expanded={expanded}
                     filterColumn={filterColumn}

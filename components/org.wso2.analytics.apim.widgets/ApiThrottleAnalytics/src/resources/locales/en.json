@@ -7,5 +7,6 @@
   "table.heading.count": "COUNT",
   "table.heading.time": "TIME",
   "table.heading.reason": "REASON",
+  "table.title": "THROTTLED OUT REQUESTS BY APPLICATION",
   "widget.heading": "API THROTTLED OUT REQUESTS OVER TIME"
 }

@@ -6,5 +6,6 @@
   "table.heading.appName": "APPLICATION",
   "table.heading.count": "COUNT",
   "table.heading.time": "TIME",
+  "table.title": "FAULTY REQUESTS BY APPLICATION",
   "widget.heading": "API FAULTY REQUESTS OVER TIME"
 }
