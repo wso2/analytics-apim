@@ -83,11 +83,11 @@ export default function ApiFaultAnalytics(props) {
         },
     };
     const chartConfig = {
-        x: 'REQUEST_TIME',
+        x: 'TIME',
         charts: [
             {
                 type: 'line',
-                y: 'FAULT_COUNT',
+                y: 'COUNT',
                 fill: '#958E94',
             },
         ],

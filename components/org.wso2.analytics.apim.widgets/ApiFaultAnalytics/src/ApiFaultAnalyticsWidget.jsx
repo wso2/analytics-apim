@@ -74,7 +74,7 @@ class ApiFaultAnalyticsWidget extends Widget {
         super(props);
 
         this.metadata = {
-            names: ['FAULT_COUNT', 'REQUEST_TIME'],
+            names: ['COUNT', 'TIME'],
             types: ['linear', 'time'],
         };
 
@@ -255,8 +255,16 @@ class ApiFaultAnalyticsWidget extends Widget {
                     time: Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss A'),
                 });
             });
-            const faultData = data.map((dataUnit) => {
-                return ([dataUnit[1], dataUnit[2]]);
+            const dataGroupByTime = data.reduce((acc, obj) => {
+                const key = obj[2];
+                if (!acc[key]) {
+                    acc[key] = 0;
+                }
+                acc[key] += obj[1];
+                return acc;
+            }, {});
+            const faultData = Object.keys(dataGroupByTime).map((key) => {
+                return [dataGroupByTime[key], parseInt(key, 10)];
             });
             this.setState({ faultData, tableData, inProgress: false });
         } else {
