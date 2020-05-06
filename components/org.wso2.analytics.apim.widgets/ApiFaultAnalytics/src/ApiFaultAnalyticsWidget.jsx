@@ -211,7 +211,7 @@ class ApiFaultAnalyticsWidget extends Widget {
     }
 
     /**
-     * Formats the siddhi query - mainquery
+     * Formats the siddhi query - query
      * @memberof ApiFaultAnalyticsWidget
      * */
     assembleMainQuery() {
@@ -225,7 +225,7 @@ class ApiFaultAnalyticsWidget extends Widget {
                     + selectedOptions[0].version + '\' AND apiCreator==\'' + selectedOptions[0].provider + '\')';
 
                 const dataProviderConfigs = cloneDeep(providerConfig);
-                dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
+                dataProviderConfigs.configs.config.queryData.queryName = 'query';
                 dataProviderConfigs.configs.config.queryData.queryValues = {
                     '{{timeFrom}}': timeFrom,
                     '{{timeTo}}': timeTo,
