@@ -74,7 +74,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
         super(props);
 
         this.metadata = {
-            names: ['THROTTLE_COUNT', 'REQUEST_TIME'],
+            names: ['COUNT', 'TIME'],
             types: ['linear', 'time'],
         };
 

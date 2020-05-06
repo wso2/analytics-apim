@@ -215,13 +215,13 @@ class CustomTable extends React.Component {
                 <FormattedMessage id='table.heading.time' defaultMessage='TIME' />
             </MenuItem>,
             <MenuItem value='appName'>
-                <FormattedMessage id='table.heading.appName' defaultMessage='APPLICATION NAME' />
+                <FormattedMessage id='table.heading.appName' defaultMessage='APPLICATION' />
             </MenuItem>,
             <MenuItem value='reason'>
                 <FormattedMessage id='table.heading.reason' defaultMessage='REASON' />
             </MenuItem>,
             <MenuItem value='count'>
-                <FormattedMessage id='table.heading.count' defaultMessage='THROTTLE COUNT' />
+                <FormattedMessage id='table.heading.count' defaultMessage='COUNT' />
             </MenuItem>,
         ];
         return (

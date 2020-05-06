@@ -82,11 +82,11 @@ export default function ApiThrottleAnalytics(props) {
         },
     };
     const chartConfig = {
-        x: 'REQUEST_TIME',
+        x: 'TIME',
         charts: [
             {
                 type: 'line',
-                y: 'THROTTLE_COUNT',
+                y: 'COUNT',
                 fill: '#958E94',
             },
         ],

@@ -3,8 +3,8 @@
   "nodata.error.heading": "No Data Available !",
   "config.error.body": "Cannot fetch provider configuration for Api Throttle Analytics widget",
   "config.error.heading": "Configuration Error !",
-  "table.heading.appName": "APPLICATION NAME",
-  "table.heading.count": "THROTTLE COUNT",
+  "table.heading.appName": "APPLICATION",
+  "table.heading.count": "COUNT",
   "table.heading.time": "TIME",
   "table.heading.reason": "REASON",
   "widget.heading": "API THROTTLED OUT REQUESTS OVER TIME"
