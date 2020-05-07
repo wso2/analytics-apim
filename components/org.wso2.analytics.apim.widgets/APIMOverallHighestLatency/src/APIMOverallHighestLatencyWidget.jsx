@@ -75,9 +75,9 @@ class APIMOverallHighestLatencyWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            totalCount: 0,
-            latency: 0,
-            avglatency: 0,
+            apiName:'',
+            apiVersion:'',
+            highestLatency: 0,
             messages: null,
             inProgress: true,
         };
@@ -113,11 +113,8 @@ class APIMOverallHighestLatencyWidget extends Widget {
         }
 
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.assembleTotalQuery = this.assembleTotalQuery.bind(this);
-        this.handleTotalCountReceived = this.handleTotalCountReceived.bind(this);
-        this.assembleLatencyQuery = this.assembleLatencyQuery.bind(this);
-        this.handleTotalLatencyReceived = this.handleTotalLatencyReceived.bind(this);
-        this.calculateAverageLatency = this.calculateAverageLatency.bind(this);
+        this.assembleQuery = this.assembleQuery.bind(this);
+        this.handleDataReceived = this.handleDataReceived.bind(this);
     }
 
     componentWillMount() {
@@ -185,28 +182,28 @@ class APIMOverallHighestLatencyWidget extends Widget {
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
             inProgress: !sync,
-        }, this.assembleTotalQuery);
+        }, this.assembleQuery);
     }
 
     /**
      * Formats the siddhi query
      * @memberof APIMOverallHighestLatencyWidget
      * */
-    assembleTotalQuery() {
+    assembleQuery() {
         const {
             timeFrom, timeTo, perValue, providerConfig,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'totalreqcountquery';
+        dataProviderConfigs.configs.config.queryData.queryName = 'query';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
         };
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleTotalCountReceived, dataProviderConfigs);
+            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -214,71 +211,14 @@ class APIMOverallHighestLatencyWidget extends Widget {
      * @param {object} message - data retrieved
      * @memberof APIMOverallHighestLatencyWidget
      * */
-    handleTotalCountReceived(message) {
+    handleDataReceived(message) {
         const { data } = message;
         const { id } = this.props;
 
         if (data.length !== 0) {
-            this.setState({ totalCount: data, inProgress: false });
+            this.setState({apiName: data[0][0], apiVersion: data[0][1], highestLatency: data[0][2], inProgress: false});
         } else {
-            this.setState({ totalCount: 0, inProgress: false });
-        }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleLatencyQuery();
-    }
-
-    /**
-     * Formats the siddhi query
-     * @memberof APIMOverallHighestLatencyWidget
-     * */
-    assembleLatencyQuery() {
-        const {
-            timeFrom, timeTo, perValue, providerConfig,
-        } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'assemblelatencyQuery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': perValue,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleTotalLatencyReceived, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data received from assembleLatencyQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMOverallHighestLatencyWidget
-     * */
-    handleTotalLatencyReceived(message) {
-        const { data } = message;
-        const { id } = this.props;
-
-        if (data.length !== 0) {
-            this.setState({ latency: data });
-        } else {
-            this.setState({ latency: 0 });
-        }
-
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.calculateAverageLatency();
-    }
-
-    /**
-     * calculate the average Latency
-     * @memberof APIMOverallHighestLatencyWidget
-     * */
-    calculateAverageLatency() {
-        const { totalCount, latency } = this.state;
-        const avglatency = (latency / totalCount).toPrecision(3);
-
-        if (isNaN(avglatency)) {
-            this.setState({ avglatency: 0, inProgress: false });
-        } else {
-            this.setState({ avglatency, inProgress: false });
+            this.setState({ highestLatency: 0, inProgress: false });
         }
     }
 
@@ -289,15 +229,15 @@ class APIMOverallHighestLatencyWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, inProgress, timeFrom, timeTo, avglatency,
+            messages, faultyProviderConf, inProgress, timeFrom, timeTo, apiName, apiVersion, highestLatency,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiCreatedProps = {
-            themeName, avglatency, timeFrom, timeTo,
+        const apiLatencyProps = {
+            themeName, apiName, apiVersion, highestLatency, timeFrom, timeTo,
         };
 
         if (inProgress) {
@@ -308,22 +248,13 @@ class APIMOverallHighestLatencyWidget extends Widget {
             );
         }
         return (
-            <IntlProvider
-                locale={language}
-                messages={messages}
-            >
+            <IntlProvider locale={language} messages={messages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
                     {
                         faultyProviderConf ? (
                             <div style={paperWrapper}>
-                                <Paper
-                                    elevation={1}
-                                    style={paper}
-                                >
-                                    <Typography
-                                        variant='h5'
-                                        component='h3'
-                                    >
+                                <Paper elevation={1} style={paper}>
+                                    <Typography variant='h5' component='h3'>
                                         <FormattedMessage
                                             id='config.error.heading'
                                             defaultMessage='Configuration Error !'
@@ -332,16 +263,14 @@ class APIMOverallHighestLatencyWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Overall Highest Latency Widget'}
+                                            defaultMessage={'Cannot fetch provider configuration for APIM Api '
+                                            + 'Created widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMOverallHighestLatency
-                                {...apiCreatedProps}
-                            />
+                            <APIMOverallHighestLatency {...apiLatencyProps} />
                         )
                     }
                 </MuiThemeProvider>

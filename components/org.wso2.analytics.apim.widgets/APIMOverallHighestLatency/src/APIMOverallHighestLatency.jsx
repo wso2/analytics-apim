@@ -21,7 +21,7 @@ import React from 'react';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
+import { green } from '@material-ui/core/colors';
 
 /**
  * React Component for APIM Overall Highest Latency widget body
@@ -30,112 +30,72 @@ import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
  */
 export default function APIMOverallHighestLatency(props) {
     const {
-        themeName, avglatency, timeFrom, timeTo,
+        themeName, apiName, apiVersion, highestLatency, timeFrom, timeTo,
     } = props;
     const styles = {
-        headingWrapper: {
-            height: '10%',
-            margin: 'auto',
-            paddingTop: '15px',
-            width: '90%',
+        root: {
+            backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
+            height: '100%',
+            cursor: 'pointer',
         },
-        iconWrapper: {
-            float: 'left',
-            width: '40%',
-            height: '62%',
-        },
-        dataWrapper: {
-            float: 'left',
-            width: '60%',
-            height: '50%',
-            paddingTop: '8%',
-        },
-        latencydata: {
-            margin: 0,
-            marginTop: '5%',
-            color: 'rgb(135,205,223)',
-            letterSpacing: 1,
-            fontSize: '80%',
-        },
-        typeText: {
-            textAlign: 'left',
-            fontWeight: 'normal',
-            margin: 0,
-            display: 'inline',
-            marginLeft: '3%',
-            letterSpacing: 1.5,
-            fontSize: 'small',
-        },
-        h1: {
+        heading: {
             margin: 'auto',
             textAlign: 'center',
-            fontSize: '300%',
-            display: 'inline',
-            color: themeName === 'dark' ? '#fff' : '#2571a7',
-        },
-        h3: {
-            borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
-            paddingBottom: '10px',
-            margin: 'auto',
-            textAlign: 'left',
             fontWeight: 'normal',
             letterSpacing: 1.5,
         },
-        icon: {
-            display: 'block',
+        headingWrapper: {
             margin: 'auto',
-            marginTop: '25%',
-            width: '50%',
-            height: '50%',
-            color: themeName === 'dark' ? '#fff' : '#e01171',
+            paddingTop: 30,
+        },
+        subheading: {
+            textAlign: 'center',
+            margin: 5,
+            fontSize: 14,
+            color: '#b5b5b5',
+        },
+        dataWrapper: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontSize: '150%',
+            fontWeight: 500,
+            color: themeName === 'dark' ? '#fff' : '#2571a7',
+            paddingTop: 10,
+            marginTop: '10%'
+        },
+        latencyUnit: {
+            fontSize: 20,
+            color: green[500]
         },
     };
 
     return (
         <div
-            style={{
-                width: '90%',
-                height: '85%',
-                margin: '5% 5%',
-                background: themeName === 'dark' ? 'linear-gradient(to right, rgba(7, 4, 51, 1) 0%,'
-                        + ' rgb(188, 39, 142) 46%, rgb(101, 42, 80) 100%)' : '#fff',
-                fontFamily: "'Open Sans', sans-serif",
-            }}
+            style={styles.root}
+            className={`overview-wrapper ${themeName}`}
         >
             <div style={styles.headingWrapper}>
-                <h3 style={styles.h3}>
-                    <FormattedMessage id='widget.heading' defaultMessage='OVERALL AVERAGE LATENCY' />
+                <h3
+                    style={styles.heading}
+                >
+                    <FormattedMessage id='widget.heading' defaultMessage='OVERALL HIGHEST LATENCY'/>
                 </h3>
-            </div>
-            <div style={styles.iconWrapper}>
-                <CompareArrowsIcon
-                    style={styles.icon}
-                />
+                <p style={styles.subheading}>
+                    {'( '}
+                    {Moment(timeFrom).format('YYYY-MMM')}{' '}
+                    {<FormattedMessage id='to' defaultMessage='TO'/>}{' '}
+                    {Moment(timeTo).format('YYYY-MMM')}
+                    {' )'}
+                </p>
             </div>
             <div style={styles.dataWrapper}>
-                <h1 style={styles.h1}>
-                    {avglatency}
-                </h1>
-                <h3 style={styles.typeText}>
-                    <FormattedMessage id='latency' defaultMessage='MS' />
-                </h3>
-                <p style={styles.latencydata}>
-                    [
-                    {' '}
-                    {avglatency}
-                    {' '}
-                    {<FormattedMessage id='latency' defaultMessage='MS' />}
-                    {' '}
-                    {<FormattedMessage id='within.text' defaultMessage='WITHIN' />}
-                    {' '}
-                    {Moment(timeFrom).format('YYYY-MMM')}
-                    {' '}
-                    {<FormattedMessage id='to' defaultMessage='TO' />}
-                    {' '}
-                    {Moment(timeTo).format('YYYY-MMM')}
-                    {' '}
-                    ]
-                </p>
+                <div>{apiName}{' ( '}{apiVersion}{' )'}</div>
+                <div style={{fontSize: '200%'}}>
+                    {highestLatency}
+                    <span style={styles.latencyUnit}>
+                            {' '}{<FormattedMessage id='latency.unit' defaultMessage='MS'/>}
+                    </span>
+                </div>
             </div>
         </div>
     );
@@ -143,7 +103,9 @@ export default function APIMOverallHighestLatency(props) {
 
 APIMOverallHighestLatency.propTypes = {
     themeName: PropTypes.string.isRequired,
-    avglatency: PropTypes.number.isRequired,
+    apiName: PropTypes.string.isRequired,
+    apiVersion: PropTypes.string.isRequired,
+    highestLatency: PropTypes.number.isRequired,
     timeFrom: PropTypes.number.isRequired,
     timeTo: PropTypes.number.isRequired,
 };

@@ -1,8 +1,7 @@
 {
-  "latency": "MS",
+  "latency.unit": "MS",
   "to": "TO",
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Overall Highest Latency Widget",
-  "widget.heading": "OVERALL HIGHEST LATENCY",
-  "within.text": "WITHIN"
+  "widget.heading": "OVERALL HIGHEST LATENCY"
 }
