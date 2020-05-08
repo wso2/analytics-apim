@@ -49,7 +49,7 @@
     "APIMTotalRequestCount",
     "APIMTotalErrorCount",
     "APIMOverallHighestLatency",
-    "APIMTotalErrorRate"
+    "APIMOverallErrorInfo"
   ],
   "version": "1.0.0"
 }

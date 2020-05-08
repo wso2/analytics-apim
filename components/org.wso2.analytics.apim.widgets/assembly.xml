@@ -220,7 +220,7 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>APIMTotalErrorRate/dist</directory>
+            <directory>APIMOverallErrorInfo/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
     </fileSets>

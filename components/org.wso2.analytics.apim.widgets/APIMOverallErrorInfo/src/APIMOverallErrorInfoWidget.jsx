@@ -28,7 +28,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import APIMTotalErrorRate from './APIMTotalErrorRate';
+import APIMOverallErrorInfo from './APIMOverallErrorInfo';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -60,15 +60,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Api Created
- * @class APIMTotalErrorRateWidget
+ * Create React Component for APIM Overall Error Info
+ * @class APIMOverallErrorInfoWidget
  * @extends {Widget}
  */
-class APIMTotalErrorRateWidget extends Widget {
+class APIMOverallErrorInfoWidget extends Widget {
     /**
-     * Creates an instance of APIMTotalErrorRateWidget.
+     * Creates an instance of APIMOverallErrorInfoWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMTotalErrorRateWidget
+     * @memberof APIMOverallErrorInfoWidget
      */
     constructor(props) {
         super(props);
@@ -154,13 +154,13 @@ class APIMTotalErrorRateWidget extends Widget {
     /**
       * Load locale file
       * @param {string} locale Locale name
-      * @memberof APIMTotalErrorRateWidget
+      * @memberof APIMOverallErrorInfoWidget
       * @returns {string}
       */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMTotalErrorRate/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMOverallErrorInfo/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -174,7 +174,7 @@ class APIMTotalErrorRateWidget extends Widget {
     /**
      * Retrieve params from publisher - DateTimeRange
      * @param {object} receivedMsg timeFrom, TimeTo, perValue
-     * @memberof APIMTotalErrorRateWidget
+     * @memberof APIMOverallErrorInfoWidget
      */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -190,7 +190,7 @@ class APIMTotalErrorRateWidget extends Widget {
 
     /**
      * Siddhi query to retreive the total request count
-     * @memberof APIMTotalErrorRateWidget
+     * @memberof APIMOverallErrorInfoWidget
      * */
     assembleTotalQuery() {
         const {
@@ -212,7 +212,7 @@ class APIMTotalErrorRateWidget extends Widget {
     /**
      * Formats data received from assembleTotalQuery
      * @param {object} message - data retrieved
-     * @memberof APIMTotalErrorRateWidget
+     * @memberof APIMOverallErrorInfoWidget
      * */
     handleTotalCountReceived(message) {
         const { data } = message;
@@ -229,7 +229,7 @@ class APIMTotalErrorRateWidget extends Widget {
 
     /**
      * Siddhi query to retreive total error count
-     * @memberof APIMTotalErrorRateWidget
+     * @memberof APIMOverallErrorInfoWidget
      * */
     assembleTotalErrorQuery() {
         const {
@@ -251,7 +251,7 @@ class APIMTotalErrorRateWidget extends Widget {
     /**
      * Formats data received from assembleTotalErrorQuery
      * @param {object} message - data retrieved
-     * @memberof APIMTotalErrorRateWidget
+     * @memberof APIMOverallErrorInfoWidget
      * */
     handleTotalerrorCountReceived(message) {
         const { data } = message;
@@ -269,7 +269,7 @@ class APIMTotalErrorRateWidget extends Widget {
 
     /**
      * Calculate the error percentage
-     * @memberof APIMTotalErrorRateWidget
+     * @memberof APIMOverallErrorInfoWidget
      * */
     analyzeErrorRate() {
         const { totalCount, errorCount } = this.state;
@@ -285,7 +285,7 @@ class APIMTotalErrorRateWidget extends Widget {
     /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Error Rate widget
-     * @memberof APIMTotalErrorRateWidget
+     * @memberof APIMOverallErrorInfoWidget
      */
     render() {
         const {
@@ -333,13 +333,13 @@ class APIMTotalErrorRateWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Total Error Rate widget'}
+                                            + 'Overall Error Info widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMTotalErrorRate
+                            <APIMOverallErrorInfo
                                 {...apiCreatedProps}
                             />
                         )
@@ -350,4 +350,4 @@ class APIMTotalErrorRateWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMTotalErrorRate', APIMTotalErrorRateWidget);
+global.dashboard.registerWidget('APIMOverallErrorInfo', APIMOverallErrorInfoWidget);

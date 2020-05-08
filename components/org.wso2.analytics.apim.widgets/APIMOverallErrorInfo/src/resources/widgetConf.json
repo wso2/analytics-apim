@@ -1,6 +1,6 @@
 {
-  "name": "APIM Total Error Rate",
-  "id": "APIMTotalErrorRate",
+  "name": "APIM Overall Error Info",
+  "id": "APIMOverallErrorInfo",
   "thumbnailURL": "", 
   "configs": {
     "pubsub": {
@@ -30,7 +30,7 @@
             false
           ]
         },
-        "defaultValue": true
+        "defaultValue": false
       }
     ]
   }

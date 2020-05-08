@@ -24,11 +24,11 @@ import { FormattedMessage } from 'react-intl';
 import ApiIcon from './ApiIcon';
 
 /**
- * React Component for APIM Error Rate widget body
+ * React Component for APIM Overall Error Info widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Error Rate widget body
+ * @returns {ReactElement} Render the APIM Overall Error Info widget body
  */
-export default function APIMTotalErrorRate(props) {
+export default function APIMOverallErrorInfo(props) {
     const {
         themeName, errorPercentage, timeFrom, timeTo,
     } = props;
@@ -108,7 +108,7 @@ export default function APIMTotalErrorRate(props) {
                 <h3 style={styles.h3}>
                     <FormattedMessage
                         id='widget.heading'
-                        defaultMessage='TOTAL ERROR PERCECNTAGE'
+                        defaultMessage='OVERALL ERROR INFO'
                     />
                 </h3>
             </div>
@@ -155,7 +155,7 @@ export default function APIMTotalErrorRate(props) {
     );
 }
 
-APIMTotalErrorRate.propTypes = {
+APIMOverallErrorInfo.propTypes = {
     themeName: PropTypes.string.isRequired,
     errorPercentage: PropTypes.number.isRequired,
     timeFrom: PropTypes.number.isRequired,
