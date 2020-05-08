@@ -44,8 +44,11 @@ export default function APIMAverageApiLatency(props) {
             style: {
                 tickLabels: {
                     fill: themeName === 'dark' ? '#fff' : '#02212f',
-                    fontSize: '8px',
-                    angle: 45,
+                    fontSize: '7px',
+                    angle: -45,
+                    verticalAnchor: "middle",
+                    textAnchor:'end'
+
                 },
                 grid: { stroke: 'none' },
             },
@@ -85,13 +88,12 @@ export default function APIMAverageApiLatency(props) {
             padding: '20px',
         },
         h3: {
-            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-            paddingBottom: '10px',
             margin: 'auto',
-            marginTop: 0,
-            textAlign: 'left',
+            textAlign: 'center',
             fontWeight: 'normal',
             letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
         },
         formLabel: {
             whiteSpace: 'nowrap',
@@ -121,7 +123,7 @@ export default function APIMAverageApiLatency(props) {
                     <h3 style={styles.h3}>
                         <FormattedMessage
                             id='widget.heading'
-                            defaultMessage='AVERAGE LAATENCY'
+                            defaultMessage='AVERAGE API LATENCY'
                         />
                     </h3>
                 </div>
@@ -171,7 +173,6 @@ export default function APIMAverageApiLatency(props) {
                                     >
                                         <VictoryBar
                                             barWidth={6}
-                                            cornerRadius={{ topRight: 5 }}
                                             style={styles.victorybar}
                                             animate={{
                                                 duration: 1000,
