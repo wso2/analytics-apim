@@ -33,11 +33,11 @@
       },
       {
         "id": "headerTitle",
-        "title": "Average Api Latency",
+        "title": "Widget Title",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Title1"
+        "defaultValue": "Average Api Latency"
       }
     ]
   }

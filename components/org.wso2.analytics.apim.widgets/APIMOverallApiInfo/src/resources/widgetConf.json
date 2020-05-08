@@ -33,11 +33,11 @@
       },
       {
         "id": "headerTitle",
-        "title": "Overall Api Info",
+        "title": "Widget Title",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Title1"
+        "defaultValue": "Overall Api Info"
       }
     ]
   }

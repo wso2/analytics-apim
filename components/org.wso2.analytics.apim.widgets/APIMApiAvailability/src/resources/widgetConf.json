@@ -33,11 +33,11 @@
       },
       {
         "id": "headerTitle",
-        "title": "Api Availability",
+        "title": "Widget Title",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Title1"
+        "defaultValue": "Api Availability"
       }
     ]
   }
