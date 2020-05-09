@@ -271,16 +271,16 @@ class APIMApiErrorPercentagesWidget extends Widget {
                 if (dataUnit[0] === array[0] && dataUnit[1] === array[1]) {
                     const percentage = (array[2] / dataUnit[2]) * 100;
                     sortedData.push({
-                        x: array[0] + '(' + array[1] + ')' + percentage.toPrecision(3) + '%',
+                        x: array[0] + ' (' + array[1] + ') : ' + percentage.toPrecision(3) + '%',
                         y: percentage,
                     });
                     legendData.push({
-                        name: array[0] + '(' + array[1] + ')',
+                        name: array[0] + ' (' + array[1] + ')',
                     });
                     tableData.push({
                         apiName: array[0],
                         version: array[1],
-                        count: percentage.toPrecision(3) + ' % ',
+                        errorPercentage: percentage.toPrecision(3) + ' % ',
                     });
                 }
             });
