@@ -261,7 +261,7 @@ export default function APIMApiResourceUsage(props) {
                 </div>
                 {inProgress ? (
                     <div style={styles.loading}>
-                        <CircularProgress style={styles.loadingIcon}/>
+                        <CircularProgress style={styles.loadingIcon} />
                     </div>
                 ) : (
                     <div>
