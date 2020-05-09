@@ -45,7 +45,7 @@
     "APIMAverageApiLatency",
     "APIMOverallApiInfo",
     "APIMApiErrorAnalysis",
-    "APIMApiResourceUsage",
+    "APIMApiResourceTraffic",
     "APIMOverallHighestLatency",
     "APIMOverallErrorInfo"
   ],

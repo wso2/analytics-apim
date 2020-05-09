@@ -1,5 +1,5 @@
 {
-    "name": "apim-api-resource-usage",
+    "name": "apim-api-resource-traffic",
     "version": "1.0.0",
     "private": true,
     "dependencies": {

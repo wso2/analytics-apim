@@ -1,6 +1,6 @@
 {
-  "name": "APIM Api Resource Usage",
-  "id": "APIMApiResourceUsage",
+  "name": "APIM Api Resource Traffic",
+  "id": "APIMApiResourceTraffic",
   "thumbnailURL": "",
   "configs": {
     "pubsub": {
@@ -40,7 +40,7 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "API Resource Usage"
+        "defaultValue": "API Resource Traffic"
       }
 
     ]

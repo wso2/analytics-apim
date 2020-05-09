@@ -4,9 +4,9 @@
   "apim.server.error.heading" : "Error !",
   "nodata.error.body": "No data available for the selected options.",
   "nodata.error.heading": "No Data Available !",
-  "config.error.body": "Cannot fetch provider configuration for APIM Api Resource Usage widget",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Resource Traffic widget",
   "config.error.heading": "Configuration Error !",
   "createdBy.label": "API Created By",
   "resources.label": "Resources",
-  "widget.heading": "API RESOURCE USAGE"
+  "widget.heading": "API RESOURCE TRAFFIC"
 }

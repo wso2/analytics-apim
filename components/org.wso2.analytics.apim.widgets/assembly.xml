@@ -204,7 +204,7 @@
             <outputDirectory></outputDirectory>
         </fileSet>
          <fileSet>
-            <directory>APIMApiResourceUsage/dist</directory>
+            <directory>APIMApiResourceTraffic/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
