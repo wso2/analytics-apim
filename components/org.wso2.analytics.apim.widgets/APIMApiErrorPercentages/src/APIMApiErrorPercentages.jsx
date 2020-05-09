@@ -76,6 +76,7 @@ export default function APIMApiErrorPercentages(props) {
             height: '75%',
             width: '95%',
             margin: 'auto',
+            paddingTop: 35,
         },
         paper: {
             background: themeName === 'dark' ? '#152638' : '#E8E8E8',
