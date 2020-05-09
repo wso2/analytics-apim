@@ -39,7 +39,7 @@
     "APIMApiUsage",
     "DateTimeRangePicker",
     "APIMPlaceholder",
-    "APIMRecentApiTraffic",
+    "APIMTotalApiTraffic",
     "APIMApiErrorPercentages",
     "APIMApiAlerts",
     "APIMAverageApiLatency",

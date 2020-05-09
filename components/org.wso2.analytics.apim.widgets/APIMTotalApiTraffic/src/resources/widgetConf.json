@@ -1,6 +1,6 @@
 {
-  "name": "APIM Recent Api Traffic",
-  "id": "APIMRecentApiTraffic",
+  "name": "APIM Total Api Traffic",
+  "id": "APIMTotalApiTraffic",
   "thumbnailURL": "",
   "configs": {
     "pubsub": {

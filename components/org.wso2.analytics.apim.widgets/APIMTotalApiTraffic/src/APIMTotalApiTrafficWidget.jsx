@@ -27,7 +27,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import APIMRecentApiTraffic from './APIMRecentApiTraffic';
+import APIMTotalApiTraffic from './APIMTotalApiTraffic';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -65,15 +65,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Widget to display API recent traffic
- * @class APIMRecentApiTrafficWidget
+ * Widget to display API Total traffic
+ * @class APIMTotalApiTrafficWidget
  * @extends {Widget}
  */
-class APIMRecentApiTrafficWidget extends Widget {
+class APIMTotalApiTrafficWidget extends Widget {
     /**
-     * Creates an instance of APIMRecentApiTrafficWidget.
+     * Creates an instance of APIMTotalApiTrafficWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMRecentApiTrafficWidget
+     * @memberof APIMTotalApiTrafficWidget
      */
     constructor(props) {
         super(props);
@@ -146,13 +146,13 @@ class APIMRecentApiTrafficWidget extends Widget {
     /**
       * Load locale file
       * @param {string} locale Locale name
-      * @memberof APIMRecentApiTrafficWidget
+      * @memberof APIMTotalApiTrafficWidget
       * @returns {string}
       */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMRecentApiTraffic/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMTotalApiTraffic/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -166,7 +166,7 @@ class APIMRecentApiTrafficWidget extends Widget {
     /**
      * set limit to the query parameter key
      * @param {string} limit data display limit
-     * @memberof APIMRecentApiTrafficWidget
+     * @memberof APIMTotalApiTrafficWidget
      */
     setQueryParam(limit) {
         super.setGlobalState(queryParamKey, { limit });
@@ -175,7 +175,7 @@ class APIMRecentApiTrafficWidget extends Widget {
     /**
      * Retrieve params from publisher - DateTimeRange
      * @param {object} receivedMsg timeFrom, TimeTo, perValue
-     * @memberof APIMRecentApiTrafficWidget
+     * @memberof APIMTotalApiTrafficWidget
     */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -191,7 +191,7 @@ class APIMRecentApiTrafficWidget extends Widget {
 
     /**
      * Retreive traffic data for APIs
-     * @memberof APIMRecentApiTrafficWidget
+     * @memberof APIMTotalApiTrafficWidget
      */
     assembleApiUsageQuery() {
         const {
@@ -219,7 +219,7 @@ class APIMRecentApiTrafficWidget extends Widget {
     /**
      * Formats data retrieved from assembleApiUsageQuery
      * @param {object} message - data retrieved
-     * @memberof APIMRecentApiTrafficWidget
+     * @memberof APIMTotalApiTrafficWidget
      * */
     handleApiUsageReceived(message) {
         const { data } = message;
@@ -238,7 +238,7 @@ class APIMRecentApiTrafficWidget extends Widget {
     /**
      * Handle API Data display limit
      * @param {Event} event - listened event
-     * @memberof APIMRecentApiTrafficWidget
+     * @memberof APIMTotalApiTrafficWidget
      * */
     handleLimitChange(event) {
         const { id } = this.props;
@@ -256,8 +256,8 @@ class APIMRecentApiTrafficWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Recent Api Traffic widget
-     * @memberof APIMRecentApiTrafficWidget
+     * @returns {ReactElement} Render the APIM Total Api Traffic widget
+     * @memberof APIMTotalApiTrafficWidget
      */
     render() {
         const {
@@ -300,13 +300,13 @@ class APIMRecentApiTrafficWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration forAPIM'
-                                            + 'Recent Api Traffic widget'}
+                                            + 'Total Api Traffic widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMRecentApiTraffic
+                            <APIMTotalApiTraffic
                                 {...apiUsageProps}
                                 handleLimitChange={this.handleLimitChange}
                             />
@@ -318,4 +318,4 @@ class APIMRecentApiTrafficWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMRecentApiTraffic', APIMRecentApiTrafficWidget);
+global.dashboard.registerWidget('APIMTotalApiTraffic', APIMTotalApiTrafficWidget);

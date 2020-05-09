@@ -31,11 +31,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import TrafficChart from './TrafficChart';
 
 /**
- * React Component for Recent Api Traffic widget body
+ * React Component for Total Api Traffic widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Recent Api Traffic widget body
+ * @returns {ReactElement} Render the Total Api Traffic widget body
  */
-export default function APIMRecentApiTraffic(props) {
+export default function APIMTotalApiTraffic(props) {
     const {
         themeName, usageData, handleLimitChange, limit, height, inProgress,
     } = props;
@@ -97,7 +97,7 @@ export default function APIMRecentApiTraffic(props) {
                     <h3 style={styles.h3}>
                         <FormattedMessage
                             id='widget.heading'
-                            defaultMessage='RECENT API TRAFFIC'
+                            defaultMessage='TOTAL API TRAFFIC'
                         />
                     </h3>
                 </div>
@@ -171,7 +171,7 @@ export default function APIMRecentApiTraffic(props) {
     );
 }
 
-APIMRecentApiTraffic.propTypes = {
+APIMTotalApiTraffic.propTypes = {
     themeName: PropTypes.string.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
     handleLimitChange: PropTypes.func.isRequired,

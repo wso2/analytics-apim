@@ -24,7 +24,7 @@ import { VictoryBar, VictoryChart, VictoryAxis } from 'victory';
 /**
  * Display API Traffic details
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Apim Recent Api Traffic widget body
+ * @returns {ReactElement} Render the Apim Total Api Traffic widget body
  */
 export default function TrafficChart(props) {
     const { data, themeName } = props;

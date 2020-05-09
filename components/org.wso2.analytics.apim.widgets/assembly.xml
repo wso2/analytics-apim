@@ -180,7 +180,7 @@
               <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>APIMRecentApiTraffic/dist</directory>
+            <directory>APIMTotalApiTraffic/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>

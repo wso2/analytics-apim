@@ -1,5 +1,5 @@
 {
-    "name": "apim-recent-api-traffic",
+    "name": "apim-total-api-traffic",
     "version": "1.0.0",
     "private": true,
     "dependencies": {
