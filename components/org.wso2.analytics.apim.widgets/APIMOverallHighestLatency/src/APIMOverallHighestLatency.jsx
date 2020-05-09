@@ -22,6 +22,9 @@ import Moment from 'moment';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { green } from '@material-ui/core/colors';
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
 
 /**
  * React Component for APIM Overall Highest Latency widget body
@@ -30,7 +33,7 @@ import { green } from '@material-ui/core/colors';
  */
 export default function APIMOverallHighestLatency(props) {
     const {
-        themeName, apiName, apiVersion, highestLatency, timeFrom, timeTo,
+        themeName, apiName, apiVersion, highestLatency, inProgress, timeFrom, timeTo,
     } = props;
     const styles = {
         root: {
@@ -63,6 +66,16 @@ export default function APIMOverallHighestLatency(props) {
             paddingTop: 10,
             marginTop: '10%'
         },
+        paperWrapper: {
+            height: '75%',
+            width: '95%',
+            margin: 'auto',
+            paddingTop: 35,
+        },
+        paper: {
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
+            padding: '4%',
+        },
         latencyUnit: {
             fontSize: 20,
             color: green[500]
@@ -78,24 +91,56 @@ export default function APIMOverallHighestLatency(props) {
                 <h3
                     style={styles.heading}
                 >
-                    <FormattedMessage id='widget.heading' defaultMessage='OVERALL HIGHEST LATENCY'/>
+                    <FormattedMessage id='widget.heading' defaultMessage='OVERALL HIGHEST LATENCY' />
                 </h3>
                 <p style={styles.subheading}>
                     {'( '}
                     {Moment(timeFrom).format('YYYY-MMM')}{' '}
-                    <FormattedMessage id='to' defaultMessage='TO'/>{' '}
+                    <FormattedMessage id='to' defaultMessage='TO' />{' '}
                     {Moment(timeTo).format('YYYY-MMM')}
                     {' )'}
                 </p>
             </div>
-            <div style={styles.dataWrapper}>
-                <div>{apiName}{' ( '}{apiVersion}{' )'}</div>
-                <div style={{fontSize: '200%'}}>
-                    {highestLatency}
-                    <span style={styles.latencyUnit}>
-                            {' '}<FormattedMessage id='latency.unit' defaultMessage='MS'/>
-                    </span>
-                </div>
+            <div>
+                {inProgress ? (
+                    <div style={styles.loading}>
+                        <CircularProgress style={styles.loadingIcon}/>
+                    </div>
+                ) : (
+                    <div>
+                        {highestLatency == 0 ? (
+                            <div style={styles.paperWrapper}>
+                                <Paper
+                                    elevation={1}
+                                    style={styles.paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='nodata.error.heading'
+                                            defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <div style={styles.dataWrapper}>
+                                <div>{apiName}{' ( '}{apiVersion}{' )'}</div>
+                                <div style={{fontSize: '200%'}}>
+                                    {highestLatency}
+                                    <span style={styles.latencyUnit}>
+                                        {' '}<FormattedMessage id='latency.unit' defaultMessage='MS'/>
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

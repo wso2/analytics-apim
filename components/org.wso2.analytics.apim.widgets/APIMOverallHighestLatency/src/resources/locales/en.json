@@ -5,5 +5,7 @@
   "config.error.body": "Cannot fetch provider configuration for APIM Overall Highest Latency Widget",
   "widget.heading": "OVERALL HIGHEST LATENCY",
   "sub.heading.error.percentage": "Total Error Percentage",
-  "sub.heading.error.count": "Total Error Count"
+  "sub.heading.error.count": "Total Error Count",
+  "nodata.error.heading": "No Data Available !",
+  "nodata.error.body": "No data available for the selected options"
 }
