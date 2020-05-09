@@ -33,7 +33,16 @@
           ]
         },
         "defaultValue": true
+      },
+      {
+        "id": "headerTitle",
+        "title": "Widget Title",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "API Resource Usage"
       }
+
     ]
   }
 }
