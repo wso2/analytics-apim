@@ -61,15 +61,13 @@ export default function APIMAverageApiLatency(props) {
         },
         paperWrapper: {
             height: '75%',
+            width: '95%',
+            margin: 'auto',
+            paddingTop: 35,
         },
         paper: {
-            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
-            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
-            width: '75%',
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-            margin: 'auto',
-            marginTop: '5%',
-            border: '1.5px solid',
         },
         inProgress: {
             display: 'flex',
@@ -209,7 +207,7 @@ export default function APIMAverageApiLatency(props) {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='nodata.error.body'
-                                            defaultMessage='No data available for the selected options!.'
+                                            defaultMessage='No data available for the selected options'
                                         />
                                     </Typography>
                                 </Paper>
