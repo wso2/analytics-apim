@@ -58,20 +58,16 @@ export default function APIMApiResourceUsage(props) {
             alignItems: 'left',
         },
         formWrapper: {
-            width: '100%',
-            height: '20%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            marginTop: '4%',
-            marginLeft: '2%',
-            marginRight: '3%',
-            minWidth: 175,
-            maxWidth: 175,
+            marginLeft: '5%',
+            marginTop: '5%',
+            minWidth: 120,
         },
         selectEmpty: {
             marginTop: 15,
@@ -83,14 +79,12 @@ export default function APIMApiResourceUsage(props) {
         },
         paperWrapper: {
             height: '75%',
+            width: '95%',
+            margin: 'auto',
         },
         paper: {
-            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
-            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
-            width: '100%',
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-            border: '1.5px solid #fff',
-            marginTop: '20%',
         },
         loadingIcon: {
             margin: 'auto',
@@ -167,7 +161,12 @@ export default function APIMApiResourceUsage(props) {
     }
 
     return (
-        <Scrollbars style={{ height }}>
+        <Scrollbars
+            style={{
+                height,
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            }}
+        >
             <div style={styles.mainDiv}>
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
@@ -258,176 +257,176 @@ export default function APIMApiResourceUsage(props) {
                                 )
                             }
                         </FormControl>
-                        { inProgress ? (
-                            <div style={styles.loading}>
-                                <CircularProgress style={styles.loadingIcon} />
-                            </div>
-                        ) : (
-                            <div>
-                                { !dataarray || dataarray.length === 0 || queryParam.operationSelected.length === 0 ? (
-                                    <div style={styles.paperWrapper}>
-                                        <Paper
-                                            elevation={1}
-                                            style={styles.paper}
-                                        >
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='nodata.error.heading'
-                                                    defaultMessage='No Data Available !'
-                                                />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='nodata.error.body'
-                                                    defaultMessage='No data available for the selected options.'
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <div style={styles.dataWrapper}>
-                                        <div style={styles.chart}>
-                                            <svg viewBox='20 25 650 300' style={styles.svgWrapper}>
-                                                <VictoryLabel
-                                                    x={30}
-                                                    y={65}
-                                                    style={styles.svgViewBox}
-                                                    text='HITS'
-                                                />
-                                                <g transform='translate(0, 40)'>
-                                                    <VictoryAxis
-                                                        scale='time'
-                                                        standalone={false}
-                                                        width={700}
-                                                        style={{
-                                                            grid: {
-                                                                stroke: tick => (tick === 0
-                                                                    ? 'transparent' : '#313f46'),
-                                                                strokeWidth: 1,
-                                                            },
-                                                            axis: {
-                                                                stroke: themeName === 'dark' ? '#fff' : '#000',
-                                                                strokeWidth: 1,
-                                                            },
-                                                            ticks: {
-                                                                size: 5,
-                                                                stroke: themeName === 'dark' ? '#fff' : '#000',
-                                                                strokeWidth: 1,
-                                                            },
-                                                        }}
-                                                        label='TIME'
-                                                        tickValues={xAxisTicks}
-                                                        tickFormat={
-                                                            (x) => {
-                                                                return Moment(x).format('YY/MM/DD hh:mm');
-                                                            }
-                                                        }
-                                                        tickLabelComponent={(
-                                                            <VictoryLabel
-                                                                dx={-5}
-                                                                dy={-5}
-                                                                angle={-40}
-                                                                style={{
-                                                                    fill: themeName === 'dark'
-                                                                        ? '#fff' : '#000',
-                                                                    fontFamily: themeName === 'dark'
-                                                                        ? '#fff' : '#000',
-                                                                    fontSize: 8,
-                                                                }}
-                                                            />
-                                                        )}
-                                                        axisLabelComponent={(
-                                                            <VictoryLabel
-                                                                dy={20}
-                                                                style={{
-                                                                    fill: themeName === 'dark' ? '#fff' : '#000',
-                                                                    fontFamily: 'inherit',
-                                                                    fontSize: 8,
-                                                                    fontStyle: 'italic',
-                                                                }}
-                                                            />
-                                                        )}
-                                                    />
-                                                    <VictoryAxis
-                                                        dependentAxis
-                                                        width={700}
-                                                        domain={[1, maxCount]}
-                                                        offsetX={50}
-                                                        orientation='left'
-                                                        standalone={false}
-                                                        style={{
-                                                            grid: {
-                                                                stroke: tick => (tick === 0
-                                                                    ? 'transparent' : '#313f46'),
-                                                                strokeWidth: 1,
-                                                            },
-                                                            axis: {
-                                                                stroke: themeName === 'dark' ? '#fff' : '#000',
-                                                                strokeWidth: 1,
-                                                            },
-                                                            ticks: {
-                                                                strokeWidth: 0,
-                                                            },
-                                                            tickLabels: {
-                                                                fill: themeName === 'dark' ? '#fff' : '#000',
-                                                                fontFamily: 'inherit',
-                                                                fontSize: 8,
-                                                            },
-                                                        }}
-                                                    />
-                                                    {
-                                                        dataarray.map((p, element) => (
-                                                            <VictoryLine
-                                                                data={p}
-                                                                labels={d => d.label}
-                                                                width={700}
-                                                                domain={{
-                                                                    y: [1, maxCount],
-                                                                }}
-                                                                scale={{ x: 'time', y: 'linear' }}
-                                                                standalone={false}
-                                                                style={{
-                                                                    data: {
-                                                                        stroke: themeName === 'dark'
-                                                                            ? colorScale[element] : '#000',
-                                                                        strokeWidth: 2,
-                                                                    },
-                                                                }}
-                                                                labelComponent={(
-                                                                    <VictoryTooltip
-                                                                        orientation='right'
-                                                                        pointerLength={0}
-                                                                        cornerRadius={2}
-                                                                        flyoutStyle={{
-                                                                            fill: '#000',
-                                                                            fillOpacity: '0.5',
-                                                                            strokeWidth: 1,
-                                                                        }}
-                                                                        style={styles.tooltip}
-                                                                    />
-                                                                )}
-                                                            />
-                                                        ))
-                                                    }
-                                                </g>
-                                                <VictoryLegend
-                                                    standalone={false}
-                                                    colorScale={colorScale}
-                                                    x={575}
-                                                    y={30}
-                                                    gutter={10}
-                                                    rowGutter={styles.rowGutter}
-                                                    style={styles.victoryLegend}
-                                                    data={legandDataSet}
-                                                />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </form>
                 </div>
+                {inProgress ? (
+                    <div style={styles.loading}>
+                        <CircularProgress style={styles.loadingIcon}/>
+                    </div>
+                ) : (
+                    <div>
+                        {!dataarray || dataarray.length === 0 || queryParam.operationSelected.length === 0 ? (
+                            <div style={styles.paperWrapper}>
+                                <Paper
+                                    elevation={1}
+                                    style={styles.paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='nodata.error.heading'
+                                            defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options.'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <div style={styles.dataWrapper}>
+                                <div style={styles.chart}>
+                                    <svg viewBox='20 25 650 300' style={styles.svgWrapper}>
+                                        <VictoryLabel
+                                            x={30}
+                                            y={65}
+                                            style={styles.svgViewBox}
+                                            text='HITS'
+                                        />
+                                        <g transform='translate(0, 40)'>
+                                            <VictoryAxis
+                                                scale='time'
+                                                standalone={false}
+                                                width={700}
+                                                style={{
+                                                    grid: {
+                                                        stroke: tick => (tick === 0
+                                                            ? 'transparent' : '#313f46'),
+                                                        strokeWidth: 1,
+                                                    },
+                                                    axis: {
+                                                        stroke: themeName === 'dark' ? '#fff' : '#000',
+                                                        strokeWidth: 1,
+                                                    },
+                                                    ticks: {
+                                                        size: 5,
+                                                        stroke: themeName === 'dark' ? '#fff' : '#000',
+                                                        strokeWidth: 1,
+                                                    },
+                                                }}
+                                                label='TIME'
+                                                tickValues={xAxisTicks}
+                                                tickFormat={
+                                                    (x) => {
+                                                        return Moment(x).format('YY/MM/DD hh:mm');
+                                                    }
+                                                }
+                                                tickLabelComponent={(
+                                                    <VictoryLabel
+                                                        dx={-5}
+                                                        dy={-5}
+                                                        angle={-40}
+                                                        style={{
+                                                            fill: themeName === 'dark'
+                                                                ? '#fff' : '#000',
+                                                            fontFamily: themeName === 'dark'
+                                                                ? '#fff' : '#000',
+                                                            fontSize: 8,
+                                                        }}
+                                                    />
+                                                )}
+                                                axisLabelComponent={(
+                                                    <VictoryLabel
+                                                        dy={20}
+                                                        style={{
+                                                            fill: themeName === 'dark' ? '#fff' : '#000',
+                                                            fontFamily: 'inherit',
+                                                            fontSize: 8,
+                                                            fontStyle: 'italic',
+                                                        }}
+                                                    />
+                                                )}
+                                            />
+                                            <VictoryAxis
+                                                dependentAxis
+                                                width={700}
+                                                domain={[1, maxCount]}
+                                                offsetX={50}
+                                                orientation='left'
+                                                standalone={false}
+                                                style={{
+                                                    grid: {
+                                                        stroke: tick => (tick === 0
+                                                            ? 'transparent' : '#313f46'),
+                                                        strokeWidth: 1,
+                                                    },
+                                                    axis: {
+                                                        stroke: themeName === 'dark' ? '#fff' : '#000',
+                                                        strokeWidth: 1,
+                                                    },
+                                                    ticks: {
+                                                        strokeWidth: 0,
+                                                    },
+                                                    tickLabels: {
+                                                        fill: themeName === 'dark' ? '#fff' : '#000',
+                                                        fontFamily: 'inherit',
+                                                        fontSize: 8,
+                                                    },
+                                                }}
+                                            />
+                                            {
+                                                dataarray.map((p, element) => (
+                                                    <VictoryLine
+                                                        data={p}
+                                                        labels={d => d.label}
+                                                        width={700}
+                                                        domain={{
+                                                            y: [1, maxCount],
+                                                        }}
+                                                        scale={{x: 'time', y: 'linear'}}
+                                                        standalone={false}
+                                                        style={{
+                                                            data: {
+                                                                stroke: themeName === 'dark'
+                                                                    ? colorScale[element] : '#000',
+                                                                strokeWidth: 2,
+                                                            },
+                                                        }}
+                                                        labelComponent={(
+                                                            <VictoryTooltip
+                                                                orientation='right'
+                                                                pointerLength={0}
+                                                                cornerRadius={2}
+                                                                flyoutStyle={{
+                                                                    fill: '#000',
+                                                                    fillOpacity: '0.5',
+                                                                    strokeWidth: 1,
+                                                                }}
+                                                                style={styles.tooltip}
+                                                            />
+                                                        )}
+                                                    />
+                                                ))
+                                            }
+                                        </g>
+                                        <VictoryLegend
+                                            standalone={false}
+                                            colorScale={colorScale}
+                                            x={575}
+                                            y={30}
+                                            gutter={10}
+                                            rowGutter={styles.rowGutter}
+                                            style={styles.victoryLegend}
+                                            data={legandDataSet}
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </Scrollbars>
     );
