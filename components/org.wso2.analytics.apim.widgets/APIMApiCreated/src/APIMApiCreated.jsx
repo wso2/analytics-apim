@@ -73,6 +73,14 @@ export default function APIMApiCreated(props) {
             bottom: '13%',
             right: '8%',
         },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
+        },
     };
     return (
         <div
@@ -86,16 +94,7 @@ export default function APIMApiCreated(props) {
             }}
         >
             <div style={styles.headingWrapper}>
-                <h3
-                    style={{
-                        borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                >
+                <h3 style={styles.heading}>
                     <FormattedMessage id='widget.heading' defaultMessage='TOTAL API COUNT' />
                 </h3>
             </div>

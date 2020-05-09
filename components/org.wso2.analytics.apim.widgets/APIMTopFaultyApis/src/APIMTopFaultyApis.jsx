@@ -122,6 +122,14 @@ export default function APIMTopFaultyApis(props) {
             fillOpacity: '0.5',
             strokeWidth: 1,
         },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
+        },
     };
 
     const { pieChartData, legendData } = Utils.summarizePieData(faultData, 'apiname', 'faultcount');
@@ -142,15 +150,7 @@ export default function APIMTopFaultyApis(props) {
                 }}
                 >
                     <div style={styles.headingWrapper}>
-                        <h3 style={{
-                            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                            paddingBottom: '10px',
-                            margin: 'auto',
-                            textAlign: 'left',
-                            fontWeight: 'normal',
-                            letterSpacing: 1.5,
-                        }}
-                        >
+                        <h3 style={styles.heading}>
                             <FormattedMessage id='widget.heading' defaultMessage='TOP FAULTY APIS' />
                         </h3>
                     </div>

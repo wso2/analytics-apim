@@ -34,6 +34,14 @@
           ]
         },
         "defaultValue" : false
+      },
+      {
+        "id": "headerTitle",
+        "title": "Widget Title",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "API Subscriptions Summary"
       }
     ]
   }

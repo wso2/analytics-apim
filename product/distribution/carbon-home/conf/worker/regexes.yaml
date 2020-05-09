@@ -1,0 +1,81 @@
+################################################################################
+#   Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved
+#
+#   Licensed under the Apache License, Version 2.0 (the \"License\");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an \"AS IS\" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+################################################################################
+
+# Contains the regular expressions to identify the browser component of the user-agent header.
+user_agent_parsers:
+
+  - regex: '(Firefox)'
+    family_replacement: 'Firefox'
+
+  - regex: '(MSIE|Trident)'
+    family_replacement: 'IE'
+
+  - regex: '(Edg)'
+    family_replacement: 'Edge'
+
+  - regex: '(UCBrowser|UC Browser|UCWEB)'
+    family_replacement: 'UC Browser'
+
+  - regex: '(Opera)'
+    amily_replacement: 'Opera'
+
+  - regex: '(?:Chrome).*(OPR)'
+    family_replacement: 'Opera'
+
+  - regex: '(CrMo|Chrome|CriOS|chromeframe)'
+    family_replacement: 'Chrome'
+
+  - regex: '(Android)'
+
+  - regex: '(Version)/(\d+)\.(\d+)(?:\.(\d+))?.*Safari/'
+    family_replacement: 'Safari'
+
+  - regex: '(Safari|iPod|iPhone|iPad)'
+    family_replacement: 'Safari'
+
+  - regex: '(Navigator|Netscape6)'
+    family_replacement: 'Netscape'
+
+  - regex: '(baidubrowser)'
+    family_replacement: 'Baidu Browser'
+
+  - regex: '(AdobeAIR|FireWeb|Jasmine|ANTGalio|Midori|Fresco|Lobo|PaleMoon|Maxthon|Lynx|OmniWeb|Dillo|Camino|Demeter|Fluid|Fennec|Epiphany|Shiira|Sunrise|Flock|Netscape|Lunascape|WebPilot|Vodafone|NetFront|Netfront|Konqueror|SeaMonkey|Kazehakase|Vienna|Iceape|Iceweasel|IceWeasel|Iron|K-Meleon|Sleipnir|Galeon|GranParadiso|Opera Mini|iCab|NetNewsWire|ThunderBrowse|Iris|UP\.Browser|Bunjalloo|Google Earth|Raven for Mac|Openwave)'
+
+# Contains the regular expressions to identify the OS component of the user-agent header.
+os_parsers:
+  - regex: '(Android)'
+
+  - regex: '(Windows|Linux|Ubuntu|Fedora|Red Hat)'
+
+  - regex: '(iPhone|iPad|iPod|CPU OS|iPhone OS)'
+    os_replacement: 'iOS'
+
+  - regex: '(Mac OS)'
+    os_replacement: 'Mac OS'
+
+  - regex: '([Dd]ebian)'
+    os_replacement: 'Debian'
+
+  - regex: 'SunOS'
+    os_replacement: 'Solaris'
+
+  - regex: '(OpenBSD|FreeBSD|NetBSD|BSD|BackTrack)'
+
+# Contains the regular expressions to identify the device component of the user-agent header.
+# Only one is there as device information is not used in apim-analytics
+device_parsers:
+
+  - regex: 'Desktop'

@@ -73,6 +73,14 @@ export default function APIMAppCreated(props) {
             bottom: '13%',
             right: '8%',
         },
+        heading: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
+        },
     };
     return (
         <div
@@ -86,16 +94,7 @@ export default function APIMAppCreated(props) {
             }}
         >
             <div style={styles.headingWrapper}>
-                <h3
-                    style={{
-                        borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #040f96',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                >
+                <h3 style={styles.heading}>
                     <FormattedMessage id='widget.heading' defaultMessage='TOTAL APP COUNT' />
                 </h3>
             </div>

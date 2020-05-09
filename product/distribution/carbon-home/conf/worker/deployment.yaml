@@ -471,6 +471,13 @@ siddhi:
           trustStoreFile : ${sys:carbon.home}/resources/security/client-truststore.jks
           trustStorePassword : wso2carbon
           trustStoreAlgorithm : SunX509
+    # Provides the regular expression collection to parse the user-agent header
+    -
+      extension:
+        name: 'getUserAgentProperty'
+        namespace: 'env'
+        properties:
+          regexFilePath : ${sys:carbon.home}/conf/worker/regexes.yaml
 
   # Cluster Configuration
 cluster.config:

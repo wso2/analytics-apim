@@ -99,13 +99,12 @@ export default function APIMTopAppUsers(props) {
             width: width > 1000 ? '50%' : '100%',
         },
         h3: {
-            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-            paddingBottom: '10px',
             margin: 'auto',
-            marginTop: 0,
-            textAlign: 'left',
+            textAlign: 'center',
             fontWeight: 'normal',
             letterSpacing: 1.5,
+            paddingBottom: '10px',
+            marginTop: 0,
         },
         rowGutter: {
             top: 0,
