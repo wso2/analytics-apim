@@ -8,6 +8,5 @@
   "config.error.body": "Cannot fetch provider configuration for APIM Api Error Analysis widget",
   "config.error.heading": "Configuration Error !",
   "resources.label": "Resources",
-  "widget.heading": "API ERROR ANALYSIS",
-  "legandData.heading": "Response codes of the API"
+  "widget.heading": "API ERROR ANALYSIS"
 }

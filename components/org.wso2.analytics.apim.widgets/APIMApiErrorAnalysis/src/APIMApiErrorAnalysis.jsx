@@ -128,17 +128,13 @@ export default function APIMApiErrorAnalysis(props) {
             marginLeft: '25px',
             marginTop: '10px',
         },
-        legandDataHeading: {
-            textAlign: 'right',
-            fontSize: '12px',
-        },
     };
     const ordinalDataChart = {
         x: 'Time',
         charts: [
             {
                 type: 'bar',
-                y: 'Hits',
+                y: 'Error Count',
                 color: 'responseCode',
                 mode: 'stacked',
 
@@ -150,7 +146,7 @@ export default function APIMApiErrorAnalysis(props) {
         },
     };
     const ordinalMetadata = {
-        names: ['Time', 'Hits', 'responseCode'],
+        names: ['Time', 'Error Count', 'responseCode'],
         types: ['ordinal', 'linear', 'ordinal'],
     };
 
@@ -325,12 +321,6 @@ export default function APIMApiErrorAnalysis(props) {
                             <div style={styles.dataWrapper}>
                                 <div>
                                     <div style={styles.chart}>
-                                        <p style={styles.legandDataHeading}>
-                                            <FormattedMessage
-                                                id='legandData.heading'
-                                                defaultMessage='Response codes of the API'
-                                            />
-                                        </p>
                                         <VizG
                                             config={ordinalDataChart}
                                             metadata={ordinalMetadata}
