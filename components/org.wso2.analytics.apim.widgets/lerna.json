@@ -46,7 +46,6 @@
     "APIMOverallApiInfo",
     "APIMApiErrorAnalysis",
     "APIMApiTrafficTrends",
-    "APIMTotalRequestCount",
     "APIMTotalErrorCount",
     "APIMOverallHighestLatency",
     "APIMOverallErrorInfo"

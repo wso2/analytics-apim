@@ -208,10 +208,6 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>APIMTotalRequestCount/dist</directory>
-            <outputDirectory></outputDirectory>
-        </fileSet>
-        <fileSet>
             <directory>APIMTotalErrorCount/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
