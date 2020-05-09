@@ -28,7 +28,7 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Widget from '@wso2-dashboards/widget';
 import Moment from 'moment';
-import APIMApiTrafficTrends from './APIMApiTrafficTrends';
+import APIMApiResourceUsage from './APIMApiResourceUsage';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -66,15 +66,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Api Traffic Trends widget
- * @class APIMApiTrafficTrendsWidget
+ * Create React Component for APIM Api Resource Usage widget
+ * @class APIMApiResourceUsageWidget
  * @extends {Widget}
  */
-class APIMApiTrafficTrendsWidget extends Widget {
+class APIMApiResourceUsageWidget extends Widget {
     /**
-     * Creates an instance of APIMApiTrafficTrendsWidget.
+     * Creates an instance of APIMApiResourceUsageWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      */
     constructor(props) {
         super(props);
@@ -193,13 +193,13 @@ class APIMApiTrafficTrendsWidget extends Widget {
     /**
       * Load locale file
       * @param {string} locale Locale name
-      * @memberof APIMApiTrafficTrendsWidget
+      * @memberof APIMApiResourceUsageWidget
       * @returns {string}
       */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiTrafficTrends/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiResourceUsage/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -213,7 +213,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
     /**
      * Retrieve params from publisher - DateTimeRange
      * @param {object} receivedMsg timeFrom, TimeTo, perValue
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -229,7 +229,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
 
     /**
      * Reset the state according to queryParam
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     resetState() {
         this.setState({
@@ -274,7 +274,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
 
     /**
      * Get API list from Publisher
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     assembleApiListQuery() {
         this.resetState();
@@ -292,7 +292,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
     /**
      * Formats data retrieved from assembleApiListQuery
      * @param {object} data - data retrieved
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     handleApiListReceived(data) {
         const { id } = this.props;
@@ -308,7 +308,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
 
     /**
      * Formats the siddhi query - apiidquery
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     assembleApiIdQuery() {
         this.resetState();
@@ -337,7 +337,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
     /**
      * Formats data retrieved from assembleApiIdQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     handleApiIdReceived(message) {
         const { id } = this.props;
@@ -366,7 +366,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
 
     /**
      * Formats the siddhi query - resourcequery
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     assembleResourceQuery() {
         this.resetState();
@@ -396,7 +396,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
     /**
      * Formats data retrieved from assembleResourceQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     handleResourceReceived(message) {
         const { data } = message;
@@ -448,7 +448,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
      * Formats the siddhi query - mainquery
      * @param {string} apiresource - Selected Api Resource
      * @param {string} apimethod - Selected Api Method
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     assembleMainQuery(apiresource, apimethod) {
         const queryParam = super.getGlobalState(queryParamKey);
@@ -480,7 +480,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
     /**
      * Formats data retrieved from assembleMainQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     handleDataReceived(message) {
         const { data } = message;
@@ -527,7 +527,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
      * @param {string} apiSelected - API Name menu option selected
      * @param {string} apiVersion - API Version menu option selected
      * @param {string} operationSelected - Resources selected
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     setQueryParam(apiSelected, apiVersion, operationSelected) {
         super.setGlobalState(queryParamKey, {
@@ -540,7 +540,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
     /**
      * Handle API name menu select change
      * @param {Event} event - listened event
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     apiSelectedHandleChange(event) {
         const { id } = this.props;
@@ -557,7 +557,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
     /**
      * Handle API Version menu select change
      * @param {Event} event - listened event
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     apiVersionHandleChange(event) {
         const { apiSelected } = this.state;
@@ -575,7 +575,7 @@ class APIMApiTrafficTrendsWidget extends Widget {
     /**
      * Handle operation select change
      * @param {Event} event - listened event
-     * @memberof APIMApiTrafficTrendsWidget
+     * @memberof APIMApiResourceUsageWidget
      * */
     apiOperationHandleChange(event) {
         const { id } = this.props;
@@ -624,8 +624,8 @@ class APIMApiTrafficTrendsWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Api Traffic Trends widget
-     * @memberof APIMApiTrafficTrendsWidget
+     * @returns {ReactElement} Render the APIM Api Resource Usage widget
+     * @memberof APIMApiResourceUsageWidget
      */
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
@@ -703,13 +703,13 @@ class APIMApiTrafficTrendsWidget extends Widget {
                                                 <FormattedMessage
                                                     id='config.error.body'
                                                     defaultMessage={'Cannot fetch provider configuration for APIM '
-                                                    + 'Api Traffic Trends widget'}
+                                                    + 'Api Resource Usage widget'}
                                                 />
                                             </Typography>
                                         </Paper>
                                     </div>
                                 ) : (
-                                    <APIMApiTrafficTrends
+                                    <APIMApiResourceUsage
                                         {...latencyProps}
                                         apiSelectedHandleChange={this.apiSelectedHandleChange}
                                         apiVersionHandleChange={this.apiVersionHandleChange}
@@ -725,4 +725,4 @@ class APIMApiTrafficTrendsWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMApiTrafficTrends', APIMApiTrafficTrendsWidget);
+global.dashboard.registerWidget('APIMApiResourceUsage', APIMApiResourceUsageWidget);

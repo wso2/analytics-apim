@@ -1,6 +1,6 @@
 {
-  "name": "APIM Api Traffic Trends",
-  "id": "APIMApiTrafficTrends",
+  "name": "APIM Api Resource Usage",
+  "id": "APIMApiResourceUsage",
   "thumbnailURL": "",
   "configs": {
     "pubsub": {

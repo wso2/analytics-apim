@@ -39,11 +39,11 @@ import {
 import Moment from 'moment';
 
 /**
- * React Component for APIM Traffic Trends widget body
+ * React Component for APIM Resource Usage widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the APIM Traffic Trends widget body
+ * @returns {ReactElement} Render the APIM Resource Usage widget body
  */
-export default function APIMApiTrafficTrends(props) {
+export default function APIMApiResourceUsage(props) {
     const {
         themeName, queryParam, height, apiSelected, inProgress,
         apiVersion, apilist, versionlist, resourceList, apiSelectedHandleChange,
@@ -172,7 +172,7 @@ export default function APIMApiTrafficTrends(props) {
             <div style={styles.mainDiv}>
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='API ERROR ANALYSIS' />
+                        <FormattedMessage id='widget.heading' defaultMessage='API RESOURCE USAGE' />
                     </div>
                 </div>
                 <div style={styles.formWrapper}>
@@ -434,7 +434,7 @@ export default function APIMApiTrafficTrends(props) {
     );
 }
 
-APIMApiTrafficTrends.propTypes = {
+APIMApiResourceUsage.propTypes = {
     themeName: PropTypes.string.isRequired,
     queryParam: PropTypes.instanceOf(Object).isRequired,
     height: PropTypes.string.isRequired,
