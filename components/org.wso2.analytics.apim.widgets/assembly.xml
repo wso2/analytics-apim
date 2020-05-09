@@ -184,7 +184,7 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>APIMApiErrorRate/dist</directory>
+            <directory>APIMApiErrorPercentages/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>

@@ -1,6 +1,6 @@
 {
-  "name": "APIM Api Error Rate",
-  "id": "APIMApiErrorRate",
+  "name": "APIM Api Error Percentages",
+  "id": "APIMApiErrorPercentages",
   "thumbnailURL": "", 
   "configs": {
     "pubsub": {

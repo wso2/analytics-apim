@@ -27,7 +27,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
-import APIMApiErrorRate from './APIMApiErrorRate';
+import APIMApiErrorPercentages from './APIMApiErrorPercentages';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -59,15 +59,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Widget for displaying APIM Api Error Rate
- * @class APIMApiErrorRateWidget
+ * Widget for displaying APIM Api Error Percentages
+ * @class APIMApiErrorPercentagesWidget
  * @extends {Widget}
  */
-class APIMApiErrorRateWidget extends Widget {
+class APIMApiErrorPercentagesWidget extends Widget {
     /**
-     * Creates an instance of APIMApiErrorRateWidget.
+     * Creates an instance of APIMApiErrorPercentagesWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMApiErrorRateWidget
+     * @memberof APIMApiErrorPercentagesWidget
      */
     constructor(props) {
         super(props);
@@ -147,13 +147,13 @@ class APIMApiErrorRateWidget extends Widget {
     /**
       * Load locale file
       * @param {string} locale Locale name
-      * @memberof APIMApiErrorRateWidget
+      * @memberof APIMApiErrorPercentagesWidget
       * @returns {string}
       */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMApiErrorRate/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APIMApiErrorPercentages/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -167,7 +167,7 @@ class APIMApiErrorRateWidget extends Widget {
     /**
      * Retrieve params from publisher - DateTimeRange
      * @param {object} receivedMsg timeFrom, TimeTo, perValue
-     * @memberof APIMApiErrorRateWidget
+     * @memberof APIMApiErrorPercentagesWidget
    */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -183,7 +183,7 @@ class APIMApiErrorRateWidget extends Widget {
 
     /**
      * Retrieve total error count for APIs
-     * @memberof APIMApiErrorRateWidget
+     * @memberof APIMApiErrorPercentagesWidget
      */
     assembleTotalErrorCountQuery() {
         const {
@@ -206,7 +206,7 @@ class APIMApiErrorRateWidget extends Widget {
     /**
      * Formats data retrieved from assembleTotalErrorCountQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApiErrorRateWidget
+     * @memberof APIMApiErrorPercentagesWidget
      * */
     handleTotalErrorCountReceived(message) {
         const { data } = message;
@@ -218,7 +218,7 @@ class APIMApiErrorRateWidget extends Widget {
 
     /**
      * Retrieve the total request count for APIs
-     * @memberof APIMApiErrorRateWidget
+     * @memberof APIMApiErrorPercentagesWidget
      */
     assembleTotalRequestCount() {
         const {
@@ -239,7 +239,7 @@ class APIMApiErrorRateWidget extends Widget {
     /**
      * Formats data retrieved from assembleTotalRequestCount
      * @param {object} message - data retrieved
-     * @memberof APIMApiErrorRateWidget
+     * @memberof APIMApiErrorPercentagesWidget
      * */
     handletotalRequestCountReceived(message) {
         const { data } = message;
@@ -251,7 +251,7 @@ class APIMApiErrorRateWidget extends Widget {
 
     /**
      * Calculate the error percentage
-     * @memberof APIMApiErrorRateWidget
+     * @memberof APIMApiErrorPercentagesWidget
      */
     analyzeErrorRate() {
         const { errorCount, totalRequestCount } = this.state;
@@ -293,8 +293,8 @@ class APIMApiErrorRateWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIMApiErrorRateWidget
-     * @memberof APIMApiErrorRateWidget
+     * @returns {ReactElement} Render the APIMApiErrorPercentagesWidget
+     * @memberof APIMApiErrorPercentagesWidget
      */
     render() {
         const {
@@ -334,13 +334,13 @@ class APIMApiErrorRateWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                            + 'Error Rate Widget'}
+                                            + 'Error Percentages Widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiErrorRate
+                            <APIMApiErrorPercentages
                                 {...apiErrorRateProps}
                             />
                         )
@@ -351,4 +351,4 @@ class APIMApiErrorRateWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMApiErrorRate', APIMApiErrorRateWidget);
+global.dashboard.registerWidget('APIMApiErrorPercentages', APIMApiErrorPercentagesWidget);

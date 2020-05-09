@@ -28,11 +28,11 @@ import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
 import MUIDataTable from 'mui-datatables';
 
 /**
- * Display API Error Rate
+ * Display API Error Percentages
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Api Error Rate widget body
+ * @returns {ReactElement} Render the Api Error Percentages widget body
  */
-export default function APIMApiErrorRate(props) {
+export default function APIMApiErrorPercentages(props) {
     const {
         width, height, themeName, sortedData, errorPercentage, legendData, tableData, inProgress,
     } = props;
@@ -149,7 +149,7 @@ export default function APIMApiErrorRate(props) {
                     <h3 style={styles.h3}>
                         <FormattedMessage
                             id='widget.heading'
-                            defaultMessage='API ERROR PERCENTAGE'
+                            defaultMessage='API ERROR PERCENTAGES'
                         />
                     </h3>
                 </div>
@@ -163,7 +163,7 @@ export default function APIMApiErrorRate(props) {
                             <div style={styles.statDiv}>
                                 <h3 style={styles.countdiv}>
                                     <FormattedMessage
-                                        id='errorrate.heading'
+                                        id='error.percentage.heading'
                                         defaultMessage='"Total Error Percentage :'
                                     />
                                     {' ' + errorPercentage + '%'}
@@ -235,7 +235,7 @@ export default function APIMApiErrorRate(props) {
     );
 }
 
-APIMApiErrorRate.propTypes = {
+APIMApiErrorPercentages.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
