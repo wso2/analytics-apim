@@ -54,20 +54,16 @@ export default function APIMApiErrorAnalysis(props) {
             width: '96%',
         },
         formWrapper: {
-            width: '100%',
-            height: '20%',
-            margin: 'auto',
+            marginBottom: '5%',
         },
         form: {
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            marginTop: '4%',
-            marginLeft: '2%',
-            marginRight: '3%',
-            minWidth: 175,
-            maxWidth: 175,
+            marginLeft: '5%',
+            marginTop: '5%',
+            minWidth: 120,
         },
         selectEmpty: {
             marginTop: 15,
@@ -79,14 +75,12 @@ export default function APIMApiErrorAnalysis(props) {
         },
         paperWrapper: {
             height: '75%',
+            width: '95%',
+            margin: 'auto',
         },
         paper: {
-            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
-            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
-            width: '100%',
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-            border: '1.5px solid #fff',
-            marginTop: '20%',
         },
         loadingIcon: {
             margin: 'auto',
@@ -173,7 +167,10 @@ export default function APIMApiErrorAnalysis(props) {
     }
 
     return (
-        <Scrollbars style={{ height }}>
+        <Scrollbars style={{
+            height,
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+        }}>
             <div style={styles.mainDiv}>
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
@@ -296,58 +293,55 @@ export default function APIMApiErrorAnalysis(props) {
                                 )
                             }
                         </FormControl>
-                        { inProgress ? (
-                            <div style={styles.loading}>
-                                <CircularProgress style={styles.loadingIcon} />
-                            </div>
-                        ) : (
-                            <div>
-                                { !resultData || resultData.length === 0 ? (
-                                    <div style={styles.paperWrapper}>
-                                        <Paper
-                                            elevation={1}
-                                            style={styles.paper}
-                                        >
-                                            <Typography
-                                                variant='h5'
-                                                component='h3'
-                                            >
-                                                <FormattedMessage
-                                                    id='nodata.error.heading'
-                                                    defaultMessage='No Data Available !'
-                                                />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='nodata.error.body'
-                                                    defaultMessage='No data available for the selected options.'
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <div style={styles.dataWrapper}>
-                                        <div>
-                                            <div style={styles.chart}>
-                                                <p style={styles.legandDataHeading}>
-                                                    <FormattedMessage
-                                                        id='legandData.heading'
-                                                        defaultMessage='Response codes of the API'
-                                                    />
-                                                </p>
-                                                <VizG
-                                                    config={ordinalDataChart}
-                                                    metadata={ordinalMetadata}
-                                                    data={resultData}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </form>
                 </div>
+                { inProgress ? (
+                    <div style={styles.loading}>
+                        <CircularProgress style={styles.loadingIcon} />
+                    </div>
+                ) : (
+                    <div>
+                        {!resultData || resultData.length === 0 ? (
+                            <div style={styles.paperWrapper}>
+                                <Paper
+                                    elevation={1}
+                                    style={styles.paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='nodata.error.heading'
+                                            defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options.'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <div style={styles.dataWrapper}>
+                                <div>
+                                    <div style={styles.chart}>
+                                        <p style={styles.legandDataHeading}>
+                                            <FormattedMessage
+                                                id='legandData.heading'
+                                                defaultMessage='Response codes of the API'
+                                            />
+                                        </p>
+                                        <VizG
+                                            config={ordinalDataChart}
+                                            metadata={ordinalMetadata}
+                                            data={resultData}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </Scrollbars>
     );
