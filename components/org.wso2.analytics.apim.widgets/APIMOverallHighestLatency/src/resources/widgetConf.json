@@ -29,7 +29,7 @@
             false
           ]
         },
-        "defaultValue": true
+        "defaultValue": false
       }
     ]
   }
