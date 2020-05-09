@@ -304,7 +304,7 @@ class APIMApiErrorPercentagesWidget extends Widget {
         const { paper, paperWrapper } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiErrorRateProps = {
+        const apiErrorPercentagesProps = {
             width, height, themeName, sortedData, errorPercentage, legendData, tableData, inProgress,
         };
 
@@ -341,7 +341,7 @@ class APIMApiErrorPercentagesWidget extends Widget {
                             </div>
                         ) : (
                             <APIMApiErrorPercentages
-                                {...apiErrorRateProps}
+                                {...apiErrorPercentagesProps}
                             />
                         )
                     }
