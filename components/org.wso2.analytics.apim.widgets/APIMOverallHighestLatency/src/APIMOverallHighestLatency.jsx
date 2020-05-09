@@ -83,7 +83,7 @@ export default function APIMOverallHighestLatency(props) {
                 <p style={styles.subheading}>
                     {'( '}
                     {Moment(timeFrom).format('YYYY-MMM')}{' '}
-                    {<FormattedMessage id='to' defaultMessage='TO'/>}{' '}
+                    <FormattedMessage id='to' defaultMessage='TO'/>{' '}
                     {Moment(timeTo).format('YYYY-MMM')}
                     {' )'}
                 </p>
@@ -93,7 +93,7 @@ export default function APIMOverallHighestLatency(props) {
                 <div style={{fontSize: '200%'}}>
                     {highestLatency}
                     <span style={styles.latencyUnit}>
-                            {' '}{<FormattedMessage id='latency.unit' defaultMessage='MS'/>}
+                            {' '}<FormattedMessage id='latency.unit' defaultMessage='MS'/>
                     </span>
                 </div>
             </div>

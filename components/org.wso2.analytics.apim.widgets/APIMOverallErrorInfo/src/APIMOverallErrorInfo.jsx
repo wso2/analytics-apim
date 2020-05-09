@@ -21,7 +21,7 @@ import React from 'react';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import ApiIcon from './ApiIcon';
+import {red} from "@material-ui/core/colors";
 
 /**
  * React Component for APIM Overall Error Info widget body
@@ -30,126 +30,86 @@ import ApiIcon from './ApiIcon';
  */
 export default function APIMOverallErrorInfo(props) {
     const {
-        themeName, errorPercentage, timeFrom, timeTo,
+        themeName, errorCount, errorPercentage, timeFrom, timeTo,
     } = props;
     const styles = {
-        headingWrapper: {
-            height: '10%',
-            margin: 'auto',
-            paddingTop: '15px',
-            width: '90%',
+        root: {
+            backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
+            height: '100%',
+            cursor: 'pointer',
         },
-        iconWrapper: {
-            float: 'left',
-            width: '40%',
-            height: '62%',
-        },
-        icon: {
-            display: 'block',
-            margin: 'auto',
-            marginTop: '25%',
-        },
-        dataWrapper: {
-            float: 'left',
-            width: '60%',
-            height: '50%',
-            paddingTop: '8%',
-        },
-        errorcount: {
-            margin: 0,
-            marginTop: '5%',
-            color: 'rgb(135,205,223)',
-            letterSpacing: 1,
-            fontSize: '80%',
-        },
-        typeText: {
-            textAlign: 'left',
-            fontWeight: 'normal',
-            margin: 0,
-            display: 'inline',
-            marginLeft: '3%',
-            letterSpacing: 1.5,
-            fontSize: 'small',
-        },
-        playIcon: {
-            position: 'absolute',
-            bottom: '13%',
-            right: '8%',
-        },
-        h3: {
-            borderBottom: themeName === 'dark' ? '1.5px solid #fff' : '2px solid #2571a7',
-            paddingBottom: '10px',
-            margin: 'auto',
-            textAlign: 'left',
-            fontWeight: 'normal',
-            letterSpacing: 1.5,
-        },
-        h1: {
+        heading: {
             margin: 'auto',
             textAlign: 'center',
-            fontSize: '300%',
-            display: 'inline',
-            color: themeName === 'dark' ? '#fff' : '#2571a7',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
         },
+        headingWrapper: {
+            margin: 'auto',
+            paddingTop: 30,
+        },
+        subheading: {
+            textAlign: 'center',
+            margin: 5,
+            fontSize: 14,
+            color: '#b5b5b5',
+        },
+        dataWrapper: {
+            margin: 'auto',
+            textAlign: 'center',
+            fontSize: '150%',
+            fontWeight: 500,
+            color: themeName === 'dark' ? '#fff' : '#2571a7',
+            paddingTop: 10,
+            marginTop: '10%',
+            display: 'flex',
+            justifyContent: 'center'
+        },
+        leftContainer: {
+            justifyContent: 'flex-start',
+            marginLeft: '5%',
+            marginRight: '10%'
+        },
+        rightContainer: {
+            justifyContent: 'flex-end',
+            marginLeft: '10%',
+            marginRight: '5%'
+        },
+        dataBlock: {
+            fontSize: '130%',
+            marginTop: '10%',
+            color: red[500]
+        }
     };
 
     return (
         <div
-            style={{
-                width: '90%',
-                height: '85%',
-                margin: '5% 5%',
-                background: themeName === 'dark'
-                    ? 'linear-gradient(to right, rgb(17, 2, 41) 0%, rgb(117, 39, 188) 46%, rgb(84, 42, 101) 100%)'
-                    : '#fff',
-            }}
+            style={styles.root}
+            className={`overview-wrapper ${themeName}`}
         >
             <div style={styles.headingWrapper}>
-                <h3 style={styles.h3}>
-                    <FormattedMessage
-                        id='widget.heading'
-                        defaultMessage='OVERALL ERROR INFO'
-                    />
+                <h3
+                    style={styles.heading}
+                >
+                    <FormattedMessage id='widget.heading' defaultMessage='OVERALL ERROR INFO'/>
                 </h3>
-            </div>
-            <div style={styles.iconWrapper}>
-                <ApiIcon
-                    strokeColor={themeName === 'dark' ? '#fff' : '#2571a7'}
-                    width='50%'
-                    height='50%'
-                    style={styles.icon}
-                />
+                <p style={styles.subheading}>
+                    {'( '}
+                    {Moment(timeFrom).format('YYYY-MMM')}{' '}
+                    <FormattedMessage id='to' defaultMessage='TO'/>{' '}
+                    {Moment(timeTo).format('YYYY-MMM')}
+                    {' )'}
+                </p>
             </div>
             <div style={styles.dataWrapper}>
-                <h1 style={styles.h1}>
-                    {errorPercentage}
-                </h1>
-                <h3 style={styles.typeText}>
-                     %
-                </h3>
-                <p style={styles.errorcount}>
-                    [
-                    {' '}
-                    {errorPercentage}
-                    {' '}
-                    {'%'}
-                    {' '}
-                    {<FormattedMessage
-                        id='within.text'
-                        defaultMessage='WITHIN'
-                    />}
-                    {' '}
-                    {Moment(timeFrom).format('YYYY-MMM')}
-                    {' '}
-                    {<FormattedMessage
-                        id='to.text'
-                        defaultMessage='TO'
-                    />}
-                    {' '}
-                    {Moment(timeTo).format('YYYY-MMM')}
-                    {' '}
-                    ]
-                </p>
+                <div style={styles.leftContainer}>
+                    <FormattedMessage id='sub.heading.error.count' defaultMessage='Total Error Count'/>
+                    <div style={styles.dataBlock}>{errorCount}</div>
+                </div>
+                <div style={styles.rightContainer}>
+                    <FormattedMessage id='sub.heading.error.percentage' defaultMessage='Total Error Percentage'/>
+                    <div style={styles.dataBlock}>{errorPercentage}{' '}{'%'}</div>
+                </div>
             </div>
         </div>
     );
@@ -157,6 +117,7 @@ export default function APIMOverallErrorInfo(props) {
 
 APIMOverallErrorInfo.propTypes = {
     themeName: PropTypes.string.isRequired,
+    errorCount: PropTypes.number.isRequired,
     errorPercentage: PropTypes.number.isRequired,
     timeFrom: PropTypes.number.isRequired,
     timeTo: PropTypes.number.isRequired,

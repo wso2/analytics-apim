@@ -289,15 +289,15 @@ class APIMOverallErrorInfoWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, errorPercentage, inProgress, timeFrom, timeTo,
+            messages, faultyProviderConf, errorCount, errorPercentage, inProgress, timeFrom, timeTo,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiCreatedProps = {
-            themeName, errorPercentage, timeFrom, timeTo,
+        const errorInfoProps = {
+            themeName, errorCount, errorPercentage, timeFrom, timeTo,
         };
 
         if (inProgress) {
@@ -340,7 +340,7 @@ class APIMOverallErrorInfoWidget extends Widget {
                             </div>
                         ) : (
                             <APIMOverallErrorInfo
-                                {...apiCreatedProps}
+                                {...errorInfoProps}
                             />
                         )
                     }

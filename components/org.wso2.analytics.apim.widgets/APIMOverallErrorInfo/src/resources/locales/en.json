@@ -1,8 +1,8 @@
 {
-  "within.text": "WITHIN",
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Overall Error Info widget",
-  "widget.heading": "Overall Error Info",
-  "within.week.text": "REQUESTS WITHIN ALL TIME",
+  "widget.heading": "OVERALL ERROR INFO",
+  "sub.heading.error.count": "Total Error Count",
+  "sub.heading.error.percentage": "Total Error Percentage",
   "to.text": "TO"
 }

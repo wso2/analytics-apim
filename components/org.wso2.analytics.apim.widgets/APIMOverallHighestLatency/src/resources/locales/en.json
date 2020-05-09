@@ -3,5 +3,7 @@
   "to": "TO",
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for APIM Overall Highest Latency Widget",
-  "widget.heading": "OVERALL HIGHEST LATENCY"
+  "widget.heading": "OVERALL HIGHEST LATENCY",
+  "sub.heading.error.percentage": "Total Error Percentage",
+  "sub.heading.error.count": "Total Error Count"
 }
