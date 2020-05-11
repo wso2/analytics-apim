@@ -47,12 +47,10 @@ const lightTheme = createMuiTheme({
     },
 });
 
-const createdByKeys = {
-    all: 'all',
-    me: 'me',
-};
-
 const queryParamKey = 'overallapiusage';
+const API_USAGE_CALLBACK = '-api-usage';
+const API_ID_CALLBACK = '-api-id';
+const API_SUB_CALLBACK = '-api-sub';
 
 /**
  * Language
@@ -65,7 +63,6 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
  */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
-let callbackFunction = null;
 /**
  * Create React Component for APIM Overall Api Usage
  * @class APIMOverallApiUsageWidget
@@ -79,28 +76,6 @@ class APIMOverallApiUsageWidget extends Widget {
      */
     constructor(props) {
         super(props);
-
-        this.chartConfig = {
-            charts: [
-                {
-                    type: 'scatter',
-                    x: 'API_NAME',
-                    y: 'SUB_COUNT',
-                    color: 'CREATED_BY',
-                    size: 'REQ_COUNT',
-                },
-            ],
-            append: false,
-            style: {
-                xAxisTickAngle: -8,
-                tickLabelColor: '#506482',
-            },
-        };
-
-        this.metadata = {
-            names: ['API_NAME', 'CREATED_BY', 'REQ_COUNT', 'SUB_COUNT'],
-            types: ['ordinal', 'ordinal', 'linear', 'linear'],
-        };
 
         this.styles = {
             paper: {
@@ -135,8 +110,6 @@ class APIMOverallApiUsageWidget extends Widget {
             apiIdMap: {},
             apiIdMapGlobal: {},
             apiDataList: [],
-            metadata: this.metadata,
-            chartConfig: this.chartConfig,
             limit: 5,
             localeMessages: null,
             inProgress: true,
@@ -275,9 +248,8 @@ class APIMOverallApiUsageWidget extends Widget {
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (dimension && timeFrom && !callbackFunction) {
+        if (dimension && timeFrom) {
             if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
-                callbackFunction = 'handleApiUsageReceived';
                 let filterCondition = selectedOptions.map((opt) => {
                     return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
                         + '\' AND apiCreator==\'' + opt.provider + '\')';
@@ -294,7 +266,8 @@ class APIMOverallApiUsageWidget extends Widget {
                     '{{limit}}': limit,
                 };
                 super.getWidgetChannelManager()
-                    .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
+                    .subscribeWidget(id + API_USAGE_CALLBACK, widgetName, this.handleApiUsageReceived,
+                        dataProviderConfigs);
             } else {
                 this.setState({
                     usageData1: [], usageData2: [], inProgress: false,
@@ -312,24 +285,22 @@ class APIMOverallApiUsageWidget extends Widget {
         const { data } = message;
         const { id } = this.props;
 
-        if (callbackFunction === 'handleApiUsageReceived') {
-            if (data && data.length > 0) {
-                const usageData = data.map((dataUnit) => {
-                    return {
-                        apiname: dataUnit[0],
-                        provider: dataUnit[1],
-                        hits: dataUnit[2],
-                        version: dataUnit[3],
-                    };
-                });
-                this.setState({ usageData });
-                super.getWidgetChannelManager().unsubscribeWidget(id);
-                this.assembleApiIdQuery();
-            } else {
-                this.setState({
-                    usageData1: [], usageData2: [], inProgress: false,
-                });
-            }
+        if (data && data.length > 0) {
+            const usageData = data.map((dataUnit) => {
+                return {
+                    apiname: dataUnit[0],
+                    provider: dataUnit[1],
+                    hits: dataUnit[2],
+                    version: dataUnit[3],
+                };
+            });
+            this.setState({ usageData });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleApiIdQuery();
+        } else {
+            this.setState({
+                usageData1: [], usageData2: [], inProgress: false,
+            });
         }
     }
 
@@ -338,7 +309,6 @@ class APIMOverallApiUsageWidget extends Widget {
      * @memberof APIMOverallApiUsageWidget
      * */
     assembleApiIdQuery() {
-        callbackFunction = 'handleApiIdReceived';
         const { providerConfig, usageData } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -355,7 +325,7 @@ class APIMOverallApiUsageWidget extends Widget {
                 '{{apiCondition}}': apiCondition,
             };
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
+                .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
             this.setState({
                 usageData1: [], usageData2: [], inProgress: false,
@@ -372,18 +342,16 @@ class APIMOverallApiUsageWidget extends Widget {
         const { data } = message;
         const { id } = this.props;
 
-        if (callbackFunction === 'handleApiIdReceived') {
-            if (data && data.length > 0) {
-                const apiIdMap = {};
-                data.forEach((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2], version: api[3] }; });
-                this.setState({ apiIdMapGlobal: cloneDeep(apiIdMap), apiIdMap });
-                super.getWidgetChannelManager().unsubscribeWidget(id);
-                this.assembleApiSubQuery();
-            } else {
-                this.setState({
-                    usageData1: [], usageData2: [], inProgress: false,
-                });
-            }
+        if (data && data.length > 0) {
+            const apiIdMap = {};
+            data.forEach((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2], version: api[3] }; });
+            this.setState({ apiIdMapGlobal: cloneDeep(apiIdMap), apiIdMap });
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.assembleApiSubQuery();
+        } else {
+            this.setState({
+                usageData1: [], usageData2: [], inProgress: false,
+            });
         }
     }
 
@@ -392,7 +360,6 @@ class APIMOverallApiUsageWidget extends Widget {
      * @memberof APIMOverallApiUsageWidget
      * */
     assembleApiSubQuery() {
-        callbackFunction = 'handleApiSubReceived';
         const { providerConfig, apiIdMap } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -405,7 +372,7 @@ class APIMOverallApiUsageWidget extends Widget {
                 '{{apiList}}': apiIds,
             };
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleApiSubReceived, dataProviderConfigs);
+                .subscribeWidget(id + API_SUB_CALLBACK, widgetName, this.handleApiSubReceived, dataProviderConfigs);
         } else {
             this.setState({
                 usageData1: [], usageData2: [], inProgress: false,
@@ -421,55 +388,51 @@ class APIMOverallApiUsageWidget extends Widget {
     handleApiSubReceived(message) {
         const { data } = message;
 
-        if (callbackFunction === 'handleApiSubReceived') {
-            if (data && data.length > 0) {
+        if (data && data.length > 0) {
+            const {
+                usageData, apiIdMap, apiIdMapGlobal,
+            } = this.state;
+            const usageData1 = [];
+            const usageData2 = [];
+            usageData.forEach((dataUnit) => {
                 const {
-                    usageData, apiIdMap, apiIdMapGlobal,
-                } = this.state;
-                const usageData1 = [];
-                const usageData2 = [];
-                usageData.forEach((dataUnit) => {
-                    const {
-                        apiname, provider, version, hits,
-                    } = dataUnit;
-                    const idArray = Object.keys(apiIdMapGlobal);
-                    const apiID = idArray.find(id => apiIdMapGlobal[id].apiname === apiname
-                        && apiIdMapGlobal[id].creator === provider && apiIdMapGlobal[id].version === version);
-                    if (apiID) {
-                        let subCount = data.reduce((result, item) => {
-                            const [aID, count] = item;
-                            // comparision === isn't done because this compares a string with an int
-                            if (aID == apiID) {
-                                result = count;
-                            }
-                            return result;
-                        }, null);
-                        if (!subCount) {
-                            subCount = 0;
+                    apiname, provider, version, hits,
+                } = dataUnit;
+                const idArray = Object.keys(apiIdMapGlobal);
+                const apiID = idArray.find(id => apiIdMapGlobal[id].apiname === apiname
+                    && apiIdMapGlobal[id].creator === provider && apiIdMapGlobal[id].version === version);
+                if (apiID) {
+                    let subCount = data.reduce((result, item) => {
+                        const [aID, count] = item;
+                        // comparision === isn't done because this compares a string with an int
+                        if (aID == apiID) {
+                            result = count;
                         }
-                        if (apiIdMap[apiID]) {
-                            usageData1.push(
-                                [apiname, provider, hits, subCount, version],
-                            );
-                        } else {
-                            usageData2.push(
-                                [apiname, provider, hits, subCount, version],
-                            );
-                        }
+                        return result;
+                    }, null);
+                    if (!subCount) {
+                        subCount = 0;
                     }
-                });
-                this.setState({
-                    usageData1,
-                    usageData2: [...usageData1, ...usageData2],
-                    inProgress: false,
-                });
-                callbackFunction = null;
-            } else {
-                this.setState({
-                    usageData1: [], usageData2: [], inProgress: false,
-                });
-                callbackFunction = null;
-            }
+                    if (apiIdMap[apiID]) {
+                        usageData1.push(
+                            [apiname, provider, hits, subCount, version],
+                        );
+                    } else {
+                        usageData2.push(
+                            [apiname, provider, hits, subCount, version],
+                        );
+                    }
+                }
+            });
+            this.setState({
+                usageData1,
+                usageData2: [...usageData1, ...usageData2],
+                inProgress: false,
+            });
+        } else {
+            this.setState({
+                usageData1: [], usageData2: [], inProgress: false,
+            });
         }
     }
 
@@ -541,8 +504,7 @@ class APIMOverallApiUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, width, height, limit, usageData1, usageData2, metadata,
-            chartConfig, inProgress, proxyError,
+            localeMessages, faultyProviderConfig, width, height, limit, usageData1, usageData2, inProgress, proxyError,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -550,7 +512,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const ovearllUsageProps = {
-            themeName, width, height, limit, usageData1, usageData2, metadata, chartConfig, inProgress,
+            themeName, width, height, limit, usageData1, usageData2, inProgress,
         };
 
         if (proxyError) {

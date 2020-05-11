@@ -38,8 +38,8 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiUsage(props) {
     const {
-        themeName, width, height, limit, usageData1, usageData2, metadata, chartConfig,
-        limitHandleChange, inProgress, selectedAPIChangeCallback,
+        themeName, width, height, limit, usageData1, usageData2, limitHandleChange, inProgress,
+        selectedAPIChangeCallback,
     } = props;
     const styles = {
         headingWrapper: {
@@ -103,6 +103,26 @@ export default function APIMOverallApiUsage(props) {
             paddingBottom: '10px',
             marginTop: 0,
         },
+    };
+    const chartConfig = {
+        charts: [
+            {
+                type: 'scatter',
+                x: 'API_NAME',
+                y: 'SUB_COUNT',
+                color: 'CREATED_BY',
+                size: 'REQ_COUNT',
+            },
+        ],
+        append: false,
+        style: {
+            xAxisTickAngle: -8,
+            tickLabelColor: '#506482',
+        },
+    };
+    const metadata = {
+        names: ['API_NAME', 'CREATED_BY', 'REQ_COUNT', 'SUB_COUNT'],
+        types: ['ordinal', 'ordinal', 'linear', 'linear'],
     };
 
     let chartData = [];
@@ -220,8 +240,6 @@ APIMOverallApiUsage.propTypes = {
     limit: PropTypes.string.isRequired,
     usageData1: PropTypes.instanceOf(Object).isRequired,
     usageData2: PropTypes.instanceOf(Object).isRequired,
-    metadata: PropTypes.instanceOf(Object).isRequired,
-    chartConfig: PropTypes.instanceOf(Object).isRequired,
     limitHandleChange: PropTypes.func.isRequired,
     selectedAPIChangeCallback: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
