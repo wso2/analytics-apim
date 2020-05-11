@@ -109,13 +109,15 @@ class APIMOverallApiUsageWidget extends Widget {
             usageData2: null,
             apiIdMap: {},
             apiIdMapGlobal: {},
-            apiDataList: [],
             limit: 5,
             localeMessages: null,
             inProgress: true,
             proxyError: false,
             dimension: null,
             selectedOptions: [],
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
