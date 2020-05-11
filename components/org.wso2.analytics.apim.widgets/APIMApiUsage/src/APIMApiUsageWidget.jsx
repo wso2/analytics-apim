@@ -241,12 +241,15 @@ class APIMApiUsageWidget extends Widget {
 
         if (dimension && timeFrom) {
             if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
-                let filterCondition = selectedOptions.map((opt) => {
-                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
-                        + '\' AND apiCreator==\'' + opt.provider + '\')';
-                });
-                filterCondition = filterCondition.join(' OR ');
-
+                let filterCondition = '';
+                if (selectedOptions[0].name !== 'All') {
+                    filterCondition = selectedOptions.map((opt) => {
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                            + '\' AND apiCreator==\'' + opt.provider + '\')';
+                    });
+                    filterCondition = filterCondition.join(' OR ');
+                    filterCondition = 'AND ' + filterCondition;
+                }
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
                 dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -307,9 +310,8 @@ class APIMApiUsageWidget extends Widget {
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
             super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleMainQuery();
+            this.setState({ inProgress: true, limit }, this.assembleMainQuery);
         } else {
             this.setState({ limit });
         }

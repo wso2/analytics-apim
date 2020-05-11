@@ -242,11 +242,15 @@ class APIMTopApiUsersWidget extends Widget {
             if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
                 const { id, widgetID: widgetName } = this.props;
 
-                let filterCondition = selectedOptions.map((opt) => {
-                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
-                        + '\' AND apiCreator==\'' + opt.provider + '\')';
-                });
-                filterCondition = filterCondition.join(' OR ');
+                let filterCondition = '';
+                if (selectedOptions[0].name !== 'All') {
+                    filterCondition = selectedOptions.map((opt) => {
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                            + '\' AND apiCreator==\'' + opt.provider + '\')';
+                    });
+                    filterCondition = filterCondition.join(' OR ');
+                    filterCondition = 'AND ' + filterCondition;
+                }
 
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
@@ -307,9 +311,8 @@ class APIMTopApiUsersWidget extends Widget {
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
             super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleMainQuery();
+            this.setState({ inProgress: true, limit }, this.assembleMainQuery);
         } else {
             this.setState({ limit });
         }

@@ -89,7 +89,7 @@ export default function APIMApiCreatedData(props) {
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
         style: {
-            xAxisTickAngle: -8,
+            xAxisTickAngle: -10,
             tickLabelColor: '#a7b0c8',
             axisLabelColor: '#a7b0c8',
             axisTextSize: 10,

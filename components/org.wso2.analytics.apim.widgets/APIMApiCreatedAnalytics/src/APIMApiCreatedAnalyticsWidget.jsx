@@ -209,22 +209,30 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         } = this.state;
 
         if (dimension && timeFrom) {
-            const { id, widgetID: widgetName } = this.props;
-            let filterCondition = selectedOptions.map((opt) => {
-                return '(API_NAME=\'' + opt.name + '\' AND API_VERSION=\'' + opt.version
-                    + '\' AND CREATED_BY=\'' + opt.provider + '\')';
-            });
-            filterCondition = filterCondition.join(' OR ');
+            if (selectedOptions && selectedOptions.length > 0) {
+                const { id, widgetID: widgetName } = this.props;
+                let filterCondition = '';
+                if (selectedOptions[0].name !== 'All') {
+                    filterCondition = selectedOptions.map((opt) => {
+                        return '(API_NAME=\'' + opt.name + '\' AND API_VERSION=\'' + opt.version
+                            + '\' AND CREATED_BY=\'' + opt.provider + '\')';
+                    });
+                    filterCondition = filterCondition.join(' OR ');
+                    filterCondition = 'AND ' + filterCondition;
+                }
 
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'query';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
-                '{{filterCondition}}': filterCondition,
-            };
-            super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived,
-                dataProviderConfigs);
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'query';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                    '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+                    '{{filterCondition}}': filterCondition,
+                };
+                super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived,
+                    dataProviderConfigs);
+            } else {
+                this.setState({ inProgress: false, chartData: [], tableData: [] });
+            }
         }
     }
 
