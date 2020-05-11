@@ -48,12 +48,6 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * Query string parameter
- * @type {string}
- */
-const queryParamKey = 'geoInvocations';
-
-/**
  * Language
  * @type {string}
  */
@@ -126,17 +120,16 @@ class APIMGeoInvocationsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiCreatedBy: 'All',
-            apiSelected: '',
-            apiVersion: '',
-            versionlist: [],
-            apilist: [],
             geoData: null,
             inProgress: true,
             metadata: this.metadata,
             chartConfig: this.chartConfig,
             proxyError: false,
-            username: '',
+            dimension: null,
+            selectedOptions: [],
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -291,7 +284,7 @@ class APIMGeoInvocationsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, proxyError, geoData
+            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, proxyError, geoData,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaperWrapper, proxyPaper,
