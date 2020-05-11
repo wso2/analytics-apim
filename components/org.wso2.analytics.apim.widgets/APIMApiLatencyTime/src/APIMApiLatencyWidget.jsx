@@ -48,18 +48,11 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * The callback function currently engaged
+ * The suffix used to register callback function
  */
-let callbackFunction = null;
-
-/**
- * Query string parameter values
- * @type {object}
- */
-const createdByKeys = {
-    All: 'All',
-    Me: 'Me',
-};
+const API_ID_CALLBACK = '-api-id';
+const API_RESOURCE_CALLBACK = '-api-resource';
+const API_LATENCY_CALLBACK = '-api-latency';
 
 /**
  * Query string parameter
@@ -91,68 +84,6 @@ class APIMApiLatencyWidget extends Widget {
      */
     constructor(props) {
         super(props);
-
-        this.chartConfig = {
-            x: 'REQUEST_TIME',
-            charts: [
-                {
-                    type: 'line',
-                    y: 'Response Time',
-                    fill: '#1a911c',
-                },
-                {
-                    type: 'line',
-                    y: 'Security',
-                    fill: '#bb3a1c',
-                },
-                {
-                    type: 'line',
-                    y: 'Throttling',
-                    fill: '#aabb2e',
-                },
-                {
-                    type: 'line',
-                    y: 'Request Mediation',
-                    fill: '#33bbb5',
-                },
-                {
-                    type: 'line',
-                    y: 'Response Mediation',
-                    fill: '#b420bb',
-                },
-                {
-                    type: 'line',
-                    y: 'Backend',
-                    fill: '#bbb2b9',
-                },
-                {
-                    type: 'line',
-                    y: 'Other',
-                    fill: '#bb780f',
-                },
-            ],
-            maxLength: 60,
-            width: 800,
-            height: 400,
-            interactiveLegend: true,
-            legend: true,
-            timeFormat: '%Y-%m-%d %H:%M:%S',
-            tipTimeFormat: '%Y-%m-%d %H:%M:%S',
-            style: {
-                xAxisTickAngle: -8,
-                tickLabelColor: '#a7b0c8',
-                axisLabelColor: '#a7b0c8',
-                axisTextSize: 50,
-                legendTextColor: '#a7b0c8',
-                legendTextSize: 15,
-            },
-        };
-
-        this.metadata = {
-            names: ['Response Time', 'Security', 'Throttling', 'Request Mediation',
-                'Response Mediation', 'Backend', 'Other', 'REQUEST_TIME'],
-            types: ['linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'time'],
-        };
 
         this.styles = {
             formControl: {
@@ -196,12 +127,13 @@ class APIMApiLatencyWidget extends Widget {
             operationSelected: [],
             resourceSelected: '',
             inProgress: true,
-            metadata: this.metadata,
-            chartConfig: this.chartConfig,
             proxyError: false,
             apiId: null,
             dimension: null,
             selectedOptions: [],
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -301,7 +233,14 @@ class APIMApiLatencyWidget extends Widget {
         const { sync } = queryParam; const {
             from, to, granularity, dm, op,
         } = receivedMsg;
+        const { selectedOptions: currentSelection, resourceList } = this.state;
 
+        let resources = [];
+        if ((op && op.length > 0) && (currentSelection && currentSelection.length > 0)) {
+            if (currentSelection[0].name === op[0].name && currentSelection[0].version === op[0].version) {
+                resources = resourceList;
+            }
+        }
         if (dm && from) {
             this.setState({
                 dimension: dm,
@@ -310,12 +249,14 @@ class APIMApiLatencyWidget extends Widget {
                 timeTo: to,
                 perValue: granularity,
                 inProgress: !sync,
+                resourceList: resources,
             }, this.assembleApiIdQuery);
         } else if (dm) {
             this.setState({
                 dimension: dm,
                 selectedOptions: op,
                 inProgress: true,
+                resourceList: resources,
             }, this.assembleApiIdQuery);
         } else if (from) {
             this.setState({
@@ -332,32 +273,26 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     assembleApiIdQuery() {
-        if (!callbackFunction) {
-            callbackFunction = 'handleApiIdReceived';
-            const {
-                providerConfig, dimension, selectedOptions, timeFrom,
-            } = this.state;
-            if (dimension && timeFrom) {
-                if (selectedOptions && selectedOptions.length > 0) {
-                    const { id, widgetID: widgetName } = this.props;
+        const {
+            providerConfig, dimension, selectedOptions, timeFrom,
+        } = this.state;
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0) {
+                const { id, widgetID: widgetName } = this.props;
 
-                    const apiCondition = '(API_NAME==\'' + selectedOptions[0].name + '\' AND API_VERSION==\''
-                        + selectedOptions[0].version + '\' AND API_PROVIDER==\'' + selectedOptions[0].provider + '\')';
-                    const dataProviderConfigs = cloneDeep(providerConfig);
-                    dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
-                    dataProviderConfigs.configs.config.queryData.queryValues = {
-                        '{{apiCondition}}': apiCondition,
-                    };
-                    super.getWidgetChannelManager()
-                        .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
-                } else {
-                    callbackFunction = null;
-                    this.setState({
-                        inProgress: false, latencyData: [],
-                    });
-                }
+                const apiCondition = '(API_NAME==\'' + selectedOptions[0].name + '\' AND API_VERSION==\''
+                    + selectedOptions[0].version + '\' AND API_PROVIDER==\'' + selectedOptions[0].provider + '\')';
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{apiCondition}}': apiCondition,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
             } else {
-                callbackFunction = null;
+                this.setState({
+                    inProgress: false, latencyData: [],
+                });
             }
         }
     }
@@ -368,17 +303,14 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     handleApiIdReceived(message) {
-        if (callbackFunction === 'handleApiIdReceived') {
-            const { id } = this.props;
-            const { data } = message;
+        const { id } = this.props;
+        const { data } = message;
 
-            if (data && data.length > 0) {
-                super.getWidgetChannelManager().unsubscribeWidget(id);
-                this.setState({ apiId: data[0][0] }, this.assembleResourceQuery);
-            } else {
-                callbackFunction = null;
-                this.setState({ inProgress: false, latencyData: [] });
-            }
+        if (data && data.length > 0) {
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ apiId: data[0][0] }, this.assembleResourceQuery);
+        } else {
+            this.setState({ inProgress: false, latencyData: [] });
         }
     }
 
@@ -396,11 +328,10 @@ class APIMApiLatencyWidget extends Widget {
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{apiID}}': apiId,
             };
-            callbackFunction = 'handleResourceReceived';
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleResourceReceived, dataProviderConfigs);
+                .subscribeWidget(id + API_RESOURCE_CALLBACK, widgetName, this.handleResourceReceived,
+                    dataProviderConfigs);
         } else {
-            callbackFunction = null;
             this.setState({ inProgress: false, latencyData: [] });
         }
     }
@@ -411,34 +342,31 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     handleResourceReceived(message) {
-        if (callbackFunction === 'handleResourceReceived') {
-            const { data } = message;
-            const { id } = this.props;
-            const { operationSelected, resourceSelected } = this.state;
+        const { data } = message;
+        const { id } = this.props;
+        const { operationSelected, resourceSelected } = this.state;
 
-            if (data) {
-                const resourceList = [];
-                data.forEach((dataUnit) => {
-                    resourceList.push([dataUnit[0] + ' (' + dataUnit[1]] + ')');
-                });
-                this.setState({ resourceList });
+        if (data) {
+            const resourceList = [];
+            data.forEach((dataUnit) => {
+                resourceList.push([dataUnit[0] + ' (' + dataUnit[1]] + ')');
+            });
+            this.setState({ resourceList });
 
-                // verify whether the selected operations/resource provided in query param are available in the
-                // API resource list
-                const availableOperations = operationSelected.filter(op => resourceList.includes[op]);
-                const availableResource = resourceList.includes(resourceSelected) ? resourceSelected : '';
-                this.setQueryParam(availableOperations, availableResource);
+            // verify whether the selected operations/resource provided in query param are available in the
+            // API resource list
+            const filterSelectedOperations = operationSelected.filter(op => resourceList.includes[op]);
+            const filterSelectedResource = resourceList.includes(resourceSelected) ? resourceSelected : '';
+            this.setQueryParam(filterSelectedOperations, filterSelectedResource);
 
-                super.getWidgetChannelManager().unsubscribeWidget(id);
-                this.setState({
-                    resourceList,
-                    operationSelected: availableOperations,
-                    resourceSelected: availableResource,
-                }, this.assembleMainQuery);
-            } else {
-                callbackFunction = null;
-                this.setState({ inProgress: false, latencyData: [] });
-            }
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({
+                resourceList,
+                operationSelected: filterSelectedOperations,
+                resourceSelected: filterSelectedResource,
+            }, this.assembleMainQuery);
+        } else {
+            this.setState({ inProgress: false, latencyData: [] });
         }
     }
 
@@ -496,11 +424,9 @@ class APIMApiLatencyWidget extends Widget {
                 '{{filterCondition}}': filterCondition,
                 '{{numberOfCommas}}': numberOfSelectedElements - 1,
             };
-            callbackFunction = 'handleDataReceived';
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+                .subscribeWidget(id + API_LATENCY_CALLBACK, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
-            callbackFunction = null;
             this.setState({ inProgress: false, latencyData: [] });
         }
     }
@@ -511,23 +437,20 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     handleDataReceived(message) {
-        if (callbackFunction === 'handleDataReceived') {
-            const { data } = message;
+        const { data } = message;
 
-            if (data) {
-                const {
-                    operationSelected, resourceSelected,
-                } = this.state;
-                const latencyData = data.map((dataUnit) => {
-                    return ([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4],
-                        dataUnit[5], dataUnit[6], dataUnit[7]]);
-                });
-                this.setState({ latencyData, inProgress: false });
-                this.setQueryParam(operationSelected, resourceSelected);
-            } else {
-                this.setState({ inProgress: false, latencyData: [] });
-            }
-            callbackFunction = null;
+        if (data) {
+            const {
+                operationSelected, resourceSelected,
+            } = this.state;
+            const latencyData = data.map((dataUnit) => {
+                return ([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4],
+                    dataUnit[5], dataUnit[6], dataUnit[7]]);
+            });
+            this.setState({ latencyData, inProgress: false });
+            this.setQueryParam(operationSelected, resourceSelected);
+        } else {
+            this.setState({ inProgress: false, latencyData: [] });
         }
     }
 
@@ -585,7 +508,7 @@ class APIMApiLatencyWidget extends Widget {
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, proxyError,
+            localeMessages, faultyProviderConfig, height, width, inProgress, proxyError,
             latencyData, resourceList,
         } = this.state;
         const {
@@ -596,8 +519,6 @@ class APIMApiLatencyWidget extends Widget {
         const latencyProps = {
             themeName,
             queryParam,
-            chartConfig,
-            metadata,
             height,
             width,
             latencyData,

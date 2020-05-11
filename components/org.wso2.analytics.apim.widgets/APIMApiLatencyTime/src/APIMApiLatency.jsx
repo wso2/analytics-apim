@@ -40,8 +40,8 @@ import Radio from '@material-ui/core/Radio';
  */
 export default function APIMApiLatency(props) {
     const {
-        themeName, queryParam, chartConfig, metadata, height, width, inProgress, latencyData, resourceList,
-        apiOperationHandleChange, apiResourceHandleChange,
+        themeName, queryParam, height, width, inProgress, latencyData, resourceList, apiOperationHandleChange,
+        apiResourceHandleChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -100,6 +100,66 @@ export default function APIMApiLatency(props) {
             marginTop: 0,
         },
     };
+    const chartConfig = {
+        x: 'REQUEST_TIME',
+        charts: [
+            {
+                type: 'line',
+                y: 'Response Time',
+                fill: '#1a911c',
+            },
+            {
+                type: 'line',
+                y: 'Security',
+                fill: '#bb3a1c',
+            },
+            {
+                type: 'line',
+                y: 'Throttling',
+                fill: '#aabb2e',
+            },
+            {
+                type: 'line',
+                y: 'Request Mediation',
+                fill: '#33bbb5',
+            },
+            {
+                type: 'line',
+                y: 'Response Mediation',
+                fill: '#b420bb',
+            },
+            {
+                type: 'line',
+                y: 'Backend',
+                fill: '#bbb2b9',
+            },
+            {
+                type: 'line',
+                y: 'Other',
+                fill: '#bb780f',
+            },
+        ],
+        maxLength: 60,
+        width: 800,
+        height: 400,
+        interactiveLegend: true,
+        legend: true,
+        timeFormat: '%d-%b-%y %H:%M',
+        tipTimeFormat: '%Y-%m-%d %H:%M:%S',
+        style: {
+            xAxisTickAngle: -8,
+            tickLabelColor: '#a7b0c8',
+            axisLabelColor: '#a7b0c8',
+            axisTextSize: 50,
+            legendTextColor: '#a7b0c8',
+            legendTextSize: 15,
+        },
+    };
+    const metadata = {
+        names: ['Response Time', 'Security', 'Throttling', 'Request Mediation',
+            'Response Mediation', 'Backend', 'Other', 'REQUEST_TIME'],
+        types: ['linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'time'],
+    };
 
     // Check whether the API is graphQL.
     // Evaluated by checking the method of the first resource.
@@ -128,57 +188,61 @@ export default function APIMApiLatency(props) {
                     <div style={styles.heading}>
                         <FormattedMessage id='widget.heading' defaultMessage='API LATENCY TIME' />
                     </div>
-                    <div style={styles.formWrapper}>
-                        <form style={styles.form}>
-                            <FormControl component='fieldset' style={styles.formControl}>
-                                <FormLabel component='legend'>
-                                    <FormattedMessage id='resources.label' defaultMessage='Resources' />
-                                </FormLabel>
-                                {
-                                    isGraphQL ? (
-                                        <FormGroup>
-                                            {
-                                                resourceList.map(option => (
-                                                    <FormControlLabel
-                                                        control={(
-                                                            <Checkbox
-                                                                checked={
-                                                                    queryParam.operationSelected
-                                                                        .includes(option.toString())
-                                                                }
-                                                                onChange={apiOperationHandleChange}
-                                                                value={option.toString()}
+                    {
+                        resourceList && resourceList.length > 0 && (
+                            <div style={styles.formWrapper}>
+                                <form style={styles.form}>
+                                    <FormControl component='fieldset' style={styles.formControl}>
+                                        <FormLabel component='legend'>
+                                            <FormattedMessage id='resources.label' defaultMessage='Resources' />
+                                        </FormLabel>
+                                        {
+                                            isGraphQL ? (
+                                                <FormGroup>
+                                                    {
+                                                        resourceList.map(option => (
+                                                            <FormControlLabel
+                                                                control={(
+                                                                    <Checkbox
+                                                                        checked={
+                                                                            queryParam.operationSelected
+                                                                                .includes(option.toString())
+                                                                        }
+                                                                        onChange={apiOperationHandleChange}
+                                                                        value={option.toString()}
+                                                                    />
+                                                                )}
+                                                                label={option}
                                                             />
-                                                        )}
-                                                        label={option}
-                                                    />
-                                                ))
-                                            }
-                                        </FormGroup>
-                                    ) : (
-                                        <RadioGroup>
-                                            {
-                                                resourceList.map(option => (
-                                                    <FormControlLabel
-                                                        control={(
-                                                            <Radio
-                                                                checked={
-                                                                    queryParam.resourceSelected
-                                                                        .includes(option.toString())}
-                                                                onChange={apiResourceHandleChange}
-                                                                value={option.toString()}
+                                                        ))
+                                                    }
+                                                </FormGroup>
+                                            ) : (
+                                                <RadioGroup>
+                                                    {
+                                                        resourceList.map(option => (
+                                                            <FormControlLabel
+                                                                control={(
+                                                                    <Radio
+                                                                        checked={
+                                                                            queryParam.resourceSelected
+                                                                                .includes(option.toString())}
+                                                                        onChange={apiResourceHandleChange}
+                                                                        value={option.toString()}
+                                                                    />
+                                                                )}
+                                                                label={option}
                                                             />
-                                                        )}
-                                                        label={option}
-                                                    />
-                                                ))
-                                            }
-                                        </RadioGroup>
-                                    )
-                                }
-                            </FormControl>
-                        </form>
-                    </div>
+                                                        ))
+                                                    }
+                                                </RadioGroup>
+                                            )
+                                        }
+                                    </FormControl>
+                                </form>
+                            </div>
+                        )
+                    }
                 </div>
                 { inProgress ? (
                     <div style={styles.loading}>
@@ -226,8 +290,6 @@ export default function APIMApiLatency(props) {
 APIMApiLatency.propTypes = {
     themeName: PropTypes.string.isRequired,
     queryParam: PropTypes.instanceOf(Object).isRequired,
-    chartConfig: PropTypes.instanceOf(Object).isRequired,
-    metadata: PropTypes.instanceOf(Object).isRequired,
     height: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
     resourceList: PropTypes.instanceOf(Object).isRequired,
