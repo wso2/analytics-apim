@@ -48,15 +48,6 @@ const lightTheme = createMuiTheme({
 });
 
 /**
-* Query string parameter values
-* @type {object}
-*/
-const createdByKeys = {
-    All: 'All',
-    Me: 'Me',
-};
-
-/**
  * Query string parameter
  * @type {string}
  */
@@ -101,11 +92,15 @@ class APIMApiBackendUsageWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiCreatedBy: 'All',
             limit: 5,
             usageData: null,
             localeMessages: null,
             inProgress: true,
+            dimension: null,
+            selectedOptions: [],
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.

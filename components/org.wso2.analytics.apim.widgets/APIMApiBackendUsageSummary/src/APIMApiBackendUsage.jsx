@@ -23,8 +23,6 @@ import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
