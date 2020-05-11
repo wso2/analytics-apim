@@ -92,11 +92,15 @@ class APIMApiVersionUsageWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiCreatedBy: 'All',
             limit: 5,
             usageData: null,
             localeMessages: null,
             inProgress: true,
+            dimension: null,
+            selectedOptions: [],
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -162,19 +166,6 @@ class APIMApiVersionUsageWidget extends Widget {
                 })
                 .catch(error => reject(error));
         });
-    }
-
-    /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
     }
 
     /**
