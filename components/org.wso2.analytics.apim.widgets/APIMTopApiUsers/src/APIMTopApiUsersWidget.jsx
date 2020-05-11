@@ -104,16 +104,15 @@ class APIMTopApiUsersWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             limit: 5,
-            apiCreatedBy: 'All',
-            apiSelected: 'All',
-            apiVersion: 'All',
-            versionlist: [],
-            versionMap: {},
-            apilist: [],
             userData: null,
             localeMessages: null,
             inProgress: true,
             proxyError: false,
+            dimension: null,
+            selectedOptions: [],
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -290,9 +289,6 @@ class APIMTopApiUsersWidget extends Widget {
 
     /**
      * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
-     * @param {string} apiSelected - API Name menu option selected
-     * @param {string} apiVersion - API Version menu option selected
      * @param {number} limit - data limitation value
      * @memberof APIMTopApiUsersWidget
      * */
