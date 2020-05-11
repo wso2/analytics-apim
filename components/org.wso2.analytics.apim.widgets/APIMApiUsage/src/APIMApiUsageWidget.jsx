@@ -109,6 +109,10 @@ class APIMApiUsageWidget extends Widget {
             localeMessages: null,
             inProgress: true,
             proxyError: false,
+            dimension: null,
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -200,14 +204,22 @@ class APIMApiUsageWidget extends Widget {
             from, to, granularity, dm, op,
         } = receivedMsg;
 
-        if (dm) {
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleMainQuery);
+        } else if (dm) {
             this.setState({
                 dimension: dm,
                 selectedOptions: op,
                 inProgress: true,
             }, this.assembleMainQuery);
-        }
-        if (from) {
+        } else if (from) {
             this.setState({
                 timeFrom: from,
                 timeTo: to,
@@ -223,30 +235,32 @@ class APIMApiUsageWidget extends Widget {
      * */
     assembleMainQuery() {
         const {
-            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions, limit
+            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions, limit,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
-            let filterCondition = selectedOptions.map((opt) => {
-                return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
-                    + '\' AND apiCreator==\'' + opt.provider + '\')';
-            });
-            filterCondition = filterCondition.join(' OR ');
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
+                let filterCondition = selectedOptions.map((opt) => {
+                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                        + '\' AND apiCreator==\'' + opt.provider + '\')';
+                });
+                filterCondition = filterCondition.join(' OR ');
 
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{from}}': timeFrom,
-                '{{to}}': timeTo,
-                '{{per}}': perValue,
-                '{{limit}}': limit,
-                '{{filterCondition}}': filterCondition,
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
-        } else {
-            this.setState({ inProgress: false, usageData: [] });
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                    '{{filterCondition}}': filterCondition,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+            } else {
+                this.setState({ inProgress: false, usageData: [] });
+            }
         }
     }
 
