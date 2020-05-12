@@ -16,5 +16,6 @@
   "table.heading": "APP CREATION TIMES",
   "table.heading.appname": "APP NAME",
   "table.heading.createdtime": "CREATED TIME",
+  "table.title": "APPLICATION CREATED TIME",
   "widget.heading": "APPS CREATED OVER TIME"
 }

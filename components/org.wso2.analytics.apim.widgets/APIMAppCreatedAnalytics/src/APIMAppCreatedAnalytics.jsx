@@ -37,8 +37,7 @@ import APIMAppCreatedData from './APIMAppCreatedData';
  */
 export default function APIMAppCreatedAnalytics(props) {
     const {
-        themeName, height, apiCreatedBy, appCreatedBy, subscribedTo, apilist, sublist, chartData, tableData,
-        xAxisTicks, maxCount, apiCreatedHandleChange, appCreatedHandleChange, subscribedToHandleChange, inProgress,
+        themeName, height, appCreatedBy, sublist, chartData, tableData, width, appCreatedHandleChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -87,7 +86,7 @@ export default function APIMAppCreatedAnalytics(props) {
         },
     };
     const createdDataProps = {
-        themeName, chartData, tableData, xAxisTicks, maxCount,
+        themeName, chartData, tableData, width,
     };
     return (
         <Scrollbars style={{
@@ -109,35 +108,6 @@ export default function APIMAppCreatedAnalytics(props) {
                 </div>
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={<FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='api-createdBy-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiCreatedBy}
-                                onChange={apiCreatedHandleChange}
-                                input={<Input name='api-createdBy' id='api-createdBy-label-placeholder' />}
-                                displayEmpty
-                                name='apiCreatedBy'
-                                style={styles.selectEmpty}
-                            >
-                                <MenuItem value='All'>
-                                    <FormattedMessage id='all.menuItem' defaultMessage='All' />
-                                </MenuItem>
-                                <MenuItem value='Me'>
-                                    <FormattedMessage id='me.menuItem' defaultMessage='Me' />
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
@@ -173,41 +143,6 @@ export default function APIMAppCreatedAnalytics(props) {
                                 }
                             </Select>
                         </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={(
-                                    <FormattedMessage
-                                        id='subscribedTo.label'
-                                        defaultMessage='Subscribed To'
-                                    />
-                                )}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='subscribedTo-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={subscribedTo}
-                                onChange={subscribedToHandleChange}
-                                input={<Input name='subscribedTo' id='subscribedTo-label-placeholder' />}
-                                displayEmpty
-                                name='subscribedTo'
-                                style={styles.selectEmpty}
-                            >
-                                {
-                                    apilist.map(option => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))
-                                }
-                            </Select>
-                        </FormControl>
                     </form>
                 </div>
                 { inProgress
@@ -226,17 +161,11 @@ export default function APIMAppCreatedAnalytics(props) {
 APIMAppCreatedAnalytics.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    apiCreatedBy: PropTypes.string.isRequired,
+    width: PropTypes.string.isRequired,
     appCreatedBy: PropTypes.string.isRequired,
-    subscribedTo: PropTypes.string.isRequired,
-    apilist: PropTypes.instanceOf(Object).isRequired,
     sublist: PropTypes.instanceOf(Object).isRequired,
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
-    xAxisTicks: PropTypes.instanceOf(Object).isRequired,
-    maxCount: PropTypes.number.isRequired,
-    apiCreatedHandleChange: PropTypes.func.isRequired,
     appCreatedHandleChange: PropTypes.func.isRequired,
-    subscribedToHandleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };
