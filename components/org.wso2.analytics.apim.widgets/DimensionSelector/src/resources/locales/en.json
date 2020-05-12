@@ -9,6 +9,6 @@
   "dimension.provider.tooltip" : "Viewing stats by 'API Provider'. Click to change the view to 'API'.",
   "search.loading": "Loading options...",
   "search.tooltip.api": "Select API(s) to view stats",
-  "search.tooltip.provide": "Select API Provider(s) to view stats",
+  "search.tooltip.provider": "Select API Provider(s) to view stats",
   "widget.heading": "Dimension Selector"
 }
