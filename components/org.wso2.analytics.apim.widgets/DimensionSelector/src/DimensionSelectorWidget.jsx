@@ -417,7 +417,9 @@ class DimensionSelectorWidget extends Widget {
         let {
             options, optionLabel, noOptionsText,
         } = { ...this.state };
-        const { selectMultiple, defaultDimension, selectedDimensions } = this.state;
+        const {
+            selectMultiple, defaultDimension, selectedDimensions, isManager,
+        } = this.state;
         const { dm, op } = this.getqueryParam();
 
         let dimension;
@@ -434,7 +436,10 @@ class DimensionSelectorWidget extends Widget {
         }
 
         if (list && list.length > 0) {
-            const apis = list.sort((a, b) => { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); });
+            const apis = [...list.sort((a, b) => { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); })];
+            if (isManager) {
+                apis.unshift({ name: 'All', version: 'All', provider: 'All' });
+            }
 
             let providers = [];
             if (selectedDimensions.includes(DIMENSION_PROVIDER)) {
@@ -443,11 +448,15 @@ class DimensionSelectorWidget extends Widget {
                 });
                 providers = [...new Set(providers)];
                 providers.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+                if (isManager) {
+                    providers.unshift('All');
+                }
             }
 
             if (dimension === DIMENSION_API) {
                 options = apis;
-                optionLabel = option => option.name + ' :: ' + option.version + ' (' + option.provider + ')';
+                optionLabel = option => (option.name === 'All' ? option.name
+                    : option.name + ' :: ' + option.version + ' (' + option.provider + ')');
             } else if (dimension === DIMENSION_PROVIDER) {
                 options = providers;
                 optionLabel = option => option;
@@ -502,20 +511,28 @@ class DimensionSelectorWidget extends Widget {
 
         const filteredSelection = [];
         if (dimension === DIMENSION_API) {
-            selection.forEach((selc) => {
-                const selcOpt = options.find(opt => opt.name === selc.name && opt.version === selc.version
-                    && opt.provider === selc.provider);
-                if (selcOpt) {
-                    filteredSelection.push(selcOpt);
-                }
-            });
+            if (selection.find(opt => opt.name === 'All')) {
+                filteredSelection.push(options.find(opt => opt.name === 'All'));
+            } else {
+                selection.forEach((selc) => {
+                    const selcOpt = options.find(opt => opt.name === selc.name && opt.version === selc.version
+                        && opt.provider === selc.provider);
+                    if (selcOpt) {
+                        filteredSelection.push(selcOpt);
+                    }
+                });
+            }
         } else if (dimension === DIMENSION_PROVIDER) {
-            selection.forEach((selc) => {
-                const selcOpt = options.find(opt => opt === selc);
-                if (selcOpt) {
-                    filteredSelection.push(selcOpt);
-                }
-            });
+            if (selection.some(value => value === 'All')) {
+                filteredSelection.push('All');
+            } else {
+                selection.forEach((selc) => {
+                    const selcOpt = options.find(opt => opt === selc);
+                    if (selcOpt) {
+                        filteredSelection.push(selcOpt);
+                    }
+                });
+            }
         }
 
         if (filteredSelection.length > 0) {
@@ -543,7 +560,8 @@ class DimensionSelectorWidget extends Widget {
         if (dimension === DIMENSION_API) {
             noOptionsText = 'No APIs available';
             options = apis;
-            optionLabel = option => option.name + ' :: ' + option.version + ' (' + option.provider + ')';
+            optionLabel = option => (option.name === 'All' ? option.name
+                : option.name + ' :: ' + option.version + ' (' + option.provider + ')');
         } else if (dimension === DIMENSION_PROVIDER) {
             noOptionsText = 'No providers available';
             options = providers;
@@ -576,9 +594,10 @@ class DimensionSelectorWidget extends Widget {
      * */
     handleChangeSelection(value) {
         const { apis, dimension } = this.state;
+        const filteredValues = this.filterSelectionChange(value);
 
-        this.setState({ selectedOptions: value });
-        const publishValue = value === null ? [] : value;
+        this.setState({ selectedOptions: filteredValues });
+        const publishValue = filteredValues === null ? [] : filteredValues;
         this.setQueryParam(dimension, Array.isArray(publishValue) ? publishValue : [publishValue]);
 
         let publishOptions = [];
@@ -596,6 +615,41 @@ class DimensionSelectorWidget extends Widget {
             }
         }
         this.publishSelection({ dm: dimension, op: publishOptions });
+    }
+
+    /**
+     * Filter values from onChange of selected values
+     * @param {Array} value - selected options
+     * @memberof DimensionSelectorWidget
+     * */
+    filterSelectionChange(value) {
+        const { dimension, selectMultiple } = this.state;
+        if (selectMultiple) {
+            if (dimension === DIMENSION_API) {
+                if (value.length > 0) {
+                    if (value[value.length - 1].name === 'All') {
+                        return [value[value.length - 1]];
+                    }
+                    if (value.length === 2) {
+                        if (value[0].name === 'All') {
+                            return [value[1]];
+                        }
+                    }
+                }
+            } else if (dimension === DIMENSION_PROVIDER) {
+                if (value.length > 0) {
+                    if (value[value.length - 1] === 'All') {
+                        return [value[value.length - 1]];
+                    }
+                    if (value.length === 2) {
+                        if (value[0] === 'All') {
+                            return [value[1]];
+                        }
+                    }
+                }
+            }
+        }
+        return value;
     }
 
     /**
