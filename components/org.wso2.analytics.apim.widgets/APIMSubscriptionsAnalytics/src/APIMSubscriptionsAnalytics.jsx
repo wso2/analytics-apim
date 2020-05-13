@@ -22,12 +22,6 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import Tooltip from '@material-ui/core/Tooltip';
 import APIMSubscriptionsData from './APIMSubscriptionsData';
 
 /**
@@ -37,25 +31,12 @@ import APIMSubscriptionsData from './APIMSubscriptionsData';
  */
 export default function APIMSubscriptionsAnalytics(props) {
     const {
-        themeName, height, apiCreatedBy, subscribedTo, apilist, chartData, tableData,
-        xAxisTicks, maxCount, apiCreatedHandleChange, subscribedToHandleChange, inProgress,
+        themeName, height, width, chartData, tableData, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
             margin: 'auto',
             width: '95%',
-        },
-        formWrapper: {
-            marginBottom: '5%',
-        },
-        form: {
-            display: 'flex',
-            flexWrap: 'wrap',
-        },
-        formControl: {
-            marginLeft: '5%',
-            marginTop: '5%',
-            minWidth: 120,
         },
         loadingIcon: {
             margin: 'auto',
@@ -67,13 +48,6 @@ export default function APIMSubscriptionsAnalytics(props) {
             justifyContent: 'center',
             height,
         },
-        formLabel: {
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-            width: '100%',
-            display: 'block',
-            overflow: 'hidden',
-        },
         heading: {
             margin: 'auto',
             textAlign: 'center',
@@ -84,7 +58,7 @@ export default function APIMSubscriptionsAnalytics(props) {
         },
     };
     const subDataProps = {
-        themeName, chartData, tableData, xAxisTicks, maxCount,
+        themeName, chartData, tableData, width,
     };
     return (
         <Scrollbars style={{
@@ -104,69 +78,6 @@ export default function APIMSubscriptionsAnalytics(props) {
                         <FormattedMessage id='widget.heading' defaultMessage='SUBSCRIPTIONS OVER TIME' />
                     </div>
                 </div>
-                <div style={styles.formWrapper}>
-                    <form style={styles.form} noValidate autoComplete='off'>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={<FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='api-createdBy-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='api.createdBy.label' defaultMessage='API Created By' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiCreatedBy}
-                                onChange={apiCreatedHandleChange}
-                                input={<Input name='api-createdBy' id='api-createdBy-label-placeholder' />}
-                                displayEmpty
-                                name='apiCreatedBy'
-                                style={styles.selectEmpty}
-                            >
-                                <MenuItem value='All'>
-                                    <FormattedMessage id='all.menuItem' defaultMessage='All' />
-                                </MenuItem>
-                                <MenuItem value='Me'>
-                                    <FormattedMessage id='me.menuItem' defaultMessage='Me' />
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={<FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='subscribedTo-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='subscribedTo.label' defaultMessage='Subscribed To' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={subscribedTo}
-                                onChange={subscribedToHandleChange}
-                                input={<Input name='subscribedTo' id='subscribedTo-label-placeholder' />}
-                                displayEmpty
-                                name='subscribedTo'
-                                style={styles.selectEmpty}
-                            >
-                                {
-                                    apilist.map(option => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))
-                                }
-                            </Select>
-                        </FormControl>
-                    </form>
-                </div>
                 { inProgress
                     ? (
                         <div style={styles.loading}>
@@ -183,14 +94,8 @@ export default function APIMSubscriptionsAnalytics(props) {
 APIMSubscriptionsAnalytics.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    apiCreatedBy: PropTypes.string.isRequired,
-    subscribedTo: PropTypes.string.isRequired,
-    apilist: PropTypes.instanceOf(Object).isRequired,
+    width: PropTypes.string.isRequired,
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
-    xAxisTicks: PropTypes.instanceOf(Object).isRequired,
-    maxCount: PropTypes.number.isRequired,
-    apiCreatedHandleChange: PropTypes.func.isRequired,
-    subscribedToHandleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

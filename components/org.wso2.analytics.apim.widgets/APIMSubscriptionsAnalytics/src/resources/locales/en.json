@@ -16,5 +16,6 @@
   "table.heading.apiname": "API NAME",
   "table.heading.appname": "APP NAME",
   "table.heading.subscribedtime": "SUBSCRIBED TIME",
+  "table.title": "SUBSCRIPTION DETAILS",
   "widget.heading": "SUBSCRIPTIONS OVER TIME"
 }

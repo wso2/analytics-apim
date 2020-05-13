@@ -30,6 +30,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
 /**
@@ -139,6 +140,10 @@ const styles = theme => ({
     paginationActions: {
         marginLeft: 0,
     },
+    title: {
+        paddingLeft: 20,
+        paddingTop: 10,
+    },
 });
 
 /**
@@ -158,7 +163,7 @@ class CustomTable extends React.Component {
             page: 0,
             rowsPerPage: 5,
             orderBy: 'subscribedtime',
-            order: 'desc',
+            order: 'asc',
             expanded: false,
             filterColumn: 'apiname',
             query: '',
@@ -223,6 +228,11 @@ class CustomTable extends React.Component {
         ];
         return (
             <Paper className={classes.root}>
+                <div className={classes.title}>
+                    <Typography variant='subtitle1'>
+                        <FormattedMessage id='table.title' defaultMessage='SUBSCRIPTION DETAILS' />
+                    </Typography>
+                </div>
                 <CustomTableToolbar
                     expanded={expanded}
                     filterColumn={filterColumn}
@@ -230,7 +240,6 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='SUBSCRIBED TIMES'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>

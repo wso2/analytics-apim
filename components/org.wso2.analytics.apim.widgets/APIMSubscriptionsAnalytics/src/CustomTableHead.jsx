@@ -34,7 +34,7 @@ const rows = [
         id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.appname',
     },
     {
-        id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.subscribedtime',
+        id: 'subscribedtime', numeric: false, disablePadding: false, label: 'table.heading.subscribedtime',
     },
 ];
 
