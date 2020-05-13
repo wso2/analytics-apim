@@ -126,6 +126,7 @@ class APIMTopApiCreatorsWidget extends Widget {
         this.handleChange = this.handleChange.bind(this);
         this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
         this.handleApiListReceived = this.handleApiListReceived.bind(this);
+        this.handleOnClickAPIProvider = this.handleOnClickAPIProvider.bind(this);
     }
 
     componentWillMount() {
@@ -304,6 +305,27 @@ class APIMTopApiCreatorsWidget extends Widget {
     }
 
     /**
+     * Handle onClick of an API Provider and drill down
+     * @memberof APIMTopApiCreatorsWidget
+     * */
+    handleOnClickAPIProvider(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const { creator } = data;
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath + '/dashboards/' + dashboard
+                    + '/' + drillDown + '#{"dmSelc":{"dm":"api provider","op":["' + creator + '"]}}';
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Top Api Creators widget
      * @memberof APIMTopApiCreatorsWidget
@@ -373,7 +395,11 @@ class APIMTopApiCreatorsWidget extends Widget {
                             </div>
                         </MuiThemeProvider>
                     ) : (
-                        <APIMTopApiCreators {...apiCreatorsProps} handleChange={this.handleChange} />
+                        <APIMTopApiCreators
+                            {...apiCreatorsProps}
+                            handleChange={this.handleChange}
+                            handleOnClickAPIProvider={this.handleOnClickAPIProvider}
+                        />
                     )
                 }
             </IntlProvider>

@@ -61,7 +61,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopApiCreators(props) {
     const {
-        themeName, height, limit, creatorData, handleChange, inProgress, width,
+        themeName, height, limit, creatorData, handleChange, inProgress, width, handleOnClickAPIProvider,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -258,6 +258,7 @@ export default function APIMTopApiCreators(props) {
                                         <div style={styles.tableDiv}>
                                             <CustomTable
                                                 data={creatorData}
+                                                onClickTableRow={e => handleOnClickAPIProvider(e)}
                                             />
                                         </div>
                                     </div>
@@ -279,4 +280,5 @@ APIMTopApiCreators.propTypes = {
     creatorData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClickAPIProvider: PropTypes.func.isRequired,
 };

@@ -38,6 +38,14 @@
           "name": "TEXT"
         },
         "defaultValue": "Top API Providers"
+      },
+      {
+        "id": "drillDown",
+        "title": "Drill Down Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": ""
       }
     ]
   }

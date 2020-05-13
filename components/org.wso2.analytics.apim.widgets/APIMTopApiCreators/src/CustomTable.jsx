@@ -192,7 +192,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, onClickTableRow } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -239,6 +239,7 @@ class CustomTable extends React.Component {
                                             hover
                                             tabIndex={-1}
                                             key={n.id}
+                                            onClick={() => onClickTableRow(n)}
                                         >
                                             <TableCell component='th' scope='row'>
                                                 {n.creator}
@@ -291,6 +292,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    onClickTableRow: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
