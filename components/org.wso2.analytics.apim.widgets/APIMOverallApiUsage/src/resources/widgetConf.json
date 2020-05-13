@@ -40,6 +40,14 @@
           "name": "TEXT"
         },
         "defaultValue": "Overall API Usage"
+      },
+      {
+        "id": "drillDown",
+        "title": "Drill Down Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": ""
       }
     ]
   }

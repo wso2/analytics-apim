@@ -138,6 +138,7 @@ class APIMOverallApiUsageWidget extends Widget {
         this.handleApiIdReceived = this.handleApiIdReceived.bind(this);
         this.selectedAPIChangeCallback = this.selectedAPIChangeCallback.bind(this);
         this.loadLimit = this.loadLimit.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -255,7 +256,7 @@ class APIMOverallApiUsageWidget extends Widget {
                 let filterCondition = '';
                 if (selectedOptions[0].name !== 'All') {
                     filterCondition = selectedOptions.map((opt) => {
-                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                        return '(apiName==\'' + opt.name + '\' AND apiversion==\'' + opt.version
                             + '\' AND apiCreator==\'' + opt.provider + '\')';
                     });
                     filterCondition = filterCondition.join(' OR ');
@@ -503,6 +504,34 @@ class APIMOverallApiUsageWidget extends Widget {
     };
 
     /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMOverallApiUsageWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g, sync,
+                } = super.getGlobalState('dtrp');
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Overall Api Usage widget
      * @memberof APIMOverallApiUsageWidget
@@ -575,6 +604,7 @@ class APIMOverallApiUsageWidget extends Widget {
                                 {...ovearllUsageProps}
                                 limitHandleChange={this.limitHandleChange}
                                 selectedAPIChangeCallback={this.selectedAPIChangeCallback}
+                                handleOnClickAPI={this.handleOnClickAPI}
                             />
                         )
                     }
