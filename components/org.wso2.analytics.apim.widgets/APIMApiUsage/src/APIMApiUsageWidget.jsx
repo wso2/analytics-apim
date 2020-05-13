@@ -127,6 +127,7 @@ class APIMApiUsageWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -244,7 +245,7 @@ class APIMApiUsageWidget extends Widget {
                 let filterCondition = '';
                 if (selectedOptions[0].name !== 'All') {
                     filterCondition = selectedOptions.map((opt) => {
-                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                        return '(apiName==\'' + opt.name + '\' AND apiversion==\'' + opt.version
                             + '\' AND apiCreator==\'' + opt.provider + '\')';
                     });
                     filterCondition = filterCondition.join(' OR ');
@@ -279,7 +280,7 @@ class APIMApiUsageWidget extends Widget {
             const usageData = data.map((dataUnit) => {
                 return {
                     api: dataUnit[0] + ' (' + dataUnit[4] + ')',
-                    apiVersion: dataUnit[1],
+                    apiversion: dataUnit[1],
                     application: dataUnit[2],
                     usage: dataUnit[3],
                 };
@@ -316,6 +317,35 @@ class APIMApiUsageWidget extends Widget {
             this.setState({ limit });
         }
     }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMApiUsageWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g, sync,
+                } = super.getGlobalState('dtrp');
+                const { api, apiversion } = data;
+                const apiname = (api.split(' (')[0]).trim();
+                const provider = (api.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + apiname + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
+        }
+    }
+
 
     /**
      * @inheritDoc
@@ -393,6 +423,7 @@ class APIMApiUsageWidget extends Widget {
                             <APIMApiUsage
                                 {...apiUsersProps}
                                 handleLimitChange={this.handleLimitChange}
+                                handleOnClickAPI={this.handleOnClickAPI}
                             />
                         )
                     }

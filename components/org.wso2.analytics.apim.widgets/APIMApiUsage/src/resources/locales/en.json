@@ -3,7 +3,7 @@
   "apim.server.error.heading" : "Error !",
   "apim.server.error" : "Error occurred while retrieving API list.",
   "apiName.label": "API Name",
-  "apiVersion.label": "API Version",
+  "apiversion.label": "API Version",
   "config.error.body": "Cannot fetch provider configuration for APIM API Usage widget",
   "config.error.heading": "Configuration Error !",
   "createdBy.label": "API Created By",
@@ -17,7 +17,7 @@
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
   "table.heading.api": "API",
-  "table.heading.apiVersion": "API VERSION",
+  "table.heading.apiversion": "API VERSION",
   "table.heading.application": "APPLICATION",
   "table.heading.usage": "USAGE",
   "widget.heading": "API USAGE BY APPLICATION"

@@ -34,7 +34,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMApiUsage(props) {
     const {
-        themeName, height, limit, usageData, handleLimitChange, inProgress,
+        themeName, height, limit, usageData, handleLimitChange, inProgress, handleOnClickAPI,
     } = props;
     const styles = {
         headingWrapper: {
@@ -139,7 +139,10 @@ export default function APIMApiUsage(props) {
                                     </Paper>
                                 </div>
                             ) : (
-                                <CustomTable data={usageData} />
+                                <CustomTable
+                                    data={usageData}
+                                    onClickTableRow={e => handleOnClickAPI(e)}
+                                />
                             )}
                     </div>
                 )}
@@ -156,4 +159,5 @@ APIMApiUsage.propTypes = {
     usageData: PropTypes.instanceOf(Object).isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClickAPI: PropTypes.func.isRequired,
 };
