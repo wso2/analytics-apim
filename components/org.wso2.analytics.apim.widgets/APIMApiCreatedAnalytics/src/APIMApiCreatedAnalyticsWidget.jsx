@@ -111,6 +111,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -248,7 +249,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             const tableData = data.map((dataUnit) => {
                 return {
                     apiname: dataUnit[0] + ' (' + dataUnit[3] + ')',
-                    apiVersion: dataUnit[1],
+                    apiversion: dataUnit[1],
                     createdtime: Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss A'),
                 };
             });
@@ -263,7 +264,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                 return acc;
             }, {});
             const chartData = Object.keys(dataGroupByTime).map((key) => {
-                return [dataGroupByTime[key], Moment(key, timeFormat).toDate().getTime(),];
+                return [dataGroupByTime[key], Moment(key, timeFormat).toDate().getTime()];
             });
             chartData.sort((a, b) => { return a[1] - b[1]; });
             this.setState({
@@ -298,14 +299,41 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     }
 
     /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMApiCreatedAnalyticsWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g, sync,
+                } = super.getGlobalState('dtrp');
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/a#{"dtrp":{"tr":"' + tr + '","sd":"' + sd + '","ed":"' + ed
+                    + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"' + api
+                    + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Api Created Analytics widget
      * @memberof APIMApiCreatedAnalyticsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, chartData, tableData, width,
-            inProgress,
+            localeMessages, faultyProviderConfig, height, chartData, tableData, width, inProgress,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -339,7 +367,10 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiCreatedAnalytics {...apiCreatedProps} />
+                            <APIMApiCreatedAnalytics
+                                {...apiCreatedProps}
+                                handleOnClickAPI={this.handleOnClickAPI}
+                            />
                         )
                     }
                 </MuiThemeProvider>

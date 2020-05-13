@@ -31,7 +31,7 @@ import APIMApiCreatedData from './APIMApiCreatedData';
  */
 export default function APIMApiCreatedAnalytics(props) {
     const {
-        themeName, height, chartData, tableData, inProgress, width,
+        themeName, height, chartData, tableData, inProgress, width, handleOnClickAPI,
     } = props;
     const styles = {
         headingWrapper: {
@@ -85,7 +85,12 @@ export default function APIMApiCreatedAnalytics(props) {
                             <CircularProgress style={styles.loadingIcon} />
                         </div>
                     )
-                    : <APIMApiCreatedData {...createdDataProps} />
+                    : (
+                        <APIMApiCreatedData
+                            {...createdDataProps}
+                            onClickAPI={e => handleOnClickAPI(e)}
+                        />
+                    )
                 }
 
             </div>
@@ -100,4 +105,5 @@ APIMApiCreatedAnalytics.propTypes = {
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClickAPI: PropTypes.func.isRequired,
 };

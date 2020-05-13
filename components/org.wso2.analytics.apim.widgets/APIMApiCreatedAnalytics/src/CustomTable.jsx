@@ -204,7 +204,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, onClickTableRow } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -219,8 +219,8 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
-            <MenuItem value='apiVersion'>
-                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
+            <MenuItem value='apiversion'>
+                <FormattedMessage id='table.heading.apiversion' defaultMessage='API VERSION' />
             </MenuItem>,
             <MenuItem value='createdtime'>
                 <FormattedMessage id='table.heading.createdtime' defaultMessage='CREATED TIME' />
@@ -262,12 +262,13 @@ class CustomTable extends React.Component {
                                         <TableRow
                                             hover
                                             tabIndex={-1}
+                                            onClick={() => onClickTableRow(n)}
                                         >
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
-                                                {n.apiVersion}
+                                                {n.apiversion}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
                                                 {n.createdtime}
@@ -321,6 +322,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    onClickTableRow: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
