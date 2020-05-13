@@ -61,9 +61,7 @@ export default function APIMApiCreatedData(props) {
             fontSize: 8,
         },
         tableWrapper: {
-            height: '30%',
-            margin: 'auto',
-            textAlign: 'right',
+            paddingTop: '20px',
         },
         button: {
             backgroundColor: '#1d216b',

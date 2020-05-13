@@ -245,27 +245,55 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const { data } = message;
 
         if (data && data.length !== 0) {
-            const chartData = [];
-            const tableData = [];
-            // use apiCount to keep aggregate API created count
-            let apiCount = 0;
-
-            data.sort((a, b) => { return new Date(a[2]).getTime() - new Date(b[2]).getTime(); });
-            data.forEach((dataUnit) => {
-                apiCount++;
-                chartData.push([apiCount, new Date(dataUnit[2]).getTime()]);
-                chartData.sort((a, b) => { return a[1] - b[1]; });
-                tableData.push({
+            const tableData = data.map((dataUnit) => {
+                return {
                     apiname: dataUnit[0] + ' (' + dataUnit[3] + ')',
                     apiVersion: dataUnit[1],
                     createdtime: Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss A'),
-                });
+                };
             });
+
+            const timeFormat = this.getDateFormat();
+            const dataGroupByTime = data.reduce((acc, obj) => {
+                const key = Moment(obj[2]).format(timeFormat);
+                if (!acc[key]) {
+                    acc[key] = 0;
+                }
+                acc[key]++;
+                return acc;
+            }, {});
+            const chartData = Object.keys(dataGroupByTime).map((key) => {
+                return [dataGroupByTime[key], Moment(key, timeFormat).toDate().getTime(),];
+            });
+            chartData.sort((a, b) => { return a[1] - b[1]; });
             this.setState({
                 chartData, tableData, inProgress: false,
             });
         } else {
             this.setState({ inProgress: false, chartData: [], tableData: [] });
+        }
+    }
+
+    /**
+     * Get time format for the selected granularity
+     * @memberof APIMApiCreatedAnalyticsWidget
+     * */
+    getDateFormat() {
+        const { perValue } = this.state;
+        switch (perValue) {
+            case 'minute':
+                return 'YYYY-MMM-DD HH:mm';
+            case 'hour':
+                return 'YYYY-MMM-DD HH';
+            case 'day':
+                return 'YYYY-MMM-DD';
+            case 'month':
+                return 'YYYY-MMM';
+            case 'year':
+                return 'YYYY';
+            case 'second':
+            default:
+                return 'YYYY-MMM-DD HH:mm:ss';
         }
     }
 

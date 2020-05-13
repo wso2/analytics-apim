@@ -13,5 +13,6 @@
   "table.heading.apiname": "API NAME",
   "table.heading.apiVersion": "API VERSION",
   "table.heading.createdtime": "CREATED TIME",
+  "table.title": "API CREATED TIME",
   "widget.heading": "APIS CREATED OVER TIME"
 }
