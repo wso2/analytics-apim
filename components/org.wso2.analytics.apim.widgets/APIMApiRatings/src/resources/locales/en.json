@@ -10,6 +10,7 @@
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
+  "table.heading.apiversion": "API VERSION",
   "table.heading.ratings": "RATING",
   "table.main.heading": "TOP RATED APIS :",
   "widget.heading": "TOP RATED APIS"

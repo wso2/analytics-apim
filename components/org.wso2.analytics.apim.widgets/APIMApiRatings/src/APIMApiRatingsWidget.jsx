@@ -121,6 +121,7 @@ class APIMApiRatingsWidget extends Widget {
         this.handleTopAPIReceived = this.handleTopAPIReceived.bind(this);
         this.assembleAPIListQuery = this.assembleAPIListQuery.bind(this);
         this.handleAPIListReceived = this.handleAPIListReceived.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -293,12 +294,41 @@ class APIMApiRatingsWidget extends Widget {
                 const api = apiIdMap[dataUnit[0]];
                 return {
                     apiname: api[1] + ' (' + api[3] + ')',
+                    apiversion: api[2],
                     ratings: dataUnit[1],
                 };
             });
             this.setState({ topApiNameData, inProgress: false });
         } else {
             this.setState({ topApiNameData: [], inProgress: false });
+        }
+    }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMApiRatingsWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g, sync,
+                } = super.getGlobalState('dtrp');
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
         }
     }
 
@@ -366,7 +396,10 @@ class APIMApiRatingsWidget extends Widget {
                                         </Paper>
                                     </div>
                                 ) : (
-                                    <APIMApiRatings {...apiRatingProps} />
+                                    <APIMApiRatings
+                                        {...apiRatingProps}
+                                        handleOnClickAPI={this.handleOnClickAPI}
+                                    />
                                 )
                             }
                         </div>
