@@ -126,6 +126,7 @@ class APIMTopThrottledApisWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -166,6 +167,19 @@ class APIMTopThrottledApisWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMTopThrottledApisWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMTopThrottledApisWidget
      * */
@@ -187,29 +201,24 @@ class APIMTopThrottledApisWidget extends Widget {
      * */
     assembleQuery() {
         const {
-            providerConfig, timeFrom, timeTo, perValue,
+            providerConfig, timeFrom, timeTo, perValue, limit,
         } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
 
-        if (!limit || limit < 0) {
-            limit = 5;
+        if (limit > 0) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'query';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{from}}': timeFrom,
+                '{{to}}': timeTo,
+                '{{per}}': perValue,
+                '{{limit}}': limit,
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, throttledData: [] });
         }
-
-        this.setState({ limit });
-        this.setQueryParam(limit);
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': perValue,
-            '{{limit}}': limit,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -221,7 +230,7 @@ class APIMTopThrottledApisWidget extends Widget {
         const { data } = message;
         const { limit } = this.state;
 
-        if (data) {
+        if (data && data.length > 0) {
             const throttledData = [];
             const legendData = [];
             let counter = 0;
@@ -266,8 +275,7 @@ class APIMTopThrottledApisWidget extends Widget {
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            this.assembleQuery();
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
             this.setState({ limit });
         }
