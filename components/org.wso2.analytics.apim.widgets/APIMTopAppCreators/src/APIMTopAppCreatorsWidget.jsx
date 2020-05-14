@@ -153,7 +153,8 @@ class APIMTopAppCreatorsWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + SUBSCRIBER_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + QUERY_CALLBACK);
     }
 
     /**
