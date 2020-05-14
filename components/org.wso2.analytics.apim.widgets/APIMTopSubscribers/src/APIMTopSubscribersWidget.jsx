@@ -127,6 +127,7 @@ class APIMTopSubscribersWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -167,29 +168,39 @@ class APIMTopSubscribersWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMTopSubscribersWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+
+    /**
      * Formats the rdbms query using selected options
      * @memberof APIMTopSubscribersWidget
      * */
     assembleQuery() {
-        const { providerConfig } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { limit } = queryParam;
+        const { providerConfig, limit } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (!limit) {
-            limit = 5;
+        if (limit > 0) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'query';
+            dataProviderConfigs.configs.config.publishingLimit = limit;
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{limit}}': limit,
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, creatorData: [] });
         }
-
-        this.setState({ limit, creatorData: [] });
-        this.setQueryParam(limit);
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.publishingLimit = limit;
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{limit}}': limit,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -199,7 +210,6 @@ class APIMTopSubscribersWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const { limit } = this.state;
 
         if (data) {
             const creatorData = [];
@@ -214,7 +224,6 @@ class APIMTopSubscribersWidget extends Widget {
             });
 
             this.setState({ legendData, creatorData, inProgress: false });
-            this.setQueryParam(limit);
         } else {
             this.setState({ inProgress: false, creatorData: [] });
         }
@@ -239,8 +248,7 @@ class APIMTopSubscribersWidget extends Widget {
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            this.assembleQuery();
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
             this.setState({ limit });
         }
