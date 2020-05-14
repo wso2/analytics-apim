@@ -252,6 +252,20 @@ export default function APIMTopApiCreators(props) {
                                                     y={d => d.apicount}
                                                     labels={d => `${d.creator} : ${((d.apicount
                                                         / (sumBy(pieChartData, o => o.apicount))) * 100).toFixed(2)}%`}
+                                                    events={[
+                                                        {
+                                                            target: 'data',
+                                                            eventHandlers: {
+                                                                onClick: () => {
+                                                                    return [{
+                                                                        mutation: (val) => {
+                                                                            handleOnClickAPIProvider(val.datum);
+                                                                        },
+                                                                    }];
+                                                                },
+                                                            },
+                                                        },
+                                                    ]}
                                                 />
                                             </svg>
                                         </div>
