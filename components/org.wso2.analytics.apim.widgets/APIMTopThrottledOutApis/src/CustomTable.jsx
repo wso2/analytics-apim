@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
+import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -192,7 +193,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, onClickTableRow } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -208,7 +209,7 @@ class CustomTable extends React.Component {
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
             <MenuItem value='apiname'>
-                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
+                <FormattedMessage id='table.heading.apiversion' defaultMessage='API VERSION' />
             </MenuItem>,
             <MenuItem value='throttledcount'>
                 <FormattedMessage id='table.heading.throttledcount' defaultMessage='THROTTLED OUT COUNT' />
@@ -223,7 +224,6 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='TOP THROTTLED OUT APIS'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
@@ -244,10 +244,12 @@ class CustomTable extends React.Component {
                                             key={n.id}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                {n.apiname}
+                                                <Link href='#' onClick={() => onClickTableRow(n)} color='inherit'>
+                                                    {n.apiname}
+                                                </Link>
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
-                                                {n.apiVersion}
+                                                {n.apiversion}
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
                                                 {n.throttledcount}
@@ -297,6 +299,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    onClickTableRow: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

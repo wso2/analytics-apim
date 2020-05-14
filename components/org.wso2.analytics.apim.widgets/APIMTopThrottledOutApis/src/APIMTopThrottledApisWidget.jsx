@@ -112,6 +112,7 @@ class APIMTopThrottledApisWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -234,7 +235,7 @@ class APIMTopThrottledApisWidget extends Widget {
                 throttledData.push({
                     id: counter,
                     apiname: apiName,
-                    apiVersion: dataUnit[1],
+                    apiversion: dataUnit[1],
                     throttledcount: dataUnit[4],
                 });
             });
@@ -271,6 +272,34 @@ class APIMTopThrottledApisWidget extends Widget {
             this.assembleQuery();
         } else {
             this.setState({ limit });
+        }
+    }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMTopThrottledApisWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g, sync,
+                } = super.getGlobalState('dtrp');
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
         }
     }
 
@@ -316,7 +345,11 @@ class APIMTopThrottledApisWidget extends Widget {
                             </div>
                         </MuiThemeProvider>
                     ) : (
-                        <APIMTopThrottledApis {...throttledApisProps} handleChange={this.handleChange} />
+                        <APIMTopThrottledApis
+                            {...throttledApisProps}
+                            handleChange={this.handleChange}
+                            handleOnClickAPI={this.handleOnClickAPI}
+                        />
                     )
                 }
             </IntlProvider>
