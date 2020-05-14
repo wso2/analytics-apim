@@ -158,7 +158,7 @@ class CustomTable extends React.Component {
             page: 0,
             rowsPerPage: 5,
             orderBy: 'signeduptime',
-            order: 'desc',
+            order: 'asc',
             expanded: false,
             filterColumn: 'developer',
             query: '',
@@ -227,7 +227,6 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='SIGNED UP TIMES'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
