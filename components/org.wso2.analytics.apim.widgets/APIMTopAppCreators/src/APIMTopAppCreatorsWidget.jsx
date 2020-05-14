@@ -114,6 +114,7 @@ class APIMTopAppCreatorsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleSubscriberDataReceived = this.handleSubscriberDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleOnClickAppCreator = this.handleOnClickAppCreator.bind(this);
     }
 
     componentWillMount() {
@@ -283,6 +284,27 @@ class APIMTopAppCreatorsWidget extends Widget {
     }
 
     /**
+     * Handle onClick of an API Provider and drill down
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    handleOnClickAppCreator(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const { creator } = data;
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath + '/dashboards/' + dashboard
+                    + '/' + drillDown + '#{"apps":{"appCreatedBy":"' + creator + '"}}';
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Top App Creators widget
      * @memberof APIMTopAppCreatorsWidget
@@ -324,7 +346,11 @@ class APIMTopAppCreatorsWidget extends Widget {
                             </div>
                         </MuiThemeProvider>
                     ) : (
-                        <APIMTopAppCreators {...appCreatorsProps} handleChange={this.handleChange} />
+                        <APIMTopAppCreators
+                            {...appCreatorsProps}
+                            handleChange={this.handleChange}
+                            handleOnClickAppCreator={this.handleOnClickAppCreator}
+                        />
                     )
                 }
             </IntlProvider>
