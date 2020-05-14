@@ -42,6 +42,14 @@
           "name": "TEXT"
         },
         "defaultValue": "Top Subscriptions per Provider"
+      },
+      {
+        "id": "drillDown",
+        "title": "Drill Down Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": ""
       }
     ]
   }

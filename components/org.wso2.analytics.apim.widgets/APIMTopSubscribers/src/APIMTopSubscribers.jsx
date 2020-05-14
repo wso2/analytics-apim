@@ -61,7 +61,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopSubscribers(props) {
     const {
-        themeName, height, limit, creatorData, handleChange, inProgress, width,
+        themeName, height, limit, creatorData, handleChange, inProgress, width, handleOnClickAPIProvider,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -252,12 +252,27 @@ export default function APIMTopSubscribers(props) {
                                                     y={d => d.subcount}
                                                     labels={d => `${d.creator} : ${((d.subcount
                                                         / (sumBy(pieChartData, o => o.subcount))) * 100).toFixed(2)}%`}
+                                                    events={[
+                                                        {
+                                                            target: 'data',
+                                                            eventHandlers: {
+                                                                onClick: () => {
+                                                                    return [{
+                                                                        mutation: (val) => {
+                                                                            handleOnClickAPIProvider(val.datum);
+                                                                        },
+                                                                    }];
+                                                                },
+                                                            },
+                                                        },
+                                                    ]}
                                                 />
                                             </svg>
                                         </div>
                                         <div style={styles.tableDiv}>
                                             <CustomTable
                                                 data={creatorData}
+                                                onClickTableRow={e => handleOnClickAPIProvider(e)}
                                             />
                                         </div>
                                     </div>
@@ -274,8 +289,10 @@ export default function APIMTopSubscribers(props) {
 APIMTopSubscribers.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     creatorData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
+    handleOnClickAPIProvider: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

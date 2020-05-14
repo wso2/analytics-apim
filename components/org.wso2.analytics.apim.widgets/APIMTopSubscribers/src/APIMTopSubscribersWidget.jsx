@@ -113,6 +113,7 @@ class APIMTopSubscribersWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleOnClickAPIProvider = this.handleOnClickAPIProvider.bind(this);
     }
 
     componentWillMount() {
@@ -248,6 +249,27 @@ class APIMTopSubscribersWidget extends Widget {
     }
 
     /**
+     * Handle onClick of an API Provider and drill down
+     * @memberof APIMTopSubscribersWidget
+     * */
+    handleOnClickAPIProvider(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const { creator } = data;
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath + '/dashboards/' + dashboard
+                    + '/' + drillDown + '#{"dmSelc":{"dm":"api provider","op":["' + creator + '"]}}';
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Top Subscribers widget
      * @memberof APIMTopSubscribersWidget
@@ -288,7 +310,11 @@ class APIMTopSubscribersWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMTopSubscribers {...subscribersProps} handleChange={this.handleChange} />
+                            <APIMTopSubscribers
+                                {...subscribersProps}
+                                handleChange={this.handleChange}
+                                handleOnClickAPIProvider={this.handleOnClickAPIProvider}
+                            />
                         )
                     }
                 </MuiThemeProvider>
