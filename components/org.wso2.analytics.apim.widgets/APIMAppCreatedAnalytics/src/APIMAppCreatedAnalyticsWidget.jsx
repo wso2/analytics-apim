@@ -288,7 +288,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * */
     assembleMainQuery() {
         const {
-            providerConfig, timeFrom, timeTo, appCreatedBy, selectedOptions,
+            providerConfig, timeFrom, timeTo, appCreatedBy, selectedOptions, sublist,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -302,9 +302,10 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             '{{subscriptionTable}}':
                 (appCreatedBy !== 'All' || apiList[0] !== 'All') ? ', AM_API api, AM_SUBSCRIPTION subc' : '',
             '{{subscription}}': (appCreatedBy !== 'All' || apiList[0] !== 'All')
-                ? 'AND api.API_ID=subc.API_ID and app.APPLICATION_ID=subc.APPLICATION_ID' : '',
+                ? 'AND api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID' : '',
             '{{apiName}}': apiList[0] !== 'All' ? 'AND api.API_NAME in (\'' + apiList.join('\', \'') + '\')' : '',
-            '{{subscriberId}}': appCreatedBy !== 'All' ? 'and sub.USER_ID = \'' + appCreatedBy + '\'' : '',
+            '{{subscriberId}}': appCreatedBy !== 'All' ? 'AND sub.USER_ID = \'' + appCreatedBy + '\''
+                : 'AND sub.USER_ID IN (\'' + sublist.join('\', \'') + '\')',
             '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
             '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
         };
@@ -324,17 +325,17 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         if (data && data.length > 0) {
             const tableData = data.map((dataUnit) => {
                 return {
-                    appname: dataUnit[2] + ' (' + dataUnit[3] + ')',
-                    createdtime: Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss A'),
+                    appname: dataUnit[1] + ' (' + dataUnit[2] + ')',
+                    createdtime: Moment(dataUnit[0]).format('YYYY-MMM-DD hh:mm:ss A'),
                 };
             });
             const timeFormat = this.getDateFormat();
             const dataGroupByTime = data.reduce((acc, obj) => {
-                const key = Moment(obj[1]).format(timeFormat);
+                const key = Moment(obj[0]).format(timeFormat);
                 if (!acc[key]) {
                     acc[key] = 0;
                 }
-                acc[key] += obj[0];
+                acc[key]++;
                 return acc;
             }, {});
             const chartData = Object.keys(dataGroupByTime).map((key) => {
