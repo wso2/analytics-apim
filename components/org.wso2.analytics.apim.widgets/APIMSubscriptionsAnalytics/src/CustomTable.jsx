@@ -142,7 +142,7 @@ const styles = theme => ({
     },
     title: {
         paddingLeft: 20,
-        paddingTop: 10,
+        paddingTop: 15,
     },
 });
 
