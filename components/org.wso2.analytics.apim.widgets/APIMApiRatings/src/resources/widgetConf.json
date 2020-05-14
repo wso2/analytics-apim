@@ -42,11 +42,11 @@
       },
       {
         "id": "drillDown",
-        "title": "Drill Down Page",
+        "title": "API Usage Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": ""
+        "defaultValue": "api-usage"
       }
     ]
   }

@@ -45,11 +45,11 @@
       },
       {
         "id": "drillDown",
-        "title": "Drill Down Page",
+        "title": "Overall Usage Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": ""
+        "defaultValue": "overall-usage"
       }
     ]
   }

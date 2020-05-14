@@ -42,11 +42,11 @@
       },
       {
         "id": "drillDown",
-        "title": "Drill Down Page",
+        "title": "Application Statistics Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": ""
+        "defaultValue": "api-app-stats"
       }
     ]
   }

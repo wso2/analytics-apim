@@ -41,11 +41,11 @@
       },
       {
         "id": "drillDown",
-        "title": "Drill Down Page",
+        "title": "API Faults Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": ""
+        "defaultValue": "api-faults"
       }
     ]
 
