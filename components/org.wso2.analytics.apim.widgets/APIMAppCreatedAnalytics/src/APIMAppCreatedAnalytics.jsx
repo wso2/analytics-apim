@@ -114,7 +114,7 @@ export default function APIMAppCreatedAnalytics(props) {
                                 title={(
                                     <FormattedMessage
                                         id='app.createdBy.label'
-                                        defaultMessage='APP Created By'
+                                        defaultMessage='App Owner'
                                     />
                                 )}
                             >
@@ -123,7 +123,7 @@ export default function APIMAppCreatedAnalytics(props) {
                                     htmlFor='app-createdBy-label-placeholder'
                                     style={styles.formLabel}
                                 >
-                                    <FormattedMessage id='app.createdBy.label' defaultMessage='APP Created By' />
+                                    <FormattedMessage id='app.createdBy.label' defaultMessage='App Owner' />
                                 </InputLabel>
                             </Tooltip>
                             <Select
