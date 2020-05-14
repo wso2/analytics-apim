@@ -104,7 +104,6 @@ class APIMTopApiCreatorsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiDataList: [],
             creatorData: [],
             legendData: [],
             limit: 5,
@@ -124,8 +123,6 @@ class APIMTopApiCreatorsWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
-        this.handleApiListReceived = this.handleApiListReceived.bind(this);
         this.handleOnClickAPIProvider = this.handleOnClickAPIProvider.bind(this);
     }
 
@@ -140,12 +137,13 @@ class APIMTopApiCreatorsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleApiListQuery);
+                }, this.assembleQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -180,33 +178,16 @@ class APIMTopApiCreatorsWidget extends Widget {
     }
 
     /**
-     * Retrieve API list from APIM server
+     * Retrieve the limit from query param
      * @memberof APIMTopApiCreatorsWidget
      * */
-    assembleApiListQuery() {
-        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
-            .then((response) => {
-                this.setState({ proxyError: false });
-                this.handleApiListReceived(response.data);
-            })
-            .catch((error) => {
-                this.setState({ proxyError: true, inProgress: false });
-                console.error(error);
-            });
-    }
-
-    /**
-     * Formats data retrieved from assembleApiListQuery
-     * @param {object} data - data retrieved
-     * @memberof APIMTopApiCreatorsWidget
-     * */
-    handleApiListReceived(data) {
-        const { list } = data;
-
-        if (list && list.length > 0) {
-            this.setState({ apiDataList: list });
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
         }
-        this.assembleQuery();
+        this.setQueryParam(limit);
+        this.setState({ limit });
     }
 
     /**
@@ -214,29 +195,13 @@ class APIMTopApiCreatorsWidget extends Widget {
      * @memberof APIMTopApiCreatorsWidget
      * */
     assembleQuery() {
-        const { providerConfig, apiDataList } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { limit } = queryParam;
+        const { providerConfig, limit } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (!limit || limit < 0) {
-            limit = 5;
-        }
-
-        this.setState({ limit, creatorData: [] });
-        this.setQueryParam(limit);
-
-        if (apiDataList && apiDataList.length > 0) {
-            let apiCondition = apiDataList.map((api) => {
-                return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
-                    + '\' AND API_PROVIDER==\'' + api.provider + '\')';
-            });
-            apiCondition = apiCondition.join(' OR ');
-
+        if (limit > 0) {
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'query';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiCondition}}': apiCondition,
                 '{{limit}}': limit,
             };
             super.getWidgetChannelManager()
@@ -253,7 +218,6 @@ class APIMTopApiCreatorsWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const { limit } = this.state;
 
         if (data) {
             const creatorData = [];
@@ -268,7 +232,6 @@ class APIMTopApiCreatorsWidget extends Widget {
             });
 
             this.setState({ legendData, creatorData, inProgress: false });
-            this.setQueryParam(limit);
         } else {
             this.setState({ inProgress: false, creatorData: [] });
         }
@@ -293,8 +256,7 @@ class APIMTopApiCreatorsWidget extends Widget {
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            this.assembleQuery();
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
             this.setState({ limit });
         }
