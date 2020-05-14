@@ -112,6 +112,7 @@ class APIMTopFaultyApisWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -229,7 +230,7 @@ class APIMTopFaultyApisWidget extends Widget {
                     legendData.push({ name: apiName });
                 }
                 faultData.push({
-                    id: counter, apiname: apiName, apiVersion: dataUnit[1], faultcount: dataUnit[4],
+                    id: counter, apiname: apiName, apiversion: dataUnit[1], faultcount: dataUnit[4],
                 });
             });
 
@@ -264,6 +265,34 @@ class APIMTopFaultyApisWidget extends Widget {
             this.assembleQuery();
         } else {
             this.setState({ limit });
+        }
+    }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMTopFaultyApisWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g, sync,
+                } = super.getGlobalState('dtrp');
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
         }
     }
 
@@ -316,7 +345,11 @@ class APIMTopFaultyApisWidget extends Widget {
                             </div>
                         </MuiThemeProvider>
                     ) : (
-                        <APIMTopFaultyApis {...faultyApisProps} handleChange={this.handleChange} />
+                        <APIMTopFaultyApis
+                            {...faultyApisProps}
+                            handleChange={this.handleChange}
+                            handleOnClickAPI={this.handleOnClickAPI}
+                        />
                     )
                 }
             </IntlProvider>
