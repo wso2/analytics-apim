@@ -180,7 +180,6 @@ class APIMTopSubscribersWidget extends Widget {
         this.setState({ limit });
     }
 
-
     /**
      * Formats the rdbms query using selected options
      * @memberof APIMTopSubscribersWidget
