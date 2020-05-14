@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
+import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -277,25 +278,16 @@ class CustomTable extends React.Component {
                                             tabIndex={-1}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                <div style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                }}
-                                                >
-                                                    <Checkbox
-                                                        value={option.apiname + ':' + option.apiversion}
-                                                        onChange={this.handleSelectedAPIChange}
-                                                        checked={selectedAPIs.includes(
-                                                            option.apiname + ':' + option.apiversion,
-                                                        )}
-                                                    />
-                                                    <div
-                                                        onClick={() => onClickTableRow(option)}
-                                                        onKeyDown={() => onClickTableRow(option)}
-                                                    >
-                                                        {option.apiname}
-                                                    </div>
-                                                </div>
+                                                <Checkbox
+                                                    value={option.apiname + ':' + option.apiversion}
+                                                    onChange={this.handleSelectedAPIChange}
+                                                    checked={selectedAPIs.includes(
+                                                        option.apiname + ':' + option.apiversion,
+                                                    )}
+                                                />
+                                                <Link href='#' onClick={() => onClickTableRow(option)} color='inherit'>
+                                                    {option.apiname}
+                                                </Link>
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
                                                 {option.apiversion}

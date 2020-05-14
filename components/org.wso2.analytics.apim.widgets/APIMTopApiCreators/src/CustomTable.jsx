@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
+import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -239,10 +240,11 @@ class CustomTable extends React.Component {
                                             hover
                                             tabIndex={-1}
                                             key={n.id}
-                                            onClick={() => onClickTableRow(n)}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                {n.creator}
+                                                <Link href='#' onClick={() => onClickTableRow(n)} color='inherit'>
+                                                    {n.creator}
+                                                </Link>
                                             </TableCell>
                                             <TableCell numeric>
                                                 {n.apicount}
