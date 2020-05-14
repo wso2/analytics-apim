@@ -302,8 +302,7 @@ class APIMOverallApiUsageWidget extends Widget {
                     version: dataUnit[3],
                 };
             });
-            this.setState({ usageData });
-            this.assembleApiIdQuery();
+            this.setState({ usageData }, this.assembleApiIdQuery);
         } else {
             this.setState({
                 usageData1: [], usageData2: [], inProgress: false,
@@ -351,8 +350,7 @@ class APIMOverallApiUsageWidget extends Widget {
         if (data && data.length > 0) {
             const apiIdMap = {};
             data.forEach((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2], version: api[3] }; });
-            this.setState({ apiIdMapGlobal: cloneDeep(apiIdMap), apiIdMap });
-            this.assembleApiSubQuery();
+            this.setState({ apiIdMapGlobal: cloneDeep(apiIdMap), apiIdMap }, this.assembleApiSubQuery);
         } else {
             this.setState({
                 usageData1: [], usageData2: [], inProgress: false,
