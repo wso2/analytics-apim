@@ -135,6 +135,7 @@ class APIMTopAppCreatorsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -175,6 +176,19 @@ class APIMTopAppCreatorsWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Retrieves subscribers
      * @memberof APIMTopAppCreatorsWidget
      * */
@@ -208,18 +222,10 @@ class APIMTopAppCreatorsWidget extends Widget {
      * @memberof APIMTopAppCreatorsWidget
      * */
     assembleQuery() {
-        const { providerConfig, subscribers } = this.state;
+        const { providerConfig, subscribers, limit } = this.state;
         const { id, widgetID: widgetName } = this.props;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { limit } = queryParam;
 
-        if (!limit || limit < 0) {
-            limit = 5;
-        }
-
-        this.setState({ limit });
-
-        if (subscribers && subscribers.length > 0) {
+        if (subscribers && subscribers.length > 0 && limit > 0) {
             const dataProviderConfigs = cloneDeep(providerConfig);
             let subs = subscribers.map((sub) => { return 'SUBSCRIBER_ID==' + sub; });
             subs = subs.join(' OR ');
@@ -279,8 +285,7 @@ class APIMTopAppCreatorsWidget extends Widget {
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            this.assembleQuery();
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
             this.setState({ limit });
         }
