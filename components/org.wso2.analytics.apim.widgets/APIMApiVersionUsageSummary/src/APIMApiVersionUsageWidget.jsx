@@ -292,12 +292,10 @@ class APIMApiVersionUsageWidget extends Widget {
      * @memberof APIMApiVersionUsageWidget
      * */
     handleChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ inProgress: true, limit }, this.assembleApiUsageQuery);
         } else {
             this.setState({ limit });

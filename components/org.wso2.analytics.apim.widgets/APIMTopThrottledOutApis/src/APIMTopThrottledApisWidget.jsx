@@ -262,13 +262,11 @@ class APIMTopThrottledApisWidget extends Widget {
      * @memberof APIMTopThrottledApisWidget
      * */
     handleChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
             this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleQuery();
         } else {
             this.setState({ limit });

@@ -202,12 +202,10 @@ class APIMTopApiCreatorsWidget extends Widget {
      * */
     handleApiListReceived(data) {
         const { list } = data;
-        const { id } = this.props;
 
         if (list && list.length > 0) {
             this.setState({ apiDataList: list });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleQuery();
     }
 
@@ -291,13 +289,11 @@ class APIMTopApiCreatorsWidget extends Widget {
      * @memberof APIMTopApiCreatorsWidget
      * */
     handleChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
             this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleQuery();
         } else {
             this.setState({ limit });

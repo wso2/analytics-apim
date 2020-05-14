@@ -314,12 +314,10 @@ class APIMTopPlatformsWidget extends Widget {
      * @memberof APIMTopPlatformsWidget
      * */
     handleLimitChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ inProgress: true, limit }, this.assembleMainQuery);
         } else {
             this.setState({ limit });

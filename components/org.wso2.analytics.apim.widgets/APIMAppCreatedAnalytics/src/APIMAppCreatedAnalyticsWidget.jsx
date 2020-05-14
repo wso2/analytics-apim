@@ -260,7 +260,6 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * */
     handleSubListReceived(message) {
         const { data } = message;
-        const { id } = this.props;
         let { appCreatedBy } = { ...this.state };
 
         if (data && data.length > 0) {
@@ -275,7 +274,6 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
                 [appCreatedBy] = sublist;
             }
             this.setQueryParam(appCreatedBy);
-            super.getWidgetChannelManager().unsubscribeWidget(id + SUBSCRIBER_CALLBACK);
             this.setState({ sublist, appCreatedBy }, this.assembleMainQuery);
         } else {
             this.setState({ chartData: [], tableData: [], inProgress: false });
@@ -388,10 +386,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
     appCreatedHandleChange(event) {
-        const { id } = this.props;
-
         this.setQueryParam(event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id + MAIN_CALLBACK);
         this.setState({ appCreatedBy: event.target.value, inProgress: true }, this.assembleMainQuery);
     }
 

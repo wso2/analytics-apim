@@ -245,7 +245,7 @@ class APIMApiUsageWidget extends Widget {
                 let filterCondition = '';
                 if (selectedOptions[0].name !== 'All') {
                     filterCondition = selectedOptions.map((opt) => {
-                        return '(apiName==\'' + opt.name + '\' AND apiversion==\'' + opt.version
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
                             + '\' AND apiCreator==\'' + opt.provider + '\')';
                     });
                     filterCondition = filterCondition.join(' OR ');
@@ -306,12 +306,10 @@ class APIMApiUsageWidget extends Widget {
      * @memberof APIMApiUsageWidget
      * */
     handleLimitChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ inProgress: true, limit }, this.assembleMainQuery);
         } else {
             this.setState({ limit });

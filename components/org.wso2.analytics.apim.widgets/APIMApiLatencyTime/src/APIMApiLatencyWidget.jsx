@@ -184,7 +184,9 @@ class APIMApiLatencyWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_ID_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_RESOURCE_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_LATENCY_CALLBACK);
     }
 
     /**
@@ -303,11 +305,9 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     handleApiIdReceived(message) {
-        const { id } = this.props;
         const { data } = message;
 
         if (data && data.length > 0) {
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ apiId: data[0][0] }, this.assembleResourceQuery);
         } else {
             this.setState({ inProgress: false, latencyData: [] });
@@ -343,7 +343,6 @@ class APIMApiLatencyWidget extends Widget {
      * */
     handleResourceReceived(message) {
         const { data } = message;
-        const { id } = this.props;
         const { operationSelected, resourceSelected } = this.state;
 
         if (data) {
@@ -359,7 +358,6 @@ class APIMApiLatencyWidget extends Widget {
             const filterSelectedResource = resourceList.includes(resourceSelected) ? resourceSelected : '';
             this.setQueryParam(filterSelectedOperations, filterSelectedResource);
 
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({
                 resourceList,
                 operationSelected: filterSelectedOperations,
@@ -473,16 +471,15 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     apiOperationHandleChange(event) {
-        const { id } = this.props;
         const queryParam = super.getGlobalState(queryParamKey);
         const { operationSelected } = this.state;
+
         if (queryParam.operationSelected.includes(event.target.value)) {
             operationSelected.splice(operationSelected.indexOf(event.target.value), 1);
         } else {
             operationSelected.push(event.target.value);
         }
         this.setQueryParam(operationSelected, '');
-        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({ operationSelected, inProgress: true }, this.assembleMainQuery);
     }
 
@@ -492,11 +489,9 @@ class APIMApiLatencyWidget extends Widget {
          * @memberof APIMApiLatencyWidget
          * */
     apiResourceHandleChange(event) {
-        const { id } = this.props;
         const resourceSelected = event.target.value;
 
         this.setQueryParam([], resourceSelected);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.setState({ resourceSelected, inProgress: true }, this.assembleMainQuery);
     }
 

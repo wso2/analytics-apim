@@ -205,11 +205,9 @@ class APIMApiRatingsWidget extends Widget {
      * */
     handleAPIListReceived(data) {
         const { list } = data;
-        const { id } = this.props;
         if (list && list.length > 0) {
             this.setState({ apiDataList: list });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleAPIDataQuery();
     }
 
@@ -247,13 +245,11 @@ class APIMApiRatingsWidget extends Widget {
      * */
     handleAPIDataReceived(message) {
         const { data } = message;
-        const { id } = this.props;
         if (data) {
             const apiIdMap = {};
             data.forEach((api) => { apiIdMap[api[0]] = api; });
             this.setState({ apiIdMap });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleTopAPIQuery();
     }
 

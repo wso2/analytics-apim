@@ -54,6 +54,13 @@ const lightTheme = createMuiTheme({
 const queryParamKey = 'appCreators';
 
 /**
+ * Callback function suffixes
+ * @type {string}
+ */
+const SUBSCRIBER_CALLBACK = '-subscriber';
+const QUERY_CALLBACK = '-query';
+
+/**
  * Language
  * @type {string}
  */
@@ -176,8 +183,8 @@ class APIMTopAppCreatorsWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'subscriberQuery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleSubscriberDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id + SUBSCRIBER_CALLBACK, widgetName,
+            this.handleSubscriberDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -187,11 +194,9 @@ class APIMTopAppCreatorsWidget extends Widget {
      * */
     handleSubscriberDataReceived(message) {
         const { data } = message;
-        const { id } = this.props;
 
         if (data) {
             const subscribers = data.map((dataUnit) => { return dataUnit[0]; });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ subscribers }, this.assembleQuery);
         } else {
             this.setState({ inProgress: false, creatorData: [] });
@@ -224,7 +229,7 @@ class APIMTopAppCreatorsWidget extends Widget {
                 '{{limit}}': limit,
             };
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+                .subscribeWidget(id + QUERY_CALLBACK, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
             this.setState({ inProgress: false, creatorData: [] });
         }
@@ -270,13 +275,11 @@ class APIMTopAppCreatorsWidget extends Widget {
      * @memberof APIMTopAppCreatorsWidget
      * */
     handleChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
             this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleQuery();
         } else {
             this.setState({ limit });

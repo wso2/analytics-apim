@@ -170,7 +170,9 @@ class APIMOverallApiUsageWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_ID_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_SUB_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_USAGE_CALLBACK);
     }
 
     /**
@@ -256,7 +258,7 @@ class APIMOverallApiUsageWidget extends Widget {
                 let filterCondition = '';
                 if (selectedOptions[0].name !== 'All') {
                     filterCondition = selectedOptions.map((opt) => {
-                        return '(apiName==\'' + opt.name + '\' AND apiversion==\'' + opt.version
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
                             + '\' AND apiCreator==\'' + opt.provider + '\')';
                     });
                     filterCondition = filterCondition.join(' OR ');
@@ -290,7 +292,6 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     handleApiUsageReceived(message) {
         const { data } = message;
-        const { id } = this.props;
 
         if (data && data.length > 0) {
             const usageData = data.map((dataUnit) => {
@@ -302,7 +303,6 @@ class APIMOverallApiUsageWidget extends Widget {
                 };
             });
             this.setState({ usageData });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleApiIdQuery();
         } else {
             this.setState({
@@ -347,13 +347,11 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     handleApiIdReceived(message) {
         const { data } = message;
-        const { id } = this.props;
 
         if (data && data.length > 0) {
             const apiIdMap = {};
             data.forEach((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2], version: api[3] }; });
             this.setState({ apiIdMapGlobal: cloneDeep(apiIdMap), apiIdMap });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleApiSubQuery();
         } else {
             this.setState({
@@ -458,12 +456,10 @@ class APIMOverallApiUsageWidget extends Widget {
      * @memberof APIMOverallApiUsageWidget
      * */
     limitHandleChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ inProgress: true, limit }, this.assembleApiUsageQuery);
         } else {
             this.setState({ limit });
