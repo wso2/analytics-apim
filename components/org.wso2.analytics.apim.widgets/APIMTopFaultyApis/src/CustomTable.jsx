@@ -216,7 +216,6 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='TOP FAULTY APIS'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
