@@ -87,17 +87,6 @@ class APIMOverallApiUsageWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            proxyPaperWrapper: {
-                height: '75%',
-            },
-            proxyPaper: {
-                background: '#969696',
-                width: '75%',
-                padding: '4%',
-                border: '1.5px solid #fff',
-                margin: 'auto',
-                marginTop: '5%',
-            },
         };
 
         this.state = {
@@ -112,7 +101,6 @@ class APIMOverallApiUsageWidget extends Widget {
             limit: 5,
             localeMessages: null,
             inProgress: true,
-            proxyError: false,
             dimension: null,
             selectedOptions: [],
             timeFrom: null,
@@ -532,44 +520,16 @@ class APIMOverallApiUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, width, height, limit, usageData1, usageData2, inProgress, proxyError,
+            localeMessages, faultyProviderConfig, width, height, limit, usageData1, usageData2, inProgress,
         } = this.state;
         const {
-            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const ovearllUsageProps = {
             themeName, width, height, limit, usageData1, usageData2, inProgress,
         };
-
-        if (proxyError) {
-            return (
-                <IntlProvider locale={language} messages={localeMessages}>
-                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                        <div style={proxyPaperWrapper}>
-                            <Paper
-                                elevation={1}
-                                style={proxyPaper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage
-                                        id='apim.server.error.heading'
-                                        defaultMessage='Error!'
-                                    />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='apim.server.error'
-                                        defaultMessage='Error occurred while retrieving API list.'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                    </MuiThemeProvider>
-                </IntlProvider>
-            );
-        }
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>

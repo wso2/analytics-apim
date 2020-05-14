@@ -88,17 +88,6 @@ class APIMTopApiCreatorsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            proxyPaperWrapper: {
-                height: '75%',
-            },
-            proxyPaper: {
-                background: '#969696',
-                width: '75%',
-                padding: '4%',
-                border: '1.5px solid #fff',
-                margin: 'auto',
-                marginTop: '5%',
-            },
         };
 
         this.state = {
@@ -109,7 +98,6 @@ class APIMTopApiCreatorsWidget extends Widget {
             limit: 5,
             localeMessages: null,
             inProgress: true,
-            proxyError: false,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -290,44 +278,16 @@ class APIMTopApiCreatorsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress, proxyError, width,
+            localeMessages, faultyProviderConfig, height, limit, creatorData, legendData, inProgress, width,
         } = this.state;
         const {
-            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatorsProps = {
             themeName, height, limit, creatorData, legendData, inProgress, width,
         };
-
-        if (proxyError) {
-            return (
-                <IntlProvider locale={language} messages={localeMessages}>
-                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                        <div style={proxyPaperWrapper}>
-                            <Paper
-                                elevation={1}
-                                style={proxyPaper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage
-                                        id='apim.server.error.heading'
-                                        defaultMessage='Error!'
-                                    />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='apim.server.error'
-                                        defaultMessage='Error occurred while retrieving API list.'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                    </MuiThemeProvider>
-                </IntlProvider>
-            );
-        }
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>

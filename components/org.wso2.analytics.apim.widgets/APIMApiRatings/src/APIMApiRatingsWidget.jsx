@@ -86,7 +86,6 @@ class APIMApiRatingsWidget extends Widget {
             apiIdMap: null,
             localeMessages: null,
             inProgress: true,
-            proxyError: false,
             refreshInterval: 60000, // 1min
         };
 
@@ -99,17 +98,6 @@ class APIMApiRatingsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            proxyPaperWrapper: {
-                height: '75%',
-            },
-            proxyPaper: {
-                background: '#969696',
-                width: '75%',
-                padding: '4%',
-                border: '1.5px solid #fff',
-                margin: 'auto',
-                marginTop: '5%',
             },
         };
 
@@ -300,10 +288,9 @@ class APIMApiRatingsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData, inProgress,
-            proxyError,
         } = this.state;
         const {
-            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -314,57 +301,32 @@ class APIMApiRatingsWidget extends Widget {
         return (
             <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    { proxyError ? (
-                        <div style={proxyPaperWrapper}>
-                            <Paper
-                                elevation={1}
-                                style={proxyPaper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage
-                                        id='apim.server.error.heading'
-                                        defaultMessage='Error!'
-                                    />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='apim.server.error'
-                                        defaultMessage='Error occurred while retrieving API list.'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                    ) : (
-                        <div>
-                            {
-                                faultyProviderConfig ? (
-                                    <div style={paperWrapper}>
-                                        <Paper elevation={1} style={paper}>
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='config.error.heading'
-                                                    defaultMessage='Configuration Error !'
-                                                />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='config.error.body'
-                                                    defaultMessage={'Cannot fetch provider configuration for APIM '
-                                                    + 'Api Ratings widget'}
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <APIMApiRatings
-                                        {...apiRatingProps}
-                                        handleOnClickAPI={this.handleOnClickAPI}
-                                    />
-                                )
-                            }
-                        </div>
-                    )}
-
+                    {
+                        faultyProviderConfig ? (
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='config.error.body'
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Api Ratings widget'}
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <APIMApiRatings
+                                {...apiRatingProps}
+                                handleOnClickAPI={this.handleOnClickAPI}
+                            />
+                        )
+                    }
                 </MuiThemeProvider>
             </IntlProvider>
         );
