@@ -18,6 +18,7 @@ package org.wso2.analytics.apim.rest.api.proxy.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderService;
 import org.wso2.carbon.config.ConfigurationException;
 import org.wso2.carbon.config.provider.ConfigProvider;
 import org.wso2.carbon.kernel.config.model.CarbonConfiguration;
@@ -30,6 +31,7 @@ public class ServiceHolder {
     private final Log log = LogFactory.getLog(ServiceHolder.class);
     private ConfigProvider configProvider;
     private CarbonConfiguration carbonConfiguration;
+    private AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService;
 
     private ServiceHolder() {
     }
@@ -78,6 +80,15 @@ public class ServiceHolder {
             log.error("Error occurred while initializing service holder for carbon configuration : "
                             + e.getMessage(), e);
         }
+    }
+
+    public AnalyticsHttpClientBuilderService getAnalyticsHttpClientBuilderService() {
+        return analyticsHttpClientBuilderService;
+    }
+
+    public void setAnalyticsHttpClientBuilderService(
+            AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService) {
+        this.analyticsHttpClientBuilderService = analyticsHttpClientBuilderService;
     }
 
 }

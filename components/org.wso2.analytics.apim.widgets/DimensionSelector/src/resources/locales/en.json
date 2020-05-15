@@ -1,0 +1,14 @@
+{
+  "apim.server.error.heading" : "Error !",
+  "apim.server.error" : "Error occurred while retrieving API list.",
+  "config.error.heading": "Configuration Error !",
+  "config.error.body": "Cannot fetch provider configuration for Dimension Selector Widget.",
+  "dimension.api" : "API",
+  "dimension.api.tooltip" : "Viewing stats by 'API'. Click to change the view to 'API Provider'",
+  "dimension.provider" : "API Provider",
+  "dimension.provider.tooltip" : "Viewing stats by 'API Provider'. Click to change the view to 'API'.",
+  "search.loading": "Loading options...",
+  "search.tooltip.api": "Select API(s) to view stats",
+  "search.tooltip.provider": "Select API Provider(s) to view stats",
+  "widget.heading": "Dimension Selector"
+}

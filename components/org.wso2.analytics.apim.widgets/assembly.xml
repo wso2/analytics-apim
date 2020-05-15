@@ -187,5 +187,9 @@
             <directory>ApiFaultAnalytics/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>DimensionSelector/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>
