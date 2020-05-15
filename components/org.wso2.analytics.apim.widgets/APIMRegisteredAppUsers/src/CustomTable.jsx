@@ -20,7 +20,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { CustomTableToolbar } from '@analytics-apim/common-lib';
+import { CustomTableToolbar, Utils } from '@analytics-apim/common-lib';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
@@ -195,12 +195,31 @@ class CustomTable extends React.Component {
         this.setState({ filterQuery: event.target.value });
     };
 
+    handleCSVDownload = () => {
+        const { data, columns, title } = this.props;
+        const {
+            page, rowsPerPage, filterQuery, filterColumn, order, orderBy,
+        } = this.state;
+        const tableData = filterQuery
+            ? data.filter(x => x[filterColumn].toString().toLowerCase().includes(filterQuery.toLowerCase()))
+            : data;
+        const dataToDownload = stableSort(tableData, getSorting(order, orderBy))
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+        const header = Utils.buildCSVHeader(columns);
+        const body = Utils.buildCSVBody(dataToDownload);
+        const csv = `${header}${body}`.trim();
+        Utils.downloadCSV(csv, title);
+    };
+
     /**
      * Render the Registered App Users table
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, inProgress } = this.props;
+        const {
+            data, classes, inProgress, title,
+        } = this.props;
         const {
             filterQuery, expanded, filterColumn, order, orderBy, rowsPerPage, page, emptyRowHeight,
         } = this.state;
@@ -227,7 +246,8 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='REGISTERED APPLICATION USERS'
+                    handleCSVDownload={this.handleCSVDownload}
+                    title={title}
                     menuItems={menuItems}
                 />
                 {
@@ -331,7 +351,9 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    columns: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

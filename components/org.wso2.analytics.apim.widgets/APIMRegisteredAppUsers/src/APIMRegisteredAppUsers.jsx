@@ -109,6 +109,15 @@ export default function APIMRegisteredAppUsers(props) {
             strokeWidth: 1,
         },
     };
+    const title = 'APIM REGISTERED APPLICATION USERS';
+    const columns = [
+        {
+            id: 'applicationName', numeric: false, disablePadding: false, label: 'table.heading.applicationName',
+        },
+        {
+            id: 'users', numeric: true, disablePadding: false, label: 'table.heading.users',
+        },
+    ];
     const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'applicationName', 'users');
 
     return (
@@ -174,6 +183,8 @@ export default function APIMRegisteredAppUsers(props) {
                                     <CustomTable
                                         data={usageData}
                                         inProgress={inProgress}
+                                        columns={columns}
+                                        title={title}
                                     />
                                 </div>
                             </div>

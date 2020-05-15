@@ -25,6 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import SearchIcon from '@material-ui/icons/Search';
+import DownloadIcon from '@material-ui/icons/CloudDownload';
 import TextField from '@material-ui/core/TextField';
 import Collapse from '@material-ui/core/Collapse';
 import { withStyles } from '@material-ui/core/styles';
@@ -64,7 +65,8 @@ const styles = theme => ({
  */
 function CustomTableToolbar(props) {
     const {
-        classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, query, title, menuItems
+        classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, handleCSVDownload,
+        query, title, menuItems
     } = props;
 
     return (
@@ -84,6 +86,15 @@ function CustomTableToolbar(props) {
                             aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
                         >
                             <SearchIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={<FormattedMessage id='csvdownload.label.title' defaultMessage='CSV Export' />}>
+                        <IconButton
+                            className={classes.expand}
+                            onClick={handleCSVDownload}
+                            aria-label={<FormattedMessage id='csvdownload.label.title' defaultMessage='CSV Export' />}
+                        >
+                            <DownloadIcon />
                         </IconButton>
                     </Tooltip>
                 </div>

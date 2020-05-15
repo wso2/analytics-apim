@@ -42,6 +42,54 @@ function summarizePieData(data=[], nameField, countField) {
     };
 }
 
+function buildCSVHeader(columns) {
+    return (
+        columns
+            .reduce(
+                (soFar, column) => (column.id
+                    ? soFar
+                    + '"'
+                    + column.label.split('table.heading.')[1].toUpperCase()
+                    + '",'
+                    : soFar),
+                '',
+            )
+            .slice(0, -1) + '\r\n'
+    );
+}
+
+function buildCSVBody(data) {
+    if (!data.length) return '';
+    return data
+        .reduce(
+            (soFar, row) => soFar
+                + '"'
+                + Object.values(row)
+                    .join('","')
+                + '"\r\n',
+            '',
+        )
+        .trim();
+}
+
+function downloadCSV(csv, title) {
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const dataURI = `data:text/csv;charset=utf-8,${csv}`;
+    const URL = window.URL || window.webkitURL;
+    const downloadURI = typeof URL.createObjectURL === 'undefined' ? dataURI : URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    const fileName = title.split(' ').join('_').replace(' ', '_') + '_DATA.csv';
+    link.setAttribute('href', downloadURI);
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 export default {
-    summarizePieData
+    summarizePieData,
+    buildCSVBody,
+    buildCSVHeader,
+    downloadCSV
 }
