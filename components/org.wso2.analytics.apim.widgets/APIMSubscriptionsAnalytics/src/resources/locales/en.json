@@ -8,6 +8,7 @@
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
+  "table.heading.apiversion": "VERSION",
   "table.heading.application": "APPLICATION",
   "table.heading.subscribedtime": "SUBSCRIBED TIME",
   "table.title": "SUBSCRIPTION DETAILS",

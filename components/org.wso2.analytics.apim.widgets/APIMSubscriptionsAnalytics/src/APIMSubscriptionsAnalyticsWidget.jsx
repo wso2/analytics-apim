@@ -110,6 +110,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -247,6 +248,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                     apiname: dataUnit[2] + ' (' + dataUnit[3] + ')',
                     application: dataUnit[4] + ' (' + dataUnit[5] + ')',
                     subscribedtime: Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss A'),
+                    apiversion: dataUnit[6],
                 };
             });
 
@@ -260,7 +262,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                 return acc;
             }, {});
             const chartData = Object.keys(dataGroupByTime).map((key) => {
-                return [dataGroupByTime[key], Moment(key, timeFormat).toDate().getTime(),];
+                return [dataGroupByTime[key], Moment(key, timeFormat).toDate().getTime()];
             });
             chartData.sort((a, b) => { return a[1] - b[1]; });
             this.setState({ chartData, tableData, inProgress: false });
@@ -289,6 +291,34 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             case 'second':
             default:
                 return 'YYYY-MMM-DD HH:mm:ss';
+        }
+    }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMSubscriptionsAnalyticsWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g, sync,
+                } = super.getGlobalState('dtrp');
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/a#{"dtrp":{"tr":"' + tr + '","sd":"' + sd + '","ed":"' + ed
+                    + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"' + api
+                    + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
         }
     }
 
@@ -340,6 +370,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                         ) : (
                             <APIMSubscriptionsAnalytics
                                 {...subscriptionsProps}
+                                handleOnClickAPI={this.handleOnClickAPI}
                             />
                         )
                     }

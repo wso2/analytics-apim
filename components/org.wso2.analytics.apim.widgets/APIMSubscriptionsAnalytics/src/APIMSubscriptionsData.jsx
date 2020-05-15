@@ -32,7 +32,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMSubscriptionsData(props) {
     const {
-        themeName, chartData, tableData, width,
+        themeName, chartData, tableData, width, onClickAPI,
     } = props;
     const styles = {
         paperWrapper: {
@@ -97,6 +97,7 @@ export default function APIMSubscriptionsData(props) {
                 <div style={styles.tableWrapper}>
                     <CustomTable
                         tableData={tableData}
+                        onClickTableRow={e => onClickAPI(e)}
                     />
                 </div>
             </div>
@@ -125,4 +126,5 @@ APIMSubscriptionsData.propTypes = {
     width: PropTypes.string.isRequired,
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
+    onClickAPI: PropTypes.func.isRequired,
 };

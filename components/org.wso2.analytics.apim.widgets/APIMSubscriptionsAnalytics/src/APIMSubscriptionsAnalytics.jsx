@@ -31,7 +31,7 @@ import APIMSubscriptionsData from './APIMSubscriptionsData';
  */
 export default function APIMSubscriptionsAnalytics(props) {
     const {
-        themeName, height, width, chartData, tableData, inProgress,
+        themeName, height, width, chartData, tableData, inProgress, handleOnClickAPI,
     } = props;
     const styles = {
         headingWrapper: {
@@ -84,7 +84,12 @@ export default function APIMSubscriptionsAnalytics(props) {
                             <CircularProgress style={styles.loadingIcon} />
                         </div>
                     )
-                    : <APIMSubscriptionsData {...subDataProps} />
+                    : (
+                        <APIMSubscriptionsData
+                            {...subDataProps}
+                            onClickAPI={e => handleOnClickAPI(e)}
+                        />
+                    )
                 }
             </div>
         </Scrollbars>
@@ -98,4 +103,5 @@ APIMSubscriptionsAnalytics.propTypes = {
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClickAPI: PropTypes.func.isRequired,
 };

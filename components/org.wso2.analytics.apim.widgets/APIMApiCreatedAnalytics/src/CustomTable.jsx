@@ -45,8 +45,8 @@ function desc(a, b, orderBy) {
     let tempa = a[orderBy];
     let tempb = b[orderBy];
 
-    if (typeof (tempa) === 'string' && !orderBy.toLowerCase().includes('version')) {
-        if (Moment(tempa).isValid()) {
+    if (typeof (tempa) === 'string') {
+        if (!orderBy.toLowerCase().includes('version') && Moment(tempa).isValid()) {
             tempa = Moment(tempa).valueOf();
             tempb = Moment(tempb).valueOf();
         } else {

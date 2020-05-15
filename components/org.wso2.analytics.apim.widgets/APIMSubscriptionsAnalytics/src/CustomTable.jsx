@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
+import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Moment from 'moment';
 import Table from '@material-ui/core/Table';
@@ -45,7 +46,7 @@ function desc(a, b, orderBy) {
     let tempb = b[orderBy];
 
     if (typeof (tempa) === 'string') {
-        if (Moment(tempa).isValid()) {
+        if (!orderBy.toLowerCase().includes('version') && Moment(tempa).isValid()) {
             tempa = Moment(tempa).valueOf();
             tempb = Moment(tempb).valueOf();
         } else {
@@ -204,7 +205,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { classes, tableData } = this.props;
+        const { classes, tableData, onClickTableRow } = this.props;
         const { query, expanded, filterColumn } = this.state;
 
         this.state.data = query
@@ -218,6 +219,9 @@ class CustomTable extends React.Component {
         const menuItems = [
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='apiversion'>
+                <FormattedMessage id='table.heading.apiversion' defaultMessage='VERSION' />
             </MenuItem>,
             <MenuItem value='application'>
                 <FormattedMessage id='table.heading.application' defaultMessage='APPLICATION' />
@@ -245,9 +249,10 @@ class CustomTable extends React.Component {
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
                         <colgroup>
-                            <col style={{ width: '35%' }} />
-                            <col style={{ width: '35%' }} />
                             <col style={{ width: '30%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '30%' }} />
+                            <col style={{ width: '25%' }} />
                         </colgroup>
                         <CustomTableHead
                             order={order}
@@ -264,7 +269,12 @@ class CustomTable extends React.Component {
                                             tabIndex={-1}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                {n.apiname}
+                                                <Link href='#' onClick={() => onClickTableRow(n)} color='inherit'>
+                                                    {n.apiname}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell component='th' scope='row' numeric>
+                                                {n.apiversion}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
                                                 {n.application}
@@ -321,6 +331,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     tableData: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    onClickTableRow: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
