@@ -99,7 +99,7 @@ export default function APIMApiUsage(props) {
                     <form>
                         <TextField
                             id='limit-number'
-                            label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                            label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                             value={limit}
                             onChange={handleLimitChange}
                             type='number'

@@ -201,7 +201,7 @@ class CustomTable extends React.Component {
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
             <MenuItem value='apiversion'>
-                <FormattedMessage id='table.heading.apiversion' defaultMessage='API VERSION' />
+                <FormattedMessage id='table.heading.apiversion' defaultMessage='VERSION' />
             </MenuItem>,
             <MenuItem value='faultcount'>
                 <FormattedMessage id='table.heading.faultcount' defaultMessage='FAULT COUNT' />
@@ -220,6 +220,11 @@ class CustomTable extends React.Component {
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '40%' }} />
+                            <col style={{ width: '30%' }} />
+                            <col style={{ width: '30%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}

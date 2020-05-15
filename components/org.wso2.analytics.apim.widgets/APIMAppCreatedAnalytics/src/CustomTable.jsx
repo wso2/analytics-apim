@@ -217,7 +217,7 @@ class CustomTable extends React.Component {
 
         const menuItems = [
             <MenuItem value='appname'>
-                <FormattedMessage id='table.heading.appname' defaultMessage='APP NAME' />
+                <FormattedMessage id='table.heading.appname' defaultMessage='APPLICATION' />
             </MenuItem>,
             <MenuItem value='createdtime'>
                 <FormattedMessage id='table.heading.createdtime' defaultMessage='CREATED TIME' />
@@ -241,6 +241,10 @@ class CustomTable extends React.Component {
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '60%' }} />
+                            <col style={{ width: '40%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}

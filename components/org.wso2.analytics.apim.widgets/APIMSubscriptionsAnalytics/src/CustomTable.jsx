@@ -219,8 +219,8 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
-            <MenuItem value='appname'>
-                <FormattedMessage id='table.heading.appname' defaultMessage='APP NAME' />
+            <MenuItem value='application'>
+                <FormattedMessage id='table.heading.application' defaultMessage='APPLICATION' />
             </MenuItem>,
             <MenuItem value='subscribedtime'>
                 <FormattedMessage id='table.heading.subscribedtime' defaultMessage='SUBSCRIBED TIME' />
@@ -244,6 +244,11 @@ class CustomTable extends React.Component {
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '35%' }} />
+                            <col style={{ width: '35%' }} />
+                            <col style={{ width: '30%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}
@@ -262,7 +267,7 @@ class CustomTable extends React.Component {
                                                 {n.apiname}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
-                                                {n.appname}
+                                                {n.application}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
                                                 {n.subscribedtime}

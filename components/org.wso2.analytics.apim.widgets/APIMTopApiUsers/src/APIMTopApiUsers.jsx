@@ -103,7 +103,7 @@ export default function APIMTopApiUsers(props) {
                     <form style={styles.form} noValidate autoComplete='off'>
                         <TextField
                             id='limit-number'
-                            label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                            label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                             value={limit}
                             onChange={handleLimitChange}
                             type='number'

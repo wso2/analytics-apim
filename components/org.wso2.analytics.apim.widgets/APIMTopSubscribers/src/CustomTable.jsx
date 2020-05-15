@@ -151,7 +151,7 @@ class CustomTable extends React.Component {
             tableData: [],
             page: 0,
             rowsPerPage: 5,
-            orderBy: 'subcount',
+            orderBy: 'subscriptions',
             order: 'desc',
             expanded: false,
             filterColumn: 'creator',
@@ -206,10 +206,10 @@ class CustomTable extends React.Component {
 
         const menuItems = [
             <MenuItem value='creator'>
-                <FormattedMessage id='table.heading.creator' defaultMessage='PROVIDER' />
+                <FormattedMessage id='table.heading.creator' defaultMessage='API PROVIDER' />
             </MenuItem>,
-            <MenuItem value='subcount'>
-                <FormattedMessage id='table.heading.subcount' defaultMessage='SUB COUNT' />
+            <MenuItem value='subscriptions'>
+                <FormattedMessage id='table.heading.subscriptions' defaultMessage='SUBSCRIPTIONS' />
             </MenuItem>,
         ];
         return (
@@ -226,6 +226,10 @@ class CustomTable extends React.Component {
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '60%' }} />
+                            <col style={{ width: '40%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}
@@ -252,7 +256,7 @@ class CustomTable extends React.Component {
                                                     paddingRight: '10%',
                                                 }}
                                             >
-                                                {n.subcount}
+                                                {n.subscriptions}
                                             </TableCell>
                                         </TableRow>
                                     );

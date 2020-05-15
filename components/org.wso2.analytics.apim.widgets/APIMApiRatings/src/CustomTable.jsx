@@ -223,7 +223,7 @@ class CustomTable extends React.Component {
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
             <MenuItem value='apiversion'>
-                <FormattedMessage id='table.heading.apiversion' defaultMessage='API VERSION' />
+                <FormattedMessage id='table.heading.apiversion' defaultMessage='VERSION' />
             </MenuItem>,
             <MenuItem value='ratings'>
                 <FormattedMessage id='table.heading.ratings' defaultMessage='RATING' />
@@ -250,6 +250,11 @@ class CustomTable extends React.Component {
                             tableData.length > 0 ? (
                                 <div className={classes.tableWrapper}>
                                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                                        <colgroup>
+                                            <col style={{ width: '40%' }} />
+                                            <col style={{ width: '30%' }} />
+                                            <col style={{ width: '30%' }} />
+                                        </colgroup>
                                         <CustomTableHead
                                             order={order}
                                             orderBy={orderBy}
@@ -273,7 +278,7 @@ class CustomTable extends React.Component {
                                                                     {n.apiname}
                                                                 </Link>
                                                             </TableCell>
-                                                            <TableCell>
+                                                            <TableCell numeric>
                                                                 {n.apiversion}
                                                             </TableCell>
                                                             <TableCell numeric>

@@ -114,14 +114,14 @@ export default function APIMApiBackendUsage(props) {
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
-                                title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                title={<FormattedMessage id='limit' defaultMessage='Limit' />}
                             >
                                 <InputLabel
                                     shrink
                                     htmlFor='limit-number'
                                     style={styles.formLabel}
                                 >
-                                    <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                    <FormattedMessage id='limit' defaultMessage='Limit' />
                                 </InputLabel>
                             </Tooltip>
                             <Input

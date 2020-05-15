@@ -141,7 +141,7 @@ export default function APIMTopSubscribers(props) {
         },
     };
 
-    const { pieChartData, legendData } = Utils.summarizePieData(creatorData, 'creator', 'subcount');
+    const { pieChartData, legendData } = Utils.summarizePieData(creatorData, 'creator', 'subscriptions');
     return (
         <MuiThemeProvider
             theme={themeName === 'dark' ? darkTheme : lightTheme}
@@ -167,14 +167,14 @@ export default function APIMTopSubscribers(props) {
                             <FormControl style={styles.formControl}>
                                 <Tooltip
                                     placement='top'
-                                    title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                    title={<FormattedMessage id='limit' defaultMessage='Limit' />}
                                 >
                                     <InputLabel
                                         shrink
                                         htmlFor='limit-number'
                                         style={styles.formLabel}
                                     >
-                                        <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                        <FormattedMessage id='limit' defaultMessage='Limit' />
                                     </InputLabel>
                                 </Tooltip>
                                 <Input
@@ -249,9 +249,10 @@ export default function APIMTopSubscribers(props) {
                                                     colorScale={colorScale}
                                                     data={pieChartData}
                                                     x={d => d.creator}
-                                                    y={d => d.subcount}
-                                                    labels={d => `${d.creator} : ${((d.subcount
-                                                        / (sumBy(pieChartData, o => o.subcount))) * 100).toFixed(2)}%`}
+                                                    y={d => d.subscriptions}
+                                                    labels={d => `${d.creator} : ${((d.subscriptions
+                                                        / (sumBy(pieChartData, o => o.subscriptions))) * 100)
+                                                        .toFixed(2)}%`}
                                                     events={[
                                                         {
                                                             target: 'data',

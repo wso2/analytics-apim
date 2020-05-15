@@ -227,6 +227,11 @@ class CustomTable extends React.Component {
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '40%' }} />
+                            <col style={{ width: '30%' }} />
+                            <col style={{ width: '30%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}
@@ -245,7 +250,7 @@ class CustomTable extends React.Component {
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}
                                             </TableCell>
-                                            <TableCell component='th' scope='row'>
+                                            <TableCell component='th' scope='row' numeric>
                                                 {n.version}
                                             </TableCell>
                                             <TableCell numeric>

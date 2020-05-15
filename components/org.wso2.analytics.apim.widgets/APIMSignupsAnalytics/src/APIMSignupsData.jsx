@@ -53,9 +53,7 @@ export default function APIMSignupsData(props) {
             width: '95%',
         },
         tableWrapper: {
-            height: '30%',
             margin: 'auto',
-            textAlign: 'right',
         },
     };
     const chartConfig = {

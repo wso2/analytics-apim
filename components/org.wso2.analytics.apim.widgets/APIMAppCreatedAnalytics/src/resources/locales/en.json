@@ -2,11 +2,11 @@
   "app.createdBy.label": "App Owner",
   "config.error.body": "Cannot fetch provider configuration for APIM App Created Analytics widget",
   "config.error.heading": "Configuration Error !",
-  "nodata.error.body": "No matching data available for the selected options.",
+  "nodata.error.body": "No data available for the selected options.",
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
   "table.heading": "APP CREATION TIMES",
-  "table.heading.appname": "APPLICATION NAME",
+  "table.heading.appname": "APPLICATION",
   "table.heading.createdtime": "CREATED TIME",
   "table.title": "APPLICATION CREATED TIME",
   "widget.heading": "APPLICATIONS CREATED OVER TIME"
