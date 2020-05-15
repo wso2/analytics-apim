@@ -204,7 +204,7 @@ class APIMTopFaultyApisWidget extends Widget {
         } = this.state;
         const { widgetID: widgetName } = this.props;
 
-        if (limit > 0) {
+        if (timeFrom && limit > 0) {
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'query';
             dataProviderConfigs.configs.config.queryData.queryValues = {
