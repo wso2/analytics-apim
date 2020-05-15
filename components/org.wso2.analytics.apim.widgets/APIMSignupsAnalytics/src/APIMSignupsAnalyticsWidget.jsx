@@ -167,13 +167,16 @@ class APIMSignupsAnalyticsWidget extends Widget {
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const { from, to, granularity } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleQuery);
+        if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleQuery);
+        }
     }
 
     /**
@@ -184,14 +187,16 @@ class APIMSignupsAnalyticsWidget extends Widget {
         const { providerConfig, timeFrom, timeTo } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        if (timeFrom) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'query';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        }
     }
 
     /**
