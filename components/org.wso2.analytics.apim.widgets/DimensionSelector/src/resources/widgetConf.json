@@ -45,6 +45,18 @@
         "defaultValue": true
       },
       {
+        "id" : "selectAll",
+        "title" : "Select 'All' Option",
+        "type" : {
+          "name" : "BOOLEAN",
+          "possibleValues" : [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      },
+      {
         "id" : "dimensions",
         "title" : "Dimension(s)",
         "type" : {
