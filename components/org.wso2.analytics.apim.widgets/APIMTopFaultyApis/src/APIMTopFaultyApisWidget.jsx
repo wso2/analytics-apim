@@ -185,13 +185,16 @@ class APIMTopFaultyApisWidget extends Widget {
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const { from, to, granularity } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleQuery);
+        if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleQuery);
+        }
     }
 
     /**
@@ -204,19 +207,21 @@ class APIMTopFaultyApisWidget extends Widget {
         } = this.state;
         const { widgetID: widgetName } = this.props;
 
-        if (timeFrom && limit > 0) {
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'query';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{from}}': timeFrom,
-                '{{to}}': timeTo,
-                '{{per}}': perValue,
-                '{{limit}}': limit,
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
-        } else {
-            this.setState({ inProgress: false, faultData: [] });
+        if (timeFrom) {
+            if (limit > 0) {
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'query';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
+            } else {
+                this.setState({inProgress: false, faultData: []});
+            }
         }
     }
 
@@ -286,7 +291,7 @@ class APIMTopFaultyApisWidget extends Widget {
 
             if (drillDown) {
                 const {
-                    tr, sd, ed, g, sync,
+                    tr, sd, ed, g,
                 } = super.getGlobalState('dtrp');
                 const { apiname, apiversion } = data;
                 const api = (apiname.split(' (')[0]).trim();
@@ -296,7 +301,7 @@ class APIMTopFaultyApisWidget extends Widget {
 
                 window.location.href = window.contextPath
                     + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
-                    + '","ed":"' + ed + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
                     + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
             }
         }

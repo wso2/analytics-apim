@@ -305,9 +305,6 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             const { drillDown } = configs.options;
 
             if (drillDown) {
-                const {
-                    tr, sd, ed, g, sync,
-                } = super.getGlobalState('dtrp');
                 const { apiname, apiversion } = data;
                 const api = (apiname.split(' (')[0]).trim();
                 const provider = (apiname.split('(')[1]).split(')')[0].trim();
@@ -315,8 +312,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                 const dashboard = locationParts[locationParts.length - 2];
 
                 window.location.href = window.contextPath
-                    + '/dashboards/' + dashboard + '/a#{"dtrp":{"tr":"' + tr + '","sd":"' + sd + '","ed":"' + ed
-                    + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"' + api
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dmSelc":{"dm":"api","op":[{"name":"' + api
                     + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
             }
         }

@@ -497,7 +497,7 @@ class APIMOverallApiUsageWidget extends Widget {
 
             if (drillDown) {
                 const {
-                    tr, sd, ed, g, sync,
+                    tr, sd, ed, g,
                 } = super.getGlobalState('dtrp');
                 const { apiname, apiversion } = data;
                 const api = (apiname.split(' (')[0]).trim();
@@ -507,7 +507,7 @@ class APIMOverallApiUsageWidget extends Widget {
 
                 window.location.href = window.contextPath
                     + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
-                    + '","ed":"' + ed + '","g":"' + g + '","sync":' + sync + '},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
                     + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
             }
         }
