@@ -198,13 +198,12 @@ class CustomTable extends React.Component {
     handleCSVDownload = () => {
         const { data, columns, title } = this.props;
         const {
-            page, rowsPerPage, filterQuery, filterColumn, order, orderBy,
+            filterQuery, filterColumn, order, orderBy,
         } = this.state;
         const tableData = filterQuery
             ? data.filter(x => x[filterColumn].toString().toLowerCase().includes(filterQuery.toLowerCase()))
             : data;
-        const dataToDownload = stableSort(tableData, getSorting(order, orderBy))
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+        const dataToDownload = stableSort(tableData, getSorting(order, orderBy));
 
         const header = Utils.buildCSVHeader(columns);
         const body = Utils.buildCSVBody(dataToDownload);
