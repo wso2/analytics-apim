@@ -45,11 +45,11 @@
       },
       {
         "id": "drillDown",
-        "title": "Overall Usage Page",
+        "title": "Subscription Statistics Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "overall-usage"
+        "defaultValue": "dev-stats"
       }
     ]
   }
