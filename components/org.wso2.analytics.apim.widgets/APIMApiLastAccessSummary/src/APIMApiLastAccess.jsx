@@ -93,6 +93,23 @@ export default function APIMApiLastAccess(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
+        },
+        {
+            id: 'context', numeric: false, disablePadding: false, label: 'table.heading.context',
+        },
+        {
+            id: 'subscriber', numeric: false, disablePadding: false, label: 'table.heading.subscriber',
+        },
+        {
+            id: 'lastaccess', numeric: true, disablePadding: false, label: 'table.heading.lastaccess',
+        },
+    ];
 
     return (
         <Scrollbars style={{
@@ -193,7 +210,10 @@ export default function APIMApiLastAccess(props) {
                                         </Paper>
                                     </div>
                                 ) : (
-                                    <CustomTable data={accessData} />
+                                    <CustomTable
+                                        data={accessData}
+                                        columns={columns}
+                                    />
                                 )}
                             </div>
                         )
