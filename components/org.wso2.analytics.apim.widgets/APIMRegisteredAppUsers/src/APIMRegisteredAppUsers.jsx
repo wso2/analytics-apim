@@ -109,7 +109,7 @@ export default function APIMRegisteredAppUsers(props) {
             strokeWidth: 1,
         },
     };
-    const title = 'APIM REGISTERED APPLICATION USERS';
+    const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'applicationName', 'users');
     const columns = [
         {
             id: 'applicationName', numeric: false, disablePadding: false, label: 'table.heading.applicationName',
@@ -118,7 +118,6 @@ export default function APIMRegisteredAppUsers(props) {
             id: 'users', numeric: true, disablePadding: false, label: 'table.heading.users',
         },
     ];
-    const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'applicationName', 'users');
 
     return (
         <Scrollbars style={{
@@ -184,7 +183,6 @@ export default function APIMRegisteredAppUsers(props) {
                                         data={usageData}
                                         inProgress={inProgress}
                                         columns={columns}
-                                        title={title}
                                     />
                                 </div>
                             </div>
