@@ -292,13 +292,13 @@
   "permissions": {
     "viewers": [
       "apim_analytics:admin_any",
-      "apim_analytics:app_developer_any"
+      "apim_analytics:subscriber_dashboard:view_any"
     ],
     "owners": [
-      "apim_analytics:admin_carbon.super"
+      "apim_analytics:subscriber_dashboard:own_carbon.super"
     ],
     "editors": [
-      "apim_analytics:admin_carbon.super"
+      "apim_analytics:subscriber_dashboard:edit_carbon.super"
     ]
   }
 }
