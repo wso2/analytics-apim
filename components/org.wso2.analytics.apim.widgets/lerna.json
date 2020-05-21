@@ -38,7 +38,10 @@
     "APIMGeoBasedInvocations",
     "APIMApiUsage",
     "DateTimeRangePicker",
-    "APIMPlaceholder"
+    "APIMPlaceholder",
+    "ApiThrottleAnalytics",
+    "ApiFaultAnalytics",
+    "DimensionSelector"
   ],
   "version": "1.0.0"
 }

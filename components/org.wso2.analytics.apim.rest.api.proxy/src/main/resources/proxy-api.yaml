@@ -71,7 +71,7 @@ paths:
         200:
           description: |
             Ok.
-            REST API url successfully retrieved.
+            API list successfully retrieved.
           schema:
             $ref: '#/definitions/APIList'
         400:
@@ -98,9 +98,36 @@ paths:
         200:
           description: |
             Ok.
-            REST API url successfully retrieved.
+            Application list successfully retrieved.
           schema:
             $ref: '#/definitions/ApplicationList'
+        400:
+          description: |
+            Bad Request.
+            Invalid request or validation error.
+          schema:
+            $ref: '#/definitions/Error'
+
+###########################################################################
+# The resource API to retrieve the Applications list from the APIM server
+###########################################################################
+  /apim/isManager:
+
+#--------------------------------------------------------------------------
+# Validate whether the logged in user is a manager
+#--------------------------------------------------------------------------
+    get:
+      summary: |
+       Verify whether the logged in user is a manager.
+      description: |
+        Introspect the access token and verify whether the logged in user is a manager.
+      responses:
+        200:
+          description: |
+            Ok.
+            User validated successfully retrieved.
+          schema:
+            $ref: '#/definitions/ManagerVerificationInfo'
         400:
           description: |
             Bad Request.
@@ -181,6 +208,19 @@ definitions:
       owner:
         type: string
         example: admin
+
+#--------------------------------------------------------------------------
+# The Manager Verification Info resource
+#--------------------------------------------------------------------------
+  ManagerVerificationInfo:
+    title: Manager Verification info object which
+    properties:
+      username:
+        type: string
+        example: admin@carbon.super
+      isManager:
+        type: boolean
+        example: true
 
 #--------------------------------------------------------------------------
 # The Error resource
