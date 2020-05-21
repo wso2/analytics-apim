@@ -201,7 +201,7 @@ class CustomTable extends React.Component {
      */
     render() {
         const {
-            data, classes, inProgress, title, columns,
+            data, classes, inProgress, columns,
         } = this.props;
         const {
             filterQuery, expanded, filterColumn, order, orderBy, rowsPerPage, page, emptyRowHeight,
@@ -232,7 +232,7 @@ class CustomTable extends React.Component {
                     handleQueryChange={this.handleQueryChange}
                     order={order}
                     orderBy={orderBy}
-                    title={title}
+                    title='REGISTERED APPLICATION USERS'
                     menuItems={menuItems}
                     columns={columns}
                 />
