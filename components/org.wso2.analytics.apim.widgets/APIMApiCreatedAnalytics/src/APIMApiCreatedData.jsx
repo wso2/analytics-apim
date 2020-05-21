@@ -77,6 +77,17 @@ export default function APIMApiCreatedData(props) {
             marginTop: '3%',
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'apiVersion', numeric: false, disablePadding: false, label: 'table.heading.apiVersion',
+        },
+        {
+            id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.createdtime',
+        },
+    ];
 
     if (tableData.length !== 0 && chartData.length !== 0) {
         return (
@@ -207,6 +218,7 @@ export default function APIMApiCreatedData(props) {
                 <div style={styles.tableWrapper}>
                     <CustomTable
                         data={tableData}
+                        columns={columns}
                     />
                 </div>
             </div>
