@@ -102,6 +102,7 @@ class DimensionSelectorWidget extends Widget {
             roleValidationResponse: null,
             isRoleValidated: false,
             isManager: false,
+            selectAll: true,
         };
 
         this.styles = {
@@ -276,12 +277,15 @@ class DimensionSelectorWidget extends Widget {
     loadDefaultValues() {
         const { configs } = this.props;
         const { roleValidationResponse } = this.state;
+        let selectAll = true;
         let selectMultiple = true;
         let defaultDimension = DIMENSION_API;
         let selectedDimensions = [DIMENSION_API, DIMENSION_PROVIDER];
 
         if (configs && configs.options) {
-            const { selectMultiple: multiSelect, defaultDimension: defaultDm, dimensions: dms } = configs.options;
+            const {
+                selectMultiple: multiSelect, defaultDimension: defaultDm, dimensions: dms, selectAll: selcAll,
+            } = configs.options;
             // set default values
             if (multiSelect !== undefined) {
                 selectMultiple = multiSelect;
@@ -293,10 +297,13 @@ class DimensionSelectorWidget extends Widget {
                 defaultDimension = selectedDimensions.includes(defaultDm.toLowerCase()) ? defaultDm.toLowerCase()
                     : selectedDimensions[0];
             }
+            if (selcAll !== undefined) {
+                selectAll = selcAll;
+            }
         }
         const isManager = roleValidationResponse ? roleValidationResponse.isManager : false;
         this.setState({
-            selectMultiple, defaultDimension, selectedDimensions, roleValidationResponse: null, isManager,
+            selectMultiple, defaultDimension, selectedDimensions, roleValidationResponse: null, isManager, selectAll,
         }, this.loadAPIList);
     }
 
@@ -418,7 +425,7 @@ class DimensionSelectorWidget extends Widget {
             options, optionLabel, noOptionsText,
         } = { ...this.state };
         const {
-            selectMultiple, defaultDimension, selectedDimensions, isManager,
+            selectMultiple, defaultDimension, selectedDimensions, isManager, selectAll,
         } = this.state;
         const { dm, op } = this.getqueryParam();
 
@@ -437,7 +444,7 @@ class DimensionSelectorWidget extends Widget {
 
         if (list && list.length > 0) {
             const apis = [...list.sort((a, b) => { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); })];
-            if (isManager) {
+            if (isManager && selectAll) {
                 apis.unshift({ name: 'All', version: 'All', provider: 'All' });
             }
 
@@ -448,7 +455,7 @@ class DimensionSelectorWidget extends Widget {
                 });
                 providers = [...new Set(providers)];
                 providers.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
-                if (isManager) {
+                if (isManager && selectAll) {
                     providers.unshift('All');
                 }
             }
@@ -512,7 +519,10 @@ class DimensionSelectorWidget extends Widget {
         const filteredSelection = [];
         if (dimension === DIMENSION_API) {
             if (selection.find(opt => opt.name === 'All')) {
-                filteredSelection.push(options.find(opt => opt.name === 'All'));
+                const allOpt = options.find(opt => opt.name === 'All');
+                if (allOpt) {
+                    filteredSelection.push(allOpt);
+                }
             } else {
                 selection.forEach((selc) => {
                     const selcOpt = options.find(opt => opt.name === selc.name && opt.version === selc.version
@@ -593,8 +603,8 @@ class DimensionSelectorWidget extends Widget {
      * @memberof DimensionSelectorWidget
      * */
     handleChangeSelection(value) {
-        const { apis, dimension } = this.state;
-        const filteredValues = this.filterSelectionChange(value);
+        const { apis, dimension, isManager, selectAll } = this.state;
+        const filteredValues = isManager && selectAll ? this.filterSelectionChange(value) : value;
 
         this.setState({ selectedOptions: filteredValues });
         const publishValue = filteredValues === null ? [] : filteredValues;
@@ -618,7 +628,7 @@ class DimensionSelectorWidget extends Widget {
     }
 
     /**
-     * Filter values from onChange of selected values
+     * Filter values based on selection of 'All' option onChange of selected values
      * @param {Array} value - selected options
      * @memberof DimensionSelectorWidget
      * */
