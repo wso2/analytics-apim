@@ -328,7 +328,7 @@ class DateTimePicker extends Widget {
         this.getSupportedGranularitiesForCustom(
           startAndEndTime.startTime,
           startAndEndTime.endTime
-        ).indexOf(granularity) === -1
+        ).indexOf(granularity.charAt(0).toUpperCase() + granularity.slice(1)) === -1
       ) {
         granularity = this.getAvailableGranularities()[0].toLowerCase();
       }
