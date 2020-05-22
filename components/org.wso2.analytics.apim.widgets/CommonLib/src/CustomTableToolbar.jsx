@@ -118,6 +118,7 @@ class CustomTableToolbar extends React.Component {
         const dataToExport = [];
         columns.map(colObj => (headers[0].push(colObj.label.split('table.heading.')[1].toUpperCase())));
         sortedData.map((dataObj, index) => {
+            if (dataObj.id) delete dataObj.id;
             const innerArr = Object.values(dataObj);
             innerArr.unshift((index + 1).toString() + ')');
             dataToExport.push(innerArr);

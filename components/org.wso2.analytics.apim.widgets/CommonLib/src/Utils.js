@@ -52,7 +52,10 @@ export function buildCSVHeader(columns) {
 
 export function buildCSVBody(data) {
     if (!data.length) return '';
-    return data.reduce((soFar, row) => soFar + '"' + Object.values(row).join('","') + '"\r\n', '',).trim();
+    return data.reduce((soFar, row) => {
+        if (row.id) delete row.id;
+        return soFar + '"' + Object.values(row).join('","') + '"\r\n';
+    }, '').trim();
 }
 
 export function downloadCSV(csv, title) {
