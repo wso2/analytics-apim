@@ -93,6 +93,23 @@ export default function APIMApiResourceUsage(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
+        },
+        {
+            id: 'resourcepath', numeric: false, disablePadding: false, label: 'table.heading.resourcepath',
+        },
+        {
+            id: 'method', numeric: false, disablePadding: false, label: 'table.heading.method',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
 
     return (
         <Scrollbars style={{
@@ -191,7 +208,10 @@ export default function APIMApiResourceUsage(props) {
                                 </Paper>
                             </div>
                         ) : (
-                            <CustomTable data={usageData} />
+                            <CustomTable
+                                data={usageData}
+                                columns={columns}
+                            />
                         )}
                     </div>
                 )}
