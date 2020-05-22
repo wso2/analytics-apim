@@ -23,14 +23,9 @@ import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -45,9 +40,8 @@ import Radio from '@material-ui/core/Radio';
  */
 export default function APIMApiLatency(props) {
     const {
-        themeName, queryParam, chartConfig, metadata, height, width, apiCreatedBy, apiSelected, inProgress,
-        apiVersion, latencyData, apilist, versionlist, resourceList, apiCreatedHandleChange, apiSelectedHandleChange,
-        apiVersionHandleChange, apiOperationHandleChange, apiResourceHandleChange,
+        themeName, queryParam, height, width, inProgress, latencyData, resourceList, apiOperationHandleChange,
+        apiResourceHandleChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -106,6 +100,66 @@ export default function APIMApiLatency(props) {
             marginTop: 0,
         },
     };
+    const chartConfig = {
+        x: 'REQUEST_TIME',
+        charts: [
+            {
+                type: 'line',
+                y: 'Response Time',
+                fill: '#1a911c',
+            },
+            {
+                type: 'line',
+                y: 'Security',
+                fill: '#bb3a1c',
+            },
+            {
+                type: 'line',
+                y: 'Throttling',
+                fill: '#aabb2e',
+            },
+            {
+                type: 'line',
+                y: 'Request Mediation',
+                fill: '#33bbb5',
+            },
+            {
+                type: 'line',
+                y: 'Response Mediation',
+                fill: '#b420bb',
+            },
+            {
+                type: 'line',
+                y: 'Backend',
+                fill: '#bbb2b9',
+            },
+            {
+                type: 'line',
+                y: 'Other',
+                fill: '#bb780f',
+            },
+        ],
+        maxLength: 60,
+        width: 800,
+        height: 400,
+        interactiveLegend: true,
+        legend: true,
+        timeFormat: '%d-%b-%y %H:%M',
+        tipTimeFormat: '%Y-%m-%d %H:%M:%S',
+        style: {
+            xAxisTickAngle: -8,
+            tickLabelColor: '#a7b0c8',
+            axisLabelColor: '#a7b0c8',
+            axisTextSize: 50,
+            legendTextColor: '#a7b0c8',
+            legendTextSize: 15,
+        },
+    };
+    const metadata = {
+        names: ['Response Time', 'Security', 'Throttling', 'Request Mediation',
+            'Response Mediation', 'Backend', 'Other', 'REQUEST_TIME'],
+        types: ['linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'time'],
+    };
 
     // Check whether the API is graphQL.
     // Evaluated by checking the method of the first resource.
@@ -134,141 +188,61 @@ export default function APIMApiLatency(props) {
                     <div style={styles.heading}>
                         <FormattedMessage id='widget.heading' defaultMessage='API LATENCY TIME' />
                     </div>
-                </div>
-                <div style={styles.formWrapper}>
-                    <form style={styles.form}>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={<FormattedMessage id='createdBy.label' defaultMessage='API Created By' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='api-createdBy-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiCreatedBy}
-                                onChange={apiCreatedHandleChange}
-                                input={<Input name='apiCreatedBy' id='api-createdBy-label-placeholder' />}
-                                displayEmpty
-                                name='apiCreatedBy'
-                            >
-                                <MenuItem value='All'>
-                                    <FormattedMessage id='all.menuItem' defaultMessage='All' />
-                                </MenuItem>
-                                <MenuItem value='Me'>
-                                    <FormattedMessage id='me.menuItem' defaultMessage='Me' />
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={<FormattedMessage id='apiName.label' defaultMessage='API Name' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='apiSelected-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='apiName.label' defaultMessage='API Name' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiSelected}
-                                onChange={apiSelectedHandleChange}
-                                input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
-                                displayEmpty
-                                name='apiSelected'
-                            >
-                                {
-                                    apilist.map(option => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))
-                                }
-                            </Select>
-                        </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <Tooltip
-                                placement='top'
-                                title={<FormattedMessage id='apiVersion.label' defaultMessage='API Version' />}
-                            >
-                                <InputLabel
-                                    shrink
-                                    htmlFor='apiVersion-label-placeholder'
-                                    style={styles.formLabel}
-                                >
-                                    <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
-                                </InputLabel>
-                            </Tooltip>
-                            <Select
-                                value={apiVersion}
-                                onChange={apiVersionHandleChange}
-                                input={<Input name='apiVersion' id='apiVersion-label-placeholder' />}
-                                displayEmpty
-                                name='apiVersion'
-                            >
-                                {
-                                    versionlist.map(option => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))
-                                }
-                            </Select>
-                        </FormControl>
-                        <FormControl component='fieldset' style={styles.formControl}>
-                            <FormLabel component='legend'>
-                                <FormattedMessage id='resources.label' defaultMessage='Resources' />
-                            </FormLabel>
-                            {
-                                isGraphQL ? (
-                                    <FormGroup>
+                    {
+                        resourceList && resourceList.length > 0 && (
+                            <div style={styles.formWrapper}>
+                                <form style={styles.form}>
+                                    <FormControl component='fieldset' style={styles.formControl}>
+                                        <FormLabel component='legend'>
+                                            <FormattedMessage id='resources.label' defaultMessage='Resources' />
+                                        </FormLabel>
                                         {
-                                            resourceList.map(option => (
-                                                <FormControlLabel
-                                                    control={(
-                                                        <Checkbox
-                                                            checked={
-                                                                queryParam.operationSelected.includes(option.toString())
-                                                            }
-                                                            onChange={apiOperationHandleChange}
-                                                            value={option.toString()}
-                                                        />
-                                                    )}
-                                                    label={option}
-                                                />
-                                            ))
+                                            isGraphQL ? (
+                                                <FormGroup>
+                                                    {
+                                                        resourceList.map(option => (
+                                                            <FormControlLabel
+                                                                control={(
+                                                                    <Checkbox
+                                                                        checked={
+                                                                            queryParam.operationSelected
+                                                                                .includes(option.toString())
+                                                                        }
+                                                                        onChange={apiOperationHandleChange}
+                                                                        value={option.toString()}
+                                                                    />
+                                                                )}
+                                                                label={option}
+                                                            />
+                                                        ))
+                                                    }
+                                                </FormGroup>
+                                            ) : (
+                                                <RadioGroup>
+                                                    {
+                                                        resourceList.map(option => (
+                                                            <FormControlLabel
+                                                                control={(
+                                                                    <Radio
+                                                                        checked={
+                                                                            queryParam.resourceSelected
+                                                                                .includes(option.toString())}
+                                                                        onChange={apiResourceHandleChange}
+                                                                        value={option.toString()}
+                                                                    />
+                                                                )}
+                                                                label={option}
+                                                            />
+                                                        ))
+                                                    }
+                                                </RadioGroup>
+                                            )
                                         }
-                                    </FormGroup>
-                                ) : (
-                                    <RadioGroup>
-                                        {
-                                            resourceList.map(option => (
-                                                <FormControlLabel
-                                                    control={(
-                                                        <Radio
-                                                            checked={
-                                                                queryParam.resourceSelected.includes(option.toString())}
-                                                            onChange={apiResourceHandleChange}
-                                                            value={option.toString()}
-                                                        />
-                                                    )}
-                                                    label={option}
-                                                />
-                                            ))
-                                        }
-                                    </RadioGroup>
-                                )
-                            }
-                        </FormControl>
-                    </form>
+                                    </FormControl>
+                                </form>
+                            </div>
+                        )
+                    }
                 </div>
                 { inProgress ? (
                     <div style={styles.loading}>
@@ -316,20 +290,10 @@ export default function APIMApiLatency(props) {
 APIMApiLatency.propTypes = {
     themeName: PropTypes.string.isRequired,
     queryParam: PropTypes.instanceOf(Object).isRequired,
-    chartConfig: PropTypes.instanceOf(Object).isRequired,
-    metadata: PropTypes.instanceOf(Object).isRequired,
     height: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
-    apiCreatedBy: PropTypes.string.isRequired,
-    apiSelected: PropTypes.string.isRequired,
-    apiVersion: PropTypes.string.isRequired,
-    apilist: PropTypes.instanceOf(Object).isRequired,
-    versionlist: PropTypes.instanceOf(Object).isRequired,
     resourceList: PropTypes.instanceOf(Object).isRequired,
     latencyData: PropTypes.instanceOf(Object).isRequired,
-    apiCreatedHandleChange: PropTypes.func.isRequired,
-    apiSelectedHandleChange: PropTypes.func.isRequired,
-    apiVersionHandleChange: PropTypes.func.isRequired,
     apiOperationHandleChange: PropTypes.func.isRequired,
     apiResourceHandleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,

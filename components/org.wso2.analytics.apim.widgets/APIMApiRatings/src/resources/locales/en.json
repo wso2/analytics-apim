@@ -1,6 +1,4 @@
 {
-  "apim.server.error.heading" : "Error !",
-  "apim.server.error" : "Error occurred while retrieving API list.",
   "config.error.body": "Cannot fetch provider configuration for APIM Api Ratings widget",
   "config.error.heading": "Configuration Error !",
   "filter.column.menu.heading": "Column Name",
@@ -10,7 +8,7 @@
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
+  "table.heading.apiversion": "VERSION",
   "table.heading.ratings": "RATING",
-  "table.main.heading": "TOP RATED APIS :",
   "widget.heading": "TOP RATED APIS"
 }

@@ -22,6 +22,7 @@ import Moment from 'moment';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
+import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -30,6 +31,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
 /**
@@ -44,7 +46,7 @@ function desc(a, b, orderBy) {
     let tempb = b[orderBy];
 
     if (typeof (tempa) === 'string') {
-        if (Moment(tempa).isValid()) {
+        if (!orderBy.toLowerCase().includes('version') && Moment(tempa).isValid()) {
             tempa = Moment(tempa).valueOf();
             tempb = Moment(tempb).valueOf();
         } else {
@@ -139,6 +141,10 @@ const styles = theme => ({
     paginationActions: {
         marginLeft: 0,
     },
+    title: {
+        paddingLeft: 20,
+        paddingTop: 15,
+    },
 });
 
 /**
@@ -158,7 +164,7 @@ class CustomTable extends React.Component {
             page: 0,
             rowsPerPage: 5,
             orderBy: 'createdtime',
-            order: 'desc',
+            order: 'asc',
             expanded: false,
             filterColumn: 'apiname',
             query: '',
@@ -199,7 +205,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, onClickTableRow } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -214,8 +220,8 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
-            <MenuItem value='apiVersion'>
-                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
+            <MenuItem value='apiversion'>
+                <FormattedMessage id='table.heading.apiversion' defaultMessage='API VERSION' />
             </MenuItem>,
             <MenuItem value='createdtime'>
                 <FormattedMessage id='table.heading.createdtime' defaultMessage='CREATED TIME' />
@@ -223,6 +229,11 @@ class CustomTable extends React.Component {
         ];
         return (
             <Paper className={classes.root}>
+                <div className={classes.title}>
+                    <Typography variant='subtitle1'>
+                        <FormattedMessage id='table.title' defaultMessage='API CREATED TIME' />
+                    </Typography>
+                </div>
                 <CustomTableToolbar
                     expanded={expanded}
                     filterColumn={filterColumn}
@@ -230,7 +241,6 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='API CREATION TIMES'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
@@ -255,10 +265,12 @@ class CustomTable extends React.Component {
                                             tabIndex={-1}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                {n.apiname}
+                                                <Link href='#' onClick={() => onClickTableRow(n)} color='inherit'>
+                                                    {n.apiname}
+                                                </Link>
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
-                                                {n.apiVersion}
+                                                {n.apiversion}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>
                                                 {n.createdtime}
@@ -312,6 +324,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    onClickTableRow: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

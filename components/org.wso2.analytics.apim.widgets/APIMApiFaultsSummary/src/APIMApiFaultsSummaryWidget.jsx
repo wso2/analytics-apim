@@ -308,7 +308,7 @@ class APIMApiFaultsSummaryWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                                + 'Created widget'}
+                                                + 'Faults Summary widget'}
                                         />
                                     </Typography>
                                 </Paper>

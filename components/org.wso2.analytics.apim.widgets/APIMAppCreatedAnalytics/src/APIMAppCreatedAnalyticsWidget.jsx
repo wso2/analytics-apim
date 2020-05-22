@@ -49,19 +49,17 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * Query string parameter values
- * @type {object}
- */
-const createdByKeys = {
-    All: 'All',
-    Me: 'Me',
-};
-
-/**
  * Query string parameter
  * @type {string}
  */
 const queryParamKey = 'apps';
+
+/**
+ * Callback suffixes
+ * @type {string}
+ */
+const MAIN_CALLBACK = '-main';
+const SUBSCRIBER_CALLBACK = '-subscriber';
 
 /**
  * Language
@@ -103,21 +101,16 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiCreatedBy: 'All',
             appCreatedBy: 'All',
-            subscribedTo: 'All',
             timeTo: null,
             timeFrom: null,
             sublist: [],
-            apilist: [],
-            applist: [],
             chartData: null,
             tableData: null,
-            xAxisTicks: null,
-            maxCount: 0,
             localeMessages: null,
-            username: null,
             inProgress: true,
+            dimension: null,
+            selectedOptions: [],
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -130,16 +123,10 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
 
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleSubListQuery = this.assembleSubListQuery.bind(this);
-        this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.handleSubListReceived = this.handleSubListReceived.bind(this);
-        this.handleApiListReceived = this.handleApiListReceived.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.appCreatedHandleChange = this.appCreatedHandleChange.bind(this);
-        this.subscribedToHandleChange = this.subscribedToHandleChange.bind(this);
-        this.resetState = this.resetState.bind(this);
-        this.getUsername = this.getUsername.bind(this);
     }
 
     componentWillMount() {
@@ -153,7 +140,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
+        this.loadQueryParam();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -171,7 +158,8 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + SUBSCRIBER_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + MAIN_CALLBACK);
     }
 
     /**
@@ -193,18 +181,13 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         });
     }
 
-
     /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
+     * Retrieve the appCreateBy value from query param
+     * @memberof APIMAppCreatedAnalyticsWidget
+     * */
+    loadQueryParam() {
+        const { appCreatedBy } = super.getGlobalState(queryParamKey);
+        this.setState({ appCreatedBy });
     }
 
     /**
@@ -214,34 +197,33 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            inProgress: !sync,
-        }, this.assembleSubListQuery);
-    }
-
-    /**
-     * Reset the state according to queryParam
-     * @memberof APIMAppCreatedAnalyticsWidget
-     * */
-    resetState() {
-        const { apilist, sublist } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy, appCreatedBy, subscribedTo } = queryParam;
-
-        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
-            apiCreatedBy = 'All';
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleSubListQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleSubListQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleSubListQuery);
         }
-        if (!appCreatedBy || (sublist.length > 0 && !sublist.includes(appCreatedBy))) {
-            appCreatedBy = 'All';
-        }
-        if (!subscribedTo || (apilist.length > 0 && !apilist.includes(subscribedTo))) {
-            subscribedTo = 'All';
-        }
-        this.setState({ apiCreatedBy, appCreatedBy, subscribedTo });
-        this.setQueryParam(apiCreatedBy, appCreatedBy, subscribedTo);
     }
 
     /**
@@ -249,29 +231,26 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
     assembleSubListQuery() {
-        this.resetState();
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy } = queryParam;
-        const { providerConfig, username } = this.state;
+        const {
+            providerConfig, dimension, selectedOptions, timeFrom,
+        } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        const { config } = dataProviderConfigs.configs;
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0) {
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                const { config } = dataProviderConfigs.configs;
 
-        config.tableName = 'AM_SUBSCRIBER';
-        config.incrementalColumn = 'SUBSCRIBER_ID';
-        config.queryData.queryName = 'sublistquery';
-        config.queryData.queryValues = {
-            '{{tablesNames}}': apiCreatedBy !== 'All'
-                ? ', AM_API as api, AM_APPLICATION app, AM_SUBSCRIPTION subc' : '',
-            '{{subscriptionCondition}}': apiCreatedBy !== 'All'
-                ? 'AND api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID '
-            + 'AND sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND api.API_PROVIDER=\'{{provider}}\'' : '',
-            '{{provider}}': username,
-        };
-        dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName,
-            this.handleSubListReceived, dataProviderConfigs);
+                config.tableName = 'AM_SUBSCRIBER';
+                config.incrementalColumn = 'SUBSCRIBER_ID';
+                config.queryData.queryName = 'sublistquery';
+                dataProviderConfigs.configs.config = config;
+                super.getWidgetChannelManager().subscribeWidget(id + SUBSCRIBER_CALLBACK, widgetName,
+                    this.handleSubListReceived, dataProviderConfigs);
+            } else {
+                this.setState({ chartData: [], tableData: [], inProgress: false });
+            }
+        }
     }
 
     /**
@@ -281,70 +260,24 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * */
     handleSubListReceived(message) {
         const { data } = message;
-        const { id } = this.props;
-        const { apiCreatedBy, appCreatedBy, subscribedTo } = this.state;
+        let { appCreatedBy } = { ...this.state };
 
-        if (data) {
+        if (data && data.length > 0) {
             let sublist = data.map((dataUnit) => {
                 return dataUnit[0];
             });
             sublist = [...new Set(sublist)];
             sublist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
             sublist.unshift('All');
-            this.setState({ sublist });
-            this.setQueryParam(apiCreatedBy, appCreatedBy, subscribedTo);
+
+            if (!sublist.includes(appCreatedBy)) {
+                [appCreatedBy] = sublist;
+            }
+            this.setQueryParam(appCreatedBy);
+            this.setState({ sublist, appCreatedBy }, this.assembleMainQuery);
+        } else {
+            this.setState({ chartData: [], tableData: [], inProgress: false });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiListQuery();
-    }
-
-    /**
-     * Formats the siddhi query - apilistquery
-     * @memberof APIMAppCreatedAnalyticsWidget
-     * */
-    assembleApiListQuery() {
-        this.resetState();
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy } = queryParam;
-        const { providerConfig, username } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        const { config } = dataProviderConfigs.configs;
-
-        config.tableName = 'AM_API';
-        config.incrementalColumn = 'API_ID';
-        config.queryData.queryName = 'apilistquery';
-        config.queryData.queryValues = {
-            '{{createdBy}}': apiCreatedBy === createdByKeys.Me ? 'AND CREATED_BY=\'{{creator}}\'' : '',
-            '{{creator}}': username,
-        };
-        dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName,
-            this.handleApiListReceived, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data retrieved from assembleApiListQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMAppCreatedAnalyticsWidget
-     * */
-    handleApiListReceived(message) {
-        const { data } = message;
-        const { id } = this.props;
-        const { apiCreatedBy, appCreatedBy, subscribedTo } = this.state;
-
-        if (data) {
-            let apilist = data.map((dataUnit) => {
-                return dataUnit[0];
-            });
-            apilist = [...new Set(apilist)];
-            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
-            apilist.unshift('All');
-            this.setState({ apilist });
-            this.setQueryParam(apiCreatedBy, appCreatedBy, subscribedTo);
-        }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
     }
 
     /**
@@ -352,35 +285,31 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
     assembleMainQuery() {
-        this.resetState();
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy, appCreatedBy, subscribedTo } = queryParam;
         const {
-            providerConfig, timeFrom, timeTo, username, sublist,
+            providerConfig, timeFrom, timeTo, appCreatedBy, selectedOptions, sublist,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         const { config } = dataProviderConfigs.configs;
-        config.queryData.queryName = 'mainquery';
+        const apiList = selectedOptions.map((opt) => { return opt.name; });
 
+        config.queryData.queryName = 'mainquery';
         config.tableName = 'AM_APPLICATION';
         config.incrementalColumn = 'CREATED_TIME';
         config.queryData.queryValues = {
             '{{subscriptionTable}}':
-                (appCreatedBy !== 'All' || subscribedTo !== 'All') ? ', AM_API api, AM_SUBSCRIPTION subc' : '',
-            '{{subscription}}': (appCreatedBy !== 'All' || subscribedTo !== 'All')
-                ? 'AND api.API_ID=subc.API_ID and app.APPLICATION_ID=subc.APPLICATION_ID' : '',
-            '{{apiName}}': subscribedTo !== 'All' ? 'AND api.API_NAME = \'' + subscribedTo + '\'' : '',
-            '{{apiProvider}}':
-                (appCreatedBy !== 'All' || subscribedTo !== 'All') ? 'AND api.API_PROVIDER {{providerCondition}}' : '',
-            '{{providerCondition}}':
-            apiCreatedBy === 'All' ? 'in (\'' + sublist.slice(1).join('\', \'') + '\')' : '= \'' + username + '\'',
-            '{{subscriberId}}': appCreatedBy !== 'All' ? 'and sub.USER_ID = \'' + appCreatedBy + '\'' : '',
+                (appCreatedBy !== 'All' || apiList[0] !== 'All') ? ', AM_API api, AM_SUBSCRIPTION subc' : '',
+            '{{subscription}}': (appCreatedBy !== 'All' || apiList[0] !== 'All')
+                ? 'AND api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID' : '',
+            '{{apiName}}': apiList[0] !== 'All' ? 'AND api.API_NAME in (\'' + apiList.join('\', \'') + '\')' : '',
+            '{{subscriberId}}': appCreatedBy !== 'All' ? 'AND sub.USER_ID = \'' + appCreatedBy + '\''
+                : 'AND sub.USER_ID IN (\'' + sublist.join('\', \'') + '\')',
             '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
             '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
         };
         dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id + MAIN_CALLBACK, widgetName,
+            this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -392,41 +321,27 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         const { data } = message;
 
         if (data && data.length > 0) {
-            data.reverse();
-            const xAxisTicks = [];
-            const chartData = [];
-            const tableData = [];
-            // keep count of total applications
-            let appCount = 0;
-
-            data.forEach((dataUnit) => {
-                appCount += dataUnit[0];
-                chartData.push({
-                    x: new Date(dataUnit[1]).getTime(),
-                    y: appCount,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss')
-                        + '\nCOUNT:' + appCount,
-                });
-                tableData.push({
-                    appname: dataUnit[2] + ' (' + dataUnit[3] + ')',
-                    createdtime: Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss'),
-                });
+            const tableData = data.map((dataUnit) => {
+                return {
+                    appname: dataUnit[1] + ' (' + dataUnit[2] + ')',
+                    createdtime: Moment(dataUnit[0]).format('YYYY-MMM-DD hh:mm:ss A'),
+                };
             });
-
-            const maxCount = chartData[chartData.length - 1].y;
-
-            const first = new Date(chartData[0].x).getTime();
-            const last = new Date(chartData[chartData.length - 1].x).getTime();
-            const interval = (last - first) / 10;
-            let duration = 0;
-            xAxisTicks.push(first);
-            for (let i = 1; i <= 10; i++) {
-                duration = interval * i;
-                xAxisTicks.push(new Date(first + duration).getTime());
-            }
-
+            const timeFormat = this.getDateFormat();
+            const dataGroupByTime = data.reduce((acc, obj) => {
+                const key = Moment(obj[0]).format(timeFormat);
+                if (!acc[key]) {
+                    acc[key] = 0;
+                }
+                acc[key]++;
+                return acc;
+            }, {});
+            const chartData = Object.keys(dataGroupByTime).map((key) => {
+                return [dataGroupByTime[key], Moment(key, timeFormat).toDate().getTime()];
+            });
+            chartData.sort((a, b) => { return a[1] - b[1]; });
             this.setState({
-                chartData, tableData, xAxisTicks, maxCount, inProgress: false,
+                chartData, tableData, inProgress: false,
             });
         } else {
             this.setState({ chartData: [], tableData: [], inProgress: false });
@@ -434,32 +349,35 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     }
 
     /**
-     * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
-     * @param {string} appCreatedBy - APP Created By menu option selected
-     * @param {string} subscribedTo - Subscribed To menu option selected
+     * Get time format for the selected granularity
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
-    setQueryParam(apiCreatedBy, appCreatedBy, subscribedTo) {
-        super.setGlobalState(queryParamKey, {
-            apiCreatedBy,
-            appCreatedBy,
-            subscribedTo,
-        });
+    getDateFormat() {
+        const { perValue } = this.state;
+        switch (perValue) {
+            case 'minute':
+                return 'YYYY-MMM-DD HH:mm';
+            case 'hour':
+                return 'YYYY-MMM-DD HH';
+            case 'day':
+                return 'YYYY-MMM-DD';
+            case 'month':
+                return 'YYYY-MMM';
+            case 'year':
+                return 'YYYY';
+            case 'second':
+            default:
+                return 'YYYY-MMM-DD HH:mm:ss';
+        }
     }
 
     /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
+     * Updates query param values
+     * @param {string} appCreatedBy - APP Created By menu option selected
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
-    apiCreatedHandleChange(event) {
-        const { appCreatedBy } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value, appCreatedBy, 'All');
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ apiCreatedBy: event.target.value, inProgress: true }, this.assembleApiListQuery);
+    setQueryParam(appCreatedBy) {
+        super.setGlobalState(queryParamKey, { appCreatedBy });
     }
 
     /**
@@ -468,26 +386,8 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
     appCreatedHandleChange(event) {
-        const { apiCreatedBy, subscribedTo } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(apiCreatedBy, event.target.value, subscribedTo);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        this.setQueryParam(event.target.value);
         this.setState({ appCreatedBy: event.target.value, inProgress: true }, this.assembleMainQuery);
-    }
-
-    /**
-     * Handle Subscribed To menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMAppCreatedAnalyticsWidget
-     * */
-    subscribedToHandleChange(event) {
-        const { apiCreatedBy, appCreatedBy } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(apiCreatedBy, appCreatedBy, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ subscribedTo: event.target.value, inProgress: true }, this.assembleMainQuery);
     }
 
     /**
@@ -497,8 +397,8 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, apiCreatedBy, appCreatedBy, subscribedTo, apilist, sublist,
-            chartData, tableData, xAxisTicks, maxCount, inProgress,
+            localeMessages, faultyProviderConfig, height, appCreatedBy, sublist, chartData, tableData,
+            width, inProgress,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -508,15 +408,11 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         const appCreatedProps = {
             themeName,
             height,
-            apiCreatedBy,
             appCreatedBy,
-            subscribedTo,
-            apilist,
             sublist,
             chartData,
             tableData,
-            xAxisTicks,
-            maxCount,
+            width,
             inProgress,
         };
 
@@ -545,9 +441,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
                         ) : (
                             <APIMAppCreatedAnalytics
                                 {...appCreatedProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
                                 appCreatedHandleChange={this.appCreatedHandleChange}
-                                subscribedToHandleChange={this.subscribedToHandleChange}
                             />
                         )
                     }

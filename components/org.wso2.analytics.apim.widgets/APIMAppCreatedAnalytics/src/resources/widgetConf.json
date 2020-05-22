@@ -12,14 +12,12 @@
         "config": {
           "datasourceName": "AM_DB",
           "queryData": {
-            "sublistquery": "select sub.USER_ID, sub.SUBSCRIBER_ID as SUBSCRIBER_ID from AM_SUBSCRIBER sub {{tablesNames}} where sub.TENANT_ID='{{tenantId}}' {{subscriptionCondition}}",
-            "apilistquery": "select API_NAME, API_ID from AM_API where CONTEXT {{contextCondition}} {{createdBy}}",
-            "mainquery": "select count(app.APPLICATION_ID) as count, app.CREATED_TIME as CREATED_TIME, app.NAME, app.CREATED_BY as time from AM_APPLICATION app, AM_SUBSCRIBER sub {{subscriptionTable}} where sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND sub.TENANT_ID='{{tenantId}}' {{subscription}} {{apiName}} {{apiProvider}} {{subscriberId}} AND app.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by app.CREATED_TIME, app.APPLICATION_ID, app.CREATED_BY, app.NAME"
+            "sublistquery": "select sub.USER_ID, sub.SUBSCRIBER_ID as SUBSCRIBER_ID from AM_SUBSCRIBER sub, AM_API as api, AM_APPLICATION app, AM_SUBSCRIPTION subc where sub.TENANT_ID='{{tenantId}}' AND api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID AND sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID",
+            "mainquery": "select app.CREATED_TIME as CREATED_TIME, app.NAME, app.CREATED_BY as time from AM_APPLICATION app, AM_SUBSCRIBER sub {{subscriptionTable}} where sub.SUBSCRIBER_ID=app.SUBSCRIBER_ID AND sub.TENANT_ID='{{tenantId}}' {{subscription}} {{apiName}} {{subscriberId}} AND app.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by app.CREATED_TIME, app.APPLICATION_ID, app.CREATED_BY, app.NAME"
           },
           "publishingInterval": 360000,
           "tableName": "{{tableName}}",
           "incrementalColumn": "{{incrementalColumn}}",
-          "publishingInterval": 2147483647,
           "publishingLimit": 2147483647,
           "isPurgingEnable": false
         }

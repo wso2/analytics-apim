@@ -48,15 +48,6 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * Query string parameter values
- * @type {object}
- */
-const createdByKeys = {
-    All: 'All',
-    Me: 'Me',
-};
-
-/**
  * Query string parameter
  * @type {string}
  */
@@ -96,33 +87,20 @@ class APIMApiUsageWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            proxyPaperWrapper: {
-                height: '75%',
-            },
-            proxyPaper: {
-                background: '#969696',
-                width: '75%',
-                padding: '4%',
-                border: '1.5px solid #fff',
-                margin: 'auto',
-                marginTop: '5%',
-            },
         };
 
         this.state = {
             width: this.props.width,
             height: this.props.height,
             limit: 5,
-            apiCreatedBy: 'All',
-            apiSelected: 'All',
-            apiVersion: 'All',
-            versionlist: [],
-            versionMap: {},
-            apilist: [],
+            selectedOptions: [],
             usageData: null,
             localeMessages: null,
             inProgress: true,
-            proxyError: false,
+            dimension: null,
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -134,15 +112,10 @@ class APIMApiUsageWidget extends Widget {
         }
 
         this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.handleApiListReceived = this.handleApiListReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
-        this.apiSelectedHandleChange = this.apiSelectedHandleChange.bind(this);
-        this.apiVersionHandleChange = this.apiVersionHandleChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
-        this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
-        this.getUsername = this.getUsername.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -156,7 +129,7 @@ class APIMApiUsageWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -197,122 +170,52 @@ class APIMApiUsageWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMApiUsageWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMApiUsageWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleApiListQuery);
-    }
-
-    /**
-     * Reset the state according to queryParam
-     * @memberof APIMApiUsageWidget
-     * */
-    resetState() {
-        const { apilist, versionMap } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let {
-            apiCreatedBy, apiSelected, apiVersion, limit,
-        } = queryParam;
-        let versions;
-
-        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
-            apiCreatedBy = 'All';
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleMainQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleMainQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleMainQuery);
         }
-        if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
-            apiSelected = 'All';
-            apiVersion = 'All';
-        }
-        if (versionMap && apiSelected in versionMap) {
-            versions = versionMap[apiSelected];
-        } else {
-            versions = [];
-        }
-        if (!apiVersion || (versions && !versions.includes(apiVersion))) {
-            apiVersion = 'All';
-        }
-        if (!limit || limit < 0) {
-            limit = 5;
-        }
-        this.setState({
-            apiCreatedBy, apiSelected, apiVersion, limit, versionlist: versions,
-        });
-        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
-    }
-
-    /**
-     * Retrieve API list from APIM server
-     * @memberof APIMApiUsageWidget
-     * */
-    assembleApiListQuery() {
-        this.resetState();
-        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
-            .then((response) => {
-                this.setState({ proxyError: false });
-                this.handleApiListReceived(response.data);
-            })
-            .catch((error) => {
-                this.setState({ proxyError: true, inProgress: false });
-                console.error(error);
-            });
-    }
-
-    /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
-    }
-
-    /**
-     * Formats data retrieved from assembleApiListQuery
-     * @param {object} data - data retrieved
-     * @memberof APIMApiUsageWidget
-     * */
-    handleApiListReceived(data) {
-        let { list } = data;
-        const { id } = this.props;
-        const { username } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy } = queryParam;
-
-        if (list && list.length > 0) {
-            if (apiCreatedBy !== 'All') {
-                list = list.filter(dataUnit => dataUnit.provider === username);
-            }
-
-            let apilist = [];
-            const versionMap = {};
-            list.forEach((dataUnit) => {
-                apilist.push(dataUnit.name);
-                // retrieve all entries for the api and get the api versions list
-                const versions = list.filter(d => d.name === dataUnit.name);
-                const versionlist = versions.map((ver) => { return ver.version; });
-                versionlist.unshift('All');
-                versionMap[dataUnit.name] = versionlist;
-            });
-            versionMap.All = ['All'];
-            apilist = [...new Set(apilist)];
-            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
-            apilist.unshift('All');
-            this.setState({ apilist, versionMap });
-        }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
     }
 
     /**
@@ -320,39 +223,36 @@ class APIMApiUsageWidget extends Widget {
      * @memberof APIMApiUsageWidget
      * */
     assembleMainQuery() {
-        this.resetState();
         const {
-            timeFrom, timeTo, perValue, providerConfig, apilist,
+            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions, limit,
         } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiSelected, apiVersion, limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apilist && apilist.length > 1) {
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-
-            let query;
-            if (apiSelected === 'All' && apiVersion === 'All') {
-                let apis = apilist.slice(1).map((api) => { return 'apiName==\'' + api + '\''; });
-                apis = apis.join(' OR ');
-                query = 'AND (' + apis + ')';
-            } else if (apiVersion !== 'All') {
-                query = 'AND apiName==\'' + apiSelected + '\' AND apiVersion==\'' + apiVersion + '\'';
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
+                let filterCondition = '';
+                if (selectedOptions[0].name !== 'All') {
+                    filterCondition = selectedOptions.map((opt) => {
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                            + '\' AND apiCreator==\'' + opt.provider + '\')';
+                    });
+                    filterCondition = filterCondition.join(' OR ');
+                    filterCondition = 'AND ' + filterCondition;
+                }
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                    '{{filterCondition}}': filterCondition,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
             } else {
-                query = 'AND apiName==\'' + apiSelected + '\'';
+                this.setState({ inProgress: false, usageData: [] });
             }
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{from}}': timeFrom,
-                '{{to}}': timeTo,
-                '{{per}}': perValue,
-                '{{limit}}': limit,
-                '{{querystring}}': query,
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
-        } else {
-            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -363,18 +263,17 @@ class APIMApiUsageWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const {
-            apiCreatedBy, apiSelected, apiVersion, limit,
-        } = this.state;
 
         if (data) {
             const usageData = data.map((dataUnit) => {
                 return {
-                    api: dataUnit[0], apiVersion: dataUnit[1], application: dataUnit[2], usage: dataUnit[3],
+                    api: dataUnit[0] + ' (' + dataUnit[4] + ')',
+                    apiversion: dataUnit[1],
+                    application: dataUnit[2],
+                    usage: dataUnit[3],
                 };
             });
             this.setState({ usageData, inProgress: false });
-            this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit);
         } else {
             this.setState({ inProgress: false, usageData: [] });
         }
@@ -382,19 +281,11 @@ class APIMApiUsageWidget extends Widget {
 
     /**
      * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
-     * @param {string} apiSelected - API Name menu option selected
-     * @param {string} apiVersion - API Version menu option selected
      * @param {number} limit - data limitation value
      * @memberof APIMApiUsageWidget
      * */
-    setQueryParam(apiCreatedBy, apiSelected, apiVersion, limit) {
-        super.setGlobalState(queryParamKey, {
-            apiCreatedBy,
-            apiSelected,
-            apiVersion,
-            limit,
-        });
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
     }
 
     /**
@@ -403,64 +294,44 @@ class APIMApiUsageWidget extends Widget {
      * @memberof APIMApiUsageWidget
      * */
     handleLimitChange(event) {
-        const { id } = this.props;
-        const { apiCreatedBy, apiSelected, apiVersion } = this.state;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion, parseInt(limit, 10));
+        this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleMainQuery();
+            this.setState({ inProgress: true, limit }, this.assembleMainQuery);
         } else {
             this.setState({ limit });
         }
     }
 
     /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
+     * Handle onClick of an API and drill down
      * @memberof APIMApiUsageWidget
      * */
-    apiCreatedHandleChange(event) {
-        const { limit } = this.state;
-        const { id } = this.props;
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
 
-        this.setQueryParam(event.target.value, 'All', 'All', limit);
-        this.setState({ inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiListQuery();
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g,
+                } = super.getGlobalState('dtrp');
+                const { api, apiversion } = data;
+                const apiname = (api.split(' (')[0]).trim();
+                const provider = (api.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + apiname + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
+        }
     }
 
-    /**
-     * Handle API name menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMApiUsageWidget
-     * */
-    apiSelectedHandleChange(event) {
-        const { apiCreatedBy, limit } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(apiCreatedBy, event.target.value, 'All', limit);
-        this.setState({ inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
-    }
-
-    /**
-     * Handle API Version menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMApiUsageWidget
-     * */
-    apiVersionHandleChange(event) {
-        const { apiCreatedBy, apiSelected, limit } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(apiCreatedBy, apiSelected, event.target.value, limit);
-        this.setState({ inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
-    }
 
     /**
      * @inheritDoc
@@ -469,11 +340,10 @@ class APIMApiUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, apiSelected, apiVersion,
-            usageData, apilist, versionlist, inProgress, proxyError,
+            localeMessages, faultyProviderConfig, height, limit, usageData, inProgress,
         } = this.state;
         const {
-            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -481,42 +351,9 @@ class APIMApiUsageWidget extends Widget {
             themeName,
             height,
             limit,
-            apiCreatedBy,
-            apiSelected,
-            apiVersion,
             usageData,
-            apilist,
-            versionlist,
             inProgress,
         };
-
-        if (proxyError) {
-            return (
-                <IntlProvider locale={language} messages={localeMessages}>
-                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                        <div style={proxyPaperWrapper}>
-                            <Paper
-                                elevation={1}
-                                style={proxyPaper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage
-                                        id='apim.server.error.heading'
-                                        defaultMessage='Error!'
-                                    />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='apim.server.error'
-                                        defaultMessage='Error occurred while retrieving API list.'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                    </MuiThemeProvider>
-                </IntlProvider>
-            );
-        }
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
@@ -543,10 +380,8 @@ class APIMApiUsageWidget extends Widget {
                         ) : (
                             <APIMApiUsage
                                 {...apiUsersProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
-                                apiSelectedHandleChange={this.apiSelectedHandleChange}
-                                apiVersionHandleChange={this.apiVersionHandleChange}
                                 handleLimitChange={this.handleLimitChange}
+                                handleOnClickAPI={this.handleOnClickAPI}
                             />
                         )
                     }

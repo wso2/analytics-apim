@@ -48,6 +48,12 @@ const lightTheme = createMuiTheme({
 });
 
 /**
+ * Callback suffixes
+ * */
+const API_ID_CALLBACK = '-api-id';
+const API_RATING_CALLBACK = '-rating';
+
+/**
  * Language
  * @type {string}
  */
@@ -77,10 +83,9 @@ class APIMApiRatingsWidget extends Widget {
             height: this.props.height,
             topApiIdData: [],
             topApiNameData: [],
-            apiDataList: [],
+            apiIdMap: null,
             localeMessages: null,
             inProgress: true,
-            proxyError: false,
             refreshInterval: 60000, // 1min
         };
 
@@ -93,17 +98,6 @@ class APIMApiRatingsWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            proxyPaperWrapper: {
-                height: '75%',
-            },
-            proxyPaper: {
-                background: '#969696',
-                width: '75%',
-                padding: '4%',
-                border: '1.5px solid #fff',
-                margin: 'auto',
-                marginTop: '5%',
             },
         };
 
@@ -119,8 +113,7 @@ class APIMApiRatingsWidget extends Widget {
         this.assembleTopAPIQuery = this.assembleTopAPIQuery.bind(this);
         this.handleAPIDataReceived = this.handleAPIDataReceived.bind(this);
         this.handleTopAPIReceived = this.handleTopAPIReceived.bind(this);
-        this.assembleAPIListQuery = this.assembleAPIListQuery.bind(this);
-        this.handleAPIListReceived = this.handleAPIListReceived.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -139,11 +132,11 @@ class APIMApiRatingsWidget extends Widget {
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 // set an interval to periodically retrieve data
-                const refreshIntervalId = setInterval(this.assembleAPIListQuery, refreshInterval);
+                const refreshIntervalId = setInterval(this.assembleAPIDataQuery, refreshInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
                     refreshIntervalId,
-                }, this.assembleAPIListQuery);
+                }, this.assembleAPIDataQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -159,7 +152,8 @@ class APIMApiRatingsWidget extends Widget {
 
         clearInterval(refreshIntervalId);
         this.setState({ refreshIntervalId: null });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_ID_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_RATING_CALLBACK);
     }
 
     /**
@@ -182,61 +176,17 @@ class APIMApiRatingsWidget extends Widget {
     }
 
     /**
-     * Get API list from publisher
-     * @memberof APIMApiRatingsWidget
-     * */
-    assembleAPIListQuery() {
-        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
-            .then((response) => {
-                this.setState({ proxyError: false });
-                this.handleAPIListReceived(response.data);
-            })
-            .catch((error) => {
-                this.setState({ proxyError: true, inProgress: false });
-                console.error(error);
-            });
-    }
-
-    /**
-     * Formats data received from assembleAPIDataQuery
-     * @param {object} data - data retrieved
-     * @memberof APIMApiRatingsWidget
-     * */
-    handleAPIListReceived(data) {
-        const { list } = data;
-        const { id } = this.props;
-        if (list && list.length > 0) {
-            this.setState({ apiDataList: list });
-        }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleAPIDataQuery();
-    }
-
-    /**
      * Formats the siddhi query - apilistquery
      * @memberof APIMApiRatingsWidget
      * */
     assembleAPIDataQuery() {
-        const { providerConfig, apiDataList } = this.state;
+        const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apiDataList && apiDataList.length > 0) {
-            let apiCondition = apiDataList.map((api) => {
-                return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
-                    + '\' AND API_PROVIDER==\'' + api.provider + '\')';
-            });
-            apiCondition = apiCondition.join(' OR ');
-
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiCondition}}': apiCondition,
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleAPIDataReceived, dataProviderConfigs);
-        } else {
-            this.setState({ inProgress: false, topApiNameData: [] });
-        }
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apilistquery';
+        super.getWidgetChannelManager()
+            .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleAPIDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -246,14 +196,13 @@ class APIMApiRatingsWidget extends Widget {
      * */
     handleAPIDataReceived(message) {
         const { data } = message;
-        const { id } = this.props;
-        if (data) {
+        if (data && data.length > 0) {
             const apiIdMap = {};
             data.forEach((api) => { apiIdMap[api[0]] = api; });
-            this.setState({ apiIdMap });
+            this.setState({ apiIdMap }, this.assembleTopAPIQuery);
+        } else {
+            this.setState({ inProgress: false, topApiNameData: [] });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleTopAPIQuery();
     }
 
     /**
@@ -273,7 +222,7 @@ class APIMApiRatingsWidget extends Widget {
                 '{{apiList}}': apiIds,
             };
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleTopAPIReceived, dataProviderConfigs);
+                .subscribeWidget(id + API_RATING_CALLBACK, widgetName, this.handleTopAPIReceived, dataProviderConfigs);
         } else {
             this.setState({ inProgress: false, topApiNameData: [] });
         }
@@ -287,18 +236,43 @@ class APIMApiRatingsWidget extends Widget {
     handleTopAPIReceived(message) {
         const { data } = message;
 
-        if (data) {
+        if (data && data.length > 0) {
             const { apiIdMap } = this.state;
             const topApiNameData = data.map((dataUnit) => {
                 const api = apiIdMap[dataUnit[0]];
                 return {
                     apiname: api[1] + ' (' + api[3] + ')',
+                    apiversion: api[2],
                     ratings: dataUnit[1],
                 };
             });
             this.setState({ topApiNameData, inProgress: false });
         } else {
             this.setState({ topApiNameData: [], inProgress: false });
+        }
+    }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMApiRatingsWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dmSelc":{"dm":"api","op":[{"name":"'
+                    + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
         }
     }
 
@@ -310,10 +284,9 @@ class APIMApiRatingsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData, inProgress,
-            proxyError,
         } = this.state;
         const {
-            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -324,54 +297,32 @@ class APIMApiRatingsWidget extends Widget {
         return (
             <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    { proxyError ? (
-                        <div style={proxyPaperWrapper}>
-                            <Paper
-                                elevation={1}
-                                style={proxyPaper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage
-                                        id='apim.server.error.heading'
-                                        defaultMessage='Error!'
-                                    />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='apim.server.error'
-                                        defaultMessage='Error occurred while retrieving API list.'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                    ) : (
-                        <div>
-                            {
-                                faultyProviderConfig ? (
-                                    <div style={paperWrapper}>
-                                        <Paper elevation={1} style={paper}>
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='config.error.heading'
-                                                    defaultMessage='Configuration Error !'
-                                                />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='config.error.body'
-                                                    defaultMessage={'Cannot fetch provider configuration for APIM '
-                                                    + 'Api Ratings widget'}
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <APIMApiRatings {...apiRatingProps} />
-                                )
-                            }
-                        </div>
-                    )}
-
+                    {
+                        faultyProviderConfig ? (
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='config.error.body'
+                                            defaultMessage={'Cannot fetch provider configuration for APIM '
+                                            + 'Api Ratings widget'}
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <APIMApiRatings
+                                {...apiRatingProps}
+                                handleOnClickAPI={this.handleOnClickAPI}
+                            />
+                        )
+                    }
                 </MuiThemeProvider>
             </IntlProvider>
         );

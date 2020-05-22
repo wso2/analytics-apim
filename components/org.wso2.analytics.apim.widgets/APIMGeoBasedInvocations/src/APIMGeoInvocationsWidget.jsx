@@ -48,21 +48,6 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * Query string parameter values
- * @type {object}
- */
-const createdByKeys = {
-    All: 'All',
-    Me: 'Me',
-};
-
-/**
- * Query string parameter
- * @type {string}
- */
-const queryParamKey = 'geoInvocations';
-
-/**
  * Language
  * @type {string}
  */
@@ -119,33 +104,20 @@ class APIMGeoInvocationsWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            proxyPaperWrapper: {
-                height: '75%',
-            },
-            proxyPaper: {
-                background: '#969696',
-                width: '75%',
-                padding: '4%',
-                border: '1.5px solid #fff',
-                margin: 'auto',
-                marginTop: '5%',
-            },
         };
 
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiCreatedBy: 'All',
-            apiSelected: '',
-            apiVersion: '',
-            versionlist: [],
-            apilist: [],
             geoData: null,
             inProgress: true,
             metadata: this.metadata,
             chartConfig: this.chartConfig,
-            proxyError: false,
-            username: '',
+            dimension: null,
+            selectedOptions: [],
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -157,15 +129,8 @@ class APIMGeoInvocationsWidget extends Widget {
         }
 
         this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.handleApiListReceived = this.handleApiListReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
-        this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
-        this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
-        this.apiSelectedHandleChange = this.apiSelectedHandleChange.bind(this);
-        this.apiVersionHandleChange = this.apiVersionHandleChange.bind(this);
-        this.resetState = this.resetState.bind(this);
-        this.getUsername = this.getUsername.bind(this);
     }
 
     componentWillMount() {
@@ -179,7 +144,6 @@ class APIMGeoInvocationsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -198,19 +162,6 @@ class APIMGeoInvocationsWidget extends Widget {
     componentWillUnmount() {
         const { id } = this.props;
         super.getWidgetChannelManager().unsubscribeWidget(id);
-    }
-
-    /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
     }
 
     /**
@@ -239,102 +190,33 @@ class APIMGeoInvocationsWidget extends Widget {
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleApiListQuery);
-    }
-
-    /**
-     * Reset the state according to queryParam
-     * @memberof APIMGeoInvocationsWidget
-     * */
-    resetState() {
-        const queryParam = super.getGlobalState(queryParamKey);
-        let {
-            apiCreatedBy, apiSelected, apiVersion,
-        } = queryParam;
-        const { apilist, versionMap } = this.state;
-        let versions;
-
-        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
-            apiCreatedBy = 'All';
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleMainQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleMainQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleMainQuery);
         }
-        if (!apiSelected || (apilist && !apilist.includes(apiSelected))) {
-            if (apilist.length > 0) {
-                [apiSelected] = apilist;
-            }
-        }
-        if (versionMap && apiSelected in versionMap) {
-            versions = versionMap[apiSelected];
-        } else {
-            versions = [];
-        }
-        if (!apiVersion || !versions.includes(apiVersion)) {
-            if (versions.length > 0) {
-                [apiVersion] = versions;
-            } else {
-                apiVersion = '';
-            }
-        }
-
-        this.setState({
-            apiCreatedBy, apiSelected, apiVersion, versionlist: versions,
-        });
-        this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
-    }
-
-    /**
-     * Formats the siddhi query - apilistquery
-     * @memberof APIMGeoInvocationsWidget
-     * */
-    assembleApiListQuery() {
-        this.resetState();
-        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
-            .then((response) => {
-                this.setState({ proxyError: false });
-                this.handleApiListReceived(response.data);
-            })
-            .catch((error) => {
-                this.setState({ proxyError: true, inProgress: false });
-                console.error(error);
-            });
-    }
-
-    /**
-     * Formats data retrieved from assembleApiListQuery
-     * @param {object} data - data retrieved
-     * @memberof APIMGeoInvocationsWidget
-     * */
-    handleApiListReceived(data) {
-        let { list } = data;
-        const { id } = this.props;
-        const { username } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy } = queryParam;
-        if (list && list.length > 0) {
-            if (apiCreatedBy !== 'All') {
-                list = list.filter((api) => { return api.provider === username; });
-            }
-
-            let apilist = [];
-            const versionMap = {};
-            list.forEach((dataUnit) => {
-                apilist.push(dataUnit.name);
-                // retrieve all entries for the api and get the api versions list
-                const versions = list.filter(d => d.name === dataUnit.name);
-                const versionlist = versions.map((ver) => { return ver.version; });
-                versionMap[dataUnit.name] = versionlist;
-            });
-            apilist = [...new Set(apilist)];
-            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
-            this.setState({ apilist, versionMap });
-        }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
     }
 
     /**
@@ -342,36 +224,28 @@ class APIMGeoInvocationsWidget extends Widget {
      * @memberof APIMGeoInvocationsWidget
      * */
     assembleMainQuery() {
-        this.resetState();
         const {
-            providerConfig, timeFrom, timeTo, perValue,
+            providerConfig, timeFrom, timeTo, perValue, dimension, selectedOptions,
         } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiSelected, apiVersion } = queryParam;
         const { id } = this.props;
         const widgetName = this.props.widgetID;
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-        if (apiSelected !== '' && apiVersion !== '') {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{querystring}}': "AND apiName=='{{api}}' AND apiVersion=='{{version}}'",
-                '{{api}}': apiSelected,
-                '{{version}}': apiVersion,
-            };
-        } else {
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{per}}': perValue,
-                '{{querystring}}': '',
-            };
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0) {
+                const filterCondition = '(apiName==\'' + selectedOptions[0].name + '\' AND apiVersion==\''
+                    + selectedOptions[0].version + '\' AND apiCreator==\'' + selectedOptions[0].provider + '\')';
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{filterCondition}}': filterCondition,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+            }
         }
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -383,72 +257,12 @@ class APIMGeoInvocationsWidget extends Widget {
         const { data } = message;
 
         if (data) {
-            const { apiCreatedBy, apiSelected, apiVersion } = this.state;
             const maxCount = data.reduce((acc,cur) => cur[0] > acc ? acc = cur[0] : acc, 0);
             this.chartConfig.chloropethRangeUpperbound = [maxCount];
             this.setState({ geoData: data, inProgress: false });
-            this.setQueryParam(apiCreatedBy, apiSelected, apiVersion);
         } else {
             this.setState({ inProgress: false, geoData: [] });
         }
-    }
-
-    /**
-     * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
-     * @param {string} apiSelected - API Name menu option selected
-     * @param {string} apiVersion - API Version menu option selected
-     * @memberof APIMGeoInvocationsWidget
-     * */
-    setQueryParam(apiCreatedBy, apiSelected, apiVersion) {
-        super.setGlobalState(queryParamKey, {
-            apiCreatedBy,
-            apiSelected,
-            apiVersion,
-        });
-    }
-
-    /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMGeoInvocationsWidget
-     * */
-    apiCreatedHandleChange(event) {
-        const { id } = this.props;
-        this.setQueryParam(event.target.value, '', '');
-        this.setState({ inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiListQuery();
-    }
-
-    /**
-     * Handle API name menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMGeoInvocationsWidget
-     * */
-    apiSelectedHandleChange(event) {
-        const { apiCreatedBy } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(apiCreatedBy, event.target.value, '');
-        this.setState({ inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
-    }
-
-    /**
-     * Handle API Version menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMGeoInvocationsWidget
-     * */
-    apiVersionHandleChange(event) {
-        const { apiCreatedBy, apiSelected } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(apiCreatedBy, apiSelected, event.target.value);
-        this.setState({ inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
     }
 
     /**
@@ -458,11 +272,10 @@ class APIMGeoInvocationsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, apiCreatedBy, inProgress,
-            apiSelected, apiVersion, geoData, apilist, versionlist, proxyError,
+            localeMessages, faultyProviderConfig, chartConfig, metadata, height, width, inProgress, geoData,
         } = this.state;
         const {
-            paper, paperWrapper, proxyPaperWrapper, proxyPaper,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -472,70 +285,38 @@ class APIMGeoInvocationsWidget extends Widget {
             metadata,
             height,
             width,
-            apiCreatedBy,
-            apiSelected,
-            apiVersion,
             geoData,
-            apilist,
-            versionlist,
             inProgress,
         };
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    { proxyError ? (
-                        <div style={proxyPaperWrapper}>
-                            <Paper
-                                elevation={1}
-                                style={proxyPaper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage
-                                        id='apim.server.error.heading'
-                                        defaultMessage='Error!'
-                                    />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='apim.server.error'
-                                        defaultMessage='Error occurred while retrieving API list.'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                    ) : (
-                        <div>
-                            {
-                                faultyProviderConfig ? (
-                                    <div style={paperWrapper}>
-                                        <Paper elevation={1} style={paper}>
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='config.error.heading'
-                                                    defaultMessage='Configuration Error !'
-                                                />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='config.error.body'
-                                                    defaultMessage={'Cannot fetch provider configuration for APIM Geo '
-                                                    + 'Based Invocations widget'}
-                                                />
-                                            </Typography>
-                                        </Paper>
-                                    </div>
-                                ) : (
-                                    <APIMGeoInvocations
-                                        {...geoProps}
-                                        apiCreatedHandleChange={this.apiCreatedHandleChange}
-                                        apiSelectedHandleChange={this.apiSelectedHandleChange}
-                                        apiVersionHandleChange={this.apiVersionHandleChange}
-                                    />
-                                )
-                            }
-                        </div>
-                    ) }
+                    {
+                        faultyProviderConfig ? (
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='config.error.body'
+                                            defaultMessage={'Cannot fetch provider configuration for APIM Geo '
+                                            + 'Based Invocations widget'}
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <APIMGeoInvocations
+                                {...geoProps}
+                            />
+                        )
+                    }
                 </MuiThemeProvider>
             </IntlProvider>
         );

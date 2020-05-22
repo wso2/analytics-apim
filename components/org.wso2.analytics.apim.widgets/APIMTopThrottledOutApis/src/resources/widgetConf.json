@@ -38,6 +38,14 @@
           "name": "TEXT"
         },
         "defaultValue": "Top Throttled Out APIs"
+      },
+      {
+        "id": "drillDown",
+        "title": "API Faults Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "api-faults"
       }
     ]
 

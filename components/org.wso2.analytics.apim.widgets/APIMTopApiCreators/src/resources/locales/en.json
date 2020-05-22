@@ -1,16 +1,14 @@
 {
-  "apim.server.error.heading" : "Error !",
-  "apim.server.error" : "Error occurred while retrieving API list.",
   "config.error.body": "Cannot fetch provider configuration for APIM Top Api Creators widget",
   "config.error.heading": "Configuration Error !",
   "filter.column.menu.heading": "Column Name",
   "filter.label.title": "Filter By",
   "filter.search.placeholder": "Search Field",
-  "limit": "Limit :",
+  "limit": "Limit",
   "nodata.error.heading": "No Data Available !",
   "nodata.error.body": "No data available for the selected options.",
   "sort.label.title": "Sort",
   "table.heading.apicount": "API COUNT",
-  "table.heading.creator": "CREATOR",
+  "table.heading.creator": "API CREATOR",
   "widget.heading": "TOP API CREATORS"
 }

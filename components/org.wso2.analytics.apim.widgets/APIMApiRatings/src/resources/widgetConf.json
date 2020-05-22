@@ -13,7 +13,7 @@
           "siddhiApp": "@App:name('APIMApiRatingsSiddhi') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API(API_ID int,API_PROVIDER string,API_NAME string,API_VERSION string,CONTEXT string,CONTEXT_TEMPLATE string,API_TIER string,CREATED_BY string,CREATED_TIME string,UPDATED_BY string,UPDATED_TIME string); @primaryKey('RATING_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API_RATINGS(RATING_ID string,API_ID int,RATING int,SUBSCRIBER_ID int); @primaryKey('EVENT_ID') @store(type=\"rdbms\" , datasource=\"AM_DB\") define table AM_API_LC_EVENT(EVENT_ID int,API_ID int,PREVIOUS_STATE string,NEW_STATE string,USER_ID string,TENANT_ID int,EVENT_DATE string);",
           "queryData": {
             "topapiquery": "from AM_API_RATINGS on ({{apiList}}) select API_ID,avg(RATING) as avg group by API_ID order by avg desc;",
-            "apilistquery":"from AM_API on {{apiCondition}} select API_ID,API_NAME,API_VERSION,CREATED_BY;"
+            "apilistquery":"from AM_API select API_ID,API_NAME,API_VERSION,CREATED_BY;"
           },
           "publishingInterval": 60
         }
@@ -39,6 +39,14 @@
           "name": "TEXT"
         },
         "defaultValue": "Top Rated APIs"
+      },
+      {
+        "id": "drillDown",
+        "title": "API Usage Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "api-usage"
       }
     ]
   }

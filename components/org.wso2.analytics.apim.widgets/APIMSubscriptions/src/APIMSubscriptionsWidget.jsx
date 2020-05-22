@@ -121,6 +121,7 @@ class APIMSubscriptionsWidget extends Widget {
         }
         this.assembleUsageCountQuery = this.assembleUsageCountQuery.bind(this);
         this.handleUsageCountReceived = this.handleUsageCountReceived.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     /**
@@ -269,6 +270,26 @@ class APIMSubscriptionsWidget extends Widget {
     }
 
     /**
+     * Handle onClick and drill down
+     * @memberof APIMSubscriptionsWidget
+     * */
+    handleOnClick() {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"7days","g":"day","sync":false}}';
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Api Created widget
      * @memberof APIMSubscriptionsWidget
@@ -308,13 +329,16 @@ class APIMSubscriptionsWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                                + 'Created widget'}
+                                                + 'Subscriptions widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMSubscriptions {...apiCreatedProps} />
+                            <APIMSubscriptions
+                                {...apiCreatedProps}
+                                handleOnClick={this.handleOnClick}
+                            />
                         )
                     }
                 </MuiThemeProvider>

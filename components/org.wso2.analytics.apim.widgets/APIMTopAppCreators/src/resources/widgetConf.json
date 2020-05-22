@@ -39,6 +39,14 @@
           "name": "TEXT"
         },
         "defaultValue": "Top Application Creators"
+      },
+      {
+        "id": "drillDown",
+        "title": "Application Statistics Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "api-app-stats"
       }
     ]
   }

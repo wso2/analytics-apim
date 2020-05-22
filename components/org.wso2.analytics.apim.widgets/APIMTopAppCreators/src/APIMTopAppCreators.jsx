@@ -61,7 +61,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopAppCreators(props) {
     const {
-        themeName, height, width, creatorData, handleChange, limit, inProgress,
+        themeName, height, width, creatorData, handleChange, limit, inProgress, handleOnClickAppCreator,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -165,14 +165,14 @@ export default function APIMTopAppCreators(props) {
                             <FormControl style={styles.formControl}>
                                 <Tooltip
                                     placement='top'
-                                    title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                    title={<FormattedMessage id='limit' defaultMessage='Limit' />}
                                 >
                                     <InputLabel
                                         shrink
                                         htmlFor='limit-number'
                                         style={styles.formLabel}
                                     >
-                                        <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                        <FormattedMessage id='limit' defaultMessage='Limit' />
                                     </InputLabel>
                                 </Tooltip>
                                 <Input
@@ -250,11 +250,28 @@ export default function APIMTopAppCreators(props) {
                                                     y={d => d.appcount}
                                                     labels={d => `${d.creator} : ${((d.appcount
                                                         / (sumBy(pieChartData, o => o.appcount))) * 100).toFixed(2)}%`}
+                                                    events={[
+                                                        {
+                                                            target: 'data',
+                                                            eventHandlers: {
+                                                                onClick: () => {
+                                                                    return [{
+                                                                        mutation: (val) => {
+                                                                            handleOnClickAppCreator(val.datum);
+                                                                        },
+                                                                    }];
+                                                                },
+                                                            },
+                                                        },
+                                                    ]}
                                                 />
                                             </svg>
                                         </div>
                                         <div style={styles.tableDiv}>
-                                            <CustomTable data={creatorData} />
+                                            <CustomTable
+                                                data={creatorData}
+                                                onClickTableRow={e => handleOnClickAppCreator(e)}
+                                            />
                                         </div>
                                     </div>
                                 )}
@@ -273,6 +290,7 @@ APIMTopAppCreators.propTypes = {
     width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     handleChange: PropTypes.func.isRequired,
+    handleOnClickAppCreator: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     creatorData: PropTypes.instanceOf(Object).isRequired,
 };

@@ -22,11 +22,6 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
 import APIMApiCreatedData from './APIMApiCreatedData';
 
 /**
@@ -36,27 +31,13 @@ import APIMApiCreatedData from './APIMApiCreatedData';
  */
 export default function APIMApiCreatedAnalytics(props) {
     const {
-        themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount, handleChange, inProgress,
+        themeName, height, chartData, tableData, inProgress, width, handleOnClickAPI,
     } = props;
     const styles = {
         headingWrapper: {
             margin: 'auto',
             width: '95%',
-        },
-        formWrapper: {
-            marginBottom: '5%',
-        },
-        form: {
-            display: 'flex',
-            flexWrap: 'wrap',
-        },
-        formControl: {
-            marginLeft: '5%',
-            marginTop: '5%',
-            minWidth: 120,
-        },
-        selectEmpty: {
-            marginTop: 10,
+            paddingBottom: '20px',
         },
         loadingIcon: {
             margin: 'auto',
@@ -68,9 +49,6 @@ export default function APIMApiCreatedAnalytics(props) {
             justifyContent: 'center',
             height,
         },
-        formLabel: {
-            whiteSpace: 'nowrap',
-        },
         heading: {
             margin: 'auto',
             textAlign: 'center',
@@ -81,7 +59,7 @@ export default function APIMApiCreatedAnalytics(props) {
         },
     };
     const createdDataProps = {
-        themeName, chartData, tableData, xAxisTicks, maxCount,
+        themeName, chartData, tableData, width,
     };
     return (
         <Scrollbars style={{
@@ -101,41 +79,18 @@ export default function APIMApiCreatedAnalytics(props) {
                         <FormattedMessage id='widget.heading' defaultMessage='APIS CREATED OVER TIME' />
                     </div>
                 </div>
-                <div style={styles.formWrapper}>
-                    <form style={styles.form} noValidate autoComplete='off'>
-                        <FormControl style={styles.formControl}>
-                            <InputLabel
-                                shrink
-                                htmlFor='createdBy-label-placeholder'
-                                style={styles.formLabel}
-                            >
-                                <FormattedMessage id='createdBy.label' defaultMessage='Created By' />
-                            </InputLabel>
-                            <Select
-                                value={createdBy}
-                                onChange={handleChange}
-                                input={<Input name='createdBy' id='createdBy-label-placeholder' />}
-                                displayEmpty
-                                name='createdBy'
-                                style={styles.selectEmpty}
-                            >
-                                <MenuItem value='all'>
-                                    <FormattedMessage id='all.menuItem' defaultMessage='All' />
-                                </MenuItem>
-                                <MenuItem value='me'>
-                                    <FormattedMessage id='me.menuItem' defaultMessage='Me' />
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
-                    </form>
-                </div>
                 { inProgress
                     ? (
                         <div style={styles.loading}>
                             <CircularProgress style={styles.loadingIcon} />
                         </div>
                     )
-                    : <APIMApiCreatedData {...createdDataProps} />
+                    : (
+                        <APIMApiCreatedData
+                            {...createdDataProps}
+                            onClickAPI={e => handleOnClickAPI(e)}
+                        />
+                    )
                 }
 
             </div>
@@ -146,11 +101,9 @@ export default function APIMApiCreatedAnalytics(props) {
 APIMApiCreatedAnalytics.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    createdBy: PropTypes.string.isRequired,
+    width: PropTypes.string.isRequired,
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
-    xAxisTicks: PropTypes.instanceOf(Object).isRequired,
-    maxCount: PropTypes.number.isRequired,
-    handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClickAPI: PropTypes.func.isRequired,
 };

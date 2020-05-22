@@ -29,7 +29,9 @@ import './styles.css';
  * @returns {ReactElement} Render the APIM Api Usage Count widget body
  */
 export default function APIMSubscriptions(props) {
-    const { themeName, thisWeekCount, lastWeekCount } = props;
+    const {
+        themeName, thisWeekCount, lastWeekCount, handleOnClick,
+    } = props;
     const styles = {
         root: {
             backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
@@ -76,11 +78,7 @@ export default function APIMSubscriptions(props) {
         <div
             style={styles.root}
             className={`overview-wrapper ${themeName}`}
-            onClick={() => {
-                window.location.href = window.contextPath
-                    + '/dashboards/apimpublisher/developer-stats#{"dtrp":{"tr":"7days","g":"day","sync":false},'
-                    + '"subscriptions":{"apiCreatedBy":"All","subscribedTo":"All"}}';
-            }}
+            onClick={() => handleOnClick()}
         >
             <div style={styles.headingWrapper}>
                 <h3
@@ -115,4 +113,5 @@ APIMSubscriptions.propTypes = {
     themeName: PropTypes.string.isRequired,
     thisWeekCount: PropTypes.string.isRequired,
     lastWeekCount: PropTypes.string.isRequired,
+    handleOnClick: PropTypes.func.isRequired,
 };

@@ -112,6 +112,7 @@ class APIMTopThrottledApisWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -125,6 +126,7 @@ class APIMTopThrottledApisWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -165,19 +167,35 @@ class APIMTopThrottledApisWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMTopThrottledApisWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMTopThrottledApisWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const { from, to, granularity } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleQuery);
+        if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleQuery);
+        }
     }
 
     /**
@@ -186,29 +204,26 @@ class APIMTopThrottledApisWidget extends Widget {
      * */
     assembleQuery() {
         const {
-            providerConfig, timeFrom, timeTo, perValue,
+            providerConfig, timeFrom, timeTo, perValue, limit,
         } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { limit } = queryParam;
         const { id, widgetID: widgetName } = this.props;
 
-        if (!limit || limit < 0) {
-            limit = 5;
+        if (timeFrom) {
+            if (limit > 0) {
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'query';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+            } else {
+                this.setState({ inProgress: false, throttledData: [] });
+            }
         }
-
-        this.setState({ limit });
-        this.setQueryParam(limit);
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': perValue,
-            '{{limit}}': limit,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -220,7 +235,7 @@ class APIMTopThrottledApisWidget extends Widget {
         const { data } = message;
         const { limit } = this.state;
 
-        if (data) {
+        if (data && data.length > 0) {
             const throttledData = [];
             const legendData = [];
             let counter = 0;
@@ -234,7 +249,7 @@ class APIMTopThrottledApisWidget extends Widget {
                 throttledData.push({
                     id: counter,
                     apiname: apiName,
-                    apiVersion: dataUnit[1],
+                    apiversion: dataUnit[1],
                     throttledcount: dataUnit[4],
                 });
             });
@@ -261,16 +276,41 @@ class APIMTopThrottledApisWidget extends Widget {
      * @memberof APIMTopThrottledApisWidget
      * */
     handleChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleQuery();
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
             this.setState({ limit });
+        }
+    }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMTopThrottledApisWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g,
+                } = super.getGlobalState('dtrp');
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
         }
     }
 
@@ -316,7 +356,11 @@ class APIMTopThrottledApisWidget extends Widget {
                             </div>
                         </MuiThemeProvider>
                     ) : (
-                        <APIMTopThrottledApis {...throttledApisProps} handleChange={this.handleChange} />
+                        <APIMTopThrottledApis
+                            {...throttledApisProps}
+                            handleChange={this.handleChange}
+                            handleOnClickAPI={this.handleOnClickAPI}
+                        />
                     )
                 }
             </IntlProvider>
