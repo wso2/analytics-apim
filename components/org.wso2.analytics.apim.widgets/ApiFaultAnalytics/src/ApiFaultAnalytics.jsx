@@ -108,6 +108,17 @@ export default function ApiFaultAnalytics(props) {
         names: ['COUNT', 'TIME'],
         types: ['linear', 'time'],
     };
+    const columns = [
+        {
+            id: 'time', numeric: false, disablePadding: false, label: 'table.heading.time',
+        },
+        {
+            id: 'appName', numeric: false, disablePadding: false, label: 'table.heading.appName',
+        },
+        {
+            id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',
+        },
+    ];
 
     return (
         <Scrollbars style={{
@@ -166,6 +177,7 @@ export default function ApiFaultAnalytics(props) {
                                 <div style={styles.tableWrapper}>
                                     <CustomTable
                                         data={tableData}
+                                        columns={columns}
                                     />
                                 </div>
                             </div>
