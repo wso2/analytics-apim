@@ -74,6 +74,14 @@ export default function APIMApiRatings(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'ratings', numeric: true, disablePadding: false, label: 'table.heading.ratings',
+        },
+    ];
 
     return (
         <Scrollbars style={{
@@ -124,7 +132,11 @@ export default function APIMApiRatings(props) {
                                 ) : (
                                     <div>
                                         <div style={{ marginTop: '5%' }}>
-                                            <CustomTable data={topApiNameData} loadingTopApis={inProgress} />
+                                            <CustomTable
+                                                data={topApiNameData}
+                                                loadingTopApis={inProgress}
+                                                columns={columns}
+                                            />
                                         </div>
                                     </div>
                                 )
