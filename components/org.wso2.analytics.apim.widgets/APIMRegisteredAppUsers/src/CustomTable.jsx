@@ -340,7 +340,6 @@ CustomTable.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
     columns: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
-    title: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
