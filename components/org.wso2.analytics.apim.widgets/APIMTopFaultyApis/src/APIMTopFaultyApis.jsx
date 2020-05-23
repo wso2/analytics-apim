@@ -131,7 +131,17 @@ export default function APIMTopFaultyApis(props) {
             marginTop: 0,
         },
     };
-
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'apiVersion', numeric: true, disablePadding: false, label: 'table.heading.apiVersion',
+        },
+        {
+            id: 'faultcount', numeric: true, disablePadding: false, label: 'table.heading.faultcount',
+        },
+    ];
     const { pieChartData, legendData } = Utils.summarizePieData(faultData, 'apiname', 'faultcount');
 
     return (
@@ -243,6 +253,7 @@ export default function APIMTopFaultyApis(props) {
                                         <div style={styles.tableDiv}>
                                             <CustomTable
                                                 data={faultData}
+                                                columns={columns}
                                             />
                                         </div>
                                     </div>
