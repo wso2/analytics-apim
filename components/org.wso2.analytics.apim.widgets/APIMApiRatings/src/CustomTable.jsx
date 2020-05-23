@@ -287,7 +287,7 @@ class CustomTable extends React.Component {
                                                             <TableCell numeric>
                                                                 {n.apiversion}
                                                             </TableCell>
-                                                            <TableCell numeric>A
+                                                            <TableCell numeric>
                                                                 {n.ratings}
                                                             </TableCell>
                                                         </TableRow>
