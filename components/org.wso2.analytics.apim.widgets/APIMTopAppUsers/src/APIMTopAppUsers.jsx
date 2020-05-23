@@ -133,7 +133,14 @@ export default function APIMTopAppUsers(props) {
             strokeWidth: 1,
         },
     };
-
+    const columns = [
+        {
+            id: 'username', numeric: false, disablePadding: false, label: 'table.heading.username',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
     const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'username', 'hits');
 
     return (
@@ -277,6 +284,7 @@ export default function APIMTopAppUsers(props) {
                                     <CustomTable
                                         data={usageData}
                                         inProgress={inProgress}
+                                        columns={columns}
                                     />
                                 </div>
                             </div>
