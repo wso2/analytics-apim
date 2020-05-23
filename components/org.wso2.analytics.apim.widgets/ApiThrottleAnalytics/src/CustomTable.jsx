@@ -245,6 +245,7 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title='API THROTTLED DATA'
                     menuItems={menuItems}
                     data={data}
                     columns={columns}

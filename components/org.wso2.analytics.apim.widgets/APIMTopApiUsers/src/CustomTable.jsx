@@ -222,6 +222,7 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title='TOP API USERS'
                     menuItems={menuItems}
                     data={data}
                     columns={columns}
