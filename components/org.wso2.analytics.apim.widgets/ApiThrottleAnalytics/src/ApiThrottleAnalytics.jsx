@@ -43,7 +43,6 @@ export default function ApiThrottleAnalytics(props) {
         },
         dataWrapper: {
             paddingTop: '20px',
-
         },
         chartWrapper: {
             width: '95%',
@@ -79,6 +78,20 @@ export default function ApiThrottleAnalytics(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'time', numeric: false, disablePadding: false, label: 'table.heading.time',
+        },
+        {
+            id: 'appName', numeric: false, disablePadding: false, label: 'table.heading.appName',
+        },
+        {
+            id: 'reason', numeric: false, disablePadding: false, label: 'table.heading.reason',
+        },
+        {
+            id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',
+        },
+    ];
     const chartConfig = {
         x: 'TIME',
         charts: [
@@ -104,7 +117,6 @@ export default function ApiThrottleAnalytics(props) {
         names: ['COUNT', 'TIME'],
         types: ['linear', 'time'],
     };
-
 
     return (
         <Scrollbars style={{
@@ -163,6 +175,7 @@ export default function ApiThrottleAnalytics(props) {
                                 <div style={styles.tableWrapper}>
                                     <CustomTable
                                         data={tableData}
+                                        columns={columns}
                                     />
                                 </div>
                             </div>
