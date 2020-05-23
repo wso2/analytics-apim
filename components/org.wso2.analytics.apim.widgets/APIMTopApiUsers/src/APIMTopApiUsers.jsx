@@ -95,6 +95,14 @@ export default function APIMTopApiUsers(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'user', numeric: false, disablePadding: false, label: 'table.heading.user',
+        },
+        {
+            id: 'apiCalls', numeric: true, disablePadding: false, label: 'table.heading.apiCalls',
+        },
+    ];
 
     return (
         <Scrollbars style={{
@@ -250,7 +258,10 @@ export default function APIMTopApiUsers(props) {
                                     </Paper>
                                 </div>
                             ) : (
-                                <CustomTable data={userData} />
+                                <CustomTable
+                                    data={userData}
+                                    columns={columns}
+                                />
                             )}
                     </div>
                 )}
