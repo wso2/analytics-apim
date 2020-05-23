@@ -141,6 +141,15 @@ export default function APIMTopAppCreators(props) {
         },
     };
     const { pieChartData, legendData } = Utils.summarizePieData(creatorData, 'creator', 'appcount');
+    const columns = [
+        {
+            id: 'creator', numeric: false, disablePadding: false, label: 'table.heading.creator',
+        },
+        {
+            id: 'appcount', numeric: true, disablePadding: false, label: 'table.heading.appcount',
+        },
+    ];
+
     return (
         <MuiThemeProvider
             theme={themeName === 'dark' ? darkTheme : lightTheme}
@@ -254,7 +263,10 @@ export default function APIMTopAppCreators(props) {
                                             </svg>
                                         </div>
                                         <div style={styles.tableDiv}>
-                                            <CustomTable data={creatorData} />
+                                            <CustomTable
+                                                data={creatorData}
+                                                columns={columns}
+                                            />
                                         </div>
                                     </div>
                                 )}
