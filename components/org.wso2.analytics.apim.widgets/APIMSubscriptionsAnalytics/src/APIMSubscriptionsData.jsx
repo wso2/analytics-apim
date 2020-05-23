@@ -77,6 +77,17 @@ export default function APIMSubscriptionsData(props) {
             marginTop: '3%',
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.appname',
+        },
+        {
+            id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.subscribedtime',
+        },
+    ];
 
     if (tableData.length !== 0 && chartData.length !== 0) {
         return (
@@ -207,6 +218,7 @@ export default function APIMSubscriptionsData(props) {
                 <div style={styles.tableWrapper}>
                     <CustomTable
                         tableData={tableData}
+                        columns={columns}
                     />
                 </div>
             </div>
