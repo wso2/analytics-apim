@@ -103,6 +103,17 @@ export default function APIMFaultyPerApp(props) {
             overflow: 'hidden',
         },
     };
+    const columns = [
+        {
+            id: 'apiName', numeric: false, disablePadding: false, label: 'table.heading.apiName',
+        },
+        {
+            id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
 
     return (
         <Scrollbars style={{
@@ -206,6 +217,7 @@ export default function APIMFaultyPerApp(props) {
                                     <CustomTable
                                         data={usageData}
                                         inProgress={inProgress}
+                                        columns={columns}
                                     />
                                 </div>
                             ) : (
