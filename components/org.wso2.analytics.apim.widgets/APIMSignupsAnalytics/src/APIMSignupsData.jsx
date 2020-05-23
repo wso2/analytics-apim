@@ -77,6 +77,14 @@ export default function APIMSignupsData(props) {
             marginTop: '3%',
         },
     };
+    const columns = [
+        {
+            id: 'developer', numeric: false, disablePadding: false, label: 'table.heading.developer',
+        },
+        {
+            id: 'signeduptime', numeric: false, disablePadding: false, label: 'table.heading.signeduptime',
+        },
+    ];
 
     if (tableData.length !== 0 && chartData.length !== 0) {
         return (
@@ -207,6 +215,7 @@ export default function APIMSignupsData(props) {
                 <div style={styles.tableWrapper}>
                     <CustomTable
                         data={tableData}
+                        columns={columns}
                     />
                 </div>
             </div>
