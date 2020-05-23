@@ -131,7 +131,17 @@ export default function APIMTopThrottledApis(props) {
             marginTop: 0,
         },
     };
-
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'apiVersion', numeric: true, disablePadding: false, label: 'table.heading.apiVersion',
+        },
+        {
+            id: 'throttledcount', numeric: true, disablePadding: false, label: 'table.heading.throttledcount',
+        },
+    ];
     const { pieChartData, legendData } = Utils.summarizePieData(throttledData, 'apiname', 'throttledcount');
 
     return (
@@ -240,7 +250,10 @@ export default function APIMTopThrottledApis(props) {
                                             </svg>
                                         </div>
                                         <div style={styles.tableDiv}>
-                                            <CustomTable data={throttledData} />
+                                            <CustomTable
+                                                data={throttledData}
+                                                columns={columns}
+                                            />
                                         </div>
                                     </div>
                                 )}
