@@ -49,21 +49,6 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * Query string parameter values
- * @type {object}
- */
-const createdByKeys = {
-    all: 'all',
-    me: 'me',
-};
-
-/**
- * Query string parameter
- * @type {string}
- */
-const queryParamKey = 'apis';
-
-/**
  * Language
  * @type {string}
  */
@@ -108,11 +93,11 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
             timeFrom: null,
             chartData: null,
             tableData: null,
-            xAxisTicks: null,
-            maxCount: 0,
             localeMessages: null,
             username: null,
             inProgress: true,
+            dimension: null,
+            selectedOptions: [],
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -126,8 +111,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.getUsername = this.getUsername.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -141,7 +125,6 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -182,31 +165,39 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     }
 
     /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
-    }
-
-    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMApiCreatedAnalyticsWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            inProgress: !sync,
-        }, this.assembleQuery);
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleQuery);
+        }
     }
 
     /**
@@ -215,27 +206,35 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      * */
     assembleQuery() {
         const {
-            providerConfig, timeFrom, timeTo, username,
+            providerConfig, timeFrom, timeTo, selectedOptions, dimension,
         } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { createdBy } = queryParam;
 
-        if (!createdBy || !(createdBy in createdByKeys)) {
-            createdBy = createdByKeys.all;
-            this.setState({ createdBy });
-            this.setQueryParam(createdBy);
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0) {
+                const { id, widgetID: widgetName } = this.props;
+                let filterCondition = '';
+                if (selectedOptions[0].name !== 'All') {
+                    filterCondition = selectedOptions.map((opt) => {
+                        return '(API_NAME=\'' + opt.name + '\' AND API_VERSION=\'' + opt.version
+                            + '\' AND CREATED_BY=\'' + opt.provider + '\')';
+                    });
+                    filterCondition = filterCondition.join(' OR ');
+                    filterCondition = 'AND ' + filterCondition;
+                }
+
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'query';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                    '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+                    '{{filterCondition}}': filterCondition,
+                };
+                super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived,
+                    dataProviderConfigs);
+            } else {
+                this.setState({ inProgress: false, chartData: [], tableData: [] });
+            }
         }
-
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
-            '{{createdBy}}': createdBy === createdByKeys.me ? "AND CREATED_BY='{{creator}}'" : '',
-            '{{creator}}': username,
-        };
-        super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -245,73 +244,82 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const { createdBy } = this.state;
 
         if (data && data.length !== 0) {
-            const xAxisTicks = [];
-            const chartData = [];
-            const tableData = [];
-            // use apiCount to keep aggregate API created count
-            let apiCount = 0;
-
-            data.forEach((dataUnit) => {
-                apiCount += dataUnit[4];
-                chartData.push({
-                    x: new Date(dataUnit[3]).getTime(),
-                    y: apiCount,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[3])
-                        .format('YYYY-MMM-DD hh:mm:ss A') + '\nCOUNT:' + apiCount,
-                });
-                tableData.push({
-                    apiname: dataUnit[1] + ' (' + dataUnit[5] + ')',
-                    apiVersion: dataUnit[2],
-                    createdtime: Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss A'),
-                });
+            const tableData = data.map((dataUnit) => {
+                return {
+                    apiname: dataUnit[0] + ' (' + dataUnit[3] + ')',
+                    apiversion: dataUnit[1],
+                    createdtime: Moment(dataUnit[2]).format('YYYY-MMM-DD hh:mm:ss A'),
+                };
             });
 
-            const maxCount = chartData[chartData.length - 1].y;
-
-            const first = new Date(chartData[0].x).getTime();
-            const last = new Date(chartData[chartData.length - 1].x).getTime();
-            const interval = (last - first) / 10;
-            let duration = 0;
-            xAxisTicks.push(first);
-            for (let i = 1; i <= 10; i++) {
-                duration = interval * i;
-                xAxisTicks.push(new Date(first + duration).getTime());
-            }
-
+            const timeFormat = this.getDateFormat();
+            const dataGroupByTime = data.reduce((acc, obj) => {
+                const key = Moment(obj[2]).format(timeFormat);
+                if (!acc[key]) {
+                    acc[key] = 0;
+                }
+                acc[key]++;
+                return acc;
+            }, {});
+            const chartData = Object.keys(dataGroupByTime).map((key) => {
+                return [dataGroupByTime[key], Moment(key, timeFormat).toDate().getTime()];
+            });
+            chartData.sort((a, b) => { return a[1] - b[1]; });
             this.setState({
-                chartData, tableData, xAxisTicks, maxCount, inProgress: false,
+                chartData, tableData, inProgress: false,
             });
         } else {
             this.setState({ inProgress: false, chartData: [], tableData: [] });
         }
-
-        this.setQueryParam(createdBy);
     }
 
     /**
-     * Updates query param values
-     * @param {string} createdBy - API Created By menu option selected
+     * Get time format for the selected granularity
      * @memberof APIMApiCreatedAnalyticsWidget
      * */
-    setQueryParam(createdBy) {
-        super.setGlobalState(queryParamKey, { createdBy });
+    getDateFormat() {
+        const { perValue } = this.state;
+        switch (perValue) {
+            case 'minute':
+                return 'YYYY-MMM-DD HH:mm';
+            case 'hour':
+                return 'YYYY-MMM-DD HH';
+            case 'day':
+                return 'YYYY-MMM-DD';
+            case 'month':
+                return 'YYYY-MMM';
+            case 'year':
+                return 'YYYY';
+            case 'second':
+            default:
+                return 'YYYY-MMM-DD HH:mm:ss';
+        }
     }
 
     /**
-     * Handle Select Change
-     * @param {Event} event - listened event
+     * Handle onClick of an API and drill down
      * @memberof APIMApiCreatedAnalyticsWidget
      * */
-    handleChange(event) {
-        const { id } = this.props;
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
 
-        this.setQueryParam(event.target.value);
-        this.setState({ createdBy: event.target.value, inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleQuery();
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dmSelc":{"dm":"api","op":[{"name":"' + api
+                    + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
+        }
     }
 
     /**
@@ -321,8 +329,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, createdBy, chartData, tableData, xAxisTicks, maxCount,
-            inProgress,
+            localeMessages, faultyProviderConfig, height, chartData, tableData, width, inProgress,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -330,7 +337,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiCreatedProps = {
-            themeName, height, createdBy, chartData, tableData, xAxisTicks, maxCount, inProgress,
+            themeName, height, chartData, tableData, inProgress, width,
         };
 
         return (
@@ -356,7 +363,10 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiCreatedAnalytics {...apiCreatedProps} handleChange={this.handleChange} />
+                            <APIMApiCreatedAnalytics
+                                {...apiCreatedProps}
+                                handleOnClickAPI={this.handleOnClickAPI}
+                            />
                         )
                     }
                 </MuiThemeProvider>

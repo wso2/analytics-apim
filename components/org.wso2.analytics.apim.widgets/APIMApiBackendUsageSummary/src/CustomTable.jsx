@@ -232,13 +232,19 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='API BACKEND USAGE SUMMARY'
                     menuItems={menuItems}
                     data={data}
                     columns={columns}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '25%' }} />
+                            <col style={{ width: '10%' }} />
+                            <col style={{ width: '20%' }} />
+                            <col style={{ width: '35%' }} />
+                            <col style={{ width: '10%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}
@@ -257,7 +263,7 @@ class CustomTable extends React.Component {
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}
                                             </TableCell>
-                                            <TableCell component='th' scope='row'>
+                                            <TableCell component='th' scope='row' numeric>
                                                 {n.version}
                                             </TableCell>
                                             <TableCell component='th' scope='row'>

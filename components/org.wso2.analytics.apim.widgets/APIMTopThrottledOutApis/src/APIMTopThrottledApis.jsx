@@ -58,7 +58,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopThrottledApis(props) {
     const {
-        themeName, height, limit, throttledData, handleChange, inProgress, width,
+        themeName, height, limit, throttledData, handleChange, inProgress, width, handleOnClickAPI,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -168,7 +168,7 @@ export default function APIMTopThrottledApis(props) {
                         <form style={styles.form} noValidate autoComplete='off'>
                             <TextField
                                 id='limit-number'
-                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                                 value={limit}
                                 onChange={handleChange}
                                 type='number'
@@ -246,6 +246,20 @@ export default function APIMTopThrottledApis(props) {
                                                     labels={d => `${d.apiname} : ${((d.throttledcount
                                                         / (sumBy(pieChartData, o => o.throttledcount))) * 100)
                                                         .toFixed(2)}%`}
+                                                    events={[
+                                                        {
+                                                            target: 'data',
+                                                            eventHandlers: {
+                                                                onClick: () => {
+                                                                    return [{
+                                                                        mutation: (val) => {
+                                                                            handleOnClickAPI(val.datum);
+                                                                        },
+                                                                    }];
+                                                                },
+                                                            },
+                                                        },
+                                                    ]}
                                                 />
                                             </svg>
                                         </div>
@@ -253,6 +267,7 @@ export default function APIMTopThrottledApis(props) {
                                             <CustomTable
                                                 data={throttledData}
                                                 columns={columns}
+                                                onClickTableRow={e => handleOnClickAPI(e)}
                                             />
                                         </div>
                                     </div>
@@ -273,5 +288,6 @@ APIMTopThrottledApis.propTypes = {
     limit: PropTypes.string.isRequired,
     throttledData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
+    handleOnClickAPI: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

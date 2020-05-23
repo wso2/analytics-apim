@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
+import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -150,7 +151,7 @@ class CustomTable extends React.Component {
             tableData: [],
             page: 0,
             rowsPerPage: 5,
-            orderBy: 'subcount',
+            orderBy: 'subscriptions',
             order: 'desc',
             expanded: false,
             filterColumn: 'creator',
@@ -192,7 +193,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, columns } = this.props;
+        const { data, classes, onClickTableRow, columns } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -205,10 +206,10 @@ class CustomTable extends React.Component {
 
         const menuItems = [
             <MenuItem value='creator'>
-                <FormattedMessage id='table.heading.creator' defaultMessage='PROVIDER' />
+                <FormattedMessage id='table.heading.creator' defaultMessage='API PROVIDER' />
             </MenuItem>,
-            <MenuItem value='subcount'>
-                <FormattedMessage id='table.heading.subcount' defaultMessage='SUB COUNT' />
+            <MenuItem value='subscriptions'>
+                <FormattedMessage id='table.heading.subscriptions' defaultMessage='SUBSCRIPTIONS' />
             </MenuItem>,
         ];
         return (
@@ -229,6 +230,10 @@ class CustomTable extends React.Component {
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '60%' }} />
+                            <col style={{ width: '40%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}
@@ -246,7 +251,9 @@ class CustomTable extends React.Component {
                                             key={n.id}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                {n.creator}
+                                                <Link href='#' onClick={() => onClickTableRow(n)} color='inherit'>
+                                                    {n.creator}
+                                                </Link>
                                             </TableCell>
                                             <TableCell
                                                 numeric
@@ -254,7 +261,7 @@ class CustomTable extends React.Component {
                                                     paddingRight: '10%',
                                                 }}
                                             >
-                                                {n.subcount}
+                                                {n.subscriptions}
                                             </TableCell>
                                         </TableRow>
                                     );
@@ -301,6 +308,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    onClickTableRow: PropTypes.func.isRequired,
     columns: PropTypes.instanceOf(Object).isRequired,
 };
 

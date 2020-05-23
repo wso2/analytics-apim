@@ -4,11 +4,11 @@
   "filter.column.menu.heading": "Column Name",
   "filter.label.title": "Filter By",
   "filter.search.placeholder": "Search Field",
-  "limit": "Limit :",
+  "limit": "Limit",
   "nodata.error.heading": "No Data Available !",
   "nodata.error.body": "No data available for the selected options.",
   "sort.label.title": "Sort",
-  "table.heading.subcount": "SUB COUNT",
-  "table.heading.creator": "PROVIDER",
+  "table.heading.subscriptions": "SUBSCRIPTIONS",
+  "table.heading.creator": "API PROVIDER",
   "widget.heading": "TOP SUBSCRIPTIONS PER API PROVIDER"
 }

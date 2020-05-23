@@ -113,6 +113,7 @@ class APIMTopSubscribersWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleOnClickAPIProvider = this.handleOnClickAPIProvider.bind(this);
     }
 
     componentWillMount() {
@@ -126,6 +127,7 @@ class APIMTopSubscribersWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -166,29 +168,38 @@ class APIMTopSubscribersWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMTopSubscribersWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Formats the rdbms query using selected options
      * @memberof APIMTopSubscribersWidget
      * */
     assembleQuery() {
-        const { providerConfig } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { limit } = queryParam;
+        const { providerConfig, limit } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (!limit) {
-            limit = 5;
+        if (limit > 0) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'query';
+            dataProviderConfigs.configs.config.publishingLimit = limit;
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{limit}}': limit,
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, creatorData: [] });
         }
-
-        this.setState({ limit, creatorData: [] });
-        this.setQueryParam(limit);
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.publishingLimit = limit;
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{limit}}': limit,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -198,7 +209,6 @@ class APIMTopSubscribersWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const { limit } = this.state;
 
         if (data) {
             const creatorData = [];
@@ -209,11 +219,14 @@ class APIMTopSubscribersWidget extends Widget {
                 if (!legendData.includes({ name: dataUnit[0] })) {
                     legendData.push({ name: dataUnit[0].replace('-AT-', '@') });
                 }
-                creatorData.push({ id: counter, creator: dataUnit[0].replace('-AT-', '@'), subcount: dataUnit[1] });
+                creatorData.push({
+                    id: counter,
+                    creator: dataUnit[0].replace('-AT-', '@'),
+                    subscriptions: dataUnit[1],
+                });
             });
 
             this.setState({ legendData, creatorData, inProgress: false });
-            this.setQueryParam(limit);
         } else {
             this.setState({ inProgress: false, creatorData: [] });
         }
@@ -234,16 +247,34 @@ class APIMTopSubscribersWidget extends Widget {
      * @memberof APIMTopSubscribersWidget
      * */
     handleChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleQuery();
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
             this.setState({ limit });
+        }
+    }
+
+    /**
+     * Handle onClick of an API Provider and drill down
+     * @memberof APIMTopSubscribersWidget
+     * */
+    handleOnClickAPIProvider(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const { creator } = data;
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath + '/dashboards/' + dashboard
+                    + '/' + drillDown + '#{"dmSelc":{"dm":"api provider","op":["' + creator + '"]}}';
+            }
         }
     }
 
@@ -288,7 +319,11 @@ class APIMTopSubscribersWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMTopSubscribers {...subscribersProps} handleChange={this.handleChange} />
+                            <APIMTopSubscribers
+                                {...subscribersProps}
+                                handleChange={this.handleChange}
+                                handleOnClickAPIProvider={this.handleOnClickAPIProvider}
+                            />
                         )
                     }
                 </MuiThemeProvider>

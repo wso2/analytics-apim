@@ -112,6 +112,7 @@ class APIMTopFaultyApisWidget extends Widget {
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -125,6 +126,7 @@ class APIMTopFaultyApisWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -164,19 +166,35 @@ class APIMTopFaultyApisWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMTopFaultyApisWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMTopFaultyApisWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const { from, to, granularity } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleQuery);
+        if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleQuery);
+        }
     }
 
     /**
@@ -185,29 +203,26 @@ class APIMTopFaultyApisWidget extends Widget {
      * */
     assembleQuery() {
         const {
-            providerConfig, timeFrom, timeTo, perValue,
+            providerConfig, timeFrom, timeTo, perValue, limit,
         } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { limit } = queryParam;
         const { widgetID: widgetName } = this.props;
 
-        if (!limit || limit < 0) {
-            limit = 5;
+        if (timeFrom) {
+            if (limit > 0) {
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'query';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
+            } else {
+                this.setState({inProgress: false, faultData: []});
+            }
         }
-
-        this.setState({ limit });
-        this.setQueryParam(limit);
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': perValue,
-            '{{limit}}': limit,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -217,7 +232,7 @@ class APIMTopFaultyApisWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        if (data) {
+        if (data && data.length > 0) {
             const faultData = [];
             const legendData = [];
             let counter = 0;
@@ -229,7 +244,7 @@ class APIMTopFaultyApisWidget extends Widget {
                     legendData.push({ name: apiName });
                 }
                 faultData.push({
-                    id: counter, apiname: apiName, apiVersion: dataUnit[1], faultcount: dataUnit[4],
+                    id: counter, apiname: apiName, apiversion: dataUnit[1], faultcount: dataUnit[4],
                 });
             });
 
@@ -254,16 +269,41 @@ class APIMTopFaultyApisWidget extends Widget {
      * @memberof APIMTopFaultyApisWidget
      * */
     handleChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleQuery();
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
             this.setState({ limit });
+        }
+    }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMTopFaultyApisWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g,
+                } = super.getGlobalState('dtrp');
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
         }
     }
 
@@ -316,7 +356,11 @@ class APIMTopFaultyApisWidget extends Widget {
                             </div>
                         </MuiThemeProvider>
                     ) : (
-                        <APIMTopFaultyApis {...faultyApisProps} handleChange={this.handleChange} />
+                        <APIMTopFaultyApis
+                            {...faultyApisProps}
+                            handleChange={this.handleChange}
+                            handleOnClickAPI={this.handleOnClickAPI}
+                        />
                     )
                 }
             </IntlProvider>

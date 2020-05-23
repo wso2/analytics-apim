@@ -61,7 +61,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopSubscribers(props) {
     const {
-        themeName, height, limit, creatorData, handleChange, inProgress, width,
+        themeName, height, limit, creatorData, handleChange, inProgress, width, handleOnClickAPIProvider,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -140,6 +140,8 @@ export default function APIMTopSubscribers(props) {
             marginTop: 0,
         },
     };
+
+    const { pieChartData, legendData } = Utils.summarizePieData(creatorData, 'creator', 'subscriptions');
     const columns = [
         {
             id: 'creator', numeric: false, disablePadding: false, label: 'table.heading.creator',
@@ -148,7 +150,6 @@ export default function APIMTopSubscribers(props) {
             id: 'subcount', numeric: true, disablePadding: false, label: 'table.heading.subcount',
         },
     ];
-    const { pieChartData, legendData } = Utils.summarizePieData(creatorData, 'creator', 'subcount');
 
     return (
         <MuiThemeProvider
@@ -175,14 +176,14 @@ export default function APIMTopSubscribers(props) {
                             <FormControl style={styles.formControl}>
                                 <Tooltip
                                     placement='top'
-                                    title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                    title={<FormattedMessage id='limit' defaultMessage='Limit' />}
                                 >
                                     <InputLabel
                                         shrink
                                         htmlFor='limit-number'
                                         style={styles.formLabel}
                                     >
-                                        <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                        <FormattedMessage id='limit' defaultMessage='Limit' />
                                     </InputLabel>
                                 </Tooltip>
                                 <Input
@@ -257,9 +258,24 @@ export default function APIMTopSubscribers(props) {
                                                     colorScale={colorScale}
                                                     data={pieChartData}
                                                     x={d => d.creator}
-                                                    y={d => d.subcount}
-                                                    labels={d => `${d.creator} : ${((d.subcount
-                                                        / (sumBy(pieChartData, o => o.subcount))) * 100).toFixed(2)}%`}
+                                                    y={d => d.subscriptions}
+                                                    labels={d => `${d.creator} : ${((d.subscriptions
+                                                        / (sumBy(pieChartData, o => o.subscriptions))) * 100)
+                                                        .toFixed(2)}%`}
+                                                    events={[
+                                                        {
+                                                            target: 'data',
+                                                            eventHandlers: {
+                                                                onClick: () => {
+                                                                    return [{
+                                                                        mutation: (val) => {
+                                                                            handleOnClickAPIProvider(val.datum);
+                                                                        },
+                                                                    }];
+                                                                },
+                                                            },
+                                                        },
+                                                    ]}
                                                 />
                                             </svg>
                                         </div>
@@ -267,6 +283,7 @@ export default function APIMTopSubscribers(props) {
                                             <CustomTable
                                                 data={creatorData}
                                                 columns={columns}
+                                                onClickTableRow={e => handleOnClickAPIProvider(e)}
                                             />
                                         </div>
                                     </div>
@@ -283,8 +300,10 @@ export default function APIMTopSubscribers(props) {
 APIMTopSubscribers.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
     creatorData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
+    handleOnClickAPIProvider: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

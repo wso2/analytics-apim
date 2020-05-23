@@ -49,12 +49,6 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * Query string parameter
- * @type {string}
- */
-const queryParamKey = 'subscriptions';
-
-/**
  * Language
  * @type {string}
  */
@@ -94,17 +88,15 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiCreatedBy: 'All',
-            subscribedTo: 'All',
             timeTo: null,
             timeFrom: null,
-            apilist: [],
+            perValue: null,
             chartData: null,
             tableData: null,
-            xAxisTicks: null,
-            maxCount: 0,
             localeMessages: null,
             inProgress: true,
+            dimension: null,
+            selectedOptions: [],
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -116,14 +108,9 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         }
 
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.handleApiListReceived = this.handleApiListReceived.bind(this);
-        this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
-        this.subscribedToHandleChange = this.subscribedToHandleChange.bind(this);
-        this.resetState = this.resetState.bind(this);
-        this.getUsername = this.getUsername.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -137,7 +124,6 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -179,94 +165,39 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     }
 
     /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
-    }
-
-    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMSubscriptionsAnalyticsWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            inProgress: !sync,
-        }, this.assembleApiListQuery);
-    }
-
-    /**
-     * Reset the state according to queryParam
-     * @memberof APIMSubscriptionsAnalyticsWidget
-     * */
-    resetState() {
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy, subscribedTo } = queryParam;
-        const { apilist } = this.state;
-        if (!apiCreatedBy || !['All', 'Me'].includes(apiCreatedBy)) {
-            apiCreatedBy = 'All';
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleMainQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleMainQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleMainQuery);
         }
-        if (!subscribedTo || (apilist.length > 0 && !apilist.includes(subscribedTo))) {
-            subscribedTo = 'All';
-        }
-        this.setState({ apiCreatedBy, subscribedTo });
-        this.setQueryParam(apiCreatedBy, subscribedTo);
-    }
-
-    /**
-     * Formats the siddhi query - apilistquery
-     * @memberof APIMSubscriptionsAnalyticsWidget
-     * */
-    assembleApiListQuery() {
-        this.resetState();
-        const { providerConfig, username } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy } = queryParam;
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-
-        const { config } = dataProviderConfigs.configs;
-        config.tableName = 'AM_API';
-        config.incrementalColumn = 'API_ID';
-        config.queryData.queryName = 'apilistquery';
-        config.queryData.queryValues = {
-            '{{providerCondition}}': apiCreatedBy !== 'All'
-                ? 'AND API_PROVIDER=\'' + username + '\'' : '',
-        };
-        dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiListReceived, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data retrieved from assembleApiListQuery
-     * @param {object} message - data retrieved
-     * @memberof APIMSubscriptionsAnalyticsWidget
-     * */
-    handleApiListReceived(message) {
-        const { data } = message;
-        const { id } = this.props;
-
-        if (data) {
-            let apilist = data.map((dataUnit) => { return dataUnit[0]; });
-            apilist = [...new Set(apilist)];
-            apilist.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
-            apilist.unshift('All');
-            this.setState({ apilist });
-        }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleMainQuery();
     }
 
     /**
@@ -274,33 +205,32 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * @memberof APIMSubscriptionsAnalyticsWidget
      * */
     assembleMainQuery() {
-        this.resetState();
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { apiCreatedBy, subscribedTo } = queryParam;
         const {
-            timeFrom, timeTo, providerConfig, username,
+            timeFrom, timeTo, providerConfig, dimension, selectedOptions,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (providerConfig) {
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            const { config } = dataProviderConfigs.configs;
+        if (providerConfig && dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0) {
+                const apiList = selectedOptions.map((opt) => { return opt.name; });
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                const { config } = dataProviderConfigs.configs;
 
-            config.tableName = 'AM_SUBSCRIPTION';
-            config.incrementalColumn = 'CREATED_TIME';
-            config.queryData.queryName = 'mainquery';
-            config.queryData.queryValues = {
-                '{{providerCondition}}': apiCreatedBy !== 'All'
-                    ? ' AND api.API_PROVIDER = \'' + username + '\'' : '',
-                '{{apiName}}': subscribedTo !== 'All' ? 'AND api.API_NAME=\'' + subscribedTo + '\'' : '',
-                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
-            };
-            dataProviderConfigs.configs.config = config;
-            super.getWidgetChannelManager().subscribeWidget(id, widgetName,
-                this.handleDataReceived, dataProviderConfigs);
-        } else {
-            this.setState({ chartData: [], tableData: [], inProgress: false });
+                config.tableName = 'AM_SUBSCRIPTION';
+                config.incrementalColumn = 'CREATED_TIME';
+                config.queryData.queryName = 'mainquery';
+                config.queryData.queryValues = {
+                    '{{apiName}}': apiList[0] !== 'All' ? 'AND api.API_NAME in (\'' + apiList.join('\', \'') + '\')'
+                        : '',
+                    '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                    '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+                };
+                dataProviderConfigs.configs.config = config;
+                super.getWidgetChannelManager().subscribeWidget(id, widgetName,
+                    this.handleDataReceived, dataProviderConfigs);
+            } else {
+                this.setState({ chartData: [], tableData: [], inProgress: false });
+            }
         }
     }
 
@@ -311,91 +241,81 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const {
-            apiCreatedBy, subscribedTo,
-        } = this.state;
 
-        if (data.length !== 0) {
-            const xAxisTicks = [];
-            const chartData = [];
-            const tableData = [];
-            let count = 0;
-
-            data.reverse();
-            data.forEach((dataUnit) => {
-                count += dataUnit[0];
-                chartData.push({
-                    x: new Date(dataUnit[1]).getTime(),
-                    y: count,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss') + '\nCOUNT:' + count,
-                });
-
-                tableData.push({
+        if (data && data.length !== 0) {
+            const tableData = data.map((dataUnit) => {
+                return {
                     apiname: dataUnit[2] + ' (' + dataUnit[3] + ')',
-                    appname: dataUnit[4] + ' (' + dataUnit[5] + ')',
-                    subscribedtime: Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss'),
-                });
+                    application: dataUnit[4] + ' (' + dataUnit[5] + ')',
+                    subscribedtime: Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss A'),
+                    apiversion: dataUnit[6],
+                };
             });
 
-            const maxCount = chartData[chartData.length - 1].y;
-
-            const first = new Date(chartData[0].x).getTime();
-            const last = new Date(chartData[chartData.length - 1].x).getTime();
-            const interval = (last - first) / 10;
-            let duration = 0;
-            xAxisTicks.push(first);
-            for (let i = 1; i <= 10; i++) {
-                duration = interval * i;
-                xAxisTicks.push(new Date(first + duration).getTime());
-            }
-
-            this.setState({
-                chartData, tableData, xAxisTicks, maxCount, inProgress: false,
+            const timeFormat = this.getDateFormat();
+            const dataGroupByTime = data.reduce((acc, obj) => {
+                const key = Moment(obj[1]).format(timeFormat);
+                if (!acc[key]) {
+                    acc[key] = 0;
+                }
+                acc[key] += obj[0];
+                return acc;
+            }, {});
+            const chartData = Object.keys(dataGroupByTime).map((key) => {
+                return [dataGroupByTime[key], Moment(key, timeFormat).toDate().getTime()];
             });
+            chartData.sort((a, b) => { return a[1] - b[1]; });
+            this.setState({ chartData, tableData, inProgress: false });
         } else {
             this.setState({ chartData: [], tableData: [], inProgress: false });
         }
-
-        this.setQueryParam(apiCreatedBy, subscribedTo);
     }
 
     /**
-     * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
-     * @param {string} subscribedTo - Subscribed To menu option selected
+     * Get time format for the selected granularity
      * @memberof APIMSubscriptionsAnalyticsWidget
      * */
-    setQueryParam(apiCreatedBy, subscribedTo) {
-        super.setGlobalState(queryParamKey, {
-            apiCreatedBy,
-            subscribedTo,
-        });
+    getDateFormat() {
+        const { perValue } = this.state;
+        switch (perValue) {
+            case 'minute':
+                return 'YYYY-MMM-DD HH:mm';
+            case 'hour':
+                return 'YYYY-MMM-DD HH';
+            case 'day':
+                return 'YYYY-MMM-DD';
+            case 'month':
+                return 'YYYY-MMM';
+            case 'year':
+                return 'YYYY';
+            case 'second':
+            default:
+                return 'YYYY-MMM-DD HH:mm:ss';
+        }
     }
 
     /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
+     * Handle onClick of an API and drill down
      * @memberof APIMSubscriptionsAnalyticsWidget
      * */
-    apiCreatedHandleChange(event) {
-        const { id } = this.props;
-        this.setQueryParam(event.target.value, 'All');
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ apiCreatedBy: event.target.value, inProgress: true }, this.assembleApiListQuery);
-    }
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
 
-    /**
-     * Handle Subscribed To menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMSubscriptionsAnalyticsWidget
-     * */
-    subscribedToHandleChange(event) {
-        const { apiCreatedBy } = this.state;
-        const { id } = this.props;
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
 
-        this.setQueryParam(apiCreatedBy, event.target.value);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.setState({ subscribedTo: event.target.value, inProgress: true }, this.assembleMainQuery);
+            if (drillDown) {
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dmSelc":{"dm":"api","op":[{"name":"' + api
+                    + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
+        }
     }
 
     /**
@@ -405,8 +325,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, apiCreatedBy, subscribedTo, apilist, inProgress,
-            chartData, tableData, xAxisTicks, maxCount,
+            localeMessages, faultyProviderConfig, height, inProgress, chartData, tableData, width,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -416,13 +335,9 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         const subscriptionsProps = {
             themeName,
             height,
-            apiCreatedBy,
-            subscribedTo,
-            apilist,
+            width,
             chartData,
             tableData,
-            xAxisTicks,
-            maxCount,
             inProgress,
         };
 
@@ -451,8 +366,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                         ) : (
                             <APIMSubscriptionsAnalytics
                                 {...subscriptionsProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
-                                subscribedToHandleChange={this.subscribedToHandleChange}
+                                handleOnClickAPI={this.handleOnClickAPI}
                             />
                         )
                     }

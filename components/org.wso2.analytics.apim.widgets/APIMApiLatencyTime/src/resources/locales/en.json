@@ -1,15 +1,8 @@
 {
-  "all.menuItem": "All",
-  "apiName.label": "API Name",
-  "apiVersion.label": "API Version",
-  "apim.server.error.heading" : "Error !",
-  "apim.server.error" : "Error occurred while retrieving API list.",
   "nodata.error.body": "No data available for the selected options.",
   "nodata.error.heading": "No Data Available !",
   "config.error.body": "Cannot fetch provider configuration for APIM Api Latency Time widget",
   "config.error.heading": "Configuration Error !",
-  "createdBy.label": "API Created By",
-  "me.menuItem": "Me",
   "resources.label": "Resources",
   "widget.heading": "API LATENCY TIME"
 }
