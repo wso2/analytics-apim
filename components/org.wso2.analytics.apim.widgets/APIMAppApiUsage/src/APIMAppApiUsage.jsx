@@ -139,6 +139,17 @@ export default function APIMAppApiUsage(props) {
             overflow: 'hidden',
         },
     };
+    const columns = [
+        {
+            id: 'apiName', numeric: false, disablePadding: false, label: 'table.heading.apiName',
+        },
+        {
+            id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
 
     const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'apiName', 'hits');
     return (
@@ -277,6 +288,7 @@ export default function APIMAppApiUsage(props) {
                                     <CustomTable
                                         data={usageData}
                                         inProgress={inProgress}
+                                        columns={columns}
                                     />
                                 </div>
                             </div>

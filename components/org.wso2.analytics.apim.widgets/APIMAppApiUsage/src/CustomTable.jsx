@@ -200,7 +200,9 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, inProgress } = this.props;
+        const {
+            data, classes, inProgress, columns,
+        } = this.props;
         const {
             filterQuery, expanded, filterColumn, order, orderBy, rowsPerPage, page, emptyRowHeight,
         } = this.state;
@@ -227,11 +229,15 @@ class CustomTable extends React.Component {
                     expanded={expanded}
                     filterColumn={filterColumn}
                     query={filterQuery}
+                    order={order}
+                    orderBy={orderBy}
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
                     title='API USAGE OF APPLICATION'
                     menuItems={menuItems}
+                    data={data}
+                    columns={columns}
                 />
                 {
                     inProgress ? (
@@ -253,6 +259,7 @@ class CustomTable extends React.Component {
                                                 order={order}
                                                 orderBy={orderBy}
                                                 onRequestSort={this.handleRequestSort}
+                                                columns={columns}
                                             />
                                             <TableBody>
                                                 {stableSort(tableData, getSorting(order, orderBy))
@@ -338,6 +345,7 @@ CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    columns: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
