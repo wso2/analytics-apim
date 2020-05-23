@@ -93,6 +93,17 @@ export default function APIMApiVersionUsage(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
 
     return (
         <Scrollbars style={{
@@ -191,7 +202,10 @@ export default function APIMApiVersionUsage(props) {
                                 </Paper>
                             </div>
                         ) : (
-                            <CustomTable data={usageData} />
+                            <CustomTable
+                                data={usageData}
+                                columns={columns}
+                            />
                         )}
                     </div>
                 )}
