@@ -106,6 +106,17 @@ export default function APIMOverallApiUsage(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'apiVersion', numeric: true, disablePadding: false, label: 'table.heading.apiVersion',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
 
     let chartData = [];
 
@@ -231,6 +242,7 @@ export default function APIMOverallApiUsage(props) {
                                     <CustomTable
                                         data={usageData2}
                                         callBack={selectedAPIChangeCallback}
+                                        columns={columns}
                                     />
                                 </div>
                             )

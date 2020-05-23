@@ -213,7 +213,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, columns } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page, initialLoad, selectedAPIs,
         } = this.state;
@@ -221,9 +221,8 @@ class CustomTable extends React.Component {
         const formattedData = data.map((dataUnit) => {
             return {
                 apiname: dataUnit[0] + ' (' + dataUnit[1] + ')',
-                hits: dataUnit[2],
                 apiVersion: dataUnit[4],
-                subs: dataUnit[3],
+                hits: dataUnit[2],
             };
         });
 
@@ -255,11 +254,15 @@ class CustomTable extends React.Component {
                     expanded={expanded}
                     filterColumn={filterColumn}
                     query={query}
+                    order={order}
+                    orderBy={orderBy}
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='OVERALL API USAGE (ALL VERSIONS) :'
+                    title='OVERALL API USAGE'
                     menuItems={menuItems}
+                    data={formattedData}
+                    columns={columns}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
@@ -267,6 +270,7 @@ class CustomTable extends React.Component {
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={this.handleRequestSort}
+                            columns={columns}
                         />
                         <TableBody>
                             {stableSort(tableData, getSorting(order, orderBy))
@@ -339,6 +343,7 @@ CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
     callBack: PropTypes.func.isRequired,
+    columns: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
