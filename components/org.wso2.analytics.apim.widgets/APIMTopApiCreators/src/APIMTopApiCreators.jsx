@@ -141,7 +141,16 @@ export default function APIMTopApiCreators(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'creator', numeric: false, disablePadding: false, label: 'table.heading.creator',
+        },
+        {
+            id: 'apicount', numeric: true, disablePadding: false, label: 'table.heading.apicount',
+        },
+    ];
     const { pieChartData, legendData } = Utils.summarizePieData(creatorData, 'creator', 'apicount');
+
     return (
         <MuiThemeProvider
             theme={themeName === 'dark' ? darkTheme : lightTheme}
@@ -258,6 +267,7 @@ export default function APIMTopApiCreators(props) {
                                         <div style={styles.tableDiv}>
                                             <CustomTable
                                                 data={creatorData}
+                                                columns={columns}
                                             />
                                         </div>
                                     </div>
