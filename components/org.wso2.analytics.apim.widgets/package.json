@@ -18,9 +18,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-intl": "^2.8.0",
     "rimraf": "^2.6.3",
-    "victory": "^31.0.2",
-    "jspdf": "^1.5.3",
-    "jspdf-autotable": "^3.5.0"
+    "victory": "^31.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
