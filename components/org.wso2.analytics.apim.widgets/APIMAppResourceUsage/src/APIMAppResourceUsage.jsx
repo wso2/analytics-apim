@@ -106,6 +106,20 @@ export default function APIMAppResourceUsage(props) {
             overflow: 'hidden',
         },
     };
+    const columns = [
+        {
+            id: 'apiName', numeric: false, disablePadding: false, label: 'table.heading.apiName',
+        },
+        {
+            id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
+        },
+        {
+            id: 'resource', numeric: false, disablePadding: false, label: 'table.heading.resource',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
 
     return (
         <Scrollbars style={{
@@ -204,6 +218,7 @@ export default function APIMAppResourceUsage(props) {
                                     <CustomTable
                                         data={usageData}
                                         inProgress={inProgress}
+                                        columns={columns}
                                     />
                                 </div>
                             ) : (
