@@ -43,11 +43,7 @@ function summarizePieData(data=[], nameField, countField) {
 }
 
 export function buildCSVHeader(columns) {
-    return (
-        columns.reduce((soFar, column) => (column.id ? soFar + '"'
-            + column.label.split('table.heading.')[1].toUpperCase() + '",' : soFar), '',)
-            .slice(0, -1) + '\r\n'
-    );
+    return '"' + columns.join('","') + '"\r\n';
 }
 
 export function buildCSVBody(data) {

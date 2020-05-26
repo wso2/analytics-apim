@@ -94,13 +94,13 @@ class CustomTableToolbar extends React.Component {
     }
 
     handleCSVDownload() {
-        const { data, columns, title, query, filterColumn, order, orderBy } = this.props;
+        const { data, strColumns, title, query, filterColumn, order, orderBy } = this.props;
         const tableData = query
             ? data.filter(x => x[filterColumn].toString().toLowerCase().includes(query.toLowerCase()))
             : data;
         const dataToDownload = stableSort(tableData, getSorting(order, orderBy));
 
-        const header = buildCSVHeader(columns);
+        const header = buildCSVHeader(strColumns);
         const body = buildCSVBody(dataToDownload);
         const csv = `${header}${body}`.trim();
         downloadCSV(csv, title);
@@ -108,7 +108,7 @@ class CustomTableToolbar extends React.Component {
     };
 
     handlePDFDownload() {
-        const { data, columns, title, query, filterColumn, order, orderBy } = this.props;
+        const { data, strColumns, title, query, filterColumn, order, orderBy } = this.props;
         const tableData = query
             ? data.filter(x => x[filterColumn].toString().toLowerCase().includes(query.toLowerCase()))
             : data;
@@ -116,7 +116,7 @@ class CustomTableToolbar extends React.Component {
 
         const headers = [['#']];
         const dataToExport = [];
-        columns.map(colObj => (headers[0].push(colObj.label.split('table.heading.')[1].toUpperCase())));
+        strColumns.map(col => headers[0].push(col));
         sortedData.map((dataObj, index) => {
             if (dataObj.id) delete dataObj.id;
             const innerArr = Object.values(dataObj);
