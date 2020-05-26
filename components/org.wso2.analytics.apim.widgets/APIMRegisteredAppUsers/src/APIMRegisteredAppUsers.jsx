@@ -121,7 +121,7 @@ function APIMRegisteredAppUsers(props) {
     const strColumns = columns.map((colObj) => {
         return intl.formatMessage({ id: colObj.label });
     });
-    const title = intl.formatMessage( { id: 'widget.heading' });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
