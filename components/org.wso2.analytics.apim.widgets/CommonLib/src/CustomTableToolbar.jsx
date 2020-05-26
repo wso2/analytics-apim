@@ -29,7 +29,7 @@ import TextField from '@material-ui/core/TextField';
 import Collapse from '@material-ui/core/Collapse';
 import { withStyles } from '@material-ui/core/styles';
 import { Menu, MenuItem } from '@material-ui/core';
-import { buildCSVBody, buildCSVHeader, downloadCSV, downloadPDF, stableSort, getSorting } from './Utils.js';
+import { buildCSVBody, buildCSVHeader, downloadCSV, downloadPDF } from './Utils.js';
 import jsPDF from "jspdf";
 import 'jspdf-autotable';
 
@@ -94,30 +94,21 @@ class CustomTableToolbar extends React.Component {
     }
 
     handleCSVDownload() {
-        const { data, strColumns, title, query, filterColumn, order, orderBy } = this.props;
-        const tableData = query
-            ? data.filter(x => x[filterColumn].toString().toLowerCase().includes(query.toLowerCase()))
-            : data;
-        const dataToDownload = stableSort(tableData, getSorting(order, orderBy));
-
+        const { data, strColumns, title } = this.props;
         const header = buildCSVHeader(strColumns);
-        const body = buildCSVBody(dataToDownload);
+        const body = buildCSVBody(data);
         const csv = `${header}${body}`.trim();
         downloadCSV(csv, title);
         this.handleMenuCloseRequest();
     };
 
     handlePDFDownload() {
-        const { data, strColumns, title, query, filterColumn, order, orderBy } = this.props;
-        const tableData = query
-            ? data.filter(x => x[filterColumn].toString().toLowerCase().includes(query.toLowerCase()))
-            : data;
-        const sortedData = stableSort(tableData, getSorting(order, orderBy));
-
+        const { data, strColumns, title } = this.props;
         const headers = [['#']];
         const dataToExport = [];
+
         strColumns.map(col => headers[0].push(col));
-        sortedData.map((dataObj, index) => {
+        data.map((dataObj, index) => {
             if (dataObj.id) delete dataObj.id;
             const innerArr = Object.values(dataObj);
             innerArr.unshift((index + 1).toString() + ')');

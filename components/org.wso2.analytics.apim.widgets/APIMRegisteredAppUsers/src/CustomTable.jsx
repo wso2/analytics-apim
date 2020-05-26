@@ -211,6 +211,10 @@ class CustomTable extends React.Component {
             ? data.filter(x => x[filterColumn].toString().toLowerCase().includes(filterQuery.toLowerCase()))
             : data;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
+        let sortedData = [];
+        if (tableData.length > 0) {
+            sortedData = stableSort(tableData, getSorting(order, orderBy));
+        }
 
         const menuItems = [
             <MenuItem value='applicationName'>
@@ -226,12 +230,10 @@ class CustomTable extends React.Component {
                     expanded={expanded}
                     filterColumn={filterColumn}
                     query={filterQuery}
-                    data={data}
+                    data={sortedData}
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    order={order}
-                    orderBy={orderBy}
                     title={title}
                     menuItems={menuItems}
                     strColumns={strColumns}
@@ -259,8 +261,7 @@ class CustomTable extends React.Component {
                                                 columns={columns}
                                             />
                                             <TableBody>
-                                                {stableSort(tableData, getSorting(order, orderBy))
-                                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                                {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                                     .map((n) => {
                                                         return (
                                                             <TableRow
