@@ -24,7 +24,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import SearchIcon from '@material-ui/icons/Search';
-import DownloadIcon from '@material-ui/icons/CloudDownload';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import TextField from '@material-ui/core/TextField';
 import Collapse from '@material-ui/core/Collapse';
 import { withStyles } from '@material-ui/core/styles';
@@ -60,6 +60,9 @@ const styles = theme => ({
     },
     collapsef: {
         marginRight: 0,
+    },
+    menuItem: {
+        height: 5,
     },
 });
 
@@ -144,7 +147,7 @@ class CustomTableToolbar extends React.Component {
                                 className={classes.expand}
                                 onClick={this.handleUserIconClick}
                             >
-                                <DownloadIcon />
+                                <GetAppIcon />
                             </IconButton>
                         </Tooltip>
                         <span>
@@ -154,8 +157,12 @@ class CustomTableToolbar extends React.Component {
                                 keepMounted
                                 onClose={this.handleMenuCloseRequest}
                             >
-                                <MenuItem onClick={this.handleCSVDownload}> CSV </MenuItem>
-                                <MenuItem onClick={this.handlePDFDownload}> PDF </MenuItem>
+                                <MenuItem
+                                    className={classes.menuItem}
+                                    onClick={this.handleCSVDownload}> CSV </MenuItem>
+                                <MenuItem
+                                    className={classes.menuItem}
+                                    onClick={this.handlePDFDownload}> PDF </MenuItem>
                             </Menu>
                         </span>
                     </div>
