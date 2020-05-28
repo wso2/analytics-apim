@@ -165,57 +165,6 @@ function convertToTitleCase(string) {
     return sentence.join(' ');
 }
 
-/**
- * Stabilize the data set and sort the data fields
- * @param {object} array - data set
- * @param {object} cmp - method to sort
- * @return {object}
- * */
-export function stableSort(array, cmp) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-        const order = cmp(a[0], b[0]);
-        if (order !== 0) return order;
-        return a[1] - b[1];
-    });
-    return stabilizedThis.map(el => el[0]);
-}
-
-/**
- * Set the value received from desc() according to 'order'
- * @param {string} order - desc or asc
- * @param {string} orderBy - column to sort table
- * @return {object}
- * */
-export function getSorting(order, orderBy) {
-    return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
-}
-
-/**
- * Compare two values and return the result
- * @param {object} a - data field
- * @param {object} b - data field
- * @param {string} orderBy - column to sort table
- * @return {number}
- * */
-function desc(a, b, orderBy) {
-    let tempa = a[orderBy];
-    let tempb = b[orderBy];
-
-    if (typeof (tempa) === 'string') {
-        tempa = tempa.toLowerCase();
-        tempb = tempb.toLowerCase();
-    }
-
-    if (tempb < tempa) {
-        return -1;
-    }
-    if (tempb > tempa) {
-        return 1;
-    }
-    return 0;
-}
-
 export default {
     summarizePieData,
     buildCSVBody,
@@ -223,6 +172,4 @@ export default {
     downloadCSV,
     downloadPDF,
     convertToTitleCase,
-    stableSort,
-    getSorting,
 };
