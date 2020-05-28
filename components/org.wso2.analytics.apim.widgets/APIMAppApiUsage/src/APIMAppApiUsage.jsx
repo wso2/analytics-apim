@@ -20,7 +20,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
@@ -42,10 +42,10 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Application Api Usage  widget body
  */
-export default function APIMAppApiUsage(props) {
+function APIMAppApiUsage(props) {
     const {
         themeName, height, width, limit, applicationSelected, usageData, applicationList,
-        applicationSelectedHandleChange, handleLimitChange, inProgress,
+        applicationSelectedHandleChange, handleLimitChange, inProgress, intl,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -150,6 +150,10 @@ export default function APIMAppApiUsage(props) {
             id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
         },
     ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'apiName', 'hits');
     return (
@@ -289,6 +293,8 @@ export default function APIMAppApiUsage(props) {
                                         data={usageData}
                                         inProgress={inProgress}
                                         columns={columns}
+                                        strColumns={strColumns}
+                                        title={title}
                                     />
                                 </div>
                             </div>
@@ -332,4 +338,7 @@ APIMAppApiUsage.propTypes = {
     applicationSelectedHandleChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
 };
+
+export default injectIntl(APIMAppApiUsage);

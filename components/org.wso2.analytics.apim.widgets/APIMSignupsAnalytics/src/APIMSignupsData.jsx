@@ -21,7 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import VizG from 'react-vizgrammar';
 import CustomTable from './CustomTable';
 
@@ -30,9 +30,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the data of APIM Signups Analytics widget
  */
-export default function APIMSignupsData(props) {
+function APIMSignupsData(props) {
     const {
-        themeName, chartData, tableData, width,
+        themeName, chartData, tableData, width, intl,
     } = props;
     const styles = {
         paperWrapper: {
@@ -90,6 +90,10 @@ export default function APIMSignupsData(props) {
             id: 'signeduptime', numeric: false, disablePadding: false, label: 'table.heading.signeduptime',
         },
     ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     if (tableData.length !== 0 && chartData.length !== 0) {
         return (
@@ -106,6 +110,8 @@ export default function APIMSignupsData(props) {
                     <CustomTable
                         data={tableData}
                         columns={columns}
+                        strColumns={strColumns}
+                        title={title}
                     />
                 </div>
             </div>
@@ -137,4 +143,7 @@ APIMSignupsData.propTypes = {
     width: PropTypes.string.isRequired,
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
+    intl: intlShape.isRequired,
 };
+
+export default injectIntl(APIMSignupsData);

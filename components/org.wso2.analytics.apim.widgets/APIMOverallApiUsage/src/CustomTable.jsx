@@ -214,7 +214,9 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, onClickTableRow, columns } = this.props;
+        const {
+            data, classes, onClickTableRow, columns, strColumns, title,
+        } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page, initialLoad, selectedAPIs,
         } = this.state;
@@ -232,7 +234,10 @@ class CustomTable extends React.Component {
             : formattedData;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-
+        let sortedData = [];
+        if (tableData.length > 0) {
+            sortedData = stableSort(tableData, getSorting(order, orderBy));
+        }
         if (initialLoad) {
             tableData.map(element => selectedAPIs.push(element.apiname + ':' + element.apiversion));
             this.setState({ initialLoad: false });
@@ -255,15 +260,13 @@ class CustomTable extends React.Component {
                     expanded={expanded}
                     filterColumn={filterColumn}
                     query={query}
-                    order={order}
-                    orderBy={orderBy}
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='OVERALL API USAGE'
+                    title={title}
                     menuItems={menuItems}
-                    data={formattedData}
-                    columns={columns}
+                    data={sortedData}
+                    strColumns={strColumns}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
@@ -279,8 +282,7 @@ class CustomTable extends React.Component {
                             columns={columns}
                         />
                         <TableBody>
-                            {stableSort(tableData, getSorting(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((option) => {
                                     return (
                                         <TableRow
@@ -353,6 +355,8 @@ CustomTable.propTypes = {
     callBack: PropTypes.func.isRequired,
     onClickTableRow: PropTypes.func.isRequired,
     columns: PropTypes.instanceOf(Object).isRequired,
+    strColumns: PropTypes.instanceOf(Object).isRequired,
+    title: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

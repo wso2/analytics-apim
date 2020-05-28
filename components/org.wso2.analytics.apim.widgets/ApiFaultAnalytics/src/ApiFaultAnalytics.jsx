@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
@@ -32,9 +32,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Api Fault Analytics widget body
  */
-export default function ApiFaultAnalytics(props) {
+function ApiFaultAnalytics(props) {
     const {
-        themeName, height, width, inProgress, faultData, tableData,
+        themeName, height, width, inProgress, faultData, tableData, intl,
     } = props;
     const styles = {
         headingWrapper: {
@@ -119,6 +119,10 @@ export default function ApiFaultAnalytics(props) {
             id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',
         },
     ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
@@ -178,6 +182,8 @@ export default function ApiFaultAnalytics(props) {
                                     <CustomTable
                                         data={tableData}
                                         columns={columns}
+                                        strColumns={strColumns}
+                                        title={title}
                                     />
                                 </div>
                             </div>
@@ -196,4 +202,7 @@ ApiFaultAnalytics.propTypes = {
     faultData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
 };
+
+export default injectIntl(ApiFaultAnalytics);

@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -59,9 +59,9 @@ const lightTheme = createMuiTheme({
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Top Subscribers widget body
  */
-export default function APIMTopSubscribers(props) {
+function APIMTopSubscribers(props) {
     const {
-        themeName, height, limit, creatorData, handleChange, inProgress, width, handleOnClickAPIProvider,
+        themeName, height, limit, creatorData, handleChange, inProgress, width, handleOnClickAPIProvider, intl,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -150,6 +150,10 @@ export default function APIMTopSubscribers(props) {
             id: 'subcount', numeric: true, disablePadding: false, label: 'table.heading.subcount',
         },
     ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <MuiThemeProvider
@@ -284,6 +288,8 @@ export default function APIMTopSubscribers(props) {
                                                 data={creatorData}
                                                 columns={columns}
                                                 onClickTableRow={e => handleOnClickAPIProvider(e)}
+                                                strColumns={strColumns}
+                                                title={title}
                                             />
                                         </div>
                                     </div>
@@ -306,4 +312,7 @@ APIMTopSubscribers.propTypes = {
     handleChange: PropTypes.func.isRequired,
     handleOnClickAPIProvider: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
 };
+
+export default injectIntl(APIMTopSubscribers);

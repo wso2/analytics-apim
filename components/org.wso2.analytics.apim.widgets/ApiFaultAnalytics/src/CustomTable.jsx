@@ -204,7 +204,9 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, columns } = this.props;
+        const {
+            data, classes, columns, strColumns, title,
+        } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -214,7 +216,10 @@ class CustomTable extends React.Component {
             : data;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-
+        let sortedData = [];
+        if (tableData.length > 0) {
+            sortedData = stableSort(tableData, getSorting(order, orderBy));
+        }
         const menuItems = [
             <MenuItem value='time'>
                 <FormattedMessage id='table.heading.time' defaultMessage='TIME' />
@@ -226,6 +231,7 @@ class CustomTable extends React.Component {
                 <FormattedMessage id='table.heading.count' defaultMessage='COUNT' />
             </MenuItem>,
         ];
+
         return (
             <Paper className={classes.root}>
                 <div className={classes.title}>
@@ -237,15 +243,13 @@ class CustomTable extends React.Component {
                     expanded={expanded}
                     filterColumn={filterColumn}
                     query={query}
-                    order={order}
-                    orderBy={orderBy}
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='API FAULT DATA'
+                    title={title}
                     menuItems={menuItems}
-                    data={data}
-                    columns={columns}
+                    data={sortedData}
+                    strColumns={strColumns}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
@@ -261,8 +265,7 @@ class CustomTable extends React.Component {
                             columns={columns}
                         />
                         <TableBody>
-                            {stableSort(tableData, getSorting(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((n) => {
                                     return (
                                         <TableRow
@@ -328,6 +331,8 @@ CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
     columns: PropTypes.instanceOf(Object).isRequired,
+    strColumns: PropTypes.instanceOf(Object).isRequired,
+    title: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

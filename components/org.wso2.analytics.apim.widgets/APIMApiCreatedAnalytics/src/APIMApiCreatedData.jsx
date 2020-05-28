@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import VizG from 'react-vizgrammar';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import CustomTable from './CustomTable';
 
 /**
@@ -30,9 +30,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the data of APIM Api Created Analytics widget
  */
-export default function APIMApiCreatedData(props) {
+function APIMApiCreatedData(props) {
     const {
-        themeName, chartData, tableData, width, onClickAPI,
+        themeName, chartData, tableData, width, onClickAPI, intl,
     } = props;
     const styles = {
         dataWrapper: {
@@ -108,6 +108,10 @@ export default function APIMApiCreatedData(props) {
             id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.createdtime',
         },
     ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     if (tableData.length !== 0 && chartData.length !== 0) {
         return (
@@ -125,6 +129,8 @@ export default function APIMApiCreatedData(props) {
                         data={tableData}
                         columns={columns}
                         onClickTableRow={e => onClickAPI(e)}
+                        strColumns={strColumns}
+                        title={title}
                     />
                 </div>
             </div>
@@ -158,4 +164,8 @@ APIMApiCreatedData.propTypes = {
     xAxisTicks: PropTypes.instanceOf(Object).isRequired,
     maxCount: PropTypes.number.isRequired,
     onClickAPI: PropTypes.func.isRequired,
+    intl: intlShape.isRequired,
 };
+
+export default injectIntl(APIMApiCreatedData);
+

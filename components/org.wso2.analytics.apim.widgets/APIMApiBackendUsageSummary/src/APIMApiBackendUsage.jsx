@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
@@ -35,9 +35,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Api Backend Usage Summary widget body
  */
-export default function APIMApiBackendUsage(props) {
+function APIMApiBackendUsage(props) {
     const {
-        themeName, height, limit, usageData, handleChange, inProgress,
+        themeName, height, limit, usageData, handleChange, inProgress, intl,
     } = props;
     const styles = {
         headingWrapper: {
@@ -108,6 +108,10 @@ export default function APIMApiBackendUsage(props) {
             id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
         },
     ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
@@ -181,6 +185,8 @@ export default function APIMApiBackendUsage(props) {
                             <CustomTable
                                 data={usageData}
                                 columns={columns}
+                                strColumns={strColumns}
+                                title={title}
                             />
                         )}
                     </div>
@@ -197,4 +203,7 @@ APIMApiBackendUsage.propTypes = {
     usageData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
 };
+
+export default injectIntl(APIMApiBackendUsage);

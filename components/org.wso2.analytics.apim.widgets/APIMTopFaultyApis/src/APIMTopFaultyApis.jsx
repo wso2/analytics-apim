@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -56,9 +56,9 @@ const lightTheme = createMuiTheme({
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Top Faulty Apis widget body
  */
-export default function APIMTopFaultyApis(props) {
+function APIMTopFaultyApis(props) {
     const {
-        themeName, height, limit, faultData, handleChange, inProgress, width, handleOnClickAPI,
+        themeName, height, limit, faultData, handleChange, inProgress, width, handleOnClickAPI, intl,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -142,6 +142,10 @@ export default function APIMTopFaultyApis(props) {
             id: 'faultcount', numeric: true, disablePadding: false, label: 'table.heading.faultcount',
         },
     ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
     const { pieChartData, legendData } = Utils.summarizePieData(faultData, 'apiname', 'faultcount');
 
     return (
@@ -269,12 +273,14 @@ export default function APIMTopFaultyApis(props) {
                                                 data={faultData}
                                                 columns={columns}
                                                 onClickTableRow={e => handleOnClickAPI(e)}
+                                                strColumns={strColumns}
+                                                title={title}
                                             />
                                         </div>
                                     </div>
                                 )}
                             </div>
-                        )}
+                        )}APIMRegisteredAppUsers
                     </div>
                 </div>
             </Scrollbars>
@@ -291,4 +297,7 @@ APIMTopFaultyApis.propTypes = {
     handleChange: PropTypes.func.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
 };
+
+export default injectIntl(APIMTopFaultyApis);
