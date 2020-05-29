@@ -34,7 +34,7 @@ import CustomTable from './CustomTable';
  */
 function ApiFaultAnalytics(props) {
     const {
-        themeName, height, width, inProgress, faultData, tableData, intl,
+        themeName, height, width, inProgress, faultData, tableData, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -184,6 +184,7 @@ function ApiFaultAnalytics(props) {
                                         columns={columns}
                                         strColumns={strColumns}
                                         title={title}
+                                        username={username}
                                     />
                                 </div>
                             </div>
@@ -203,6 +204,7 @@ ApiFaultAnalytics.propTypes = {
     tableData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(ApiFaultAnalytics);

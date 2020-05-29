@@ -328,8 +328,9 @@ class APIMTopThrottledApisWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const throttledApisProps = {
-            themeName, height, limit, throttledData, legendData, inProgress, width,
+            themeName, height, limit, throttledData, legendData, inProgress, width, username,
         };
 
         return (

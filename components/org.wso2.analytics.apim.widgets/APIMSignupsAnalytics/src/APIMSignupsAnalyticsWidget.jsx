@@ -272,8 +272,9 @@ class APIMSignupsAnalyticsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const signupsProps = {
-            themeName, height, chartData, tableData, width, inProgress,
+            themeName, height, chartData, tableData, width, inProgress, username,
         };
 
         return (

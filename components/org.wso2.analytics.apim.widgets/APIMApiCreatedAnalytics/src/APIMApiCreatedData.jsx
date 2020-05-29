@@ -32,7 +32,7 @@ import CustomTable from './CustomTable';
  */
 function APIMApiCreatedData(props) {
     const {
-        themeName, chartData, tableData, width, onClickAPI, intl,
+        themeName, chartData, tableData, width, onClickAPI, intl, username,
     } = props;
     const styles = {
         dataWrapper: {
@@ -131,6 +131,7 @@ function APIMApiCreatedData(props) {
                         onClickTableRow={e => onClickAPI(e)}
                         strColumns={strColumns}
                         title={title}
+                        username={username}
                     />
                 </div>
             </div>
@@ -165,6 +166,7 @@ APIMApiCreatedData.propTypes = {
     maxCount: PropTypes.number.isRequired,
     onClickAPI: PropTypes.func.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMApiCreatedData);

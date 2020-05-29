@@ -34,7 +34,7 @@ import CustomTable from './CustomTable';
  */
 function ApiThrottleAnalytics(props) {
     const {
-        themeName, height, width, inProgress, throttleData, tableData, intl,
+        themeName, height, width, inProgress, throttleData, tableData, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -182,6 +182,7 @@ function ApiThrottleAnalytics(props) {
                                         columns={columns}
                                         strColumns={strColumns}
                                         title={title}
+                                        username={username}
                                     />
                                 </div>
                             </div>
@@ -201,6 +202,7 @@ ApiThrottleAnalytics.propTypes = {
     tableData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(ApiThrottleAnalytics);

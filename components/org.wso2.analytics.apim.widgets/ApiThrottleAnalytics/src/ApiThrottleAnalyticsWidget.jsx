@@ -282,6 +282,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const faultProps = {
             themeName,
             height,
@@ -289,6 +290,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
             throttleData,
             tableData,
             inProgress,
+            username,
         };
 
         return (

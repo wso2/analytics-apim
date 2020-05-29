@@ -40,6 +40,7 @@ import CustomTable from './CustomTable';
 function APIMApiLastAccess(props) {
     const {
         themeName, height, limit, apiCreatedBy, accessData, apiCreatedHandleChange, handleChange, inProgress, intl,
+        username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -219,6 +220,7 @@ function APIMApiLastAccess(props) {
                                         columns={columns}
                                         strColumns={strColumns}
                                         title={title}
+                                        username={username}
                                     />
                                 )}
                             </div>
@@ -240,6 +242,7 @@ APIMApiLastAccess.propTypes = {
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMApiLastAccess);

@@ -314,8 +314,9 @@ class APIMApiResourceUsageWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const resourceUsageProps = {
-            themeName, height, limit, usageData, inProgress,
+            themeName, height, limit, usageData, inProgress, username,
         };
 
         return (

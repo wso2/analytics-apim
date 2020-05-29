@@ -527,8 +527,9 @@ class APIMOverallApiUsageWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const ovearllUsageProps = {
-            themeName, width, height, limit, usageData1, usageData2, inProgress,
+            themeName, width, height, limit, usageData1, usageData2, inProgress, username,
         };
 
         return (

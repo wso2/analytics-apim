@@ -327,8 +327,9 @@ class APIMTopAppCreatorsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const appCreatorsProps = {
-            themeName, height, creatorData, legendData, inProgress, limit, width,
+            themeName, height, creatorData, legendData, inProgress, limit, width, username,
         };
 
         return (

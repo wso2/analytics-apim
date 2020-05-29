@@ -32,7 +32,7 @@ import CustomTable from './CustomTable';
  */
 function APIMAppCreatedData(props) {
     const {
-        themeName, chartData, tableData, width, intl,
+        themeName, chartData, tableData, width, intl, username,
     } = props;
     const styles = {
         dataWrapper: {
@@ -112,6 +112,7 @@ function APIMAppCreatedData(props) {
                         columns={columns}
                         strColumns={strColumns}
                         title={title}
+                        username={username}
                     />
                 </div>
             </div>
@@ -144,6 +145,7 @@ APIMAppCreatedData.propTypes = {
     tableData: PropTypes.instanceOf(Object).isRequired,
     width: PropTypes.string.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMAppCreatedData);

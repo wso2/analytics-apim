@@ -33,7 +33,7 @@ import CustomTable from './CustomTable';
  */
 function APIMApiRatings(props) {
     const {
-        themeName, height, topApiNameData, inProgress, handleOnClickAPI, intl,
+        themeName, height, topApiNameData, inProgress, handleOnClickAPI, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -143,6 +143,7 @@ function APIMApiRatings(props) {
                                                 columns={columns}
                                                 strColumns={strColumns}
                                                 title={title}
+                                                username={username}
                                             />
                                         </div>
                                     </div>
@@ -163,6 +164,7 @@ APIMApiRatings.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMApiRatings);

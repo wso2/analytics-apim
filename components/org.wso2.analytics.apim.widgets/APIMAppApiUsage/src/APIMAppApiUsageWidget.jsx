@@ -456,6 +456,7 @@ class APIMAppApiUsageWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const apiUsageProps = {
             themeName,
             height,
@@ -466,6 +467,7 @@ class APIMAppApiUsageWidget extends Widget {
             usageData,
             legendData,
             inProgress,
+            username,
         };
 
         return (

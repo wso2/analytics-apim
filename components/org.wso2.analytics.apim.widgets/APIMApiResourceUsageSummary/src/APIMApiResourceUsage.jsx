@@ -37,7 +37,7 @@ import CustomTable from './CustomTable';
  */
 function APIMApiResourceUsage(props) {
     const {
-        themeName, height, limit, usageData, handleChange, inProgress, intl,
+        themeName, height, limit, usageData, handleChange, inProgress, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -187,6 +187,7 @@ function APIMApiResourceUsage(props) {
                                 columns={columns}
                                 strColumns={strColumns}
                                 title={title}
+                                username={username}
                             />
                         )}
                     </div>
@@ -204,6 +205,7 @@ APIMApiResourceUsage.propTypes = {
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMApiResourceUsage);

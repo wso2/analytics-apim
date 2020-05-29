@@ -292,8 +292,9 @@ class APIMTopSubscribersWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const subscribersProps = {
-            themeName, height, limit, creatorData, legendData, inProgress, width,
+            themeName, height, limit, creatorData, legendData, inProgress, width, username,
         };
 
         return (

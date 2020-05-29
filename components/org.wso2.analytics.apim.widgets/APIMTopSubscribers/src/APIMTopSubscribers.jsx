@@ -62,6 +62,7 @@ const lightTheme = createMuiTheme({
 function APIMTopSubscribers(props) {
     const {
         themeName, height, limit, creatorData, handleChange, inProgress, width, handleOnClickAPIProvider, intl,
+        username,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -290,6 +291,7 @@ function APIMTopSubscribers(props) {
                                                 onClickTableRow={e => handleOnClickAPIProvider(e)}
                                                 strColumns={strColumns}
                                                 title={title}
+                                                username={username}
                                             />
                                         </div>
                                     </div>
@@ -313,6 +315,7 @@ APIMTopSubscribers.propTypes = {
     handleOnClickAPIProvider: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMTopSubscribers);

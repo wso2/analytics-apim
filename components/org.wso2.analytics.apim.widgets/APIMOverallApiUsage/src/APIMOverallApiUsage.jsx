@@ -39,7 +39,7 @@ import CustomTable from './CustomTable';
 function APIMOverallApiUsage(props) {
     const {
         themeName, width, height, limit, usageData1, usageData2, limitHandleChange, inProgress, handleOnClickAPI,
-        selectedAPIChangeCallback, intl,
+        selectedAPIChangeCallback, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -240,6 +240,7 @@ function APIMOverallApiUsage(props) {
                                         onClickTableRow={e => handleOnClickAPI(e)}
                                         strColumns={strColumns}
                                         title={title}
+                                        username={username}
                                     />
                                 </div>
                             )
@@ -264,6 +265,7 @@ APIMOverallApiUsage.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMOverallApiUsage);

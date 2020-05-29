@@ -32,7 +32,7 @@ import CustomTable from './CustomTable';
  */
 function APIMSignupsData(props) {
     const {
-        themeName, chartData, tableData, width, intl,
+        themeName, chartData, tableData, width, intl, username,
     } = props;
     const styles = {
         paperWrapper: {
@@ -112,6 +112,7 @@ function APIMSignupsData(props) {
                         columns={columns}
                         strColumns={strColumns}
                         title={title}
+                        username={username}
                     />
                 </div>
             </div>
@@ -144,6 +145,7 @@ APIMSignupsData.propTypes = {
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMSignupsData);

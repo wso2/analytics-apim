@@ -405,6 +405,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const appCreatedProps = {
             themeName,
             height,
@@ -414,6 +415,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             tableData,
             width,
             inProgress,
+            username,
         };
 
         return (

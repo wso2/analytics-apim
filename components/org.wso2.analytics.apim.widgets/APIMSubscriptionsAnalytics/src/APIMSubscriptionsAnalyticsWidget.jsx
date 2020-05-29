@@ -332,6 +332,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const subscriptionsProps = {
             themeName,
             height,
@@ -339,6 +340,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             chartData,
             tableData,
             inProgress,
+            username,
         };
 
         return (

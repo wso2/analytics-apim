@@ -40,7 +40,7 @@ import CustomTable from './CustomTable';
 function APIMAppResourceUsage(props) {
     const {
         themeName, height, width, limit, applicationSelected, usageData, applicationList,
-        applicationSelectedHandleChange, handleLimitChange, inProgress, intl,
+        applicationSelectedHandleChange, handleLimitChange, inProgress, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -225,6 +225,7 @@ function APIMAppResourceUsage(props) {
                                         columns={columns}
                                         strColumns={strColumns}
                                         title={title}
+                                        username={username}
                                     />
                                 </div>
                             ) : (
@@ -268,6 +269,7 @@ APIMAppResourceUsage.propTypes = {
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMAppResourceUsage);

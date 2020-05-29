@@ -34,7 +34,7 @@ import CustomTable from './CustomTable';
  */
 function APIMApiUsage(props) {
     const {
-        themeName, height, limit, usageData, handleLimitChange, inProgress, handleOnClickAPI, intl,
+        themeName, height, limit, usageData, handleLimitChange, inProgress, handleOnClickAPI, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -163,6 +163,7 @@ function APIMApiUsage(props) {
                                     columns={columns}
                                     strColumns={strColumns}
                                     title={title}
+                                    username={username}
                                 />
                             )}
                     </div>
@@ -182,6 +183,7 @@ APIMApiUsage.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMApiUsage);

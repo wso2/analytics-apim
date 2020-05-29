@@ -40,7 +40,7 @@ import CustomTable from './CustomTable';
 function APIMFaultyPerApp(props) {
     const {
         themeName, height, width, limit, applicationSelected, usageData, applicationList,
-        applicationSelectedHandleChange, handleLimitChange, inProgress, intl,
+        applicationSelectedHandleChange, handleLimitChange, inProgress, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -224,6 +224,7 @@ function APIMFaultyPerApp(props) {
                                         columns={columns}
                                         strColumns={strColumns}
                                         title={title}
+                                        username={username}
                                     />
                                 </div>
                             ) : (
@@ -267,6 +268,7 @@ APIMFaultyPerApp.propTypes = {
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMFaultyPerApp);

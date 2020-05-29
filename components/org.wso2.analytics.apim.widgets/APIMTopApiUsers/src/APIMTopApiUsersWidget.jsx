@@ -318,12 +318,14 @@ class APIMTopApiUsersWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const apiUsersProps = {
             themeName,
             height,
             limit,
             userData,
             inProgress,
+            username,
         };
 
         return (

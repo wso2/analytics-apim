@@ -61,7 +61,7 @@ const lightTheme = createMuiTheme({
  */
 function APIMTopAppCreators(props) {
     const {
-        themeName, height, width, creatorData, handleChange, limit, inProgress, handleOnClickAppCreator, intl,
+        themeName, height, width, creatorData, handleChange, limit, inProgress, handleOnClickAppCreator, intl, username,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -287,6 +287,7 @@ function APIMTopAppCreators(props) {
                                                 onClickTableRow={e => handleOnClickAppCreator(e)}
                                                 strColumns={strColumns}
                                                 title={title}
+                                                username={username}
                                             />
                                         </div>
                                     </div>
@@ -310,6 +311,7 @@ APIMTopAppCreators.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     creatorData: PropTypes.instanceOf(Object).isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMTopAppCreators);

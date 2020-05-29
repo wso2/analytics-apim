@@ -58,7 +58,7 @@ const lightTheme = createMuiTheme({
  */
 function APIMTopFaultyApis(props) {
     const {
-        themeName, height, limit, faultData, handleChange, inProgress, width, handleOnClickAPI, intl,
+        themeName, height, limit, faultData, handleChange, inProgress, width, handleOnClickAPI, intl, username,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -197,7 +197,10 @@ function APIMTopFaultyApis(props) {
                                             elevation={1}
                                             style={styles.paper}
                                         >
-                                            <Typography variant='h5' component='h3'>
+                                            <Typography
+                                                variant='husername: PropTypes.string.isRequired,5'
+                                                component='h3'
+                                            >
                                                 <FormattedMessage
                                                     id='nodata.error.heading'
                                                     defaultMessage='No Data Available !'
@@ -275,12 +278,13 @@ function APIMTopFaultyApis(props) {
                                                 onClickTableRow={e => handleOnClickAPI(e)}
                                                 strColumns={strColumns}
                                                 title={title}
+                                                username={username}
                                             />
                                         </div>
                                     </div>
                                 )}
                             </div>
-                        )}APIMRegisteredAppUsers
+                        )}
                     </div>
                 </div>
             </Scrollbars>
@@ -298,6 +302,7 @@ APIMTopFaultyApis.propTypes = {
     handleOnClickAPI: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMTopFaultyApis);

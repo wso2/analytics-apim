@@ -34,7 +34,7 @@ import CustomTable from './CustomTable';
  */
 function APIMTopApiUsers(props) {
     const {
-        themeName, height, limit, userData, handleLimitChange, inProgress, intl,
+        themeName, height, limit, userData, handleLimitChange, inProgress, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -160,6 +160,7 @@ function APIMTopApiUsers(props) {
                                     columns={columns}
                                     strColumns={strColumns}
                                     title={title}
+                                    username={username}
                                 />
                             )}
                     </div>
@@ -178,6 +179,7 @@ APIMTopApiUsers.propTypes = {
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMTopApiUsers);

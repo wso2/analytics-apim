@@ -58,7 +58,7 @@ const lightTheme = createMuiTheme({
  */
 function APIMTopThrottledApis(props) {
     const {
-        themeName, height, limit, throttledData, handleChange, inProgress, width, handleOnClickAPI, intl,
+        themeName, height, limit, throttledData, handleChange, inProgress, width, handleOnClickAPI, intl, username,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -274,6 +274,7 @@ function APIMTopThrottledApis(props) {
                                                 onClickTableRow={e => handleOnClickAPI(e)}
                                                 strColumns={strColumns}
                                                 title={title}
+                                                username={username}
                                             />
                                         </div>
                                     </div>
@@ -297,6 +298,7 @@ APIMTopThrottledApis.propTypes = {
     handleOnClickAPI: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMTopThrottledApis);
