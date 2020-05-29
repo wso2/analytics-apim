@@ -38,7 +38,7 @@ import CustomTable from './CustomTable';
  */
 function APIMRegisteredAppUsers(props) {
     const {
-        themeName, height, width, usageData = [], inProgress, intl,
+        themeName, height, width, usageData = [], inProgress, intl, username,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -189,6 +189,7 @@ function APIMRegisteredAppUsers(props) {
                                         columns={columns}
                                         strColumns={strColumns}
                                         title={title}
+                                        username={username}
                                     />
                                 </div>
                             </div>
@@ -227,6 +228,7 @@ APIMRegisteredAppUsers.propTypes = {
     usageData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMRegisteredAppUsers);

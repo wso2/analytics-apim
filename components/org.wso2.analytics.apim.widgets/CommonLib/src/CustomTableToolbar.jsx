@@ -106,7 +106,7 @@ class CustomTableToolbar extends React.Component {
     };
 
     handlePDFDownload() {
-        const { data, strColumns, title } = this.props;
+        const { data, strColumns, title, username } = this.props;
         const headers = [['#']];
         const dataToExport = [];
 
@@ -119,7 +119,7 @@ class CustomTableToolbar extends React.Component {
         });
 
         const doc = new jsPDF({ putOnlyUsedFonts: true });
-        downloadPDF(doc, title, headers, dataToExport);
+        downloadPDF(doc, title, headers, dataToExport, username);
         this.handleMenuCloseRequest();
     };
 
@@ -223,6 +223,7 @@ CustomTableToolbar.propTypes = {
     handleExpandClick: PropTypes.func.isRequired,
     handleColumnSelect: PropTypes.func.isRequired,
     handleQueryChange: PropTypes.func.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTableToolbar);

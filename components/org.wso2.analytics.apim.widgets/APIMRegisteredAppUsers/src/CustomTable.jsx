@@ -201,7 +201,7 @@ class CustomTable extends React.Component {
      */
     render() {
         const {
-            data, classes, inProgress, columns, strColumns, title,
+            data, classes, inProgress, columns, strColumns, title, username,
         } = this.props;
         const {
             filterQuery, expanded, filterColumn, order, orderBy, rowsPerPage, page, emptyRowHeight,
@@ -237,6 +237,7 @@ class CustomTable extends React.Component {
                     title={title}
                     menuItems={menuItems}
                     strColumns={strColumns}
+                    username={username}
                 />
                 {
                     inProgress ? (
@@ -343,6 +344,7 @@ CustomTable.propTypes = {
     strColumns: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     title: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
