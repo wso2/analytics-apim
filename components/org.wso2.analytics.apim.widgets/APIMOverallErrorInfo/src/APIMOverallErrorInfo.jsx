@@ -57,29 +57,29 @@ export default function APIMOverallErrorInfo(props) {
         dataWrapper: {
             margin: 'auto',
             textAlign: 'center',
-            fontSize: '150%',
+            fontSize: '100%',
             fontWeight: 500,
             color: themeName === 'dark' ? '#fff' : '#2571a7',
             paddingTop: 10,
             marginTop: '10%',
             display: 'flex',
-            justifyContent: 'center'
+            justifyContent: 'center',
         },
         leftContainer: {
             justifyContent: 'flex-start',
             marginLeft: '5%',
-            marginRight: '10%'
+            marginRight: '10%',
         },
         rightContainer: {
             justifyContent: 'flex-end',
             marginLeft: '10%',
-            marginRight: '5%'
+            marginRight: '5%',
         },
         dataBlock: {
             fontSize: '130%',
             marginTop: '10%',
-            color: red[500]
-        }
+            color: red[500],
+        },
     };
 
     return (
