@@ -58,7 +58,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopFaultyApis(props) {
     const {
-        themeName, height, limit, faultData, handleChange, inProgress, width,
+        themeName, height, limit, faultData, handleChange, inProgress, width, handleOnClickAPI,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -158,7 +158,7 @@ export default function APIMTopFaultyApis(props) {
                         <form style={styles.form} noValidate autoComplete='off'>
                             <TextField
                                 id='limit-number'
-                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                                 value={limit}
                                 onChange={handleChange}
                                 type='number'
@@ -237,12 +237,27 @@ export default function APIMTopFaultyApis(props) {
                                                         d => `${d.apiname} : ${((d.faultcount
                                                         / (sumBy(pieChartData, o => o.faultcount))) * 100).toFixed(2)}%`
                                                     }
+                                                    events={[
+                                                        {
+                                                            target: 'data',
+                                                            eventHandlers: {
+                                                                onClick: () => {
+                                                                    return [{
+                                                                        mutation: (val) => {
+                                                                            handleOnClickAPI(val.datum);
+                                                                        },
+                                                                    }];
+                                                                },
+                                                            },
+                                                        },
+                                                    ]}
                                                 />
                                             </svg>
                                         </div>
                                         <div style={styles.tableDiv}>
                                             <CustomTable
                                                 data={faultData}
+                                                onClickTableRow={e => handleOnClickAPI(e)}
                                             />
                                         </div>
                                     </div>
@@ -263,5 +278,6 @@ APIMTopFaultyApis.propTypes = {
     limit: PropTypes.string.isRequired,
     faultData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
+    handleOnClickAPI: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

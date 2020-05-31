@@ -61,7 +61,7 @@ const lightTheme = createMuiTheme({
  */
 export default function APIMTopApiCreators(props) {
     const {
-        themeName, height, limit, creatorData, handleChange, inProgress, width,
+        themeName, height, limit, creatorData, handleChange, inProgress, width, handleOnClickAPIProvider,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -167,14 +167,14 @@ export default function APIMTopApiCreators(props) {
                             <FormControl style={styles.formControl}>
                                 <Tooltip
                                     placement='top'
-                                    title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                    title={<FormattedMessage id='limit' defaultMessage='Limit' />}
                                 >
                                     <InputLabel
                                         shrink
                                         htmlFor='limit-number'
                                         style={styles.formLabel}
                                     >
-                                        <FormattedMessage id='limit' defaultMessage='Limit :' />
+                                        <FormattedMessage id='limit' defaultMessage='Limit' />
                                     </InputLabel>
                                 </Tooltip>
                                 <Input
@@ -252,12 +252,27 @@ export default function APIMTopApiCreators(props) {
                                                     y={d => d.apicount}
                                                     labels={d => `${d.creator} : ${((d.apicount
                                                         / (sumBy(pieChartData, o => o.apicount))) * 100).toFixed(2)}%`}
+                                                    events={[
+                                                        {
+                                                            target: 'data',
+                                                            eventHandlers: {
+                                                                onClick: () => {
+                                                                    return [{
+                                                                        mutation: (val) => {
+                                                                            handleOnClickAPIProvider(val.datum);
+                                                                        },
+                                                                    }];
+                                                                },
+                                                            },
+                                                        },
+                                                    ]}
                                                 />
                                             </svg>
                                         </div>
                                         <div style={styles.tableDiv}>
                                             <CustomTable
                                                 data={creatorData}
+                                                onClickTableRow={e => handleOnClickAPIProvider(e)}
                                             />
                                         </div>
                                     </div>
@@ -279,4 +294,5 @@ APIMTopApiCreators.propTypes = {
     creatorData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClickAPIProvider: PropTypes.func.isRequired,
 };

@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
+import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -184,7 +185,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, onClickTableRow } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -199,8 +200,8 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
-            <MenuItem value='apiVersion'>
-                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
+            <MenuItem value='apiversion'>
+                <FormattedMessage id='table.heading.apiversion' defaultMessage='VERSION' />
             </MenuItem>,
             <MenuItem value='faultcount'>
                 <FormattedMessage id='table.heading.faultcount' defaultMessage='FAULT COUNT' />
@@ -215,11 +216,15 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='TOP FAULTY APIS'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '40%' }} />
+                            <col style={{ width: '30%' }} />
+                            <col style={{ width: '30%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}
@@ -236,10 +241,12 @@ class CustomTable extends React.Component {
                                             key={n.id}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                {n.apiname}
+                                                <Link href='#' onClick={() => onClickTableRow(n)} color='inherit'>
+                                                    {n.apiname}
+                                                </Link>
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
-                                                {n.apiVersion}
+                                                {n.apiversion}
                                             </TableCell>
                                             <TableCell numeric>
                                                 {n.faultcount}
@@ -289,6 +296,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
+    onClickTableRow: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

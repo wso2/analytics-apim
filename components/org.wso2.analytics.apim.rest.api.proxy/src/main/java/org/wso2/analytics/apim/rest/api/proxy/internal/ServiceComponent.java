@@ -22,6 +22,7 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.wso2.carbon.analytics.idp.client.core.api.AnalyticsHttpClientBuilderService;
 import org.wso2.carbon.config.provider.ConfigProvider;
 
 /**
@@ -51,5 +52,19 @@ public class ServiceComponent {
 
     protected void unregisterConfigProvider(ConfigProvider client) {
         ServiceHolder.getInstance().setConfigProvider(null);
+    }
+
+    @Reference(
+            service = AnalyticsHttpClientBuilderService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterAnalyticsHttpClient"
+    )
+    protected void registerAnalyticsHttpClient(AnalyticsHttpClientBuilderService service) {
+        ServiceHolder.getInstance().setAnalyticsHttpClientBuilderService(service);
+    }
+
+    protected void unregisterAnalyticsHttpClient(AnalyticsHttpClientBuilderService service) {
+        ServiceHolder.getInstance().setAnalyticsHttpClientBuilderService(null);
     }
 }

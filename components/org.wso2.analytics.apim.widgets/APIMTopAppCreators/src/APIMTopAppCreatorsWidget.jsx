@@ -54,6 +54,13 @@ const lightTheme = createMuiTheme({
 const queryParamKey = 'appCreators';
 
 /**
+ * Callback function suffixes
+ * @type {string}
+ */
+const SUBSCRIBER_CALLBACK = '-subscriber';
+const QUERY_CALLBACK = '-query';
+
+/**
  * Language
  * @type {string}
  */
@@ -114,6 +121,7 @@ class APIMTopAppCreatorsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleSubscriberDataReceived = this.handleSubscriberDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleOnClickAppCreator = this.handleOnClickAppCreator.bind(this);
     }
 
     componentWillMount() {
@@ -127,6 +135,7 @@ class APIMTopAppCreatorsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -144,7 +153,8 @@ class APIMTopAppCreatorsWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + SUBSCRIBER_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + QUERY_CALLBACK);
     }
 
     /**
@@ -167,6 +177,19 @@ class APIMTopAppCreatorsWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Retrieves subscribers
      * @memberof APIMTopAppCreatorsWidget
      * */
@@ -175,8 +198,8 @@ class APIMTopAppCreatorsWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'subscriberQuery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleSubscriberDataReceived, dataProviderConfigs);
+        super.getWidgetChannelManager().subscribeWidget(id + SUBSCRIBER_CALLBACK, widgetName,
+            this.handleSubscriberDataReceived, dataProviderConfigs);
     }
 
     /**
@@ -186,11 +209,9 @@ class APIMTopAppCreatorsWidget extends Widget {
      * */
     handleSubscriberDataReceived(message) {
         const { data } = message;
-        const { id } = this.props;
 
         if (data) {
             const subscribers = data.map((dataUnit) => { return dataUnit[0]; });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
             this.setState({ subscribers }, this.assembleQuery);
         } else {
             this.setState({ inProgress: false, creatorData: [] });
@@ -202,18 +223,10 @@ class APIMTopAppCreatorsWidget extends Widget {
      * @memberof APIMTopAppCreatorsWidget
      * */
     assembleQuery() {
-        const { providerConfig, subscribers } = this.state;
+        const { providerConfig, subscribers, limit } = this.state;
         const { id, widgetID: widgetName } = this.props;
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { limit } = queryParam;
 
-        if (!limit || limit < 0) {
-            limit = 5;
-        }
-
-        this.setState({ limit });
-
-        if (subscribers && subscribers.length > 0) {
+        if (subscribers && subscribers.length > 0 && limit > 0) {
             const dataProviderConfigs = cloneDeep(providerConfig);
             let subs = subscribers.map((sub) => { return 'SUBSCRIBER_ID==' + sub; });
             subs = subs.join(' OR ');
@@ -223,7 +236,7 @@ class APIMTopAppCreatorsWidget extends Widget {
                 '{{limit}}': limit,
             };
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+                .subscribeWidget(id + QUERY_CALLBACK, widgetName, this.handleDataReceived, dataProviderConfigs);
         } else {
             this.setState({ inProgress: false, creatorData: [] });
         }
@@ -269,16 +282,34 @@ class APIMTopAppCreatorsWidget extends Widget {
      * @memberof APIMTopAppCreatorsWidget
      * */
     handleChange(event) {
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleQuery();
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
             this.setState({ limit });
+        }
+    }
+
+    /**
+     * Handle onClick of an API Provider and drill down
+     * @memberof APIMTopAppCreatorsWidget
+     * */
+    handleOnClickAppCreator(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const { creator } = data;
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath + '/dashboards/' + dashboard
+                    + '/' + drillDown + '#{"apps":{"appCreatedBy":"' + creator + '"}}';
+            }
         }
     }
 
@@ -324,7 +355,11 @@ class APIMTopAppCreatorsWidget extends Widget {
                             </div>
                         </MuiThemeProvider>
                     ) : (
-                        <APIMTopAppCreators {...appCreatorsProps} handleChange={this.handleChange} />
+                        <APIMTopAppCreators
+                            {...appCreatorsProps}
+                            handleChange={this.handleChange}
+                            handleOnClickAppCreator={this.handleOnClickAppCreator}
+                        />
                     )
                 }
             </IntlProvider>

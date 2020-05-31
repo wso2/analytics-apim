@@ -90,10 +90,9 @@ class APIMSignupsAnalyticsWidget extends Widget {
             height: this.props.height,
             timeTo: null,
             timeFrom: null,
+            perValue: null,
             chartData: null,
             tableData: null,
-            xAxisTicks: null,
-            maxCount: 0,
             localeMessages: null,
             inProgress: true,
         };
@@ -168,12 +167,16 @@ class APIMSignupsAnalyticsWidget extends Widget {
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const { from, to, granularity } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            inProgress: !sync,
-        }, this.assembleQuery);
+        if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleQuery);
+        }
     }
 
     /**
@@ -184,14 +187,16 @@ class APIMSignupsAnalyticsWidget extends Widget {
         const { providerConfig, timeFrom, timeTo } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'query';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        if (timeFrom) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'query';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        }
     }
 
     /**
@@ -203,42 +208,53 @@ class APIMSignupsAnalyticsWidget extends Widget {
         const { data } = message;
 
         if (data && data.length > 0) {
-            const xAxisTicks = [];
-            const chartData = [];
-            const tableData = [];
-            let signups = 0;
-
-            data.forEach((dataUnit) => {
-                signups += dataUnit[2];
-                chartData.push({
-                    x: new Date(dataUnit[1]).getTime(),
-                    y: signups,
-                    label: 'CREATED_TIME:' + Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss')
-                        + '\nCOUNT:' + signups,
-                });
-                tableData.push({
+            const tableData = data.map((dataUnit) => {
+                return {
                     developer: dataUnit[0],
-                    signeduptime: Moment(dataUnit[1]).format('YYYY-MMM-DD HH:mm:ss'),
-                });
+                    signeduptime: Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss A'),
+                };
             });
-
-            const maxCount = chartData[chartData.length - 1].y;
-
-            const first = new Date(chartData[0].x).getTime();
-            const last = new Date(chartData[chartData.length - 1].x).getTime();
-            const interval = (last - first) / 10;
-            let duration = 0;
-            xAxisTicks.push(first);
-            for (let i = 1; i <= 10; i++) {
-                duration = interval * i;
-                xAxisTicks.push(new Date(first + duration).getTime());
-            }
-
+            const timeFormat = this.getDateFormat();
+            const dataGroupByTime = data.reduce((acc, obj) => {
+                const key = Moment(obj[1]).format(timeFormat);
+                if (!acc[key]) {
+                    acc[key] = 0;
+                }
+                acc[key]++;
+                return acc;
+            }, {});
+            const chartData = Object.keys(dataGroupByTime).map((key) => {
+                return [dataGroupByTime[key], Moment(key, timeFormat).toDate().getTime()];
+            });
+            chartData.sort((a, b) => { return a[1] - b[1]; });
             this.setState({
-                chartData, tableData, xAxisTicks, maxCount, inProgress: false,
+                chartData, tableData, inProgress: false,
             });
         } else {
             this.setState({ inProgress: false, chartData: [], tableData: [] });
+        }
+    }
+
+    /**
+     * Get time format for the selected granularity
+     * @memberof APIMSignupsAnalyticsWidget
+     * */
+    getDateFormat() {
+        const { perValue } = this.state;
+        switch (perValue) {
+            case 'minute':
+                return 'YYYY-MMM-DD HH:mm';
+            case 'hour':
+                return 'YYYY-MMM-DD HH';
+            case 'day':
+                return 'YYYY-MMM-DD';
+            case 'month':
+                return 'YYYY-MMM';
+            case 'year':
+                return 'YYYY';
+            case 'second':
+            default:
+                return 'YYYY-MMM-DD HH:mm:ss';
         }
     }
 
@@ -249,7 +265,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
+            localeMessages, faultyProviderConfig, height, chartData, tableData, width, inProgress,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -257,7 +273,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const signupsProps = {
-            themeName, height, chartData, tableData, xAxisTicks, maxCount, inProgress,
+            themeName, height, chartData, tableData, width, inProgress,
         };
 
         return (

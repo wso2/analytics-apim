@@ -12,7 +12,7 @@
         "config": {
           "datasourceName": "AM_DB",
           "queryData": {
-            "query" : "select API_ID, API_NAME, API_VERSION, CREATED_TIME, COUNT(API_ID) as count, CREATED_BY from AM_API where CONTEXT {{contextCondition}} {{createdBy}} AND CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by CREATED_TIME, API_ID, API_NAME, API_VERSION, CREATED_BY"
+            "query" : "select API_NAME, API_VERSION, CREATED_TIME, CREATED_BY from AM_API where CONTEXT {{contextCondition}} {{filterCondition}} AND CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}' group by CREATED_TIME, API_ID, API_NAME, API_VERSION, CREATED_BY"
           },
           "publishingInterval": 360000,
           "tableName": "AM_API",
@@ -42,6 +42,14 @@
           "name": "TEXT"
         },
         "defaultValue": "APIs Created Over Time"
+      },
+      {
+        "id": "drillDown",
+        "title": "API Usage Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "api-usage"
       }
     ]
   }

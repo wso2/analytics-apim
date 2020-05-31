@@ -33,7 +33,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMApiRatings(props) {
     const {
-        themeName, height, topApiNameData, inProgress,
+        themeName, height, topApiNameData, inProgress, handleOnClickAPI,
     } = props;
     const styles = {
         headingWrapper: {
@@ -124,7 +124,11 @@ export default function APIMApiRatings(props) {
                                 ) : (
                                     <div>
                                         <div style={{ marginTop: '5%' }}>
-                                            <CustomTable data={topApiNameData} loadingTopApis={inProgress} />
+                                            <CustomTable
+                                                data={topApiNameData}
+                                                loadingTopApis={inProgress}
+                                                onClickTableRow={e => handleOnClickAPI(e)}
+                                            />
                                         </div>
                                     </div>
                                 )
@@ -142,4 +146,5 @@ APIMApiRatings.propTypes = {
     height: PropTypes.string.isRequired,
     topApiNameData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClickAPI: PropTypes.func.isRequired,
 };

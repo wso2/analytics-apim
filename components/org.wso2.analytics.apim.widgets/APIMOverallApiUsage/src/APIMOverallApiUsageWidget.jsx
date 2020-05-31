@@ -47,12 +47,10 @@ const lightTheme = createMuiTheme({
     },
 });
 
-const createdByKeys = {
-    all: 'all',
-    me: 'me',
-};
-
 const queryParamKey = 'overallapiusage';
+const API_USAGE_CALLBACK = '-api-usage';
+const API_ID_CALLBACK = '-api-id';
+const API_SUB_CALLBACK = '-api-sub';
 
 /**
  * Language
@@ -79,28 +77,6 @@ class APIMOverallApiUsageWidget extends Widget {
     constructor(props) {
         super(props);
 
-        this.chartConfig = {
-            charts: [
-                {
-                    type: 'scatter',
-                    x: 'API_NAME',
-                    y: 'SUB_COUNT',
-                    color: 'CREATED_BY',
-                    size: 'REQ_COUNT',
-                },
-            ],
-            append: false,
-            style: {
-                xAxisTickAngle: -8,
-                tickLabelColor: '#506482',
-            },
-        };
-
-        this.metadata = {
-            names: ['API_NAME', 'CREATED_BY', 'REQ_COUNT', 'SUB_COUNT'],
-            types: ['ordinal', 'ordinal', 'linear', 'linear'],
-        };
-
         this.styles = {
             paper: {
                 padding: '5%',
@@ -110,17 +86,6 @@ class APIMOverallApiUsageWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            proxyPaperWrapper: {
-                height: '75%',
-            },
-            proxyPaper: {
-                background: '#969696',
-                width: '75%',
-                padding: '4%',
-                border: '1.5px solid #fff',
-                margin: 'auto',
-                marginTop: '5%',
             },
         };
 
@@ -133,13 +98,14 @@ class APIMOverallApiUsageWidget extends Widget {
             usageData2: null,
             apiIdMap: {},
             apiIdMapGlobal: {},
-            apiDataList: [],
-            metadata: this.metadata,
-            chartConfig: this.chartConfig,
             limit: 5,
             localeMessages: null,
             inProgress: true,
-            proxyError: false,
+            dimension: null,
+            selectedOptions: [],
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -151,19 +117,16 @@ class APIMOverallApiUsageWidget extends Widget {
         }
 
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.assembleApiListQuery = this.assembleApiListQuery.bind(this);
         this.assembleApiSubQuery = this.assembleApiSubQuery.bind(this);
         this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
-        this.handleApiListReceived = this.handleApiListReceived.bind(this);
         this.handleApiSubReceived = this.handleApiSubReceived.bind(this);
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
         this.limitHandleChange = this.limitHandleChange.bind(this);
-        this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
-        this.resetState = this.resetState.bind(this);
-        this.getUsername = this.getUsername.bind(this);
         this.assembleApiIdQuery = this.assembleApiIdQuery.bind(this);
         this.handleApiIdReceived = this.handleApiIdReceived.bind(this);
         this.selectedAPIChangeCallback = this.selectedAPIChangeCallback.bind(this);
+        this.loadLimit = this.loadLimit.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -177,7 +140,7 @@ class APIMOverallApiUsageWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -195,7 +158,9 @@ class APIMOverallApiUsageWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_ID_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_SUB_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_USAGE_CALLBACK);
     }
 
     /**
@@ -218,50 +183,52 @@ class APIMOverallApiUsageWidget extends Widget {
     }
 
     /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
-    }
-
-    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMOverallApiUsageWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleApiUsageQuery);
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleApiUsageQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleApiUsageQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleApiUsageQuery);
+        }
     }
 
     /**
-     * Reset the state according to queryParam
+     * Retrieve the limit from query param
      * @memberof APIMOverallApiUsageWidget
      * */
-    resetState() {
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy } = queryParam;
-        let { limit } = queryParam;
-        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
-            apiCreatedBy = 'all';
-        }
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
         if (!limit || limit < 0) {
             limit = 5;
         }
-        this.setState({ apiCreatedBy, limit });
-        this.setQueryParam(apiCreatedBy, limit);
+        this.setQueryParam(limit);
+        this.setState({ limit });
     }
 
     /**
@@ -269,26 +236,41 @@ class APIMOverallApiUsageWidget extends Widget {
      * @memberof APIMOverallApiUsageWidget
      * */
     assembleApiUsageQuery() {
-        this.resetState();
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { limit, apiCreatedBy } = queryParam;
         const {
-            timeFrom, timeTo, perValue, providerConfig, username,
+            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions, limit,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{apiCreator}}': apiCreatedBy !== 'all' ? 'AND apiCreator==\'{{username}}\'' : '',
-            '{{username}}': username,
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': perValue,
-            '{{limit}}': limit,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
+                let filterCondition = '';
+                if (selectedOptions[0].name !== 'All') {
+                    filterCondition = selectedOptions.map((opt) => {
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                            + '\' AND apiCreator==\'' + opt.provider + '\')';
+                    });
+                    filterCondition = filterCondition.join(' OR ');
+                    filterCondition = 'AND ' + filterCondition;
+                }
+
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{filterCondition}}': filterCondition,
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id + API_USAGE_CALLBACK, widgetName, this.handleApiUsageReceived,
+                        dataProviderConfigs);
+            } else {
+                this.setState({
+                    usageData1: [], usageData2: [], inProgress: false,
+                });
+            }
+        }
     }
 
     /**
@@ -298,9 +280,8 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     handleApiUsageReceived(message) {
         const { data } = message;
-        const { id } = this.props;
 
-        if (data) {
+        if (data && data.length > 0) {
             const usageData = data.map((dataUnit) => {
                 return {
                     apiname: dataUnit[0],
@@ -309,43 +290,12 @@ class APIMOverallApiUsageWidget extends Widget {
                     version: dataUnit[3],
                 };
             });
-            this.setState({ usageData });
-        }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiListQuery();
-    }
-
-    /**
-     * Retrieve API list from APIM server
-     * @memberof APIMOverallApiUsageWidget
-     * */
-    assembleApiListQuery() {
-        this.resetState();
-        Axios.get(`${window.contextPath}/apis/analytics/v1.0/apim/apis`)
-            .then((response) => {
-                this.setState({ proxyError: false });
-                this.handleApiListReceived(response.data);
-            })
-            .catch((error) => {
-                this.setState({ proxyError: true, inProgress: false });
-                console.error(error);
+            this.setState({ usageData }, this.assembleApiIdQuery);
+        } else {
+            this.setState({
+                usageData1: [], usageData2: [], inProgress: false,
             });
-    }
-
-    /**
-     * Formats data retrieved from assembleApiListQuery
-     * @param {object} data - data retrieved
-     * @memberof APIMOverallApiUsageWidget
-     * */
-    handleApiListReceived(data) {
-        const { list } = data;
-        const { id } = this.props;
-
-        if (list && list.length > 0) {
-            this.setState({ apiDataList: list });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiIdQuery();
     }
 
     /**
@@ -353,13 +303,12 @@ class APIMOverallApiUsageWidget extends Widget {
      * @memberof APIMOverallApiUsageWidget
      * */
     assembleApiIdQuery() {
-        this.resetState();
-        const { providerConfig, apiDataList } = this.state;
+        const { providerConfig, usageData } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apiDataList && apiDataList.length > 0) {
-            let apiCondition = apiDataList.map((api) => {
-                return '(API_NAME==\'' + api.name + '\' AND API_VERSION==\'' + api.version
+        if (usageData && usageData.length > 0) {
+            let apiCondition = usageData.map((api) => {
+                return '(API_NAME==\'' + api.apiname + '\' AND API_VERSION==\'' + api.version
                     + '\' AND API_PROVIDER==\'' + api.provider + '\')';
             });
             apiCondition = apiCondition.join(' OR ');
@@ -370,9 +319,11 @@ class APIMOverallApiUsageWidget extends Widget {
                 '{{apiCondition}}': apiCondition,
             };
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleApiIdReceived, dataProviderConfigs);
+                .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
         } else {
-            this.setState({ usageData1: [], usageData2: [], inProgress: false });
+            this.setState({
+                usageData1: [], usageData2: [], inProgress: false,
+            });
         }
     }
 
@@ -383,15 +334,16 @@ class APIMOverallApiUsageWidget extends Widget {
      * */
     handleApiIdReceived(message) {
         const { data } = message;
-        const { id } = this.props;
 
-        if (data) {
+        if (data && data.length > 0) {
             const apiIdMap = {};
             data.forEach((api) => { apiIdMap[api[0]] = { apiname: api[1], creator: api[2], version: api[3] }; });
-            this.setState({ apiIdMapGlobal: cloneDeep(apiIdMap), apiIdMap });
+            this.setState({ apiIdMapGlobal: cloneDeep(apiIdMap), apiIdMap }, this.assembleApiSubQuery);
+        } else {
+            this.setState({
+                usageData1: [], usageData2: [], inProgress: false,
+            });
         }
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiSubQuery();
     }
 
     /**
@@ -399,7 +351,6 @@ class APIMOverallApiUsageWidget extends Widget {
      * @memberof APIMOverallApiUsageWidget
      * */
     assembleApiSubQuery() {
-        this.resetState();
         const { providerConfig, apiIdMap } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -412,9 +363,11 @@ class APIMOverallApiUsageWidget extends Widget {
                 '{{apiList}}': apiIds,
             };
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleApiSubReceived, dataProviderConfigs);
+                .subscribeWidget(id + API_SUB_CALLBACK, widgetName, this.handleApiSubReceived, dataProviderConfigs);
         } else {
-            this.setState({ usageData1: [], usageData2: [], inProgress: false });
+            this.setState({
+                usageData1: [], usageData2: [], inProgress: false,
+            });
         }
     }
 
@@ -426,7 +379,7 @@ class APIMOverallApiUsageWidget extends Widget {
     handleApiSubReceived(message) {
         const { data } = message;
 
-        if (data) {
+        if (data && data.length > 0) {
             const {
                 usageData, apiIdMap, apiIdMapGlobal,
             } = this.state;
@@ -434,7 +387,7 @@ class APIMOverallApiUsageWidget extends Widget {
             const usageData2 = [];
             usageData.forEach((dataUnit) => {
                 const {
-                    apiname, provider, version, hits
+                    apiname, provider, version, hits,
                 } = dataUnit;
                 const idArray = Object.keys(apiIdMapGlobal);
                 const apiID = idArray.find(id => apiIdMapGlobal[id].apiname === apiname
@@ -442,6 +395,7 @@ class APIMOverallApiUsageWidget extends Widget {
                 if (apiID) {
                     let subCount = data.reduce((result, item) => {
                         const [aID, count] = item;
+                        // comparision === isn't done because this compares a string with an int
                         if (aID == apiID) {
                             result = count;
                         }
@@ -461,20 +415,25 @@ class APIMOverallApiUsageWidget extends Widget {
                     }
                 }
             });
-            this.setState({ usageData1, usageData2: [...usageData1, ...usageData2], inProgress: false });
+            this.setState({
+                usageData1,
+                usageData2: [...usageData1, ...usageData2],
+                inProgress: false,
+            });
         } else {
-            this.setState({ usageData1: [], usageData2: [], inProgress: false });
+            this.setState({
+                usageData1: [], usageData2: [], inProgress: false,
+            });
         }
     }
 
     /**
      * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
      * @param {string} limit - limit menu option selected
      * @memberof APIMOverallApiUsageWidget
      * */
-    setQueryParam(apiCreatedBy, limit) {
-        super.setGlobalState(queryParamKey, { apiCreatedBy, limit });
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
     }
 
     /**
@@ -483,33 +442,14 @@ class APIMOverallApiUsageWidget extends Widget {
      * @memberof APIMOverallApiUsageWidget
      * */
     limitHandleChange(event) {
-        const { apiCreatedBy } = this.state;
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(apiCreatedBy, parseInt(limit, 10));
+        this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleApiUsageQuery();
+            this.setState({ inProgress: true, limit }, this.assembleApiUsageQuery);
         } else {
             this.setState({ limit });
         }
-    }
-
-    /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMOverallApiUsageWidget
-     * */
-    apiCreatedHandleChange(event) {
-        const { limit } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value, limit);
-        this.setState({ inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiUsageQuery();
     }
 
     selectedAPIChangeCallback = (selectedAPI) => {
@@ -546,51 +486,50 @@ class APIMOverallApiUsageWidget extends Widget {
     };
 
     /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMOverallApiUsageWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g,
+                } = super.getGlobalState('dtrp');
+                const { apiname, apiversion } = data;
+                const api = (apiname.split(' (')[0]).trim();
+                const provider = (apiname.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Overall Api Usage widget
      * @memberof APIMOverallApiUsageWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata,
-            chartConfig, inProgress, proxyError,
+            localeMessages, faultyProviderConfig, width, height, limit, usageData1, usageData2, inProgress,
         } = this.state;
         const {
-            paper, paperWrapper, proxyPaper, proxyPaperWrapper,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const ovearllUsageProps = {
-            themeName, width, height, limit, apiCreatedBy, usageData1, usageData2, metadata, chartConfig, inProgress,
+            themeName, width, height, limit, usageData1, usageData2, inProgress,
         };
-
-        if (proxyError) {
-            return (
-                <IntlProvider locale={language} messages={localeMessages}>
-                    <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                        <div style={proxyPaperWrapper}>
-                            <Paper
-                                elevation={1}
-                                style={proxyPaper}
-                            >
-                                <Typography variant='h5' component='h3'>
-                                    <FormattedMessage
-                                        id='apim.server.error.heading'
-                                        defaultMessage='Error!'
-                                    />
-                                </Typography>
-                                <Typography component='p'>
-                                    <FormattedMessage
-                                        id='apim.server.error'
-                                        defaultMessage='Error occurred while retrieving API list.'
-                                    />
-                                </Typography>
-                            </Paper>
-                        </div>
-                    </MuiThemeProvider>
-                </IntlProvider>
-            );
-        }
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
@@ -617,9 +556,9 @@ class APIMOverallApiUsageWidget extends Widget {
                         ) : (
                             <APIMOverallApiUsage
                                 {...ovearllUsageProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
                                 limitHandleChange={this.limitHandleChange}
                                 selectedAPIChangeCallback={this.selectedAPIChangeCallback}
+                                handleOnClickAPI={this.handleOnClickAPI}
                             />
                         )
                     }

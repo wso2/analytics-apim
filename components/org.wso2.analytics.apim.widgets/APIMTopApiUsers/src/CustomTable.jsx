@@ -208,7 +208,7 @@ class CustomTable extends React.Component {
                 <FormattedMessage id='table.heading.user' defaultMessage='USERNAME' />
             </MenuItem>,
             <MenuItem value='apiCalls'>
-                <FormattedMessage id='table.heading.apiCalls' defaultMessage='API CALLS' />
+                <FormattedMessage id='table.heading.apiCalls' defaultMessage='HITS' />
             </MenuItem>,
         ];
         return (
@@ -220,11 +220,14 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='TOP API USERS'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '60%' }} />
+                            <col style={{ width: '40%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}
@@ -243,12 +246,7 @@ class CustomTable extends React.Component {
                                             <TableCell component='th' scope='row'>
                                                 {n.user}
                                             </TableCell>
-                                            <TableCell
-                                                numeric
-                                                style={{
-                                                    paddingRight: '10%',
-                                                }}
-                                            >
+                                            <TableCell numeric>
                                                 {n.apiCalls}
                                             </TableCell>
                                         </TableRow>

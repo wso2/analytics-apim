@@ -4,12 +4,12 @@
   "filter.column.menu.heading": "Column Name",
   "filter.label.title": "Filter By",
   "filter.search.placeholder": "Search Field",
-  "limit": "Limit :",
+  "limit": "Limit",
   "nodata.error.heading": "No Data Available !",
   "nodata.error.body": "No data available for the selected options.",
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
-  "table.heading.apiVersion": "API VERSION",
+  "table.heading.apiversion": "VERSION",
   "table.heading.throttledcount": "THROTTLED OUT COUNT",
   "widget.heading": "TOP THROTTLED OUT APIS"
 }

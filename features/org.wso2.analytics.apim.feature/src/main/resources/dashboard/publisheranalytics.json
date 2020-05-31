@@ -1,0 +1,778 @@
+{
+  "dashboard": {
+    "url": "publisheranalytics",
+    "owner": "admin@carbon.super",
+    "name": "Publisher Analytics",
+    "description": "",
+    "landingPage": "overall-usage",
+    "parentId": "0",
+    "content": {
+      "properties": {},
+      "readOnly": false,
+      "pages": [
+        {
+          "id": "overall-usage",
+          "name": "Overall Usage Summary",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 19.863013698630137,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 50,
+                      "width": 56.41975308641975,
+                      "content": [
+                        {
+                          "title": "[Dimension Selector]",
+                          "type": "component",
+                          "component": "DimensionSelector",
+                          "props": {
+                            "id": "7c092ab6-db8e-464f-a623-1d20c25fe08d",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "dimension",
+                                  "selection"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "selectMultiple": true,
+                                "dimensions": [
+                                  "API",
+                                  "API Provider"
+                                ],
+                                "defaultDimension": "API"
+                              }
+                            },
+                            "widgetID": "DimensionSelector"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 43.58024691358025,
+                      "content": [
+                        {
+                          "title": "[Date Time Range]",
+                          "type": "component",
+                          "component": "DateRangePicker",
+                          "props": {
+                            "id": "2e89b706-c775-434c-b490-018d26bfc705",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "granularity",
+                                  "from",
+                                  "to"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "defaultValue": "3 Months",
+                                "availableGranularities": "From Second",
+                                "autoSyncInterval": "30",
+                                "headerTitle": "Date Time Range"
+                              }
+                            },
+                            "widgetID": "DateRangePicker"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 80.13698630136986,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 50,
+                      "width": 55.12345679012346,
+                      "content": [
+                        {
+                          "title": "[APIM Overall Api Usage]",
+                          "type": "component",
+                          "component": "APIMOverallApiUsage",
+                          "props": {
+                            "id": "3b20b1bd-fe73-4dca-b0d3-6c8fa6299e32",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "2e89b706-c775-434c-b490-018d26bfc705",
+                                  "7c092ab6-db8e-464f-a623-1d20c25fe08d"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "Overall API Usage",
+                                "drillDown": "api-usage"
+                              }
+                            },
+                            "widgetID": "APIMOverallApiUsage"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 44.87654320987654,
+                      "content": [
+                        {
+                          "title": "[APIM Api Usage]",
+                          "type": "component",
+                          "component": "APIMApiUsage",
+                          "props": {
+                            "id": "f84cdfa2-0dea-4eb1-acc0-c5963ad4f2f2",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "2e89b706-c775-434c-b490-018d26bfc705",
+                                  "7c092ab6-db8e-464f-a623-1d20c25fe08d"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Usage by Application",
+                                "drillDown": "api-usage"
+                              }
+                            },
+                            "widgetID": "APIMApiUsage"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "api-usag",
+          "name": "API Usage Summary",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 14.097222222222221,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 56.481481481481474,
+                      "content": [
+                        {
+                          "title": "[Dimension Selector]",
+                          "type": "component",
+                          "component": "DimensionSelector",
+                          "props": {
+                            "id": "b3a4148f-1b1b-4f0a-bf72-718946e7a71f",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "dimension",
+                                  "selection"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "selectMultiple": true,
+                                "dimensions": [
+                                  "API",
+                                  "API Provider"
+                                ],
+                                "defaultDimension": "API"
+                              }
+                            },
+                            "widgetID": "DimensionSelector"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 50,
+                      "width": 43.518518518518526,
+                      "content": [
+                        {
+                          "title": "[Date Time Range]",
+                          "type": "component",
+                          "component": "DateRangePicker",
+                          "props": {
+                            "id": "c3f16589-7aea-467c-b6f2-510ca5130e22",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "granularity",
+                                  "from",
+                                  "to"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "defaultValue": "3 Months",
+                                "availableGranularities": "From Second",
+                                "autoSyncInterval": "30",
+                                "headerTitle": "Date Time Range"
+                              }
+                            },
+                            "widgetID": "DateRangePicker"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 85.90277777777777,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[APIM Api Version Usage Summary]",
+                          "type": "component",
+                          "component": "APIMApiVersionUsageSummary",
+                          "props": {
+                            "id": "1b3cfe22-7d02-4142-a126-1bc43d1b3707",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "c3f16589-7aea-467c-b6f2-510ca5130e22",
+                                  "b3a4148f-1b1b-4f0a-bf72-718946e7a71f"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Version Usage Summary"
+                              }
+                            },
+                            "widgetID": "APIMApiVersionUsageSummary"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 67.72146222597905,
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[APIM Api Backend Usage Summary]",
+                          "type": "component",
+                          "component": "APIMApiBackendUsageSummary",
+                          "props": {
+                            "id": "00a49da1-b88d-45a6-a6e4-fe9aac73a0d0",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "c3f16589-7aea-467c-b6f2-510ca5130e22",
+                                  "b3a4148f-1b1b-4f0a-bf72-718946e7a71f"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Backend Usage Summary"
+                              }
+                            },
+                            "widgetID": "APIMApiBackendUsageSummary"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "height": 1085,
+          "hidden": false
+        },
+        {
+          "id": "api-performance",
+          "name": "API Performance",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 16.43835616438356,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 56.7283950617284,
+                      "content": [
+                        {
+                          "title": "[Dimension Selector]",
+                          "type": "component",
+                          "component": "DimensionSelector",
+                          "props": {
+                            "id": "b4e06647-68a1-408c-aeca-0cfdfbc4c99e",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "dimension",
+                                  "selection"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "selectMultiple": false,
+                                "selectAll": false,
+                                "dimensions": [
+                                  "API",
+                                  "API Provider"
+                                ],
+                                "defaultDimension": "API"
+                              }
+                            },
+                            "widgetID": "DimensionSelector"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 43.2716049382716,
+                      "height": 20.091324200913242,
+                      "content": [
+                        {
+                          "title": "[Date Time Range]",
+                          "type": "component",
+                          "component": "DateRangePicker",
+                          "props": {
+                            "id": "b0febf75-6023-408f-8e13-8617b166f71a",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "granularity",
+                                  "from",
+                                  "to"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "defaultValue": "1 Month",
+                                "availableGranularities": "From Second",
+                                "autoSyncInterval": "30",
+                                "headerTitle": "Date Time Range"
+                              }
+                            },
+                            "widgetID": "DateRangePicker"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 83.56164383561644,
+                  "width": 100,
+                  "content": [
+                    {
+                      "title": "[APIM Api Latency Time]",
+                      "type": "component",
+                      "component": "APIMApiLatencyTime",
+                      "props": {
+                        "id": "bf11e2fa-0245-410c-aaa8-746998e66041",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "b0febf75-6023-408f-8e13-8617b166f71a",
+                              "b4e06647-68a1-408c-aeca-0cfdfbc4c99e"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "API Latency Over Time"
+                          }
+                        },
+                        "widgetID": "APIMApiLatencyTime"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "api-faults",
+          "name": "API Faults",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 16.095890410958905,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 56.358024691358025,
+                      "content": [
+                        {
+                          "title": "[Dimension Selector]",
+                          "type": "component",
+                          "component": "DimensionSelector",
+                          "props": {
+                            "id": "55441c24-6249-4506-a336-767bd2bc82be",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "dimension",
+                                  "selection"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "selectMultiple": false,
+                                "dimensions": [
+                                  "API"
+                                ],
+                                "defaultDimension": "API",
+                                "selectAll": false
+                              }
+                            },
+                            "widgetID": "DimensionSelector"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 16.552511415525114,
+                      "width": 43.641975308641975,
+                      "content": [
+                        {
+                          "title": "[Date Time Range]",
+                          "type": "component",
+                          "component": "DateRangePicker",
+                          "props": {
+                            "id": "cc700f62-0449-4a6f-adf4-217568cc9c2d",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "granularity",
+                                  "from",
+                                  "to"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "defaultValue": "7 Days",
+                                "availableGranularities": "From Second",
+                                "autoSyncInterval": "30",
+                                "headerTitle": "Date Time Range"
+                              }
+                            },
+                            "widgetID": "DateRangePicker"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 83.9041095890411,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 50,
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[Api Fault Analytics]",
+                          "type": "component",
+                          "component": "ApiFaultAnalytics",
+                          "props": {
+                            "id": "ab1ddcb8-07f2-40c3-8b34-1bce3acd3fc9",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "cc700f62-0449-4a6f-adf4-217568cc9c2d",
+                                  "55441c24-6249-4506-a336-767bd2bc82be"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "headerTitle": "API Faulty Requests Over Time"
+                              }
+                            },
+                            "widgetID": "ApiFaultAnalytics"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[Api Throttle Analytics]",
+                          "type": "component",
+                          "component": "ApiThrottleAnalytics",
+                          "props": {
+                            "id": "2cc19886-bd42-47e7-8699-07fb0e66a1ec",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "cc700f62-0449-4a6f-adf4-217568cc9c2d",
+                                  "55441c24-6249-4506-a336-767bd2bc82be"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "headerTitle": "API Throttled Out Requests Over Time"
+                              }
+                            },
+                            "widgetID": "ApiThrottleAnalytics"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "hasOwnerPermission": false,
+    "hasDesignerPermission": false,
+    "hasViewerPermission": false
+  },
+  "widgets": {
+    "generated": [],
+    "custom": [
+      "ApiThrottleAnalytics",
+      "DateRangePicker",
+      "APIMOverallApiUsage",
+      "DimensionSelector",
+      "APIMApiLatencyTime",
+      "APIMApiBackendUsageSummary",
+      "ApiFaultAnalytics",
+      "APIMApiUsage",
+      "APIMApiVersionUsageSummary"
+    ]
+  },
+  "permissions": {
+    "viewers": [
+      "apim_analytics:admin_any",
+      "apim_analytics:publisher_dashboard:view_any"
+    ],
+    "owners": [
+      "apim_analytics:admin_carbon.super",
+      "apim_analytics:publisher_dashboard:own_carbon.super"
+    ],
+    "editors": [
+      "apim_analytics:admin_carbon.super",
+      "apim_analytics:publisher_dashboard:edit_carbon.super"
+    ]
+  }
+}

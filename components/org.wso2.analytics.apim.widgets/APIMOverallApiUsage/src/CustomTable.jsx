@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
+import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -213,7 +214,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, onClickTableRow } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page, initialLoad, selectedAPIs,
         } = this.state;
@@ -222,7 +223,7 @@ class CustomTable extends React.Component {
             return {
                 apiname: dataUnit[0] + ' (' + dataUnit[1] + ')',
                 hits: dataUnit[2],
-                apiVersion: dataUnit[4],
+                apiversion: dataUnit[4],
                 subs: dataUnit[3],
             };
         });
@@ -234,7 +235,7 @@ class CustomTable extends React.Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
         if (initialLoad) {
-            tableData.map(element => selectedAPIs.push(element.apiname + ':' + element.apiVersion));
+            tableData.map(element => selectedAPIs.push(element.apiname + ':' + element.apiversion));
             this.setState({ initialLoad: false });
         }
 
@@ -242,8 +243,8 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
-            <MenuItem value='apiVersion'>
-                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
+            <MenuItem value='apiversion'>
+                <FormattedMessage id='table.heading.apiversion' defaultMessage='VERSION' />
             </MenuItem>,
             <MenuItem value='hits'>
                 <FormattedMessage id='table.heading.hits' defaultMessage='HITS' />
@@ -258,11 +259,15 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='OVERALL API USAGE (ALL VERSIONS) :'
                     menuItems={menuItems}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <colgroup>
+                            <col style={{ width: '40%' }} />
+                            <col style={{ width: '30%' }} />
+                            <col style={{ width: '30%' }} />
+                        </colgroup>
                         <CustomTableHead
                             order={order}
                             orderBy={orderBy}
@@ -279,16 +284,18 @@ class CustomTable extends React.Component {
                                         >
                                             <TableCell component='th' scope='row'>
                                                 <Checkbox
-                                                    value={option.apiname + ':' + option.apiVersion}
+                                                    value={option.apiname + ':' + option.apiversion}
                                                     onChange={this.handleSelectedAPIChange}
                                                     checked={selectedAPIs.includes(
-                                                        option.apiname + ':' + option.apiVersion,
+                                                        option.apiname + ':' + option.apiversion,
                                                     )}
                                                 />
-                                                {option.apiname}
+                                                <Link href='#' onClick={() => onClickTableRow(option)} color='inherit'>
+                                                    {option.apiname}
+                                                </Link>
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
-                                                {option.apiVersion}
+                                                {option.apiversion}
                                             </TableCell>
                                             <TableCell numeric>
                                                 {option.hits}
@@ -339,6 +346,7 @@ CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
     callBack: PropTypes.func.isRequired,
+    onClickTableRow: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

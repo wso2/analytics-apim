@@ -19,12 +19,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Moment from 'moment';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import {
-    VictoryAxis, VictoryLabel, VictoryLine, VictoryTooltip,
-} from 'victory';
+import VizG from 'react-vizgrammar';
 import { FormattedMessage } from 'react-intl';
 import CustomTable from './CustomTable';
 
@@ -35,7 +32,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMApiCreatedData(props) {
     const {
-        themeName, chartData, tableData, xAxisTicks, maxCount,
+        themeName, chartData, tableData, width, onClickAPI,
     } = props;
     const styles = {
         dataWrapper: {
@@ -53,8 +50,7 @@ export default function APIMApiCreatedData(props) {
             padding: '4%',
         },
         chartWrapper: {
-            width: '100%',
-            height: '70%',
+            width: '95%',
         },
         svgWrapper: {
             height: '100%',
@@ -65,9 +61,7 @@ export default function APIMApiCreatedData(props) {
             fontSize: 8,
         },
         tableWrapper: {
-            height: '30%',
-            margin: 'auto',
-            textAlign: 'right',
+            paddingTop: '20px',
         },
         button: {
             backgroundColor: '#1d216b',
@@ -77,136 +71,48 @@ export default function APIMApiCreatedData(props) {
             marginTop: '3%',
         },
     };
+    const chartConfig = {
+        x: 'CREATED_TIME',
+        charts: [
+            {
+                type: 'line',
+                y: 'COUNT',
+                fill: '#958E94',
+            },
+        ],
+        maxLength: 60,
+        width: 800,
+        height: 400,
+        legend: false,
+        timeFormat: '%d-%b-%y %H:%M',
+        tipTimeFormat: '%Y-%m-%d %H:%M:%S',
+        style: {
+            xAxisTickAngle: -10,
+            tickLabelColor: '#a7b0c8',
+            axisLabelColor: '#a7b0c8',
+            axisTextSize: 10,
+        },
+    };
+    const metadata = {
+        names: ['COUNT', 'CREATED_TIME'],
+        types: ['linear', 'time'],
+    };
 
     if (tableData.length !== 0 && chartData.length !== 0) {
         return (
             <div style={styles.dataWrapper}>
                 <div style={styles.chartWrapper}>
-                    <svg viewBox='20 50 650 300' style={styles.svgWrapper}>
-                        <VictoryLabel
-                            x={30}
-                            y={65}
-                            style={{
-                                fill: themeName === 'dark' ? '#fff' : '#000',
-                                fontFamily: 'inherit',
-                                fontSize: 8,
-                                fontStyle: 'italic',
-                            }}
-                            text='COUNT'
-                        />
-                        <g transform='translate(0, 40)'>
-                            <VictoryAxis
-                                scale='time'
-                                standalone={false}
-                                width={700}
-                                style={{
-                                    grid: {
-                                        stroke: tick => (tick === 0 ? 'transparent' : '#313f46'),
-                                        strokeWidth: 1,
-                                    },
-                                    axis: {
-                                        stroke: themeName === 'dark' ? '#fff' : '#000',
-                                        strokeWidth: 1,
-                                    },
-                                    ticks: {
-                                        size: 5,
-                                        stroke: themeName === 'dark' ? '#fff' : '#000',
-                                        strokeWidth: 1,
-                                    },
-                                }}
-                                label='CREATED TIME'
-                                tickValues={xAxisTicks}
-                                tickFormat={
-                                    (x) => {
-                                        return Moment(x).format('YY/MM/DD HH:mm');
-                                    }
-                                }
-                                tickLabelComponent={(
-                                    <VictoryLabel
-                                        dx={-5}
-                                        dy={-5}
-                                        angle={-40}
-                                        style={{
-                                            fill: themeName === 'dark' ? '#fff' : '#000',
-                                            fontFamily: themeName === 'dark' ? '#fff' : '#000',
-                                            fontSize: 8,
-                                        }}
-                                    />
-                                )}
-                                axisLabelComponent={(
-                                    <VictoryLabel
-                                        dy={20}
-                                        style={{
-                                            fill: themeName === 'dark' ? '#fff' : '#000',
-                                            fontFamily: 'inherit',
-                                            fontSize: 8,
-                                            fontStyle: 'italic',
-                                        }}
-                                    />
-                                )}
-                            />
-                            <VictoryAxis
-                                dependentAxis
-                                domain={[1, maxCount]}
-                                width={700}
-                                offsetX={50}
-                                orientation='left'
-                                standalone={false}
-                                style={{
-                                    grid: {
-                                        stroke: tick => (tick === 0 ? 'transparent' : '#313f46'),
-                                        strokeWidth: 1,
-                                    },
-                                    axis: {
-                                        stroke: themeName === 'dark' ? '#fff' : '#000',
-                                        strokeWidth: 1,
-                                    },
-                                    ticks: {
-                                        strokeWidth: 0,
-                                    },
-                                    tickLabels: {
-                                        fill: themeName === 'dark' ? '#fff' : '#000',
-                                        fontFamily: 'inherit',
-                                        fontSize: 8,
-                                    },
-                                }}
-                            />
-                            <VictoryLine
-                                labelComponent={(
-                                    <VictoryTooltip
-                                        orientation='right'
-                                        pointerLength={0}
-                                        cornerRadius={2}
-                                        flyoutStyle={{
-                                            fill: '#000',
-                                            fillOpacity: '0.5',
-                                            strokeWidth: 1,
-                                        }}
-                                        style={styles.tooltip}
-                                    />
-                                )}
-                                data={chartData}
-                                labels={d => d.label}
-                                width={700}
-                                domain={{
-                                    x: [xAxisTicks[0], xAxisTicks[xAxisTicks.length - 1]],
-                                    y: [1, maxCount],
-                                }}
-                                scale={{ x: 'time', y: 'linear' }}
-                                standalone={false}
-                                style={{
-                                    data: {
-                                        stroke: themeName === 'dark' ? '#fff' : '#000',
-                                        strokeWidth: 2,
-                                    },
-                                }}
-                            />
-                        </g>
-                    </svg>
+                    <VizG
+                        config={chartConfig}
+                        metadata={metadata}
+                        data={chartData}
+                        width={width}
+                    />
                 </div>
                 <div style={styles.tableWrapper}>
                     <CustomTable
                         data={tableData}
+                        onClickTableRow={e => onClickAPI(e)}
                     />
                 </div>
             </div>
@@ -239,4 +145,5 @@ APIMApiCreatedData.propTypes = {
     tableData: PropTypes.instanceOf(Object).isRequired,
     xAxisTicks: PropTypes.instanceOf(Object).isRequired,
     maxCount: PropTypes.number.isRequired,
+    onClickAPI: PropTypes.func.isRequired,
 };

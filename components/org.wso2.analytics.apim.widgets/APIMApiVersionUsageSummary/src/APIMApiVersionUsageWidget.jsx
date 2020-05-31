@@ -48,15 +48,6 @@ const lightTheme = createMuiTheme({
 });
 
 /**
-* Query string parameter values
-* @type {object}
-*/
-const createdByKeys = {
-    All: 'All',
-    Me: 'Me',
-};
-
-/**
  * Query string parameter
  * @type {string}
  */
@@ -101,11 +92,15 @@ class APIMApiVersionUsageWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiCreatedBy: 'All',
             limit: 5,
             usageData: null,
             localeMessages: null,
             inProgress: true,
+            dimension: null,
+            selectedOptions: [],
+            timeFrom: null,
+            timeTo: null,
+            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -117,11 +112,9 @@ class APIMApiVersionUsageWidget extends Widget {
         }
 
         this.handleChange = this.handleChange.bind(this);
-        this.apiCreatedHandleChange = this.apiCreatedHandleChange.bind(this);
         this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.getUsername = this.getUsername.bind(this);
     }
 
     componentWillMount() {
@@ -135,7 +128,7 @@ class APIMApiVersionUsageWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.getUsername();
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -176,49 +169,52 @@ class APIMApiVersionUsageWidget extends Widget {
     }
 
     /**
-     * Get username of the logged in user
-     */
-    getUsername() {
-        let { username } = super.getCurrentUser();
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
-        this.setState({ username });
-    }
-
-    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMApiVersionUsageWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
+        const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-            inProgress: !sync,
-        }, this.assembleApiUsageQuery);
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleApiUsageQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleApiUsageQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleApiUsageQuery);
+        }
     }
 
     /**
-     * Reset the state according to queryParam
+     * Retrieve the limit from query param
      * @memberof APIMApiVersionUsageWidget
      * */
-    resetState() {
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { apiCreatedBy, limit } = queryParam;
-        if (!apiCreatedBy || !(apiCreatedBy in createdByKeys)) {
-            apiCreatedBy = 'All';
-        }
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
         if (!limit || limit < 0) {
             limit = 5;
         }
-        this.setState({ apiCreatedBy, limit });
-        this.setQueryParam(apiCreatedBy, limit);
+        this.setQueryParam(limit);
+        this.setState({ limit });
     }
 
     /**
@@ -226,25 +222,37 @@ class APIMApiVersionUsageWidget extends Widget {
      * @memberof APIMApiVersionUsageWidget
      * */
     assembleApiUsageQuery() {
-        this.resetState();
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { limit, apiCreatedBy } = queryParam;
         const {
-            timeFrom, timeTo, perValue, providerConfig, username,
+            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions, limit,
         } = this.state;
-        const { id, widgetID: widgetName } = this.props;
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
+                const { id, widgetID: widgetName } = this.props;
+                let filterCondition = '';
+                if (selectedOptions[0].name !== 'All') {
+                    filterCondition = selectedOptions.map((opt) => {
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                            + '\' AND apiCreator==\'' + opt.provider + '\')';
+                    });
+                    filterCondition = filterCondition.join(' OR ');
+                    filterCondition = 'AND ' + filterCondition;
+                }
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{apiCreator}}': apiCreatedBy !== 'All' ? 'AND apiCreator==\'' + username + '\'' : '',
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': perValue,
-            '{{limit}}': limit,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{filterCondition}}': filterCondition,
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
+                    '{{limit}}': limit,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
+            } else {
+                this.setState({ inProgress: false, usageData: [] });
+            }
+        }
     }
 
     /**
@@ -254,7 +262,6 @@ class APIMApiVersionUsageWidget extends Widget {
      * */
     handleApiUsageReceived(message) {
         const { data } = message;
-        const { apiCreatedBy, limit } = this.state;
 
         if (data) {
             const usageData = data.map((dataUnit) => {
@@ -265,7 +272,6 @@ class APIMApiVersionUsageWidget extends Widget {
                 };
             });
             this.setState({ usageData, inProgress: false });
-            this.setQueryParam(apiCreatedBy, limit);
         } else {
             this.setState({ inProgress: false, usageData: [] });
         }
@@ -273,12 +279,11 @@ class APIMApiVersionUsageWidget extends Widget {
 
     /**
      * Updates query param values
-     * @param {string} apiCreatedBy - API Created By menu option selected
      * @param {number} limit - data limitation value
      * @memberof APIMApiVersionUsageWidget
      * */
-    setQueryParam(apiCreatedBy, limit) {
-        super.setGlobalState(queryParamKey, { apiCreatedBy, limit });
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
     }
 
     /**
@@ -287,33 +292,14 @@ class APIMApiVersionUsageWidget extends Widget {
      * @memberof APIMApiVersionUsageWidget
      * */
     handleChange(event) {
-        const { apiCreatedBy } = this.state;
-        const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(apiCreatedBy, parseInt(limit, 10));
+        this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleApiUsageQuery();
+            this.setState({ inProgress: true, limit }, this.assembleApiUsageQuery);
         } else {
             this.setState({ limit });
         }
-    }
-
-    /**
-     * Handle API Created By menu select change
-     * @param {Event} event - listened event
-     * @memberof APIMApiVersionUsageWidget
-     * */
-    apiCreatedHandleChange(event) {
-        const { limit } = this.state;
-        const { id } = this.props;
-
-        this.setQueryParam(event.target.value, limit);
-        this.setState({ inProgress: true });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
-        this.assembleApiUsageQuery();
     }
 
     /**
@@ -323,7 +309,7 @@ class APIMApiVersionUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, apiCreatedBy, usageData, inProgress,
+            localeMessages, faultyProviderConfig, height, limit, usageData, inProgress,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -331,7 +317,7 @@ class APIMApiVersionUsageWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
-            themeName, height, limit, apiCreatedBy, usageData, inProgress,
+            themeName, height, limit, usageData, inProgress,
         };
 
         return (
@@ -359,7 +345,6 @@ class APIMApiVersionUsageWidget extends Widget {
                         ) : (
                             <APIMApiVersionUsage
                                 {...apiUsageProps}
-                                apiCreatedHandleChange={this.apiCreatedHandleChange}
                                 handleChange={this.handleChange}
                             />
                         )

@@ -47,7 +47,10 @@
     "APIMApiErrorAnalysis",
     "APIMApiResourceTraffic",
     "APIMOverallHighestLatency",
-    "APIMOverallErrorInfo"
+    "APIMOverallErrorInfo",
+    "ApiThrottleAnalytics",
+    "ApiFaultAnalytics",
+    "DimensionSelector"
   ],
   "version": "1.0.0"
 }

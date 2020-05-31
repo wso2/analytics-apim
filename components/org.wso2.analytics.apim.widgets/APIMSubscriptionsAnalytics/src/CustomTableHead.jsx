@@ -31,10 +31,13 @@ const rows = [
         id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
     },
     {
-        id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.appname',
+        id: 'apiversion', numeric: true, disablePadding: false, label: 'table.heading.apiversion',
     },
     {
-        id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.subscribedtime',
+        id: 'application', numeric: false, disablePadding: false, label: 'table.heading.application',
+    },
+    {
+        id: 'subscribedtime', numeric: false, disablePadding: false, label: 'table.heading.subscribedtime',
     },
 ];
 

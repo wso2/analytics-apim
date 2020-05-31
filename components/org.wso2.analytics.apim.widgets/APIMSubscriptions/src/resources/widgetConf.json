@@ -42,6 +42,14 @@
           "name": "TEXT"
         },
         "defaultValue": "API Subscriptions Summary"
+      },
+      {
+        "id": "drillDown",
+        "title": "Developer Statistics Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "dev-stats"
       }
     ]
   }

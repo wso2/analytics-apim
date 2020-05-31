@@ -31,7 +31,7 @@ const rows = [
         id: 'creator', numeric: false, disablePadding: false, label: 'table.heading.creator',
     },
     {
-        id: 'subcount', numeric: true, disablePadding: false, label: 'table.heading.subcount',
+        id: 'subscriptions', numeric: true, disablePadding: false, label: 'table.heading.subscriptions',
     },
 ];
 
