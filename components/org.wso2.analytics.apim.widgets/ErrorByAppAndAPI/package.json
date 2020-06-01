@@ -1,0 +1,43 @@
+{
+  "name": "ErrorByAppAndAPI",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^3.9.0",
+    "@material-ui/icons": "^3.0.2",
+    "@wso2-dashboards/widget": "^1.4.0",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-intl": "^2.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.7.0",
+    "@babel/register": "^7.7.0",
+    "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.0.6",
+    "copy-webpack-plugin": "^5.1.1",
+    "cpr": "^3.0.1",
+    "css-loader": "^3.4.2",
+    "eslint": "^5.10.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
+    "rimraf": "^2.6.3",
+    "style-loader": "^0.20.3",
+    "symlink-dir": "^3.1.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "victory": "34.3.6"
+  },
+  "scripts": {
+    "build": "node_modules/.bin/webpack -p",
+    "postbuild": "cpr ./dist/ErrorByAppAndAPI ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/ErrorByAppAndAPI -o",
+    "clean": "rimraf dist",
+    "dev": "npm run build & npm run symlink && NODE_ENV=development node_modules/.bin/webpack -d --config webpack.config.js --watch --progress",
+    "symlink": "symlink-dir ./dist/ErrorByAppAndAPI ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/ErrorByAppAndAPI"
+  }
+}

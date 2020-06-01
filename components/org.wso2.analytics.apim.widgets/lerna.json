@@ -41,7 +41,9 @@
     "APIMPlaceholder",
     "ApiThrottleAnalytics",
     "ApiFaultAnalytics",
-    "DimensionSelector"
+    "DimensionSelector",
+    "AppAndAPIErrorTable",
+    "ErrorByAppAndAPI"
   ],
   "version": "1.0.0"
 }
