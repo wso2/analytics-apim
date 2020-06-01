@@ -53,7 +53,8 @@
     "DimensionSelector",
     "AppAndAPIErrorTable",
     "ErrorByAppAndAPI",
-    "AppAndAPIErrorsByTime"
+    "AppAndAPIErrorsByTime",
+    "ApiUsageOverTime"
   ],
   "version": "1.0.0"
 }

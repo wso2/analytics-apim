@@ -239,5 +239,9 @@
             <directory>AppAndAPIErrorsByTime/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>ApiUsageOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>
