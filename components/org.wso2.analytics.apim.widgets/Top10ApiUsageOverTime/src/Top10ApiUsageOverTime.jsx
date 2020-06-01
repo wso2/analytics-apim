@@ -51,6 +51,7 @@ export default function Top10ApiUsageOverTime(props) {
         },
         chartWrapper: {
             width: '95%',
+            height: '90%',
         },
         tableWrapper: {
             height: '30%',
@@ -156,7 +157,7 @@ export default function Top10ApiUsageOverTime(props) {
                                         metadata={metadata}
                                         data={usageData}
                                         width={width}
-                                        height={height * 0.9}
+                                        height={height}
                                         theme={themeName}
                                         onClick={data => handleOnClickAPI(data)}
                                     />

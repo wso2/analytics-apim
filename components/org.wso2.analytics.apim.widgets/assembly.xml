@@ -247,5 +247,9 @@
             <directory>Top10ApiUsageOverTime/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>OverallFaultAnalytics/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>

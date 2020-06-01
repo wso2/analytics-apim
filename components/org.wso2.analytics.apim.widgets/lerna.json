@@ -55,7 +55,8 @@
     "ErrorByAppAndAPI",
     "AppAndAPIErrorsByTime",
     "ApiUsageOverTime",
-    "Top10ApiUsageOverTime"
+    "Top10ApiUsageOverTime",
+    "OverallFaultAnalytics"
   ],
   "version": "1.0.0"
 }
