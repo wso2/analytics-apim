@@ -24,10 +24,11 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Axios from 'axios';
+import Moment from 'moment';
 import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
-import ApiUsageOverTime from './ApiUsageOverTime';
+import Top10ApiUsageOverTime from './Top10ApiUsageOverTime';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -47,6 +48,9 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const CALLBACK_TOP_10 = '_top_10';
+const CALLBACK_USAGE = '_usage';
+
 /**
  * Language
  * @type {string}
@@ -59,15 +63,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for Api Usage Over Time
- * @class ApiUsageOverTimeWidget
+ * Create React Component for Top 10 Api Usage Over Time
+ * @class Top10ApiUsageOverTimeWidget
  * @extends {Widget}
  */
-class ApiUsageOverTimeWidget extends Widget {
+class Top10ApiUsageOverTimeWidget extends Widget {
     /**
-     * Creates an instance of ApiUsageOverTimeWidget.
+     * Creates an instance of Top10ApiUsageOverTimeWidget.
      * @param {any} props @inheritDoc
-     * @memberof ApiUsageOverTimeWidget
+     * @memberof Top10ApiUsageOverTimeWidget
      */
     constructor(props) {
         super(props);
@@ -94,9 +98,6 @@ class ApiUsageOverTimeWidget extends Widget {
             dimension: null,
             apiList: [],
             selectedOptions: [],
-            timeFrom: null,
-            timeTo: null,
-            perValue: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -107,9 +108,11 @@ class ApiUsageOverTimeWidget extends Widget {
             }));
         }
 
-        this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
+        this.assembleTopApiQuery = this.assembleTopApiQuery.bind(this);
+        this.handleTopApiReceived = this.handleTopApiReceived.bind(this);
         this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -128,7 +131,7 @@ class ApiUsageOverTimeWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, () => super.subscribe(this.handlePublisherParameters));
+                }, this.assembleTopApiQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -140,18 +143,19 @@ class ApiUsageOverTimeWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_TOP_10);
+        super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_USAGE);
     }
 
     /**
      * Load locale file.
      * @param {string} locale Locale name
-     * @memberof ApiUsageOverTimeWidget
+     * @memberof Top10ApiUsageOverTimeWidget
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/ApiUsageOverTime/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/Top10ApiUsageOverTime/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -163,82 +167,79 @@ class ApiUsageOverTimeWidget extends Widget {
     }
 
     /**
-     * Retrieve params from publisher - DateTimeRange
-     * @memberof ApiUsageOverTimeWidget
+     * Formats the siddhi query - topapiquery
+     * @memberof Top10ApiUsageOverTimeWidget
      * */
-    handlePublisherParameters(receivedMsg) {
-        const queryParam = super.getGlobalState('dtrp');
-        const { sync } = queryParam;
-        const {
-            from, to, granularity, dm, op,
-        } = receivedMsg;
+    assembleTopApiQuery() {
+        const { providerConfig } = this.state;
+        const { id, widgetID: widgetName } = this.props;
 
-        if (dm && from) {
-            this.setState({
-                dimension: dm,
-                selectedOptions: op,
-                timeFrom: from,
-                timeTo: to,
-                perValue: granularity,
-                inProgress: !sync,
-            }, this.assembleApiUsageQuery);
-        } else if (dm) {
-            this.setState({
-                dimension: dm,
-                selectedOptions: op,
-                inProgress: true,
-            }, this.assembleApiUsageQuery);
-        } else if (from) {
-            this.setState({
-                timeFrom: from,
-                timeTo: to,
-                perValue: granularity,
-                inProgress: !sync,
-            }, this.assembleApiUsageQuery);
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{from}}': Moment().subtract(1, 'months').toDate().getTime(),
+            '{{to}}': new Date().getTime(),
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id + CALLBACK_TOP_10, widgetName, this.handleTopApiReceived, dataProviderConfigs);
+    }
+
+    /**
+     * Formats data retrieved from assembleTopApiQuery
+     * @param {object} message - data retrieved
+     * @memberof Top10ApiUsageOverTimeWidget
+     * */
+    handleTopApiReceived(message) {
+        const { data } = message;
+
+        if (data && data.length > 0) {
+            const selectedOptions = data.map((dataUnit) => {
+                return { name: dataUnit[0], version: dataUnit[2], provider: dataUnit[1] };
+            });
+            this.setState({ selectedOptions }, this.assembleApiUsageQuery);
+        } else {
+            this.setState({ usageData: [], inProgress: false });
         }
     }
 
     /**
      * Formats the siddhi query - apiusagequery
-     * @memberof ApiUsageOverTimeWidget
+     * @memberof Top10ApiUsageOverTimeWidget
      * */
     assembleApiUsageQuery() {
         const {
-            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions,
+            providerConfig, selectedOptions,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (dimension && timeFrom) {
-            if (selectedOptions && selectedOptions.length > 0) {
-                let filterCondition = selectedOptions.map((opt) => {
-                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
-                        + '\' AND apiCreator==\'' + opt.provider + '\')';
-                });
-                filterCondition = filterCondition.join(' OR ');
-                filterCondition = 'AND ' + filterCondition;
+        if (selectedOptions && selectedOptions.length > 0) {
+            let filterCondition = selectedOptions.map((opt) => {
+                return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
+                    + '\' AND apiCreator==\'' + opt.provider + '\')';
+            });
+            filterCondition = filterCondition.join(' OR ');
+            filterCondition = 'AND ' + filterCondition;
 
-                const dataProviderConfigs = cloneDeep(providerConfig);
-                dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
-                dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{filterCondition}}': filterCondition,
-                    '{{from}}': timeFrom,
-                    '{{to}}': timeTo,
-                    '{{per}}': perValue,
-                };
-                super.getWidgetChannelManager()
-                    .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
-            } else {
-                this.setState({
-                    usageData: [], inProgress: false,
-                });
-            }
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{filterCondition}}': filterCondition,
+                '{{from}}': Moment().subtract(1, 'months').toDate().getTime(),
+                '{{to}}': new Date().getTime(),
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id + CALLBACK_USAGE, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
+        } else {
+            this.setState({
+                usageData: [], inProgress: false,
+            });
         }
     }
 
     /**
      * Formats data retrieved from assembleApiUsageQuery
      * @param {object} message - data retrieved
-     * @memberof ApiUsageOverTimeWidget
+     * @memberof Top10ApiUsageOverTimeWidget
      * */
     handleApiUsageReceived(message) {
         const { data } = message;
@@ -247,13 +248,13 @@ class ApiUsageOverTimeWidget extends Widget {
         if (data && data.length > 0) {
             const apiList = selectedOptions
                 .sort((a, b) => { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); })
-                .map((api) => { return api.name + ' (' + api.provider + ') :: ' + api.version; });
+                .map((api) => { return api.name + ' :: ' + api.version + ' (' + api.provider + ')'; });
             const dataGroupByTime = data.reduce((acc, obj) => {
                 const key = obj[4];
                 if (!acc[key]) {
                     acc[key] = [];
                 }
-                acc[key].push({ apiname: obj[0] + ' (' + obj[1] + ') :: ' + obj[3], hits: obj[2] });
+                acc[key].push({ apiname: obj[0] + ' :: ' + obj[3] + ' (' + obj[1] + ')', hits: obj[2] });
                 return acc;
             }, {});
             const usageData = Object.keys(dataGroupByTime).map((key) => {
@@ -277,9 +278,36 @@ class ApiUsageOverTimeWidget extends Widget {
     }
 
     /**
+     * Handle onClick of an API and drill down
+     * @memberof Top10ApiUsageOverTimeWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const name = Object.keys(data).find(key => key.includes('::'));
+                const splitName = name.split(' :: ');
+                const api = splitName[0].trim();
+                const apiversion = splitName[1].split(' (')[0].trim();
+                const provider = splitName[1].split(' (')[1].split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1month"},"dmSelc":{"dm":"api",'
+                    + '"op":[{"name":"' + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
+        }
+    }
+
+
+    /**
      * @inheritDoc
-     * @returns {ReactElement} Render the Api Usage Over Time widget
-     * @memberof ApiUsageOverTimeWidget
+     * @returns {ReactElement} Render the Top 10 Api Usage Over Time widget
+     * @memberof Top10ApiUsageOverTimeWidget
      */
     render() {
         const {
@@ -311,14 +339,15 @@ class ApiUsageOverTimeWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for'
-                                            + ' Api Usage Over Time widget'}
+                                            + ' Top 10 Api Usage Over Time widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <ApiUsageOverTime
+                            <Top10ApiUsageOverTime
                                 {...apiUsageOverTimeProps}
+                                handleOnClickAPI={this.handleOnClickAPI}
                             />
                         )
                     }
@@ -328,4 +357,4 @@ class ApiUsageOverTimeWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('ApiUsageOverTime', ApiUsageOverTimeWidget);
+global.dashboard.registerWidget('Top10ApiUsageOverTime', Top10ApiUsageOverTimeWidget);

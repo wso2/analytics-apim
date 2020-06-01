@@ -243,5 +243,9 @@
             <directory>ApiUsageOverTime/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>Top10ApiUsageOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>

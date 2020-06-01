@@ -1,0 +1,7 @@
+{
+  "config.error.body": "Cannot fetch provider configuration for Top 10 Api Usage Over Time widget",
+  "config.error.heading": "Configuration Error !",
+  "nodata.error.body": "No data available for the selected options",
+  "nodata.error.heading": "No Data Available !",
+  "widget.heading": "TOP 10 API USAGE FOR MONTH"
+}
