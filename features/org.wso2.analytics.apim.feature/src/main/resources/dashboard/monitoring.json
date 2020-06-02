@@ -878,8 +878,8 @@
           ]
         },
         {
-          "id": "alert-new",
-          "name": "Alert New",
+          "id": "error-new",
+          "name": "Error New",
           "content": [
             {
               "type": "column",
@@ -987,6 +987,40 @@
                           "options": {}
                         },
                         "widgetID": "AppAndAPIErrorTable"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 1.595744680851066,
+                  "content": [
+                    {
+                      "title": "[AppAndAPIErrorsByTimeWidget]",
+                      "type": "component",
+                      "component": "AppAndAPIErrorsByTime",
+                      "props": {
+                        "id": "89c44858-bbd8-494e-bf06-a78ec4df0ada",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "f085d16c-922a-455e-ab32-718ff0ea26e5"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {}
+                        },
+                        "widgetID": "AppAndAPIErrorsByTime"
                       },
                       "isClosable": false,
                       "header": {
