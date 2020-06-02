@@ -251,5 +251,9 @@
             <directory>OverallFaultAnalytics/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>Top10ThrottledApisOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>

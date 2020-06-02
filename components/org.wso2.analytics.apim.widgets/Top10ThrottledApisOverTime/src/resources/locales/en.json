@@ -1,0 +1,7 @@
+{
+  "nodata.error.body": "No data available for the selected options.",
+  "nodata.error.heading": "No Data Available !",
+  "config.error.body": "Cannot fetch provider configuration for Top 10 Throttled Out Apis Over Time widget",
+  "config.error.heading": "Configuration Error !",
+  "widget.heading": "TOP 10 THROTTLED OUT APIS FOR MONTH"
+}
