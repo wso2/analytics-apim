@@ -211,8 +211,7 @@ class ApiUsageOverTimeWidget extends Widget {
         if (dimension && timeFrom) {
             if (selectedOptions && selectedOptions.length > 0) {
                 let filterCondition = selectedOptions.map((opt) => {
-                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
-                        + '\' AND apiCreator==\'' + opt.provider + '\')';
+                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
                 });
                 filterCondition = filterCondition.join(' OR ');
                 filterCondition = 'AND ' + filterCondition;

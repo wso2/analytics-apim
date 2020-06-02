@@ -233,7 +233,7 @@ class APIMGeoInvocationsWidget extends Widget {
         if (dimension && timeFrom) {
             if (selectedOptions && selectedOptions.length > 0) {
                 const filterCondition = '(apiName==\'' + selectedOptions[0].name + '\' AND apiVersion==\''
-                    + selectedOptions[0].version + '\' AND apiCreator==\'' + selectedOptions[0].provider + '\')';
+                    + selectedOptions[0].version + '\')';
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
                 dataProviderConfigs.configs.config.queryData.queryValues = {

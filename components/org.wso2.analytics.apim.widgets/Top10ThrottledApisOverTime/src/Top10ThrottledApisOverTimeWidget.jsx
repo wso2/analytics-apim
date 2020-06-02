@@ -211,8 +211,7 @@ class Top10ThrottledApisOverTimeWidget extends Widget {
 
         if (selectedOptions && selectedOptions.length > 0) {
             let filterCondition = selectedOptions.map((opt) => {
-                return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
-                    + '\' AND apiCreator==\'' + opt.provider + '\')';
+                return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
             });
             filterCondition = filterCondition.join(' OR ');
 
@@ -236,8 +235,8 @@ class Top10ThrottledApisOverTimeWidget extends Widget {
      * @memberof Top10ThrottledApisOverTimeWidget
      * */
     handleDataReceived(message) {
-        const {data} = message;
-        const {selectedOptions} = this.state;
+        const { data } = message;
+        const { selectedOptions } = this.state;
 
         if (data && data.length > 0) {
             const apiList = selectedOptions
@@ -252,7 +251,7 @@ class Top10ThrottledApisOverTimeWidget extends Widget {
                 if (!acc[key]) {
                     acc[key] = [];
                 }
-                acc[key].push({apiname: obj[0] + ' :: ' + obj[1] + ' (' + obj[2] + ')', hits: obj[3]});
+                acc[key].push({ apiname: obj[0] + ' :: ' + obj[1] + ' (' + obj[2] + ')', hits: obj[3] });
                 return acc;
             }, {});
             const throttleData = Object.keys(dataGroupByTime).map((key) => {
@@ -269,9 +268,9 @@ class Top10ThrottledApisOverTimeWidget extends Widget {
                 usage.push(parseInt(key, 10));
                 return usage;
             });
-            this.setState({throttleData, apiList, inProgress: false});
+            this.setState({ throttleData, apiList, inProgress: false });
         } else {
-            this.setState({throttleData: [], inProgress: false});
+            this.setState({ throttleData: [], inProgress: false });
         }
     }
 
