@@ -20,45 +20,14 @@
 @source(type='inMemory' , topic='APIM_REQUEST')
 define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
 
-@source(type='inMemory' , topic='ThrottledOutStream')
-define stream ThrottledOutStream(meta_clientType string, username string, userTenantDomain string, apiName string, apiVersion string, apiContext string,
-    apiCreator string, apiCreatorTenantDomain string, applicationId string, applicationName string, subscriber string, throttledOutReason string, gatewayType string,
-    throttledOutTimestamp long, hostname string );
-
-@source(type = 'inMemory', topic='FaultStream')
-define stream FaultStream(meta_clientType string, applicationConsumerKey string, apiName string, apiVersion string, apiContext string, apiResourcePath string,
-    apiMethod string, apiCreator string, username string, userTenantDomain string, apiCreatorTenantDomain string, hostname string,
-    applicationId string, applicationName string, protocol string, errorCode string, errorMessage string, requestTimestamp long
-);
-
-define stream ErrorSummaryStream (apiName string, apiVersion string, apiResourceTemplate string, apiMethod string, apiCreator string,
-apiCreatorTenantDomain string, applicationConsumerKey string, applicationName string, applicationOwner string, responseCode int,
-successCount int, faultCount int, throttledCount int, timestamp long);
-
-
+-- Aggregations
 
 -- API details summary(Error details, traffic details)
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "apiMethod:40")
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='72 hours', hours='90 days', days='1 year', months='10 years'))
-define aggregation ApiErrorAnalysisAgg
-from ErrorSummaryStream
-select apiName, apiVersion, apiMethod, apiResourceTemplate, applicationName, applicationOwner, responseCode, ifThenElse((responseCode/100) == 4,1,0) as _4xx,
-ifThenElse((responseCode/100) == 5,1,0) as _5xx, sum(successCount) as successCount, sum(faultCount) as faultCount, sum(throttledCount) as throttledCount,
-apiCreator, apiCreatorTenantDomain
-group by apiName, apiVersion, responseCode, apiResourceTemplate, applicationConsumerKey
-aggregate by timestamp every seconds...years;
-
+define aggregation ApiErroranalysisAgg
 from Request
-select apiName, apiVersion, apiResourceTemplate, apiMethod, apiCreator, apiCreatorTenantDomain, applicationConsumerKey,
-applicationName, applicationOwner, responseCode, 1 as successCount, 0 as faultCount, 0 as throttledCount, requestTimestamp as timestamp
-insert into ErrorSummaryStream;
+select apiName, apiVersion, apiMethod, apiResourceTemplate, responseCode, apiContext, sum(backendLatency) as backendLatency, sum(otherLatency) as otherLatency, sum(responseTime) as responseLatency, count() as totalRequestCount, apiCreator, apiCreatorTenantDomain, applicationName, label
+group by apiName, apiVersion, responseCode, apiResourceTemplate
+aggregate by requestTimestamp every seconds...years;
 
-from ThrottledOutStream
-select apiName, apiVersion, "None" as apiResourceTemplate, "None" as apiMethod, apiCreator, apiCreatorTenantDomain, applicationId as applicationConsumerKey,
-applicationName, subscriber as applicationOwner, 0 as responseCode, 0 as successCount, 0 as faultCount, 1 as throttledCount, throttledOutTimestamp as timestamp
-insert into ErrorSummaryStream;
-
-from FaultStream
-select apiName, apiVersion, apiResourcePath as apiResourceTemplate, apiMethod, apiCreator, apiCreatorTenantDomain, applicationConsumerKey,
-applicationName, 'None' as applicationOwner, 0 as responseCode, 0 as successCount, 1 as faultCount, 0 as throttledCount, requestTimestamp as timestamp
-insert into ErrorSummaryStream;
