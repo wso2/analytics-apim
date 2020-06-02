@@ -1,0 +1,10 @@
+{
+  "config.error.heading": "Configuration Error !",
+  "config.error.body": "Cannot fetch provider configuration for API Error Percentages Widget widget",
+  "widget.heading": "API ERROR PERCENTAGES",
+  "nodata.error.heading": "No Data Available !",
+  "error.percentage.heading": "Total Error Percentage :",
+  "table.heading.api.name": "API NAME",
+  "table.heading.version": "VERSION",
+  "table.heading.error.percentage": "ERROR PERCENTAGE"
+}

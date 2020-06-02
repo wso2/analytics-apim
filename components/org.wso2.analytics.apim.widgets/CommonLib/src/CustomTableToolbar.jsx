@@ -49,11 +49,13 @@ const styles = theme => ({
     },
     actions: {
         marginTop: '10px',
+
     },
     expand: {
         marginLeft: 'auto',
     },
     collapsef: {
+        marginBottom: 30,
         marginRight: 0,
     },
 });

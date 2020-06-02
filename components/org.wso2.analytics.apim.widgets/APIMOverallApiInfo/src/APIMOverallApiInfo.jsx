@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -19,21 +19,21 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { FormattedMessage } from 'react-intl';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import ApiAvailability from './ApiAvailability';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CustomTable from './CustomTable';
 
 /**
- * React Component for Api Availability widget body
+ * Display API Overall Info
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Api Availability widget body
+ * @returns {ReactElement} Render the Api Overall info widget body
  */
-export default function APIMApiAvailability(props) {
+export default function APIMOverallApiInfo(props) {
     const {
-        themeName, height, availableApiData, legendData, inProgress,
+        height, apiInfoData, inProgress, themeName,
     } = props;
     const styles = {
         headingWrapper: {
@@ -47,12 +47,6 @@ export default function APIMApiAvailability(props) {
             letterSpacing: 1.5,
             paddingBottom: '10px',
             marginTop: 0,
-        },
-        subheading: {
-            textAlign: 'center',
-            margin: 5,
-            fontSize: 14,
-            color: '#b5b5b5',
         },
         dataWrapper: {
             height: '75%',
@@ -73,14 +67,19 @@ export default function APIMApiAvailability(props) {
             margin: 'auto',
             display: 'block',
         },
-        inProgress: {
+        loading: {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             height,
         },
+        subheading: {
+            textAlign: 'center',
+            margin: 5,
+            fontSize: 14,
+            color: '#b5b5b5',
+        },
     };
-    const availabilityProps = { availableApiData, legendData };
 
     return (
         <Scrollbars style={{
@@ -89,23 +88,28 @@ export default function APIMApiAvailability(props) {
         }}
         >
             <div style={{
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
                 margin: '10px',
                 padding: '20px',
             }}
             >
                 <div style={styles.headingWrapper}>
-                    <h3  style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='API AVAILABILITY' />
+                    <h3  style={styles.heading}
+                    >
+                        <FormattedMessage id='api.info.heading' defaultMessage='OVERALL API INFO' />
                     </h3>
+                    <p style={styles.subheading}>
+                        <FormattedMessage id='api.info.subheading' defaultMessage='(Last 7 Days)' />
+                    </p>
                 </div>
                 <div>
                     { inProgress ? (
-                        <div style={styles.inProgress}>
+                        <div style={styles.loading}>
                             <CircularProgress style={styles.loadingIcon} />
                         </div>
                     ) : (
                         <div>
-                            { availableApiData.length === 0
+                            { apiInfoData.length === 0
                                 ? (
                                     <div style={styles.dataWrapper}>
                                         <Paper
@@ -129,19 +133,8 @@ export default function APIMApiAvailability(props) {
                                     </div>
                                 ) : (
                                     <div>
-                                        <div style={{
-                                            marginTop: '5%',
-                                        }}
-                                        >
-                                            <ApiAvailability {...availabilityProps} />
-                                            <Typography variant='caption' style={{ color: '#9e9e9e' }}>
-                                                <FormattedMessage
-                                                    id='chart.helper.text'
-                                                    defaultMessage={'Please note that API availability is accurately'
-                                                    + ' shown only when alerts are enabled. If alerts are disabled, '
-                                                    + 'the chart will show as 100% availability.'}
-                                                />
-                                            </Typography>
+                                        <div style={{ marginTop: '2%' }}>
+                                            <CustomTable data={apiInfoData} loadingApiInfo={inProgress} />
                                         </div>
                                     </div>
                                 )
@@ -154,10 +147,10 @@ export default function APIMApiAvailability(props) {
     );
 }
 
-APIMApiAvailability.propTypes = {
-    themeName: PropTypes.string.isRequired,
+APIMOverallApiInfo.propTypes = {
     height: PropTypes.string.isRequired,
+    apiInfoData: PropTypes.instanceOf(Object).isRequired,
+    loadingApiInfo: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
-    availableApiData: PropTypes.instanceOf(Object).isRequired,
-    legendData: PropTypes.instanceOf(Object).isRequired,
+    themeName: PropTypes.string.isRequired,
 };

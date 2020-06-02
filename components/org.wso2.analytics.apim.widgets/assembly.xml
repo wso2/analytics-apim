@@ -177,6 +177,42 @@
         </fileSet>
         <fileSet>
             <directory>APIMPlaceholder/dist</directory>
+              <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMTotalApiTraffic/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMApiErrorPercentages/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMApiAlerts/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMAverageApiLatency/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMOverallApiInfo/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+         <fileSet>
+            <directory>APIMApiErrorAnalysis/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+         <fileSet>
+            <directory>APIMApiResourceTraffic/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMOverallHighestLatency/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMOverallErrorInfo/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>

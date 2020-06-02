@@ -1,0 +1,33 @@
+/*
+    Copyright (c) 2020, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name('APIM_ERROR_SUMMARY')
+@App:description('Do aggregations to the request events and store in the database.')
+
+@source(type='inMemory' , topic='APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+-- Aggregations
+
+-- API details summary(Error details, traffic details)
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "apiMethod:40")
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+define aggregation ApiErroranalysisAgg
+from Request
+select apiName, apiVersion, apiMethod, apiResourceTemplate, responseCode, apiContext, sum(backendLatency) as backendLatency, sum(otherLatency) as otherLatency, sum(responseTime) as responseLatency, count() as totalRequestCount, apiCreator, apiCreatorTenantDomain, applicationName, label
+group by apiName, apiVersion, responseCode, apiResourceTemplate
+aggregate by requestTimestamp every seconds...years;
+

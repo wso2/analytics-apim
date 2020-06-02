@@ -1,0 +1,18 @@
+{
+  "config.error.body": "Cannot fetch provider configuration for APIM Overall Api Info widget",
+  "config.error.heading": "Configuration Error !",
+  "createdBy.label": "API Created By",
+  "nodata.error.body": "No data available for the selected options",
+  "nodata.error.heading": "No Data Available !",
+  "api.info.heading": "OVERALL API INFO",
+  "api.info.subheading": "(Last 7 Days)",
+  "table.heading.apiname": "API NAME",
+  "table.heading.version": "VERSION",
+  "table.heading.resourcetemplate": "RESOURCE TEMPLATE",
+  "table.heading.method": "METHOD",
+  "table.heading.hits": "TOTAL HITS",
+  "table.heading.error4xx": "ERROR 4XX",
+  "table.heading.error5xx": "ERROR 5XX",
+  "table.heading.avglatency": "AVERAGE LATENCY",
+  "sort.label.title": "Sort"
+}
