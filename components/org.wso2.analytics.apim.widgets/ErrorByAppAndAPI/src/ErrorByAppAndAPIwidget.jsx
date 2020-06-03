@@ -1,3 +1,22 @@
+/*
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
+
 import React from 'react';
 import Widget from '@wso2-dashboards/widget';
 import cloneDeep from 'lodash/cloneDeep';
@@ -7,7 +26,7 @@ import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import ErrorsSummaryChart from './ErrorsSummaryChart';
-import {ViewTypeEnum} from "../../AppAndAPIErrorTable/src/Constants";
+import { ViewTypeEnum } from '../../AppAndAPIErrorTable/src/Constants';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -60,7 +79,7 @@ class ErrorByAppAndAPIwidget extends Widget {
             totalApiErrors: null,
             appErrors: [],
             totalAppErrors: null,
-            totalRequestCounts: null,
+            totalRequestCounts: 0,
 
             data4XX: [],
             total4XX: 0,
@@ -240,7 +259,19 @@ class ErrorByAppAndAPIwidget extends Widget {
         if (data.length !== 0) {
             this.setState({ totalRequestCounts }, this.loadAllErrors);
         } else {
-            this.setState({ totalRequestCounts: 1 });
+            this.setState(
+                {
+                    totalRequestCounts: 0,
+                    data4XX: [],
+                    total4XX: 0,
+                    data5XX: [],
+                    total5XX: 0,
+                    dataFaulty: [],
+                    totalFaulty: 0,
+                    dataThrottled: [],
+                    totalThrottled: 0,
+                },
+            );
         }
     }
 
@@ -278,7 +309,7 @@ class ErrorByAppAndAPIwidget extends Widget {
         if (data.length !== 0) {
             this.setState({ total4XX }, this.assemble4xxDataQuery);
         } else {
-            this.setState({ total4XX: 1 });
+            this.setState({ total4XX: 0, data4XX: [] });
         }
     }
 
@@ -300,6 +331,7 @@ class ErrorByAppAndAPIwidget extends Widget {
             '{{to}}': timeTo,
             '{{per}}': perValue,
             '{{querystring}}': '',
+            // '{{querystring}}': 'on _4xx > 0',
             '{{selectPhase}}': selectPhase,
             '{{groupByPhase}}': groupByPhase,
             '{{orderBy}}': 'order by count desc',
@@ -357,7 +389,7 @@ class ErrorByAppAndAPIwidget extends Widget {
         if (data.length !== 0) {
             this.setState({ total5XX }, this.assemble5xxDataQuery);
         } else {
-            this.setState({ total5XX: 1 });
+            this.setState({ total5XX: 0, data5XX: [] });
         }
     }
 
@@ -436,7 +468,7 @@ class ErrorByAppAndAPIwidget extends Widget {
         if (data.length !== 0) {
             this.setState({ totalFaulty }, this.assembleFaultyDataQuery);
         } else {
-            this.setState({ totalFaulty: 1 });
+            this.setState({ totalFaulty: 0, dataFaulty: [] });
         }
     }
 
@@ -505,7 +537,8 @@ class ErrorByAppAndAPIwidget extends Widget {
         };
         // Use this method to subscribe to the endpoint via web socket connection
         super.getWidgetChannelManager()
-            .subscribeWidget(id + '_throttled_total', widgetName, this.handleThrottledTotalDataResults, dataProviderConfigs);
+            .subscribeWidget(id + '_throttled_total', widgetName, this.handleThrottledTotalDataResults,
+                dataProviderConfigs);
     }
 
     handleThrottledTotalDataResults(message) {
@@ -515,7 +548,7 @@ class ErrorByAppAndAPIwidget extends Widget {
         if (data.length !== 0) {
             this.setState({ totalThrottled }, this.assembleThrottledDataQuery);
         } else {
-            this.setState({ totalThrottled: 1 });
+            this.setState({ totalThrottled: 0, dataThrottled: [] });
         }
     }
 

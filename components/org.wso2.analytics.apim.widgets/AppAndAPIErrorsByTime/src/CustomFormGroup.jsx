@@ -27,7 +27,6 @@ import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
-import { ViewTypeEnum, DrillDownEnum } from './Constants';
 
 const styles = theme => ({
     table: {
@@ -46,7 +45,7 @@ const styles = theme => ({
 
 function CustomFormGroup(props) {
     const {
-        classes, viewType, drillDownType, selectedApp, selectedAPI, selectedVersion, selectedResource, apiList, appList,
+        classes, selectedApp, selectedAPI, selectedVersion, selectedResource, apiList, appList,
         versionList, operationList, selectedLimit,
         handleApplicationChange, handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
@@ -54,22 +53,20 @@ function CustomFormGroup(props) {
     return (
         <div component={Paper}>
             <div>
-                { viewType === ViewTypeEnum.APP ? (
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id='demo-simple-select-label'>Application</InputLabel>
-                        <Select
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
-                            value={selectedApp}
-                            onChange={handleApplicationChange}
-                        >
-                            <MenuItem value={-1}>All</MenuItem>
-                            {appList.map((row, i) => (
-                                <MenuItem value={i}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                ) : '' }
+                <FormControl className={classes.formControl}>
+                    <InputLabel id='demo-simple-select-label'>Application</InputLabel>
+                    <Select
+                        labelId='demo-simple-select-label'
+                        id='demo-simple-select'
+                        value={selectedApp}
+                        onChange={handleApplicationChange}
+                    >
+                        <MenuItem value={-1}>All</MenuItem>
+                        {appList.map((row, i) => (
+                            <MenuItem value={i}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
 
                 <FormControl className={classes.formControl}>
                     <InputLabel id='demo-simple-select-label'>API Name</InputLabel>
@@ -85,43 +82,36 @@ function CustomFormGroup(props) {
                         ))}
                     </Select>
                 </FormControl>
-
-                { drillDownType === DrillDownEnum.VERSION || drillDownType === DrillDownEnum.RESOURCE ? (
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id='demo-simple-select-label'>API Version</InputLabel>
-                        <Select
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
-                            value={selectedVersion}
-                            onChange={handleVersionChange}
-                            disabled={versionList && versionList.length === 0}
-                        >
-                            <MenuItem value={-1}>All</MenuItem>
-                            {versionList.map((row, i) => (
-                                <MenuItem value={i}>{row[1]}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                ) : '' }
-
-                { drillDownType === DrillDownEnum.RESOURCE ? (
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
-                        <Select
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
-                            value={selectedResource}
-                            onChange={handleOperationChange}
-                            disabled={operationList && operationList.length === 0}
-                        >
-                            <MenuItem value={-1}>All</MenuItem>
-                            {operationList.map((row, i) => (
-                                <MenuItem value={i}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                ) : '' }
-
+                <FormControl className={classes.formControl}>
+                    <InputLabel id='demo-simple-select-label'>API Version</InputLabel>
+                    <Select
+                        labelId='demo-simple-select-label'
+                        id='demo-simple-select'
+                        value={selectedVersion}
+                        onChange={handleVersionChange}
+                        disabled={versionList && versionList.length === 0}
+                    >
+                        <MenuItem value={-1}>All</MenuItem>
+                        {versionList.map((row, i) => (
+                            <MenuItem value={i}>{row[1]}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
+                    <Select
+                        labelId='demo-simple-select-label'
+                        id='demo-simple-select'
+                        value={selectedResource}
+                        onChange={handleOperationChange}
+                        disabled={operationList && operationList.length === 0}
+                    >
+                        <MenuItem value={-1}>All</MenuItem>
+                        {operationList.map((row, i) => (
+                            <MenuItem value={i}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 <FormControl className={classes.formControl}>
                     <TextField
                         id='limit-number'
@@ -141,6 +131,12 @@ function CustomFormGroup(props) {
 
 CustomFormGroup.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
+};
+
+export default withStyles(styles)(CustomFormGroup);
+
+CustomFormGroup.propTypes = {
+    classes: PropTypes.func.isRequired,
     handleApplicationChange: PropTypes.func.isRequired,
     handleAPIChange: PropTypes.func.isRequired,
     handleVersionChange: PropTypes.func.isRequired,
@@ -155,8 +151,4 @@ CustomFormGroup.propTypes = {
     appList: PropTypes.instanceOf(Object).isRequired,
     versionList: PropTypes.instanceOf(Object).isRequired,
     operationList: PropTypes.instanceOf(Object).isRequired,
-    viewType: PropTypes.string.isRequired,
-    drillDownType: PropTypes.string.isRequired,
 };
-
-export default withStyles(styles)(CustomFormGroup);

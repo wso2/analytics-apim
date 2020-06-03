@@ -26,17 +26,11 @@ import Axios from 'axios';
 import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
-import FormControl from '@material-ui/core/FormControl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { ViewTypeEnum, ValueFormatType, DrillDownEnum } from './Constants';
+import { ViewTypeEnum, ValueFormatType, DrillDownEnum } from '../../AppAndAPIErrorTable/src/Constants';
 import APIViewErrorTable from './APIViewErrorTable';
-import VersionViewErrorTable from './VersionViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
-import ResourceViewErrorTable from './ResourceViewErrorTable';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -96,15 +90,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for AppAndAPIErrorTable
- * @class AppAndAPIErrorTablewidget
+ * Create React Component for AppAndAPIErrorsByTime
+ * @class AppAndAPIErrorsByTimeWidget
  * @extends {Widget}
  */
-class AppAndAPIErrorTablewidget extends Widget {
+class AppAndAPIErrorsByTimeWidget extends Widget {
     /**
-     * Creates an instance of AppAndAPIErrorTablewidget.
+     * Creates an instance of AppAndAPIErrorsByTimeWidget.
      * @param {any} props @inheritDoc
-     * @memberof AppAndAPIErrorTablewidget
+     * @memberof AppAndAPIErrorsByTimeWidget
      */
     constructor(props) {
         super(props);
@@ -178,13 +172,8 @@ class AppAndAPIErrorTablewidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.handleQueryResults = this.handleQueryResults.bind(this);
         this.assembleFetchDataQuery = this.assembleFetchDataQuery.bind(this);
-        this.handleViewChange = this.handleViewChange.bind(this);
-        this.handleDrillDownChange = this.handleDrillDownChange.bind(this);
-        this.handleValueFormatTypeChange = this.handleValueFormatTypeChange.bind(this);
 
         this.getQueryForAPI = this.getQueryForAPI.bind(this);
-        this.getQueryForVersion = this.getQueryForVersion.bind(this);
-        this.getQueryForResource = this.getQueryForResource.bind(this);
 
         this.loadApis = this.loadApis.bind(this);
         this.loadApps = this.loadApps.bind(this);
@@ -242,13 +231,13 @@ class AppAndAPIErrorTablewidget extends Widget {
     /**
       * Load locale file
       * @param {string} locale Locale name
-      * @memberof AppAndAPIErrorTablewidget
+      * @memberof AppAndAPIErrorsByTimeWidget
       * @returns {string}
       */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/AppAndAPIErrorTable/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/AppAndAPIErrorsByTime/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -262,7 +251,7 @@ class AppAndAPIErrorTablewidget extends Widget {
     /**
      * Retrieve params from publisher
      * @param {string} receivedMsg Received data from publisher
-     * @memberof AppAndAPIErrorTablewidget
+     * @memberof AppAndAPIErrorsByTimeWidget
      * */
     handlePublisherParameters(receivedMsg) {
         this.setState({
@@ -286,11 +275,8 @@ class AppAndAPIErrorTablewidget extends Widget {
     }
 
     loadApis() {
-        const { viewType } = this.state;
         this.loadingDrillDownData();
-        if (viewType === ViewTypeEnum.APP) {
-            this.loadApps();
-        }
+        this.loadApps();
 
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
@@ -366,9 +352,9 @@ class AppAndAPIErrorTablewidget extends Widget {
             '{{per}}': perValue,
             '{{limit}}': selectedLimit,
             '{{selectPhase}}': selectPhase.join(','),
-            '{{groupByPhase}}': groupByPhase.join(','),
+            '{{groupByPhase}}': 'group by ' + groupByPhase.join(','),
             '{{querystring}}': filterPhase.length > 0 ? 'on ' + filterPhase.join(' AND ') : '',
-            '{{orderBy}}': '',
+            '{{orderBy}}': 'order by AGG_TIMESTAMP asc',
         };
         // Use this method to subscribe to the endpoint via web socket connection
         super.getWidgetChannelManager()
@@ -378,7 +364,7 @@ class AppAndAPIErrorTablewidget extends Widget {
     /**
      * Formats data retrieved
      * @param {object} message - data retrieved
-     * @memberof AppAndAPIErrorTablewidget
+     * @memberof AppAndAPIErrorsByTimeWidget
      * */
     handleQueryResults(message) {
         // Insert the code to handle the data received through query
@@ -400,50 +386,14 @@ class AppAndAPIErrorTablewidget extends Widget {
     // end data query functions
 
 
-    // start handling table data type
-    handleViewChange(event) {
-        this.setState({ viewType: event.target.value }, this.loadingDrillDownData);
-        if (event.target.value === ViewTypeEnum.APP) {
-            this.loadApps();
-        }
-    }
-
-    handleValueFormatTypeChange(event) {
-        this.setState({ valueFormatType: event.target.value });
-    }
-
-    handleDrillDownChange(event) {
-        this.setState(
-            {
-                drillDownType: event.target.value,
-                data: [],
-                selectedApp: -1,
-                selectedAPI: -1,
-                selectedVersion: -1,
-                selectedResource: -1,
-                versionList: [],
-                operationList: [],
-            }, this.loadingDrillDownData,
-        );
-    }
-    // end handling table data type
-
-
     // start table data type query constructor
     loadingDrillDownData() {
-        const { drillDownType } = this.state;
-        if (drillDownType === DrillDownEnum.API) {
-            this.getQueryForAPI();
-        } else if (drillDownType === DrillDownEnum.VERSION) {
-            this.getQueryForVersion();
-        } else if (drillDownType === DrillDownEnum.RESOURCE) {
-            this.getQueryForResource();
-        }
+        this.getQueryForAPI();
     }
 
     getQueryForAPI() {
         const {
-            selectedAPI, selectedApp, viewType, appList,
+            selectedAPI, selectedApp, selectedVersion, selectedResource, versionList, operationList, appList,
         } = this.state;
         const selectPhase = [];
         const groupByPhase = [];
@@ -451,87 +401,10 @@ class AppAndAPIErrorTablewidget extends Widget {
 
         if (selectedAPI !== -1) {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
-        }
-        if (selectedApp !== -1) {
-            const appName = appList[selectedApp][0];
-            const appOwner = appList[selectedApp][1];
-            filterPhase.push('applicationName==\'' + appName + '\'');
-            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
-        }
-
-        if (viewType === ViewTypeEnum.APP) {
-            selectPhase.push('applicationName', 'applicationOwner');
-            groupByPhase.push('applicationName', 'applicationOwner');
-        }
-        selectPhase.push('apiName', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
-            'sum(successCount) as successCount',
-            'sum(faultCount) as faultCount', 'sum(throttledCount) as throttledCount');
-        groupByPhase.push('apiName');
-        this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
-    }
-
-    getQueryForVersion() {
-        const {
-            selectedAPI, selectedApp, selectedVersion, viewType, versionList, appList,
-        } = this.state;
-
-        const selectPhase = [];
-        const groupByPhase = [];
-        const filterPhase = [];
-
-        if (selectedAPI !== -1) {
-            filterPhase.push('apiName==\'' + selectedAPI + '\'');
-        } else {
-            return;
         }
         if (selectedVersion !== -1) {
             const ver = versionList[selectedVersion][1];
             filterPhase.push('apiVersion==\'' + ver + '\'');
-        }
-
-        if (selectedApp !== -1) {
-            const appName = appList[selectedApp][0];
-            const appOwner = appList[selectedApp][1];
-            filterPhase.push('applicationName==\'' + appName + '\'');
-            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
-        }
-
-        if (viewType === ViewTypeEnum.APP) {
-            selectPhase.push('applicationName', 'applicationOwner');
-            groupByPhase.push('applicationName', 'applicationOwner');
-        }
-        selectPhase.push('apiVersion', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
-            'sum(successCount) as successCount',
-            'sum(faultCount) as faultCount', 'sum(throttledCount) as throttledCount');
-        groupByPhase.push('apiVersion');
-        this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
-    }
-
-    getQueryForResource() {
-        const {
-            selectedAPI, selectedApp, selectedVersion, selectedResource, viewType, versionList, operationList, appList,
-        } = this.state;
-
-        const selectPhase = [];
-        const groupByPhase = [];
-        const filterPhase = [];
-
-        if (selectedApp !== -1) {
-            const appName = appList[selectedApp][0];
-            const appOwner = appList[selectedApp][1];
-            filterPhase.push('applicationName==\'' + appName + '\'');
-            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
-        }
-        if (selectedAPI !== -1) {
-            filterPhase.push('apiName==\'' + selectedAPI + '\'');
-        } else {
-            return;
-        }
-        if (selectedVersion > -1) {
-            const ver = versionList[selectedVersion][1];
-            filterPhase.push('apiVersion==\'' + ver + '\'');
-        } else {
-            return;
         }
         if (selectedResource > -1) {
             const template = operationList[selectedResource][0];
@@ -539,15 +412,17 @@ class AppAndAPIErrorTablewidget extends Widget {
             filterPhase.push('apiResourceTemplate==\'' + template + '\'');
             filterPhase.push('apiMethod==\'' + verb + '\'');
         }
-
-        if (viewType === ViewTypeEnum.APP) {
-            selectPhase.push('applicationName', 'applicationOwner');
-            groupByPhase.push('applicationName', 'applicationOwner');
+        if (selectedApp !== -1) {
+            const appName = appList[selectedApp][0];
+            const appOwner = appList[selectedApp][1];
+            filterPhase.push('applicationName==\'' + appName + '\'');
+            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
         }
-        selectPhase.push('apiResourceTemplate', 'apiMethod', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
+
+        selectPhase.push('AGG_TIMESTAMP', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
             'sum(successCount) as successCount',
             'sum(faultCount) as faultCount', 'sum(throttledCount) as throttledCount');
-        groupByPhase.push('apiResourceTemplate', 'apiMethod');
+        groupByPhase.push('AGG_TIMESTAMP');
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
     }
 
@@ -561,21 +436,14 @@ class AppAndAPIErrorTablewidget extends Widget {
 
     handleAPIChange(event) {
         this.setState({ selectedAPI: event.target.value }, this.loadingDrillDownData);
-        const { drillDownType } = this.state;
-
-        if (drillDownType === DrillDownEnum.VERSION || drillDownType === DrillDownEnum.RESOURCE) {
-            this.loadVersions(event.target.value);
-        }
+        this.loadVersions(event.target.value);
     }
 
     handleVersionChange(event) {
         this.setState({ selectedVersion: event.target.value }, this.loadingDrillDownData);
-        const { drillDownType } = this.state;
-        if (drillDownType === DrillDownEnum.RESOURCE && event.target.value >= 0) {
-            const { versionList } = this.state;
-            const api = versionList[event.target.value];
-            this.loadOperations(api[0]);
-        }
+        const { versionList } = this.state;
+        const api = versionList[event.target.value];
+        this.loadOperations(api[0]);
     }
 
     handleOperationChange(event) {
@@ -589,21 +457,13 @@ class AppAndAPIErrorTablewidget extends Widget {
     // end of handle filter change
 
     renderDrillDownTable(props) {
-        const { drillDownType } = props;
-        if (drillDownType === DrillDownEnum.API) {
-            return (<APIViewErrorTable {...props} />);
-        } else if (drillDownType === DrillDownEnum.VERSION) {
-            return (<VersionViewErrorTable {...props} />);
-        } else if (drillDownType === DrillDownEnum.RESOURCE) {
-            return (<ResourceViewErrorTable {...props} />);
-        }
-        return '';
+        return (<APIViewErrorTable {...props} />);
     }
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the AppAndAPIErrorTablewidget
-     * @memberof AppAndAPIErrorTablewidget
+     * @returns {ReactElement} Render the AppAndAPIErrorsByTimeWidget
+     * @memberof AppAndAPIErrorsByTimeWidget
      */
     render() {
         const {
@@ -630,55 +490,6 @@ class AppAndAPIErrorTablewidget extends Widget {
                                     defaultMessage='SAMPLE HEADING'
                                 />
                             </h3>
-                            <FormControl component='fieldset'>
-                                <RadioGroup
-                                    row
-                                    aria-label='viewType'
-                                    name='view'
-                                    value={viewType}
-                                    onChange={this.handleViewChange}
-                                >
-                                    <FormControlLabel
-                                        value={ViewTypeEnum.APP}
-                                        control={<Radio />}
-                                        label='Application and API View'
-                                    />
-                                    <FormControlLabel value={ViewTypeEnum.API} control={<Radio />} label='API View' />
-                                </RadioGroup>
-                                <RadioGroup
-                                    row
-                                    aria-label='gender'
-                                    name='gender1'
-                                    value={valueFormatType}
-                                    onChange={this.handleValueFormatTypeChange}
-                                >
-                                    <FormControlLabel value={ValueFormatType.COUNT} control={<Radio />} label='Count' />
-                                    <FormControlLabel
-                                        value={ValueFormatType.PERCENT}
-                                        control={<Radio />}
-                                        label='Percentage'
-                                    />
-                                </RadioGroup>
-                                <RadioGroup
-                                    row
-                                    aria-label='gender'
-                                    name='gender1'
-                                    value={drillDownType}
-                                    onChange={this.handleDrillDownChange}
-                                >
-                                    <FormControlLabel value={DrillDownEnum.API} control={<Radio />} label='API' />
-                                    <FormControlLabel
-                                        value={DrillDownEnum.VERSION}
-                                        control={<Radio />}
-                                        label='Version'
-                                    />
-                                    <FormControlLabel
-                                        value={DrillDownEnum.RESOURCE}
-                                        control={<Radio />}
-                                        label='Resource'
-                                    />
-                                </RadioGroup>
-                            </FormControl>
                             <CustomFormGroup
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
@@ -724,4 +535,4 @@ class AppAndAPIErrorTablewidget extends Widget {
 }
 
 // Use this method to register the react component as a widget in the dashboard.
-global.dashboard.registerWidget('AppAndAPIErrorTable', AppAndAPIErrorTablewidget);
+global.dashboard.registerWidget('AppAndAPIErrorsByTime', AppAndAPIErrorsByTimeWidget);

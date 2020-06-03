@@ -52,7 +52,8 @@
     "ApiFaultAnalytics",
     "DimensionSelector",
     "AppAndAPIErrorTable",
-    "ErrorByAppAndAPI"
+    "ErrorByAppAndAPI",
+    "AppAndAPIErrorsByTime"
   ],
   "version": "1.0.0"
 }

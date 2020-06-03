@@ -1,3 +1,22 @@
+/*
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
+
 import React from 'react';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -5,13 +24,13 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
 import SummaryPieChart from './SummaryPieChart';
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import {ViewTypeEnum} from "../../AppAndAPIErrorTable/src/Constants";
-import FormControl from "@material-ui/core/FormControl";
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import {ViewTypeEnum} from '../../AppAndAPIErrorTable/src/Constants';
+import FormControl from '@material-ui/core/FormControl';
 import Radio from '@material-ui/core/Radio';
-import TextField from "@material-ui/core/TextField";
-import {FormattedMessage} from "react-intl";
+import TextField from '@material-ui/core/TextField';
+import {FormattedMessage} from 'react-intl';
 import {withStyles} from '@material-ui/core/styles';
 
 const classes = {
@@ -114,20 +133,16 @@ function ErrorsSummaryChart(props) {
                             </RadioGroup>
                         </FormControl>
                         <FormControl className={classes.formControl}>
-                            <form style={styles.form} noValidate autoComplete='off'>
-                                <TextField
-                                    id='limit-number'
-                                    label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
-                                    value={selectedLimit}
-                                    onChange={handleLimitChange}
-                                    type='number'
-                                    // style={styles.formControl}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    margin='normal'
-                                />
-                            </form>
+                            <TextField
+                                id='limit-number'
+                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                value={selectedLimit}
+                                onChange={handleLimitChange}
+                                type='number'
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
                         </FormControl>
                     </TableRow>
                     <TableRow>

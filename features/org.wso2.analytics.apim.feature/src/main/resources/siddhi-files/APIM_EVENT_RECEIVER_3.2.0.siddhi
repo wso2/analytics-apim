@@ -14,11 +14,11 @@
     limitations under the License.
 */
 
-@App:name("APIM_EVENT_RECEIVER_3.1.0")
-@App:description("Receive the 3.1.0 streams and passes it for in-memory sinks.")
+@App:name("APIM_EVENT_RECEIVER_3.2.0")
+@App:description("Receive the 3.2.0 streams and passes it for in-memory sinks.")
 
-@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.1.0', @map(type = 'wso2event'))
-@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.1.0', @map(type = 'wso2event'))
+@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.2.0', @map(type = 'wso2event'))
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.request:3.2.0', @map(type = 'wso2event'))
 define stream InComingRequestStream (meta_clientType string,
     applicationConsumerKey string,
     applicationName string,
@@ -59,8 +59,8 @@ define stream InComingRequestStream (meta_clientType string,
     properties string
 );
 
-@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.1.0', @map(type = 'wso2event'))
-@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.1.0',
+@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.2.0', @map(type = 'wso2event'))
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.throttle:3.2.0',
 	@map(type = 'wso2event'))
 define stream InComingThrottledOutStream(
     meta_clientType string,
@@ -71,6 +71,8 @@ define stream InComingThrottledOutStream(
     apiContext string,
     apiCreator string,
     apiCreatorTenantDomain string,
+    apiResourceTemplate string,
+    apiMethod string,
     applicationId string,
     applicationName string,
     subscriber string,
@@ -81,8 +83,8 @@ define stream InComingThrottledOutStream(
     properties string
 );
 
-@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.1.0', @map(type = 'wso2event'))
-@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.1.0',
+@source(type = 'mgwfile', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.2.0', @map(type = 'wso2event'))
+@source(type = 'wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.fault:3.2.0',
 	@map(type = 'wso2event'))
 define stream InComingFaultStream(
     meta_clientType string,
@@ -91,6 +93,7 @@ define stream InComingFaultStream(
     apiVersion string,
     apiContext string,
     apiResourcePath string,
+    apiResourceTemplate string,
     apiMethod string,
     apiCreator string,
     username string,
@@ -99,6 +102,7 @@ define stream InComingFaultStream(
     hostname string,
     applicationId string,
     applicationName string,
+    applicationOwner string,
     protocol string,
     errorCode string,
     errorMessage string,
@@ -206,13 +210,13 @@ insert into Request;
 -- Truncating Throttled event stream attributes
 from InComingThrottledOutStream
 select meta_clientType, username, userTenantDomain, apiName, apiVersion, apiContext, ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150),
- apiCreator) as  apiCreator, apiCreatorTenantDomain, "None" as apiResourceTemplate, "None" as apiMethod, applicationId, applicationName, subscriber,
+ apiCreator) as  apiCreator, apiCreatorTenantDomain, apiResourceTemplate, apiMethod, applicationId, applicationName, subscriber,
  ifThenElse(str:length(throttledOutReason) > 30, str:substr(throttledOutReason,0,30), throttledOutReason) as  throttledOutReason,
  gatewayType, throttledOutTimestamp, ifThenElse(str:length(hostname)>200, str:substr(hostname,0,200), hostname) as hostname
 insert into ThrottledOutStream;
 
 -- Truncating Fault event stream attributes
 from InComingFaultStream
-select meta_clientType, applicationConsumerKey, apiName, apiVersion, apiContext, apiResourcePath, "None" as apiResourceTemplate, apiMethod, apiCreator, username,
-userTenantDomain, apiCreatorTenantDomain, hostname, applicationId, applicationName, "None" as applicationOwner, protocol, errorCode, errorMessage, requestTimestamp
+select meta_clientType, applicationConsumerKey, apiName, apiVersion, apiContext, apiResourcePath, apiResourceTemplate, apiMethod, apiCreator, username,
+userTenantDomain, apiCreatorTenantDomain, hostname, applicationId, applicationName, applicationOwner, protocol, errorCode, errorMessage, requestTimestamp
 insert into FaultStream;

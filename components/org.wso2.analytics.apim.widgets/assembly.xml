@@ -235,5 +235,9 @@
             <directory>ErrorByAppAndAPI/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>AppAndAPIErrorsByTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>
