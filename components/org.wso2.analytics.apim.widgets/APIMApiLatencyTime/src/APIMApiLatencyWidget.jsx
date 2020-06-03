@@ -263,28 +263,24 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     assembleApiIdQuery() {
+        console.log('assembleApiIdQuery')
         const {
             providerConfig, dimension, selectedOptions, timeFrom,
         } = this.state;
-        if (dimension && timeFrom) {
-            if (selectedOptions && selectedOptions.length > 0) {
-                const { id, widgetID: widgetName } = this.props;
-
-                const apiCondition = '(API_NAME==\'' + selectedOptions[0].name + '\' AND API_VERSION==\''
-                    + selectedOptions[0].version + '\' AND API_PROVIDER==\'' + selectedOptions[0].provider + '\')';
-                const dataProviderConfigs = cloneDeep(providerConfig);
-                dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
-                dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{apiCondition}}': apiCondition,
-                };
-                super.getWidgetChannelManager()
-                    .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
-            } else {
-                this.setState({
-                    inProgress: false, latencyData: [],
-                });
-            }
+        let apiCondition = '';
+        if (selectedOptions && selectedOptions.length > 0) {
+            apiCondition = '(API_NAME==\'' + selectedOptions[0].name + '\' AND API_VERSION==\''
+                + selectedOptions[0].version + '\' AND API_PROVIDER==\'' + selectedOptions[0].provider + '\')';
         }
+        const { id, widgetID: widgetName } = this.props;
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{apiCondition}}': apiCondition === '' ? '' : 'on' + apiCondition,
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
+        console.log(291);
     }
 
     /**
@@ -294,7 +290,7 @@ class APIMApiLatencyWidget extends Widget {
      * */
     handleApiIdReceived(message) {
         const { data } = message;
-
+        console.log(data);
         if (data && data.length > 0) {
             this.setState({ apiId: data[0][0] }, this.assembleResourceQuery);
         } else {
@@ -330,6 +326,7 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     handleResourceReceived(message) {
+        console.log('handleResourceReceived')
         const { data } = message;
         const { operationSelected, resourceSelected } = this.state;
 
@@ -361,6 +358,7 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     assembleMainQuery() {
+        console.log('assembleMainQuery')
         const {
             providerConfig, timeFrom, timeTo, perValue, operationSelected, resourceSelected, selectedOptions,
         } = this.state;
@@ -423,6 +421,7 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     handleDataReceived(message) {
+        console.log('handleDataReceived', message);
         const { data } = message;
 
         if (data) {

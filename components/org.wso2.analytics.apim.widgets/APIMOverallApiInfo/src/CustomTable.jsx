@@ -219,17 +219,8 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
-            <MenuItem value='version'>
-                <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
-            </MenuItem>,
-            <MenuItem value='resourcetemplate'>
-                <FormattedMessage id='table.heading.resource.template' defaultMessage='RESOURCE TEMPLATE' />
-            </MenuItem>,
-            <MenuItem value='method'>
-                <FormattedMessage id='table.heading.method' defaultMessage='METHOD' />
-            </MenuItem>,
             <MenuItem value='hits'>
-                <FormattedMessage id='table.heading.total.hits' defaultMessage='TOTAL HITS' />
+                <FormattedMessage id='table.heading.success' defaultMessage='SUCCESS HITS' />
             </MenuItem>,
             <MenuItem value='error4xx'>
                 <FormattedMessage id='table.heading.error4xx' defaultMessage='ERROR 4XX' />
@@ -237,8 +228,11 @@ class CustomTable extends React.Component {
             <MenuItem value='error5xx'>
                 <FormattedMessage id='table.heading.error5xx' defaultMessage='ERROR 5XX' />
             </MenuItem>,
-            <MenuItem value='avglatency'>
-                <FormattedMessage id='table.heading.average.latency' defaultMessage='AVERAGE LATENCY' />
+            <MenuItem value='errorFaulty'>
+                <FormattedMessage id='table.heading.errorFaulty' defaultMessage='FAULTY HITS' />
+            </MenuItem>,
+            <MenuItem value='errorThrottled'>
+                <FormattedMessage id='table.heading.errorThrottled' defaultMessage='THROTTLED HIT' />
             </MenuItem>,
         ];
         return (
@@ -271,34 +265,29 @@ class CustomTable extends React.Component {
                                             {stableSort(tableData, getSorting(order, orderBy))
                                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                                 .map((n) => {
+                                                    console.log(n);
                                                     return (
                                                         <TableRow
                                                             hover
                                                             tabIndex={-1}
                                                         >
                                                             <TableCell component='th' scope='row'>
-                                                                {n.apiname}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {n.version}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {n.resourcetemplate}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {n.method}
+                                                                {n.apiName}
                                                             </TableCell>
                                                             <TableCell numeric>
-                                                                {n.hits}
+                                                                {n.successCount}
                                                             </TableCell>
                                                             <TableCell numeric>
-                                                                {n.error4xx}
+                                                                {n._4xx}
                                                             </TableCell>
                                                             <TableCell numeric>
-                                                                {n.error5xx}
+                                                                {n._5xx}
                                                             </TableCell>
                                                             <TableCell numeric>
-                                                              {n.avglatency}
+                                                                {n.faultCount}
+                                                            </TableCell>
+                                                            <TableCell numeric>
+                                                                {n.throttledCount}
                                                             </TableCell>
                                                         </TableRow>
                                                     );

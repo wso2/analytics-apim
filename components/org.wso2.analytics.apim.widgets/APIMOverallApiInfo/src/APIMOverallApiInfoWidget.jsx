@@ -198,38 +198,18 @@ class APIMOverallApiInfoWidget extends Widget {
      * @memberof APIMOverallApiInfoWidget
      * */
     handleApiInfoReceived(message) {
-        const { data } = message;
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+        console.log('newData', newData);
         const { id } = this.props;
-        const apiInfoData =[];
-        if (data) {
-            const usageData = [];
-            data.forEach((element, key) => {
-                const avglatency = element[5] / element[4];
-                if (element[6] > 399 && element[6] < 499) {
-                    usageData.push([element[0], element[1], element[2], element[3],element[4], element[4], 0,
-                        parseInt(avglatency, 10)]);
-                } else if (element[6] > 499) {
-                    usageData.push([element[0], element[1], element[2], element[3],element[4], 0, element[4],
-                        parseInt(avglatency, 10)]);
-                } else {
-                    usageData.push([element[0], element[1], element[2], element[3],element[4], 0, 0,
-                        parseInt(avglatency, 10)]);
-                }
-                const api = usageData[key];
-                apiInfoData[key] = {
-                    apiname: api[0],
-                    version: api[1],
-                    resourcetemplate: api[2],
-                    method: api[3],
-                    hits: api[4],
-                    error4xx: api[5],
-                    error5xx: api[6],
-                    avglatency: api[7],
-                }
-            });
-            this.setState({ apiInfoData, inProgress: false });
-            super.getWidgetChannelManager().unsubscribeWidget(id);
-        }
+        this.setState({ apiInfoData: newData, inProgress: false });
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
