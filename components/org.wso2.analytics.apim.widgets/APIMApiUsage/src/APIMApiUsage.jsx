@@ -141,7 +141,7 @@ export default function APIMApiUsage(props) {
                             ) : (
                                 <CustomTable
                                     data={usageData}
-                                    onClickTableRow={e => handleOnClickAPI(e)}
+                                    // onClickTableRow={e => handleOnClickAPI(e)}
                                 />
                             )}
                     </div>
