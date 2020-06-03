@@ -1611,13 +1611,14 @@
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": true,
                                 "headerTitle": "Top Subscriptions per Provider",
-                                "drillDown": "overall-usage"
+                                "drillDown": "dev-stats"
                               }
                             },
                             "widgetID": "APIMTopSubscribers"
@@ -1646,13 +1647,14 @@
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": true,
                                 "headerTitle": "Top Rated APIs",
-                                "drillDown": "api-usage"
+                                "drillDown": "usage-summary"
                               }
                             },
                             "widgetID": "APIMApiRatings"
