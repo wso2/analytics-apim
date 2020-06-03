@@ -67,11 +67,6 @@ export default function OverallFaultAnalytics(props) {
             paddingBottom: '10px',
             marginTop: 0,
         },
-        chartWrapper: {
-            paddingTop: '20px',
-            width: '95%',
-            height: '90%',
-        },
     };
     const chartConfig = {
         x: 'TIME',
@@ -83,6 +78,7 @@ export default function OverallFaultAnalytics(props) {
             },
         ],
         maxLength: 60,
+        height: 400,
         legend: false,
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
@@ -145,13 +141,12 @@ export default function OverallFaultAnalytics(props) {
                                 </Paper>
                             </div>
                         ) : (
-                            <div style={styles.chartWrapper} onClick={handleOnClick} onKeyDown={handleOnClick}>
+                            <div onClick={handleOnClick} onKeyDown={handleOnClick}>
                                 <VizG
                                     config={chartConfig}
                                     metadata={metadata}
                                     data={faultData}
                                     width={width}
-                                    height={height}
                                 />
                             </div>
                         )}

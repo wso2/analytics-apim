@@ -51,12 +51,12 @@ export default function APIMApiUsage(props) {
             padding: '4%',
         },
         formWrapper: {
-            marginBottom: '5%',
+            paddingBottom: 20,
         },
         formControl: {
-            marginLeft: '5%',
-            marginTop: '5%',
-            minWidth: 120,
+            marginLeft: 10,
+            marginTop: 10,
+            width: '10%',
         },
         loadingIcon: {
             margin: 'auto',

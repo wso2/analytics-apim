@@ -51,10 +51,7 @@ export default function ApiUsageOverTime(props) {
         },
         chartWrapper: {
             width: '95%',
-        },
-        tableWrapper: {
-            height: '30%',
-            margin: 'auto',
+            paddingTop: '10px',
         },
         loadingIcon: {
             margin: 'auto',

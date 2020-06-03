@@ -40,11 +40,6 @@ export default function Top10ThrottledApisOverTime(props) {
             margin: 'auto',
             width: '95%',
         },
-        chartWrapper: {
-            width: '95%',
-            height: '90%',
-            paddingTop: '20px',
-        },
         paperWrapper: {
             height: '75%',
             width: '95%',
@@ -79,6 +74,7 @@ export default function Top10ThrottledApisOverTime(props) {
         interactiveLegend: true,
         legend: true,
         maxLength: 60,
+        height: 400,
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
         style: {
@@ -149,13 +145,12 @@ export default function Top10ThrottledApisOverTime(props) {
                                 </Paper>
                             </div>
                         ) : (
-                            <div style={styles.chartWrapper}>
+                            <div>
                                 <VizG
                                     config={chartConfig}
                                     metadata={metadata}
                                     data={throttleData}
                                     width={width}
-                                    height={height}
                                     onClick={data => handleOnClickAPI(data)}
                                 />
                             </div>

@@ -49,14 +49,6 @@ export default function Top10ApiPerformanceOverTime(props) {
             background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
         },
-        chartWrapper: {
-            width: '95%',
-            height: '90%',
-        },
-        tableWrapper: {
-            height: '30%',
-            margin: 'auto',
-        },
         loadingIcon: {
             margin: 'auto',
             display: 'block',
@@ -77,9 +69,10 @@ export default function Top10ApiPerformanceOverTime(props) {
         },
     };
     const chartConfig = {
-        x: 'REQUEST_TIME',
+        x: 'TIME',
         charts: [],
         maxLength: 60,
+        height: 400,
         interactiveLegend: true,
         legend: true,
         timeFormat: '%d-%b-%y %H:%M',
@@ -100,7 +93,7 @@ export default function Top10ApiPerformanceOverTime(props) {
 
     if (latencyData) {
         metadata.names = apiList.map((dataUnit) => { return dataUnit; });
-        metadata.names.push('REQUEST_TIME');
+        metadata.names.push('TIME');
         metadata.types = apiList.map(() => { return 'linear'; });
         metadata.types.push('time');
         chartConfig.charts = apiList.map((dataUnit) => { return { type: 'line', y: dataUnit }; });
@@ -151,13 +144,12 @@ export default function Top10ApiPerformanceOverTime(props) {
                                     </Paper>
                                 </div>
                             ) : (
-                                <div style={styles.chartWrapper}>
+                                <div>
                                     <VizG
                                         config={chartConfig}
                                         metadata={metadata}
                                         data={latencyData}
                                         width={width}
-                                        height={height}
                                         theme={themeName}
                                         onClick={data => handleOnClickAPI(data)}
                                     />
