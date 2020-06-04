@@ -239,5 +239,13 @@
             <directory>AppAndAPIErrorsByTime/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>APIMAlertSummary/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMAlertSummaryByAPIs/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>

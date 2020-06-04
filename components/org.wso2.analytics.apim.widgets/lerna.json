@@ -53,7 +53,10 @@
     "DimensionSelector",
     "AppAndAPIErrorTable",
     "ErrorByAppAndAPI",
-    "AppAndAPIErrorsByTime"
+    "AppAndAPIErrorsByTime",
+    "APIMAlertSummary",
+    "APIMAlertSummaryByAPIs"
+
   ],
   "version": "1.0.0"
 }
