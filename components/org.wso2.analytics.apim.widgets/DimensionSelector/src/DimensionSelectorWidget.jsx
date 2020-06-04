@@ -158,6 +158,10 @@ class DimensionSelectorWidget extends Widget {
             button: {
                 minHeight: '55px',
             },
+            helperText: {
+                color: '#9e9e9e',
+                margin: 'auto',
+            },
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -603,7 +607,9 @@ class DimensionSelectorWidget extends Widget {
      * @memberof DimensionSelectorWidget
      * */
     handleChangeSelection(value) {
-        const { apis, dimension, isManager, selectAll } = this.state;
+        const {
+            apis, dimension, isManager, selectAll,
+        } = this.state;
         const filteredValues = isManager && selectAll ? this.filterSelectionChange(value) : value;
 
         this.setState({ selectedOptions: filteredValues });
@@ -674,9 +680,8 @@ class DimensionSelectorWidget extends Widget {
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading, proxyPaper, proxyPaperWrapper, root, search,
-            dimensionButton,
+            dimensionButton, button, helperText,
         } = this.styles;
-        const { button } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         button.color = muiTheme.palette.textColor;
@@ -833,6 +838,17 @@ class DimensionSelectorWidget extends Widget {
                                             />
                                         </Tooltip>
                                     </div>
+                                    {
+                                        dimension === 'api' && (
+                                            <Typography variant='caption' style={helperText}>
+                                                <FormattedMessage
+                                                    id='dimension.api.helper'
+                                                    defaultMessage={'APIs are listed in the format \'API_Name'
+                                                    + ' :: API_Version (API_Provider)\''}
+                                                />
+                                            </Typography>
+                                        )
+                                    }
                                 </div>
                             </Scrollbars>
                         )
