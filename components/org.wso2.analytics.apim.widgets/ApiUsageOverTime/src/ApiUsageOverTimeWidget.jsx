@@ -246,13 +246,13 @@ class ApiUsageOverTimeWidget extends Widget {
         if (data && data.length > 0) {
             const apiList = selectedOptions
                 .sort((a, b) => { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); })
-                .map((api) => { return api.name + ' (' + api.provider + ') :: ' + api.version; });
+                .map((api) => { return api.name + ' :: ' + api.version + ' (' + api.provider + ')'; });
             const dataGroupByTime = data.reduce((acc, obj) => {
                 const key = obj[4];
                 if (!acc[key]) {
                     acc[key] = [];
                 }
-                acc[key].push({ apiname: obj[0] + ' (' + obj[1] + ') :: ' + obj[3], hits: obj[2] });
+                acc[key].push({ apiname: obj[0] + ' :: ' + obj[3] + ' (' + obj[1] + ')', hits: obj[2] });
                 return acc;
             }, {});
             const usageData = Object.keys(dataGroupByTime).map((key) => {
