@@ -174,7 +174,7 @@ class Top10ThrottledApisOverTimeWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{timeFrom}}': Moment().subtract(1, 'months').toDate().getTime(),
+            '{{timeFrom}}': Moment().subtract(30, 'days').toDate().getTime(),
             '{{timeTo}}': new Date().getTime(),
         };
         super.getWidgetChannelManager()
@@ -218,7 +218,7 @@ class Top10ThrottledApisOverTimeWidget extends Widget {
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'throttlequery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': Moment().subtract(1, 'months').toDate().getTime(),
+                '{{timeFrom}}': Moment().subtract(30, 'days').toDate().getTime(),
                 '{{timeTo}}': new Date().getTime(),
                 '{{filterCondition}}': filterCondition,
             };

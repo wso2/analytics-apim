@@ -3,5 +3,5 @@
   "nodata.error.heading": "No Data Available !",
   "config.error.body": "Cannot fetch provider configuration for Overall Fault Analytics widget",
   "config.error.heading": "Configuration Error !",
-  "widget.heading": "OVERALL FAULTY REQUESTS OVER TIME"
+  "widget.heading": "ERRORS DURING PAST 30 DAYS"
 }

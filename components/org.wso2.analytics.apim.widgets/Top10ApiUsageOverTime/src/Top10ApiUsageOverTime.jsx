@@ -117,7 +117,7 @@ export default function Top10ApiUsageOverTime(props) {
             >
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='TOP 10 API USAGE FOR MONTH' />
+                        <FormattedMessage id='widget.heading' defaultMessage='TOP 10 API USAGE DURING PAST 30 DAYS' />
                     </div>
                 </div>
                 {inProgress ? (

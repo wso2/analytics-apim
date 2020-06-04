@@ -124,7 +124,7 @@ export default function ApiFaultAnalytics(props) {
             >
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='API FAULTY REQUESTS OVER TIME' />
+                        <FormattedMessage id='widget.heading' defaultMessage='API ERRORS OVER TIME' />
                     </div>
                 </div>
                 { inProgress ? (

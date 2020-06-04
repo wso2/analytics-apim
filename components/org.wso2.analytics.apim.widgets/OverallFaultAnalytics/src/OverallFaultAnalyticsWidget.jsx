@@ -166,7 +166,7 @@ class OverallFaultAnalyticsWidget extends Widget {
 
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{timeFrom}}': Moment().subtract(1, 'months').toDate().getTime(),
+            '{{timeFrom}}': Moment().subtract(30, 'days').toDate().getTime(),
             '{{timeTo}}': new Date().getTime(),
         };
         super.getWidgetChannelManager()

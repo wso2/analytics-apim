@@ -3,5 +3,5 @@
   "config.error.heading": "Configuration Error !",
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
-  "widget.heading": "TOP 10 API USAGE FOR MONTH"
+  "widget.heading": "TOP 10 API USAGE DURING PAST 30 DAYS"
 }

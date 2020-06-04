@@ -115,7 +115,7 @@ export default function Top10ThrottledApisOverTime(props) {
             >
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='TOP 10 THROTTLED OUT APIS FOR MONTH' />
+                        <FormattedMessage id='widget.heading' defaultMessage='TOP 10 THROTTLED OUT APIS DURING PAST 30 DAYS' />
                     </div>
                 </div>
                 { inProgress ? (

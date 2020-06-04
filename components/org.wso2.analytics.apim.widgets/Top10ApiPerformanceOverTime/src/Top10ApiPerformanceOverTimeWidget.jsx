@@ -176,7 +176,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{from}}': Moment().subtract(1, 'months').toDate().getTime(),
+            '{{from}}': Moment().subtract(30, 'days').toDate().getTime(),
             '{{to}}': new Date().getTime(),
         };
         super.getWidgetChannelManager()
@@ -221,7 +221,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
             dataProviderConfigs.configs.config.queryData.queryName = 'apilatencyquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{filterCondition}}': filterCondition,
-                '{{from}}': Moment().subtract(1, 'months').toDate().getTime(),
+                '{{from}}': Moment().subtract(30, 'days').toDate().getTime(),
                 '{{to}}': new Date().getTime(),
             };
             super.getWidgetChannelManager()
