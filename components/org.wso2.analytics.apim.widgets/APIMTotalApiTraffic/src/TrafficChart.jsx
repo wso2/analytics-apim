@@ -65,13 +65,27 @@ export default function TrafficChart(props) {
         >
             <VictoryBar
                 barWidth={6}
-                cornerRadius={{ topRight: 5 }}
                 style={styles.victorybar}
                 animate={{
                     duration: 1000,
                     onLoad: { duration: 500 },
                 }}
                 data={data}
+                events={[
+                    {
+                        target: 'data',
+                        eventHandlers: {
+                            onClick: () => {
+                                return [{
+                                    mutation: (val) => {
+                                        props.setCurrentApi(val.datum.apiId);
+                                        // val.datum.apiVersion
+                                    },
+                                }];
+                            },
+                        },
+                    },
+                ]}
                 x='API'
                 y='Traffic'
             />
@@ -91,4 +105,5 @@ export default function TrafficChart(props) {
 TrafficChart.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     themeName: PropTypes.string.isRequired,
+    setCurrentApi: PropTypes.func.isRequired,
 };

@@ -111,6 +111,7 @@ class APIMTotalApiTrafficWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
+        this.setCurrentApi = this.setCurrentApi.bind(this);
     }
 
     componentWillMount() {
@@ -168,8 +169,10 @@ class APIMTotalApiTrafficWidget extends Widget {
      * @param {string} limit data display limit
      * @memberof APIMTotalApiTrafficWidget
      */
-    setQueryParam(limit) {
-        super.setGlobalState(queryParamKey, { limit });
+    updateQueryParamsInURL() {
+        const limit = parseInt(this.state.limit, 10);
+        const { api } = this.state;
+        super.setGlobalState(queryParamKey, { limit, api });
     }
 
     /**
@@ -228,7 +231,10 @@ class APIMTotalApiTrafficWidget extends Widget {
 
             data.forEach((dataUnit) => {
                 usageData.push({
-                    API: dataUnit[0] + '(' + dataUnit[1] + ')', Traffic: dataUnit[2],
+                    API: dataUnit[0] + '(' + dataUnit[1] + ')',
+                    Traffic: dataUnit[2],
+                    apiId: dataUnit[0],
+                    apiVersion: dataUnit[1],
                 });
             });
             this.setState({ usageData, inProgress: false });
@@ -243,8 +249,6 @@ class APIMTotalApiTrafficWidget extends Widget {
     handleLimitChange(event) {
         const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
-
-        this.setQueryParam(parseInt(limit, 10));
         if (limit) {
             this.setState({ inProgress: false, limit });
             super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -252,6 +256,18 @@ class APIMTotalApiTrafficWidget extends Widget {
         } else {
             this.setState({ limit });
         }
+        this.updateQueryParamsInURL();
+    }
+
+    /**
+     *
+     * @param {String} api - API Name
+     */
+    setCurrentApi(api) {
+        this.setState({
+            api,
+        });
+        this.updateQueryParamsInURL();
     }
 
     /**
@@ -309,6 +325,7 @@ class APIMTotalApiTrafficWidget extends Widget {
                             <APIMTotalApiTraffic
                                 {...apiUsageProps}
                                 handleLimitChange={this.handleLimitChange}
+                                setCurrentApi={this.setCurrentApi}
                             />
                         )
                     }
