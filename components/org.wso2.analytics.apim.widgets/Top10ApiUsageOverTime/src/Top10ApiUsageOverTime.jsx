@@ -33,7 +33,7 @@ import VizG from 'react-vizgrammar';
  */
 export default function Top10ApiUsageOverTime(props) {
     const {
-        themeName, width, height, usageData, inProgress, apiList, handleOnClickAPI,
+        themeName, width, height, usageData, inProgress, apiList, handleOnClick,
     } = props;
     const styles = {
         headingWrapper: {
@@ -148,14 +148,16 @@ export default function Top10ApiUsageOverTime(props) {
                                     </Paper>
                                 </div>
                             ) : (
-                                <div>
+                                <div
+                                    onClick={data => handleOnClick(data)}
+                                    onKeyDown={data => handleOnClick(data)}
+                                >
                                     <VizG
                                         config={chartConfig}
                                         metadata={metadata}
                                         data={usageData}
                                         width={width}
                                         theme={themeName}
-                                        onClick={data => handleOnClickAPI(data)}
                                     />
                                 </div>
                             )
@@ -172,7 +174,7 @@ Top10ApiUsageOverTime.propTypes = {
     themeName: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    handleOnClickAPI: PropTypes.func.isRequired,
+    handleOnClick: PropTypes.func.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
     apiList: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
