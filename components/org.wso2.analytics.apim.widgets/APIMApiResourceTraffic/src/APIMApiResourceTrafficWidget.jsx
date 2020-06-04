@@ -133,7 +133,7 @@ class APIMApiResourceTrafficWidget extends Widget {
             apiresource: null,
             apimethod: null,
             dataarray: [],
-            legandDataSet: [],
+            legendDataSet: [],
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -430,7 +430,7 @@ class APIMApiResourceTrafficWidget extends Widget {
                         { name: element },
                     );
                 });
-                this.setState({ legandDataSet: legenddata });
+                this.setState({ legendDataSet: legenddata });
 
                 for (let index = 0; index < operations.length; index++) {
                     this.setQueryParam(apiSelected, apiVersion, operationSelected);
@@ -484,42 +484,12 @@ class APIMApiResourceTrafficWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        let maxCount = 0;
+        // let maxCount = 0;
         const { dataarray } = this.state;
-        if (data && data.length !== 0) {
-            const chartData = [];
-            const xAxisTicks = [];
-
-            data.forEach((dataUnit) => {
-                chartData.push({
-                    x: new Date(dataUnit[0]).getTime(),
-                    y: dataUnit[1],
-                    label: 'CREATED_TIME:'
-                     + Moment(dataUnit[0]).format('YYYY-MMM-DD HH:mm:ss')
-                     + '\nCOUNT:' + dataUnit[1],
-                });
-                maxCount += dataUnit[1];
-            });
-
-            const first = new Date(chartData[0].x).getTime();
-            const last = new Date(chartData[chartData.length - 1].x).getTime();
-            const interval = (last - first) / 10;
-            let duration = 0;
-            xAxisTicks.push(first);
-            for (let i = 1; i <= 10; i++) {
-                duration = interval * i;
-                xAxisTicks.push(new Date(first + duration).getTime());
-            }
-
-            dataarray.push(chartData);
-            this.setState({
-                dataarray, inProgress: false, xAxisTicks, maxCount,
-            });
-        } else if (dataarray.length > 0) {
-            this.setState({ inProgress: false });
-        } else {
-            this.setState({ inProgress: false, dataarray: [] });
-        }
+        this.setState({
+            dataarray: [...dataarray, data],
+            inProgress: false,
+        });
     }
 
     /**
@@ -611,7 +581,7 @@ class APIMApiResourceTrafficWidget extends Widget {
                 );
             });
             this.setState({
-                operationSelected, inProgress: true, dataarray: [], legandDataSet: legenddata,
+                operationSelected, inProgress: true, dataarray: [], legendDataSet: legenddata,
             });
             this.setQueryParam(apiSelected, apiVersion, operationSelected);
             super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -632,7 +602,7 @@ class APIMApiResourceTrafficWidget extends Widget {
         const {
             localeMessages, faultyProviderConfig, height, width,
             inProgress, proxyError, apiSelected, apiVersion, resultdata, apilist,
-            versionlist, resourceList, chartData, xAxisTicks, maxCount, dataarray, legandDataSet,
+            versionlist, resourceList, dataarray, legendDataSet,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -651,11 +621,8 @@ class APIMApiResourceTrafficWidget extends Widget {
             versionlist,
             resourceList,
             inProgress,
-            chartData,
-            xAxisTicks,
-            maxCount,
             dataarray,
-            legandDataSet,
+            legendDataSet,
         };
 
         return (

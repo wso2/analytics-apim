@@ -37,7 +37,7 @@ import TrafficChart from './TrafficChart';
  */
 export default function APIMTotalApiTraffic(props) {
     const {
-        themeName, usageData, handleLimitChange, limit, height, inProgress,
+        themeName, usageData, handleLimitChange, limit, height, inProgress, setCurrentApi
     } = props;
     const styles = {
         headingWrapper: {
@@ -136,6 +136,7 @@ export default function APIMTotalApiTraffic(props) {
                                     <TrafficChart
                                         data={usageData}
                                         themeName={themeName}
+                                        setCurrentApi={setCurrentApi}
                                     />
                                 </div>
                             </div>
