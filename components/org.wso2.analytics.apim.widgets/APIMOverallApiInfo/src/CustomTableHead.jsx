@@ -31,16 +31,7 @@ const rows = [
         id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
     },
     {
-        id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
-    },
-    {
-        id: 'resourcetemplate', numeric: false, disablePadding: false, label: 'table.heading.resourcetemplate',
-    },
-    {
-        id: 'method', numeric: false, disablePadding: false, label: 'table.heading.method',
-    },
-    {
-        id: 'totalhits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        id: 'successHits', numeric: true, disablePadding: false, label: 'table.heading.success',
     },
     {
         id: 'error4XX', numeric: true, disablePadding: false, label: 'table.heading.error4xx',
@@ -49,7 +40,10 @@ const rows = [
         id: 'error5XX', numeric: true, disablePadding: false, label: 'table.heading.error5xx',
     },
     {
-        id: 'averagelatency', numeric: true, disablePadding: false, label: 'table.heading.avglatency',
+        id: 'errorFaulty', numeric: true, disablePadding: false, label: 'table.heading.errorFaulty',
+    },
+    {
+        id: 'errorThrottled', numeric: true, disablePadding: false, label: 'table.heading.errorThrottled',
     },
 ];
 

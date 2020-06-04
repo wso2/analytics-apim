@@ -50,7 +50,10 @@
     "APIMOverallErrorInfo",
     "ApiThrottleAnalytics",
     "ApiFaultAnalytics",
-    "DimensionSelector"
+    "DimensionSelector",
+    "AppAndAPIErrorTable",
+    "ErrorByAppAndAPI",
+    "AppAndAPIErrorsByTime"
   ],
   "version": "1.0.0"
 }

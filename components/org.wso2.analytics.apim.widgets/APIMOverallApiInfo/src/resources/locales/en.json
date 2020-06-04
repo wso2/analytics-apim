@@ -7,12 +7,11 @@
   "api.info.heading": "OVERALL API INFO",
   "api.info.subheading": "(Last 7 Days)",
   "table.heading.apiname": "API NAME",
-  "table.heading.version": "VERSION",
-  "table.heading.resourcetemplate": "RESOURCE TEMPLATE",
   "table.heading.method": "METHOD",
-  "table.heading.hits": "TOTAL HITS",
+  "table.heading.success": "SUCCESS HITS",
   "table.heading.error4xx": "ERROR 4XX",
   "table.heading.error5xx": "ERROR 5XX",
-  "table.heading.avglatency": "AVERAGE LATENCY",
+  "table.heading.errorFaulty": "FAULTY HITS",
+  "table.heading.errorThrottled": "THROTTLED HIT",
   "sort.label.title": "Sort"
 }
