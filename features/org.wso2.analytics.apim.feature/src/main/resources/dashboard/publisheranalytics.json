@@ -4,15 +4,15 @@
     "owner": "admin@carbon.super",
     "name": "Publisher Analytics",
     "description": "",
-    "landingPage": "overall-usage",
+    "landingPage": "usage-summary",
     "parentId": "0",
     "content": {
       "properties": {},
       "readOnly": false,
       "pages": [
         {
-          "id": "overall-usage",
-          "name": "Overall Usage Summary",
+          "id": "usage-summary",
+          "name": "Usage Summary",
           "content": [
             {
               "type": "column",
@@ -23,21 +23,21 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 19.863013698630137,
+                  "height": 6.952815312937968,
                   "content": [
                     {
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 50,
-                      "width": 56.41975308641975,
+                      "height": 12.5,
+                      "width": 57.160493827160494,
                       "content": [
                         {
                           "title": "[Dimension Selector]",
                           "type": "component",
                           "component": "DimensionSelector",
                           "props": {
-                            "id": "7c092ab6-db8e-464f-a623-1d20c25fe08d",
+                            "id": "df3597b3-9e77-4009-b791-3075ee352942",
                             "configs": {
                               "pubsub": {
                                 "types": [
@@ -52,6 +52,7 @@
                               "options": {
                                 "header": false,
                                 "selectMultiple": true,
+                                "selectAll": true,
                                 "dimensions": [
                                   "API",
                                   "API Provider"
@@ -73,14 +74,14 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 43.58024691358025,
+                      "width": 42.839506172839506,
                       "content": [
                         {
                           "title": "[Date Time Range]",
                           "type": "component",
                           "component": "DateRangePicker",
                           "props": {
-                            "id": "2e89b706-c775-434c-b490-018d26bfc705",
+                            "id": "228115e5-61c6-4188-a7d7-d3af02b7c7b1",
                             "configs": {
                               "pubsub": {
                                 "types": [
@@ -117,29 +118,29 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 80.13698630136986,
+                  "height": 35.215942993287555,
                   "content": [
                     {
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 50,
-                      "width": 55.12345679012346,
+                      "height": 25,
+                      "width": 57.22222222222222,
                       "content": [
                         {
                           "title": "[APIM Overall Api Usage]",
                           "type": "component",
                           "component": "APIMOverallApiUsage",
                           "props": {
-                            "id": "3b20b1bd-fe73-4dca-b0d3-6c8fa6299e32",
+                            "id": "8bef6df6-effa-47cc-8cfb-a662c8306c16",
                             "configs": {
                               "pubsub": {
                                 "types": [
                                   "subscriber"
                                 ],
                                 "publishers": [
-                                  "2e89b706-c775-434c-b490-018d26bfc705",
-                                  "7c092ab6-db8e-464f-a623-1d20c25fe08d"
+                                  "228115e5-61c6-4188-a7d7-d3af02b7c7b1",
+                                  "df3597b3-9e77-4009-b791-3075ee352942"
                                 ]
                               },
                               "isGenerated": false,
@@ -163,22 +164,23 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 44.87654320987654,
+                      "width": 42.77777777777778,
+                      "height": 100,
                       "content": [
                         {
                           "title": "[APIM Api Usage]",
                           "type": "component",
                           "component": "APIMApiUsage",
                           "props": {
-                            "id": "f84cdfa2-0dea-4eb1-acc0-c5963ad4f2f2",
+                            "id": "fe004f2d-92b9-459f-88fd-2f7f52cc1161",
                             "configs": {
                               "pubsub": {
                                 "types": [
                                   "subscriber"
                                 ],
                                 "publishers": [
-                                  "2e89b706-c775-434c-b490-018d26bfc705",
-                                  "7c092ab6-db8e-464f-a623-1d20c25fe08d"
+                                  "228115e5-61c6-4188-a7d7-d3af02b7c7b1",
+                                  "df3597b3-9e77-4009-b791-3075ee352942"
                                 ]
                               },
                               "isGenerated": false,
@@ -199,14 +201,138 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 27.33529888036608,
+                  "width": 100,
+                  "content": [
+                    {
+                      "title": "[APIM Api Backend Usage Summary]",
+                      "type": "component",
+                      "component": "APIMApiBackendUsageSummary",
+                      "props": {
+                        "id": "57321b4d-2896-4604-8f8a-28edfa09597a",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "228115e5-61c6-4188-a7d7-d3af02b7c7b1",
+                              "df3597b3-9e77-4009-b791-3075ee352942"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "API Backend Usage Summary"
+                          }
+                        },
+                        "widgetID": "APIMApiBackendUsageSummary"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 30.49594281340841,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 63.08641975308642,
+                      "content": [
+                        {
+                          "title": "[APIM Api Resource Usage Summary]",
+                          "type": "component",
+                          "component": "APIMApiResourceUsageSummary",
+                          "props": {
+                            "id": "6a556b10-8fea-46cd-bc84-1829e404a86d",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "df3597b3-9e77-4009-b791-3075ee352942",
+                                  "228115e5-61c6-4188-a7d7-d3af02b7c7b1"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Resource Usage Summary"
+                              }
+                            },
+                            "widgetID": "APIMApiResourceUsageSummary"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 36.91358024691358,
+                      "content": [
+                        {
+                          "title": "[APIM Top Api Users]",
+                          "type": "component",
+                          "component": "APIMTopApiUsers",
+                          "props": {
+                            "id": "a9a0cc82-47a2-468c-b43a-194c26baee5d",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "df3597b3-9e77-4009-b791-3075ee352942",
+                                  "228115e5-61c6-4188-a7d7-d3af02b7c7b1"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "Top API Users"
+                              }
+                            },
+                            "widgetID": "APIMTopApiUsers"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
-          ]
+          ],
+          "height": 2357
         },
         {
-          "id": "api-usag",
-          "name": "API Usage Summary",
+          "id": "api-usage",
+          "name": "API Usage",
           "content": [
             {
               "type": "column",
@@ -217,20 +343,20 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 14.097222222222221,
+                  "height": 19.292237442922374,
                   "content": [
                     {
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 56.481481481481474,
+                      "width": 56.04938271604938,
                       "content": [
                         {
                           "title": "[Dimension Selector]",
                           "type": "component",
                           "component": "DimensionSelector",
                           "props": {
-                            "id": "b3a4148f-1b1b-4f0a-bf72-718946e7a71f",
+                            "id": "df922f6f-c469-4171-b356-004ba4b37b5f",
                             "configs": {
                               "pubsub": {
                                 "types": [
@@ -239,12 +365,14 @@
                                 "publisherWidgetOutputs": [
                                   "dimension",
                                   "selection"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": false,
                                 "selectMultiple": true,
+                                "selectAll": false,
                                 "dimensions": [
                                   "API",
                                   "API Provider"
@@ -266,15 +394,14 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 50,
-                      "width": 43.518518518518526,
+                      "width": 43.95061728395062,
                       "content": [
                         {
                           "title": "[Date Time Range]",
                           "type": "component",
                           "component": "DateRangePicker",
                           "props": {
-                            "id": "c3f16589-7aea-467c-b6f2-510ca5130e22",
+                            "id": "adff930b-c4a5-4c81-a47b-1811f26c1eb4",
                             "configs": {
                               "pubsub": {
                                 "types": [
@@ -308,95 +435,47 @@
                   ]
                 },
                 {
-                  "type": "row",
+                  "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 85.90277777777777,
+                  "height": 80.70776255707763,
                   "content": [
                     {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "width": 50,
-                      "content": [
-                        {
-                          "title": "[APIM Api Version Usage Summary]",
-                          "type": "component",
-                          "component": "APIMApiVersionUsageSummary",
-                          "props": {
-                            "id": "1b3cfe22-7d02-4142-a126-1bc43d1b3707",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": [
-                                  "c3f16589-7aea-467c-b6f2-510ca5130e22",
-                                  "b3a4148f-1b1b-4f0a-bf72-718946e7a71f"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true,
-                                "headerTitle": "API Version Usage Summary"
-                              }
-                            },
-                            "widgetID": "APIMApiVersionUsageSummary"
+                      "title": "[Api Usage Over Time]",
+                      "type": "component",
+                      "component": "ApiUsageOverTime",
+                      "props": {
+                        "id": "6a21fbd4-b134-4e27-a0f2-49743ac3f27b",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "df922f6f-c469-4171-b356-004ba4b37b5f",
+                              "adff930b-c4a5-4c81-a47b-1811f26c1eb4"
+                            ]
                           },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "height": 67.72146222597905,
-                      "width": 50,
-                      "content": [
-                        {
-                          "title": "[APIM Api Backend Usage Summary]",
-                          "type": "component",
-                          "component": "APIMApiBackendUsageSummary",
-                          "props": {
-                            "id": "00a49da1-b88d-45a6-a6e4-fe9aac73a0d0",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": [
-                                  "c3f16589-7aea-467c-b6f2-510ca5130e22",
-                                  "b3a4148f-1b1b-4f0a-bf72-718946e7a71f"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true,
-                                "headerTitle": "API Backend Usage Summary"
-                              }
-                            },
-                            "widgetID": "APIMApiBackendUsageSummary"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "API Usage Over Time"
+                          }
+                        },
+                        "widgetID": "ApiUsageOverTime"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
                     }
                   ]
                 }
               ]
             }
           ],
-          "height": 1085,
-          "hidden": false
+          "height": 882
         },
         {
           "id": "api-performance",
@@ -411,7 +490,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 16.43835616438356,
+                  "height": 12.586805555555555,
                   "content": [
                     {
                       "type": "stack",
@@ -508,7 +587,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 83.56164383561644,
+                  "height": 87.41319444444444,
                   "width": 100,
                   "content": [
                     {
@@ -545,7 +624,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "height": 1157
         },
         {
           "id": "api-faults",
@@ -560,13 +640,13 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 16.095890410958905,
+                  "height": 13.155555555555557,
                   "content": [
                     {
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 56.358024691358025,
+                      "width": 57.46913580246914,
                       "content": [
                         {
                           "title": "[Dimension Selector]",
@@ -611,7 +691,7 @@
                       "isClosable": true,
                       "title": "",
                       "height": 16.552511415525114,
-                      "width": 43.641975308641975,
+                      "width": 42.53086419753086,
                       "content": [
                         {
                           "title": "[Date Time Range]",
@@ -656,7 +736,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 83.9041095890411,
+                  "height": 86.84444444444445,
                   "content": [
                     {
                       "type": "stack",
@@ -739,7 +819,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "height": 1167
         }
       ]
     },
@@ -750,15 +831,17 @@
   "widgets": {
     "generated": [],
     "custom": [
-      "ApiThrottleAnalytics",
-      "DateRangePicker",
       "APIMOverallApiUsage",
       "DimensionSelector",
-      "APIMApiLatencyTime",
       "APIMApiBackendUsageSummary",
+      "APIMApiResourceUsageSummary",
       "ApiFaultAnalytics",
       "APIMApiUsage",
-      "APIMApiVersionUsageSummary"
+      "APIMTopApiUsers",
+      "ApiUsageOverTime",
+      "ApiThrottleAnalytics",
+      "DateRangePicker",
+      "APIMApiLatencyTime"
     ]
   },
   "permissions": {

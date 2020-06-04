@@ -46,7 +46,7 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "api-usage"
+        "defaultValue": "usage-summary"
       }
     ]
   }

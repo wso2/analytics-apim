@@ -140,7 +140,6 @@ export default function APIMApiLatency(props) {
             },
         ],
         maxLength: 60,
-        width: 800,
         height: 400,
         interactiveLegend: true,
         legend: true,
