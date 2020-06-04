@@ -50,7 +50,6 @@ export default function ApiUsageOverTime(props) {
             padding: '4%',
         },
         chartWrapper: {
-            width: '95%',
             paddingTop: '10px',
         },
         loadingIcon: {
@@ -155,6 +154,7 @@ export default function ApiUsageOverTime(props) {
                                         metadata={metadata}
                                         data={usageData}
                                         width={width}
+                                        height={height * 0.9}
                                         theme={themeName}
                                     />
                                 </div>
