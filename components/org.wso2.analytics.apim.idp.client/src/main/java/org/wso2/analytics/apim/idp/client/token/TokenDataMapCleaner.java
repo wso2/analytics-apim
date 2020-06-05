@@ -32,6 +32,8 @@ public class TokenDataMapCleaner extends TimerTask {
 
     private static final Logger log = LoggerFactory.getLogger(TokenDataMapCleaner.class);
 
+    private final Timer timer = new Timer();
+
     @Override
     public void run() {
         log.debug("Starting token data map cleaner task.");
@@ -65,6 +67,14 @@ public class TokenDataMapCleaner extends TimerTask {
      */
     public void startTokenDataMapCleaner() {
         // Thread starts after 2 minutes and runs every 45 minutes
-        new Timer().schedule(this, 120000, 2700000);
+        this.timer.schedule(this, 120000, 2700000);
+    }
+
+    /**
+     * Stop the timer task which cleans the Token data map.
+     */
+    public void stopTokenDataMapCleaner() {
+        this.timer.cancel();
+        this.timer.purge();
     }
 }
