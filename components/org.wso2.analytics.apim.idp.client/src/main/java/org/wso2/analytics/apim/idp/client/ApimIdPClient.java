@@ -350,7 +350,8 @@ public class ApimIdPClient extends ExternalIdPClient {
             LOG.error(error);
             throw new IdPClientException(error);
         }
-        if (response.status() == 200) {   //200 - Success
+        int responseStatus = response.status();
+        if (responseStatus == 200) {   //200 - Success
             if (LOG.isDebugEnabled()) {
                 LOG.debug("A new access token is successfully generated.");
             }
@@ -401,7 +402,7 @@ public class ApimIdPClient extends ExternalIdPClient {
                 LOG.error(error, e);
                 throw new IdPClientException(error, e);
             }
-        } else if (response.status() == 401) {
+        } else if (responseStatus == 401) {
             String invalidResponse = "Unable to get access token for the request with grant type : '" + grantType +
                     "', for the user '" + username + "'.";
             LOG.error(invalidResponse);
@@ -410,7 +411,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             returnProperties.put(IdPClientConstants.ERROR_DESCRIPTION, invalidResponse);
             return returnProperties;
         } else {  //Error case
-            String errorMessage = "Token generation request failed. HTTP error code: '" + response.status() +
+            String errorMessage = "Token generation request failed. HTTP error code: '" + responseStatus +
                     "'. Error Response: '" + response.body().toString() + "'.";
             LOG.error(errorMessage);
             throw new IdPClientException(errorMessage);
@@ -514,7 +515,8 @@ public class ApimIdPClient extends ExternalIdPClient {
             LOG.error(error);
             throw new IdPClientException(error);
         }
-        if (response.status() == 200) {   //200 - Success
+        int responseStatus = response.status();
+        if (responseStatus == 200) {   //200 - Success
             if (LOG.isDebugEnabled()) {
                 LOG.debug("A new access token from code is successfully generated for the code '" + code + "'.");
             }
@@ -563,7 +565,7 @@ public class ApimIdPClient extends ExternalIdPClient {
                 LOG.error(error, e);
                 throw new IdPClientException(error, e);
             }
-        } else if (response.status() == 401) {
+        } else if (responseStatus == 401) {
             String invalidResponse = "Unauthorized user for accessing token form code '" + code + "'. for the app " +
                     "context, '" + appContext + "'";
             returnProperties.put(IdPClientConstants.LOGIN_STATUS, IdPClientConstants.LoginStatus.LOGIN_FAILURE);
@@ -571,7 +573,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             returnProperties.put(IdPClientConstants.ERROR_DESCRIPTION, invalidResponse);
             return returnProperties;
         } else {  //Error case
-            String error = "Token generation request failed. HTTP error code: '" + response.status() +
+            String error = "Token generation request failed. HTTP error code: '" + responseStatus +
                     "'. Error Response Body: '" + response.body().toString() + "'.";
             LOG.error(error);
             throw new IdPClientException(error);
@@ -609,7 +611,8 @@ public class ApimIdPClient extends ExternalIdPClient {
             throw new IdPClientException(error);
         }
         try {
-            if (response.status() == 200) {  //200 - OK
+            int responseStatus = response.status();
+            if (responseStatus == 200) {  //200 - OK
                 OAuth2IntrospectionResponse introspectResponse = (OAuth2IntrospectionResponse) new GsonDecoder()
                         .decode(response, OAuth2IntrospectionResponse.class);
                 if (introspectResponse.isActive()) {
@@ -621,12 +624,12 @@ public class ApimIdPClient extends ExternalIdPClient {
                     }
                     throw new AuthenticationException(error);
                 }
-            } else if (response.status() == 400) {  //400 - Known Error
+            } else if (responseStatus == 400) {  //400 - Known Error
                 try {
                     DCRError error = (DCRError) new GsonDecoder().decode(response, DCRError.class);
                     String errorString = "Error occurred while introspecting the token. Error: " + error.getErrorCode()
                             + ". Error Description: " + error.getErrorDescription() + ". Status Code: "
-                            + response.status();
+                            + responseStatus;
                     LOG.error(errorString);
                     throw new IdPClientException(errorString);
                 } catch (IOException e) {
@@ -636,7 +639,7 @@ public class ApimIdPClient extends ExternalIdPClient {
                 }
             } else {  //Unknown Error
                 String error = "Error occurred while authenticating. Error: '" + response.body().toString()
-                        + "'. Status Code: '" + response.status() + "'.";
+                        + "'. Status Code: '" + responseStatus + "'.";
                 LOG.error(error);
                 throw new IdPClientException(error);
             }
@@ -699,7 +702,8 @@ public class ApimIdPClient extends ExternalIdPClient {
             LOG.error(error);
             throw new IdPClientException(error);
         }
-        if (response.status() == 200) {  //200 - OK
+        int responseStatus = response.status();
+        if (responseStatus == 200) {  //200 - OK
             try {
                 DCRClientResponse dcrClientInfoResponse = (DCRClientResponse) new GsonDecoder()
                         .decode(response, DCRClientResponse.class);
@@ -726,12 +730,12 @@ public class ApimIdPClient extends ExternalIdPClient {
                 LOG.error(error, e);
                 throw new IdPClientException(error, e);
             }
-        } else if (response.status() == 400) {  //400 - Known Error
+        } else if (responseStatus == 400) {  //400 - Known Error
             try {
                 DCRError error = (DCRError) new GsonDecoder().decode(response, DCRError.class);
                 String errorMessage = "Error occurred while DCR application creation. Error: " +
                         error.getErrorCode() + ". Error Description: " + error.getErrorDescription() +
-                        ". Status Code: " + response.status();
+                        ". Status Code: " + responseStatus;
                 LOG.error(errorMessage);
                 throw new IdPClientException(errorMessage);
             } catch (IOException e) {
@@ -742,7 +746,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             }
         } else {  //Unknown Error
             String error = "Error occurred while DCR application creation. Error: '" +
-                    response.body().toString() + "'. Status Code: '" + response.status() + "'.";
+                    response.body().toString() + "'. Status Code: '" + responseStatus + "'.";
             LOG.error(error);
             throw new IdPClientException(error);
         }
