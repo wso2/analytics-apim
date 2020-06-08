@@ -27,13 +27,13 @@ import Typography from '@material-ui/core/Typography';
 import VizG from 'react-vizgrammar';
 
 /**
- * React Component for Api Usage Over Time widget body
+ * React Component for Throttle Summary widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Api Usage Over Time  widget body
+ * @returns {ReactElement} Render the Throttle Summary widget body
  */
-export default function ApiUsageOverTime(props) {
+export default function ThrottleSummary(props) {
     const {
-        themeName, width, height, usageData, inProgress, apiList,
+        themeName, height, width, inProgress, throttleData, apiList, handleOnClick,
     } = props;
     const styles = {
         headingWrapper: {
@@ -48,9 +48,6 @@ export default function ApiUsageOverTime(props) {
         paper: {
             background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-        },
-        chartWrapper: {
-            paddingTop: '10px',
         },
         loadingIcon: {
             margin: 'auto',
@@ -73,7 +70,8 @@ export default function ApiUsageOverTime(props) {
     };
     const chartConfig = {
         x: 'TIME',
-        charts: [],
+        charts: [
+        ],
         maxLength: 60,
         interactiveLegend: true,
         legend: true,
@@ -83,22 +81,18 @@ export default function ApiUsageOverTime(props) {
             xAxisTickAngle: -8,
             tickLabelColor: '#a7b0c8',
             axisLabelColor: '#a7b0c8',
-            axisTextSize: 50,
-            legendTextColor: '#a7b0c8',
-            legendTextSize: 15,
+            axisTextSize: 10,
         },
     };
     const metadata = {
-        names: [],
-        types: [],
     };
 
-    if (usageData) {
+    if (throttleData) {
         metadata.names = apiList.map((dataUnit) => { return dataUnit; });
         metadata.names.push('TIME');
         metadata.types = apiList.map(() => { return 'linear'; });
         metadata.types.push('time');
-        chartConfig.charts = apiList.map((dataUnit) => { return { type: 'line', y: dataUnit}; });
+        chartConfig.charts = apiList.map((dataUnit) => { return { type: 'line', y: dataUnit }; });
     }
 
     return (
@@ -107,70 +101,69 @@ export default function ApiUsageOverTime(props) {
             backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
         }}
         >
-            <div style={{
-                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                margin: '10px',
-                padding: '20px',
-            }}
+            <div
+                style={{
+                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                    margin: '10px',
+                    padding: '20px',
+                }}
             >
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='API USAGE OVER TIME' />
+                        <FormattedMessage id='widget.heading' defaultMessage='THROTTLE SUMMARY' />
                     </div>
                 </div>
-                {inProgress ? (
+                { inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
                 ) : (
                     <div>
-                        {
-                            !usageData || usageData.length === 0 ? (
-                                <div style={styles.paperWrapper}>
-                                    <Paper
-                                        elevation={1}
-                                        style={styles.paper}
-                                    >
-                                        <Typography variant='h5' component='h3'>
-                                            <FormattedMessage
-                                                id='nodata.error.heading'
-                                                defaultMessage='No Data Available !'
-                                            />
-                                        </Typography>
-                                        <Typography component='p'>
-                                            <FormattedMessage
-                                                id='nodata.error.body'
-                                                defaultMessage='No data available for the selected options.'
-                                            />
-                                        </Typography>
-                                    </Paper>
-                                </div>
-                            ) : (
-                                <div style={styles.chartWrapper}>
-                                    <VizG
-                                        config={chartConfig}
-                                        metadata={metadata}
-                                        data={usageData}
-                                        width={width}
-                                        height={height * 0.85}
-                                        theme={themeName}
-                                    />
-                                </div>
-                            )
-                        }
+                        { !throttleData || throttleData.length === 0 ? (
+                            <div style={styles.paperWrapper}>
+                                <Paper
+                                    elevation={1}
+                                    style={styles.paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='nodata.error.heading'
+                                            defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options.'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <div>
+                                <VizG
+                                    config={chartConfig}
+                                    metadata={metadata}
+                                    data={throttleData}
+                                    width={width}
+                                    height={height}
+                                    onClick={data => handleOnClick(data)}
+                                />
+                            </div>
+                        )}
                     </div>
-                )
-                }
+                )}
             </div>
         </Scrollbars>
     );
 }
 
-ApiUsageOverTime.propTypes = {
+ThrottleSummary.propTypes = {
     themeName: PropTypes.string.isRequired,
-    width: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    usageData: PropTypes.instanceOf(Object).isRequired,
+    width: PropTypes.string.isRequired,
+    throttleData: PropTypes.instanceOf(Object).isRequired,
     apiList: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClick: PropTypes.func.isRequired,
 };

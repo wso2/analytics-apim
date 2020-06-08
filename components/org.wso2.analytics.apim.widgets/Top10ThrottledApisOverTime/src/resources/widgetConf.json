@@ -46,7 +46,7 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "api-faults"
+        "defaultValue": "throttle-summary"
       }
     ]
   }

@@ -214,7 +214,6 @@ class ApiUsageOverTimeWidget extends Widget {
                     return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
                 });
                 filterCondition = filterCondition.join(' OR ');
-                filterCondition = 'AND ' + filterCondition;
 
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';

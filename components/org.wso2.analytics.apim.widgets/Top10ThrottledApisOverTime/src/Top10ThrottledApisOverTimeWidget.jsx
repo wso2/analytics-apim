@@ -275,7 +275,7 @@ class Top10ThrottledApisOverTimeWidget extends Widget {
     }
 
     /**
-     * Handle onClick of an API and drill down
+     * Handle onClick and drill down
      * @memberof Top10ThrottledApisOverTimeWidget
      * */
     handleOnClick() {
