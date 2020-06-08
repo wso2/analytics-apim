@@ -38,7 +38,7 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Top 10 Api Performance For Month"
+        "defaultValue": "Top 10 Api Performance During Past 30 Days"
       },
       {
         "id": "drillDown",
