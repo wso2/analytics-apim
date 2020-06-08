@@ -85,7 +85,7 @@
                               "options": {
                                 "header": true,
                                 "headerTitle": "Top 10 Api Performance For Month",
-                                "drillDown": "api-performance"
+                                "drillDown": "performance-summary"
                               }
                             },
                             "widgetID": "Top10ApiPerformanceOverTime"
@@ -130,7 +130,7 @@
                               "options": {
                                 "header": false,
                                 "headerTitle": "Top 10 Throttled Out Apis Over Time",
-                                "drillDown": "api-faults"
+                                "drillDown": "throttle-summary"
                               }
                             },
                             "widgetID": "Top10ThrottledApisOverTime"
@@ -166,7 +166,7 @@
                               "options": {
                                 "header": false,
                                 "headerTitle": "Overall Faulty Requests Over Time",
-                                "drillDown": "faults-summary"
+                                "drillDown": "error-summary"
                               }
                             },
                             "widgetID": "OverallFaultAnalytics"
@@ -199,7 +199,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 6.952815312937968,
+                  "height": 6.700905925179563,
                   "content": [
                     {
                       "type": "stack",
@@ -294,7 +294,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 35.215942993287555,
+                  "height": 35.467852381045965,
                   "content": [
                     {
                       "type": "stack",
@@ -519,7 +519,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 19.292237442922374,
+                  "height": 18.129988597491447,
                   "content": [
                     {
                       "type": "stack",
@@ -550,8 +550,7 @@
                                 "selectMultiple": true,
                                 "selectAll": false,
                                 "dimensions": [
-                                  "API",
-                                  "API Provider"
+                                  "API"
                                 ],
                                 "defaultDimension": "API"
                               }
@@ -587,12 +586,13 @@
                                   "granularity",
                                   "from",
                                   "to"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "defaultValue": "3 Months",
+                                "defaultValue": "1 Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": "Date Time Range"
@@ -614,7 +614,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 80.70776255707763,
+                  "height": 81.87001140250855,
                   "content": [
                     {
                       "title": "[Api Usage Over Time]",
@@ -652,6 +652,153 @@
             }
           ],
           "height": 882
+        },
+        {
+          "id": "performance-summary",
+          "name": "Performance Summary",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 17.351598173515985,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 55.55555555555556,
+                      "content": [
+                        {
+                          "title": "[Dimension Selector]",
+                          "type": "component",
+                          "component": "DimensionSelector",
+                          "props": {
+                            "id": "0c9f3791-169d-47db-a842-9ec489f93651",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "dimension",
+                                  "selection"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "selectMultiple": true,
+                                "selectAll": false,
+                                "dimensions": [
+                                  "API"
+                                ],
+                                "defaultDimension": "API"
+                              }
+                            },
+                            "widgetID": "DimensionSelector"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 44.44444444444444,
+                      "content": [
+                        {
+                          "title": "[Date Time Range]",
+                          "type": "component",
+                          "component": "DateRangePicker",
+                          "props": {
+                            "id": "53ffa709-67dd-4b05-b0e1-a8edfd671cc3",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "granularity",
+                                  "from",
+                                  "to"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "defaultValue": "1 Month",
+                                "availableGranularities": "From Second",
+                                "autoSyncInterval": "30",
+                                "headerTitle": "Date Time Range"
+                              }
+                            },
+                            "widgetID": "DateRangePicker"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 82.64840182648403,
+                  "content": [
+                    {
+                      "title": "[Performance Summary]",
+                      "type": "component",
+                      "component": "PerformanceSummary",
+                      "props": {
+                        "id": "168d6e63-0044-4a6c-86eb-ea229ea92243",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "53ffa709-67dd-4b05-b0e1-a8edfd671cc3",
+                              "0c9f3791-169d-47db-a842-9ec489f93651"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "PerformanceSummary",
+                            "drillDown": "api-performance"
+                          }
+                        },
+                        "widgetID": "PerformanceSummary"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "api-performance",
@@ -697,8 +844,7 @@
                                 "selectMultiple": false,
                                 "selectAll": false,
                                 "dimensions": [
-                                  "API",
-                                  "API Provider"
+                                  "API"
                                 ],
                                 "defaultDimension": "API"
                               }
@@ -804,8 +950,156 @@
           "height": 1157
         },
         {
-          "id": "faults-summary",
-          "name": "Faults Summary",
+          "id": "throttle-summary",
+          "name": "Throttle Summary",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 17.465753424657535,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 100,
+                      "width": 56.851851851851855,
+                      "content": [
+                        {
+                          "title": "[Dimension Selector]",
+                          "type": "component",
+                          "component": "DimensionSelector",
+                          "props": {
+                            "id": "8a580d17-ab39-4d1e-a059-ffc5c29fe206",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "dimension",
+                                  "selection"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "selectMultiple": true,
+                                "selectAll": false,
+                                "dimensions": [
+                                  "API"
+                                ],
+                                "defaultDimension": "API"
+                              }
+                            },
+                            "widgetID": "DimensionSelector"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 43.148148148148145,
+                      "content": [
+                        {
+                          "title": "[Date Time Range]",
+                          "type": "component",
+                          "component": "DateRangePicker",
+                          "props": {
+                            "id": "1a124290-226e-42ee-a60c-f5952df7e724",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "granularity",
+                                  "from",
+                                  "to"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "defaultValue": "1 Month",
+                                "availableGranularities": "From Second",
+                                "autoSyncInterval": "30",
+                                "headerTitle": "Date Time Range"
+                              }
+                            },
+                            "widgetID": "DateRangePicker"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 82.53424657534246,
+                  "content": [
+                    {
+                      "title": "[Throttle Summary]",
+                      "type": "component",
+                      "component": "ThrottleSummary",
+                      "props": {
+                        "id": "a7197991-9781-48a1-91b7-a41e835a4788",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "1a124290-226e-42ee-a60c-f5952df7e724",
+                              "8a580d17-ab39-4d1e-a059-ffc5c29fe206"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": false,
+                            "headerTitle": "Throttle Summary",
+                            "drillDown": "api-errors"
+                          }
+                        },
+                        "widgetID": "ThrottleSummary"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "error-summary",
+          "name": "Error Summary",
           "content": [
             {
               "type": "column",
@@ -887,7 +1181,7 @@
                               "options": {
                                 "header": true,
                                 "headerTitle": "Top Faulty APIs",
-                                "drillDown": "api-faults"
+                                "drillDown": "api-errors"
                               }
                             },
                             "widgetID": "APIMTopFaultyApis"
@@ -925,7 +1219,7 @@
                               "options": {
                                 "header": true,
                                 "headerTitle": "Top Throttled Out APIs",
-                                "drillDown": "api-faults"
+                                "drillDown": "api-errors"
                               }
                             },
                             "widgetID": "APIMTopThrottledOutApis"
@@ -946,8 +1240,8 @@
           "height": 1156
         },
         {
-          "id": "api-faults",
-          "name": "API Faults",
+          "id": "api-errors",
+          "name": "API Errors",
           "content": [
             {
               "type": "column",
@@ -958,7 +1252,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 13.155555555555557,
+                  "height": 12.306368330464714,
                   "content": [
                     {
                       "type": "stack",
@@ -1054,7 +1348,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 86.84444444444445,
+                  "height": 87.69363166953528,
                   "content": [
                     {
                       "type": "stack",
@@ -1153,7 +1447,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 16.119691119691122,
+                  "height": 14.671814671814674,
                   "content": [
                     {
                       "type": "stack",
@@ -1247,7 +1541,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 83.88030888030889,
+                  "height": 85.32818532818534,
                   "content": [
                     {
                       "type": "stack",
@@ -1525,7 +1819,8 @@
                                   "API",
                                   "API Provider"
                                 ],
-                                "defaultDimension": "API"
+                                "defaultDimension": "API",
+                                "selectAll": true
                               }
                             },
                             "widgetID": "DimensionSelector"
@@ -2087,6 +2382,7 @@
       "APIMTopThrottledOutApis",
       "APIMTopUserAgents",
       "APIMApiCreatedAnalytics",
+      "PerformanceSummary",
       "ApiThrottleAnalytics",
       "DateRangePicker",
       "APIMApiRatings",
@@ -2097,6 +2393,7 @@
       "APIMAppCreatedAnalytics",
       "Top10ApiPerformanceOverTime",
       "OverallFaultAnalytics",
+      "ThrottleSummary",
       "ApiFaultAnalytics",
       "APIMTopApiUsers",
       "APIMTopFaultyApis",
