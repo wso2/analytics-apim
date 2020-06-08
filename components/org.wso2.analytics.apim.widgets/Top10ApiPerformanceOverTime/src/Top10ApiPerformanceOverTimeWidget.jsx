@@ -109,7 +109,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
 
         this.assembleTopApiQuery = this.assembleTopApiQuery.bind(this);
         this.handleTopApiReceived = this.handleTopApiReceived.bind(this);
-        this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
+        this.assembleLatencyQuery = this.assembleLatencyQuery.bind(this);
         this.handleApiLatencyReceived = this.handleApiLatencyReceived.bind(this);
         this.handleOnClick = this.handleOnClick.bind(this);
     }
@@ -195,7 +195,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
             const selectedOptions = data.map((dataUnit) => {
                 return { name: dataUnit[0], version: dataUnit[2], provider: dataUnit[1] };
             });
-            this.setState({ selectedOptions }, this.assembleApiUsageQuery);
+            this.setState({ selectedOptions }, this.assembleLatencyQuery);
         } else {
             this.setState({ latencyData: [], inProgress: false });
         }
@@ -205,7 +205,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
      * Formats the siddhi query - apiusagequery
      * @memberof Top10ApiPerformanceOverTimeWidget
      * */
-    assembleApiUsageQuery() {
+    assembleLatencyQuery() {
         const {
             providerConfig, selectedOptions,
         } = this.state;
@@ -235,7 +235,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
     }
 
     /**
-     * Formats data retrieved from assembleApiUsageQuery
+     * Formats data retrieved from assembleLatencyQuery
      * @param {object} message - data retrieved
      * @memberof Top10ApiPerformanceOverTimeWidget
      * */
@@ -282,24 +282,25 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
      * Handle onClick of an API and drill down
      * @memberof Top10ApiPerformanceOverTimeWidget
      * */
-    handleOnClick(data) {
+    handleOnClick() {
         const { configs } = this.props;
+        const { selectedOptions } = this.state;
 
         if (configs && configs.options) {
             const { drillDown } = configs.options;
 
             if (drillDown) {
-                const name = Object.keys(data).find(key => key.includes('::'));
-                const splitName = name.split(' :: ');
-                const api = splitName[0].trim();
-                const apiversion = splitName[1].split(' (')[0].trim();
-                const provider = splitName[1].split(' (')[1].split(')')[0].trim();
+                let apiList = selectedOptions.map((opt) => {
+                    return '{"name":"' + opt.name + '","version":"' + opt.version + '","provider":"'
+                        + opt.provider + '"}';
+                });
+                apiList = apiList.join(',');
                 const locationParts = window.location.pathname.split('/');
                 const dashboard = locationParts[locationParts.length - 2];
 
                 window.location.href = window.contextPath
                     + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1month"},"dmSelc":{"dm":"api",'
-                    + '"op":[{"name":"' + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+                    + '"op":[' + apiList + ']}}';
             }
         }
     }

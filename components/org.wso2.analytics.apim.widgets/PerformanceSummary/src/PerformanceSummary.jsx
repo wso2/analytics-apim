@@ -27,11 +27,11 @@ import Typography from '@material-ui/core/Typography';
 import VizG from 'react-vizgrammar';
 
 /**
- * React Component for Top 10 Api Performance Over Time widget body
+ * React Component for Performance Summary widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Top 10 Api Performance Over Time  widget body
+ * @returns {ReactElement} Render the Performance Summary widget body
  */
-export default function Top10ApiPerformanceOverTime(props) {
+export default function PerformanceSummary(props) {
     const {
         themeName, width, height, latencyData, inProgress, apiList, handleOnClick,
     } = props;
@@ -72,7 +72,6 @@ export default function Top10ApiPerformanceOverTime(props) {
         x: 'TIME',
         charts: [],
         maxLength: 60,
-        height: 400,
         interactiveLegend: true,
         legend: true,
         timeFormat: '%d-%b-%y %H:%M',
@@ -115,7 +114,7 @@ export default function Top10ApiPerformanceOverTime(props) {
                     <div style={styles.heading}>
                         <FormattedMessage
                             id='widget.heading'
-                            defaultMessage='TOP 10 API PERFORMANCE DURING PAST 30 DAYS'
+                            defaultMessage='PERFORMANCE SUMMARY'
                         />
                     </div>
                 </div>
@@ -147,14 +146,15 @@ export default function Top10ApiPerformanceOverTime(props) {
                                     </Paper>
                                 </div>
                             ) : (
-                                <div onClick={() => handleOnClick()} onKeyDown={() => handleOnClick()}>
+                                <div>
                                     <VizG
                                         config={chartConfig}
                                         metadata={metadata}
                                         data={latencyData}
                                         width={width}
-                                        height={height * 0.9}
+                                        height={height * 0.85}
                                         theme={themeName}
+                                        onClick={data => handleOnClick(data)}
                                     />
                                 </div>
                             )
@@ -167,7 +167,7 @@ export default function Top10ApiPerformanceOverTime(props) {
     );
 }
 
-Top10ApiPerformanceOverTime.propTypes = {
+PerformanceSummary.propTypes = {
     themeName: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,

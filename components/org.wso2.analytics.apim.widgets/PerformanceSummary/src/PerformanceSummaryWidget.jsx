@@ -18,16 +18,17 @@
  */
 
 import React from 'react';
-import {
-    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
-} from 'react-intl';
-import Axios from 'axios';
+import Widget from '@wso2-dashboards/widget';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import Widget from '@wso2-dashboards/widget';
-import ThrottleSummary from './ThrottleSummary';
+import Axios from 'axios';
+import Moment from 'moment';
+import {
+    defineMessages, IntlProvider, FormattedMessage, addLocaleData,
+} from 'react-intl';
+import PerformanceSummary from './PerformanceSummary';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -59,31 +60,20 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for Throttle Summary widget
- * @class ThrottleSummaryWidget
+ * Create React Component for Performance Summary
+ * @class PerformanceSummaryWidget
  * @extends {Widget}
  */
-class ThrottleSummaryWidget extends Widget {
+class PerformanceSummaryWidget extends Widget {
     /**
-     * Creates an instance of ThrottleSummaryWidget.
+     * Creates an instance of PerformanceSummaryWidget.
      * @param {any} props @inheritDoc
-     * @memberof ThrottleSummaryWidget
+     * @memberof PerformanceSummaryWidget
      */
     constructor(props) {
         super(props);
 
         this.styles = {
-            formControl: {
-                margin: 5,
-                minWidth: 120,
-            },
-            selectEmpty: {
-                marginTop: 10,
-            },
-            form: {
-                display: 'flex',
-                flexWrap: 'wrap',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -98,9 +88,11 @@ class ThrottleSummaryWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            throttleData: null,
+            apiCreatedBy: 'all',
+            latencyData: null,
+            localeMessages: null,
             inProgress: true,
-            dimension: null,
+            apiList: [],
             selectedOptions: [],
         };
 
@@ -112,10 +104,10 @@ class ThrottleSummaryWidget extends Widget {
             }));
         }
 
-        this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
-        this.assembleMainQuery = this.assembleMainQuery.bind(this);
+        this.assembleLatencyQuery = this.assembleLatencyQuery.bind(this);
+        this.handleApiLatencyReceived = this.handleApiLatencyReceived.bind(this);
         this.handleOnClick = this.handleOnClick.bind(this);
+        this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
     }
 
     componentWillMount() {
@@ -152,12 +144,12 @@ class ThrottleSummaryWidget extends Widget {
     /**
      * Load locale file.
      * @param {string} locale Locale name
-     * @memberof ThrottleSummaryWidget
+     * @memberof PerformanceSummaryWidget
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/ThrottleSummary/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/PerformanceSummary/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -170,7 +162,7 @@ class ThrottleSummaryWidget extends Widget {
 
     /**
      * Retrieve params from publisher - DateTimeRange
-     * @memberof ThrottleSummaryWidget
+     * @memberof PerformanceSummaryWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -186,32 +178,33 @@ class ThrottleSummaryWidget extends Widget {
                 timeTo: to,
                 perValue: granularity,
                 inProgress: !sync,
-            }, this.assembleMainQuery);
+            }, this.assembleLatencyQuery);
         } else if (dm) {
             this.setState({
                 dimension: dm,
                 selectedOptions: op,
                 inProgress: true,
-            }, this.assembleMainQuery);
+            }, this.assembleLatencyQuery);
         } else if (from) {
             this.setState({
                 timeFrom: from,
                 timeTo: to,
                 perValue: granularity,
                 inProgress: !sync,
-            }, this.assembleMainQuery);
+            }, this.assembleLatencyQuery);
         }
     }
 
     /**
-     * Formats the siddhi query - mainquery
-     * @memberof ThrottleSummaryWidget
+     * Formats the siddhi query - apiusagequery
+     * @memberof PerformanceSummaryWidget
      * */
-    assembleMainQuery() {
+    assembleLatencyQuery() {
         const {
             providerConfig, timeFrom, timeTo, perValue, dimension, selectedOptions,
         } = this.state;
-        const { widgetID: widgetName, id } = this.props;
+        const { id, widgetID: widgetName } = this.props;
+
         if (dimension && timeFrom) {
             if (selectedOptions && selectedOptions.length > 0) {
                 let filterCondition = selectedOptions.map((opt) => {
@@ -220,27 +213,30 @@ class ThrottleSummaryWidget extends Widget {
                 filterCondition = filterCondition.join(' OR ');
 
                 const dataProviderConfigs = cloneDeep(providerConfig);
-                dataProviderConfigs.configs.config.queryData.queryName = 'query';
+                dataProviderConfigs.configs.config.queryData.queryName = 'apilatencyquery';
                 dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{timeFrom}}': timeFrom,
-                    '{{timeTo}}': timeTo,
-                    '{{per}}': perValue,
                     '{{filterCondition}}': filterCondition,
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
                 };
                 super.getWidgetChannelManager()
-                    .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+                    .subscribeWidget(id, widgetName, this.handleApiLatencyReceived,
+                        dataProviderConfigs);
             } else {
-                this.setState({ inProgress: false, throttleData: [] });
+                this.setState({
+                    latencyData: [], inProgress: false,
+                });
             }
         }
     }
 
     /**
-     * Formats data retrieved from assembleMainQuery
+     * Formats data retrieved from assembleLatencyQuery
      * @param {object} message - data retrieved
-     * @memberof ThrottleSummaryWidget
+     * @memberof PerformanceSummaryWidget
      * */
-    handleDataReceived(message) {
+    handleApiLatencyReceived(message) {
         const { data } = message;
         const { selectedOptions } = this.state;
 
@@ -253,34 +249,35 @@ class ThrottleSummaryWidget extends Widget {
                 if (!acc[key]) {
                     acc[key] = [];
                 }
-                acc[key].push({ apiname: obj[0] + ' :: ' + obj[1] + ' (' + obj[2] + ')', count: obj[3] });
+                acc[key].push({ apiname: obj[0] + ' :: ' + obj[2] + ' (' + obj[1] + ')', latency: obj[3] });
                 return acc;
             }, {});
-            const throttleData = Object.keys(dataGroupByTime).map((key) => {
-                const availableUsage = dataGroupByTime[key];
-                const throttleInfo = [];
+            const latencyData = Object.keys(dataGroupByTime).map((key) => {
+                const availableLatencyData = dataGroupByTime[key];
+                const perf = [];
                 apiList.forEach((api) => {
-                    const apiUsage = availableUsage.find(selc => selc.apiname === api);
-                    if (apiUsage) {
-                        throttleInfo.push(apiUsage.count);
+                    const apiPerf = availableLatencyData.filter(selc => selc.apiname === api);
+                    if (apiPerf) {
+                        const latency = apiPerf.reduce((acc, cur) => {
+                            return acc + cur.latency;
+                        }, 0);
+                        perf.push(latency / apiPerf.length);
                     } else {
-                        throttleInfo.push(0);
+                        perf.push(0);
                     }
                 });
-                throttleInfo.push(parseInt(key, 10));
-                return throttleInfo;
+                perf.push(parseInt(key, 10));
+                return perf;
             });
-
-
-            this.setState({ throttleData, apiList, inProgress: false });
+            this.setState({ latencyData, apiList, inProgress: false });
         } else {
-            this.setState({ inProgress: false, throttleData: [] });
+            this.setState({ latencyData: [], inProgress: false });
         }
     }
 
     /**
      * Handle onClick of an API and drill down
-     * @memberof ThrottleSummaryWidget
+     * @memberof PerformanceSummaryWidget
      * */
     handleOnClick(data) {
         const { configs } = this.props;
@@ -304,67 +301,58 @@ class ThrottleSummaryWidget extends Widget {
         }
     }
 
+
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the Throttle Summary widget
-     * @memberof ThrottleSummaryWidget
+     * @returns {ReactElement} Render the Performance Summary widget
+     * @memberof PerformanceSummaryWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, width, inProgress, throttleData, apiList,
+            localeMessages, faultyProviderConfig, width, height, latencyData, inProgress, apiList,
         } = this.state;
         const {
             paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const faultProps = {
-            themeName,
-            height,
-            width,
-            throttleData,
-            inProgress,
-            apiList,
+        const apiPerfOverTimeProps = {
+            themeName, width, height, latencyData, inProgress, apiList,
         };
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    <div>
-                        {
-                            faultyProviderConfig ? (
-                                <div style={paperWrapper}>
-                                    <Paper
-                                        elevation={1}
-                                        style={paper}
-                                    >
-                                        <Typography variant='h5' component='h3'>
-                                            <FormattedMessage
-                                                id='config.error.heading'
-                                                defaultMessage='Configuration Error !'
-                                            />
-                                        </Typography>
-                                        <Typography component='p'>
-                                            <FormattedMessage
-                                                id='config.error.body'
-                                                defaultMessage={'Cannot fetch provider configuration for '
-                                                + 'Throttle Summary widget'}
-                                            />
-                                        </Typography>
-                                    </Paper>
-                                </div>
-                            ) : (
-                                <ThrottleSummary
-                                    {...faultProps}
-                                    handleOnClick={this.handleOnClick}
-                                />
-                            )
-                        }
-                    </div>
+                    {
+                        faultyProviderConfig ? (
+                            <div style={paperWrapper}>
+                                <Paper elevation={1} style={paper}>
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='config.error.heading'
+                                            defaultMessage='Configuration Error !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='config.error.body'
+                                            defaultMessage={'Cannot fetch provider configuration for'
+                                            + ' Performance Summary widget'}
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <PerformanceSummary
+                                {...apiPerfOverTimeProps}
+                                handleOnClick={this.handleOnClick}
+                            />
+                        )
+                    }
                 </MuiThemeProvider>
             </IntlProvider>
         );
     }
 }
 
-global.dashboard.registerWidget('ThrottleSummary', ThrottleSummaryWidget);
+global.dashboard.registerWidget('PerformanceSummary', PerformanceSummaryWidget);
