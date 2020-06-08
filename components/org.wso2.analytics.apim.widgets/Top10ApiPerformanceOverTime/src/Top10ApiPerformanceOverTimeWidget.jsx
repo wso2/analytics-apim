@@ -259,9 +259,12 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
                 const availableLatencyData = dataGroupByTime[key];
                 const perf = [];
                 apiList.forEach((api) => {
-                    const apiPerf = availableLatencyData.find(selc => selc.apiname === api);
+                    const apiPerf = availableLatencyData.filter(selc => selc.apiname === api);
                     if (apiPerf) {
-                        perf.push(apiPerf.latency);
+                        const latency = apiPerf.reduce((acc, cur) => {
+                            return acc + cur.latency;
+                        }, 0);
+                        perf.push(latency / apiPerf.length);
                     } else {
                         perf.push(0);
                     }
