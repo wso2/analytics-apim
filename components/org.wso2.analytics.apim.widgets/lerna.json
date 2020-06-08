@@ -64,7 +64,7 @@
     "APILatencySummary",
     "APILatencyOverTime",
     "PerformanceSummary",
-    "PerformanceSummary"
+    "ThrottleSummary"
   ],
   "version": "1.0.0"
 }
