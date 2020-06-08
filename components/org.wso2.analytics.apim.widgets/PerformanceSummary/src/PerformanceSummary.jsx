@@ -152,7 +152,7 @@ export default function PerformanceSummary(props) {
                                         metadata={metadata}
                                         data={latencyData}
                                         width={width}
-                                        height={height * 0.85}
+                                        height={height * 0.88}
                                         theme={themeName}
                                         onClick={data => handleOnClick(data)}
                                     />

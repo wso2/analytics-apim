@@ -146,7 +146,7 @@ export default function ThrottleSummary(props) {
                                     metadata={metadata}
                                     data={throttleData}
                                     width={width}
-                                    height={height}
+                                    height={height * 0.88}
                                     onClick={data => handleOnClick(data)}
                                 />
                             </div>

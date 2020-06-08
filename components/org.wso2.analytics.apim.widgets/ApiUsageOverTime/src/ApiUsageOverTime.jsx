@@ -49,9 +49,6 @@ export default function ApiUsageOverTime(props) {
             background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
         },
-        chartWrapper: {
-            paddingTop: '10px',
-        },
         loadingIcon: {
             margin: 'auto',
             display: 'block',
@@ -146,13 +143,13 @@ export default function ApiUsageOverTime(props) {
                                     </Paper>
                                 </div>
                             ) : (
-                                <div style={styles.chartWrapper}>
+                                <div>
                                     <VizG
                                         config={chartConfig}
                                         metadata={metadata}
                                         data={usageData}
                                         width={width}
-                                        height={height * 0.85}
+                                        height={height * 0.88}
                                         theme={themeName}
                                     />
                                 </div>
