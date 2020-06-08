@@ -23,7 +23,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 47.09864603481625,
+                  "height": 46.123650637880274,
                   "content": [
                     {
                       "type": "stack",
@@ -104,7 +104,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 52.90135396518375,
+                  "height": 53.876349362119726,
                   "content": [
                     {
                       "type": "stack",
@@ -184,7 +184,7 @@
               ]
             }
           ],
-          "height": 1039
+          "height": 1001
         },
         {
           "id": "usage-summary",
@@ -294,7 +294,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 35.467852381045965,
+                  "height": 40.69158758931034,
                   "content": [
                     {
                       "type": "stack",
@@ -382,7 +382,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 27.33529888036608,
+                  "height": 26.5599586314832,
                   "width": 100,
                   "content": [
                     {
@@ -421,7 +421,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 30.49594281340841,
+                  "height": 26.047547854026927,
                   "content": [
                     {
                       "type": "stack",
@@ -2251,7 +2251,7 @@
                           "type": "stack",
                           "isClosable": true,
                           "title": "",
-                          "height": 28.684811911010307,
+                          "height": 31.02806151666481,
                           "width": 100,
                           "content": [
                             {
@@ -2287,7 +2287,7 @@
                           "type": "stack",
                           "isClosable": true,
                           "title": "",
-                          "height": 31.291357580882615,
+                          "height": 30.957623238533895,
                           "content": [
                             {
                               "title": "[APIM Top Subscribers]",
@@ -2323,7 +2323,7 @@
                           "type": "stack",
                           "isClosable": true,
                           "title": "",
-                          "height": 32.9846128612334,
+                          "height": 30.975097597927626,
                           "content": [
                             {
                               "title": "[APIM Top App Creators]",
