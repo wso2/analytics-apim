@@ -232,11 +232,9 @@ class APIMApiBackendUsageWidget extends Widget {
                 let filterCondition = '';
                 if (selectedOptions[0].name !== 'All') {
                     filterCondition = selectedOptions.map((opt) => {
-                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
-                            + '\' AND apiCreator==\'' + opt.provider + '\')';
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
                     });
-                    filterCondition = filterCondition.join(' OR ');
-                    filterCondition = 'AND ' + filterCondition;
+                    filterCondition = 'AND ' + filterCondition.join(' OR ');
                 }
 
                 const dataProviderConfigs = cloneDeep(providerConfig);

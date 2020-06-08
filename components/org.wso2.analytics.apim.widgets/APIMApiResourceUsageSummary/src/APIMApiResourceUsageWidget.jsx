@@ -227,12 +227,13 @@ class APIMApiResourceUsageWidget extends Widget {
         if (dimension && timeFrom) {
             if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
                 const dataProviderConfigs = cloneDeep(providerConfig);
-
-                let filterCondition = selectedOptions.map((opt) => {
-                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version
-                        + '\' AND apiCreator==\'' + opt.provider + '\')';
-                });
-                filterCondition = filterCondition.join(' OR ');
+                let filterCondition = '';
+                if (selectedOptions[0].name !== 'All') {
+                    filterCondition = selectedOptions.map((opt) => {
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
+                    });
+                    filterCondition = 'AND ' + filterCondition.join(' OR ');
+                }
 
                 dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
                 dataProviderConfigs.configs.config.queryData.queryValues = {

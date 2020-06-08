@@ -1,0 +1,74 @@
+/*
+    Copyright (c) 2020, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+@App:name('APIM_ERROR_SUMMARY')
+@App:description('Do aggregations to the request events and store in the database.')
+
+@source(type='inMemory' , topic='APIM_REQUEST')
+define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string);
+
+@source(type='inMemory' , topic='ThrottledOutStream')
+define stream ThrottledOutStream(meta_clientType string, username string, userTenantDomain string, apiName string, apiVersion string, apiContext string,
+    apiCreator string, apiCreatorTenantDomain string, apiResourceTemplate string, apiMethod string, applicationId string, applicationName string,
+    subscriber string, throttledOutReason string, gatewayType string, throttledOutTimestamp long, hostname string );
+
+@source(type = 'inMemory', topic='FaultStream')
+define stream FaultStream(meta_clientType string, applicationConsumerKey string, apiName string, apiVersion string, apiContext string, apiResourcePath string,
+    apiResourceTemplate string, apiMethod string, apiCreator string, username string, userTenantDomain string, apiCreatorTenantDomain string, hostname string,
+    applicationId string, applicationName string, applicationOwner string, protocol string, errorCode string, errorMessage string, requestTimestamp long
+);
+
+define stream ErrorSummaryStream (apiName string, apiVersion string, apiResourceTemplate string, apiMethod string, apiCreator string,
+apiCreatorTenantDomain string, applicationId string, applicationName string, applicationOwner string, responseCode int,
+_4xx int, _5xx int, successCount int, faultCount int, throttledCount int, timestamp long);
+
+
+
+-- API details summary(Error details, traffic details)
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "apiMethod:40")
+@purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='72 hours', hours='90 days', days='1 year', months='10 years'))
+define aggregation ApiErrorAnalysisAgg
+from ErrorSummaryStream
+select apiName, apiVersion, apiMethod, apiResourceTemplate, applicationName, applicationOwner, responseCode, sum(_4xx) as _4xx,
+sum(_5xx) as _5xx, sum(successCount) as successCount, sum(faultCount) as faultCount, sum(throttledCount) as throttledCount,
+apiCreator, apiCreatorTenantDomain
+group by apiName, apiVersion, responseCode, apiResourceTemplate, applicationId
+aggregate by timestamp every seconds...years;
+
+from Request[responseCode >= 400 and responseCode < 500]
+select apiName, apiVersion, apiResourceTemplate, apiMethod, apiCreator, apiCreatorTenantDomain, applicationId,
+applicationName, applicationOwner, responseCode, 1 as _4xx, 0 as _5xx, 0 as successCount, 0 as faultCount, 0 as throttledCount, requestTimestamp as timestamp
+insert into ErrorSummaryStream;
+
+from Request[responseCode >= 500 and responseCode < 600]
+select apiName, apiVersion, apiResourceTemplate, apiMethod, apiCreator, apiCreatorTenantDomain, applicationId,
+applicationName, applicationOwner, responseCode, 0 as _4xx, 1 as _5xx, 0 as successCount, 0 as faultCount, 0 as throttledCount, requestTimestamp as timestamp
+insert into ErrorSummaryStream;
+
+from Request
+select apiName, apiVersion, apiResourceTemplate, apiMethod, apiCreator, apiCreatorTenantDomain, applicationId,
+applicationName, applicationOwner, responseCode, 0 as _4xx, 0 as _5xx, 1 as successCount, 0 as faultCount, 0 as throttledCount, requestTimestamp as timestamp
+insert into ErrorSummaryStream;
+
+from ThrottledOutStream
+select apiName, apiVersion, apiResourceTemplate, apiMethod, apiCreator, apiCreatorTenantDomain, applicationId,
+applicationName, subscriber as applicationOwner, 0 as responseCode, 0 as _4xx, 0 as _5xx, 0 as successCount, 0 as faultCount, 1 as throttledCount, throttledOutTimestamp as timestamp
+insert into ErrorSummaryStream;
+
+from FaultStream
+select apiName, apiVersion, apiResourceTemplate, apiMethod, apiCreator, apiCreatorTenantDomain, applicationId,
+applicationName, applicationOwner, 0 as responseCode, 0 as _4xx, 0 as _5xx, 0 as successCount, 1 as faultCount, 0 as throttledCount, requestTimestamp as timestamp
+insert into ErrorSummaryStream;

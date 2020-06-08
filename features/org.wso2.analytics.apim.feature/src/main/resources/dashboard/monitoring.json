@@ -1,0 +1,935 @@
+{
+  "dashboard": {
+    "url": "monitoring",
+    "owner": "admin@carbon.super",
+    "name": "Monitoring",
+    "description": "",
+    "landingPage": "home",
+    "parentId": "0",
+    "content": {
+      "properties": {},
+      "readOnly": false,
+      "pages": [
+        {
+          "id": "home",
+          "name": "Home",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 48.34902934718262,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 19.43416316006319,
+                      "content": [
+                        {
+                          "title": "[APIM Api Usage Summary]",
+                          "type": "component",
+                          "component": "APIMApiUsageSummary",
+                          "props": {
+                            "id": "f35b4041-a78e-4990-99a7-1ffdee18abbb",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "headerTitle": "API Usage Summary"
+                              }
+                            },
+                            "widgetID": "APIMApiUsageSummary"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 28.125,
+                      "width": 26.454319412566687,
+                      "content": [
+                        {
+                          "title": "[APIM Faults Summary]",
+                          "type": "component",
+                          "component": "APIMApiFaultsSummary",
+                          "props": {
+                            "id": "d888af7e-d49f-4776-8a78-3280ae443b2d",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "headerTitle": "API Faults Summary"
+                              }
+                            },
+                            "widgetID": "APIMApiFaultsSummary"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 19.621637096219846,
+                      "content": [
+                        {
+                          "title": "[APIM Throttled Api Summary]",
+                          "type": "component",
+                          "component": "APIMApiThrottledSummary",
+                          "props": {
+                            "id": "bf170ea4-cef8-46da-9a44-f56295bdc28e",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": false,
+                                "headerTitle": "API Throttle Summary"
+                              }
+                            },
+                            "widgetID": "APIMApiThrottledSummary"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 34.489880331150275,
+                      "content": [
+                        {
+                          "title": "[APIM Api Availability]",
+                          "type": "component",
+                          "component": "APIMApiAvailability",
+                          "props": {
+                            "id": "433f3128-5670-4838-82d7-55ce34fc92a7",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Availability"
+                              }
+                            },
+                            "widgetID": "APIMApiAvailability"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 51.650970652817385,
+                  "content": [
+                    {
+                      "title": "[APIM Overall Api Info]",
+                      "type": "component",
+                      "component": "APIMOverallApiInfo",
+                      "props": {
+                        "id": "59c873c4-0b2b-4464-a037-acc2f4358f0f",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "Overall Api Info"
+                          }
+                        },
+                        "widgetID": "APIMOverallApiInfo"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "error",
+          "name": "Error",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 6.4495202817278505,
+                  "content": [
+                    {
+                      "title": "[Date Time Range]",
+                      "type": "component",
+                      "component": "DateRangePicker",
+                      "props": {
+                        "id": "f085d16c-922a-455e-ab32-718ff0ea26e5",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "granularity",
+                              "from",
+                              "to"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "defaultValue": "3 Months",
+                            "availableGranularities": "From Second",
+                            "autoSyncInterval": "30",
+                            "headerTitle": "Date Time Range"
+                          }
+                        },
+                        "widgetID": "DateRangePicker"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 42.11978177122716,
+                  "content": [
+                    {
+                      "title": "[ErrorByAppAndAPIwidget]",
+                      "type": "component",
+                      "component": "ErrorByAppAndAPI",
+                      "props": {
+                        "id": "b16a5f89-1f07-4f24-bcb2-0eb3232c96a1",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "f085d16c-922a-455e-ab32-718ff0ea26e5"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {}
+                        },
+                        "widgetID": "ErrorByAppAndAPI"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 49.86001731877273,
+                  "content": [
+                    {
+                      "title": "[AppAndAPIErrorTablewidget]",
+                      "type": "component",
+                      "component": "AppAndAPIErrorTable",
+                      "props": {
+                        "id": "531ee75d-35c5-4db8-a250-fc6fa73d56f3",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "f085d16c-922a-455e-ab32-718ff0ea26e5"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {}
+                        },
+                        "widgetID": "AppAndAPIErrorTable"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 1.5706806282722534,
+                  "content": [
+                    {
+                      "title": "[AppAndAPIErrorsByTimeWidget]",
+                      "type": "component",
+                      "component": "AppAndAPIErrorsByTime",
+                      "props": {
+                        "id": "89c44858-bbd8-494e-bf06-a78ec4df0ada",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "f085d16c-922a-455e-ab32-718ff0ea26e5"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {}
+                        },
+                        "widgetID": "AppAndAPIErrorsByTime"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "height": 1458
+        },
+        {
+          "id": "latency",
+          "name": "Latency",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 9.690916685080007,
+                  "content": [
+                    {
+                      "title": "[Date Time Range]",
+                      "type": "component",
+                      "component": "DateRangePicker",
+                      "props": {
+                        "id": "5525e109-7b1f-4b89-a413-7b0279312e06",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "granularity",
+                              "from",
+                              "to"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "defaultValue": "3 Months",
+                            "availableGranularities": "From Second",
+                            "autoSyncInterval": "30",
+                            "headerTitle": "Date Time Range"
+                          }
+                        },
+                        "widgetID": "DateRangePicker"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 40.541143654103344,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 33.333333333333336,
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[APIM Overall Highest Latency]",
+                          "type": "component",
+                          "component": "APIMOverallHighestLatency",
+                          "props": {
+                            "id": "45a72125-febe-4ca7-bc6b-cfc3cf68e279",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "5525e109-7b1f-4b89-a413-7b0279312e06"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true
+                              }
+                            },
+                            "widgetID": "APIMOverallHighestLatency"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 100,
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[APIM Average Api Latency]",
+                          "type": "component",
+                          "component": "APIMAverageApiLatency",
+                          "props": {
+                            "id": "1cfb2aea-dfdd-4d41-9fd2-3bb437e5539a",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "5525e109-7b1f-4b89-a413-7b0279312e06"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "Average Api Latency"
+                              }
+                            },
+                            "widgetID": "APIMAverageApiLatency"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 49.76793966081666,
+                  "content": [
+                    {
+                      "title": "[APIM Api Latency Time]",
+                      "type": "component",
+                      "component": "APIMApiLatencyTime",
+                      "props": {
+                        "id": "33bac192-2ef6-46e0-899d-38a4c1742a1b",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "5525e109-7b1f-4b89-a413-7b0279312e06"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "API Latency Over Time"
+                          }
+                        },
+                        "widgetID": "APIMApiLatencyTime"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "height": 1084.2222137451172
+        },
+        {
+          "id": "traffic",
+          "name": "Traffic",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 16.607057065072333,
+                  "content": [
+                    {
+                      "title": "[Date Time Range]",
+                      "type": "component",
+                      "component": "DateRangePicker",
+                      "props": {
+                        "id": "b9dc4573-f4b7-4d26-8080-6dedbcbfb737",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "granularity",
+                              "from",
+                              "to"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "defaultValue": "3 Months",
+                            "availableGranularities": "From Second",
+                            "autoSyncInterval": "30",
+                            "headerTitle": "Date Time Range"
+                          }
+                        },
+                        "widgetID": "DateRangePicker"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 37.247731171148324,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[APIM Total Api Traffic]",
+                          "type": "component",
+                          "component": "APIMTotalApiTraffic",
+                          "props": {
+                            "id": "7a77462f-bf38-4ded-935f-0f9a95a272be",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "Total Api Traffic"
+                              }
+                            },
+                            "widgetID": "APIMTotalApiTraffic"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 100,
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[APIM Top Throttled Out Apis]",
+                          "type": "component",
+                          "component": "APIMTopThrottledOutApis",
+                          "props": {
+                            "id": "cb924ce2-2be3-4669-a955-bed39051df25",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "Top Throttled Out APIs"
+                              }
+                            },
+                            "widgetID": "APIMTopThrottledOutApis"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 46.14521176377935,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 33.333333333333336,
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[APIM Api Resource Traffic]",
+                          "type": "component",
+                          "component": "APIMApiResourceTraffic",
+                          "props": {
+                            "id": "cd52c269-96c0-46a1-8936-8c4e2b97a5bf",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Resource Traffic"
+                              }
+                            },
+                            "widgetID": "APIMApiResourceTraffic"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 50,
+                      "content": [
+                        {
+                          "title": "[APIM Api Last Access Summary]",
+                          "type": "component",
+                          "component": "APIMApiLastAccessSummary",
+                          "props": {
+                            "id": "e992fecb-5b27-432c-a208-d339abf03f6f",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Last Access Time"
+                              }
+                            },
+                            "widgetID": "APIMApiLastAccessSummary"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "alerts",
+          "name": "Alerts",
+          "content": [
+            {
+              "type": "column",
+              "isClosable": true,
+              "title": "",
+              "content": [
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 7.212089763832891,
+                  "content": [
+                    {
+                      "title": "[Date Time Range]",
+                      "type": "component",
+                      "component": "DateRangePicker",
+                      "props": {
+                        "id": "c1651b66-a7e1-4875-baa9-0b8e628a233c",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "granularity",
+                              "from",
+                              "to"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "defaultValue": "3 Months",
+                            "availableGranularities": "From Second",
+                            "autoSyncInterval": "30",
+                            "headerTitle": "Date Time Range"
+                          }
+                        },
+                        "widgetID": "DateRangePicker"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 48.8516626019266,
+                  "content": [
+                    {
+                      "title": "[APIM Alert Summary By APIs]",
+                      "type": "component",
+                      "component": "APIMAlertSummaryByAPIs",
+                      "props": {
+                        "id": "d3efa2d1-5788-4c4b-8783-0f43611b1039",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "c1651b66-a7e1-4875-baa9-0b8e628a233c"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "Top Throttled Out APIs",
+                            "drillDown": "api-faults"
+                          }
+                        },
+                        "widgetID": "APIMAlertSummaryByAPIs"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 43.936247634240495,
+                  "content": [
+                    {
+                      "title": "[APIM Alert Summary]",
+                      "type": "component",
+                      "component": "APIMAlertSummary",
+                      "props": {
+                        "id": "2df628ec-7984-44a8-8444-d537d5ac0e37",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "c1651b66-a7e1-4875-baa9-0b8e628a233c"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "Overall Api Info"
+                          }
+                        },
+                        "widgetID": "APIMAlertSummary"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "height": 1333
+        }
+      ]
+    },
+    "hasOwnerPermission": false,
+    "hasDesignerPermission": false,
+    "hasViewerPermission": false
+  },
+  "widgets": {
+    "generated": [],
+    "custom": [
+      "APIMApiThrottledSummary",
+      "APIMAverageApiLatency",
+      "APIMApiAvailability",
+      "ErrorByAppAndAPI",
+      "APIMOverallErrorInfo",
+      "AppAndAPIErrorsByTime",
+      "AppAndAPIErrorTable",
+      "APIMOverallApiInfo",
+      "APIMApiErrorPercentages",
+      "APIMTopFaultyApis",
+      "APIMApiResourceTraffic",
+      "APIMTopThrottledOutApis",
+      "APIMAlertSummary",
+      "APIMApiLastAccessSummary",
+      "DateRangePicker",
+      "APIMApiLatencyTime",
+      "APIMOverallHighestLatency",
+      "APIMAlertSummaryByAPIs",
+      "APIMApiFaultsSummary",
+      "APIMApiErrorAnalysis",
+      "APIMApiUsageSummary",
+      "APIMTotalApiTraffic"
+    ]
+  },
+  "permissions": {
+    "viewers": [
+      "apim_analytics:admin_carbon.super"
+    ],
+    "owners": [
+      "apim_analytics:admin_carbon.super"
+    ],
+    "editors": [
+      "apim_analytics:admin_carbon.super"
+    ]
+  }
+}

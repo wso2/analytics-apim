@@ -261,9 +261,10 @@ class CustomTable extends React.Component {
                                             tabIndex={-1}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                <Link href='#' onClick={() => onClickTableRow(n)} color='inherit'>
-                                                    {n.api}
-                                                </Link>
+                                                {n.api}
+                                                {/* <Link href='#' onClick={() => onClickTableRow(n)} color='inherit'> */}
+                                                {/* {n.api} */}
+                                                {/* </Link> */}
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
                                                 {n.apiversion}

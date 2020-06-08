@@ -116,6 +116,8 @@ define stream ThrottledOutStream(
     apiContext string,
     apiCreator string,
     apiCreatorTenantDomain string,
+    apiResourceTemplate string,
+    apiMethod string,
     applicationId string,
     applicationName string,
     subscriber string,
@@ -172,6 +174,7 @@ define stream FaultStream(
     apiVersion string,
     apiContext string,
     apiResourcePath string,
+    apiResourceTemplate string,
     apiMethod string,
     apiCreator string,
     username string,
@@ -180,6 +183,7 @@ define stream FaultStream(
     hostname string,
     applicationId string,
     applicationName string,
+    applicationOwner string,
     protocol string,
     errorCode string,
     errorMessage string,
@@ -202,13 +206,13 @@ insert into Request;
 -- Truncating Throttled event stream attributes
 from InComingThrottledOutStream
 select meta_clientType, username, userTenantDomain, apiName, apiVersion, apiContext, ifThenElse(str:length(apiCreator) > 150,str:substr(apiCreator,0,150),
- apiCreator) as  apiCreator, apiCreatorTenantDomain, applicationId, applicationName, subscriber, ifThenElse(str:length(throttledOutReason) > 30,
- str:substr(throttledOutReason,0,30), throttledOutReason) as  throttledOutReason,
+ apiCreator) as  apiCreator, apiCreatorTenantDomain, "None" as apiResourceTemplate, "None" as apiMethod, applicationId, applicationName, subscriber,
+ ifThenElse(str:length(throttledOutReason) > 30, str:substr(throttledOutReason,0,30), throttledOutReason) as  throttledOutReason,
  gatewayType, throttledOutTimestamp, ifThenElse(str:length(hostname)>200, str:substr(hostname,0,200), hostname) as hostname
 insert into ThrottledOutStream;
 
 -- Truncating Fault event stream attributes
 from InComingFaultStream
-select meta_clientType, applicationConsumerKey, apiName, apiVersion, apiContext, apiResourcePath, apiMethod, apiCreator, username,
-userTenantDomain, apiCreatorTenantDomain, hostname, applicationId, applicationName, protocol, errorCode, errorMessage, requestTimestamp
+select meta_clientType, applicationConsumerKey, apiName, apiVersion, apiContext, apiResourcePath, "None" as apiResourceTemplate, apiMethod, apiCreator, username,
+userTenantDomain, apiCreatorTenantDomain, hostname, applicationId, applicationName, "None" as applicationOwner, protocol, errorCode, errorMessage, requestTimestamp
 insert into FaultStream;

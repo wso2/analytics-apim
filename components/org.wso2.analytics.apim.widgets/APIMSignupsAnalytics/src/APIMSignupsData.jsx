@@ -53,7 +53,7 @@ function APIMSignupsData(props) {
             width: '95%',
         },
         tableWrapper: {
-            margin: 'auto',
+            paddingTop: '20px',
         },
     };
     const chartConfig = {

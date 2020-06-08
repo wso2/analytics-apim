@@ -54,16 +54,12 @@ function APIMApiBackendUsage(props) {
             padding: '4%',
         },
         formWrapper: {
-            marginBottom: '5%',
-        },
-        form: {
-            display: 'flex',
-            flexWrap: 'wrap',
+            paddingBottom: 20,
         },
         formControl: {
-            marginLeft: '5%',
-            marginTop: '5%',
-            minWidth: 120,
+            marginLeft: 10,
+            marginTop: 10,
+            width: '10%',
         },
         loadingIcon: {
             margin: 'auto',
@@ -131,7 +127,7 @@ function APIMApiBackendUsage(props) {
                     </h3>
                 </div>
                 <div style={styles.formWrapper}>
-                    <form style={styles.form}>
+                    <form>
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'

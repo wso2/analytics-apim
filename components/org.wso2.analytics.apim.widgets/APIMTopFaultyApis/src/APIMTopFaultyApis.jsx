@@ -76,11 +76,7 @@ function APIMTopFaultyApis(props) {
             padding: '4%',
         },
         formWrapper: {
-            marginBottom: '5%',
-        },
-        form: {
-            display: 'flex',
-            flexWrap: 'wrap',
+            paddingBottom: 20,
         },
         statDiv: {
             display: 'flex',
@@ -93,9 +89,9 @@ function APIMTopFaultyApis(props) {
             width: width > 1000 ? '50%' : '100%',
         },
         formControl: {
-            marginLeft: '5%',
-            marginTop: '5%',
-            minWidth: 120,
+            marginLeft: 10,
+            marginTop: 10,
+            width: '10%',
         },
         loadingIcon: {
             margin: 'auto',
@@ -169,7 +165,7 @@ function APIMTopFaultyApis(props) {
                         </h3>
                     </div>
                     <div style={styles.formWrapper}>
-                        <form style={styles.form} noValidate autoComplete='off'>
+                        <form noValidate autoComplete='off'>
                             <TextField
                                 id='limit-number'
                                 label={<FormattedMessage id='limit' defaultMessage='Limit' />}

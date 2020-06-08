@@ -177,6 +177,42 @@
         </fileSet>
         <fileSet>
             <directory>APIMPlaceholder/dist</directory>
+              <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMTotalApiTraffic/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMApiErrorPercentages/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMApiAlerts/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMAverageApiLatency/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMOverallApiInfo/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+         <fileSet>
+            <directory>APIMApiErrorAnalysis/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+         <fileSet>
+            <directory>APIMApiResourceTraffic/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMOverallHighestLatency/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMOverallErrorInfo/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
@@ -189,6 +225,46 @@
         </fileSet>
         <fileSet>
             <directory>DimensionSelector/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>AppAndAPIErrorTable/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>ErrorByAppAndAPI/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>AppAndAPIErrorsByTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>ApiUsageOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>Top10ApiUsageOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>OverallFaultAnalytics/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>Top10ThrottledApisOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>Top10ApiPerformanceOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMAlertSummary/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>APIMAlertSummaryByAPIs/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
     </fileSets>

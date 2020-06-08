@@ -80,14 +80,12 @@ function APIMTopApiCreators(props) {
             padding: '4%',
         },
         formWrapper: {
-            marginBottom: '5%',
+            paddingBottom: 20,
         },
-        form: {
-            width: '30%',
-            marginLeft: '5%',
-            marginTop: '5%',
-            display: 'flex',
-            flexWrap: 'wrap',
+        formControl: {
+            marginLeft: 10,
+            marginTop: 10,
+            width: '10%',
         },
         statDiv: {
             display: 'flex',
@@ -177,7 +175,7 @@ function APIMTopApiCreators(props) {
                         </h3>
                     </div>
                     <div style={styles.formWrapper}>
-                        <form style={styles.form} noValidate autoComplete='off'>
+                        <form noValidate autoComplete='off'>
                             <FormControl style={styles.formControl}>
                                 <Tooltip
                                     placement='top'

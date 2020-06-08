@@ -56,16 +56,12 @@ function APIMOverallApiUsage(props) {
             padding: '4%',
         },
         formWrapper: {
-            marginBottom: '5%',
-        },
-        form: {
-            display: 'flex',
-            flexWrap: 'wrap',
+            paddingBottom: 20,
         },
         formControl: {
-            marginLeft: '5%',
-            marginTop: '5%',
-            minWidth: 120,
+            marginLeft: 10,
+            marginTop: 10,
+            width: '10%',
         },
         dataWrapper: {
             height: '80%',
@@ -165,7 +161,7 @@ function APIMOverallApiUsage(props) {
                     </div>
                 </div>
                 <div style={styles.formWrapper}>
-                    <form style={styles.form} noValidate autoComplete='off'>
+                    <form noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'

@@ -27,6 +27,8 @@ define stream ThrottledOutStream(
     apiContext string,
     apiCreator string,
     apiCreatorTenantDomain string,
+    apiResourceTemplate string,
+    apiMethod string,
     applicationId string,
     applicationName string,
     subscriber string,
