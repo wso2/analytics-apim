@@ -762,49 +762,131 @@
           "name": "Alerts",
           "content": [
             {
-              "type": "stack",
+              "type": "column",
               "isClosable": true,
               "title": "",
-              "width": 100,
-              "height": 100,
               "content": [
                 {
-                  "title": "[Date Time Range]",
-                  "type": "component",
-                  "component": "DateRangePicker",
-                  "props": {
-                    "id": "54785bfb-32e6-4ad9-972b-2433afa033a2",
-                    "configs": {
-                      "pubsub": {
-                        "types": [
-                          "publisher"
-                        ],
-                        "publisherWidgetOutputs": [
-                          "granularity",
-                          "from",
-                          "to"
-                        ]
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 7.212089763832891,
+                  "content": [
+                    {
+                      "title": "[Date Time Range]",
+                      "type": "component",
+                      "component": "DateRangePicker",
+                      "props": {
+                        "id": "c1651b66-a7e1-4875-baa9-0b8e628a233c",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "granularity",
+                              "from",
+                              "to"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "defaultValue": "3 Months",
+                            "availableGranularities": "From Second",
+                            "autoSyncInterval": "30",
+                            "headerTitle": "Date Time Range"
+                          }
+                        },
+                        "widgetID": "DateRangePicker"
                       },
-                      "isGenerated": false,
-                      "options": {
-                        "header": true,
-                        "defaultValue": "3 Months",
-                        "availableGranularities": "From Second",
-                        "autoSyncInterval": "30",
-                        "headerTitle": "Date Time Range"
-                      }
-                    },
-                    "widgetID": "DateRangePicker"
-                  },
-                  "isClosable": false,
-                  "header": {
-                    "show": true
-                  },
-                  "componentName": "lm-react-component"
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 48.8516626019266,
+                  "content": [
+                    {
+                      "title": "[APIM Alert Summary By APIs]",
+                      "type": "component",
+                      "component": "APIMAlertSummaryByAPIs",
+                      "props": {
+                        "id": "d3efa2d1-5788-4c4b-8783-0f43611b1039",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "c1651b66-a7e1-4875-baa9-0b8e628a233c"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "Top Throttled Out APIs",
+                            "drillDown": "api-faults"
+                          }
+                        },
+                        "widgetID": "APIMAlertSummaryByAPIs"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 43.936247634240495,
+                  "content": [
+                    {
+                      "title": "[APIM Alert Summary]",
+                      "type": "component",
+                      "component": "APIMAlertSummary",
+                      "props": {
+                        "id": "2df628ec-7984-44a8-8444-d537d5ac0e37",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "c1651b66-a7e1-4875-baa9-0b8e628a233c"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "Overall Api Info"
+                          }
+                        },
+                        "widgetID": "APIMAlertSummary"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
                 }
               ]
             }
-          ]
+          ],
+          "height": 1333
         }
       ]
     },
@@ -827,10 +909,12 @@
       "APIMTopFaultyApis",
       "APIMApiResourceTraffic",
       "APIMTopThrottledOutApis",
+      "APIMAlertSummary",
       "APIMApiLastAccessSummary",
       "DateRangePicker",
       "APIMApiLatencyTime",
       "APIMOverallHighestLatency",
+      "APIMAlertSummaryByAPIs",
       "APIMApiFaultsSummary",
       "APIMApiErrorAnalysis",
       "APIMApiUsageSummary",
