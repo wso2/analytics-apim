@@ -72,7 +72,7 @@ export default function ApiUsageOverTime(props) {
         },
     };
     const chartConfig = {
-        x: 'REQUEST_TIME',
+        x: 'TIME',
         charts: [],
         maxLength: 60,
         width: 800,
@@ -97,7 +97,7 @@ export default function ApiUsageOverTime(props) {
 
     if (usageData) {
         metadata.names = apiList.map((dataUnit) => { return dataUnit; });
-        metadata.names.push('REQUEST_TIME');
+        metadata.names.push('TIME');
         metadata.types = apiList.map(() => { return 'linear'; });
         metadata.types.push('time');
         chartConfig.charts = apiList.map((dataUnit) => { return { type: 'line', y: dataUnit}; });
@@ -154,7 +154,7 @@ export default function ApiUsageOverTime(props) {
                                         metadata={metadata}
                                         data={usageData}
                                         width={width}
-                                        height={height * 0.9}
+                                        height={height * 0.85}
                                         theme={themeName}
                                     />
                                 </div>

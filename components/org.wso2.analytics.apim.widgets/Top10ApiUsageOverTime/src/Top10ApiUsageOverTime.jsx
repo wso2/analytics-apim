@@ -149,14 +149,15 @@ export default function Top10ApiUsageOverTime(props) {
                                 </div>
                             ) : (
                                 <div
-                                    onClick={data => handleOnClick(data)}
-                                    onKeyDown={data => handleOnClick(data)}
+                                    onClick={() => handleOnClick()}
+                                    onKeyDown={() => handleOnClick()}
                                 >
                                     <VizG
                                         config={chartConfig}
                                         metadata={metadata}
                                         data={usageData}
                                         width={width}
+                                        height={height * 0.9}
                                         theme={themeName}
                                     />
                                 </div>

@@ -111,7 +111,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
         this.handleTopApiReceived = this.handleTopApiReceived.bind(this);
         this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
         this.handleApiLatencyReceived = this.handleApiLatencyReceived.bind(this);
-        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     componentWillMount() {
@@ -279,7 +279,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
      * Handle onClick of an API and drill down
      * @memberof Top10ApiPerformanceOverTimeWidget
      * */
-    handleOnClickAPI(data) {
+    handleOnClick(data) {
         const { configs } = this.props;
 
         if (configs && configs.options) {
@@ -345,7 +345,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
                         ) : (
                             <Top10ApiPerformanceOverTime
                                 {...apiPerfOverTimeProps}
-                                handleOnClickAPI={this.handleOnClickAPI}
+                                handleOnClick={this.handleOnClick}
                             />
                         )
                     }
