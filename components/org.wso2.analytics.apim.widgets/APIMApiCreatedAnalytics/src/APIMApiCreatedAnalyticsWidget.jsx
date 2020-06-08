@@ -218,8 +218,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                         return '(API_NAME=\'' + opt.name + '\' AND API_VERSION=\'' + opt.version
                             + '\' AND CREATED_BY=\'' + opt.provider + '\')';
                     });
-                    filterCondition = filterCondition.join(' OR ');
-                    filterCondition = 'AND ' + filterCondition;
+                    filterCondition = 'AND ' + filterCondition.join(' OR ');
                 }
 
                 const dataProviderConfigs = cloneDeep(providerConfig);

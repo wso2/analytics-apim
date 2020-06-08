@@ -56,16 +56,12 @@ export default function APIMTopAgents(props) {
             padding: '4%',
         },
         formWrapper: {
-            marginBottom: '5%',
-        },
-        form: {
-            display: 'flex',
-            flexWrap: 'wrap',
+            paddingBottom: 20,
         },
         formControl: {
-            marginLeft: '5%',
-            marginTop: '5%',
-            minWidth: 120,
+            marginLeft: 10,
+            marginTop: 10,
+            width: '10%',
         },
         dataWrapper: {
             height: '80%',
@@ -124,7 +120,7 @@ export default function APIMTopAgents(props) {
                     </h3>
                 </div>
                 <div style={styles.formWrapper}>
-                    <form style={styles.form}>
+                    <form>
                         <TextField
                             id='limit-number'
                             label={<FormattedMessage id='limit' defaultMessage='Limit :' />}

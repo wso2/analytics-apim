@@ -1,0 +1,53 @@
+{
+  "name": "Top 10 Api Usage Over Time",
+  "id": "Top10ApiUsageOverTime",
+  "thumbnailURL": "",
+  "configs": {
+    "pubsub": {
+      "types": ["subscriber"]
+    },
+    "providerConfig" : {
+      "configs": {
+        "type": "SiddhiStoreDataProvider",
+        "config": {
+          "siddhiApp": "@App:name('Top10ApiUsageOverTimeSiddhi') define stream Request (meta_clientType string, applicationConsumerKey string, applicationName string, applicationId string, applicationOwner string, apiContext string,apiName string, apiVersion string, apiResourcePath string, apiResourceTemplate string, apiMethod string, apiCreator string, apiCreatorTenantDomain string, apiTier string, apiHostname string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp long, throttledOut bool, responseTime long, serviceTime long, backendTime long, responseCacheHit bool, responseSize long, protocol string, responseCode int, destination string, securityLatency long, throttlingLatency long, requestMedLat long, responseMedLat long, backendLatency long, otherLatency long, gatewayType string, label string); @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB') @purge(enable='true', interval='60 min', @retentionPeriod(sec='1 day', min='72 hours', hours='90 days', days='1 year', months='2 years', years='3 years')) define aggregation ApiUserPerAppAgg from Request select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain, count() as totalRequestCount, gatewayType, label,'default' as regionalID group by apiContext,apiHostname, applicationId, username, userTenantDomain aggregate by requestTimestamp every seconds...years;",
+          "queryData": {
+            "topapiquery": "from ApiUserPerAppAgg on apiCreatorTenantDomain=='{{tenantDomain}}' within {{from}}L, {{to}}L per \"days\" select apiName,apiCreator,apiVersion,sum(totalRequestCount) as RequestCount group by apiName,apiCreator,apiVersion order by RequestCount desc limit 10;",
+            "apiusagequery": "from ApiUserPerAppAgg on apiCreatorTenantDomain=='{{tenantDomain}}' {{filterCondition}} within {{from}}L, {{to}}L per \"days\" select apiName,apiCreator,sum(totalRequestCount) as RequestCount,apiVersion,AGG_TIMESTAMP group by apiName,apiCreator,apiVersion,AGG_TIMESTAMP order by AGG_TIMESTAMP asc;"
+          },
+          "publishingInterval": 360000
+        }
+      }
+    },
+    "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      },
+      {
+        "id": "headerTitle",
+        "title": "Widget Title",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "Top 10 Api Usage For Month"
+      },
+      {
+        "id": "drillDown",
+        "title": "API Usage Over Time Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "usage-over-time"
+      }
+    ]
+  }
+}

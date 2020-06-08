@@ -230,7 +230,7 @@ class CustomTable extends React.Component {
             <Paper className={classes.root}>
                 <div className={classes.title}>
                     <Typography variant='subtitle1'>
-                        <FormattedMessage id='table.title' defaultMessage='FAULTY REQUESTS BY APPLICATION' />
+                        <FormattedMessage id='table.title' defaultMessage='ERRORS BY APPLICATION' />
                     </Typography>
                 </div>
                 <CustomTableToolbar

@@ -54,9 +54,13 @@
     "AppAndAPIErrorTable",
     "ErrorByAppAndAPI",
     "AppAndAPIErrorsByTime",
+    "ApiUsageOverTime",
+    "Top10ApiUsageOverTime",
+    "OverallFaultAnalytics",
+    "Top10ThrottledApisOverTime",
+    "Top10ApiPerformanceOverTime",
     "APIMAlertSummary",
     "APIMAlertSummaryByAPIs"
-
   ],
   "version": "1.0.0"
 }

@@ -240,6 +240,26 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>ApiUsageOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>Top10ApiUsageOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>OverallFaultAnalytics/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>Top10ThrottledApisOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>Top10ApiPerformanceOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>APIMAlertSummary/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>

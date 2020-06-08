@@ -33,8 +33,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
+import VizG from 'react-vizgrammar';
+
 import {
-    VictoryAxis, VictoryLabel, VictoryLine, VictoryTooltip, VictoryLegend,
+    VictoryAxis, VictoryLabel, VictoryArea, VictoryStack,
+    VictoryGroup, VictoryPortal, VictoryScatter, VictoryChart,
 } from 'victory';
 import Moment from 'moment';
 
@@ -47,9 +50,8 @@ export default function APIMApiResourceTraffic(props) {
     const {
         themeName, queryParam, height, apiSelected, inProgress,
         apiVersion, apilist, versionlist, resourceList, apiSelectedHandleChange,
-        apiVersionHandleChange, apiOperationHandleChange, xAxisTicks, maxCount, dataarray, legandDataSet,
+        apiVersionHandleChange, apiOperationHandleChange, dataarray, legendDataSet,
     } = props;
-    const colorScale = ['#385dbd', '#83FF33', '#CB33FF', '#FF335C', '#33FFF5', '#FF9633'];
     const styles = {
         headingWrapper: {
             margin: 'auto',
@@ -137,9 +139,7 @@ export default function APIMApiResourceTraffic(props) {
             padding: '20px',
         },
         chart: {
-            height: 450,
-            width: 800,
-            marginLeft: '25px',
+            height: 550,
         },
         svgViewBox: {
             fill: themeName === 'dark' ? '#fff' : '#000',
@@ -148,6 +148,47 @@ export default function APIMApiResourceTraffic(props) {
             fontStyle: 'italic',
         },
     };
+
+    const xValues = {};
+
+    if (legendDataSet.length) {
+        dataarray.forEach((datum, i) => {
+            datum.forEach((dataUnit) => {
+                const date = dataUnit[0];
+                const label = legendDataSet[i].name;
+                xValues[date] = xValues[date] || {};
+                xValues[date][label] = xValues[date][label] || [...dataUnit];
+            });
+        });
+    }
+    const data = {};
+
+    Object.keys(xValues).forEach((key) => {
+        legendDataSet.forEach((legendItem) => {
+            data[legendItem.name] = data[legendItem.name] || [];
+            if (xValues[key][legendItem.name]) {
+                data[legendItem.name].push(xValues[key][legendItem.name]);
+            } else {
+                data[legendItem.name].push([parseInt(key, 10), null]);
+            }
+        });
+    });
+    const stackGroups = Object.values(data).map((datum) => {
+        return (
+            <VictoryGroup
+                data={datum.map(([x, y]) => {
+                    return { x, y };
+                })}
+            >
+                <VictoryArea />
+                <VictoryPortal>
+                    <VictoryScatter
+                        style={{ data: { fill: 'black' } }}
+                    />
+                </VictoryPortal>
+            </VictoryGroup>
+        );
+    });
 
     /**
      * Check whether the API is graphQL.
@@ -159,7 +200,6 @@ export default function APIMApiResourceTraffic(props) {
         const method = resFormat[1].replace(')', '');
         isGraphQL = (method === 'QUERY' || method === 'MUTATION' || method === 'SUBSCRIPTION');
     }
-
     return (
         <Scrollbars
             style={{
@@ -288,140 +328,95 @@ export default function APIMApiResourceTraffic(props) {
                         ) : (
                             <div style={styles.dataWrapper}>
                                 <div style={styles.chart}>
-                                    <svg viewBox='20 25 650 300' style={styles.svgWrapper}>
+                                    <VictoryChart
+                                        scale={{ x: 'time' }}
+                                        domainPadding={{ y: 20 }}
+                                    >
                                         <VictoryLabel
                                             x={30}
                                             y={65}
                                             style={styles.svgViewBox}
                                             text='HITS'
                                         />
-                                        <g transform='translate(0, 40)'>
-                                            <VictoryAxis
-                                                scale='time'
-                                                standalone={false}
-                                                width={700}
-                                                style={{
-                                                    grid: {
-                                                        stroke: tick => (tick === 0
-                                                            ? 'transparent' : '#313f46'),
-                                                        strokeWidth: 1,
-                                                    },
-                                                    axis: {
-                                                        stroke: themeName === 'dark' ? '#fff' : '#000',
-                                                        strokeWidth: 1,
-                                                    },
-                                                    ticks: {
-                                                        size: 5,
-                                                        stroke: themeName === 'dark' ? '#fff' : '#000',
-                                                        strokeWidth: 1,
-                                                    },
-                                                }}
-                                                label='TIME'
-                                                tickValues={xAxisTicks}
-                                                tickFormat={
-                                                    (x) => {
-                                                        return Moment(x).format('YY/MM/DD hh:mm');
-                                                    }
+                                        <VictoryAxis
+                                            scale='time'
+                                            standalone={false}
+                                            style={{
+                                                grid: {
+                                                    stroke: tick => (tick === 0
+                                                        ? 'transparent' : '#313f46'),
+                                                    strokeWidth: 1,
+                                                },
+                                                axis: {
+                                                    stroke: themeName === 'dark' ? '#fff' : '#000',
+                                                    strokeWidth: 1,
+                                                },
+                                                ticks: {
+                                                    size: 5,
+                                                    stroke: themeName === 'dark' ? '#fff' : '#000',
+                                                    strokeWidth: 1,
+                                                },
+                                            }}
+                                            label='TIME'
+                                            tickFormat={
+                                                (x) => {
+                                                    return Moment(x).format('YY/MM/DD hh:mm');
                                                 }
-                                                tickLabelComponent={(
-                                                    <VictoryLabel
-                                                        dx={-5}
-                                                        dy={-5}
-                                                        angle={-40}
-                                                        style={{
-                                                            fill: themeName === 'dark'
-                                                                ? '#fff' : '#000',
-                                                            fontFamily: themeName === 'dark'
-                                                                ? '#fff' : '#000',
-                                                            fontSize: 8,
-                                                        }}
-                                                    />
-                                                )}
-                                                axisLabelComponent={(
-                                                    <VictoryLabel
-                                                        dy={20}
-                                                        style={{
-                                                            fill: themeName === 'dark' ? '#fff' : '#000',
-                                                            fontFamily: 'inherit',
-                                                            fontSize: 8,
-                                                            fontStyle: 'italic',
-                                                        }}
-                                                    />
-                                                )}
-                                            />
-                                            <VictoryAxis
-                                                dependentAxis
-                                                width={700}
-                                                domain={[1, maxCount]}
-                                                offsetX={50}
-                                                orientation='left'
-                                                standalone={false}
-                                                style={{
-                                                    grid: {
-                                                        stroke: tick => (tick === 0
-                                                            ? 'transparent' : '#313f46'),
-                                                        strokeWidth: 1,
-                                                    },
-                                                    axis: {
-                                                        stroke: themeName === 'dark' ? '#fff' : '#000',
-                                                        strokeWidth: 1,
-                                                    },
-                                                    ticks: {
-                                                        strokeWidth: 0,
-                                                    },
-                                                    tickLabels: {
+                                            }
+                                            tickLabelComponent={(
+                                                <VictoryLabel
+                                                    dx={-5}
+                                                    dy={-5}
+                                                    angle={-40}
+                                                    style={{
+                                                        fill: themeName === 'dark'
+                                                            ? '#fff' : '#000',
+                                                        fontFamily: themeName === 'dark'
+                                                            ? '#fff' : '#000',
+                                                        fontSize: 8,
+                                                    }}
+                                                />
+                                            )}
+                                            axisLabelComponent={(
+                                                <VictoryLabel
+                                                    dy={20}
+                                                    style={{
                                                         fill: themeName === 'dark' ? '#fff' : '#000',
                                                         fontFamily: 'inherit',
                                                         fontSize: 8,
-                                                    },
-                                                }}
-                                            />
-                                            {
-                                                dataarray.map((p, element) => (
-                                                    <VictoryLine
-                                                        data={p}
-                                                        labels={d => d.label}
-                                                        width={700}
-                                                        domain={{
-                                                            y: [1, maxCount],
-                                                        }}
-                                                        scale={{x: 'time', y: 'linear'}}
-                                                        standalone={false}
-                                                        style={{
-                                                            data: {
-                                                                stroke: themeName === 'dark'
-                                                                    ? colorScale[element] : '#000',
-                                                                strokeWidth: 2,
-                                                            },
-                                                        }}
-                                                        labelComponent={(
-                                                            <VictoryTooltip
-                                                                orientation='right'
-                                                                pointerLength={0}
-                                                                cornerRadius={2}
-                                                                flyoutStyle={{
-                                                                    fill: '#000',
-                                                                    fillOpacity: '0.5',
-                                                                    strokeWidth: 1,
-                                                                }}
-                                                                style={styles.tooltip}
-                                                            />
-                                                        )}
-                                                    />
-                                                ))
-                                            }
-                                        </g>
-                                        <VictoryLegend
-                                            standalone={false}
-                                            colorScale={colorScale}
-                                            x={575}
-                                            y={30}
-                                            gutter={10}
-                                            rowGutter={styles.rowGutter}
-                                            style={styles.victoryLegend}
-                                            data={legandDataSet}
+                                                        fontStyle: 'italic',
+                                                    }}
+                                                />
+                                            )}
                                         />
-                                    </svg>
+                                        <VictoryAxis
+                                            dependentAxis
+                                            orientation='left'
+                                            standalone={false}
+                                            style={{
+                                                grid: {
+                                                    stroke: tick => (tick === 0
+                                                        ? 'transparent' : '#313f46'),
+                                                    strokeWidth: 1,
+                                                },
+                                                axis: {
+                                                    stroke: themeName === 'dark' ? '#fff' : '#000',
+                                                    strokeWidth: 1,
+                                                },
+                                                ticks: {
+                                                    strokeWidth: 0,
+                                                },
+                                                tickLabels: {
+                                                    fill: themeName === 'dark' ? '#fff' : '#000',
+                                                    fontFamily: 'inherit',
+                                                    fontSize: 8,
+                                                },
+                                            }}
+                                        />
+                                        <VictoryStack colorScale='blue'>
+                                            {stackGroups}
+                                        </VictoryStack>
+                                    </VictoryChart>
                                 </div>
                             </div>
                         )}
@@ -440,13 +435,11 @@ APIMApiResourceTraffic.propTypes = {
     apiVersion: PropTypes.string.isRequired,
     apilist: PropTypes.instanceOf(Object).isRequired,
     versionlist: PropTypes.instanceOf(Object).isRequired,
-    xAxisTicks: PropTypes.instanceOf(Object).isRequired,
     resourceList: PropTypes.instanceOf(Object).isRequired,
     dataarray: PropTypes.instanceOf(Object).isRequired,
-    legandDataSet: PropTypes.instanceOf(Object).isRequired,
+    legendDataSet: PropTypes.instanceOf(Object).isRequired,
     apiSelectedHandleChange: PropTypes.func.isRequired,
     apiVersionHandleChange: PropTypes.func.isRequired,
     apiOperationHandleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
-    maxCount: PropTypes.number.isRequired,
 };
