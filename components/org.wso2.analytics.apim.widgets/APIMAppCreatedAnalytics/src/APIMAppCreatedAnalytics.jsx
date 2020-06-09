@@ -45,15 +45,11 @@ export default function APIMAppCreatedAnalytics(props) {
             width: '95%',
         },
         formWrapper: {
-            marginBottom: '5%',
-        },
-        form: {
-            display: 'flex',
-            flexWrap: 'wrap',
+            paddingBottom: 20,
         },
         formControl: {
-            marginLeft: '5%',
-            marginTop: '5%',
+            marginLeft: 10,
+            marginTop: 10,
             minWidth: 120,
         },
         selectEmpty: {
@@ -107,7 +103,7 @@ export default function APIMAppCreatedAnalytics(props) {
                     </div>
                 </div>
                 <div style={styles.formWrapper}>
-                    <form style={styles.form} noValidate autoComplete='off'>
+                    <form noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
                             <Tooltip
                                 placement='top'
