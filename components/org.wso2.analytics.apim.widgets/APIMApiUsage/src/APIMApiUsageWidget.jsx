@@ -267,7 +267,7 @@ class APIMApiUsageWidget extends Widget {
                 return {
                     api: dataUnit[0] + ' (' + dataUnit[4] + ')',
                     apiversion: dataUnit[1],
-                    application: dataUnit[2],
+                    application: dataUnit[2] + ' (' + dataUnit[5] + ')',
                     usage: dataUnit[3],
                 };
             });
