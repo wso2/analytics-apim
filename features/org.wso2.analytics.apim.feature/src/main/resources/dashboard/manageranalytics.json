@@ -128,7 +128,7 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": false,
+                                "header": true,
                                 "headerTitle": "Top 10 Throttled Out Apis Over Time",
                                 "drillDown": "throttle-summary"
                               }
@@ -164,7 +164,7 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": false,
+                                "header": true,
                                 "headerTitle": "Overall Faulty Requests Over Time",
                                 "drillDown": "error-summary"
                               }
@@ -782,7 +782,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "PerformanceSummary",
+                            "headerTitle": "Performance Summary",
                             "drillDown": "api-performance"
                           }
                         },
@@ -1078,7 +1078,7 @@
                           },
                           "isGenerated": false,
                           "options": {
-                            "header": false,
+                            "header": true,
                             "headerTitle": "Throttle Summary",
                             "drillDown": "api-errors"
                           }
@@ -1375,7 +1375,7 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": false,
+                                "header": true,
                                 "headerTitle": "API Faulty Requests Over Time"
                               }
                             },
@@ -1413,7 +1413,7 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": false,
+                                "header": true,
                                 "headerTitle": "API Throttled Out Requests Over Time"
                               }
                             },
@@ -2232,7 +2232,7 @@
                                   },
                                   "isGenerated": false,
                                   "options": {
-                                    "header": false,
+                                    "header": true,
                                     "headerTitle": "API Subscriptions Summary",
                                     "drillDown": ""
                                   }
