@@ -38,16 +38,15 @@
           "name": "TEXT"
         },
         "defaultValue": "API Usage by Application"
+      },
+      {
+        "id": "drillDown",
+        "title": "API Usage Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "api-usage"
       }
-//    ,
-//      {
-//        "id": "drillDown",
-//        "title": "API Usage Page",
-//        "type": {
-//          "name": "TEXT"
-//        },
-//        "defaultValue": "api-usage"
-//      }
     ]
   }
 }
