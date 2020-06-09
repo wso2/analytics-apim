@@ -1799,7 +1799,7 @@
                           "type": "stack",
                           "isClosable": true,
                           "title": "",
-                          "width": 35.23809523809524,
+                          "width": 46.85714285714286,
                           "content": [
                             {
                               "title": "[Dimension Selector]",
@@ -1844,7 +1844,7 @@
                           "isClosable": true,
                           "title": "",
                           "height": 11.350638112823118,
-                          "width": 64.76190476190476,
+                          "width": 53.14285714285714,
                           "content": [
                             {
                               "title": "[Date Time Range]",
@@ -2039,7 +2039,7 @@
                           "type": "stack",
                           "isClosable": true,
                           "title": "",
-                          "width": 35.9417652411283,
+                          "width": 49.31756141947225,
                           "content": [
                             {
                               "title": "[Dimension Selector]",
@@ -2083,7 +2083,7 @@
                           "type": "stack",
                           "isClosable": true,
                           "title": "",
-                          "width": 64.0582347588717,
+                          "width": 50.682438580527744,
                           "height": 5.840466212681675,
                           "content": [
                             {
