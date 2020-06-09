@@ -380,16 +380,15 @@ class ApiUsageOverTimeWidget extends Widget {
         if (dimension && timeFrom) {
             if (selectedOptions && selectedOptions.length > 0 && selectedApp) {
                 let filterCondition = selectedOptions.map((opt) => {
+                    if (selectedApp !== 'All') {
+                        const appName = selectedApp.split(' (')[0].trim();
+                        const appOwner = selectedApp.split(' (')[1].split(')')[0].trim();
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\''
+                            + ' AND applicationName==\'' + appName + '\' AND applicationOwner==\'' + appOwner + '\')';
+                    }
                     return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
                 });
                 filterCondition = '(' + filterCondition.join(' OR ') + ')';
-
-                if (selectedApp !== 'All') {
-                    const appName = selectedApp.split(' (')[0].trim();
-                    const appOwner = selectedApp.split(' (')[1].split(')')[0].trim();
-                    filterCondition = filterCondition + ' AND applicationName==\'' + appName + '\''
-                        + ' AND applicationOwner==\'' + appOwner + '\'';
-                }
 
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';

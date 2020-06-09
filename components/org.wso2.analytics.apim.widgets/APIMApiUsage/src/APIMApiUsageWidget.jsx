@@ -316,7 +316,7 @@ class APIMApiUsageWidget extends Widget {
                 const {
                     tr, sd, ed, g,
                 } = super.getGlobalState('dtrp');
-                const { api, apiversion } = data;
+                const { api, apiversion, application } = data;
                 const apiname = (api.split(' (')[0]).trim();
                 const provider = (api.split('(')[1]).split(')')[0].trim();
                 const locationParts = window.location.pathname.split('/');
@@ -325,7 +325,8 @@ class APIMApiUsageWidget extends Widget {
                 window.location.href = window.contextPath
                     + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
                     + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
-                    + apiname + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+                    + apiname + '","version":"' + apiversion + '","provider":"' + provider + '"}]},'
+                    + '"apiUsageTime":{"selectedApp":"' + application + '"}}';
             }
         }
     }
