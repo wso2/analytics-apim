@@ -256,12 +256,9 @@ class PerformanceSummaryWidget extends Widget {
                 const availableLatencyData = dataGroupByTime[key];
                 const perf = [];
                 apiList.forEach((api) => {
-                    const apiPerf = availableLatencyData.filter(selc => selc.apiname === api);
-                    if (apiPerf && apiPerf.length > 0) {
-                        const latency = apiPerf.reduce((acc, cur) => {
-                            return acc + cur.latency;
-                        }, 0);
-                        perf.push(latency / apiPerf.length);
+                    const apiPerf = availableLatencyData.find(selc => selc.apiname === api);
+                    if (apiPerf) {
+                        perf.push(apiPerf.latency);
                     } else {
                         perf.push(0);
                     }
