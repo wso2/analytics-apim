@@ -267,12 +267,13 @@
                                   "granularity",
                                   "from",
                                   "to"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "defaultValue": "3 Months",
+                                "defaultValue": "1 Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": "Date Time Range"
@@ -1133,7 +1134,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "defaultValue": "3 Months",
+                            "defaultValue": "1 Month",
                             "availableGranularities": "From Second",
                             "autoSyncInterval": "30",
                             "headerTitle": "Date Time Range"
@@ -1774,62 +1775,113 @@
           "height": 921
         },
         {
-          "id": "api-app-stats",
-          "name": "API and Application Statistics",
+          "id": "api-stats",
+          "name": "API Statistics",
           "content": [
             {
-              "type": "column",
+              "type": "row",
               "isClosable": true,
               "title": "",
               "content": [
                 {
-                  "type": "row",
+                  "type": "column",
                   "isClosable": true,
                   "title": "",
-                  "height": 12.081060015588465,
+                  "width": 65.12345679012346,
                   "content": [
                     {
-                      "type": "stack",
+                      "type": "row",
                       "isClosable": true,
                       "title": "",
-                      "width": 56.481481481481474,
+                      "height": 10.007047216349543,
                       "content": [
                         {
-                          "title": "[Dimension Selector]",
-                          "type": "component",
-                          "component": "DimensionSelector",
-                          "props": {
-                            "id": "c8532bba-0653-4761-8cb8-4c47a4680b5e",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "publisher"
-                                ],
-                                "publisherWidgetOutputs": [
-                                  "dimension",
-                                  "selection"
-                                ],
-                                "publishers": []
+                          "type": "stack",
+                          "isClosable": true,
+                          "title": "",
+                          "width": 35.23809523809524,
+                          "content": [
+                            {
+                              "title": "[Dimension Selector]",
+                              "type": "component",
+                              "component": "DimensionSelector",
+                              "props": {
+                                "id": "c8532bba-0653-4761-8cb8-4c47a4680b5e",
+                                "configs": {
+                                  "pubsub": {
+                                    "types": [
+                                      "publisher"
+                                    ],
+                                    "publisherWidgetOutputs": [
+                                      "dimension",
+                                      "selection"
+                                    ],
+                                    "publishers": []
+                                  },
+                                  "isGenerated": false,
+                                  "options": {
+                                    "header": false,
+                                    "selectMultiple": false,
+                                    "dimensions": [
+                                      "API Provider"
+                                    ],
+                                    "defaultDimension": "API Provider",
+                                    "selectAll": true
+                                  }
+                                },
+                                "widgetID": "DimensionSelector"
                               },
-                              "isGenerated": false,
-                              "options": {
-                                "header": false,
-                                "selectMultiple": true,
-                                "dimensions": [
-                                  "API",
-                                  "API Provider"
-                                ],
-                                "defaultDimension": "API",
-                                "selectAll": true
-                              }
-                            },
-                            "widgetID": "DimensionSelector"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
+                              "isClosable": false,
+                              "header": {
+                                "show": true
+                              },
+                              "componentName": "lm-react-component"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "stack",
+                          "isClosable": true,
+                          "title": "",
+                          "height": 11.350638112823118,
+                          "width": 64.76190476190476,
+                          "content": [
+                            {
+                              "title": "[Date Time Range]",
+                              "type": "component",
+                              "component": "DateRangePicker",
+                              "props": {
+                                "id": "ef7cdd2c-fee5-453c-be69-2f117e84049e",
+                                "configs": {
+                                  "pubsub": {
+                                    "types": [
+                                      "publisher"
+                                    ],
+                                    "publisherWidgetOutputs": [
+                                      "granularity",
+                                      "from",
+                                      "to"
+                                    ],
+                                    "publishers": []
+                                  },
+                                  "isGenerated": false,
+                                  "options": {
+                                    "header": true,
+                                    "defaultValue": "1 Month",
+                                    "availableGranularities": "From Second",
+                                    "autoSyncInterval": "30",
+                                    "headerTitle": "Date Time Range"
+                                  }
+                                },
+                                "widgetID": "DateRangePicker"
+                              },
+                              "isClosable": false,
+                              "header": {
+                                "show": true
+                              },
+                              "componentName": "lm-react-component"
+                            }
+                          ]
                         }
                       ]
                     },
@@ -1837,59 +1889,8 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 50,
-                      "width": 43.518518518518526,
-                      "content": [
-                        {
-                          "title": "[Date Time Range]",
-                          "type": "component",
-                          "component": "DateRangePicker",
-                          "props": {
-                            "id": "53b5abba-dae8-4def-bf20-91bff4fcfe3b",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "publisher"
-                                ],
-                                "publisherWidgetOutputs": [
-                                  "granularity",
-                                  "from",
-                                  "to"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true,
-                                "defaultValue": "3 Months",
-                                "availableGranularities": "From Second",
-                                "autoSyncInterval": "30",
-                                "headerTitle": "Date Time Range"
-                              }
-                            },
-                            "widgetID": "DateRangePicker"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "row",
-                  "isClosable": true,
-                  "title": "",
-                  "height": 87.91893998441154,
-                  "content": [
-                    {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "height": 100,
-                      "width": 49.93827160493827,
+                      "height": 89.99295278365047,
+                      "width": 100,
                       "content": [
                         {
                           "title": "[APIM Api Created Analytics]",
@@ -1904,7 +1905,7 @@
                                 ],
                                 "publishers": [
                                   "c8532bba-0653-4761-8cb8-4c47a4680b5e",
-                                  "53b5abba-dae8-4def-bf20-91bff4fcfe3b"
+                                  "ef7cdd2c-fee5-453c-be69-2f117e84049e"
                                 ]
                               },
                               "isGenerated": false,
@@ -1923,28 +1924,267 @@
                           "componentName": "lm-react-component"
                         }
                       ]
+                    }
+                  ]
+                },
+                {
+                  "type": "column",
+                  "isClosable": true,
+                  "title": "",
+                  "width": 34.876543209876544,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 50,
+                      "height": 38.46689895470383,
+                      "content": [
+                        {
+                          "title": "[APIM Api Ratings]",
+                          "type": "component",
+                          "component": "APIMApiRatings",
+                          "props": {
+                            "id": "ade0acfc-0353-47f2-ac8d-e08227c70d6e",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "Top Rated APIs",
+                                "drillDown": "usage-summary"
+                              }
+                            },
+                            "widgetID": "APIMApiRatings"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
                     },
                     {
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 100,
-                      "width": 50.061728395061735,
+                      "height": 61.53310104529617,
                       "content": [
                         {
-                          "title": "[APIM App Created Analytics]",
+                          "title": "[APIM Top Api Creators]",
                           "type": "component",
-                          "component": "APIMAppCreatedAnalytics",
+                          "component": "APIMTopApiCreators",
                           "props": {
-                            "id": "f8cc6179-6f71-445e-a7fb-b377c29fe024",
+                            "id": "ca747071-7112-45f2-8e28-7b780218bea3",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": []
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "Top API Creators",
+                                "drillDown": ""
+                              }
+                            },
+                            "widgetID": "APIMTopApiCreators"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "height": 1424
+        },
+        {
+          "id": "dev-stats",
+          "name": "Developer Statistics",
+          "content": [
+            {
+              "type": "row",
+              "isClosable": true,
+              "title": "",
+              "height": 100,
+              "content": [
+                {
+                  "type": "column",
+                  "isClosable": true,
+                  "title": "",
+                  "width": 68.14814814814815,
+                  "content": [
+                    {
+                      "type": "row",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 6.759394301008323,
+                      "content": [
+                        {
+                          "type": "stack",
+                          "isClosable": true,
+                          "title": "",
+                          "width": 35.9417652411283,
+                          "content": [
+                            {
+                              "title": "[Dimension Selector]",
+                              "type": "component",
+                              "component": "DimensionSelector",
+                              "props": {
+                                "id": "f6d86cf0-5f26-41dc-b4f3-5b5d46b7287e",
+                                "configs": {
+                                  "pubsub": {
+                                    "types": [
+                                      "publisher"
+                                    ],
+                                    "publisherWidgetOutputs": [
+                                      "dimension",
+                                      "selection"
+                                    ],
+                                    "publishers": []
+                                  },
+                                  "isGenerated": false,
+                                  "options": {
+                                    "header": false,
+                                    "selectMultiple": false,
+                                    "dimensions": [
+                                      "API Provider"
+                                    ],
+                                    "defaultDimension": "API Provider",
+                                    "selectAll": true
+                                  }
+                                },
+                                "widgetID": "DimensionSelector"
+                              },
+                              "isClosable": false,
+                              "header": {
+                                "show": true
+                              },
+                              "componentName": "lm-react-component"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "stack",
+                          "isClosable": true,
+                          "title": "",
+                          "width": 64.0582347588717,
+                          "height": 5.840466212681675,
+                          "content": [
+                            {
+                              "title": "[Date Time Range]",
+                              "type": "component",
+                              "component": "DateRangePicker",
+                              "props": {
+                                "id": "19798878-73c2-4913-8aee-b6d7cf8295aa",
+                                "configs": {
+                                  "pubsub": {
+                                    "types": [
+                                      "publisher"
+                                    ],
+                                    "publisherWidgetOutputs": [
+                                      "granularity",
+                                      "from",
+                                      "to"
+                                    ],
+                                    "publishers": []
+                                  },
+                                  "isGenerated": false,
+                                  "options": {
+                                    "header": true,
+                                    "defaultValue": "1 Month",
+                                    "availableGranularities": "From Second",
+                                    "autoSyncInterval": "30",
+                                    "headerTitle": "Date Time Range"
+                                  }
+                                },
+                                "widgetID": "DateRangePicker"
+                              },
+                              "isClosable": false,
+                              "header": {
+                                "show": true
+                              },
+                              "componentName": "lm-react-component"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 29.405010712876518,
+                      "width": 100,
+                      "content": [
+                        {
+                          "title": "[APIM Subscriptions Analytics]",
+                          "type": "component",
+                          "component": "APIMSubscriptionsAnalytics",
+                          "props": {
+                            "id": "22692b3b-a85e-4f78-b8ba-a3c667bb3454",
                             "configs": {
                               "pubsub": {
                                 "types": [
                                   "subscriber"
                                 ],
                                 "publishers": [
-                                  "53b5abba-dae8-4def-bf20-91bff4fcfe3b",
-                                  "c8532bba-0653-4761-8cb8-4c47a4680b5e"
+                                  "19798878-73c2-4913-8aee-b6d7cf8295aa",
+                                  "f6d86cf0-5f26-41dc-b4f3-5b5d46b7287e"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Subscriptions Over Time",
+                                "drillDown": "usage-summary"
+                              }
+                            },
+                            "widgetID": "APIMSubscriptionsAnalytics"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "height": 34.059041185418124,
+                      "content": [
+                        {
+                          "title": "[APIM App Created Analytics]",
+                          "type": "component",
+                          "component": "APIMAppCreatedAnalytics",
+                          "props": {
+                            "id": "3546d57d-04d9-49b6-8d69-28b25f80430f",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "f6d86cf0-5f26-41dc-b4f3-5b5d46b7287e",
+                                  "19798878-73c2-4913-8aee-b6d7cf8295aa"
                                 ]
                               },
                               "isGenerated": false,
@@ -1962,108 +2202,35 @@
                           "componentName": "lm-react-component"
                         }
                       ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "height": 1288
-        },
-        {
-          "id": "dev-stats",
-          "name": "Developer Statistics",
-          "content": [
-            {
-              "type": "column",
-              "isClosable": true,
-              "title": "",
-              "content": [
-                {
-                  "type": "row",
-                  "isClosable": true,
-                  "title": "",
-                  "height": 4.99843798812871,
-                  "content": [
-                    {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "height": 100,
-                      "width": 55.55555555555556,
-                      "content": [
-                        {
-                          "title": "[Dimension Selector]",
-                          "type": "component",
-                          "component": "DimensionSelector",
-                          "props": {
-                            "id": "f6d86cf0-5f26-41dc-b4f3-5b5d46b7287e",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "publisher"
-                                ],
-                                "publisherWidgetOutputs": [
-                                  "dimension",
-                                  "selection"
-                                ],
-                                "publishers": []
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": false,
-                                "selectMultiple": true,
-                                "dimensions": [
-                                  "API",
-                                  "API Provider"
-                                ],
-                                "defaultDimension": "API",
-                                "selectAll": true
-                              }
-                            },
-                            "widgetID": "DimensionSelector"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
                     },
                     {
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 44.44444444444444,
+                      "height": 29.776553800696988,
                       "content": [
                         {
-                          "title": "[Date Time Range]",
+                          "title": "[APIM Signups Analytics]",
                           "type": "component",
-                          "component": "DateRangePicker",
+                          "component": "APIMSignupsAnalytics",
                           "props": {
-                            "id": "19798878-73c2-4913-8aee-b6d7cf8295aa",
+                            "id": "bd1ad35c-5d4b-4284-9509-32f4cef9dde1",
                             "configs": {
                               "pubsub": {
                                 "types": [
-                                  "publisher"
+                                  "subscriber"
                                 ],
-                                "publisherWidgetOutputs": [
-                                  "granularity",
-                                  "from",
-                                  "to"
+                                "publishers": [
+                                  "19798878-73c2-4913-8aee-b6d7cf8295aa"
                                 ]
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "defaultValue": "3 Months",
-                                "availableGranularities": "From Second",
-                                "autoSyncInterval": "30",
-                                "headerTitle": "Date Time Range"
+                                "headerTitle": "Developer Signups Over Time"
                               }
                             },
-                            "widgetID": "DateRangePicker"
+                            "widgetID": "APIMSignupsAnalytics"
                           },
                           "isClosable": false,
                           "header": {
@@ -2076,284 +2243,82 @@
                   ]
                 },
                 {
-                  "type": "row",
+                  "type": "column",
                   "isClosable": true,
                   "title": "",
-                  "height": 95.00156201187129,
+                  "width": 31.851851851851855,
                   "content": [
                     {
-                      "type": "column",
+                      "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 55.61728395061728,
+                      "width": 50,
+                      "height": 50.447133087848506,
                       "content": [
                         {
-                          "type": "stack",
-                          "isClosable": true,
-                          "title": "",
-                          "height": 36.00504270034943,
-                          "content": [
-                            {
-                              "title": "[APIM Subscriptions Analytics]",
-                              "type": "component",
-                              "component": "APIMSubscriptionsAnalytics",
-                              "props": {
-                                "id": "22692b3b-a85e-4f78-b8ba-a3c667bb3454",
-                                "configs": {
-                                  "pubsub": {
-                                    "types": [
-                                      "subscriber"
-                                    ],
-                                    "publishers": [
-                                      "19798878-73c2-4913-8aee-b6d7cf8295aa",
-                                      "f6d86cf0-5f26-41dc-b4f3-5b5d46b7287e"
-                                    ]
-                                  },
-                                  "isGenerated": false,
-                                  "options": {
-                                    "header": true,
-                                    "headerTitle": "API Subscriptions Over Time",
-                                    "drillDown": "usage-summary"
-                                  }
-                                },
-                                "widgetID": "APIMSubscriptionsAnalytics"
+                          "title": "[APIM Top App Creators]",
+                          "type": "component",
+                          "component": "APIMTopAppCreators",
+                          "props": {
+                            "id": "24f730b6-2889-42b4-94a8-acf550f7d70f",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": []
                               },
-                              "isClosable": false,
-                              "header": {
-                                "show": true
-                              },
-                              "componentName": "lm-react-component"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "stack",
-                          "isClosable": true,
-                          "title": "",
-                          "height": 35.72465748156317,
-                          "content": [
-                            {
-                              "title": "[APIM Signups Analytics]",
-                              "type": "component",
-                              "component": "APIMSignupsAnalytics",
-                              "props": {
-                                "id": "7b20ffe3-a950-4407-8613-c07b3841bd67",
-                                "configs": {
-                                  "pubsub": {
-                                    "types": [
-                                      "subscriber"
-                                    ],
-                                    "publishers": [
-                                      "19798878-73c2-4913-8aee-b6d7cf8295aa",
-                                      "f6d86cf0-5f26-41dc-b4f3-5b5d46b7287e"
-                                    ]
-                                  },
-                                  "isGenerated": false,
-                                  "options": {
-                                    "header": true,
-                                    "headerTitle": "Developer Signups Over Time"
-                                  }
-                                },
-                                "widgetID": "APIMSignupsAnalytics"
-                              },
-                              "isClosable": false,
-                              "header": {
-                                "show": true
-                              },
-                              "componentName": "lm-react-component"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "stack",
-                          "isClosable": true,
-                          "title": "",
-                          "height": 28.27029981808739,
-                          "content": [
-                            {
-                              "title": "[APIM Api Ratings]",
-                              "type": "component",
-                              "component": "APIMApiRatings",
-                              "props": {
-                                "id": "988bf01a-3f96-4072-b50a-5afd60e82c7d",
-                                "configs": {
-                                  "pubsub": {
-                                    "types": [
-                                      "subscriber"
-                                    ],
-                                    "publishers": [
-                                      "19798878-73c2-4913-8aee-b6d7cf8295aa",
-                                      "f6d86cf0-5f26-41dc-b4f3-5b5d46b7287e"
-                                    ]
-                                  },
-                                  "isGenerated": false,
-                                  "options": {
-                                    "header": true,
-                                    "headerTitle": "Top Rated APIs",
-                                    "drillDown": "usage-summary"
-                                  }
-                                },
-                                "widgetID": "APIMApiRatings"
-                              },
-                              "isClosable": false,
-                              "header": {
-                                "show": true
-                              },
-                              "componentName": "lm-react-component"
-                            }
-                          ]
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "Top Application Creators",
+                                "drillDown": ""
+                              }
+                            },
+                            "widgetID": "APIMTopAppCreators"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
                         }
                       ]
                     },
                     {
-                      "type": "column",
+                      "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 44.38271604938272,
+                      "height": 49.552866912151494,
+                      "width": 100,
                       "content": [
                         {
-                          "type": "stack",
-                          "isClosable": true,
-                          "title": "",
-                          "height": 7.039217646873695,
-                          "content": [
-                            {
-                              "title": "[APIM Subscriptions]",
-                              "type": "component",
-                              "component": "APIMSubscriptions",
-                              "props": {
-                                "id": "144bbcc5-27c4-4ff0-a0ea-b379636b2ca6",
-                                "configs": {
-                                  "pubsub": {
-                                    "types": [
-                                      "subscriber"
-                                    ],
-                                    "publishers": []
-                                  },
-                                  "isGenerated": false,
-                                  "options": {
-                                    "header": true,
-                                    "headerTitle": "API Subscriptions Summary",
-                                    "drillDown": ""
-                                  }
-                                },
-                                "widgetID": "APIMSubscriptions"
+                          "title": "[APIM Top Subscribers]",
+                          "type": "component",
+                          "component": "APIMTopSubscribers",
+                          "props": {
+                            "id": "e04c1898-ba5b-44e0-ae51-f0742016c6cd",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": []
                               },
-                              "isClosable": false,
-                              "header": {
-                                "show": true
-                              },
-                              "componentName": "lm-react-component"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "stack",
-                          "isClosable": true,
-                          "title": "",
-                          "height": 31.02806151666481,
-                          "width": 100,
-                          "content": [
-                            {
-                              "title": "[APIM Top Api Creators]",
-                              "type": "component",
-                              "component": "APIMTopApiCreators",
-                              "props": {
-                                "id": "99f9d5b1-faa8-4ed8-b87f-409c12a19c77",
-                                "configs": {
-                                  "pubsub": {
-                                    "types": [
-                                      "subscriber"
-                                    ]
-                                  },
-                                  "isGenerated": false,
-                                  "options": {
-                                    "header": true,
-                                    "headerTitle": "Top API Providers",
-                                    "drillDown": "api-app-stats"
-                                  }
-                                },
-                                "widgetID": "APIMTopApiCreators"
-                              },
-                              "isClosable": false,
-                              "header": {
-                                "show": true
-                              },
-                              "componentName": "lm-react-component"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "stack",
-                          "isClosable": true,
-                          "title": "",
-                          "height": 30.957623238533895,
-                          "content": [
-                            {
-                              "title": "[APIM Top Subscribers]",
-                              "type": "component",
-                              "component": "APIMTopSubscribers",
-                              "props": {
-                                "id": "9a05a90c-6bc2-4538-a16a-c7ecbcd725a2",
-                                "configs": {
-                                  "pubsub": {
-                                    "types": [
-                                      "subscriber"
-                                    ],
-                                    "publishers": []
-                                  },
-                                  "isGenerated": false,
-                                  "options": {
-                                    "header": true,
-                                    "headerTitle": "Top Subscriptions per Provider",
-                                    "drillDown": ""
-                                  }
-                                },
-                                "widgetID": "APIMTopSubscribers"
-                              },
-                              "isClosable": false,
-                              "header": {
-                                "show": true
-                              },
-                              "componentName": "lm-react-component"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "stack",
-                          "isClosable": true,
-                          "title": "",
-                          "height": 30.975097597927626,
-                          "content": [
-                            {
-                              "title": "[APIM Top App Creators]",
-                              "type": "component",
-                              "component": "APIMTopAppCreators",
-                              "props": {
-                                "id": "7515cc73-2d1b-448a-ab90-5fd6511cf172",
-                                "configs": {
-                                  "pubsub": {
-                                    "types": [
-                                      "subscriber"
-                                    ],
-                                    "publishers": []
-                                  },
-                                  "isGenerated": false,
-                                  "options": {
-                                    "header": true,
-                                    "headerTitle": "Top Application Creators",
-                                    "drillDown": "api-app-stats"
-                                  }
-                                },
-                                "widgetID": "APIMTopAppCreators"
-                              },
-                              "isClosable": false,
-                              "header": {
-                                "show": true
-                              },
-                              "componentName": "lm-react-component"
-                            }
-                          ]
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "Top Subscriptions per Provider",
+                                "drillDown": ""
+                              }
+                            },
+                            "widgetID": "APIMTopSubscribers"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
                         }
                       ]
                     }
@@ -2362,7 +2327,7 @@
               ]
             }
           ],
-          "height": 3010
+          "height": 1906
         }
       ]
     },
@@ -2399,7 +2364,6 @@
       "APIMTopFaultyApis",
       "Top10ThrottledApisOverTime",
       "Top10ApiUsageOverTime",
-      "APIMSubscriptions",
       "APIMTopSubscribers",
       "APIMSubscriptionsAnalytics",
       "APIMTopApiCreators",
