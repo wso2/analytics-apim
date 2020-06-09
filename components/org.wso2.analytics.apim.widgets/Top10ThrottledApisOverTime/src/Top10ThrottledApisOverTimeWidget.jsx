@@ -259,7 +259,7 @@ class Top10ThrottledApisOverTimeWidget extends Widget {
                 const usage = [];
                 apiList.forEach((api) => {
                     const apiUsage = availableUsage.find(selc => selc.apiname === api);
-                    if (apiUsage) {
+                    if (apiUsage && apiUsage.length > 0) {
                         usage.push(apiUsage.hits);
                     } else {
                         usage.push(0);

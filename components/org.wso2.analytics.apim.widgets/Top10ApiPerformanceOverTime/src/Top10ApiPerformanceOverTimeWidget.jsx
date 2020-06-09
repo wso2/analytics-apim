@@ -260,7 +260,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
                 const perf = [];
                 apiList.forEach((api) => {
                     const apiPerf = availableLatencyData.filter(selc => selc.apiname === api);
-                    if (apiPerf) {
+                    if (apiPerf && apiPerf.length > 0) {
                         const latency = apiPerf.reduce((acc, cur) => {
                             return acc + cur.latency;
                         }, 0);
