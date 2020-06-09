@@ -262,7 +262,7 @@ class Top10ApiUsageOverTimeWidget extends Widget {
                 const usage = [];
                 apiList.forEach((api) => {
                     const apiUsage = availableUsage.find(selc => selc.apiname === api);
-                    if (apiUsage && apiUsage.length > 0) {
+                    if (apiUsage) {
                         usage.push(apiUsage.hits);
                     } else {
                         usage.push(0);
