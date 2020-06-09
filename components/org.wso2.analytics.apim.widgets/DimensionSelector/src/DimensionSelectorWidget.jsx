@@ -137,11 +137,9 @@ class DimensionSelectorWidget extends Widget {
                 marginTop: '5%',
             },
             root: {
-                padding: '10px',
                 paddingTop: '20px',
                 margin: 'auto',
                 display: 'flex',
-                flexWrap: 'wrap',
                 width: '95%',
             },
             search: {
@@ -161,6 +159,9 @@ class DimensionSelectorWidget extends Widget {
             helperText: {
                 color: '#9e9e9e',
                 margin: 'auto',
+                justifyContent: 'center',
+                display: 'flex',
+                paddingLeft: '20px',
             },
         };
 
@@ -838,18 +839,18 @@ class DimensionSelectorWidget extends Widget {
                                             />
                                         </Tooltip>
                                     </div>
-                                    {
-                                        dimension === 'api' && (
-                                            <Typography variant='caption' style={helperText}>
-                                                <FormattedMessage
-                                                    id='dimension.api.helper'
-                                                    defaultMessage={'APIs are listed in the format \'API_Name'
-                                                    + ' :: API_Version (API_Provider)\''}
-                                                />
-                                            </Typography>
-                                        )
-                                    }
                                 </div>
+                                {
+                                    dimension === 'api' && (
+                                        <Typography variant='caption' style={helperText}>
+                                            <FormattedMessage
+                                                id='dimension.api.helper'
+                                                defaultMessage={'APIs are listed in the format \'api_name'
+                                                + ' :: api_version (api_provider)\''}
+                                            />
+                                        </Typography>
+                                    )
+                                }
                             </Scrollbars>
                         )
                     }

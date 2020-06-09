@@ -4,7 +4,7 @@
   "config.error.heading": "Configuration Error !",
   "config.error.body": "Cannot fetch provider configuration for Dimension Selector Widget.",
   "dimension.api" : "API",
-  "dimension.api.helper" : "APIs are listed in the format 'API_Name :: API_Version (API_Provider)'",
+  "dimension.api.helper" : "APIs are listed in the format 'api_name :: api_version (api_provider)'",
   "dimension.api.tooltip" : "Viewing stats by 'API'. Click to change the view to 'API Provider'",
   "dimension.provider" : "API Provider",
   "dimension.provider.tooltip" : "Viewing stats by 'API Provider'. Click to change the view to 'API'.",
