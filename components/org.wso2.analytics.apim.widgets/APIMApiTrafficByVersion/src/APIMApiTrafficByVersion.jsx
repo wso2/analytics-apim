@@ -26,18 +26,21 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Tooltip from '@material-ui/core/Tooltip';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TrafficChart from './TrafficChart';
 
 /**
- * React Component for Total Api Traffic widget body
+ * React Component for Api Traffic By Version widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Total Api Traffic widget body
+ * @returns {ReactElement} Render the Api Traffic By Version widget body
  */
-export default function APIMTotalApiTraffic(props) {
+export default function APIMApiTrafficByVersion(props) {
     const {
-        themeName, usageData, handleLimitChange, limit, height, inProgress, setCurrentApi
+        themeName, usageData, handleLimitChange, limit, height, inProgress, setCurrentApi,
+        apilist = [], apiSelected = '',
     } = props;
     const styles = {
         headingWrapper: {
@@ -51,7 +54,6 @@ export default function APIMTotalApiTraffic(props) {
         },
         paper: {
             background: themeName === 'dark' ? '#152638' : '#E8E8E8',
-            marginTop: 10,
             padding: '4%',
         },
         inProgress: {
@@ -63,10 +65,11 @@ export default function APIMTotalApiTraffic(props) {
         formControl: {
             marginTop: '2%',
             marginLeft: '5%',
+            marginBottom: 20,
         },
         mainDiv: {
             backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-            padding: 30,
+            padding: '20px',
         },
         h3: {
             margin: 'auto',
@@ -79,12 +82,11 @@ export default function APIMTotalApiTraffic(props) {
         formLabel: {
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
-            width: '100%',
+            width: 150,
             display: 'block',
             overflow: 'hidden',
         },
     };
-
     return (
         <Scrollbars style={{ height }}>
             <div style={styles.mainDiv}>
@@ -102,37 +104,62 @@ export default function APIMTotalApiTraffic(props) {
                     </div>
                 ) : (
                     <div>
+                        <FormControl style={styles.formControl}>
+                            <Tooltip
+                                placement='top'
+                                title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                            >
+                                <InputLabel
+                                    shrink
+                                    htmlFor='limit-number'
+                                    style={styles.formLabel}
+                                >
+                                    <FormattedMessage
+                                        id='limit'
+                                        defaultMessage='Limit :'
+                                    />
+                                </InputLabel>
+                            </Tooltip>
+                            <Input
+                                id='limit-number'
+                                value={limit}
+                                onChange={handleLimitChange}
+                                type='number'
+                                margin='normal'
+                            />
+                        </FormControl>
+                        <FormControl style={styles.formControl}>
+                            <InputLabel
+                                shrink
+                                htmlFor='apiSelected-label-placeholder'
+                                style={styles.formLabel}
+                            >
+                                <FormattedMessage id='apiName.label' defaultMessage='API Name' />
+                            </InputLabel>
+                            <Select
+                                value={apiSelected}
+                                onChange={setCurrentApi}
+                                input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
+                                displayEmpty
+                                name='apiSelected'
+                                style={styles.selectEmpty}
+                            >
+                                {
+                                    apilist.map(option => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))
+                                }
+                            </Select>
+                        </FormControl>
                         { usageData.length !== 0 ? (
                             <div>
-                                <FormControl style={styles.formControl}>
-                                    <Tooltip
-                                        placement='top'
-                                        title={<FormattedMessage id='limit' defaultMessage='Limit :' />}
-                                    >
-                                        <InputLabel
-                                            shrink
-                                            htmlFor='limit-number'
-                                            style={styles.formLabel}
-                                        >
-                                            <FormattedMessage
-                                                id='limit'
-                                                defaultMessage='Limit :'
-                                            />
-                                        </InputLabel>
-                                    </Tooltip>
-                                    <Input
-                                        id='limit-number'
-                                        value={limit}
-                                        onChange={handleLimitChange}
-                                        type='number'
-                                        margin='normal'
-                                    />
-                                </FormControl>
                                 <div style={styles.dataWrapper}>
                                     <TrafficChart
                                         data={usageData}
                                         themeName={themeName}
-                                        setCurrentApi={setCurrentApi}
+                                        // setCurrentApi={setCurrentApi}
                                     />
                                 </div>
                             </div>
@@ -167,11 +194,14 @@ export default function APIMTotalApiTraffic(props) {
     );
 }
 
-APIMTotalApiTraffic.propTypes = {
+APIMApiTrafficByVersion.propTypes = {
     themeName: PropTypes.string.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     limit: PropTypes.string.isRequired,
     inProgress: PropTypes.bool.isRequired,
     height: PropTypes.number.isRequired,
+    setCurrentApi: PropTypes.func.isRequired,
+    apilist: PropTypes.arrayOf(PropTypes.instanceOf(Object)).isRequired,
+    apiSelected: PropTypes.string.isRequired,
 };

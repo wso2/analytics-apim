@@ -62,7 +62,8 @@
     "APIMAlertSummary",
     "APIMAlertSummaryByAPIs",
     "APILatencySummary",
-    "APILatencyOverTime"
+    "APILatencyOverTime",
+    "APIMApiTrafficByVersion"
   ],
   "version": "1.0.0"
 }
