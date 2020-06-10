@@ -150,7 +150,7 @@ export default function APIMAlertSummaryByAPIs(props) {
                 >
                     <div style={styles.headingWrapper}>
                         <h3 style={styles.heading}>
-                            <FormattedMessage id='widget.heading' defaultMessage='Top Alerts by APIS' />
+                            <FormattedMessage id='widget.heading' defaultMessage='Top Alerts by API' />
                         </h3>
                     </div>
                     <div style={styles.formWrapper}>

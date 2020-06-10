@@ -27,10 +27,8 @@ import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
-import { ViewTypeEnum, ValueFormatType, DrillDownEnum } from '../../AppAndAPIErrorTable/src/Constants';
-import APIViewErrorTable from './APIViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
+import ResourceViewErrorTable from './ResourceViewErrorTable';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -91,35 +89,30 @@ const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
  * Create React Component for AppAndAPIErrorsByTime
- * @class AppAndAPIErrorsByTimeWidget
+ * @class APILatencySummaryWidget
  * @extends {Widget}
  */
-class AppAndAPIErrorsByTimeWidget extends Widget {
+class APILatencySummaryWidget extends Widget {
     /**
-     * Creates an instance of AppAndAPIErrorsByTimeWidget.
+     * Creates an instance of APILatencySummaryWidget.
      * @param {any} props @inheritDoc
-     * @memberof AppAndAPIErrorsByTimeWidget
+     * @memberof APILatencySummaryWidget
      */
     constructor(props) {
+        console.log('constructor')
         super(props);
         this.state = {
             width: this.props.width,
             height: this.props.height,
             localeMessages: null,
 
-            viewType: ViewTypeEnum.API,
-            valueFormatType: ValueFormatType.PERCENT,
-            drillDownType: DrillDownEnum.API,
-
             selectedAPI: -1,
-            selectedApp: -1,
             selectedVersion: -1,
             selectedResource: -1,
             selectedLimit: 5,
             data: [],
 
             apiList: [],
-            appList: [],
             versionList: [],
             operationList: [],
 
@@ -172,21 +165,19 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.handleQueryResults = this.handleQueryResults.bind(this);
         this.assembleFetchDataQuery = this.assembleFetchDataQuery.bind(this);
+        this.handleDrillDownChange = this.handleDrillDownChange.bind(this);
 
-        this.getQueryForAPI = this.getQueryForAPI.bind(this);
+        this.getQueryForResource = this.getQueryForResource.bind(this);
 
         this.loadApis = this.loadApis.bind(this);
-        this.loadApps = this.loadApps.bind(this);
         this.loadVersions = this.loadVersions.bind(this);
         this.loadOperations = this.loadOperations.bind(this);
 
         this.handleLoadApis = this.handleLoadApis.bind(this);
-        this.handleLoadApps = this.handleLoadApps.bind(this);
         this.handleLoadVersions = this.handleLoadVersions.bind(this);
         this.handleLoadOperations = this.handleLoadOperations.bind(this);
 
         this.handleAPIChange = this.handleAPIChange.bind(this);
-        this.handleApplicationChange = this.handleApplicationChange.bind(this);
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleOperationChange = this.handleOperationChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
@@ -231,7 +222,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     /**
       * Load locale file
       * @param {string} locale Locale name
-      * @memberof AppAndAPIErrorsByTimeWidget
+      * @memberof APILatencySummaryWidget
       * @returns {string}
       */
     loadLocale(locale = 'en') {
@@ -251,7 +242,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     /**
      * Retrieve params from publisher
      * @param {string} receivedMsg Received data from publisher
-     * @memberof AppAndAPIErrorsByTimeWidget
+     * @memberof APILatencySummaryWidget
      * */
     handlePublisherParameters(receivedMsg) {
         this.setState({
@@ -264,19 +255,8 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
 
     // start of filter loading
-    loadApps() {
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'listAppsQuery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id + '_loadApps', widgetName, this.handleLoadApps, dataProviderConfigs);
-    }
-
     loadApis() {
         this.loadingDrillDownData();
-        this.loadApps();
 
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
@@ -311,11 +291,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id + '_loadOperations', widgetName, this.handleLoadOperations, dataProviderConfigs);
-    }
-
-    handleLoadApps(message) {
-        const { data } = message;
-        this.setState({ appList: data });
     }
 
     handleLoadApis(message) {
@@ -354,7 +329,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             '{{selectPhase}}': selectPhase.join(','),
             '{{groupByPhase}}': 'group by ' + groupByPhase.join(','),
             '{{querystring}}': filterPhase.length > 0 ? 'on ' + filterPhase.join(' AND ') : '',
-            '{{orderBy}}': 'order by AGG_TIMESTAMP asc',
+            '{{orderBy}}': 'order by responseTime desc',
         };
         // Use this method to subscribe to the endpoint via web socket connection
         super.getWidgetChannelManager()
@@ -364,9 +339,10 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     /**
      * Formats data retrieved
      * @param {object} message - data retrieved
-     * @memberof AppAndAPIErrorsByTimeWidget
+     * @memberof APILatencySummaryWidget
      * */
     handleQueryResults(message) {
+        console.log(message);
         // Insert the code to handle the data received through query
         const { data, metadata: { names } } = message;
         const newData = data.map((row) => {
@@ -385,16 +361,29 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     }
     // end data query functions
 
+    handleDrillDownChange(event) {
+        this.setState(
+            {
+                data: [],
+                selectedAPI: -1,
+                selectedVersion: -1,
+                selectedResource: -1,
+                versionList: [],
+                operationList: [],
+            }, this.loadingDrillDownData,
+        );
+    }
 
     // start table data type query constructor
     loadingDrillDownData() {
-        this.getQueryForAPI();
+        this.getQueryForResource();
     }
 
-    getQueryForAPI() {
+    getQueryForResource() {
         const {
-            selectedAPI, selectedApp, selectedVersion, selectedResource, versionList, operationList, appList,
+            selectedAPI, selectedVersion, selectedResource, versionList, operationList,
         } = this.state;
+
         const selectPhase = [];
         const groupByPhase = [];
         const filterPhase = [];
@@ -402,7 +391,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         if (selectedAPI !== -1) {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
-        if (selectedVersion !== -1) {
+        if (selectedVersion > -1) {
             const ver = versionList[selectedVersion][1];
             filterPhase.push('apiVersion==\'' + ver + '\'');
         }
@@ -412,17 +401,15 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             filterPhase.push('apiResourceTemplate==\'' + template + '\'');
             filterPhase.push('apiMethod==\'' + verb + '\'');
         }
-        if (selectedApp !== -1) {
-            const appName = appList[selectedApp][0];
-            const appOwner = appList[selectedApp][1];
-            filterPhase.push('applicationName==\'' + appName + '\'');
-            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
-        }
 
-        selectPhase.push('AGG_TIMESTAMP', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
-            'sum(successCount) as successCount',
-            'sum(faultCount) as faultCount', 'sum(throttledCount) as throttledCount');
-        groupByPhase.push('AGG_TIMESTAMP');
+        selectPhase.push('apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod',
+            'max(responseTime * 1.0) as responseTime',
+            'max(backendLatency * 1.0) as backendLatency',
+            'max(securityLatency * 1.0) as securityLatency',
+            'max(throttlingLatency * 1.0) as throttlingLatency',
+            'max(requestMedLat * 1.0) as requestMedLat',
+            'max(responseMedLat * 1.0) as responseMedLat');
+        groupByPhase.push('apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod');
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
     }
 
@@ -430,10 +417,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
 
     // start of handle filter change
-    handleApplicationChange(event) {
-        this.setState({ selectedApp: event.target.value }, this.loadingDrillDownData);
-    }
-
     handleAPIChange(event) {
         this.setState({ selectedAPI: event.target.value }, this.loadingDrillDownData);
         this.loadVersions(event.target.value);
@@ -457,18 +440,18 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     // end of handle filter change
 
     renderDrillDownTable(props) {
-        return (<APIViewErrorTable {...props} />);
+        return (<ResourceViewErrorTable {...props} />);
     }
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the AppAndAPIErrorsByTimeWidget
-     * @memberof AppAndAPIErrorsByTimeWidget
+     * @returns {ReactElement} Render the APILatencySummaryWidget
+     * @memberof APILatencySummaryWidget
      */
     render() {
         const {
-            localeMessages, viewType, drillDownType, valueFormatType, data, loading,
-            selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit, apiList, appList,
+            localeMessages, viewType, valueFormatType, data, loading,
+            selectedAPI, selectedVersion, selectedResource, selectedLimit, apiList,
             versionList, operationList,
         } = this.state;
         const { muiTheme } = this.props;
@@ -486,27 +469,23 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                         <div style={this.styles.headingWrapper}>
                             <h3 style={this.styles.h3}>
                                 <FormattedMessage
-                                    id='widget.heading.error.summary.overtime'
-                                    defaultMessage='Error Summary Over Time'
+                                    id='widget.heading.latency.summary'
+                                    defaultMessage='API Latency Summary'
                                 />
                             </h3>
                             <CustomFormGroup
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
-                                drillDownType={drillDownType}
 
-                                selectedApp={selectedApp}
                                 selectedAPI={selectedAPI}
                                 selectedVersion={selectedVersion}
                                 selectedResource={selectedResource}
                                 selectedLimit={selectedLimit}
 
                                 apiList={apiList}
-                                appList={appList}
                                 versionList={versionList}
                                 operationList={operationList}
 
-                                handleApplicationChange={this.handleApplicationChange}
                                 handleAPIChange={this.handleAPIChange}
                                 handleVersionChange={this.handleVersionChange}
                                 handleOperationChange={this.handleOperationChange}
@@ -517,7 +496,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                     data={data}
                                     viewType={viewType}
                                     valueFormatType={valueFormatType}
-                                    drillDownType={drillDownType}
                                 />
                             )
                                 : (
@@ -535,4 +513,4 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 }
 
 // Use this method to register the react component as a widget in the dashboard.
-global.dashboard.registerWidget('AppAndAPIErrorsByTime', AppAndAPIErrorsByTimeWidget);
+global.dashboard.registerWidget('APILatencySummary', APILatencySummaryWidget);

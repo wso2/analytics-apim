@@ -26,12 +26,13 @@ import {
     VictoryChart,
     VictoryTheme,
     VictoryStack,
+    VictoryLegend,
     VictoryAxis,
     VictoryTooltip,
     VictoryClipContainer,
     VictoryLabel,
+    VictoryVoronoiContainer,
 } from 'victory';
-import Moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -56,28 +57,31 @@ const styles = theme => ({
 const colorScale = ['tomato', 'orange', 'gold', 'green', 'blue', 'red'];
 
 class APIViewErrorTable extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            successSelected: true,
-            _4xxSelected: true,
-            _5xxSelected: true,
-            faultySelected: true,
+            responseSelected: true,
+            backendSelected: true,
+            securitySelected: true,
             throttleSelected: true,
+            requestMedSelected: true,
+            responseMedSelected: true,
         };
-        this.handleSuccessSelectChange = this.handleSuccessSelectChange.bind(this);
-        this.handle4XXSelectChange = this.handle4XXSelectChange.bind(this);
-        this.handle5XXSelectChange = this.handle5XXSelectChange.bind(this);
-        this.handleFaultySelectChange = this.handleFaultySelectChange.bind(this);
+        this.handleResponseSelectChange = this.handleResponseSelectChange.bind(this);
+        this.handleBackendSelectChange = this.handleBackendSelectChange.bind(this);
+        this.handleSecuritySelectChange = this.handleSecuritySelectChange.bind(this);
         this.handleThrottlingSelectChange = this.handleThrottlingSelectChange.bind(this);
+        this.handleRequestMedSelectChange = this.handleRequestMedSelectChange.bind(this);
+        this.handleResponseMedSelectChange = this.handleResponseMedSelectChange.bind(this);
         this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
     }
 
     getPieChartForAPI() {
-        const timeFormat = 'YY/DD/MM, HH:mm:ss';
         const { data } = this.props;
         const {
-            successSelected, _4xxSelected, _5xxSelected, faultySelected, throttleSelected,
+            responseSelected, backendSelected, securitySelected, throttleSelected,
+            requestMedSelected, responseMedSelected,
         } = this.state;
         const barRatio = 0.2;
         return (
@@ -85,21 +89,20 @@ class APIViewErrorTable extends React.Component {
                 <VictoryChart
                     responsive={false}
                     domainPadding={{ x: [20, 20] }}
-                    theme={VictoryTheme.material}
-                    height={400}
-                    width={800}
-                    // style={{ parent: { maxWidth: 800 } }}
-                    // scale={{ x: 20 }}
                     padding={{
                         top: 50, bottom: 50, right: 50, left: 50,
                     }}
+                    theme={VictoryTheme.material}
+                    height={400}
+                    width={800}
+                    containerComponent={
+                        <VictoryVoronoiContainer />
+                    }
+                    // style={{ parent: { maxWidth: 800 } }}
+                    // scale={{ x: 20 }}
                 >
                     <VictoryAxis
-                        label={() => 'Time'}
-                        tickFormat={(time) => {
-                            const moment = Moment(Number(time));
-                            return moment.format(timeFormat);
-                        }}
+                        label={() => 'API Operation'}
                         tickLabelComponent={<VictoryLabel angle={45} />}
                         style={{
                             axis: { stroke: '#756f6a' },
@@ -111,7 +114,7 @@ class APIViewErrorTable extends React.Component {
                     />
                     <VictoryAxis
                         dependentAxis
-                        label={() => 'Error count'}
+                        label={() => 'Latency Time (ms)'}
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
@@ -122,82 +125,134 @@ class APIViewErrorTable extends React.Component {
                     />
 
                     <VictoryStack>
-                        { successSelected && (
+                        { responseSelected && (
                             <VictoryBar
                                 style={{ data: { fill: colorScale[0] } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({
                                     ...row,
-                                    label: ['success', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.successCount],
+                                    label: ['Response Latency',
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Max Latency: ' + row.responseTime],
                                 }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='successCount'
+                                x={
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
+                                }
+                                y={d => d.responseTime}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
                             />
                         )}
-                        { _4xxSelected && (
+                        { backendSelected && (
                             <VictoryBar
                                 style={{ data: { fill: colorScale[1] } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({
                                     ...row,
-                                    label: ['4xx errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row._4xx],
+                                    label: ['Backend latency',
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Max Latency: ' + row.backendLatency],
                                 }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='_4xx'
+                                x={
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
+                                }
+                                y={d => d.backendLatency}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
                             />
                         )}
-                        { _5xxSelected && (
+                        { securitySelected && (
                             <VictoryBar
                                 style={{ data: { fill: colorScale[2] } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({
                                     ...row,
-                                    label: ['5xx errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row._5xx],
+                                    label: ['Security latency',
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Max Latency: ' + row.securityLatency],
                                 }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='_5xx'
-                                labelComponent={<VictoryTooltip />}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                            />
-                        )}
-                        { faultySelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[3] } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['fault errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.faultCount],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='faultCount'
+                                x={
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
+                                }
+                                y={d => d.securityLatency}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
                             />
                         )}
                         { throttleSelected && (
                             <VictoryBar
+                                style={{ data: { fill: colorScale[3] } }}
+                                alignment='start'
+                                barRatio={barRatio}
+                                data={data.map(row => ({
+                                    ...row,
+                                    label: ['Throttling latency',
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Max Latency: ' + row.throttlingLatency],
+                                }))}
+                                x={
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
+                                }
+                                y={d => d.throttlingLatency}
+                                labelComponent={<VictoryTooltip />}
+                                groupComponent={<VictoryClipContainer clipId={0} />}
+                            />
+                        )}
+                        { requestMedSelected && (
+                            <VictoryBar
                                 style={{ data: { fill: colorScale[4] } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({
                                     ...row,
-                                    label: ['throttled errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.throttledCount],
+                                    label: ['Request Mediation latency',
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Max Latency: ' + row.requestMedLat],
                                 }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='throttledCount'
+                                x={
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
+                                }
+                                y={d => d.requestMedLat}
+                                labelComponent={<VictoryTooltip />}
+                                groupComponent={<VictoryClipContainer clipId={0} />}
+                            />
+                        )}
+                        { responseMedSelected && (
+                            <VictoryBar
+                                style={{ data: { fill: colorScale[5] } }}
+                                alignment='start'
+                                barRatio={barRatio}
+                                data={data.map(row => ({
+                                    ...row,
+                                    label: ['Response Mediation latency',
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Max Latency: ' + row.responseMedLat],
+                                }))}
+                                x={
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
+                                }
+                                y={d => d.responseMedLat}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
                             />
@@ -208,27 +263,21 @@ class APIViewErrorTable extends React.Component {
         );
     }
 
-    handleSuccessSelectChange(event) {
+    handleResponseSelectChange(event) {
         this.setState({
-            successSelected: event.target.checked,
+            responseSelected: event.target.checked,
         });
     }
 
-    handle4XXSelectChange(event) {
+    handleBackendSelectChange(event) {
         this.setState({
-            _4xxSelected: event.target.checked,
+            backendSelected: event.target.checked,
         });
     }
 
-    handle5XXSelectChange(event) {
+    handleSecuritySelectChange(event) {
         this.setState({
-            _5xxSelected: event.target.checked,
-        });
-    }
-
-    handleFaultySelectChange(event) {
-        this.setState({
-            faultySelected: event.target.checked,
+            securitySelected: event.target.checked,
         });
     }
 
@@ -238,41 +287,60 @@ class APIViewErrorTable extends React.Component {
         });
     }
 
+    handleRequestMedSelectChange(event) {
+        this.setState({
+            requestMedSelected: event.target.checked,
+        });
+    }
+
+    handleResponseMedSelectChange(event) {
+        this.setState({
+            responseMedSelected: event.target.checked,
+        });
+    }
+
     render() {
         const { data } = this.props;
         const {
-            successSelected, _4xxSelected, _5xxSelected, faultySelected, throttleSelected,
+            responseSelected, backendSelected, securitySelected, throttleSelected,
+            requestMedSelected, responseMedSelected,
         } = this.state;
         const checkBoxData = [
             {
-                selected: successSelected,
-                name: 'Success Hits',
-                onChange: this.handleSuccessSelectChange,
+                selected: responseSelected,
+                name: 'Response Latency',
+                onChange: this.handleResponseSelectChange,
                 color: colorScale[0],
             },
             {
-                selected: _4xxSelected,
-                name: '4XX Hits',
-                onChange: this.handle4XXSelectChange,
+                selected: backendSelected,
+                name: 'Backend Latency',
+                onChange: this.handleBackendSelectChange,
                 color: colorScale[1],
             },
             {
-                selected: _5xxSelected,
-                name: '5XX Hits',
-                onChange: this.handle5XXSelectChange,
+                selected: securitySelected,
+                name: 'Security Latency',
+                onChange: this.handleSecuritySelectChange,
                 color: colorScale[2],
             },
             {
-                selected: faultySelected,
-                name: 'Faulty Hits',
-                onChange: this.handleFaultySelectChange,
+                selected: throttleSelected,
+                name: 'Throttling Latency',
+                onChange: this.handleThrottlingSelectChange,
                 color: colorScale[3],
             },
             {
-                selected: throttleSelected,
-                name: 'Throttled Hits',
-                onChange: this.handleThrottlingSelectChange,
+                selected: requestMedSelected,
+                name: 'Request Mediation Latency',
+                onChange: this.handleRequestMedSelectChange,
                 color: colorScale[4],
+            },
+            {
+                selected: responseMedSelected,
+                name: 'Response Mediation Latency',
+                onChange: this.handleResponseMedSelectChange,
+                color: colorScale[5],
             },
         ];
         if (data.length === 0) {
