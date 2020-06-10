@@ -28,19 +28,19 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 
 const rows = [
     {
+        id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+    },
+    {
         id: 'type', numeric: false, disablePadding: false, label: 'table.heading.type',
     },
     {
         id: 'severity', numeric: true, disablePadding: false, label: 'table.heading.severity',
     },
     {
-        id: 'apiname', numeric: true, disablePadding: false, label: 'table.heading.apiname',
+        id: 'details', numeric: false, disablePadding: false, label: 'table.heading.details',
     },
     {
-        id: 'details', numeric: true, disablePadding: false, label: 'table.heading.details',
-    },
-    {
-        id: 'time', numeric: true, disablePadding: false, label: 'table.heading.time',
+        id: 'time', numeric: false, disablePadding: false, label: 'table.heading.time',
     },
 ];
 
