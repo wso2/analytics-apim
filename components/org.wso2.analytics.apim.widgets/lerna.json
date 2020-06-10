@@ -60,7 +60,9 @@
     "Top10ThrottledApisOverTime",
     "Top10ApiPerformanceOverTime",
     "APIMAlertSummary",
-    "APIMAlertSummaryByAPIs"
+    "APIMAlertSummaryByAPIs",
+    "APILatencySummary",
+    "APILatencyOverTime"
   ],
   "version": "1.0.0"
 }

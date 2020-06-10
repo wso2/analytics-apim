@@ -1,5 +1,5 @@
 {
-  "name": "ErrorByAppAndAPI",
+  "name": "APILatencySummary",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -8,7 +8,8 @@
     "@wso2-dashboards/widget": "^1.4.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-intl": "^2.8.0"
+    "react-intl": "^2.8.0",
+    "moment": "^2.24.0"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
@@ -30,8 +31,7 @@
     "style-loader": "^0.20.3",
     "symlink-dir": "^3.1.2",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10",
-    "victory": "34.3.6"
+    "webpack-cli": "^3.3.10"
   },
   "scripts": {
     "build": "node_modules/.bin/webpack -p",

@@ -95,11 +95,8 @@ export default function APIMAlertSummary(props) {
             >
                 <div style={styles.headingWrapper}>
                     <h3 style={styles.heading}>
-                        <FormattedMessage id='alert.summary.heading' defaultMessage='All alert summary' />
+                        <FormattedMessage id='alert.summary.heading' defaultMessage='All Alert Summary' />
                     </h3>
-                    <p style={styles.subheading}>
-                        <FormattedMessage id='alert.summary.heading' defaultMessage='(Last 7 Days)' />
-                    </p>
                 </div>
                 <div>
                     { inProgress ? (

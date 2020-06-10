@@ -8,7 +8,7 @@
     "parentId": "0",
     "content": {
       "properties": {},
-      "readOnly": false,
+      "readOnly": true,
       "pages": [
         {
           "id": "home",
@@ -373,14 +373,14 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 9.690916685080007,
+                  "height": 11.808448811409718,
                   "content": [
                     {
                       "title": "[Date Time Range]",
                       "type": "component",
                       "component": "DateRangePicker",
                       "props": {
-                        "id": "5525e109-7b1f-4b89-a413-7b0279312e06",
+                        "id": "e7861496-6c61-4dde-84d1-fb96a6782286",
                         "configs": {
                           "pubsub": {
                             "types": [
@@ -412,85 +412,36 @@
                   ]
                 },
                 {
-                  "type": "row",
+                  "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 40.541143654103344,
+                  "height": 86.47228660855242,
                   "content": [
                     {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "height": 33.333333333333336,
-                      "width": 50,
-                      "content": [
-                        {
-                          "title": "[APIM Overall Highest Latency]",
-                          "type": "component",
-                          "component": "APIMOverallHighestLatency",
-                          "props": {
-                            "id": "45a72125-febe-4ca7-bc6b-cfc3cf68e279",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": [
-                                  "5525e109-7b1f-4b89-a413-7b0279312e06"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true
-                              }
-                            },
-                            "widgetID": "APIMOverallHighestLatency"
+                      "title": "[APILatencySummaryWidget]",
+                      "type": "component",
+                      "component": "APILatencySummary",
+                      "props": {
+                        "id": "fdab9400-c125-4dc7-8bcb-9a720951742b",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "e7861496-6c61-4dde-84d1-fb96a6782286"
+                            ]
                           },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "height": 100,
-                      "width": 50,
-                      "content": [
-                        {
-                          "title": "[APIM Average Api Latency]",
-                          "type": "component",
-                          "component": "APIMAverageApiLatency",
-                          "props": {
-                            "id": "1cfb2aea-dfdd-4d41-9fd2-3bb437e5539a",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": [
-                                  "5525e109-7b1f-4b89-a413-7b0279312e06"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true,
-                                "headerTitle": "Average Api Latency"
-                              }
-                            },
-                            "widgetID": "APIMAverageApiLatency"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
+                          "isGenerated": false,
+                          "options": {}
+                        },
+                        "widgetID": "APILatencySummary"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
                     }
                   ]
                 },
@@ -498,30 +449,27 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 49.76793966081666,
+                  "height": 1.7192645800378619,
                   "content": [
                     {
-                      "title": "[APIM Api Latency Time]",
+                      "title": "[APILatencyOverTimeWidget]",
                       "type": "component",
-                      "component": "APIMApiLatencyTime",
+                      "component": "APILatencyOverTime",
                       "props": {
-                        "id": "33bac192-2ef6-46e0-899d-38a4c1742a1b",
+                        "id": "aa98d4da-e1cd-4b03-b69f-83a554616277",
                         "configs": {
                           "pubsub": {
                             "types": [
                               "subscriber"
                             ],
                             "publishers": [
-                              "5525e109-7b1f-4b89-a413-7b0279312e06"
+                              "e7861496-6c61-4dde-84d1-fb96a6782286"
                             ]
                           },
                           "isGenerated": false,
-                          "options": {
-                            "header": true,
-                            "headerTitle": "API Latency Over Time"
-                          }
+                          "options": {}
                         },
-                        "widgetID": "APIMApiLatencyTime"
+                        "widgetID": "APILatencyOverTime"
                       },
                       "isClosable": false,
                       "header": {
@@ -534,7 +482,7 @@
               ]
             }
           ],
-          "height": 1084.2222137451172
+          "height": 822
         },
         {
           "id": "traffic",
@@ -913,6 +861,8 @@
       "APIMApiLastAccessSummary",
       "DateRangePicker",
       "APIMApiLatencyTime",
+      "APILatencySummary",
+      "APILatencyOverTime",
       "APIMOverallHighestLatency",
       "APIMAlertSummaryByAPIs",
       "APIMApiFaultsSummary",

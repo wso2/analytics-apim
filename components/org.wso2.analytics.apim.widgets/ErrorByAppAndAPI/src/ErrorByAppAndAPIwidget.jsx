@@ -630,8 +630,8 @@ class ErrorByAppAndAPIwidget extends Widget {
                         <div style={this.styles.headingWrapper}>
                             <h3 style={this.styles.h3}>
                                 <FormattedMessage
-                                    id='widget.heading'
-                                    defaultMessage='SAMPLE HEADING'
+                                    id='widget.heading.top.error.summary'
+                                    defaultMessage='Top Error Summary'
                                 />
                             </h3>
                             <ErrorsSummaryChart

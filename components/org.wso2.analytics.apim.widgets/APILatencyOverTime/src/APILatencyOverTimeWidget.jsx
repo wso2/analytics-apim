@@ -91,14 +91,14 @@ const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
  * Create React Component for AppAndAPIErrorsByTime
- * @class AppAndAPIErrorsByTimeWidget
+ * @classAPILatencyOverTimeWidget
  * @extends {Widget}
  */
-class AppAndAPIErrorsByTimeWidget extends Widget {
+class APILatencyOverTimeWidget extends Widget {
     /**
-     * Creates an instance of AppAndAPIErrorsByTimeWidget.
+     * Creates an instance ofAPILatencyOverTimeWidget.
      * @param {any} props @inheritDoc
-     * @memberof AppAndAPIErrorsByTimeWidget
+     * @memberofAPILatencyOverTimeWidget
      */
     constructor(props) {
         super(props);
@@ -112,14 +112,12 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             drillDownType: DrillDownEnum.API,
 
             selectedAPI: -1,
-            selectedApp: -1,
             selectedVersion: -1,
             selectedResource: -1,
             selectedLimit: 5,
             data: [],
 
             apiList: [],
-            appList: [],
             versionList: [],
             operationList: [],
 
@@ -176,17 +174,14 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         this.getQueryForAPI = this.getQueryForAPI.bind(this);
 
         this.loadApis = this.loadApis.bind(this);
-        this.loadApps = this.loadApps.bind(this);
         this.loadVersions = this.loadVersions.bind(this);
         this.loadOperations = this.loadOperations.bind(this);
 
         this.handleLoadApis = this.handleLoadApis.bind(this);
-        this.handleLoadApps = this.handleLoadApps.bind(this);
         this.handleLoadVersions = this.handleLoadVersions.bind(this);
         this.handleLoadOperations = this.handleLoadOperations.bind(this);
 
         this.handleAPIChange = this.handleAPIChange.bind(this);
-        this.handleApplicationChange = this.handleApplicationChange.bind(this);
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleOperationChange = this.handleOperationChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
@@ -231,7 +226,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     /**
       * Load locale file
       * @param {string} locale Locale name
-      * @memberof AppAndAPIErrorsByTimeWidget
+      * @memberofAPILatencyOverTimeWidget
       * @returns {string}
       */
     loadLocale(locale = 'en') {
@@ -251,7 +246,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     /**
      * Retrieve params from publisher
      * @param {string} receivedMsg Received data from publisher
-     * @memberof AppAndAPIErrorsByTimeWidget
+     * @memberofAPILatencyOverTimeWidget
      * */
     handlePublisherParameters(receivedMsg) {
         this.setState({
@@ -264,19 +259,8 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
 
     // start of filter loading
-    loadApps() {
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'listAppsQuery';
-        super.getWidgetChannelManager()
-            .subscribeWidget(id + '_loadApps', widgetName, this.handleLoadApps, dataProviderConfigs);
-    }
-
     loadApis() {
         this.loadingDrillDownData();
-        this.loadApps();
 
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
@@ -311,11 +295,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id + '_loadOperations', widgetName, this.handleLoadOperations, dataProviderConfigs);
-    }
-
-    handleLoadApps(message) {
-        const { data } = message;
-        this.setState({ appList: data });
     }
 
     handleLoadApis(message) {
@@ -364,9 +343,10 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     /**
      * Formats data retrieved
      * @param {object} message - data retrieved
-     * @memberof AppAndAPIErrorsByTimeWidget
+     * @memberofAPILatencyOverTimeWidget
      * */
     handleQueryResults(message) {
+        console.log(message);
         // Insert the code to handle the data received through query
         const { data, metadata: { names } } = message;
         const newData = data.map((row) => {
@@ -393,7 +373,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
     getQueryForAPI() {
         const {
-            selectedAPI, selectedApp, selectedVersion, selectedResource, versionList, operationList, appList,
+            selectedAPI, selectedVersion, selectedResource, versionList, operationList,
         } = this.state;
         const selectPhase = [];
         const groupByPhase = [];
@@ -412,16 +392,14 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             filterPhase.push('apiResourceTemplate==\'' + template + '\'');
             filterPhase.push('apiMethod==\'' + verb + '\'');
         }
-        if (selectedApp !== -1) {
-            const appName = appList[selectedApp][0];
-            const appOwner = appList[selectedApp][1];
-            filterPhase.push('applicationName==\'' + appName + '\'');
-            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
-        }
 
-        selectPhase.push('AGG_TIMESTAMP', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
-            'sum(successCount) as successCount',
-            'sum(faultCount) as faultCount', 'sum(throttledCount) as throttledCount');
+        selectPhase.push('AGG_TIMESTAMP',
+            'avg(responseTime * 1.0) as responseTime',
+            'avg(backendLatency * 1.0) as backendLatency',
+            'avg(securityLatency * 1.0) as securityLatency',
+            'avg(throttlingLatency * 1.0) as throttlingLatency',
+            'avg(requestMedLat * 1.0) as requestMedLat',
+            'avg(responseMedLat * 1.0) as responseMedLat');
         groupByPhase.push('AGG_TIMESTAMP');
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
     }
@@ -430,10 +408,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
 
     // start of handle filter change
-    handleApplicationChange(event) {
-        this.setState({ selectedApp: event.target.value }, this.loadingDrillDownData);
-    }
-
     handleAPIChange(event) {
         this.setState({ selectedAPI: event.target.value }, this.loadingDrillDownData);
         this.loadVersions(event.target.value);
@@ -462,13 +436,13 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the AppAndAPIErrorsByTimeWidget
-     * @memberof AppAndAPIErrorsByTimeWidget
+     * @returns {ReactElement} Render theAPILatencyOverTimeWidget
+     * @memberofAPILatencyOverTimeWidget
      */
     render() {
         const {
             localeMessages, viewType, drillDownType, valueFormatType, data, loading,
-            selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit, apiList, appList,
+            selectedAPI, selectedVersion, selectedResource, selectedLimit, apiList,
             versionList, operationList,
         } = this.state;
         const { muiTheme } = this.props;
@@ -486,8 +460,8 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                         <div style={this.styles.headingWrapper}>
                             <h3 style={this.styles.h3}>
                                 <FormattedMessage
-                                    id='widget.heading.error.summary.overtime'
-                                    defaultMessage='Error Summary Over Time'
+                                    id='widget.heading.latency.overtime'
+                                    defaultMessage='API Latency Over Time'
                                 />
                             </h3>
                             <CustomFormGroup
@@ -495,18 +469,15 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                 valueFormatType={valueFormatType}
                                 drillDownType={drillDownType}
 
-                                selectedApp={selectedApp}
                                 selectedAPI={selectedAPI}
                                 selectedVersion={selectedVersion}
                                 selectedResource={selectedResource}
                                 selectedLimit={selectedLimit}
 
                                 apiList={apiList}
-                                appList={appList}
                                 versionList={versionList}
                                 operationList={operationList}
 
-                                handleApplicationChange={this.handleApplicationChange}
                                 handleAPIChange={this.handleAPIChange}
                                 handleVersionChange={this.handleVersionChange}
                                 handleOperationChange={this.handleOperationChange}
@@ -535,4 +506,4 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 }
 
 // Use this method to register the react component as a widget in the dashboard.
-global.dashboard.registerWidget('AppAndAPIErrorsByTime', AppAndAPIErrorsByTimeWidget);
+global.dashboard.registerWidget('APILatencyOverTime', APILatencyOverTimeWidget);

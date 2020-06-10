@@ -626,8 +626,8 @@ class AppAndAPIErrorTablewidget extends Widget {
                         <div style={this.styles.headingWrapper}>
                             <h3 style={this.styles.h3}>
                                 <FormattedMessage
-                                    id='widget.heading'
-                                    defaultMessage='SAMPLE HEADING'
+                                    id='widget.heading.error.summary'
+                                    defaultMessage='Error Summary'
                                 />
                             </h3>
                             <FormControl component='fieldset'>
