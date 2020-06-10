@@ -281,6 +281,7 @@ class ApiFaultAnalyticsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const faultProps = {
             themeName,
             height,
@@ -288,6 +289,7 @@ class ApiFaultAnalyticsWidget extends Widget {
             faultData,
             tableData,
             inProgress,
+            username,
         };
 
         return (

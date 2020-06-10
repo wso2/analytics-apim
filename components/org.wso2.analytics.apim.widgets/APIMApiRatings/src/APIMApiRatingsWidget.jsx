@@ -290,8 +290,9 @@ class APIMApiRatingsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const apiRatingProps = {
-            themeName, height, availableApiData, legendData, topApiNameData, inProgress,
+            themeName, height, availableApiData, legendData, topApiNameData, inProgress, username,
         };
 
         return (

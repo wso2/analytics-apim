@@ -20,7 +20,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -36,9 +36,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Registered App Users widget body
  */
-export default function APIMRegisteredAppUsers(props) {
+function APIMRegisteredAppUsers(props) {
     const {
-        themeName, height, width, usageData = [], inProgress,
+        themeName, height, width, usageData = [], inProgress, intl, username,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -110,6 +110,18 @@ export default function APIMRegisteredAppUsers(props) {
         },
     };
     const { pieChartData, legendData } = Utils.summarizePieData(usageData, 'applicationName', 'users');
+    const columns = [
+        {
+            id: 'applicationName', numeric: false, disablePadding: false, label: 'table.heading.applicationName',
+        },
+        {
+            id: 'users', numeric: true, disablePadding: false, label: 'table.heading.users',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
@@ -174,6 +186,10 @@ export default function APIMRegisteredAppUsers(props) {
                                     <CustomTable
                                         data={usageData}
                                         inProgress={inProgress}
+                                        columns={columns}
+                                        strColumns={strColumns}
+                                        title={title}
+                                        username={username}
                                     />
                                 </div>
                             </div>
@@ -211,4 +227,8 @@ APIMRegisteredAppUsers.propTypes = {
     width: PropTypes.number.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMRegisteredAppUsers);

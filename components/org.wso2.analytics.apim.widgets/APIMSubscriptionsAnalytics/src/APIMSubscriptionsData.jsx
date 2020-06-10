@@ -21,7 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import VizG from 'react-vizgrammar';
 import CustomTable from './CustomTable';
 
@@ -30,9 +30,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the data of APIM Subscriptions Analytics widget
  */
-export default function APIMSubscriptionsData(props) {
+function APIMSubscriptionsData(props) {
     const {
-        themeName, chartData, tableData, width, onClickAPI,
+        themeName, chartData, tableData, width, onClickAPI, intl, username,
     } = props;
     const styles = {
         paperWrapper: {
@@ -82,6 +82,21 @@ export default function APIMSubscriptionsData(props) {
         names: ['COUNT', 'SUBSCRIBED_TIME'],
         types: ['linear', 'time'],
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.appname',
+        },
+        {
+            id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.subscribedtime',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     if (tableData.length !== 0 && chartData.length !== 0) {
         return (
@@ -97,7 +112,11 @@ export default function APIMSubscriptionsData(props) {
                 <div style={styles.tableWrapper}>
                     <CustomTable
                         tableData={tableData}
+                        columns={columns}
                         onClickTableRow={e => onClickAPI(e)}
+                        strColumns={strColumns}
+                        title={title}
+                        username={username}
                     />
                 </div>
             </div>
@@ -127,4 +146,8 @@ APIMSubscriptionsData.propTypes = {
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
     onClickAPI: PropTypes.func.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMSubscriptionsData);

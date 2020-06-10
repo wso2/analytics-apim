@@ -26,15 +26,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
-const rows = [
-    {
-        id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.appname',
-    },
-    {
-        id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.createdtime',
-    },
-];
-
 /**
  * Create React Component for Custom Table Head
  */
@@ -49,12 +40,12 @@ export default class CustomTableHead extends React.Component {
      * @return {ReactElement} customTableHead
      */
     render() {
-        const { order, orderBy } = this.props;
+        const { order, orderBy, columns } = this.props;
 
         return (
             <TableHead>
                 <TableRow>
-                    {rows.map((row) => {
+                    {columns.map((row) => {
                         return (
                             <TableCell
                                 key={row.id}
@@ -91,4 +82,5 @@ CustomTableHead.propTypes = {
     onRequestSort: PropTypes.func.isRequired,
     order: PropTypes.string.isRequired,
     orderBy: PropTypes.string.isRequired,
+    columns: PropTypes.instanceOf(Object).isRequired,
 };

@@ -335,8 +335,9 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const apiCreatedProps = {
-            themeName, height, chartData, tableData, inProgress, width,
+            themeName, height, chartData, tableData, inProgress, width, username,
         };
 
         return (

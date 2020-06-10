@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
@@ -32,9 +32,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Api Throttle Analytics widget body
  */
-export default function ApiThrottleAnalytics(props) {
+function ApiThrottleAnalytics(props) {
     const {
-        themeName, height, width, inProgress, throttleData, tableData,
+        themeName, height, width, inProgress, throttleData, tableData, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -43,7 +43,6 @@ export default function ApiThrottleAnalytics(props) {
         },
         dataWrapper: {
             paddingTop: '20px',
-
         },
         chartWrapper: {
             width: '95%',
@@ -79,6 +78,24 @@ export default function ApiThrottleAnalytics(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'time', numeric: false, disablePadding: false, label: 'table.heading.time',
+        },
+        {
+            id: 'appName', numeric: false, disablePadding: false, label: 'table.heading.appName',
+        },
+        {
+            id: 'reason', numeric: false, disablePadding: false, label: 'table.heading.reason',
+        },
+        {
+            id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
     const chartConfig = {
         x: 'TIME',
         charts: [
@@ -104,7 +121,6 @@ export default function ApiThrottleAnalytics(props) {
         names: ['COUNT', 'TIME'],
         types: ['linear', 'time'],
     };
-
 
     return (
         <Scrollbars style={{
@@ -163,6 +179,10 @@ export default function ApiThrottleAnalytics(props) {
                                 <div style={styles.tableWrapper}>
                                     <CustomTable
                                         data={tableData}
+                                        columns={columns}
+                                        strColumns={strColumns}
+                                        title={title}
+                                        username={username}
                                     />
                                 </div>
                             </div>
@@ -181,4 +201,8 @@ ApiThrottleAnalytics.propTypes = {
     throttleData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(ApiThrottleAnalytics);

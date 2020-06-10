@@ -21,7 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import VizG from 'react-vizgrammar';
 import CustomTable from './CustomTable';
 
@@ -30,9 +30,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the data of APIM App Created Analytics widget
  */
-export default function APIMAppCreatedData(props) {
+function APIMAppCreatedData(props) {
     const {
-        themeName, chartData, tableData, width,
+        themeName, chartData, tableData, width, intl, username,
     } = props;
     const styles = {
         dataWrapper: {
@@ -82,6 +82,18 @@ export default function APIMAppCreatedData(props) {
         names: ['COUNT', 'CREATED_TIME'],
         types: ['linear', 'time'],
     };
+    const columns = [
+        {
+            id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.appname',
+        },
+        {
+            id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.createdtime',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     if (tableData.length !== 0 && chartData.length !== 0) {
         return (
@@ -97,6 +109,10 @@ export default function APIMAppCreatedData(props) {
                 <div style={styles.tableWrapper}>
                     <CustomTable
                         data={tableData}
+                        columns={columns}
+                        strColumns={strColumns}
+                        title={title}
+                        username={username}
                     />
                 </div>
             </div>
@@ -128,4 +144,8 @@ APIMAppCreatedData.propTypes = {
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
     width: PropTypes.string.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMAppCreatedData);

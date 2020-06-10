@@ -20,7 +20,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
@@ -37,10 +37,10 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the App Resource Usage  widget body
  */
-export default function APIMAppResourceUsage(props) {
+function APIMAppResourceUsage(props) {
     const {
         themeName, height, width, limit, applicationSelected, usageData, applicationList,
-        applicationSelectedHandleChange, handleLimitChange, inProgress,
+        applicationSelectedHandleChange, handleLimitChange, inProgress, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -106,6 +106,24 @@ export default function APIMAppResourceUsage(props) {
             overflow: 'hidden',
         },
     };
+    const columns = [
+        {
+            id: 'apiName', numeric: false, disablePadding: false, label: 'table.heading.apiName',
+        },
+        {
+            id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
+        },
+        {
+            id: 'resource', numeric: false, disablePadding: false, label: 'table.heading.resource',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
@@ -204,6 +222,10 @@ export default function APIMAppResourceUsage(props) {
                                     <CustomTable
                                         data={usageData}
                                         inProgress={inProgress}
+                                        columns={columns}
+                                        strColumns={strColumns}
+                                        title={title}
+                                        username={username}
                                     />
                                 </div>
                             ) : (
@@ -246,4 +268,8 @@ APIMAppResourceUsage.propTypes = {
     applicationSelectedHandleChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMAppResourceUsage);

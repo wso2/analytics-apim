@@ -453,6 +453,7 @@ class APIMTopAppUsersWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const appUsersProps = {
             themeName,
             height,
@@ -463,6 +464,7 @@ class APIMTopAppUsersWidget extends Widget {
             usageData,
             legendData,
             inProgress,
+            username,
         };
 
         return (

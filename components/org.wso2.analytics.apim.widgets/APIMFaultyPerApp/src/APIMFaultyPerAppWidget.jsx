@@ -451,6 +451,7 @@ class APIMFaultyPerAppWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const faultyUsageProps = {
             themeName,
             height,
@@ -460,6 +461,7 @@ class APIMFaultyPerAppWidget extends Widget {
             applicationSelected,
             usageData,
             inProgress,
+            username,
         };
 
         return (

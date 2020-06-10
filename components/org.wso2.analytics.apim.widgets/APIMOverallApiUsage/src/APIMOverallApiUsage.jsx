@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
@@ -36,10 +36,10 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Overall Api Usage widget body
  */
-export default function APIMOverallApiUsage(props) {
+function APIMOverallApiUsage(props) {
     const {
         themeName, width, height, limit, usageData1, usageData2, limitHandleChange, inProgress, handleOnClickAPI,
-        selectedAPIChangeCallback,
+        selectedAPIChangeCallback, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -100,6 +100,21 @@ export default function APIMOverallApiUsage(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'apiVersion', numeric: true, disablePadding: false, label: 'table.heading.apiVersion',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
     const chartConfig = {
         charts: [
             {
@@ -217,7 +232,11 @@ export default function APIMOverallApiUsage(props) {
                                     <CustomTable
                                         data={usageData2}
                                         callBack={selectedAPIChangeCallback}
+                                        columns={columns}
                                         onClickTableRow={e => handleOnClickAPI(e)}
+                                        strColumns={strColumns}
+                                        title={title}
+                                        username={username}
                                     />
                                 </div>
                             )
@@ -241,4 +260,8 @@ APIMOverallApiUsage.propTypes = {
     selectedAPIChangeCallback: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMOverallApiUsage);

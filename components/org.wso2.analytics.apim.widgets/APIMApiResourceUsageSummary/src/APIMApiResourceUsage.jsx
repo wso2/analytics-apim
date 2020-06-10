@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
@@ -35,9 +35,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Api Resource Usage Summary widget body
  */
-export default function APIMApiResourceUsage(props) {
+function APIMApiResourceUsage(props) {
     const {
-        themeName, height, limit, usageData, handleChange, inProgress,
+        themeName, height, limit, usageData, handleChange, inProgress, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -87,6 +87,27 @@ export default function APIMApiResourceUsage(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
+        },
+        {
+            id: 'resourcepath', numeric: false, disablePadding: false, label: 'table.heading.resourcepath',
+        },
+        {
+            id: 'method', numeric: false, disablePadding: false, label: 'table.heading.method',
+        },
+        {
+            id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
@@ -157,7 +178,13 @@ export default function APIMApiResourceUsage(props) {
                                 </Paper>
                             </div>
                         ) : (
-                            <CustomTable data={usageData} />
+                            <CustomTable
+                                data={usageData}
+                                columns={columns}
+                                strColumns={strColumns}
+                                title={title}
+                                username={username}
+                            />
                         )}
                     </div>
                 )}
@@ -173,4 +200,8 @@ APIMApiResourceUsage.propTypes = {
     usageData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMApiResourceUsage);

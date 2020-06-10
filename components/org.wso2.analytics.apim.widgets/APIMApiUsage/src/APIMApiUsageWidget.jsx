@@ -345,12 +345,14 @@ class APIMApiUsageWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const apiUsersProps = {
             themeName,
             height,
             limit,
             usageData,
             inProgress,
+            username,
         };
 
         return (

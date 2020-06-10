@@ -455,6 +455,7 @@ class APIMAppResourceUsageWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const resourceUsageProps = {
             themeName,
             height,
@@ -464,6 +465,7 @@ class APIMAppResourceUsageWidget extends Widget {
             applicationSelected,
             usageData,
             inProgress,
+            username,
         };
 
         return (
