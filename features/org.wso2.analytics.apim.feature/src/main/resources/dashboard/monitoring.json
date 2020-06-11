@@ -882,8 +882,9 @@
     "generated": [],
     "custom": [
       "APIMApiThrottledSummary",
-      "APIMApiAvailability",
       "ErrorByAppAndAPI",
+      "APIMApiAvailability",
+      "ApiAvailability",
       "AppAndAPIErrorsByTime",
       "AppAndAPIErrorTable",
       "APIMOverallApiInfo",
