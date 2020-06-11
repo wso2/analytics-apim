@@ -58,19 +58,23 @@ public class ApimIdPClientFactory implements IdPClientFactory {
     private boolean isHostnameVerifierEnabled;
     private AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService;
     private static final String CUSTOM_URL_API_ENDPOINT = "/api/am/admin/v0.16/custom-urls";
+    private TokenDataMapCleaner tokenDataMapCleaner;
 
     @Activate
     protected void activate(BundleContext bundleContext) {
         LOG.debug("APIM IDP client factory activated.");
 
         // Start tokenData map cleaner.
-        TokenDataMapCleaner tokenDataMapCleaner = new TokenDataMapCleaner();
-        tokenDataMapCleaner.startTokenDataMapCleaner();
+        this.tokenDataMapCleaner = new TokenDataMapCleaner();
+        this.tokenDataMapCleaner.startTokenDataMapCleaner();
     }
 
     @Deactivate
     protected void deactivate(BundleContext bundleContext) {
         LOG.debug("APIM IDP client factory deactivated.");
+
+        // Stop tokenData map cleaner.
+        this.tokenDataMapCleaner.stopTokenDataMapCleaner();
     }
 
     /**
