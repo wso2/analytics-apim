@@ -28,7 +28,7 @@ import Moment from 'moment';
 import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
-import Top10ApiPerformanceOverTime from './Top10ApiPerformanceOverTime';
+import PerformanceSummary from './PerformanceSummary';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -48,9 +48,6 @@ const lightTheme = createMuiTheme({
     },
 });
 
-const CALLBACK_TOP_10 = '_top_10';
-const CALLBACK_PERFORMANCE = '_performance';
-
 /**
  * Language
  * @type {string}
@@ -63,15 +60,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for Top 10 Api Performance Over Time
- * @class Top10ApiPerformanceOverTimeWidget
+ * Create React Component for Performance Summary
+ * @class PerformanceSummaryWidget
  * @extends {Widget}
  */
-class Top10ApiPerformanceOverTimeWidget extends Widget {
+class PerformanceSummaryWidget extends Widget {
     /**
-     * Creates an instance of Top10ApiPerformanceOverTimeWidget.
+     * Creates an instance of PerformanceSummaryWidget.
      * @param {any} props @inheritDoc
-     * @memberof Top10ApiPerformanceOverTimeWidget
+     * @memberof PerformanceSummaryWidget
      */
     constructor(props) {
         super(props);
@@ -107,11 +104,10 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
             }));
         }
 
-        this.assembleTopApiQuery = this.assembleTopApiQuery.bind(this);
-        this.handleTopApiReceived = this.handleTopApiReceived.bind(this);
         this.assembleLatencyQuery = this.assembleLatencyQuery.bind(this);
         this.handleApiLatencyReceived = this.handleApiLatencyReceived.bind(this);
         this.handleOnClick = this.handleOnClick.bind(this);
+        this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
     }
 
     componentWillMount() {
@@ -130,7 +126,7 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleTopApiQuery);
+                }, () => super.subscribe(this.handlePublisherParameters));
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -142,19 +138,18 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_TOP_10);
-        super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_PERFORMANCE);
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
      * Load locale file.
      * @param {string} locale Locale name
-     * @memberof Top10ApiPerformanceOverTimeWidget
+     * @memberof PerformanceSummaryWidget
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/Top10ApiPerformanceOverTime/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/PerformanceSummary/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -166,78 +161,80 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
     }
 
     /**
-     * Formats the siddhi query - topapiquery
-     * @memberof Top10ApiPerformanceOverTimeWidget
+     * Retrieve params from publisher - DateTimeRange
+     * @memberof PerformanceSummaryWidget
      * */
-    assembleTopApiQuery() {
-        const { providerConfig } = this.state;
-        const { id, widgetID: widgetName } = this.props;
+    handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam; const {
+            from, to, granularity, dm, op,
+        } = receivedMsg;
 
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{from}}': Moment().subtract(30, 'days').toDate().getTime(),
-            '{{to}}': new Date().getTime(),
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id + CALLBACK_TOP_10, widgetName, this.handleTopApiReceived, dataProviderConfigs);
-    }
-
-    /**
-     * Formats data retrieved from assembleTopApiQuery
-     * @param {object} message - data retrieved
-     * @memberof Top10ApiPerformanceOverTimeWidget
-     * */
-    handleTopApiReceived(message) {
-        const { data } = message;
-
-        if (data && data.length > 0) {
-            const selectedOptions = data.map((dataUnit) => {
-                return { name: dataUnit[0], version: dataUnit[2], provider: dataUnit[1] };
-            });
-            this.setState({ selectedOptions }, this.assembleLatencyQuery);
-        } else {
-            this.setState({ latencyData: [], inProgress: false });
+        if (dm && from) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleLatencyQuery);
+        } else if (dm) {
+            this.setState({
+                dimension: dm,
+                selectedOptions: op,
+                inProgress: true,
+            }, this.assembleLatencyQuery);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                perValue: granularity,
+                inProgress: !sync,
+            }, this.assembleLatencyQuery);
         }
     }
 
     /**
      * Formats the siddhi query - apiusagequery
-     * @memberof Top10ApiPerformanceOverTimeWidget
+     * @memberof PerformanceSummaryWidget
      * */
     assembleLatencyQuery() {
         const {
-            providerConfig, selectedOptions,
+            providerConfig, timeFrom, timeTo, perValue, dimension, selectedOptions,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (selectedOptions && selectedOptions.length > 0) {
-            let filterCondition = selectedOptions.map((opt) => {
-                return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
-            });
-            filterCondition = filterCondition.join(' OR ');
+        if (dimension && timeFrom) {
+            if (selectedOptions && selectedOptions.length > 0) {
+                let filterCondition = selectedOptions.map((opt) => {
+                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
+                });
+                filterCondition = filterCondition.join(' OR ');
 
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'apilatencyquery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{filterCondition}}': filterCondition,
-                '{{from}}': Moment().subtract(30, 'days').toDate().getTime(),
-                '{{to}}': new Date().getTime(),
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id + CALLBACK_PERFORMANCE, widgetName, this.handleApiLatencyReceived,
-                    dataProviderConfigs);
-        } else {
-            this.setState({
-                latencyData: [], inProgress: false,
-            });
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'apilatencyquery';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{filterCondition}}': filterCondition,
+                    '{{from}}': timeFrom,
+                    '{{to}}': timeTo,
+                    '{{per}}': perValue,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id, widgetName, this.handleApiLatencyReceived,
+                        dataProviderConfigs);
+            } else {
+                this.setState({
+                    latencyData: [], inProgress: false,
+                });
+            }
         }
     }
 
     /**
      * Formats data retrieved from assembleLatencyQuery
      * @param {object} message - data retrieved
-     * @memberof Top10ApiPerformanceOverTimeWidget
+     * @memberof PerformanceSummaryWidget
      * */
     handleApiLatencyReceived(message) {
         const { data } = message;
@@ -277,27 +274,26 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
 
     /**
      * Handle onClick of an API and drill down
-     * @memberof Top10ApiPerformanceOverTimeWidget
+     * @memberof PerformanceSummaryWidget
      * */
-    handleOnClick() {
+    handleOnClick(data) {
         const { configs } = this.props;
-        const { selectedOptions } = this.state;
 
         if (configs && configs.options) {
             const { drillDown } = configs.options;
 
             if (drillDown) {
-                let apiList = selectedOptions.map((opt) => {
-                    return '{"name":"' + opt.name + '","version":"' + opt.version + '","provider":"'
-                        + opt.provider + '"}';
-                });
-                apiList = apiList.join(',');
+                const name = Object.keys(data).find(key => key.includes('::'));
+                const splitName = name.split(' :: ');
+                const api = splitName[0].trim();
+                const apiversion = splitName[1].split(' (')[0].trim();
+                const provider = splitName[1].split(' (')[1].split(')')[0].trim();
                 const locationParts = window.location.pathname.split('/');
                 const dashboard = locationParts[locationParts.length - 2];
 
                 window.location.href = window.contextPath
                     + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1month"},"dmSelc":{"dm":"api",'
-                    + '"op":[' + apiList + ']}}';
+                    + '"op":[{"name":"' + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
             }
         }
     }
@@ -305,8 +301,8 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the Top 10 Api Performance Over Time widget
-     * @memberof Top10ApiPerformanceOverTimeWidget
+     * @returns {ReactElement} Render the Performance Summary widget
+     * @memberof PerformanceSummaryWidget
      */
     render() {
         const {
@@ -338,13 +334,13 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for'
-                                            + ' Top 10 Api Performance Over Time widget'}
+                                            + ' Performance Summary widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <Top10ApiPerformanceOverTime
+                            <PerformanceSummary
                                 {...apiPerfOverTimeProps}
                                 handleOnClick={this.handleOnClick}
                             />
@@ -356,4 +352,4 @@ class Top10ApiPerformanceOverTimeWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('Top10ApiPerformanceOverTime', Top10ApiPerformanceOverTimeWidget);
+global.dashboard.registerWidget('PerformanceSummary', PerformanceSummaryWidget);

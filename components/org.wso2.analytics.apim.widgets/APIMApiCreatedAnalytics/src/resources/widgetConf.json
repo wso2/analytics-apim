@@ -45,11 +45,11 @@
       },
       {
         "id": "drillDown",
-        "title": "API Usage Page",
+        "title": "Usage Summary Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "api-usage"
+        "defaultValue": "usage-summary"
       }
     ]
   }

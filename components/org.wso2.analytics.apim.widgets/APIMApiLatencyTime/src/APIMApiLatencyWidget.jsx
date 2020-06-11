@@ -263,7 +263,6 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     assembleApiIdQuery() {
-        console.log('assembleApiIdQuery')
         const {
             providerConfig, dimension, selectedOptions, timeFrom,
         } = this.state;
@@ -280,7 +279,6 @@ class APIMApiLatencyWidget extends Widget {
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
-        console.log(291);
     }
 
     /**
@@ -290,7 +288,6 @@ class APIMApiLatencyWidget extends Widget {
      * */
     handleApiIdReceived(message) {
         const { data } = message;
-        console.log(data);
         if (data && data.length > 0) {
             this.setState({ apiId: data[0][0] }, this.assembleResourceQuery);
         } else {
@@ -326,7 +323,6 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     handleResourceReceived(message) {
-        console.log('handleResourceReceived')
         const { data } = message;
         const { operationSelected, resourceSelected } = this.state;
 
@@ -358,7 +354,6 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     assembleMainQuery() {
-        console.log('assembleMainQuery')
         const {
             providerConfig, timeFrom, timeTo, perValue, operationSelected, resourceSelected, selectedOptions,
         } = this.state;
@@ -421,7 +416,6 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     handleDataReceived(message) {
-        console.log('handleDataReceived', message);
         const { data } = message;
 
         if (data) {

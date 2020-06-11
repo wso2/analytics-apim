@@ -47,6 +47,13 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'apiUsageTime';
+
+const API_ID_CALLBACK = '-api-id';
+const APP_ID_CALLBACK = '-app-id';
+const APPLICATION_CALLBACK = '-applications';
+const USAGE_CALLBACK = '-usage';
+
 /**
  * Language
  * @type {string}
@@ -97,6 +104,10 @@ class ApiUsageOverTimeWidget extends Widget {
             timeFrom: null,
             timeTo: null,
             perValue: null,
+            appData: [],
+            selectedApp: 'All',
+            apiIds: [],
+            appIds: [],
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -110,6 +121,15 @@ class ApiUsageOverTimeWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
+        this.assembleApplicationQuery = this.assembleApplicationQuery.bind(this);
+        this.handleAppDataReceived = this.handleAppDataReceived.bind(this);
+        this.loadSelectedApp = this.loadSelectedApp.bind(this);
+        this.setQueryParam = this.setQueryParam.bind(this);
+        this.applicationHandleChange = this.applicationHandleChange.bind(this);
+        this.assembleApiIdQuery = this.assembleApiIdQuery.bind(this);
+        this.handleApiIdDataReceived = this.handleApiIdDataReceived.bind(this);
+        this.assembleSubscribedAppIdQuery = this.assembleSubscribedAppIdQuery.bind(this);
+        this.handleSubscribedAppIdDataReceived = this.handleSubscribedAppIdDataReceived.bind(this);
     }
 
     componentWillMount() {
@@ -123,6 +143,7 @@ class ApiUsageOverTimeWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadSelectedApp();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -140,7 +161,10 @@ class ApiUsageOverTimeWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_ID_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + APP_ID_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + APPLICATION_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + USAGE_CALLBACK);
     }
 
     /**
@@ -163,6 +187,17 @@ class ApiUsageOverTimeWidget extends Widget {
     }
 
     /**
+     * Retrieve the selected applications from query param
+     * @memberof ApiUsageOverTimeWidget
+     * */
+    loadSelectedApp() {
+        const { selectedApp } = super.getGlobalState(queryParamKey);
+        this.setQueryParam(selectedApp);
+        this.setState({ selectedApp });
+    }
+
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof ApiUsageOverTimeWidget
      * */
@@ -181,20 +216,154 @@ class ApiUsageOverTimeWidget extends Widget {
                 timeTo: to,
                 perValue: granularity,
                 inProgress: !sync,
-            }, this.assembleApiUsageQuery);
+            }, this.assembleApiIdQuery);
         } else if (dm) {
             this.setState({
                 dimension: dm,
                 selectedOptions: op,
                 inProgress: true,
-            }, this.assembleApiUsageQuery);
+            }, this.assembleApiIdQuery);
         } else if (from) {
             this.setState({
                 timeFrom: from,
                 timeTo: to,
                 perValue: granularity,
                 inProgress: !sync,
-            }, this.assembleApiUsageQuery);
+            }, this.assembleApiIdQuery);
+        }
+    }
+
+    /**
+     * Retrieves API Ids of selected APIs
+     * @memberof ApiUsageOverTimeWidget
+     * */
+    assembleApiIdQuery() {
+        const {
+            providerConfig, selectedOptions,
+        } = this.state;
+        const { id, widgetID: widgetName } = this.props;
+
+        if (selectedOptions && selectedOptions.length > 0) {
+            let filterCondition = selectedOptions.map((opt) => {
+                return '(API_NAME==\'' + opt.name + '\' AND API_VERSION==\'' + opt.version + '\')';
+            });
+            filterCondition = '(' + filterCondition.join(' OR ') + ')';
+
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{filterCondition}}': filterCondition,
+            };
+            super.getWidgetChannelManager().subscribeWidget(id + API_ID_CALLBACK, widgetName,
+                this.handleApiIdDataReceived, dataProviderConfigs);
+        }
+    }
+
+    /**
+     * Formats data retrieved from assembleApiIdQuery
+     * @param {object} message - data retrieved
+     * @memberof ApiUsageOverTimeWidget
+     * */
+    handleApiIdDataReceived(message) {
+        const { data } = message;
+
+        if (data) {
+            const apiIds = data.map((dataUnit) => { return dataUnit[0]; });
+            this.setState({ apiIds }, this.assembleSubscribedAppIdQuery);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
+        }
+    }
+
+    /**
+     * Retrieves subscribed applications
+     * @memberof ApiUsageOverTimeWidget
+     * */
+    assembleSubscribedAppIdQuery() {
+        const {
+            providerConfig, apiIds,
+        } = this.state;
+        const { id, widgetID: widgetName } = this.props;
+
+        if (apiIds && apiIds.length > 0) {
+            let filterCondition = apiIds.map((api) => {
+                return 'API_ID==' + api;
+            });
+            filterCondition = '(' + filterCondition.join(' OR ') + ')';
+
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'apisubquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{apiList}}': filterCondition,
+            };
+            super.getWidgetChannelManager().subscribeWidget(id + APP_ID_CALLBACK, widgetName,
+                this.handleSubscribedAppIdDataReceived, dataProviderConfigs);
+        }
+    }
+
+    /**
+     * Formats data retrieved from assembleSubscribedAppIdQuery
+     * @param {object} message - data retrieved
+     * @memberof ApiUsageOverTimeWidget
+     * */
+    handleSubscribedAppIdDataReceived(message) {
+        const { data } = message;
+
+        if (data) {
+            const appIds = data.map((dataUnit) => { return dataUnit[0]; });
+            this.setState({ appIds }, this.assembleApplicationQuery);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
+        }
+    }
+
+    /**
+     * Retrieves application data
+     * @memberof ApiUsageOverTimeWidget
+     * */
+    assembleApplicationQuery() {
+        const { providerConfig, appIds } = this.state;
+        const { id, widgetID: widgetName } = this.props;
+
+        if (appIds && appIds.length > 0) {
+            let appIdList = appIds.map((appId) => { return 'APPLICATION_ID==' + appId; });
+            appIdList = appIdList.join(' OR ');
+
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'appQuery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{appIdList}}': appIdList,
+            };
+            super.getWidgetChannelManager().subscribeWidget(
+                id + APPLICATION_CALLBACK, widgetName, this.handleAppDataReceived, dataProviderConfigs,
+            );
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
+        }
+    }
+
+    /**
+     * Formats data retrieved from assembleApplicationQuery
+     * @param {object} message - data retrieved
+     * @memberof ApiUsageOverTimeWidget
+     * */
+    handleAppDataReceived(message) {
+        const { data } = message;
+        let { selectedApp } = { ...this.state };
+
+        if (data) {
+            const appData = data.map((dataUnit) => {
+                return dataUnit[0] + ' (' + dataUnit[1] + ')';
+            });
+            appData.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+            appData.unshift('All');
+            if (!appData.includes(selectedApp)) {
+                selectedApp = 'All';
+                this.setQueryParam(selectedApp);
+            }
+            this.setState({ appData, selectedApp }, this.assembleApiUsageQuery);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
         }
     }
 
@@ -204,17 +373,22 @@ class ApiUsageOverTimeWidget extends Widget {
      * */
     assembleApiUsageQuery() {
         const {
-            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions,
+            timeFrom, timeTo, perValue, providerConfig, dimension, selectedOptions, selectedApp,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         if (dimension && timeFrom) {
-            if (selectedOptions && selectedOptions.length > 0) {
+            if (selectedOptions && selectedOptions.length > 0 && selectedApp) {
                 let filterCondition = selectedOptions.map((opt) => {
+                    if (selectedApp !== 'All') {
+                        const appName = selectedApp.split(' (')[0].trim();
+                        const appOwner = selectedApp.split(' (')[1].split(')')[0].trim();
+                        return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\''
+                            + ' AND applicationName==\'' + appName + '\' AND applicationOwner==\'' + appOwner + '\')';
+                    }
                     return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
                 });
-                filterCondition = filterCondition.join(' OR ');
-                filterCondition = 'AND ' + filterCondition;
+                filterCondition = '(' + filterCondition.join(' OR ') + ')';
 
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'apiusagequery';
@@ -225,7 +399,7 @@ class ApiUsageOverTimeWidget extends Widget {
                     '{{per}}': perValue,
                 };
                 super.getWidgetChannelManager()
-                    .subscribeWidget(id, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
+                    .subscribeWidget(id + USAGE_CALLBACK, widgetName, this.handleApiUsageReceived, dataProviderConfigs);
             } else {
                 this.setState({
                     usageData: [], inProgress: false,
@@ -246,13 +420,13 @@ class ApiUsageOverTimeWidget extends Widget {
         if (data && data.length > 0) {
             const apiList = selectedOptions
                 .sort((a, b) => { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); })
-                .map((api) => { return api.name + ' (' + api.provider + ') :: ' + api.version; });
+                .map((api) => { return api.name + ' :: ' + api.version + ' (' + api.provider + ')'; });
             const dataGroupByTime = data.reduce((acc, obj) => {
                 const key = obj[4];
                 if (!acc[key]) {
                     acc[key] = [];
                 }
-                acc[key].push({ apiname: obj[0] + ' (' + obj[1] + ') :: ' + obj[3], hits: obj[2] });
+                acc[key].push({ apiname: obj[0] + ' :: ' + obj[3] + ' (' + obj[1] + ')', hits: obj[2] });
                 return acc;
             }, {});
             const usageData = Object.keys(dataGroupByTime).map((key) => {
@@ -276,13 +450,32 @@ class ApiUsageOverTimeWidget extends Widget {
     }
 
     /**
+     * Handle onChange of selected application
+     * @param {String} value - selected application
+     * @memberof ApiUsageOverTimeWidget
+     * */
+    applicationHandleChange(value) {
+        this.setQueryParam(value);
+        this.setState({ selectedApp: value, inProgress: true }, this.assembleApiUsageQuery);
+    }
+
+    /**
+     * Updates query param values
+     * @param {String} selectedApp - selected application
+     * @memberof ApiUsageOverTimeWidget
+     * */
+    setQueryParam(selectedApp) {
+        super.setGlobalState(queryParamKey, { selectedApp });
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the Api Usage Over Time widget
      * @memberof ApiUsageOverTimeWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, width, height, usageData, inProgress, apiList,
+            localeMessages, faultyProviderConfig, width, height, usageData, inProgress, apiList, selectedApp, appData,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -290,7 +483,7 @@ class ApiUsageOverTimeWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageOverTimeProps = {
-            themeName, width, height, usageData, inProgress, apiList,
+            themeName, width, height, usageData, inProgress, apiList, selectedApp, appData,
         };
 
         return (
@@ -318,6 +511,7 @@ class ApiUsageOverTimeWidget extends Widget {
                         ) : (
                             <ApiUsageOverTime
                                 {...apiUsageOverTimeProps}
+                                applicationHandleChange={this.applicationHandleChange}
                             />
                         )
                     }

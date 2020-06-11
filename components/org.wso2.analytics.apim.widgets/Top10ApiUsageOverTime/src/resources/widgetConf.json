@@ -38,15 +38,15 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Top 10 Api Usage For Month"
+        "defaultValue": "Top 10 Api Usage During Past 30 Days"
       },
       {
         "id": "drillDown",
-        "title": "API Usage Over Time Page",
+        "title": "API Usage Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "usage-over-time"
+        "defaultValue": "api-usage"
       }
     ]
   }

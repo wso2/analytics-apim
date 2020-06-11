@@ -37,15 +37,15 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Overall Faulty Requests Over Time"
+        "defaultValue": "Errors During Past 30 Days"
       },
       {
         "id": "drillDown",
-        "title": "API Faults Page",
+        "title": "Faults Summary Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "api-faults"
+        "defaultValue": "faults-summary"
       }
     ]
   }

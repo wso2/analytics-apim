@@ -37,7 +37,7 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Top API Providers"
+        "defaultValue": "Top API Creators"
       },
       {
         "id": "drillDown",
@@ -45,7 +45,7 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "api-app-stats"
+        "defaultValue": ""
       }
     ]
   }

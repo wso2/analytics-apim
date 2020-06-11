@@ -38,15 +38,15 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Top 10 Throttled Out Apis Over Time"
+        "defaultValue": "Top 10 Throttled Out Apis During Past 30 Days"
       },
       {
         "id": "drillDown",
-        "title": "API Faults Page",
+        "title": "Throttle Summary Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "api-faults"
+        "defaultValue": "throttle-summary"
       }
     ]
   }

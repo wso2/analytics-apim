@@ -27,13 +27,13 @@ import Typography from '@material-ui/core/Typography';
 import VizG from 'react-vizgrammar';
 
 /**
- * React Component for Top 10 Api Performance Over Time widget body
+ * React Component for Throttle Summary widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Top 10 Api Performance Over Time  widget body
+ * @returns {ReactElement} Render the Throttle Summary widget body
  */
-export default function Top10ApiPerformanceOverTime(props) {
+export default function ThrottleSummary(props) {
     const {
-        themeName, width, height, latencyData, inProgress, apiList, handleOnClick,
+        themeName, height, width, inProgress, throttleData, apiList, handleOnClick,
     } = props;
     const styles = {
         headingWrapper: {
@@ -70,9 +70,9 @@ export default function Top10ApiPerformanceOverTime(props) {
     };
     const chartConfig = {
         x: 'TIME',
-        charts: [],
+        charts: [
+        ],
         maxLength: 60,
-        height: 400,
         interactiveLegend: true,
         legend: true,
         timeFormat: '%d-%b-%y %H:%M',
@@ -81,17 +81,13 @@ export default function Top10ApiPerformanceOverTime(props) {
             xAxisTickAngle: -8,
             tickLabelColor: '#a7b0c8',
             axisLabelColor: '#a7b0c8',
-            axisTextSize: 50,
-            legendTextColor: '#a7b0c8',
-            legendTextSize: 15,
+            axisTextSize: 10,
         },
     };
     const metadata = {
-        names: [],
-        types: [],
     };
 
-    if (latencyData) {
+    if (throttleData) {
         metadata.names = apiList.map((dataUnit) => { return dataUnit; });
         metadata.names.push('TIME');
         metadata.types = apiList.map(() => { return 'linear'; });
@@ -105,74 +101,69 @@ export default function Top10ApiPerformanceOverTime(props) {
             backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
         }}
         >
-            <div style={{
-                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                margin: '10px',
-                padding: '20px',
-            }}
+            <div
+                style={{
+                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                    margin: '10px',
+                    padding: '20px',
+                }}
             >
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
-                        <FormattedMessage
-                            id='widget.heading'
-                            defaultMessage='TOP 10 API PERFORMANCE DURING PAST 30 DAYS'
-                        />
+                        <FormattedMessage id='widget.heading' defaultMessage='THROTTLE SUMMARY' />
                     </div>
                 </div>
-                {inProgress ? (
+                { inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
                 ) : (
                     <div>
-                        {
-                            !latencyData || latencyData.length === 0 ? (
-                                <div style={styles.paperWrapper}>
-                                    <Paper
-                                        elevation={1}
-                                        style={styles.paper}
-                                    >
-                                        <Typography variant='h5' component='h3'>
-                                            <FormattedMessage
-                                                id='nodata.error.heading'
-                                                defaultMessage='No Data Available !'
-                                            />
-                                        </Typography>
-                                        <Typography component='p'>
-                                            <FormattedMessage
-                                                id='nodata.error.body'
-                                                defaultMessage='No data available for the selected options.'
-                                            />
-                                        </Typography>
-                                    </Paper>
-                                </div>
-                            ) : (
-                                <div onClick={() => handleOnClick()} onKeyDown={() => handleOnClick()}>
-                                    <VizG
-                                        config={chartConfig}
-                                        metadata={metadata}
-                                        data={latencyData}
-                                        width={width}
-                                        height={height * 0.9}
-                                        theme={themeName}
-                                    />
-                                </div>
-                            )
-                        }
+                        { !throttleData || throttleData.length === 0 ? (
+                            <div style={styles.paperWrapper}>
+                                <Paper
+                                    elevation={1}
+                                    style={styles.paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='nodata.error.heading'
+                                            defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options.'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        ) : (
+                            <div>
+                                <VizG
+                                    config={chartConfig}
+                                    metadata={metadata}
+                                    data={throttleData}
+                                    width={width}
+                                    height={height * 0.88}
+                                    onClick={data => handleOnClick(data)}
+                                />
+                            </div>
+                        )}
                     </div>
-                )
-                }
+                )}
             </div>
         </Scrollbars>
     );
 }
 
-Top10ApiPerformanceOverTime.propTypes = {
+ThrottleSummary.propTypes = {
     themeName: PropTypes.string.isRequired,
-    width: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    handleOnClick: PropTypes.func.isRequired,
-    latencyData: PropTypes.instanceOf(Object).isRequired,
+    width: PropTypes.string.isRequired,
+    throttleData: PropTypes.instanceOf(Object).isRequired,
     apiList: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClick: PropTypes.func.isRequired,
 };

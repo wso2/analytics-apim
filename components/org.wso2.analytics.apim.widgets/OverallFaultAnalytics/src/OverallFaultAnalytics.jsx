@@ -147,6 +147,7 @@ export default function OverallFaultAnalytics(props) {
                                     metadata={metadata}
                                     data={faultData}
                                     width={width}
+                                    height={height * 0.9}
                                 />
                             </div>
                         )}
