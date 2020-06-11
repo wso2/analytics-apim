@@ -220,8 +220,8 @@ class APIMApiResourceTrafficWidget extends Widget {
         const { sync } = queryParam;
 
         this.setState({
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
+            timeFrom: parseInt(receivedMsg.from, 10),
+            timeTo: parseInt(receivedMsg.to, 10),
             perValue: receivedMsg.granularity,
             inProgress: !sync,
         }, this.assembleApiListQuery);

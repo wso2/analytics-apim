@@ -1,0 +1,8 @@
+{
+  "widget.heading": "API TRAFFIC BY VERSION",
+  "config.error.heading": "Configuration Error!",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Traffic By Version widget",
+  "nodata.error.heading": "No Data Available!",
+  "nodata.error.body": "No data available for the selected options!",
+  "limit": "Limit"
+}
