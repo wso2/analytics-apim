@@ -29,7 +29,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 30.930789937113282,
+                      "width": 22.97320938135093,
                       "content": [
                         {
                           "title": "[APIM Api Usage Summary]",
@@ -64,7 +64,7 @@
                       "isClosable": true,
                       "title": "",
                       "height": 28.125,
-                      "width": 37.95094618961678,
+                      "width": 25.34162789320254,
                       "content": [
                         {
                           "title": "[APIM Faults Summary]",
@@ -98,7 +98,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 31.11826387326994,
+                      "width": 26.463797260865643,
                       "content": [
                         {
                           "title": "[APIM Throttled Api Summary]",
