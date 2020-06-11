@@ -847,8 +847,8 @@
                               "subscriber"
                             ],
                             "publishers": [
-                              "54fe9519-effe-42e7-89f3-33d499892840",
-                              "32761c20-92be-4c5f-b50b-142a36b884b0"
+                              "32761c20-92be-4c5f-b50b-142a36b884b0",
+                              "69e6e1ee-67bf-4186-a276-536724d4e517"
                             ]
                           },
                           "isGenerated": false,
@@ -893,6 +893,7 @@
       "APIMAlertSummary",
       "DateRangePicker",
       "APILatencySummary",
+      "APIMOverallHighestLatency",
       "APIMApiTrafficByVersion",
       "APIMAlertSummaryByAPIs",
       "APIMApiFaultsSummary",
