@@ -77,7 +77,7 @@ export default function ApiUsageOverTime(props) {
         formControl: {
             marginLeft: 10,
             marginTop: 10,
-            minWidth: 120,
+            minWidth: 300,
         },
     };
     const chartConfig = {
@@ -131,13 +131,17 @@ export default function ApiUsageOverTime(props) {
                     <form noValidate autoComplete='off'>
                         <FormControl style={styles.formControl}>
                             <Autocomplete
-                                id='combo-box-demo'
                                 options={appData}
                                 getOptionLabel={option => option}
                                 value={selectedApp}
                                 onChange={(event, value) => applicationHandleChange(value)}
-                                style={{ width: 300 }}
-                                renderInput={params => <TextField {...params} label='Application' variant='standard' />}
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        label={<FormattedMessage id='application.label' defaultMessage='Application' />}
+                                        variant='standard'
+                                    />
+                                )}
                             />
                         </FormControl>
                     </form>
