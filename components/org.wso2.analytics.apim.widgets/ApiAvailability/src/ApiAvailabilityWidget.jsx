@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -22,13 +22,12 @@ import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
-import Moment from 'moment';
 import cloneDeep from 'lodash/cloneDeep';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 import Widget from '@wso2-dashboards/widget';
-import APIMAlertSummaryByAPIs from './APIMAlertSummaryByAPIs';
+import ApiAvailability from './ApiAvailability';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -48,11 +47,7 @@ const lightTheme = createMuiTheme({
     },
 });
 
-/**
- * Query string parameter
- * @type {string}
- */
-const queryParamKey = 'topApiByAlert';
+const queryParamKey = 'apiAvailability';
 
 /**
  * Language
@@ -66,18 +61,27 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Alert Summary By APIs
- * @class APIMAlertSummaryByAPIsWidget
+ * Create React Component for Api Availability
+ * @class ApiAvailabilityWidget
  * @extends {Widget}
  */
-class APIMAlertSummaryByAPIsWidget extends Widget {
+class ApiAvailabilityWidget extends Widget {
     /**
-     * Creates an instance of APIMAlertSummaryByAPIsWidget.
+     * Creates an instance of ApiAvailabilityWidget.
      * @param {any} props @inheritDoc
-     * @memberof APIMAlertSummaryByAPIsWidget
+     * @memberof ApiAvailabilityWidget
      */
     constructor(props) {
         super(props);
+
+        this.state = {
+            width: this.props.width,
+            height: this.props.height,
+            availableApiData: [],
+            limit: 5,
+            localeMessages: null,
+            inProgress: true,
+        };
 
         this.styles = {
             paper: {
@@ -91,16 +95,6 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
             },
         };
 
-        this.state = {
-            width: this.props.width,
-            height: this.props.height,
-            alertData: [],
-            legendData: null,
-            limit: 5,
-            localeMessages: null,
-            inProgress: true,
-        };
-
         // This will re-size the widget when the glContainer's width is changed.
         if (this.props.glContainer !== undefined) {
             this.props.glContainer.on('resize', () => this.setState({
@@ -109,11 +103,9 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
             }));
         }
 
-        this.assembleQuery = this.assembleQuery.bind(this);
-        this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
-        this.publishTimeRange = this.publishTimeRange.bind(this);
+        this.assembleApiAvailableQuery = this.assembleApiAvailableQuery.bind(this);
+        this.handleApiAvailableReceived = this.handleApiAvailableReceived.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
     }
 
     componentWillMount() {
@@ -133,7 +125,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleQuery);
+                }, this.assembleApiAvailableQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -151,12 +143,12 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
     /**
      * Load locale file.
      * @param {string} locale Locale name
-     * @memberof APIMAlertSummaryByAPIsWidget
+     * @memberof ApiAvailabilityWidget
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/APIMAlertSummaryByAPIs/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/ApiAvailability/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -169,7 +161,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
 
     /**
      * Retrieve the limit from query param
-     * @memberof APIMAlertSummaryByAPIsWidget
+     * @memberof ApiAvailabilityWidget
      * */
     loadLimit() {
         let { limit } = super.getGlobalState(queryParamKey);
@@ -181,130 +173,97 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
     }
 
     /**
-     * Formats the siddhi query using selected options
-     * @memberof APIMAlertSummaryByAPIsWidget
+     * Formats the siddhi query - apiavailablequery
+     * @memberof ApiAvailabilityWidget
      * */
-    assembleQuery() {
+    assembleApiAvailableQuery() {
         const { providerConfig, limit } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         if (limit > 0) {
             const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'query';
+            dataProviderConfigs.configs.config.queryData.queryName = 'apiavailablequery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': Moment().subtract(7, 'days').toDate().getTime(),
-                '{{timeTo}}': new Date().getTime(),
                 '{{limit}}': limit,
             };
             super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+                .subscribeWidget(id, widgetName, this.handleApiAvailableReceived, dataProviderConfigs);
         } else {
-            this.setState({ inProgress: false, alertData: [] });
+            this.setState({ inProgress: false, availableApiData: [] });
         }
     }
 
     /**
-     * Formats data retrieved and loads to the widget
+     * Formats data received from assembleApiAvailableQuery
      * @param {object} message - data retrieved
-     * @memberof APIMAlertSummaryByAPIsWidget
+     * @memberof ApiAvailabilityWidget
      * */
-    handleDataReceived(message) {
+    handleApiAvailableReceived(message) {
         const { data } = message;
 
         if (data && data.length > 0) {
-            const alertData = data.map((dataUnit) => { return { apiname: dataUnit[0], count: dataUnit[1] }; });
-            const legendData = alertData.reduce(
-                (acc, curr) => {
-                    if (!acc.includes(curr.apiname)) {
-                        acc.push(curr.apiname);
-                    }
-                    return acc;
-                },
-                [],
-            );
-            this.setState({ legendData, alertData, inProgress: false });
+            const availableApiData = data.map((dataUnit) => {
+                return {
+                    apiname: dataUnit[0] + ' (' + dataUnit[2] + ')',
+                    apiversion: dataUnit[1],
+                    status: dataUnit[3] === 'Available' ? 'available' : 'limited',
+                    reason: dataUnit[3],
+                };
+            });
+            this.setState({ availableApiData, inProgress: false });
         } else {
-            this.setState({ inProgress: false, alertData: [] });
+            this.setState({ inProgress: false, availableApiData: [] });
         }
     }
 
     /**
      * Updates query param values
      * @param {number} limit - data limitation value
-     * @memberof APIMAlertSummaryByAPIsWidget
+     * @memberof ApiAvailabilityWidget
      * */
     setQueryParam(limit) {
         super.setGlobalState(queryParamKey, { limit });
     }
 
     /**
-     * Handle limit Change
+     * Handle Limit select Change
      * @param {Event} event - listened event
-     * @memberof APIMAlertSummaryByAPIsWidget
+     * @memberof ApiAvailabilityWidget
      * */
-    handleChange(event) {
+    handleLimitChange(event) {
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit }, this.assembleQuery);
+            this.setState({ inProgress: true, limit }, this.assembleApiAvailableQuery);
         } else {
             this.setState({ limit });
         }
     }
 
     /**
-     * Handle onClick of an API and drill down
-     * @memberof APIMAlertSummaryByAPIsWidget
-     * */
-    handleOnClickAPI(event, data) {
-        const { configs } = this.props;
-
-        if (configs && configs.options) {
-            const { drillDown } = configs.options;
-
-            if (drillDown !== undefined && drillDown) {
-                const { apiname } = data;
-                event.preventDefault();
-                this.publishTimeRange({ selectedApi: apiname });
-                document.getElementById('alertSummary').scrollIntoView();
-            }
-        }
-    }
-
-    /**
-     * Publishing the selected API
-     * @param {String} message : Selected API
-     * @memberof APIMAlertSummaryByAPIsWidget
-     */
-    publishTimeRange = (message) => {
-        super.publish(message);
-    };
-
-
-    /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Alert Summary By APIs widget
-     * @memberof APIMAlertSummaryByAPIsWidget
+     * @returns {ReactElement} Render the Api Availability widget
+     * @memberof ApiAvailabilityWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, alertData, legendData, inProgress, width,
+            localeMessages, faultyProviderConfig, height, availableApiData, inProgress, limit,
         } = this.state;
         const {
             paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const alertApisProps = {
-            themeName, height, limit, alertData, legendData, inProgress, width,
+        const apiAvailabilityProps = {
+            themeName, height, availableApiData, inProgress, limit,
         };
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
-                {
-                    faultyProviderConfig ? (
-                        <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
+                    {
+                        faultyProviderConfig ? (
                             <div style={paperWrapper}>
                                 <Paper elevation={1} style={paper}>
                                     <Typography variant='h5' component='h3'>
@@ -316,24 +275,23 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
                                     <Typography component='p'>
                                         <FormattedMessage
                                             id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Alert Summary By APIs widget'}
+                                            defaultMessage={'Cannot fetch provider configuration for '
+                                            + ' Api Availability widget'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
-                        </MuiThemeProvider>
-                    ) : (
-                        <APIMAlertSummaryByAPIs
-                            {...alertApisProps}
-                            handleChange={this.handleChange}
-                            handleOnClickAPI={this.handleOnClickAPI}
-                        />
-                    )
-                }
+                        ) : (
+                            <ApiAvailability
+                                {...apiAvailabilityProps}
+                                handleLimitChange={this.handleLimitChange}
+                            />
+                        )
+                    }
+                </MuiThemeProvider>
             </IntlProvider>
         );
     }
 }
 
-global.dashboard.registerWidget('APIMAlertSummaryByAPIs', APIMAlertSummaryByAPIsWidget);
+global.dashboard.registerWidget('ApiAvailability', ApiAvailabilityWidget);

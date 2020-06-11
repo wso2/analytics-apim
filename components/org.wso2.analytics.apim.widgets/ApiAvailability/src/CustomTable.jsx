@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +21,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
-import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -29,7 +28,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
+import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
+import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import CustomTableHead from './CustomTableHead';
 /**
  * Compare two values and return the result
@@ -133,10 +136,17 @@ const styles = theme => ({
     paginationActions: {
         marginLeft: 0,
     },
+    statusCell: {
+        display: 'flex',
+    },
+    statusContainer: {
+        paddingTop: 5,
+        paddingLeft: 10,
+    },
 });
 
 /**
- * Create React Component for Top Throttled Out Apis Table
+ * Create React Component for Top Rated APIs Table
  */
 class CustomTable extends React.Component {
     /**
@@ -151,8 +161,8 @@ class CustomTable extends React.Component {
             tableData: [],
             page: 0,
             rowsPerPage: 5,
-            orderBy: 'count',
-            order: 'desc',
+            orderBy: 'apiname',
+            order: 'asc',
             expanded: false,
             filterColumn: 'apiname',
             query: '',
@@ -189,11 +199,13 @@ class CustomTable extends React.Component {
     };
 
     /**
-     * Render the Top Throttled Out Apis table
+     * Render the Custom Table
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, onClickTableRow } = this.props;
+        const {
+            data, classes,
+        } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -208,8 +220,11 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
-            <MenuItem value='count'>
-                <FormattedMessage id='table.heading.count' defaultMessage='COUNT' />
+            <MenuItem value='apiversion'>
+                <FormattedMessage id='table.heading.apiversion' defaultMessage='VERSION' />
+            </MenuItem>,
+            <MenuItem value='status'>
+                <FormattedMessage id='table.heading.status' defaultMessage='STATUS' />
             </MenuItem>,
         ];
         return (
@@ -223,46 +238,68 @@ class CustomTable extends React.Component {
                     handleQueryChange={this.handleQueryChange}
                     menuItems={menuItems}
                 />
-                <div className={classes.tableWrapper}>
-                    <Table className={classes.table} aria-labelledby='tableTitle'>
-                        <colgroup>
-                            <col style={{ width: '40%' }} />
-                            <col style={{ width: '30%' }} />
-                            <col style={{ width: '30%' }} />
-                        </colgroup>
-                        <CustomTableHead
-                            order={order}
-                            orderBy={orderBy}
-                            onRequestSort={this.handleRequestSort}
-                        />
-                        <TableBody>
-                            {stableSort(tableData, getSorting(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((n) => {
-                                    return (
-                                        <TableRow
-                                            hover
-                                            tabIndex={-1}
-                                            key={n.id}
-                                        >
-                                            <TableCell component='th' scope='row'>
-                                                <Link href='#' onClick={e => onClickTableRow(e, n)} color='inherit'>
+                <div>
+                    <div className={classes.tableWrapper}>
+                        <Table className={classes.table} aria-labelledby='tableTitle'>
+                            <colgroup>
+                                <col style={{ width: '35%' }} />
+                                <col style={{ width: '30%' }} />
+                                <col style={{ width: '35%' }} />
+                            </colgroup>
+                            <CustomTableHead
+                                order={order}
+                                orderBy={orderBy}
+                                onRequestSort={this.handleRequestSort}
+                            />
+                            <TableBody>
+                                {stableSort(tableData, getSorting(order, orderBy))
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((n) => {
+                                        return (
+                                            <TableRow
+                                                hover
+                                                tabIndex={-1}
+                                            >
+                                                <TableCell component='th' scope='row'>
                                                     {n.apiname}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell component='th' scope='row' numeric>
-                                                {n.count}
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 49 * emptyRows }}>
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                                                </TableCell>
+                                                <TableCell numeric>
+                                                    {n.apiversion}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Tooltip
+                                                        title={n.reason}
+                                                        placement='bottom-start'
+                                                        disableHoverListener={n.reason === 'Available'}
+                                                    >
+                                                        <div className={classes.statusCell}>
+                                                            <div>
+                                                                {n.reason === 'Available' ? (
+                                                                    <CheckCircleRoundedIcon
+                                                                        style={{ color: '#669933' }}
+                                                                    />
+                                                                ) : (
+                                                                    <WarningRoundedIcon style={{ color: '#ffcc66' }} />
+                                                                )
+                                                                }
+                                                            </div>
+                                                            <div className={classes.statusContainer}>
+                                                                {n.status}
+                                                            </div>
+                                                        </div>
+                                                    </Tooltip>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                {emptyRows > 0 && (
+                                    <TableRow style={{ height: 49 * emptyRows }}>
+                                        <TableCell colSpan={6} />
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
@@ -296,9 +333,8 @@ class CustomTable extends React.Component {
 }
 
 CustomTable.propTypes = {
-    data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
-    onClickTableRow: PropTypes.func.isRequired,
+    data: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

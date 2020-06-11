@@ -1,5 +1,5 @@
 {
-  "config.error.body": "Cannot fetch provider configuration for APIM Top Throttled Out Apis widget",
+  "config.error.body": "Cannot fetch provider configuration for APIM Alert Summary By APIs widget",
   "config.error.heading": "Configuration Error !",
   "filter.column.menu.heading": "Column Name",
   "filter.label.title": "Filter By",
@@ -9,4 +9,7 @@
   "nodata.error.body": "No data available for the selected options.",
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
+  "table.heading.count": "COUNT",
+  "widget.heading": "TOP API BY ALERT COUNT",
+  "widget.subheading": "(Last 7 Days)"
 }

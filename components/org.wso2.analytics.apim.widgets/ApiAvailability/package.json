@@ -1,15 +1,14 @@
 {
-    "name": "apim-alert-summary-by-apis",
+    "name": "api-availability",
     "version": "1.0.0",
     "private": true,
     "dependencies": {
-        "@analytics-apim/common-lib": "^1.0.0",
-        "victory": "^31.0.2",
-        "moment": "^2.24.0"
+        "@analytics-apim/common-lib": "^1.0.0"
     },
     "scripts": {
         "build": "../node_modules/.bin/webpack -p",
         "clean": "rimraf dist",
         "dev": "NODE_ENV=development ../node_modules/.bin/webpack -d --config webpack.config.js --watch --progress"
-    }
+    },
+    "devDependencies": {}
 }

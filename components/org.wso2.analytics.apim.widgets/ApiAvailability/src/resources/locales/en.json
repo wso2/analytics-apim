@@ -1,0 +1,14 @@
+{
+  "availability.available" : "Available",
+  "availability.limited" : "Limited",
+  "config.error.body": "Cannot fetch provider configuration for Api Availability widget",
+  "config.error.heading": "Configuration Error !",
+  "limit": "Limit",
+  "nodata.error.body": "No data available for the selected options",
+  "nodata.error.heading": "No Data Available !",
+  "sort.label.title": "Sort",
+  "table.heading.apiname": "API NAME",
+  "table.heading.apiversion": "VERSION",
+  "table.heading.status": "STATUS",
+  "widget.heading": "API AVAILABILITY"
+}

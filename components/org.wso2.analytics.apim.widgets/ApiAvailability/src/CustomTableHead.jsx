@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -31,7 +31,10 @@ const rows = [
         id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
     },
     {
-        id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',
+        id: 'apiversion', numeric: true, disablePadding: false, label: 'table.heading.apiversion',
+    },
+    {
+        id: 'status', numeric: false, disablePadding: false, label: 'table.heading.status',
     },
 ];
 

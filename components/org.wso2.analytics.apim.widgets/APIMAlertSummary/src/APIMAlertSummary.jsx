@@ -20,20 +20,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CustomTable from './CustomTable';
+import Moment from "moment/moment";
 
 /**
- * Display API Overall Info
+ * Display API Alert Summary
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Api Overall info widget body
+ * @returns {ReactElement} Render the Api Alert Summary widget body
  */
-export default function APIMAlertSummary(props) {
+function APIMAlertSummary(props) {
     const {
-        height, apiInfoData, inProgress, themeName,
+        height, alertData, inProgress, themeName, selectedApi, apiList, handleApiChange, limit, handleLimitChange, intl,
     } = props;
     const styles = {
         headingWrapper: {
@@ -54,6 +58,9 @@ export default function APIMAlertSummary(props) {
             margin: 'auto',
             width: '90%',
         },
+        tableWrapper: {
+            paddingTop: 5,
+        },
         paperWrapper: {
             height: '75%',
             width: '95%',
@@ -73,13 +80,29 @@ export default function APIMAlertSummary(props) {
             justifyContent: 'center',
             height,
         },
-        subheading: {
-            textAlign: 'center',
-            margin: 5,
-            fontSize: 14,
-            color: '#b5b5b5',
+        formWrapper: {
+            paddingBottom: 20,
+            paddingLeft: 20,
+        },
+        formControlAutocomplete: {
+            marginRight: 20,
+            marginTop: 15,
+            minWidth: 300,
+        },
+        formControlLimit: {
+            width: '10%',
         },
     };
+    const tableData = alertData.map((data) => {
+        return {
+            apiname: data.apiname,
+            type: data.type,
+            severity: intl.formatMessage({ id: 'alert.severity.' + data.severity }),
+            severityColor: data.severityColor,
+            details: data.details,
+            time: data.time,
+        };
+    });
 
     return (
         <Scrollbars style={{
@@ -95,8 +118,41 @@ export default function APIMAlertSummary(props) {
             >
                 <div style={styles.headingWrapper}>
                     <h3 style={styles.heading}>
-                        <FormattedMessage id='alert.summary.heading' defaultMessage='All Alert Summary' />
+                        <FormattedMessage id='widget.heading' defaultMessage='ALERT SUMMARY' />
                     </h3>
+                </div>
+
+                <div style={styles.formWrapper}>
+                    <form noValidate autoComplete='off'>
+                        <FormControl style={styles.formControlAutocomplete}>
+                            <Autocomplete
+                                options={apiList}
+                                getOptionLabel={option => option}
+                                value={selectedApi}
+                                onChange={(event, value) => handleApiChange(value)}
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        label={<FormattedMessage id='api.label' defaultMessage='API' />}
+                                        variant='standard'
+                                    />
+                                )}
+                            />
+                        </FormControl>
+                        <FormControl style={styles.formControlLimit}>
+                            <TextField
+                                id='limit-number'
+                                label={<FormattedMessage id='limit' defaultMessage='Limit' />}
+                                value={limit}
+                                onChange={handleLimitChange}
+                                type='number'
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                margin='normal'
+                            />
+                        </FormControl>
+                    </form>
                 </div>
                 <div>
                     { inProgress ? (
@@ -105,7 +161,7 @@ export default function APIMAlertSummary(props) {
                         </div>
                     ) : (
                         <div>
-                            { apiInfoData.length === 0
+                            { alertData.length === 0
                                 ? (
                                     <div style={styles.dataWrapper}>
                                         <Paper
@@ -128,10 +184,8 @@ export default function APIMAlertSummary(props) {
                                         </Paper>
                                     </div>
                                 ) : (
-                                    <div>
-                                        <div style={{ marginTop: '2%' }}>
-                                            <CustomTable data={apiInfoData} loadingApiInfo={inProgress} />
-                                        </div>
+                                    <div style={styles.tableWrapper}>
+                                        <CustomTable data={tableData} />
                                     </div>
                                 )
                             }
@@ -145,8 +199,15 @@ export default function APIMAlertSummary(props) {
 
 APIMAlertSummary.propTypes = {
     height: PropTypes.string.isRequired,
-    apiInfoData: PropTypes.instanceOf(Object).isRequired,
-    loadingApiInfo: PropTypes.instanceOf(Object).isRequired,
+    alertData: PropTypes.instanceOf(Object).isRequired,
+    apiList: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     themeName: PropTypes.string.isRequired,
+    selectedApi: PropTypes.string.isRequired,
+    limit: PropTypes.string.isRequired,
+    handleApiChange: PropTypes.func.isRequired,
+    handleLimitChange: PropTypes.func.isRequired,
+    intl: intlShape.isRequired,
 };
+
+export default injectIntl(APIMAlertSummary);

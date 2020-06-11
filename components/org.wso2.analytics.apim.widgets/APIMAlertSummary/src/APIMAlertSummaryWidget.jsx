@@ -27,6 +27,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
+import cloneDeep from 'lodash/cloneDeep';
 import APIMAlertSummary from './APIMAlertSummary';
 
 const darkTheme = createMuiTheme({
@@ -49,6 +50,11 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'alertSummary';
+
+const API_CALLBACK = '-api';
+const ALERT_CALLBACK = '-alert';
+
 /**
  * Language
  * @type {string}
@@ -60,10 +66,8 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
  */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
-let refreshIntervalId = null;
-
 /**
- * Create react component for the APIM Oerall Api Info widget
+ * Create react component for the APIM Alert Summary widget
  * @class APIMAlertSummaryWidget
  * @extends {Widget}
  */
@@ -85,22 +89,21 @@ class APIMAlertSummaryWidget extends Widget {
                 width: '50%',
                 marginTop: '20%',
             },
-            button: {
-                maxWidth: '30px',
-                maxHeight: '30px',
-                minWidth: '30px',
-                minHeight: '30px',
-            },
         };
 
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            usageData: null,
+            alertData: [],
             refreshInterval: 60000, // 1min
             refreshIntervalId: null,
             localeMessages: null,
             inProgress: true,
+            apiList: [],
+            selectedApi: 'All',
+            timeFrom: null,
+            timeTo: null,
+            limit: 5,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -111,9 +114,16 @@ class APIMAlertSummaryWidget extends Widget {
             }));
         }
 
-        this.assembleApiInfo = this.assembleApiInfo.bind(this);
-        this.handleApiInfoReceived = this.handleApiInfoReceived.bind(this);
+        this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
+        this.assembleApiAlerts = this.assembleApiAlerts.bind(this);
+        this.handleApiAlertsReceived = this.handleApiAlertsReceived.bind(this);
+        this.assembleApiList = this.assembleApiList.bind(this);
+        this.handleApiListReceived = this.handleApiListReceived.bind(this);
+        this.handleApiChange = this.handleApiChange.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.setQueryParam = this.setQueryParam.bind(this);
+        this.loadQueryParam = this.loadQueryParam.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
     }
 
     componentWillMount() {
@@ -128,15 +138,22 @@ class APIMAlertSummaryWidget extends Widget {
     componentDidMount() {
         const { widgetID } = this.props;
         const { refreshInterval } = this.state;
+        this.loadQueryParam();
+
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 // set an interval to periodically retrieve data
                 const refresh = () => {
-                    super.getWidgetChannelManager().unsubscribeWidget(widgetID);
-                    this.assembleApiInfo(message.data.configs.providerConfig);
+                    this.assembleApiAlerts();
                 };
-                refreshIntervalId = setInterval(refresh, refreshInterval);
-                this.assembleApiInfo(message.data.configs.providerConfig);
+                const refreshIntervalId = setInterval(refresh, refreshInterval);
+                this.setState({
+                    providerConfig: message.data.configs.providerConfig,
+                    refreshIntervalId,
+                }, () => {
+                    this.assembleApiList();
+                    super.subscribe(this.handlePublisherParameters);
+                });
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -148,8 +165,10 @@ class APIMAlertSummaryWidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
+        const { refreshIntervalId } = this.state;
         clearInterval(refreshIntervalId);
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + API_CALLBACK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + ALERT_CALLBACK);
     }
 
     /**
@@ -173,23 +192,113 @@ class APIMAlertSummaryWidget extends Widget {
     }
 
     /**
-     * Retreive the API info for sub rows
+     * Retrieve the limit from query param
+     * @memberof APIMApiUsageWidget
+     * */
+    loadQueryParam() {
+        let { limit, selectedApi } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        if (!selectedApi) {
+            selectedApi = 'All';
+        }
+        this.setQueryParam(selectedApi, limit);
+        this.setState({ selectedApi, limit });
+    }
+
+    /**
+     * Retrieve params from publisher - DateTimeRange
      * @memberof APIMAlertSummaryWidget
      * */
-    assembleApiInfo(dataProviderConfigs) {
+    handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
+        const { from, to, selectedApi } = receivedMsg;
+
+        if (selectedApi && from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                inProgress: true,
+                selectedApi,
+            }, this.assembleApiAlerts);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                inProgress: !sync,
+            }, this.assembleApiAlerts);
+        } else if (selectedApi) {
+            this.setState({
+                inProgress: true,
+                selectedApi,
+            }, this.assembleApiAlerts);
+        }
+    }
+
+    /**
+     * Retrieve the API list
+     * @memberof APIMAlertSummaryWidget
+     * */
+    assembleApiList() {
         const { id, widgetID: widgetName } = this.props;
-        dataProviderConfigs.configs.config.queryData.queryName = 'infoquery';
+        const { providerConfig } = this.state;
 
-        const timeTo = new Date().getTime();
-        const timeFrom = Moment(timeTo).subtract(7, 'days').toDate().getTime();
-
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': 'day',
-        };
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'apiquery';
         super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiInfoReceived, dataProviderConfigs);
+            .subscribeWidget(id + API_CALLBACK, widgetName, this.handleApiListReceived, dataProviderConfigs);
+    }
+
+    /**
+     * Formats data retrieved from assembleApiList query
+     * @param {object} message - data retrieved
+     * @memberof APIMAlertSummaryWidget
+     * */
+    handleApiListReceived(message) {
+        const { data } = message;
+        const { limit } = this.state;
+        let { selectedApi } = { ...this.state };
+
+        if (data && data.length > 0) {
+            let apiList = data.map((dataUnit) => { return dataUnit[0]; });
+            apiList = Array.from(new Set(apiList));
+            apiList.sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+            apiList.unshift('All');
+
+            if (!apiList.includes(selectedApi)) {
+                selectedApi = 'All';
+                this.setQueryParam(selectedApi, limit);
+            }
+            this.setState({ apiList, selectedApi }, this.assembleApiAlerts);
+        } else {
+            this.setState({ alertData: [], apiList: [], inProgress: false });
+        }
+    }
+
+    /**
+     * Retrieve the API info for sub rows
+     * @memberof APIMAlertSummaryWidget
+     * */
+    assembleApiAlerts() {
+        const { id, widgetID: widgetName } = this.props;
+        const {
+            timeFrom, timeTo, providerConfig, selectedApi, limit,
+        } = this.state;
+
+        if (timeFrom) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'alertquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': timeFrom,
+                '{{timeTo}}': timeTo,
+                '{{apiName}}': selectedApi !== 'All' ? 'AND apiName == \'' + selectedApi + '\'' : '',
+                '{{limit}}': limit,
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id + ALERT_CALLBACK, widgetName, this.handleApiAlertsReceived, dataProviderConfigs);
+        }
     }
 
     /**
@@ -197,36 +306,109 @@ class APIMAlertSummaryWidget extends Widget {
      * @param {object} message - data retrieved
      * @memberof APIMAlertSummaryWidget
      * */
-    handleApiInfoReceived(message) {
-        const { data, metadata: { names } } = message;
-        const newData = data.map((row) => {
-            const obj = {};
-            for (let j = 0; j < row.length; j++) {
-                obj[names[j]] = row[j];
-            }
-            return obj;
-        });
-        const { id } = this.props;
-        this.setState({ apiInfoData: newData, inProgress: false });
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+    handleApiAlertsReceived(message) {
+        const { data } = message;
+
+        if (data && data.length > 0) {
+            const alertData = data.map((dataUnit) => {
+                const severityData = this.getSeverityLevel(dataUnit[2]);
+                return {
+                    apiname: dataUnit[0],
+                    type: dataUnit[1],
+                    severity: severityData.text,
+                    severityColor: severityData.color,
+                    details: dataUnit[3],
+                    time: Moment(dataUnit[4]).format('YYYY-MMM-DD hh:mm:ss A'),
+                };
+            });
+            this.setState({ alertData, inProgress: false });
+        } else {
+            this.setState({ alertData: [], inProgress: false });
+        }
+    }
+
+    /**
+     * Get severity level
+     * @param {String} severity - severity value
+     * @memberof APIMAlertSummaryWidget
+     * */
+    getSeverityLevel(severity) {
+        let color = '';
+        let text = '';
+
+        switch (severity) {
+            case 1:
+                color = '#777777';
+                text = 'mild';
+                break;
+            case 2:
+                color = '#ff9800';
+                text = 'moderate';
+                break;
+            case 3:
+                color = '#b71c1c';
+                text = 'severe';
+                break;
+            default:
+            //        not reached
+        }
+        return { color, text };
+    }
+
+    /**
+     * Handle onChange of selected api
+     * @param {String} value - selected api
+     * @memberof APIMAlertSummaryWidget
+     * */
+    handleApiChange(value) {
+        const { limit } = this.state;
+        this.setQueryParam(value, limit);
+        this.setState({ selectedApi: value, inProgress: true }, this.assembleApiAlerts);
+    }
+
+    /**
+     * Handle limit  Change
+     * @param {Event} event - listened event
+     * @memberof APIMAlertSummaryWidget
+     * */
+    handleLimitChange(event) {
+        const { selectedApi } = this.state;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(selectedApi, parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit }, this.assembleApiAlerts);
+        } else {
+            this.setState({ limit });
+        }
+    }
+
+    /**
+     * Updates query param values
+     * @param {String} selectedApi - selected api
+     * @param {String} limit - limit
+     * @memberof APIMAlertSummaryWidget
+     * */
+    setQueryParam(selectedApi, limit) {
+        super.setGlobalState(queryParamKey, { selectedApi, limit });
     }
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Api Overall Api Info widget
+     * @returns {ReactElement} Render the APIM Alert Summary widget
      * @memberof APIMAlertSummaryWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, apiInfoData, inProgress,
+            localeMessages, faultyProviderConfig, height, alertData, inProgress, selectedApi, apiList, limit,
         } = this.state;
         const {
             paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiUsageProps = {
-            themeName, height, apiInfoData, inProgress,
+        const apiAlertProps = {
+            themeName, height, alertData, inProgress, selectedApi, apiList, limit,
         };
 
         return (
@@ -235,37 +417,41 @@ class APIMAlertSummaryWidget extends Widget {
                 messages={localeMessages}
             >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper
-                                    elevation={1}
-                                    style={paper}
-                                >
-                                    <Typography
-                                        variant='h5'
-                                        component='h3'
+                    <div id='alertSummary'>
+                        {
+                            faultyProviderConfig ? (
+                                <div style={paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={paper}
                                     >
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM Overall '
-                                            + 'Api Info Widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMAlertSummary
-                                {...apiUsageProps}
-                            />
-                        )
-                    }
+                                        <Typography
+                                            variant='h5'
+                                            component='h3'
+                                        >
+                                            <FormattedMessage
+                                                id='config.error.heading'
+                                                defaultMessage='Configuration Error !'
+                                            />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='config.error.body'
+                                                defaultMessage={'Cannot fetch provider configuration for APIM ALert '
+                                            + 'Summary Widget'}
+                                            />
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <APIMAlertSummary
+                                    {...apiAlertProps}
+                                    handleApiChange={this.handleApiChange}
+                                    handleLimitChange={this.handleLimitChange}
+                                />
+                            )
+                        }
+                    </div>
                 </MuiThemeProvider>
             </IntlProvider>
         );

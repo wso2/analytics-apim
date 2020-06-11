@@ -29,7 +29,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 22.97320938135093,
+                      "width": 30.930789937113282,
                       "content": [
                         {
                           "title": "[APIM Api Usage Summary]",
@@ -64,7 +64,7 @@
                       "isClosable": true,
                       "title": "",
                       "height": 28.125,
-                      "width": 25.34162789320254,
+                      "width": 37.95094618961678,
                       "content": [
                         {
                           "title": "[APIM Faults Summary]",
@@ -98,7 +98,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 26.463797260865643,
+                      "width": 31.11826387326994,
                       "content": [
                         {
                           "title": "[APIM Throttled Api Summary]",
@@ -669,17 +669,136 @@
               "title": "",
               "content": [
                 {
+                  "type": "row",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 29.54361757839729,
+                  "content": [
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 38.7037037037037,
+                      "height": 100.00000000000003,
+                      "content": [
+                        {
+                          "title": "[APIM Api Availability]",
+                          "type": "component",
+                          "component": "APIMApiAvailability",
+                          "props": {
+                            "id": "5f6ccc95-6fbf-407d-8770-e842b18deb72",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Availability Summary"
+                              }
+                            },
+                            "widgetID": "APIMApiAvailability"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "isClosable": true,
+                      "title": "",
+                      "width": 61.29629629629629,
+                      "content": [
+                        {
+                          "title": "[Api Availability]",
+                          "type": "component",
+                          "component": "ApiAvailability",
+                          "props": {
+                            "id": "00c41ed9-eee4-4fe7-9b02-c9897cfdca5e",
+                            "configs": {
+                              "pubsub": {
+                                "types": [
+                                  "subscriber"
+                                ],
+                                "publishers": [
+                                  "006edbd8-8703-4a64-8bb4-a476b4a127a8"
+                                ]
+                              },
+                              "isGenerated": false,
+                              "options": {
+                                "header": true,
+                                "headerTitle": "API Availability"
+                              }
+                            },
+                            "widgetID": "ApiAvailability"
+                          },
+                          "isClosable": false,
+                          "header": {
+                            "show": true
+                          },
+                          "componentName": "lm-react-component"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 7.212089763832891,
+                  "height": 29.54415564471445,
+                  "content": [
+                    {
+                      "title": "[APIM Alert Summary By APIs]",
+                      "type": "component",
+                      "component": "APIMAlertSummaryByAPIs",
+                      "props": {
+                        "id": "69e6e1ee-67bf-4186-a276-536724d4e517",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "selectedApi"
+                            ],
+                            "publishers": []
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "Top API by Alerts",
+                            "drillDown": true
+                          }
+                        },
+                        "widgetID": "APIMAlertSummaryByAPIs"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 4.697155772317826,
                   "content": [
                     {
                       "title": "[Date Time Range]",
                       "type": "component",
                       "component": "DateRangePicker",
                       "props": {
-                        "id": "c1651b66-a7e1-4875-baa9-0b8e628a233c",
+                        "id": "32761c20-92be-4c5f-b50b-142a36b884b0",
                         "configs": {
                           "pubsub": {
                             "types": [
@@ -714,59 +833,22 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 48.8516626019266,
-                  "content": [
-                    {
-                      "title": "[APIM Alert Summary By APIs]",
-                      "type": "component",
-                      "component": "APIMAlertSummaryByAPIs",
-                      "props": {
-                        "id": "d3efa2d1-5788-4c4b-8783-0f43611b1039",
-                        "configs": {
-                          "pubsub": {
-                            "types": [
-                              "subscriber"
-                            ],
-                            "publishers": [
-                              "c1651b66-a7e1-4875-baa9-0b8e628a233c"
-                            ]
-                          },
-                          "isGenerated": false,
-                          "options": {
-                            "header": true,
-                            "headerTitle": "Top Throttled Out APIs",
-                            "drillDown": "api-faults"
-                          }
-                        },
-                        "widgetID": "APIMAlertSummaryByAPIs"
-                      },
-                      "isClosable": false,
-                      "header": {
-                        "show": true
-                      },
-                      "componentName": "lm-react-component"
-                    }
-                  ]
-                },
-                {
-                  "type": "stack",
-                  "isClosable": true,
-                  "title": "",
-                  "height": 43.936247634240495,
+                  "height": 36.21507100457043,
                   "content": [
                     {
                       "title": "[APIM Alert Summary]",
                       "type": "component",
                       "component": "APIMAlertSummary",
                       "props": {
-                        "id": "2df628ec-7984-44a8-8444-d537d5ac0e37",
+                        "id": "70009f61-fcb7-4847-8cc4-a9e518c5f1fb",
                         "configs": {
                           "pubsub": {
                             "types": [
                               "subscriber"
                             ],
                             "publishers": [
-                              "c1651b66-a7e1-4875-baa9-0b8e628a233c"
+                              "54fe9519-effe-42e7-89f3-33d499892840",
+                              "32761c20-92be-4c5f-b50b-142a36b884b0"
                             ]
                           },
                           "isGenerated": false,
@@ -788,7 +870,7 @@
               ]
             }
           ],
-          "height": 1333
+          "height": 2144
         }
       ]
     },

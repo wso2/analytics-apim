@@ -22,7 +22,6 @@ import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
 import MenuItem from '@material-ui/core/MenuItem';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -45,8 +44,13 @@ function desc(a, b, orderBy) {
     let tempb = b[orderBy];
 
     if (typeof (tempa) === 'string') {
-        tempa = tempa.toLowerCase();
-        tempb = tempb.toLowerCase();
+        if (Moment(tempa).isValid()) {
+            tempa = Moment(tempa).valueOf();
+            tempb = Moment(tempb).valueOf();
+        } else {
+            tempa = tempa.toLowerCase();
+            tempb = tempb.toLowerCase();
+        }
     }
 
     if (tempb < tempa) {
@@ -135,17 +139,6 @@ const styles = theme => ({
     paginationActions: {
         marginLeft: 0,
     },
-    inProgress: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    noDataMessage: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#888888',
-    },
 });
 
 /**
@@ -206,8 +199,9 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const timeFormat = 'YY/DD/MM, HH:mm:ss';
-        const { data, classes, loadingApiInfo, themeName } = this.props;
+        const {
+            data, classes,
+        } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -219,14 +213,14 @@ class CustomTable extends React.Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
         const menuItems = [
+            <MenuItem value='apiname'>
+                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
             <MenuItem value='type'>
                 <FormattedMessage id='table.heading.type' defaultMessage='ALERT TYPE' />
             </MenuItem>,
             <MenuItem value='severity'>
                 <FormattedMessage id='table.heading.severity' defaultMessage='SEVERITY' />
-            </MenuItem>,
-            <MenuItem value='apiname'>
-                <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
             <MenuItem value='details'>
                 <FormattedMessage id='table.heading.details' defaultMessage='DETAILS' />
@@ -246,70 +240,64 @@ class CustomTable extends React.Component {
                     handleQueryChange={this.handleQueryChange}
                     menuItems={menuItems}
                 />
-                { loadingApiInfo ? (
-                    <div className={classes.inProgress} style={{ height: rowsPerPage * 49 }}>
-                        <CircularProgress />
-                    </div>
-                ) : (
-                    <div>
-                        {
-                            tableData.length > 0 ? (
-                                <div className={classes.tableWrapper}>
-                                    <Table className={classes.table} aria-labelledby='tableTitle'>
-                                        <CustomTableHead
-                                            order={order}
-                                            orderBy={orderBy}
-                                            onRequestSort={this.handleRequestSort}
-                                        />
-                                        <TableBody>
-                                            {stableSort(tableData, getSorting(order, orderBy))
-                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                                .map((n) => {
-                                                    return (
-                                                        <TableRow
-                                                            hover
-                                                            tabIndex={-1}
-                                                        >
-                                                            <TableCell component='th' scope='row'>
-                                                                {n.type}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {n.severity}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {n.apiName}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {n.message}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {Moment(n.alertTimestamp).format(timeFormat)}
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    );
-                                                })}
-                                            {emptyRows > 0 && (
-                                                <TableRow style={{ height: 49 * emptyRows }}>
-                                                    <TableCell colSpan={6} />
-                                                </TableRow>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            ) : (
-                                <div
-                                    className={classes.noDataMessage}
-                                    style={{ height: (rowsPerPage + 1) * 49 }}
-                                >
-                                    <FormattedMessage
-                                        id='nodata.error.body'
-                                        defaultMessage='No data available for the selected options.'
-                                    />
-                                </div>
-                            )
-                        }
-                    </div>
-                )}
+                <div className={classes.tableWrapper}>
+                    <Table className={classes.table} aria-labelledby='tableTitle'>
+                        <CustomTableHead
+                            order={order}
+                            orderBy={orderBy}
+                            onRequestSort={this.handleRequestSort}
+                        />
+                        <colgroup>
+                            <col style={{ width: '20%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '10%' }} />
+                            <col style={{ width: '35%' }} />
+                            <col style={{ width: '20%' }} />
+                        </colgroup>
+                        <TableBody>
+                            {stableSort(tableData, getSorting(order, orderBy))
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((n) => {
+                                    return (
+                                        <TableRow
+                                            hover
+                                            tabIndex={-1}
+                                        >
+                                            <TableCell>
+                                                {n.apiname}
+                                            </TableCell>
+                                            <TableCell component='th' scope='row'>
+                                                {n.type}
+                                            </TableCell>
+                                            <TableCell numeric>
+                                                <span style={{
+                                                    fontWeight: 'bold',
+                                                    backgroundColor: n.severityColor,
+                                                    borderRadius: '5px',
+                                                    padding: '5px',
+                                                    verticalAlign: 'center',
+                                                }}
+                                                >
+                                                    {n.severity}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell>
+                                                {n.details}
+                                            </TableCell>
+                                            <TableCell>
+                                                {n.time}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            {emptyRows > 0 && (
+                                <TableRow style={{ height: 49 * emptyRows }}>
+                                    <TableCell colSpan={6} />
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
                     component='div'
@@ -344,8 +332,6 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
     data: PropTypes.instanceOf(Object).isRequired,
-    loadingApiInfo: PropTypes.instanceOf(Object).isRequired,
-    themeName: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
