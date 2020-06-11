@@ -98,7 +98,8 @@ class ThrottleSummaryWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            throttleData: null,
+            throttleData: [],
+            apiList: [],
             inProgress: true,
             dimension: null,
             selectedOptions: [],
