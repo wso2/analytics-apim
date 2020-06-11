@@ -75,7 +75,7 @@ export default function TrafficChart(props) {
                 y='Traffic'
             />
             <VictoryAxis
-                label='Api Name'
+                label='API Version'
                 style={styles.victoryaxis}
             />
             <VictoryAxis
