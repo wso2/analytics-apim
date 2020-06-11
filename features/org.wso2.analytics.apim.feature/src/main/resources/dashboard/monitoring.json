@@ -29,7 +29,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 19.43416316006319,
+                      "width": 22.97320938135093,
                       "content": [
                         {
                           "title": "[APIM Api Usage Summary]",
@@ -64,7 +64,7 @@
                       "isClosable": true,
                       "title": "",
                       "height": 28.125,
-                      "width": 26.454319412566687,
+                      "width": 25.34162789320254,
                       "content": [
                         {
                           "title": "[APIM Faults Summary]",
@@ -98,7 +98,7 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 19.621637096219846,
+                      "width": 26.463797260865643,
                       "content": [
                         {
                           "title": "[APIM Throttled Api Summary]",
@@ -132,14 +132,14 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 34.489880331150275,
+                      "width": 25.221365464580874,
                       "content": [
                         {
-                          "title": "[APIM Api Availability]",
+                          "title": "[APIM Overall Highest Latency]",
                           "type": "component",
-                          "component": "APIMApiAvailability",
+                          "component": "APIMOverallHighestLatency",
                           "props": {
-                            "id": "433f3128-5670-4838-82d7-55ce34fc92a7",
+                            "id": "bd848190-d8e2-417e-b9f6-e1f7396e11ed",
                             "configs": {
                               "pubsub": {
                                 "types": [
@@ -148,11 +148,10 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": true,
-                                "headerTitle": "API Availability"
+                                "header": false
                               }
                             },
-                            "widgetID": "APIMApiAvailability"
+                            "widgetID": "APIMOverallHighestLatency"
                           },
                           "isClosable": false,
                           "header": {
