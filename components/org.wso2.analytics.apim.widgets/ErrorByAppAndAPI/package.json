@@ -36,6 +36,6 @@
   "scripts": {
     "build": "node_modules/.bin/webpack -p",
     "clean": "rimraf dist",
-    "dev": "npm run build & npm run symlink && NODE_ENV=development node_modules/.bin/webpack -d --config webpack.config.js --watch --progress"
+    "dev": "npm run build && NODE_ENV=development node_modules/.bin/webpack -d --config webpack.config.js --watch --progress"
   }
 }

@@ -23,6 +23,19 @@ import {
 } from 'victory';
 import PropTypes from 'prop-types';
 
+const classes = {
+    labels: {
+        fill: 'black',
+        fontSize: 18,
+        strokeWidth: 0,
+        stroke: 'black',
+    },
+    flyout: {
+        stroke: 'none',
+        fill: 'white',
+    },
+};
+
 class CustomLabel extends React.Component {
     static defaultEvents = VictoryTooltip.defaultEvents;
 
@@ -30,20 +43,23 @@ class CustomLabel extends React.Component {
         const { totalRequestCounts } = this.props;
         return (
             <g>
-                <VictoryLabel {...this.props} />
+                <VictoryLabel renderInPortal {...this.props} />
                 <VictoryTooltip
                     {...this.props}
                     labelComponent={(
                         <VictoryLabel
                             text={
-                                e => [e.datum.x, e.datum.y,
-                                    ((e.datum.y * 100) / totalRequestCounts).toFixed(2) + '%']}
+                                e => ['API: ' + e.datum.x,
+                                    'Errors: ' + e.datum.y,
+                                    'Percentage: ' + ((e.datum.y * 100) / totalRequestCounts).toFixed(2) + '%']}
                         />
                     )}
                     orientation='top'
-                    style={{ fill: 'black' }}
-                    constrainToVisibleArea
-                    flyoutHeight={60}
+                    style={classes.labels}
+                    flyoutStyle={classes.flyout}
+                    flyoutHeight={70}
+                    // flyoutHeight={60}
+
                 />
             </g>
         );

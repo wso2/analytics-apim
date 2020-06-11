@@ -37,14 +37,6 @@ const classes = {
         marginBottom: 50,
         padding: 0,
     },
-    formControl: {
-        // margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    selectEmpty: {
-        // marginTop: theme.spacing(2),
-    },
-
     dataWrapper: {
         margin: 'auto',
         textAlign: 'center',
@@ -73,7 +65,7 @@ const classes = {
     pieChart: {
         labels: {
             fill: 'white',
-            fontSize: 15,
+            fontSize: 18,
         },
         parent: { margin: 0 },
     },
@@ -87,6 +79,17 @@ export default function SummaryPieChart(props) {
     } = props;
     const apiErrorsPerCent = totalRequestCounts === 0 ? '0.00' : ((totalErrors * 100) / totalRequestCounts).toFixed(2);
 
+    if (data.length === 0) {
+        return (
+            <Typography variant='h5' component='h3'>
+                <FormattedMessage
+                    id='nodata.error.heading'
+                    defaultMessage='No Data Available !'
+                />
+            </Typography>
+        );
+    }
+
     return (
         <div>
             <Table className={classes.table}>
@@ -94,25 +97,13 @@ export default function SummaryPieChart(props) {
                     <TableRow>
                         <TableCell component='th' scope='row'>
                             <h3>{heading}</h3>
-                            {data.length === 0
-                                ? (
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='nodata.error.heading'
-                                            defaultMessage='No Data Available !'
-                                        />
-                                    </Typography>
-                                )
-                                : (
-                                    <VictoryPie
-                                        colorScale={colorScale}
-                                        data={data}
-                                        // height={250}
-                                        style={classes.pieChart}
-                                        labelComponent={<CustomLabel totalRequestCounts={totalRequestCounts} />}
-                                    />
-                                )
-                            }
+                            <VictoryPie
+                                colorScale={colorScale}
+                                data={data}
+                                // height={250}
+                                style={classes.pieChart}
+                                labelComponent={<CustomLabel totalRequestCounts={totalRequestCounts} />}
+                            />
                         </TableCell>
                     </TableRow>
                     <TableRow>

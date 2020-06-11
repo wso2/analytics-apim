@@ -23,15 +23,14 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
-import SummaryPieChart from './SummaryPieChart';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import {ViewTypeEnum} from '../../AppAndAPIErrorTable/src/Constants';
 import FormControl from '@material-ui/core/FormControl';
 import Radio from '@material-ui/core/Radio';
 import TextField from '@material-ui/core/TextField';
-import {FormattedMessage} from 'react-intl';
-import {withStyles} from '@material-ui/core/styles';
+import { FormattedMessage } from 'react-intl';
+import { ViewTypeEnum } from '../../AppAndAPIErrorTable/src/Constants';
+import SummaryPieChart from './SummaryPieChart';
 
 const classes = {
     table: {
@@ -41,66 +40,14 @@ const classes = {
         padding: 0,
     },
     formControl: {
-        // margin: theme.spacing(1),
         minWidth: 120,
-    },
-    selectEmpty: {
-        // marginTop: theme.spacing(2),
-    },
-
-    dataWrapper: {
-        margin: 'auto',
-        textAlign: 'center',
-        fontSize: '100%',
-        fontWeight: 500,
-        // paddingTop: 10,
-        marginTop: '10%',
-        marginBottom: '10%',
-        display: 'flex',
-        justifyContent: 'center',
-    },
-    leftContainer: {
-        justifyContent: 'flex-start',
-        // marginLeft: '5%',
-        marginRight: '10%',
-    },
-    rightContainer: {
-        justifyContent: 'flex-end',
-        // marginLeft: '10%',
-        marginRight: '5%',
-    },
-    dataBlock: {
-        fontSize: '130%',
-        // marginTop: '10%',
-    },
-    pieChart: {
-        labels: {
-            fill: 'white',
-            fontSize: 15,
-        },
-        parent: { margin: 0 },
     },
 };
-
-const styles = theme => ({
-    table: {
-        minWidth: 650,
-        maxWidth: 650,
-        marginBottom: 50,
-    },
-    formControl: {
-        margin: theme.spacing.unit,
-        minWidth: 120,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing.unit * 2,
-    },
-});
 
 function ErrorsSummaryChart(props) {
     const {
         totalRequestCounts, data4XX, total4XX, data5XX, total5XX, dataFaulty, totalFaulty,
-        dataThrottled, totalThrottled, heading, handleViewChange, handleLimitChange, viewType, selectedLimit,
+        dataThrottled, totalThrottled, handleViewChange, handleLimitChange, viewType, selectedLimit,
     } = props;
 
     let viewTypeName;
@@ -116,7 +63,7 @@ function ErrorsSummaryChart(props) {
             <Table className={classes.table}>
                 <TableBody>
                     <TableRow>
-                        <FormControl component='fieldset'>
+                        <FormControl className={classes.formControl}>
                             <RadioGroup
                                 row
                                 aria-label='viewType'
@@ -132,6 +79,8 @@ function ErrorsSummaryChart(props) {
                                 <FormControlLabel value={ViewTypeEnum.API} control={<Radio />} label='By Apis' />
                             </RadioGroup>
                         </FormControl>
+                    </TableRow>
+                    <TableRow>
                         <FormControl className={classes.formControl}>
                             <TextField
                                 id='limit-number'
@@ -146,7 +95,7 @@ function ErrorsSummaryChart(props) {
                         </FormControl>
                     </TableRow>
                     <TableRow>
-                        <TableCell component='th' scope='row'>
+                        <TableCell align='right'>
                             <SummaryPieChart
                                 heading={'4xx errors by ' + viewTypeName}
                                 data={data4XX}
@@ -195,7 +144,10 @@ ErrorsSummaryChart.propTypes = {
     totalFaulty: PropTypes.number.isRequired,
     totalThrottled: PropTypes.number.isRequired,
     totalRequestCounts: PropTypes.number.isRequired,
-    heading: PropTypes.string.isRequired,
+    handleViewChange: PropTypes.func.isRequired,
+    handleLimitChange: PropTypes.func.isRequired,
+    viewType: PropTypes.string.isRequired,
+    selectedLimit: PropTypes.number.isRequired,
 };
 
-export default withStyles(styles)(ErrorsSummaryChart);
+export default ErrorsSummaryChart;

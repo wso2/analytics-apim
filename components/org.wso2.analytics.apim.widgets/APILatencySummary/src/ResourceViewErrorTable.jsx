@@ -26,12 +26,10 @@ import {
     VictoryChart,
     VictoryTheme,
     VictoryStack,
-    VictoryLegend,
     VictoryAxis,
     VictoryTooltip,
     VictoryClipContainer,
     VictoryLabel,
-    VictoryVoronoiContainer,
 } from 'victory';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -95,9 +93,6 @@ class APIViewErrorTable extends React.Component {
                     theme={VictoryTheme.material}
                     height={400}
                     width={800}
-                    containerComponent={
-                        <VictoryVoronoiContainer />
-                    }
                     // style={{ parent: { maxWidth: 800 } }}
                     // scale={{ x: 20 }}
                 >
