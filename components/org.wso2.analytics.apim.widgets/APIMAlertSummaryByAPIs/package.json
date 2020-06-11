@@ -4,7 +4,8 @@
     "private": true,
     "dependencies": {
         "@analytics-apim/common-lib": "^1.0.0",
-        "victory": "^31.0.2"
+        "victory": "^31.0.2",
+        "moment": "^2.24.0"
     },
     "scripts": {
         "build": "../node_modules/.bin/webpack -p",

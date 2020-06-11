@@ -10,5 +10,6 @@
   "sort.label.title": "Sort",
   "table.heading.apiname": "API NAME",
   "table.heading.count": "COUNT",
-  "widget.heading": "TOP API BY ALERTS"
+  "widget.heading": "TOP API BY ALERT COUNT",
+  "widget.subheading": "(Last 7 Days)"
 }

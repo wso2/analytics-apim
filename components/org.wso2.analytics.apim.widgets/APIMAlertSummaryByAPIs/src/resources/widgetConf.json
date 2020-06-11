@@ -4,7 +4,7 @@
   "thumbnailURL": "",
   "configs": {
     "pubsub": {
-      "types": ["subscriber", "publisher"],
+      "types": ["publisher"],
       "publisherWidgetOutputs": ["selectedApi"]
     },
     "providerConfig" : {
@@ -38,7 +38,7 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Top Alerts by APIs"
+        "defaultValue": "Top API by Alerts"
       },
       {
         "id": "drillDown",

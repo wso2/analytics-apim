@@ -22,6 +22,7 @@ import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import Axios from 'axios';
+import Moment from 'moment';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -98,8 +99,6 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
             limit: 5,
             localeMessages: null,
             inProgress: true,
-            timeFrom: null,
-            timeTo: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -110,7 +109,6 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
             }));
         }
 
-        this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -135,7 +133,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, () => super.subscribe(this.handlePublisherParameters));
+                }, this.assembleQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -183,47 +181,25 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
     }
 
     /**
-     * Retrieve params from publisher - DateTimeRange
-     * @memberof APIMAlertSummaryByAPIsWidget
-     * */
-    handlePublisherParameters(receivedMsg) {
-        const queryParam = super.getGlobalState('dtrp');
-        const { sync } = queryParam;
-        const { from, to } = receivedMsg;
-
-        if (from) {
-            this.setState({
-                timeFrom: from,
-                timeTo: to,
-                inProgress: !sync,
-            }, this.assembleQuery);
-        }
-    }
-
-    /**
      * Formats the siddhi query using selected options
      * @memberof APIMAlertSummaryByAPIsWidget
      * */
     assembleQuery() {
-        const {
-            providerConfig, timeFrom, timeTo, limit,
-        } = this.state;
+        const { providerConfig, limit } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (timeFrom) {
-            if (limit > 0) {
-                const dataProviderConfigs = cloneDeep(providerConfig);
-                dataProviderConfigs.configs.config.queryData.queryName = 'query';
-                dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{timeFrom}}': timeFrom,
-                    '{{timeTo}}': timeTo,
-                    '{{limit}}': limit,
-                };
-                super.getWidgetChannelManager()
-                    .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
-            } else {
-                this.setState({ inProgress: false, alertData: [] });
-            }
+        if (limit > 0) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'query';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{timeFrom}}': Moment().subtract(7, 'days').toDate().getTime(),
+                '{{timeTo}}': new Date().getTime(),
+                '{{limit}}': limit,
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, alertData: [] });
         }
     }
 

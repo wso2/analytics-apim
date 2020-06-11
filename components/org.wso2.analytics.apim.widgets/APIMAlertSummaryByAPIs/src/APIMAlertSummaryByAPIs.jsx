@@ -127,8 +127,13 @@ export default function APIMAlertSummaryByAPIs(props) {
             textAlign: 'center',
             fontWeight: 'normal',
             letterSpacing: 1.5,
-            paddingBottom: '10px',
             marginTop: 0,
+        },
+        subheading: {
+            textAlign: 'center',
+            margin: 5,
+            fontSize: 14,
+            color: '#b5b5b5',
         },
     };
 
@@ -150,8 +155,11 @@ export default function APIMAlertSummaryByAPIs(props) {
                 >
                     <div style={styles.headingWrapper}>
                         <h3 style={styles.heading}>
-                            <FormattedMessage id='widget.heading' defaultMessage='TOP API BY ALERTS' />
+                            <FormattedMessage id='widget.heading' defaultMessage='TOP API BY ALERT COUNT' />
                         </h3>
+                        <p style={styles.subheading}>
+                            <FormattedMessage id='api.info.subheading' defaultMessage='(Last 7 Days)' />
+                        </p>
                     </div>
                     <div style={styles.formWrapper}>
                         <form style={styles.form} noValidate autoComplete='off'>
