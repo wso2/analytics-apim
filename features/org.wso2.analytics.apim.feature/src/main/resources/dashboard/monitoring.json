@@ -903,6 +903,7 @@
   },
   "permissions": {
     "viewers": [
+      "apim_analytics:admin_any",
       "apim_analytics:admin_carbon.super"
     ],
     "owners": [
