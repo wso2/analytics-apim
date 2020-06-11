@@ -17,6 +17,8 @@
     "@babel/cli": "^7.7.4"
   },
   "dependencies": {
-    "short-number": "^1.0.7"
+    "short-number": "^1.0.7",
+    "jspdf": "^1.5.3",
+    "jspdf-autotable": "^3.5.0"
   }
 }

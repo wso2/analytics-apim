@@ -24,9 +24,14 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import SearchIcon from '@material-ui/icons/Search';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import TextField from '@material-ui/core/TextField';
 import Collapse from '@material-ui/core/Collapse';
 import { withStyles } from '@material-ui/core/styles';
+import { Menu, MenuItem } from '@material-ui/core';
+import { buildCSVBody, buildCSVHeader, downloadCSV, downloadPDF } from './Utils.js';
+import jsPDF from "jspdf";
+import 'jspdf-autotable';
 
 const styles = theme => ({
     root: {
@@ -58,77 +63,158 @@ const styles = theme => ({
         marginBottom: 30,
         marginRight: 0,
     },
+    menuItem: {
+        height: 5,
+    },
 });
 
 /**
  * Create React Component for Custom Table Toolbar
  */
-function CustomTableToolbar(props) {
-    const {
-        classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, query, title, menuItems
-    } = props;
+class CustomTableToolbar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isMenuOpen: false,
+            anchorElement: null,
+        };
+        this.handleUserIconClick = this.handleUserIconClick.bind(this);
+        this.handleMenuCloseRequest = this.handleMenuCloseRequest.bind(this);
+        this.handleCSVDownload = this.handleCSVDownload.bind(this);
+        this.handlePDFDownload = this.handlePDFDownload.bind(this);
+    }
 
-    return (
-        <Toolbar style={{ display: 'block' }}>
-            <div className={classes.root}>
-                <div className={classes.actions}>
-                    <Tooltip title={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}>
-                        <IconButton
-                            className={classes.expand}
-                            onClick={handleExpandClick}
-                            aria-expanded={expanded}
-                            aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
+    handleUserIconClick(event) {
+        event.preventDefault();
+        this.setState({
+            isMenuOpen: !this.state.isMenuOpen,
+            anchorElement: event.currentTarget,
+        });
+    }
+
+    handleMenuCloseRequest() {
+        this.setState({
+            isMenuOpen: false,
+        });
+    }
+
+    handleCSVDownload() {
+        const { data, strColumns, title } = this.props;
+        const header = buildCSVHeader(strColumns);
+        const body = buildCSVBody(data);
+        const csv = `${header}${body}`.trim();
+        downloadCSV(csv, title);
+        this.handleMenuCloseRequest();
+    };
+
+    handlePDFDownload() {
+        const { data, strColumns, title, username } = this.props;
+        const headers = [['#']];
+        const dataToExport = [];
+
+        strColumns.map(col => headers[0].push(col));
+        data.map((dataObj, index) => {
+            if (dataObj.id) delete dataObj.id;
+            const innerArr = Object.values(dataObj);
+            innerArr.unshift((index + 1).toString() + ')');
+            dataToExport.push(innerArr);
+        });
+
+        const doc = new jsPDF({ putOnlyUsedFonts: true });
+        downloadPDF(doc, title, headers, dataToExport, username);
+        this.handleMenuCloseRequest();
+    };
+
+    render() {
+        const {
+            classes, handleExpandClick, expanded, filterColumn, handleColumnSelect, handleQueryChange, query, menuItems
+        } = this.props;
+
+        return (
+            <Toolbar style={{ display: 'block' }}>
+                <div className={classes.root}>
+                    <div className={classes.actions}>
+                        <Tooltip title={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}>
+                            <IconButton
+                                className={classes.expand}
+                                onClick={handleExpandClick}
+                                aria-expanded={expanded}
+                                aria-label={<FormattedMessage id='filter.label.title' defaultMessage='Filter By' />}
+                            >
+                                <SearchIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={<FormattedMessage id='export.label.title' defaultMessage='Export' />}>
+                            <IconButton
+                                className={classes.expand}
+                                onClick={this.handleUserIconClick}
+                            >
+                                <GetAppIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <span>
+                            <Menu
+                                open={this.state.isMenuOpen}
+                                anchorEl={this.state.anchorElement}
+                                keepMounted
+                                onClose={this.handleMenuCloseRequest}
+                            >
+                                <MenuItem
+                                    className={classes.menuItem}
+                                    onClick={this.handleCSVDownload}> CSV </MenuItem>
+                                <MenuItem
+                                    className={classes.menuItem}
+                                    onClick={this.handlePDFDownload}> PDF </MenuItem>
+                            </Menu>
+                        </span>
+                    </div>
+                </div>
+                <Collapse in={expanded} timeout='auto' unmountOnExit className={classes.collapsef}>
+                    <div>
+                        <TextField
+                            id='column-select'
+                            select
+                            label={<FormattedMessage id='filter.column.menu.heading' defaultMessage='Column Name' />}
+                            InputLabelProps={{
+                                style: {
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'Hidden',
+                                    textOverflow: 'ellipsis',
+                                },
+                            }}
+                            className={classes.textField}
+                            value={filterColumn}
+                            onChange={handleColumnSelect}
+                            SelectProps={{
+                                MenuProps: {
+                                    className: classes.menu,
+                                },
+                            }}
+                            margin='normal'
                         >
-                            <SearchIcon />
-                        </IconButton>
-                    </Tooltip>
-                </div>
-            </div>
-            <Collapse in={expanded} timeout='auto' unmountOnExit className={classes.collapsef}>
-                <div>
-                    <TextField
-                        id='column-select'
-                        select
-                        label={<FormattedMessage id='filter.column.menu.heading' defaultMessage='Column Name' />}
-                        InputLabelProps={{
-                            style: {
-                                whiteSpace: 'nowrap',
-                                overflow: 'Hidden',
-                                textOverflow: 'ellipsis',
-                            },
-                        }}
-                        className={classes.textField}
-                        value={filterColumn}
-                        onChange={handleColumnSelect}
-                        SelectProps={{
-                            MenuProps: {
-                                className: classes.menu,
-                            },
-                        }}
-                        margin='normal'
-                    >
-                        { menuItems }
-                    </TextField>
-                    <TextField
-                        id='query-search'
-                        label={<FormattedMessage id='filter.search.placeholder' defaultMessage='Search Field' />}
-                        InputLabelProps={{
-                            style: {
-                                whiteSpace: 'nowrap',
-                                overflow: 'Hidden',
-                                textOverflow: 'ellipsis',
-                            },
-                        }}
-                        type='search'
-                        value={query}
-                        className={classes.textField}
-                        onChange={handleQueryChange}
-                        margin='normal'
-                    />
-                </div>
-            </Collapse>
-        </Toolbar>
-    );
+                            { menuItems }
+                        </TextField>
+                        <TextField
+                            id='query-search'
+                            label={<FormattedMessage id='filter.search.placeholder' defaultMessage='Search Field' />}
+                            InputLabelProps={{
+                                style: {
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'Hidden',
+                                    textOverflow: 'ellipsis',
+                                },
+                            }}
+                            type='search'
+                            value={query}
+                            className={classes.textField}
+                            onChange={handleQueryChange}
+                            margin='normal'
+                        />
+                    </div>
+                </Collapse>
+            </Toolbar>
+        );
+    }
 }
 
 CustomTableToolbar.propTypes = {
@@ -139,6 +225,7 @@ CustomTableToolbar.propTypes = {
     handleExpandClick: PropTypes.func.isRequired,
     handleColumnSelect: PropTypes.func.isRequired,
     handleQueryChange: PropTypes.func.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTableToolbar);

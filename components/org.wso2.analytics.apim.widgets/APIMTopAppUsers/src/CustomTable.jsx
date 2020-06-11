@@ -205,7 +205,9 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, inProgress } = this.props;
+        const {
+            data, classes, inProgress, columns, strColumns, title, username,
+        } = this.props;
         const {
             filterQuery, expanded, filterColumn, order, orderBy, rowsPerPage, page, emptyRowHeight,
         } = this.state;
@@ -214,7 +216,10 @@ class CustomTable extends React.Component {
             ? data.filter(x => x[filterColumn].toString().toLowerCase().includes(filterQuery.toLowerCase()))
             : data;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-
+        let sortedData = [];
+        if (tableData.length > 0) {
+            sortedData = stableSort(tableData, getSorting(order, orderBy));
+        }
         const menuItems = [
             <MenuItem value='username'>
                 <FormattedMessage id='table.heading.username' defaultMessage='USERNAME' />
@@ -232,8 +237,11 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
-                    title='TOP APPLICATION USERS'
+                    title={title}
                     menuItems={menuItems}
+                    data={sortedData}
+                    strColumns={strColumns}
+                    username={username}
                 />
                 {
                     inProgress ? (
@@ -254,10 +262,10 @@ class CustomTable extends React.Component {
                                                 order={order}
                                                 orderBy={orderBy}
                                                 onRequestSort={this.handleRequestSort}
+                                                columns={columns}
                                             />
                                             <TableBody>
-                                                {stableSort(tableData, getSorting(order, orderBy))
-                                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                                {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                                     .map((n) => {
                                                         return (
                                                             <TableRow
@@ -336,6 +344,10 @@ CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    columns: PropTypes.instanceOf(Object).isRequired,
+    strColumns: PropTypes.instanceOf(Object).isRequired,
+    title: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

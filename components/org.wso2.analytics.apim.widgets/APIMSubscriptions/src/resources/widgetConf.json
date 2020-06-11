@@ -45,11 +45,11 @@
       },
       {
         "id": "drillDown",
-        "title": "Developer Statistics Page",
+        "title": "Subscription Analytics Page",
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "dev-stats"
+        "defaultValue": ""
       }
     ]
   }

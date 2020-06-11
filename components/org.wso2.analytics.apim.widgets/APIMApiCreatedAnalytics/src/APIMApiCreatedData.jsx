@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import VizG from 'react-vizgrammar';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import CustomTable from './CustomTable';
 
 /**
@@ -30,9 +30,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the data of APIM Api Created Analytics widget
  */
-export default function APIMApiCreatedData(props) {
+function APIMApiCreatedData(props) {
     const {
-        themeName, chartData, tableData, width, onClickAPI,
+        themeName, chartData, tableData, width, onClickAPI, intl, username,
     } = props;
     const styles = {
         dataWrapper: {
@@ -97,6 +97,21 @@ export default function APIMApiCreatedData(props) {
         names: ['COUNT', 'CREATED_TIME'],
         types: ['linear', 'time'],
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'apiVersion', numeric: false, disablePadding: false, label: 'table.heading.apiVersion',
+        },
+        {
+            id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.createdtime',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     if (tableData.length !== 0 && chartData.length !== 0) {
         return (
@@ -112,7 +127,11 @@ export default function APIMApiCreatedData(props) {
                 <div style={styles.tableWrapper}>
                     <CustomTable
                         data={tableData}
+                        columns={columns}
                         onClickTableRow={e => onClickAPI(e)}
+                        strColumns={strColumns}
+                        title={title}
+                        username={username}
                     />
                 </div>
             </div>
@@ -146,4 +165,9 @@ APIMApiCreatedData.propTypes = {
     xAxisTicks: PropTypes.instanceOf(Object).isRequired,
     maxCount: PropTypes.number.isRequired,
     onClickAPI: PropTypes.func.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMApiCreatedData);
+

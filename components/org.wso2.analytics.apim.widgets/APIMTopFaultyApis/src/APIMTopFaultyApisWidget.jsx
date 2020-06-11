@@ -321,8 +321,9 @@ class APIMTopFaultyApisWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const faultyApisProps = {
-            themeName, height, limit, faultData, legendData, inProgress, width,
+            themeName, height, limit, faultData, legendData, inProgress, width, username,
         };
 
         return (

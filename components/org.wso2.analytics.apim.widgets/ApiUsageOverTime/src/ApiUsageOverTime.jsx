@@ -21,8 +21,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FormControl from '@material-ui/core/FormControl';
 import Paper from '@material-ui/core/Paper';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import VizG from 'react-vizgrammar';
 
@@ -33,7 +36,7 @@ import VizG from 'react-vizgrammar';
  */
 export default function ApiUsageOverTime(props) {
     const {
-        themeName, width, height, usageData, inProgress, apiList,
+        themeName, width, height, usageData, inProgress, apiList, selectedApp, appData, applicationHandleChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -48,10 +51,6 @@ export default function ApiUsageOverTime(props) {
         paper: {
             background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
-        },
-        chartWrapper: {
-            width: '95%',
-            paddingTop: '10px',
         },
         loadingIcon: {
             margin: 'auto',
@@ -71,13 +70,20 @@ export default function ApiUsageOverTime(props) {
             paddingBottom: '10px',
             marginTop: 0,
         },
+        formWrapper: {
+            paddingBottom: 20,
+            paddingLeft: 20,
+        },
+        formControl: {
+            marginLeft: 10,
+            marginTop: 10,
+            minWidth: 300,
+        },
     };
     const chartConfig = {
-        x: 'REQUEST_TIME',
+        x: 'TIME',
         charts: [],
         maxLength: 60,
-        width: 800,
-        height: 400,
         interactiveLegend: true,
         legend: true,
         timeFormat: '%d-%b-%y %H:%M',
@@ -98,10 +104,10 @@ export default function ApiUsageOverTime(props) {
 
     if (usageData) {
         metadata.names = apiList.map((dataUnit) => { return dataUnit; });
-        metadata.names.push('REQUEST_TIME');
+        metadata.names.push('TIME');
         metadata.types = apiList.map(() => { return 'linear'; });
         metadata.types.push('time');
-        chartConfig.charts = apiList.map((dataUnit) => { return { type: 'line', y: dataUnit}; });
+        chartConfig.charts = apiList.map((dataUnit) => { return { type: 'line', y: dataUnit }; });
     }
 
     return (
@@ -120,6 +126,25 @@ export default function ApiUsageOverTime(props) {
                     <div style={styles.heading}>
                         <FormattedMessage id='widget.heading' defaultMessage='API USAGE OVER TIME' />
                     </div>
+                </div>
+                <div style={styles.formWrapper}>
+                    <form noValidate autoComplete='off'>
+                        <FormControl style={styles.formControl}>
+                            <Autocomplete
+                                options={appData}
+                                getOptionLabel={option => option}
+                                value={selectedApp}
+                                onChange={(event, value) => applicationHandleChange(value)}
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        label={<FormattedMessage id='application.label' defaultMessage='Application' />}
+                                        variant='standard'
+                                    />
+                                )}
+                            />
+                        </FormControl>
+                    </form>
                 </div>
                 {inProgress ? (
                     <div style={styles.loading}>
@@ -149,12 +174,13 @@ export default function ApiUsageOverTime(props) {
                                     </Paper>
                                 </div>
                             ) : (
-                                <div style={styles.chartWrapper}>
+                                <div>
                                     <VizG
                                         config={chartConfig}
                                         metadata={metadata}
                                         data={usageData}
                                         width={width}
+                                        height={height * 0.8}
                                         theme={themeName}
                                     />
                                 </div>
@@ -172,7 +198,10 @@ ApiUsageOverTime.propTypes = {
     themeName: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    selectedApp: PropTypes.string.isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
     apiList: PropTypes.instanceOf(Object).isRequired,
+    appData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    applicationHandleChange: PropTypes.func.isRequired,
 };

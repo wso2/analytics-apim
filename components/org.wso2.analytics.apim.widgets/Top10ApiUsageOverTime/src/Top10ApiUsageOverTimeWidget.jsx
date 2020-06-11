@@ -112,7 +112,7 @@ class Top10ApiUsageOverTimeWidget extends Widget {
         this.handleTopApiReceived = this.handleTopApiReceived.bind(this);
         this.assembleApiUsageQuery = this.assembleApiUsageQuery.bind(this);
         this.handleApiUsageReceived = this.handleApiUsageReceived.bind(this);
-        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     componentWillMount() {
@@ -281,24 +281,25 @@ class Top10ApiUsageOverTimeWidget extends Widget {
      * Handle onClick of an API and drill down
      * @memberof Top10ApiUsageOverTimeWidget
      * */
-    handleOnClickAPI(data) {
+    handleOnClick() {
         const { configs } = this.props;
+        const { selectedOptions } = this.state;
 
         if (configs && configs.options) {
             const { drillDown } = configs.options;
 
             if (drillDown) {
-                const name = Object.keys(data).find(key => key.includes('::'));
-                const splitName = name.split(' :: ');
-                const api = splitName[0].trim();
-                const apiversion = splitName[1].split(' (')[0].trim();
-                const provider = splitName[1].split(' (')[1].split(')')[0].trim();
+                let apiList = selectedOptions.map((opt) => {
+                    return '{"name":"' + opt.name + '","version":"' + opt.version + '","provider":"'
+                        + opt.provider + '"}';
+                });
+                apiList = apiList.join(',');
                 const locationParts = window.location.pathname.split('/');
                 const dashboard = locationParts[locationParts.length - 2];
 
                 window.location.href = window.contextPath
                     + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1month"},"dmSelc":{"dm":"api",'
-                    + '"op":[{"name":"' + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+                    + '"op":[' + apiList + ']}}';
             }
         }
     }
@@ -347,7 +348,7 @@ class Top10ApiUsageOverTimeWidget extends Widget {
                         ) : (
                             <Top10ApiUsageOverTime
                                 {...apiUsageOverTimeProps}
-                                handleOnClickAPI={this.handleOnClickAPI}
+                                handleOnClick={this.handleOnClick}
                             />
                         )
                     }

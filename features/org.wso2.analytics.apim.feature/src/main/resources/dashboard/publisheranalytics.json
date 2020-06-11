@@ -46,7 +46,8 @@
                                 "publisherWidgetOutputs": [
                                   "dimension",
                                   "selection"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
@@ -118,7 +119,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 35.215942993287555,
+                  "height": 39.498090221005114,
                   "content": [
                     {
                       "type": "stack",
@@ -206,7 +207,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 27.33529888036608,
+                  "height": 26.816000712206716,
                   "width": 100,
                   "content": [
                     {
@@ -245,7 +246,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 30.49594281340841,
+                  "height": 26.733093753850202,
                   "content": [
                     {
                       "type": "stack",
@@ -374,8 +375,7 @@
                                 "selectMultiple": true,
                                 "selectAll": false,
                                 "dimensions": [
-                                  "API",
-                                  "API Provider"
+                                  "API"
                                 ],
                                 "defaultDimension": "API"
                               }
@@ -521,8 +521,7 @@
                                 "selectMultiple": false,
                                 "selectAll": false,
                                 "dimensions": [
-                                  "API",
-                                  "API Provider"
+                                  "API"
                                 ],
                                 "defaultDimension": "API"
                               }
@@ -831,17 +830,17 @@
   "widgets": {
     "generated": [],
     "custom": [
+      "ApiThrottleAnalytics",
+      "DateRangePicker",
       "APIMOverallApiUsage",
       "DimensionSelector",
+      "APIMApiLatencyTime",
       "APIMApiBackendUsageSummary",
       "APIMApiResourceUsageSummary",
       "ApiFaultAnalytics",
       "APIMApiUsage",
       "APIMTopApiUsers",
-      "ApiUsageOverTime",
-      "ApiThrottleAnalytics",
-      "DateRangePicker",
-      "APIMApiLatencyTime"
+      "ApiUsageOverTime"
     ]
   },
   "permissions": {

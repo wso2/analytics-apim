@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -59,9 +59,9 @@ const lightTheme = createMuiTheme({
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Top App Creators widget body
  */
-export default function APIMTopAppCreators(props) {
+function APIMTopAppCreators(props) {
     const {
-        themeName, height, width, creatorData, handleChange, limit, inProgress, handleOnClickAppCreator,
+        themeName, height, width, creatorData, handleChange, limit, inProgress, handleOnClickAppCreator, intl, username,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -134,6 +134,19 @@ export default function APIMTopAppCreators(props) {
         },
     };
     const { pieChartData, legendData } = Utils.summarizePieData(creatorData, 'creator', 'appcount');
+    const columns = [
+        {
+            id: 'creator', numeric: false, disablePadding: false, label: 'table.heading.creator',
+        },
+        {
+            id: 'appcount', numeric: true, disablePadding: false, label: 'table.heading.appcount',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
+
     return (
         <MuiThemeProvider
             theme={themeName === 'dark' ? darkTheme : lightTheme}
@@ -263,7 +276,11 @@ export default function APIMTopAppCreators(props) {
                                         <div style={styles.tableDiv}>
                                             <CustomTable
                                                 data={creatorData}
+                                                columns={columns}
                                                 onClickTableRow={e => handleOnClickAppCreator(e)}
+                                                strColumns={strColumns}
+                                                title={title}
+                                                username={username}
                                             />
                                         </div>
                                     </div>
@@ -286,4 +303,8 @@ APIMTopAppCreators.propTypes = {
     handleOnClickAppCreator: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     creatorData: PropTypes.instanceOf(Object).isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMTopAppCreators);

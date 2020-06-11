@@ -33,7 +33,7 @@ import VizG from 'react-vizgrammar';
  */
 export default function Top10ApiPerformanceOverTime(props) {
     const {
-        themeName, width, height, latencyData, inProgress, apiList, handleOnClickAPI,
+        themeName, width, height, latencyData, inProgress, apiList, handleOnClick,
     } = props;
     const styles = {
         headingWrapper: {
@@ -113,7 +113,10 @@ export default function Top10ApiPerformanceOverTime(props) {
             >
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='TOP 10 API PERFORMANCE DURING PAST 30 DAYS' />
+                        <FormattedMessage
+                            id='widget.heading'
+                            defaultMessage='TOP 10 API PERFORMANCE DURING PAST 30 DAYS'
+                        />
                     </div>
                 </div>
                 {inProgress ? (
@@ -144,14 +147,14 @@ export default function Top10ApiPerformanceOverTime(props) {
                                     </Paper>
                                 </div>
                             ) : (
-                                <div>
+                                <div onClick={() => handleOnClick()} onKeyDown={() => handleOnClick()}>
                                     <VizG
                                         config={chartConfig}
                                         metadata={metadata}
                                         data={latencyData}
                                         width={width}
+                                        height={height * 0.9}
                                         theme={themeName}
-                                        onClick={data => handleOnClickAPI(data)}
                                     />
                                 </div>
                             )
@@ -168,7 +171,7 @@ Top10ApiPerformanceOverTime.propTypes = {
     themeName: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    handleOnClickAPI: PropTypes.func.isRequired,
+    handleOnClick: PropTypes.func.isRequired,
     latencyData: PropTypes.instanceOf(Object).isRequired,
     apiList: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,

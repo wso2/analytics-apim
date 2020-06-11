@@ -205,7 +205,9 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, onClickTableRow } = this.props;
+        const {
+            data, classes, onClickTableRow, columns, strColumns, title, username,
+        } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -215,7 +217,10 @@ class CustomTable extends React.Component {
             : data;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-
+        let sortedData = [];
+        if (tableData.length > 0) {
+            sortedData = stableSort(tableData, getSorting(order, orderBy));
+        }
         const menuItems = [
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
@@ -241,7 +246,11 @@ class CustomTable extends React.Component {
                     handleExpandClick={this.handleExpandClick}
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
+                    title={title}
                     menuItems={menuItems}
+                    data={sortedData}
+                    strColumns={strColumns}
+                    username={username}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>
@@ -254,10 +263,10 @@ class CustomTable extends React.Component {
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={this.handleRequestSort}
+                            columns={columns}
                         />
                         <TableBody>
-                            {stableSort(tableData, getSorting(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((n) => {
                                     return (
                                         <TableRow
@@ -325,6 +334,10 @@ CustomTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
     onClickTableRow: PropTypes.func.isRequired,
+    columns: PropTypes.instanceOf(Object).isRequired,
+    strColumns: PropTypes.instanceOf(Object).isRequired,
+    title: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);

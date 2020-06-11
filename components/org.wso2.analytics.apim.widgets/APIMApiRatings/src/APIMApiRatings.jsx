@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
@@ -31,9 +31,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Api Ratings widget body
  */
-export default function APIMApiRatings(props) {
+function APIMApiRatings(props) {
     const {
-        themeName, height, topApiNameData, inProgress, handleOnClickAPI,
+        themeName, height, topApiNameData, inProgress, handleOnClickAPI, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -74,6 +74,18 @@ export default function APIMApiRatings(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'ratings', numeric: true, disablePadding: false, label: 'table.heading.ratings',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
@@ -128,6 +140,10 @@ export default function APIMApiRatings(props) {
                                                 data={topApiNameData}
                                                 loadingTopApis={inProgress}
                                                 onClickTableRow={e => handleOnClickAPI(e)}
+                                                columns={columns}
+                                                strColumns={strColumns}
+                                                title={title}
+                                                username={username}
                                             />
                                         </div>
                                     </div>
@@ -147,4 +163,8 @@ APIMApiRatings.propTypes = {
     topApiNameData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMApiRatings);

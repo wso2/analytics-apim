@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
@@ -32,9 +32,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Top Api Users widget body
  */
-export default function APIMTopApiUsers(props) {
+function APIMTopApiUsers(props) {
     const {
-        themeName, height, limit, userData, handleLimitChange, inProgress,
+        themeName, height, limit, userData, handleLimitChange, inProgress, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -77,6 +77,18 @@ export default function APIMTopApiUsers(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'user', numeric: false, disablePadding: false, label: 'table.heading.user',
+        },
+        {
+            id: 'apiCalls', numeric: true, disablePadding: false, label: 'table.heading.apiCalls',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
@@ -139,7 +151,13 @@ export default function APIMTopApiUsers(props) {
                                     </Paper>
                                 </div>
                             ) : (
-                                <CustomTable data={userData} />
+                                <CustomTable
+                                    data={userData}
+                                    columns={columns}
+                                    strColumns={strColumns}
+                                    title={title}
+                                    username={username}
+                                />
                             )}
                     </div>
                 )}
@@ -156,4 +174,8 @@ APIMTopApiUsers.propTypes = {
     userData: PropTypes.instanceOf(Object).isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMTopApiUsers);

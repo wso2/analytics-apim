@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
@@ -32,9 +32,9 @@ import CustomTable from './CustomTable';
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Api Usage widget body
  */
-export default function APIMApiUsage(props) {
+function APIMApiUsage(props) {
     const {
-        themeName, height, limit, usageData, handleLimitChange, inProgress, handleOnClickAPI,
+        themeName, height, limit, usageData, handleLimitChange, inProgress, handleOnClickAPI, intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -77,6 +77,24 @@ export default function APIMApiUsage(props) {
             marginTop: 0,
         },
     };
+    const columns = [
+        {
+            id: 'api', numeric: false, disablePadding: false, label: 'table.heading.api',
+        },
+        {
+            id: 'apiVersion', numeric: true, disablePadding: false, label: 'table.heading.apiVersion',
+        },
+        {
+            id: 'application', numeric: false, disablePadding: false, label: 'table.heading.application',
+        },
+        {
+            id: 'usage', numeric: true, disablePadding: false, label: 'table.heading.usage',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
@@ -141,7 +159,11 @@ export default function APIMApiUsage(props) {
                             ) : (
                                 <CustomTable
                                     data={usageData}
-                                    // onClickTableRow={e => handleOnClickAPI(e)}
+                                    onClickTableRow={e => handleOnClickAPI(e)}
+                                    columns={columns}
+                                    strColumns={strColumns}
+                                    title={title}
+                                    username={username}
                                 />
                             )}
                     </div>
@@ -160,4 +182,8 @@ APIMApiUsage.propTypes = {
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMApiUsage);

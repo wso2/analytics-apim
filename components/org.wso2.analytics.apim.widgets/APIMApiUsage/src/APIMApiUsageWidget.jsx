@@ -115,7 +115,7 @@ class APIMApiUsageWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
-        // this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
+        this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
     }
 
     componentWillMount() {
@@ -267,7 +267,7 @@ class APIMApiUsageWidget extends Widget {
                 return {
                     api: dataUnit[0] + ' (' + dataUnit[4] + ')',
                     apiversion: dataUnit[1],
-                    application: dataUnit[2],
+                    application: dataUnit[2] + ' (' + dataUnit[5] + ')',
                     usage: dataUnit[3],
                 };
             });
@@ -301,34 +301,35 @@ class APIMApiUsageWidget extends Widget {
             this.setState({ limit });
         }
     }
-    // currently we are unable to provide application level filtering for analytics dashboard
-    // /**
-    //  * Handle onClick of an API and drill down
-    //  * @memberof APIMApiUsageWidget
-    //  * */
-    // handleOnClickAPI(data) {
-    //     const { configs } = this.props;
-    //
-    //     if (configs && configs.options) {
-    //         const { drillDown } = configs.options;
-    //
-    //         if (drillDown) {
-    //             const {
-    //                 tr, sd, ed, g,
-    //             } = super.getGlobalState('dtrp');
-    //             const { api, apiversion } = data;
-    //             const apiname = (api.split(' (')[0]).trim();
-    //             const provider = (api.split('(')[1]).split(')')[0].trim();
-    //             const locationParts = window.location.pathname.split('/');
-    //             const dashboard = locationParts[locationParts.length - 2];
-    //
-    //             window.location.href = window.contextPath
-    //                 + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
-    //                 + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
-    //                 + apiname + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
-    //         }
-    //     }
-    // }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof APIMApiUsageWidget
+     * */
+    handleOnClickAPI(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const {
+                    tr, sd, ed, g,
+                } = super.getGlobalState('dtrp');
+                const { api, apiversion, application } = data;
+                const apiname = (api.split(' (')[0]).trim();
+                const provider = (api.split('(')[1]).split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
+                    + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
+                    + apiname + '","version":"' + apiversion + '","provider":"' + provider + '"}]},'
+                    + '"apiUsageTime":{"selectedApp":"' + application + '"}}';
+            }
+        }
+    }
 
 
     /**
@@ -345,12 +346,14 @@ class APIMApiUsageWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const apiUsersProps = {
             themeName,
             height,
             limit,
             usageData,
             inProgress,
+            username,
         };
 
         return (
@@ -379,7 +382,7 @@ class APIMApiUsageWidget extends Widget {
                             <APIMApiUsage
                                 {...apiUsersProps}
                                 handleLimitChange={this.handleLimitChange}
-                                // handleOnClickAPI={this.handleOnClickAPI}
+                                handleOnClickAPI={this.handleOnClickAPI}
                             />
                         )
                     }

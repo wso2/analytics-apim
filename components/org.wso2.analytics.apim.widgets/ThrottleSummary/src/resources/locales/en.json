@@ -1,0 +1,7 @@
+{
+  "nodata.error.body": "No data available for the selected options.",
+  "nodata.error.heading": "No Data Available !",
+  "config.error.body": "Cannot fetch provider configuration for Throttle Summary widget",
+  "config.error.heading": "Configuration Error !",
+  "widget.heading": "THROTTLE SUMMARY"
+}

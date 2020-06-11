@@ -60,7 +60,7 @@ export default function APIMApiResourceTraffic(props) {
             alignItems: 'left',
         },
         formWrapper: {
-            marginBottom: '5%',
+            marginBottom: 0,
         },
         form: {
             display: 'flex',
@@ -68,7 +68,8 @@ export default function APIMApiResourceTraffic(props) {
         },
         formControl: {
             marginLeft: '5%',
-            marginTop: '5%',
+            marginTop: 5,
+            marginBottom: 20,
             minWidth: 120,
         },
         selectEmpty: {

@@ -46,15 +46,13 @@ export default function APIMTotalApiTraffic(props) {
         },
         paperWrapper: {
             height: '75%',
+            width: '95%',
+            margin: 'auto',
         },
         paper: {
-            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
-            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
-            width: '75%',
+            background: themeName === 'dark' ? '#152638' : '#E8E8E8',
+            marginTop: 10,
             padding: '4%',
-            margin: 'auto',
-            marginTop: '5%',
-            border: '1.5px solid',
         },
         inProgress: {
             display: 'flex',
@@ -68,9 +66,7 @@ export default function APIMTotalApiTraffic(props) {
         },
         mainDiv: {
             backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-            height,
-            margin: '10px',
-            padding: '20px',
+            padding: 30,
         },
         h3: {
             margin: 'auto',
