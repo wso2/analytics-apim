@@ -262,7 +262,7 @@ class ThrottleSummaryWidget extends Widget {
                 const throttleInfo = [];
                 apiList.forEach((api) => {
                     const apiUsage = availableUsage.find(selc => selc.apiname === api);
-                    if (apiUsage && apiUsage.length > 0) {
+                    if (apiUsage) {
                         throttleInfo.push(apiUsage.count);
                     } else {
                         throttleInfo.push(0);
