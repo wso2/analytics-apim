@@ -18,13 +18,12 @@
  */
 
 import React from 'react';
-import Moment from 'moment';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { green } from '@material-ui/core/colors';
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
 /**
  * React Component for APIM Overall Highest Latency widget body
@@ -33,7 +32,7 @@ import Typography from "@material-ui/core/Typography";
  */
 export default function APIMOverallHighestLatency(props) {
     const {
-        themeName, apiName, apiVersion, highestLatency, inProgress, timeFrom, timeTo,
+        themeName, apiName, apiVersion, highestLatency, inProgress,
     } = props;
     const styles = {
         root: {
@@ -64,7 +63,7 @@ export default function APIMOverallHighestLatency(props) {
             fontWeight: 500,
             color: themeName === 'dark' ? '#fff' : '#2571a7',
             paddingTop: 10,
-            marginTop: '10%'
+            marginTop: '10%',
         },
         paperWrapper: {
             height: '75%',
@@ -78,7 +77,7 @@ export default function APIMOverallHighestLatency(props) {
         },
         latencyUnit: {
             fontSize: 20,
-            color: green[500]
+            color: green[500],
         },
     };
 
@@ -94,21 +93,17 @@ export default function APIMOverallHighestLatency(props) {
                     <FormattedMessage id='widget.heading' defaultMessage='OVERALL HIGHEST LATENCY' />
                 </h3>
                 <p style={styles.subheading}>
-                    {'( '}
-                    {Moment(timeFrom).format('YYYY-MMM')}{' '}
-                    <FormattedMessage id='to' defaultMessage='TO' />{' '}
-                    {Moment(timeTo).format('YYYY-MMM')}
-                    {' )'}
+                    <FormattedMessage id='api.info.subheading' defaultMessage='(Last 24 Hours)' />
                 </p>
             </div>
             <div>
                 {inProgress ? (
                     <div style={styles.loading}>
-                        <CircularProgress style={styles.loadingIcon}/>
+                        <CircularProgress style={styles.loadingIcon} />
                     </div>
                 ) : (
                     <div>
-                        {highestLatency == 0 ? (
+                        {highestLatency === 0 ? (
                             <div style={styles.paperWrapper}>
                                 <Paper
                                     elevation={1}
@@ -130,11 +125,17 @@ export default function APIMOverallHighestLatency(props) {
                             </div>
                         ) : (
                             <div style={styles.dataWrapper}>
-                                <div>{apiName}{' ( '}{apiVersion}{' )'}</div>
-                                <div style={{fontSize: '200%'}}>
+                                <div>
+                                    {apiName}
+                                    {' ( '}
+                                    {apiVersion}
+                                    {' )'}
+                                </div>
+                                <div style={{ fontSize: '200%' }}>
                                     {highestLatency}
                                     <span style={styles.latencyUnit}>
-                                        {' '}<FormattedMessage id='latency.unit' defaultMessage='MS'/>
+                                        {' '}
+                                        <FormattedMessage id='latency.unit' defaultMessage='MS' />
                                     </span>
                                 </div>
                             </div>
@@ -151,6 +152,5 @@ APIMOverallHighestLatency.propTypes = {
     apiName: PropTypes.string.isRequired,
     apiVersion: PropTypes.string.isRequired,
     highestLatency: PropTypes.number.isRequired,
-    timeFrom: PropTypes.number.isRequired,
-    timeTo: PropTypes.number.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

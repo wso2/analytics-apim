@@ -180,8 +180,8 @@ class APIMOverallApiInfoWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         dataProviderConfigs.configs.config.queryData.queryName = 'infoquery';
 
-        let timeTo = new Date().getTime();
-        let timeFrom = Moment(timeTo).subtract(7, 'days').toDate().getTime();
+        const timeTo = new Date().getTime();
+        const timeFrom = Moment(timeTo).subtract(1, 'days').toDate().getTime();
 
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,

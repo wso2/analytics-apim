@@ -273,6 +273,9 @@
         </fileSet>
         <fileSet>
             <directory>APILatencyOverTime/dist</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>APIMApiTrafficByVersion/dist</directory>
             <outputDirectory></outputDirectory>
         </fileSet>

@@ -30,7 +30,7 @@ import './styles.css';
  * @returns {ReactElement} Render the APIM Api Usage Count widget body
  */
 export default function APIMApiFaultsSummary(props) {
-    const { themeName, thisWeekCount, lastWeekCount } = props;
+    const { themeName, thisDayCount, lastDayCount } = props;
     const styles = {
         root: {
             backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
@@ -77,11 +77,12 @@ export default function APIMApiFaultsSummary(props) {
         <div
             style={styles.root}
             className={`overview-wrapper ${themeName}`}
-            onClick={() => {
-                window.location.href = window.contextPath
-                    + '/dashboards/apimpublisher/faults#{"dtrp":{"tr":"7days","g":"day","sync":false},'
-                    + '"faultyapis":{"limit":5},"throttledapis":{"limit":5}}';
-            }}
+            // remove until fix it
+            // onClick={() => {
+            //     window.location.href = window.contextPath
+            //         + '/dashboards/apimpublisher/faults#{"dtrp":{"tr":"7days","g":"day","sync":false},'
+            //         + '"faultyapis":{"limit":5},"throttledapis":{"limit":5}}';
+            // }}
         >
             <div style={styles.headingWrapper}>
                 <h3
@@ -90,20 +91,20 @@ export default function APIMApiFaultsSummary(props) {
                     <FormattedMessage id='widget.heading' defaultMessage='API FAULTS SUMMARY' />
                 </h3>
                 <p style={styles.subheading}>
-                    <FormattedMessage id='widget.subheading' defaultMessage='(Last 7 Days)' />
+                    <FormattedMessage id='widget.subheading' defaultMessage='(Last 24 Hours)' />
                 </p>
             </div>
             <div style={styles.dataWrapper}>
                 <SummaryWidget
                     themeName={themeName}
-                    thisWeekCount={thisWeekCount}
-                    lastWeekCount={lastWeekCount}
+                    thisWeekCount={thisDayCount}
+                    lastWeekCount={lastDayCount}
                     negative
                     tooltip={
                         (
                             <FormattedMessage
                                 id='widget.tooltip'
-                                defaultMessage='Increase/Decrease compared to last week'
+                                defaultMessage='Increase/Decrease compared to last day'
                             />
                         )
                     }
@@ -115,6 +116,6 @@ export default function APIMApiFaultsSummary(props) {
 
 APIMApiFaultsSummary.propTypes = {
     themeName: PropTypes.string.isRequired,
-    thisWeekCount: PropTypes.string.isRequired,
-    lastWeekCount: PropTypes.string.isRequired,
+    thisDayCount: PropTypes.string.isRequired,
+    lastDayCount: PropTypes.string.isRequired,
 };

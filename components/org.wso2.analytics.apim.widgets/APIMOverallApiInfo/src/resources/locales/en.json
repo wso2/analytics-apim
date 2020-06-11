@@ -5,7 +5,7 @@
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
   "api.info.heading": "OVERALL API INFO",
-  "api.info.subheading": "(Last 7 Days)",
+  "api.info.subheading": "(Last 24 Hours)",
   "table.heading.apiname": "API NAME",
   "table.heading.method": "METHOD",
   "table.heading.success": "SUCCESS HITS",

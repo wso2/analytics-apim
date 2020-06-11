@@ -28,6 +28,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
+import Moment from 'moment';
 import APIMOverallHighestLatency from './APIMOverallHighestLatency';
 
 const darkTheme = createMuiTheme({
@@ -75,8 +76,8 @@ class APIMOverallHighestLatencyWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            apiName:'',
-            apiVersion:'',
+            apiName: '',
+            apiVersion: '',
             highestLatency: 0,
             messages: null,
             inProgress: true,
@@ -133,7 +134,7 @@ class APIMOverallHighestLatencyWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, () => super.subscribe(this.handlePublisherParameters));
+                }, this.assembleQuery);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -190,9 +191,9 @@ class APIMOverallHighestLatencyWidget extends Widget {
      * @memberof APIMOverallHighestLatencyWidget
      * */
     assembleQuery() {
-        const {
-            timeFrom, timeTo, perValue, providerConfig,
-        } = this.state;
+        const { providerConfig } = this.state;
+        const timeTo = new Date().getTime();
+        const timeFrom = Moment(timeTo).subtract(1, 'days').toDate().getTime();
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -200,7 +201,7 @@ class APIMOverallHighestLatencyWidget extends Widget {
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
-            '{{per}}': perValue,
+            '{{per}}': 'day',
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -213,7 +214,6 @@ class APIMOverallHighestLatencyWidget extends Widget {
      * */
     handleDataReceived(message) {
         const { data } = message;
-        const { id } = this.props;
 
         if (data.length !== 0) {
             this.setState({apiName: data[0][0], apiVersion: data[0][1], highestLatency: data[0][2], inProgress: false});
@@ -229,7 +229,7 @@ class APIMOverallHighestLatencyWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, inProgress, timeFrom, timeTo, apiName, apiVersion, highestLatency,
+            messages, faultyProviderConf, inProgress, apiName, apiVersion, highestLatency,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
@@ -237,7 +237,7 @@ class APIMOverallHighestLatencyWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiLatencyProps = {
-            themeName, apiName, apiVersion, highestLatency, timeFrom, timeTo,
+            themeName, apiName, apiVersion, highestLatency,
         };
 
         if (inProgress) {
