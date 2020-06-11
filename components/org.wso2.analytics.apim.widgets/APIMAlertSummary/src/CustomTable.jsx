@@ -270,7 +270,16 @@ class CustomTable extends React.Component {
                                                 {n.type}
                                             </TableCell>
                                             <TableCell numeric>
-                                                {n.severity}
+                                                <span style={{
+                                                    fontWeight: 'bold',
+                                                    backgroundColor: n.severityColor,
+                                                    borderRadius: '5px',
+                                                    padding: '5px',
+                                                    verticalAlign: 'center',
+                                                }}
+                                                >
+                                                    {n.severity}
+                                                </span>
                                             </TableCell>
                                             <TableCell>
                                                 {n.details}

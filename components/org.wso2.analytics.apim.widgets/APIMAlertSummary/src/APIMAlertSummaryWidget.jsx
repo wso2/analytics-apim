@@ -94,7 +94,7 @@ class APIMAlertSummaryWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            alertData: null,
+            alertData: [],
             refreshInterval: 60000, // 1min
             refreshIntervalId: null,
             localeMessages: null,
@@ -193,10 +193,12 @@ class APIMAlertSummaryWidget extends Widget {
      * @memberof APIMApiUsageWidget
      * */
     loadQueryParam() {
-        const { selectedApi } = super.getGlobalState(queryParamKey);
-        let { limit } = super.getGlobalState(queryParamKey);
+        let { limit, selectedApi } = super.getGlobalState(queryParamKey);
         if (!limit || limit < 0) {
             limit = 5;
+        }
+        if (!selectedApi) {
+            selectedApi = 'All';
         }
         this.setQueryParam(selectedApi, limit);
         this.setState({ selectedApi, limit });
@@ -239,6 +241,7 @@ class APIMAlertSummaryWidget extends Widget {
      * */
     handleApiListReceived(message) {
         const { data } = message;
+        const { limit } = this.state;
         let { selectedApi } = { ...this.state };
 
         if (data && data.length > 0) {
@@ -249,6 +252,7 @@ class APIMAlertSummaryWidget extends Widget {
 
             if (!apiList.includes(selectedApi)) {
                 selectedApi = 'All';
+                this.setQueryParam(selectedApi, limit);
             }
             this.setState({ apiList, selectedApi }, this.assembleApiAlerts);
         } else {
@@ -290,10 +294,12 @@ class APIMAlertSummaryWidget extends Widget {
 
         if (data && data.length > 0) {
             const alertData = data.map((dataUnit) => {
+                const severityData = this.getSeverityLevel(dataUnit[2]);
                 return {
                     apiname: dataUnit[0],
                     type: dataUnit[1],
-                    severity: dataUnit[2],
+                    severity: severityData.text,
+                    severityColor: severityData.color,
                     details: dataUnit[3],
                     time: Moment(dataUnit[4]).format('YYYY-MMM-DD hh:mm:ss A'),
                 };
@@ -302,6 +308,34 @@ class APIMAlertSummaryWidget extends Widget {
         } else {
             this.setState({ alertData: [], inProgress: false });
         }
+    }
+
+    /**
+     * Get severity level
+     * @param {String} severity - severity value
+     * @memberof APIMAlertSummaryWidget
+     * */
+    getSeverityLevel(severity) {
+        let color = '';
+        let text = '';
+
+        switch (severity) {
+            case 1:
+                color = '#777777';
+                text = 'mild';
+                break;
+            case 2:
+                color = '#ff9800';
+                text = 'moderate';
+                break;
+            case 3:
+                color = '#b71c1c';
+                text = 'severe';
+                break;
+            default:
+            //        not reached
+        }
+        return { color, text };
     }
 
     /**

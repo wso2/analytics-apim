@@ -20,7 +20,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
@@ -28,15 +28,16 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CustomTable from './CustomTable';
+import Moment from "moment/moment";
 
 /**
  * Display API Alert Summary
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the Api Alert Summary widget body
  */
-export default function APIMAlertSummary(props) {
+function APIMAlertSummary(props) {
     const {
-        height, alertData, inProgress, themeName, selectedApi, apiList, handleApiChange, limit, handleLimitChange,
+        height, alertData, inProgress, themeName, selectedApi, apiList, handleApiChange, limit, handleLimitChange, intl,
     } = props;
     const styles = {
         headingWrapper: {
@@ -92,6 +93,16 @@ export default function APIMAlertSummary(props) {
             width: '10%',
         },
     };
+    const tableData = alertData.map((data) => {
+        return {
+            apiname: data.apiname,
+            type: data.type,
+            severity: intl.formatMessage({ id: 'alert.severity.' + data.severity }),
+            severityColor: data.severityColor,
+            details: data.details,
+            time: data.time,
+        };
+    });
 
     return (
         <Scrollbars style={{
@@ -174,7 +185,7 @@ export default function APIMAlertSummary(props) {
                                     </div>
                                 ) : (
                                     <div style={styles.tableWrapper}>
-                                        <CustomTable data={alertData} />
+                                        <CustomTable data={tableData} />
                                     </div>
                                 )
                             }
@@ -196,4 +207,7 @@ APIMAlertSummary.propTypes = {
     limit: PropTypes.string.isRequired,
     handleApiChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
+    intl: intlShape.isRequired,
 };
+
+export default injectIntl(APIMAlertSummary);

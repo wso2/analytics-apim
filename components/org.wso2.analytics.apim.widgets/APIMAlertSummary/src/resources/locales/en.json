@@ -1,4 +1,7 @@
 {
+  "alert.severity.mild": "Mild",
+  "alert.severity.moderate": "Moderate",
+  "alert.severity.severe": "Severe",
   "api.label": "API",
   "config.error.body": "Cannot fetch provider configuration for APIM Alert Summary widget",
   "config.error.heading": "Configuration Error !",
