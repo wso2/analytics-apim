@@ -1,8 +1,7 @@
 {
-  "application.label": "Application",
-  "config.error.body": "Cannot fetch provider configuration for Api Usage Over Time widget",
+  "config.error.body": "Cannot fetch provider configuration for Performance Summary widget",
   "config.error.heading": "Configuration Error !",
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
-  "widget.heading": "API USAGE OVER TIME"
+  "widget.heading": "PERFORMANCE SUMMARY"
 }

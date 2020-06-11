@@ -159,7 +159,7 @@ function APIMApiUsage(props) {
                             ) : (
                                 <CustomTable
                                     data={usageData}
-                                    // onClickTableRow={e => handleOnClickAPI(e)}
+                                    onClickTableRow={e => handleOnClickAPI(e)}
                                     columns={columns}
                                     strColumns={strColumns}
                                     title={title}

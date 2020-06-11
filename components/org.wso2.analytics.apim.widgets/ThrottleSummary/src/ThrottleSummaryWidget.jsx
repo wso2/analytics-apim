@@ -23,12 +23,11 @@ import {
 } from 'react-intl';
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
-import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Widget from '@wso2-dashboards/widget';
-import ApiThrottleAnalytics from './ApiThrottleAnalytics';
+import ThrottleSummary from './ThrottleSummary';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -60,15 +59,15 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for Api Throttle Analytics widget
- * @class ApiThrottleAnalyticsWidget
+ * Create React Component for Throttle Summary widget
+ * @class ThrottleSummaryWidget
  * @extends {Widget}
  */
-class ApiThrottleAnalyticsWidget extends Widget {
+class ThrottleSummaryWidget extends Widget {
     /**
-     * Creates an instance of ApiThrottleAnalyticsWidget.
+     * Creates an instance of ThrottleSummaryWidget.
      * @param {any} props @inheritDoc
-     * @memberof ApiThrottleAnalyticsWidget
+     * @memberof ThrottleSummaryWidget
      */
     constructor(props) {
         super(props);
@@ -100,7 +99,6 @@ class ApiThrottleAnalyticsWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             throttleData: null,
-            tableData: null,
             inProgress: true,
             dimension: null,
             selectedOptions: [],
@@ -117,6 +115,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     componentWillMount() {
@@ -153,12 +152,12 @@ class ApiThrottleAnalyticsWidget extends Widget {
     /**
      * Load locale file.
      * @param {string} locale Locale name
-     * @memberof ApiThrottleAnalyticsWidget
+     * @memberof ThrottleSummaryWidget
      */
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/ApiThrottleAnalytics/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/ThrottleSummary/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -171,7 +170,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
 
     /**
      * Retrieve params from publisher - DateTimeRange
-     * @memberof ApiThrottleAnalyticsWidget
+     * @memberof ThrottleSummaryWidget
      * */
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
@@ -206,7 +205,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
 
     /**
      * Formats the siddhi query - mainquery
-     * @memberof ApiThrottleAnalyticsWidget
+     * @memberof ThrottleSummaryWidget
      * */
     assembleMainQuery() {
         const {
@@ -215,8 +214,10 @@ class ApiThrottleAnalyticsWidget extends Widget {
         const { widgetID: widgetName, id } = this.props;
         if (dimension && timeFrom) {
             if (selectedOptions && selectedOptions.length > 0) {
-                const filterCondition = '(apiName==\'' + selectedOptions[0].name + '\' AND apiVersion==\''
-                    + selectedOptions[0].version + '\' AND apiCreator==\'' + selectedOptions[0].provider + '\')';
+                let filterCondition = selectedOptions.map((opt) => {
+                    return '(apiName==\'' + opt.name + '\' AND apiVersion==\'' + opt.version + '\')';
+                });
+                filterCondition = filterCondition.join(' OR ');
 
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'query';
@@ -229,7 +230,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
                 super.getWidgetChannelManager()
                     .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
             } else {
-                this.setState({ inProgress: false, throttleData: [], tableData: [] });
+                this.setState({ inProgress: false, throttleData: [] });
             }
         }
     }
@@ -237,61 +238,93 @@ class ApiThrottleAnalyticsWidget extends Widget {
     /**
      * Formats data retrieved from assembleMainQuery
      * @param {object} message - data retrieved
-     * @memberof ApiThrottleAnalyticsWidget
+     * @memberof ThrottleSummaryWidget
      * */
     handleDataReceived(message) {
         const { data } = message;
+        const { selectedOptions } = this.state;
 
         if (data && data.length > 0) {
-            const tableData = data.map((dataUnit) => {
-                return ({
-                    appName: dataUnit[0],
-                    count: dataUnit[1],
-                    reason: dataUnit[2].split('_').join(' ').toLowerCase(),
-                    time: Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss A'),
-                });
-            });
+            const apiList = selectedOptions
+                .sort((a, b) => { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); })
+                .map((api) => { return api.name + ' :: ' + api.version + ' (' + api.provider + ')'; });
             const dataGroupByTime = data.reduce((acc, obj) => {
-                const key = obj[3];
+                const key = obj[4];
                 if (!acc[key]) {
-                    acc[key] = 0;
+                    acc[key] = [];
                 }
-                acc[key] += obj[1];
+                acc[key].push({ apiname: obj[0] + ' :: ' + obj[1] + ' (' + obj[2] + ')', count: obj[3] });
                 return acc;
             }, {});
             const throttleData = Object.keys(dataGroupByTime).map((key) => {
-                return [dataGroupByTime[key], parseInt(key, 10)];
+                const availableUsage = dataGroupByTime[key];
+                const throttleInfo = [];
+                apiList.forEach((api) => {
+                    const apiUsage = availableUsage.find(selc => selc.apiname === api);
+                    if (apiUsage && apiUsage.length > 0) {
+                        throttleInfo.push(apiUsage.count);
+                    } else {
+                        throttleInfo.push(0);
+                    }
+                });
+                throttleInfo.push(parseInt(key, 10));
+                return throttleInfo;
             });
-            this.setState({ throttleData, tableData, inProgress: false });
+
+
+            this.setState({ throttleData, apiList, inProgress: false });
         } else {
-            this.setState({ inProgress: false, throttleData: [], tableData: [] });
+            this.setState({ inProgress: false, throttleData: [] });
+        }
+    }
+
+    /**
+     * Handle onClick of an API and drill down
+     * @memberof ThrottleSummaryWidget
+     * */
+    handleOnClick(data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const name = Object.keys(data).find(key => key.includes('::'));
+                const splitName = name.split(' :: ');
+                const api = splitName[0].trim();
+                const apiversion = splitName[1].split(' (')[0].trim();
+                const provider = splitName[1].split(' (')[1].split(')')[0].trim();
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1month"},"dmSelc":{"dm":"api",'
+                    + '"op":[{"name":"' + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            }
         }
     }
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the Api Throttle Analytics widget
-     * @memberof ApiThrottleAnalyticsWidget
+     * @returns {ReactElement} Render the Throttle Summary widget
+     * @memberof ThrottleSummaryWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, width, inProgress, throttleData,
-            tableData,
+            localeMessages, faultyProviderConfig, height, width, inProgress, throttleData, apiList,
         } = this.state;
         const {
             paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const { username } = super.getCurrentUser();
         const faultProps = {
             themeName,
             height,
             width,
             throttleData,
-            tableData,
             inProgress,
-            username,
+            apiList,
         };
 
         return (
@@ -315,14 +348,15 @@ class ApiThrottleAnalyticsWidget extends Widget {
                                             <FormattedMessage
                                                 id='config.error.body'
                                                 defaultMessage={'Cannot fetch provider configuration for '
-                                                + 'Api Throttle Analytics widget'}
+                                                + 'Throttle Summary widget'}
                                             />
                                         </Typography>
                                     </Paper>
                                 </div>
                             ) : (
-                                <ApiThrottleAnalytics
+                                <ThrottleSummary
                                     {...faultProps}
+                                    handleOnClick={this.handleOnClick}
                                 />
                             )
                         }
@@ -333,4 +367,4 @@ class ApiThrottleAnalyticsWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('ApiThrottleAnalytics', ApiThrottleAnalyticsWidget);
+global.dashboard.registerWidget('ThrottleSummary', ThrottleSummaryWidget);

@@ -1,12 +1,10 @@
 {
-    "name": "api-usage-over-time",
+    "name": "performance-summary",
     "version": "1.0.0",
     "private": true,
     "dependencies": {
-        "@material-ui/core": "^4.9.10",
-        "@material-ui/icons": "^4.9.1",
-        "@material-ui/lab": "^4.0.0-alpha.49",
-        "react-vizgrammar": "^0.7.39"
+        "react-vizgrammar": "^0.7.39",
+        "moment": "^2.24.0"
     },
     "scripts": {
         "build": "../node_modules/.bin/webpack -p",

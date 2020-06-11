@@ -33,7 +33,7 @@ import VizG from 'react-vizgrammar';
  */
 export default function Top10ThrottledApisOverTime(props) {
     const {
-        themeName, height, width, inProgress, throttleData, apiList, handleOnClickAPI,
+        themeName, height, width, inProgress, throttleData, apiList, handleOnClick,
     } = props;
     const styles = {
         headingWrapper: {
@@ -145,13 +145,13 @@ export default function Top10ThrottledApisOverTime(props) {
                                 </Paper>
                             </div>
                         ) : (
-                            <div>
+                            <div onClick={() => handleOnClick()} onKeyDown={() => handleOnClick()}>
                                 <VizG
                                     config={chartConfig}
                                     metadata={metadata}
                                     data={throttleData}
                                     width={width}
-                                    onClick={data => handleOnClickAPI(data)}
+                                    height={height * 0.9}
                                 />
                             </div>
                         )}
@@ -169,5 +169,5 @@ Top10ThrottledApisOverTime.propTypes = {
     throttleData: PropTypes.instanceOf(Object).isRequired,
     apiList: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
-    handleOnClickAPI: PropTypes.func.isRequired,
+    handleOnClick: PropTypes.func.isRequired,
 };
