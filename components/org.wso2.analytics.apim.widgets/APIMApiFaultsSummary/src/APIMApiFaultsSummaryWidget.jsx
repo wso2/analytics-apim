@@ -30,8 +30,8 @@ import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
 import APIMApiFaultsSummary from './APIMApiFaultsSummary';
 
-const LAST_WEEK = 'last-week';
-const THIS_WEEK = 'this-week';
+const LAST_DAY = 'last-day';
+const THIS_DAY = 'this-day';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -82,8 +82,8 @@ class APIMApiFaultsSummaryWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            lastWeekCount: 0,
-            thisWeekCount: 0,
+            lastDayCount: 0,
+            thisDayCount: 0,
             messages: null,
             refreshInterval: 60000, // 1min
             refreshIntervalId: null,
@@ -148,11 +148,11 @@ class APIMApiFaultsSummaryWidget extends Widget {
             .then((message) => {
                 // set an interval to periodically retrieve data
                 const refresh = () => {
-                    super.getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
-                    this.assembleUsageCountQuery(LAST_WEEK, message.data.configs.providerConfig);
+                    super.getWidgetChannelManager().unsubscribeWidget(id + LAST_DAY);
+                    this.assembleUsageCountQuery(LAST_DAY, message.data.configs.providerConfig);
                 };
                 refreshIntervalId1 = setInterval(refresh, refreshInterval);
-                this.assembleUsageCountQuery(LAST_WEEK, message.data.configs.providerConfig);
+                this.assembleUsageCountQuery(LAST_DAY, message.data.configs.providerConfig);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -165,11 +165,11 @@ class APIMApiFaultsSummaryWidget extends Widget {
             .then((message) => {
                 // set an interval to periodically retrieve data
                 const refresh = () => {
-                    super.getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
-                    this.assembleUsageCountQuery(THIS_WEEK, message.data.configs.providerConfig);
+                    super.getWidgetChannelManager().unsubscribeWidget(id + THIS_DAY);
+                    this.assembleUsageCountQuery(THIS_DAY, message.data.configs.providerConfig);
                 };
                 refreshIntervalId2 = setInterval(refresh, refreshInterval);
-                this.assembleUsageCountQuery(THIS_WEEK, message.data.configs.providerConfig);
+                this.assembleUsageCountQuery(THIS_DAY, message.data.configs.providerConfig);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -187,8 +187,8 @@ class APIMApiFaultsSummaryWidget extends Widget {
         const { id } = this.props;
         clearInterval(refreshIntervalId1);
         clearInterval(refreshIntervalId2);
-        super.getWidgetChannelManager().unsubscribeWidget(id + THIS_WEEK);
-        super.getWidgetChannelManager().unsubscribeWidget(id + LAST_WEEK);
+        super.getWidgetChannelManager().unsubscribeWidget(id + THIS_DAY);
+        super.getWidgetChannelManager().unsubscribeWidget(id + LAST_DAY);
     }
 
     /**
@@ -213,19 +213,19 @@ class APIMApiFaultsSummaryWidget extends Widget {
 
     /**
      * Formats the siddhi query
-     * @param {string} week - This week/Last week
+     * @param {string} day - This day/Last day
      * @param {object} dataProviderConfigs - Data provider configurations
      * @memberof APIMApiFaultsSummaryWidget
      * */
-    assembleUsageCountQuery(week, dataProviderConfigs) {
+    assembleUsageCountQuery(day, dataProviderConfigs) {
         const { id, widgetID: widgetName } = this.props;
         dataProviderConfigs.configs.config.queryData.queryName = 'query';
 
         let timeTo = new Date().getTime();
-        let timeFrom = Moment(timeTo).subtract(7, 'days').toDate().getTime();
-        if (week === LAST_WEEK) {
+        let timeFrom = Moment(timeTo).subtract(1, 'days').toDate().getTime();
+        if (day === LAST_DAY) {
             timeTo = timeFrom;
-            timeFrom = Moment(timeTo).subtract(7, 'days').toDate().getTime();
+            timeFrom = Moment(timeTo).subtract(1, 'days').toDate().getTime();
         }
 
         dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -236,30 +236,30 @@ class APIMApiFaultsSummaryWidget extends Widget {
         };
 
         super.getWidgetChannelManager()
-            .subscribeWidget(id + week, widgetName, (message) => {
-                this.handleUsageCountReceived(week, message);
+            .subscribeWidget(id + day, widgetName, (message) => {
+                this.handleUsageCountReceived(day, message);
             }, dataProviderConfigs);
     }
 
     /**
      * Formats data received from assembleweekQuery
-     * @param {string} week - This week/Last week
+     * @param {string} day - This day/Last day
      * @param {object} message - data retrieved
      * @memberof APIMApiFaultsSummaryWidget
      * */
-    handleUsageCountReceived(week, message) {
+    handleUsageCountReceived(day, message) {
         const { data } = message;
         const count = data[0] || [];
         if (count.length) {
-            if (week === THIS_WEEK) {
+            if (day === THIS_DAY) {
                 this.setState({
-                    thisWeekCount: count[0] || 0,
+                    thisDayCount: count[0] || 0,
                     inProgress: false,
                 });
             }
-            if (week === LAST_WEEK) {
+            if (day === LAST_DAY) {
                 this.setState({
-                    lastWeekCount: count[0] || 0,
+                    lastDayCount: count[0] || 0,
                     inProgress: false,
                 });
             }
@@ -275,14 +275,14 @@ class APIMApiFaultsSummaryWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, lastWeekCount, thisWeekCount, inProgress,
+            messages, faultyProviderConf, lastDayCount, thisDayCount, inProgress,
         } = this.state;
         const {
             loadingIcon, paper, paperWrapper, loading,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiCreatedProps = { themeName, lastWeekCount, thisWeekCount };
+        const apiCreatedProps = { themeName, lastDayCount, thisDayCount };
 
         if (inProgress) {
             return (
