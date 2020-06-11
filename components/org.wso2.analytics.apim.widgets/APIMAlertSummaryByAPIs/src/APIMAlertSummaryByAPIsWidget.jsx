@@ -51,7 +51,7 @@ const lightTheme = createMuiTheme({
  * Query string parameter
  * @type {string}
  */
-const queryParamKey = 'throttledapis';
+const queryParamKey = 'topApiByAlert';
 
 /**
  * Language
@@ -65,7 +65,7 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
- * Create React Component for APIM Top Throttled Out Apis
+ * Create React Component for APIM Alert Summary By APIs
  * @class APIMAlertSummaryByAPIsWidget
  * @extends {Widget}
  */
@@ -93,11 +93,13 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            throttledData: null,
+            alertData: [],
             legendData: null,
             limit: 5,
             localeMessages: null,
             inProgress: true,
+            timeFrom: null,
+            timeTo: null,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -113,6 +115,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
+        this.publishTimeRange = this.publishTimeRange.bind(this);
     }
 
     componentWillMount() {
@@ -186,13 +189,12 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
-        const { from, to, granularity } = receivedMsg;
+        const { from, to } = receivedMsg;
 
         if (from) {
             this.setState({
                 timeFrom: from,
                 timeTo: to,
-                perValue: granularity,
                 inProgress: !sync,
             }, this.assembleQuery);
         }
@@ -204,7 +206,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
      * */
     assembleQuery() {
         const {
-            providerConfig, timeFrom, timeTo, perValue, limit,
+            providerConfig, timeFrom, timeTo, limit,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -213,15 +215,14 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 dataProviderConfigs.configs.config.queryData.queryName = 'query';
                 dataProviderConfigs.configs.config.queryData.queryValues = {
-                    '{{from}}': timeFrom,
-                    '{{to}}': timeTo,
-                    '{{per}}': perValue,
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
                     '{{limit}}': limit,
                 };
                 super.getWidgetChannelManager()
                     .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
             } else {
-                this.setState({ inProgress: false, throttledData: [] });
+                this.setState({ inProgress: false, alertData: [] });
             }
         }
     }
@@ -232,25 +233,22 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
      * @memberof APIMAlertSummaryByAPIsWidget
      * */
     handleDataReceived(message) {
-        const { limit } = this.state;
-        const { data, metadata: { names } } = message;
+        const { data } = message;
 
         if (data && data.length > 0) {
-            const legendData = [];
-            const newData = data.map((row) => {
-                const obj = {};
-                for (let j = 0; j < row.length; j++) {
-                    obj[names[j]] = row[j];
-                    if (j === 0 && !legendData.includes({ name: row[j] })) {
-                        legendData.push({ name: row[j] });
+            const alertData = data.map((dataUnit) => { return { apiname: dataUnit[0], count: dataUnit[1] }; });
+            const legendData = alertData.reduce(
+                (acc, curr) => {
+                    if (!acc.includes(curr.apiname)) {
+                        acc.push(curr.apiname);
                     }
-                }
-                return obj;
-            });
-            this.setState({ legendData, throttledData: newData, inProgress: false });
-            this.setQueryParam(limit);
+                    return acc;
+                },
+                [],
+            );
+            this.setState({ legendData, alertData, inProgress: false });
         } else {
-            this.setState({ inProgress: false, throttledData: [] });
+            this.setState({ inProgress: false, alertData: [] });
         }
     }
 
@@ -264,7 +262,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
     }
 
     /**
-     * Handle Select Change
+     * Handle limit Change
      * @param {Event} event - listened event
      * @memberof APIMAlertSummaryByAPIsWidget
      * */
@@ -283,46 +281,47 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
      * Handle onClick of an API and drill down
      * @memberof APIMAlertSummaryByAPIsWidget
      * */
-    handleOnClickAPI(data) {
+    handleOnClickAPI(event, data) {
         const { configs } = this.props;
 
         if (configs && configs.options) {
             const { drillDown } = configs.options;
 
-            if (drillDown) {
-                const {
-                    tr, sd, ed, g,
-                } = super.getGlobalState('dtrp');
-                const { apiname, apiversion } = data;
-                const api = (apiname.split(' (')[0]).trim();
-                const provider = (apiname.split('(')[1]).split(')')[0].trim();
-                const locationParts = window.location.pathname.split('/');
-                const dashboard = locationParts[locationParts.length - 2];
-
-                window.location.href = window.contextPath
-                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
-                    + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
-                    + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+            if (drillDown !== undefined && drillDown) {
+                const { apiname } = data;
+                event.preventDefault();
+                this.publishTimeRange({ selectedApi: apiname });
+                document.getElementById('alertSummary').scrollIntoView();
             }
         }
     }
 
     /**
+     * Publishing the selected API
+     * @param {String} message : Selected API
+     * @memberof APIMAlertSummaryByAPIsWidget
+     */
+    publishTimeRange = (message) => {
+        super.publish(message);
+    };
+
+
+    /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Top Throttled Out Apis widget
+     * @returns {ReactElement} Render the APIM Alert Summary By APIs widget
      * @memberof APIMAlertSummaryByAPIsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, throttledData, legendData, inProgress, width,
+            localeMessages, faultyProviderConfig, height, limit, alertData, legendData, inProgress, width,
         } = this.state;
         const {
             paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const throttledApisProps = {
-            themeName, height, limit, throttledData, legendData, inProgress, width,
+        const alertApisProps = {
+            themeName, height, limit, alertData, legendData, inProgress, width,
         };
 
         return (
@@ -342,7 +341,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Top Throttled Out Apis widget'}
+                                            + 'Alert Summary By APIs widget'}
                                         />
                                     </Typography>
                                 </Paper>
@@ -350,7 +349,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
                         </MuiThemeProvider>
                     ) : (
                         <APIMAlertSummaryByAPIs
-                            {...throttledApisProps}
+                            {...alertApisProps}
                             handleChange={this.handleChange}
                             handleOnClickAPI={this.handleOnClickAPI}
                         />

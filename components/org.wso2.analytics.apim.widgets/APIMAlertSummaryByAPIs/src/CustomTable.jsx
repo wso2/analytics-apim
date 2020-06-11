@@ -151,7 +151,7 @@ class CustomTable extends React.Component {
             tableData: [],
             page: 0,
             rowsPerPage: 5,
-            orderBy: 'throttledcount',
+            orderBy: 'count',
             order: 'desc',
             expanded: false,
             filterColumn: 'apiname',
@@ -208,8 +208,8 @@ class CustomTable extends React.Component {
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
-            <MenuItem value='alertCount'>
-                <FormattedMessage id='table.heading.alertCount' defaultMessage='Alert Count' />
+            <MenuItem value='count'>
+                <FormattedMessage id='table.heading.count' defaultMessage='COUNT' />
             </MenuItem>,
         ];
         return (
@@ -246,8 +246,8 @@ class CustomTable extends React.Component {
                                             key={n.id}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                <Link href='#' onClick={() => onClickTableRow(n)} color='inherit'>
-                                                    {n.apiName}
+                                                <Link href='#' onClick={e => onClickTableRow(e, n)} color='inherit'>
+                                                    {n.apiname}
                                                 </Link>
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>

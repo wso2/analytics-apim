@@ -150,7 +150,10 @@ class APIMAlertSummaryWidget extends Widget {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
                     refreshIntervalId,
-                }, () => super.subscribe(this.handlePublisherParameters));
+                }, () => {
+                    this.assembleApiList();
+                    super.subscribe(this.handlePublisherParameters);
+                });
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -211,13 +214,27 @@ class APIMAlertSummaryWidget extends Widget {
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
-        const { from, to } = receivedMsg;
+        const { from, to, selectedApi } = receivedMsg;
 
-        this.setState({
-            timeFrom: from,
-            timeTo: to,
-            inProgress: !sync,
-        }, this.assembleApiList);
+        if (selectedApi && from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                inProgress: true,
+                selectedApi,
+            }, this.assembleApiAlerts);
+        } else if (from) {
+            this.setState({
+                timeFrom: from,
+                timeTo: to,
+                inProgress: !sync,
+            }, this.assembleApiAlerts);
+        } else if (selectedApi) {
+            this.setState({
+                inProgress: true,
+                selectedApi,
+            }, this.assembleApiAlerts);
+        }
     }
 
     /**
@@ -400,39 +417,41 @@ class APIMAlertSummaryWidget extends Widget {
                 messages={localeMessages}
             >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper
-                                    elevation={1}
-                                    style={paper}
-                                >
-                                    <Typography
-                                        variant='h5'
-                                        component='h3'
+                    <div id='alertSummary'>
+                        {
+                            faultyProviderConfig ? (
+                                <div style={paperWrapper}>
+                                    <Paper
+                                        elevation={1}
+                                        style={paper}
                                     >
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM ALert '
+                                        <Typography
+                                            variant='h5'
+                                            component='h3'
+                                        >
+                                            <FormattedMessage
+                                                id='config.error.heading'
+                                                defaultMessage='Configuration Error !'
+                                            />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='config.error.body'
+                                                defaultMessage={'Cannot fetch provider configuration for APIM ALert '
                                             + 'Summary Widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMAlertSummary
-                                {...apiAlertProps}
-                                handleApiChange={this.handleApiChange}
-                                handleLimitChange={this.handleLimitChange}
-                            />
-                        )
-                    }
+                                            />
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <APIMAlertSummary
+                                    {...apiAlertProps}
+                                    handleApiChange={this.handleApiChange}
+                                    handleLimitChange={this.handleLimitChange}
+                                />
+                            )
+                        }
+                    </div>
                 </MuiThemeProvider>
             </IntlProvider>
         );

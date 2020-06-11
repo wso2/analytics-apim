@@ -31,7 +31,7 @@ const rows = [
         id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
     },
     {
-        id: 'alertCount', numeric: true, disablePadding: false, label: 'table.heading.alertCount',
+        id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',
     },
 ];
 

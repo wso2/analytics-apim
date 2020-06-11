@@ -52,13 +52,13 @@ const lightTheme = createMuiTheme({
 });
 
 /**
- * React Component for Top Throttled Out Apis widget body
+ * React Component for APIM Alert Summary By APIs widget body
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Top Throttled Out Apis widget body
+ * @returns {ReactElement} Render the APIM Alert Summary By APIs widget body
  */
 export default function APIMAlertSummaryByAPIs(props) {
     const {
-        themeName, height, limit, throttledData, handleChange, inProgress, width, handleOnClickAPI,
+        themeName, height, limit, alertData, handleChange, inProgress, width, handleOnClickAPI,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -132,7 +132,7 @@ export default function APIMAlertSummaryByAPIs(props) {
         },
     };
 
-    const { pieChartData, legendData } = Utils.summarizePieData(throttledData, 'apiName', 'count');
+    const { pieChartData, legendData } = Utils.summarizePieData(alertData, 'apiname', 'count');
     return (
         <MuiThemeProvider
             theme={themeName === 'dark' ? darkTheme : lightTheme}
@@ -150,7 +150,7 @@ export default function APIMAlertSummaryByAPIs(props) {
                 >
                     <div style={styles.headingWrapper}>
                         <h3 style={styles.heading}>
-                            <FormattedMessage id='widget.heading' defaultMessage='Top Alerts by API' />
+                            <FormattedMessage id='widget.heading' defaultMessage='TOP API BY ALERTS' />
                         </h3>
                     </div>
                     <div style={styles.formWrapper}>
@@ -176,7 +176,7 @@ export default function APIMAlertSummaryByAPIs(props) {
                             </div>
                         ) : (
                             <div>
-                                { !throttledData || throttledData.length === 0 ? (
+                                { !alertData || alertData.length === 0 ? (
                                     <div style={styles.paperWrapper}>
                                         <Paper
                                             elevation={1}
@@ -230,19 +230,19 @@ export default function APIMAlertSummaryByAPIs(props) {
                                                     theme={VictoryTheme.material}
                                                     colorScale={colorScale}
                                                     data={pieChartData}
-                                                    x={d => d.apiName}
+                                                    x={d => d.apiname}
                                                     y={d => d.count}
-                                                    labels={d => `${d.apiName} : ${((d.count
+                                                    labels={d => `${d.apiname} : ${((d.count
                                                         / (sumBy(pieChartData, o => o.count))) * 100)
                                                         .toFixed(2)}%`}
                                                     events={[
                                                         {
                                                             target: 'data',
                                                             eventHandlers: {
-                                                                onClick: () => {
+                                                                onClick: (e) => {
                                                                     return [{
                                                                         mutation: (val) => {
-                                                                            handleOnClickAPI(val.datum);
+                                                                            handleOnClickAPI(e, val.datum);
                                                                         },
                                                                     }];
                                                                 },
@@ -254,8 +254,8 @@ export default function APIMAlertSummaryByAPIs(props) {
                                         </div>
                                         <div style={styles.tableDiv}>
                                             <CustomTable
-                                                data={throttledData}
-                                                onClickTableRow={e => handleOnClickAPI(e)}
+                                                data={alertData}
+                                                onClickTableRow={(e, v) => handleOnClickAPI(e, v)}
                                             />
                                         </div>
                                     </div>
@@ -274,7 +274,7 @@ APIMAlertSummaryByAPIs.propTypes = {
     height: PropTypes.string.isRequired,
     width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
-    throttledData: PropTypes.instanceOf(Object).isRequired,
+    alertData: PropTypes.instanceOf(Object).isRequired,
     handleChange: PropTypes.func.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
