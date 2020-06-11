@@ -66,6 +66,7 @@ export default function APIMTotalApiTraffic(props) {
         },
         mainDiv: {
             backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            height,
             padding: 30,
         },
         h3: {
