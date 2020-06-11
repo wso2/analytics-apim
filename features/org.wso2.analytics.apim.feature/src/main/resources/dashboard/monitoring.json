@@ -497,7 +497,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 16.607057065072333,
+                  "height": 7.518531362610465,
                   "content": [
                     {
                       "title": "[Date Time Range]",
@@ -539,13 +539,14 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 37.247731171148324,
+                  "height": 53.23120204728209,
                   "content": [
                     {
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
                       "width": 50,
+                      "height": 60.968821272949555,
                       "content": [
                         {
                           "title": "[APIM Total Api Traffic]",
@@ -582,53 +583,6 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "height": 100,
-                      "width": 50,
-                      "content": [
-                        {
-                          "title": "[APIM Top Throttled Out Apis]",
-                          "type": "component",
-                          "component": "APIMTopThrottledOutApis",
-                          "props": {
-                            "id": "cb924ce2-2be3-4669-a955-bed39051df25",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": [
-                                  "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true,
-                                "headerTitle": "Top Throttled Out APIs"
-                              }
-                            },
-                            "widgetID": "APIMTopThrottledOutApis"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "row",
-                  "isClosable": true,
-                  "title": "",
-                  "height": 46.14521176377935,
-                  "content": [
-                    {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "height": 33.333333333333336,
                       "width": 50,
                       "content": [
                         {
@@ -661,49 +615,50 @@
                           "componentName": "lm-react-component"
                         }
                       ]
-                    },
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 39.25026659010746,
+                  "content": [
                     {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "width": 50,
-                      "content": [
-                        {
-                          "title": "[APIM Api Last Access Summary]",
-                          "type": "component",
-                          "component": "APIMApiLastAccessSummary",
-                          "props": {
-                            "id": "e992fecb-5b27-432c-a208-d339abf03f6f",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": [
-                                  "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true,
-                                "headerTitle": "API Last Access Time"
-                              }
-                            },
-                            "widgetID": "APIMApiLastAccessSummary"
+                      "title": "[APIM Api Traffic By Version]",
+                      "type": "component",
+                      "component": "APIMApiTrafficByVersion",
+                      "props": {
+                        "id": "8c712b28-887b-4ab8-a2ac-08cd36707f03",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber"
+                            ],
+                            "publishers": [
+                              "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
+                            ]
                           },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "Api Traffic By Version"
+                          }
+                        },
+                        "widgetID": "APIMApiTrafficByVersion"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
                     }
                   ]
                 }
               ]
             }
-          ]
+          ],
+          "height": 1382
         },
         {
           "id": "alerts",
@@ -846,27 +801,19 @@
     "generated": [],
     "custom": [
       "APIMApiThrottledSummary",
-      "APIMAverageApiLatency",
       "APIMApiAvailability",
       "ErrorByAppAndAPI",
-      "APIMOverallErrorInfo",
       "AppAndAPIErrorsByTime",
       "AppAndAPIErrorTable",
       "APIMOverallApiInfo",
-      "APIMApiErrorPercentages",
-      "APIMTopFaultyApis",
-      "APIMApiResourceTraffic",
-      "APIMTopThrottledOutApis",
-      "APIMAlertSummary",
-      "APIMApiLastAccessSummary",
-      "DateRangePicker",
-      "APIMApiLatencyTime",
-      "APILatencySummary",
       "APILatencyOverTime",
-      "APIMOverallHighestLatency",
+      "APIMApiResourceTraffic",
+      "APIMAlertSummary",
+      "DateRangePicker",
+      "APILatencySummary",
+      "APIMApiTrafficByVersion",
       "APIMAlertSummaryByAPIs",
       "APIMApiFaultsSummary",
-      "APIMApiErrorAnalysis",
       "APIMApiUsageSummary",
       "APIMTotalApiTraffic"
     ]
