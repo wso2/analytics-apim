@@ -678,25 +678,29 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 38.7037037037037,
-                      "height": 100.00000000000003,
+                      "width": 37.28395061728395,
                       "content": [
                         {
                           "title": "[APIM Api Availability]",
                           "type": "component",
                           "component": "APIMApiAvailability",
                           "props": {
-                            "id": "5f6ccc95-6fbf-407d-8770-e842b18deb72",
+                            "id": "2a91bc96-700c-4044-8539-d679a85cacea",
                             "configs": {
                               "pubsub": {
                                 "types": [
-                                  "subscriber"
-                                ]
+                                  "publisher"
+                                ],
+                                "publisherWidgetOutputs": [
+                                  "status"
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API Availability Summary"
+                                "headerTitle": "API Availability Summary",
+                                "drillDown": true
                               }
                             },
                             "widgetID": "APIMApiAvailability"
@@ -713,7 +717,8 @@
                       "type": "stack",
                       "isClosable": true,
                       "title": "",
-                      "width": 61.29629629629629,
+                      "width": 62.716049382716044,
+                      "height": 29.54361757839729,
                       "content": [
                         {
                           "title": "[Api Availability]",
@@ -727,7 +732,7 @@
                                   "subscriber"
                                 ],
                                 "publishers": [
-                                  "006edbd8-8703-4a64-8bb4-a476b4a127a8"
+                                  "2a91bc96-700c-4044-8539-d679a85cacea"
                                 ]
                               },
                               "isGenerated": false,
