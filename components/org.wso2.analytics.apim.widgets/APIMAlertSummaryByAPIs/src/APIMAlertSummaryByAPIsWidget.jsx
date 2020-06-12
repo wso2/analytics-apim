@@ -113,7 +113,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
-        this.publishTimeRange = this.publishTimeRange.bind(this);
+        this.publishSelection = this.publishSelection.bind(this);
     }
 
     componentWillMount() {
@@ -265,7 +265,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
 
             if (drillDown !== undefined && drillDown) {
                 const { apiname } = data;
-                this.publishTimeRange({ selectedApi: apiname });
+                this.publishSelection({ selectedApi: apiname });
                 document.getElementById('alertSummary').scrollIntoView();
             }
         }
@@ -277,7 +277,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
      * @param {String} message : Selected API
      * @memberof APIMAlertSummaryByAPIsWidget
      */
-    publishTimeRange = (message) => {
+    publishSelection = (message) => {
         super.publish(message);
     };
 
