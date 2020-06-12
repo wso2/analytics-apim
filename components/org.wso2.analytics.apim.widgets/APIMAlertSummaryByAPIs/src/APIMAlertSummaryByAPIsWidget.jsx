@@ -265,11 +265,11 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
 
             if (drillDown !== undefined && drillDown) {
                 const { apiname } = data;
-                event.preventDefault();
                 this.publishTimeRange({ selectedApi: apiname });
                 document.getElementById('alertSummary').scrollIntoView();
             }
         }
+        event.preventDefault();
     }
 
     /**
