@@ -277,7 +277,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
      * @param {String} message : Selected API
      * @memberof APIMAlertSummaryByAPIsWidget
      */
-    publishSelection = (message) => {
+    publishSelection(message) {
         super.publish(message);
     };
 
