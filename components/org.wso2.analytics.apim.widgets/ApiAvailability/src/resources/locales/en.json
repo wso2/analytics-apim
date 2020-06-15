@@ -1,5 +1,8 @@
 {
-  "availability.available" : "Available",
+  "availability.all.label" : "All",
+  "availability.available.label" : "Available",
+  "availability.response.time.label" : "High Response Time",
+  "availability.server.error.label" : "Server Malfunction",
   "availability.limited" : "Limited",
   "config.error.body": "Cannot fetch provider configuration for Api Availability widget",
   "config.error.heading": "Configuration Error !",
@@ -7,6 +10,7 @@
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
+  "status.available" : "Status",
   "table.heading.apiname": "API NAME",
   "table.heading.apiversion": "VERSION",
   "table.heading.status": "STATUS",

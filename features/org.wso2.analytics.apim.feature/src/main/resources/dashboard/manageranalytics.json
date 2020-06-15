@@ -8,7 +8,7 @@
     "parentId": "0",
     "content": {
       "properties": {},
-      "readOnly": false,
+      "readOnly": true,
       "pages": [
         {
           "id": "overview",

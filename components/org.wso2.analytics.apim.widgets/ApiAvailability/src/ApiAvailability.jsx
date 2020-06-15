@@ -22,7 +22,11 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
+import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CustomTable from './CustomTable';
@@ -34,7 +38,8 @@ import CustomTable from './CustomTable';
  */
 function ApiAvailability(props) {
     const {
-        themeName, height, availableApiData, inProgress, limit, handleLimitChange, intl,
+        themeName, height, availableApiData, inProgress, limit, handleLimitChange, intl, status,
+        handleStatusChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -85,6 +90,19 @@ function ApiAvailability(props) {
             marginTop: 10,
             width: '10%',
         },
+        formControlSelect: {
+            paddingRight: 10,
+            marginLeft: 10,
+            marginTop: 10,
+            minWidth: 300,
+        },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
+        },
     };
     const tableData = availableApiData.map((data) => {
         return {
@@ -113,6 +131,47 @@ function ApiAvailability(props) {
                 </div>
                 <div style={styles.formWrapper}>
                     <form>
+                        <FormControl style={styles.formControlSelect}>
+                            <InputLabel style={styles.formLabel}>
+                                <FormattedMessage id='status.label' defaultMessage='Status' />
+                            </InputLabel>
+                            <Select
+                                value={status}
+                                onChange={handleStatusChange}
+                                MenuProps={{
+                                    getContentAnchorEl: null,
+                                    anchorOrigin: {
+                                        vertical: 'bottom',
+                                        horizontal: 'left',
+                                    },
+                                }}
+                            >
+                                <MenuItem value='all'>
+                                    <FormattedMessage
+                                        id='availability.all.label'
+                                        defaultMessage='All'
+                                    />
+                                </MenuItem>
+                                <MenuItem value='Available'>
+                                    <FormattedMessage
+                                        id='availability.available.label'
+                                        defaultMessage='Available'
+                                    />
+                                </MenuItem>
+                                <MenuItem value='Response time'>
+                                    <FormattedMessage
+                                        id='availability.response.time.label'
+                                        defaultMessage='High Response Time'
+                                    />
+                                </MenuItem>
+                                <MenuItem value='Server error'>
+                                    <FormattedMessage
+                                        id='availability.server.error.label'
+                                        defaultMessage='Server Malfunction'
+                                    />
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
                         <TextField
                             id='limit-number'
                             label={<FormattedMessage id='limit' defaultMessage='Limit' />}
@@ -179,6 +238,8 @@ ApiAvailability.propTypes = {
     availableApiData: PropTypes.instanceOf(Object).isRequired,
     limit: PropTypes.string.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
+    status: PropTypes.string.isRequired,
+    handleStatusChange: PropTypes.func.isRequired,
     intl: intlShape.isRequired,
 };
 

@@ -33,7 +33,7 @@ import ApiAvailability from './ApiAvailability';
  */
 export default function APIMApiAvailability(props) {
     const {
-        themeName, height, availableApiData, legendData, inProgress,
+        themeName, height, availableApiData, legendData, inProgress, handleOnClick,
     } = props;
     const styles = {
         headingWrapper: {
@@ -133,7 +133,10 @@ export default function APIMApiAvailability(props) {
                                             marginTop: '5%',
                                         }}
                                         >
-                                            <ApiAvailability {...availabilityProps} />
+                                            <ApiAvailability
+                                                {...availabilityProps}
+                                                handleOnClick={(e, v) => handleOnClick(e, v)}
+                                            />
                                             <Typography variant='caption' style={{ color: '#9e9e9e' }}>
                                                 <FormattedMessage
                                                     id='chart.helper.text'
@@ -160,4 +163,5 @@ APIMApiAvailability.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     availableApiData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
+    handleOnClick: PropTypes.func.isRequired,
 };

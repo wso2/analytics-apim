@@ -103,6 +103,7 @@ class APIMApiAvailabilityWidget extends Widget {
 
         this.assembleApiAvailableQuery = this.assembleApiAvailableQuery.bind(this);
         this.handleApiAvailableReceived = this.handleApiAvailableReceived.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     componentWillMount() {
@@ -156,6 +157,13 @@ class APIMApiAvailabilityWidget extends Widget {
     }
 
     /**
+     * Publishing the selected options
+     */
+    publishSelection(message) {
+        super.publish(message);
+    }
+
+    /**
      * Formats the siddhi query - apiavailablequery
      * @memberof APIMApiAvailabilityWidget
      * */
@@ -201,7 +209,7 @@ class APIMApiAvailabilityWidget extends Widget {
             if (availableCount > 0) {
                 legendData.push(legend[0]);
                 dataModified[0] = [legend[0].name, availableCount];
-            }   
+            }
             if (responseHighCount > 0) {
                 legendData.push(legend[1]);
                 dataModified[dataModified.length] = [legend[1].name, responseHighCount];
@@ -214,6 +222,24 @@ class APIMApiAvailabilityWidget extends Widget {
         } else {
             this.setState({ inProgress: false });
         }
+    }
+
+    /**
+     * Handle onClick of a status and drill down
+     * @memberof APIMAlertSummaryByAPIsWidget
+     * */
+    handleOnClick(event, data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown !== undefined && drillDown) {
+                this.publishSelection({ status: data[0] });
+                document.getElementById('apiAvailability').scrollIntoView();
+            }
+        }
+        event.preventDefault();
     }
 
     /**
@@ -257,7 +283,10 @@ class APIMApiAvailabilityWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiAvailability {...apiAvailabilityProps} />
+                            <APIMApiAvailability
+                                {...apiAvailabilityProps}
+                                handleOnClick={this.handleOnClick}
+                            />
                         )
                     }
                 </MuiThemeProvider>

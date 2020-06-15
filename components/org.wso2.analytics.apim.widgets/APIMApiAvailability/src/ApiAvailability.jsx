@@ -31,7 +31,7 @@ import sumBy from 'lodash/sumBy';
  * @returns {ReactElement} Render the Api Availability Chart
  */
 export default function ApiAvailability(props) {
-    const { availableApiData, legendData } = props;
+    const { availableApiData, legendData, handleOnClick } = props;
     return (
         <div>
             <VictoryContainer height={400}>
@@ -72,6 +72,20 @@ export default function ApiAvailability(props) {
                     x={0}
                     y={1}
                     labels={d => `${d[0]} : ${((d[1] / (sumBy(availableApiData, o => o[1]))) * 100).toFixed(2)}%`}
+                    events={[
+                        {
+                            target: 'data',
+                            eventHandlers: {
+                                onClick: (e) => {
+                                    return [{
+                                        mutation: (val) => {
+                                            handleOnClick(e, val.datum);
+                                        },
+                                    }];
+                                },
+                            },
+                        },
+                    ]}
                 />
             </VictoryContainer>
         </div>
@@ -81,4 +95,5 @@ export default function ApiAvailability(props) {
 ApiAvailability.propTypes = {
     availableApiData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
+    handleOnClick: PropTypes.func.isRequired,
 };
