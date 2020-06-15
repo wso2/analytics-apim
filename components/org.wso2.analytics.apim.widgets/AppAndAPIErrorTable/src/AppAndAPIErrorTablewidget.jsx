@@ -37,6 +37,7 @@ import APIViewErrorTable from './APIViewErrorTable';
 import VersionViewErrorTable from './VersionViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
 import ResourceViewErrorTable from './ResourceViewErrorTable';
+import Moment from "../../APIMSubscriptionsAnalytics/src/APIMSubscriptionsAnalyticsWidget";
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -280,7 +281,10 @@ class AppAndAPIErrorTablewidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'listAppsQuery';
+        dataProviderConfigs.configs = dataProviderConfigs.listAppsQueryConfigs;
+        const { config } = dataProviderConfigs.configs;
+        config.queryData.queryName = 'listAppsQuery';
+        dataProviderConfigs.configs.config = config;
         super.getWidgetChannelManager()
             .subscribeWidget(id + '_loadApps', widgetName, this.handleLoadApps, dataProviderConfigs);
     }
@@ -367,7 +371,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             '{{limit}}': selectedLimit,
             '{{selectPhase}}': selectPhase.join(','),
             '{{groupByPhase}}': groupByPhase.join(','),
-            '{{querystring}}': filterPhase.length > 0 ? 'on ' + filterPhase.join(' AND ') : '',
+            '{{querystring}}': filterPhase.length > 0 ? 'AND ' + filterPhase.join(' AND ') : '',
             '{{orderBy}}': '',
         };
         // Use this method to subscribe to the endpoint via web socket connection

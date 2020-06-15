@@ -269,7 +269,10 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'listAppsQuery';
+        dataProviderConfigs.configs = dataProviderConfigs.listAppsQueryConfigs;
+        const { config } = dataProviderConfigs.configs;
+        config.queryData.queryName = 'listAppsQuery';
+        dataProviderConfigs.configs.config = config;
         super.getWidgetChannelManager()
             .subscribeWidget(id + '_loadApps', widgetName, this.handleLoadApps, dataProviderConfigs);
     }
@@ -353,7 +356,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             '{{limit}}': selectedLimit,
             '{{selectPhase}}': selectPhase.join(','),
             '{{groupByPhase}}': 'group by ' + groupByPhase.join(','),
-            '{{querystring}}': filterPhase.length > 0 ? 'on ' + filterPhase.join(' AND ') : '',
+            '{{querystring}}': filterPhase.length > 0 ? 'AND ' + filterPhase.join(' AND ') : '',
             '{{orderBy}}': 'order by AGG_TIMESTAMP asc',
         };
         // Use this method to subscribe to the endpoint via web socket connection
