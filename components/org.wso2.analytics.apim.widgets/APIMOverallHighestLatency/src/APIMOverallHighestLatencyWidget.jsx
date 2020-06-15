@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -84,10 +83,6 @@ class APIMOverallHighestLatencyWidget extends Widget {
         };
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -96,12 +91,6 @@ class APIMOverallHighestLatencyWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            loading: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -229,24 +218,17 @@ class APIMOverallHighestLatencyWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, inProgress, apiName, apiVersion, highestLatency,
+            messages, faultyProviderConf, inProgress, apiName, apiVersion, highestLatency, height,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, loading,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiLatencyProps = {
-            themeName, apiName, apiVersion, highestLatency,
+            themeName, apiName, apiVersion, highestLatency, inProgress, height,
         };
 
-        if (inProgress) {
-            return (
-                <div style={loading}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={language} messages={messages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>

@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { SummaryWidget } from '@analytics-apim/common-lib';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import './styles.css';
 
 /**
@@ -29,7 +30,9 @@ import './styles.css';
  * @returns {ReactElement} Render the APIM Api Usage Count widget body
  */
 export default function APIMApiThrottledSummary(props) {
-    const { themeName, thisDayCount, lastDayCount } = props;
+    const {
+        themeName, thisDayCount, lastDayCount, inProgress, height,
+    } = props;
     const styles = {
         root: {
             backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
@@ -41,7 +44,6 @@ export default function APIMApiThrottledSummary(props) {
             textAlign: 'center',
             fontWeight: 'normal',
             letterSpacing: 1.5,
-            paddingBottom: '10px',
             marginTop: 0,
         },
         headingWrapper: {
@@ -70,6 +72,16 @@ export default function APIMApiThrottledSummary(props) {
             fontSize: 14,
             color: '#b5b5b5',
         },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
+        },
     };
     return (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
@@ -93,22 +105,28 @@ export default function APIMApiThrottledSummary(props) {
                     <FormattedMessage id='widget.subheading' defaultMessage='(Last 24 Hours)' />
                 </p>
             </div>
-            <div style={styles.dataWrapper}>
-                <SummaryWidget
-                    themeName={themeName}
-                    thisWeekCount={thisDayCount}
-                    lastWeekCount={lastDayCount}
-                    negative
-                    tooltip={
-                        (
-                            <FormattedMessage
-                                id='widget.tooltip'
-                                defaultMessage='Increase/Decrease compared to last Day'
-                            />
-                        )
-                    }
-                />
-            </div>
+            { inProgress ? (
+                <div style={styles.loading}>
+                    <CircularProgress style={styles.loadingIcon} />
+                </div>
+            ) : (
+                <div style={styles.dataWrapper}>
+                    <SummaryWidget
+                        themeName={themeName}
+                        thisWeekCount={thisDayCount}
+                        lastWeekCount={lastDayCount}
+                        negative
+                        tooltip={
+                            (
+                                <FormattedMessage
+                                    id='widget.tooltip'
+                                    defaultMessage='Increase/Decrease compared to last Day'
+                                />
+                            )
+                        }
+                    />
+                </div>
+            )}
         </div>
     );
 }
@@ -117,4 +135,6 @@ APIMApiThrottledSummary.propTypes = {
     themeName: PropTypes.string.isRequired,
     thisDayCount: PropTypes.string.isRequired,
     lastDayCount: PropTypes.string.isRequired,
+    height: PropTypes.string.isRequired,
+    inProgress: PropTypes.bool.isRequired,
 };

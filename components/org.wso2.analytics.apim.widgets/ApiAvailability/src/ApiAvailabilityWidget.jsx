@@ -81,6 +81,7 @@ class ApiAvailabilityWidget extends Widget {
             limit: 5,
             localeMessages: null,
             inProgress: true,
+            status: 'all',
         };
 
         this.styles = {
@@ -106,6 +107,8 @@ class ApiAvailabilityWidget extends Widget {
         this.assembleApiAvailableQuery = this.assembleApiAvailableQuery.bind(this);
         this.handleApiAvailableReceived = this.handleApiAvailableReceived.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
+        this.handleStatusChange = this.handleStatusChange.bind(this);
+        this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
     }
 
     componentWillMount() {
@@ -125,7 +128,10 @@ class ApiAvailabilityWidget extends Widget {
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, this.assembleApiAvailableQuery);
+                }, () => {
+                    this.assembleApiAvailableQuery();
+                    super.subscribe(this.handlePublisherParameters);
+                });
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -160,16 +166,32 @@ class ApiAvailabilityWidget extends Widget {
     }
 
     /**
+     * Retrieve params from publishers
+     * @memberof ApiAvailabilityWidget
+     * */
+    handlePublisherParameters(receivedMsg) {
+        const { status } = receivedMsg;
+
+        this.setState({
+            inProgress: true,
+            status: status.split(' ').slice(0, 2).join(' '),
+        }, this.assembleApiAvailableQuery);
+    }
+
+    /**
      * Retrieve the limit from query param
      * @memberof ApiAvailabilityWidget
      * */
     loadLimit() {
-        let { limit } = super.getGlobalState(queryParamKey);
+        let { limit, status } = super.getGlobalState(queryParamKey);
         if (!limit || limit < 0) {
             limit = 5;
         }
-        this.setQueryParam(limit);
-        this.setState({ limit });
+        if (!status || !['all', 'available', 'response time', 'server error'].includes(status)) {
+            status = 'all';
+        }
+        this.setQueryParam(limit, status);
+        this.setState({ limit, status });
     }
 
     /**
@@ -177,7 +199,7 @@ class ApiAvailabilityWidget extends Widget {
      * @memberof ApiAvailabilityWidget
      * */
     assembleApiAvailableQuery() {
-        const { providerConfig, limit } = this.state;
+        const { providerConfig, limit, status } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         if (limit > 0) {
@@ -185,6 +207,7 @@ class ApiAvailabilityWidget extends Widget {
             dataProviderConfigs.configs.config.queryData.queryName = 'apiavailablequery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{limit}}': limit,
+                '{{status}}': status !== 'all' ? 'AND (str:contains(status,\'' + status + '\'))' : '',
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id, widgetName, this.handleApiAvailableReceived, dataProviderConfigs);
@@ -221,8 +244,8 @@ class ApiAvailabilityWidget extends Widget {
      * @param {number} limit - data limitation value
      * @memberof ApiAvailabilityWidget
      * */
-    setQueryParam(limit) {
-        super.setGlobalState(queryParamKey, { limit });
+    setQueryParam(limit, status) {
+        super.setGlobalState(queryParamKey, { limit, status });
     }
 
     /**
@@ -231,14 +254,26 @@ class ApiAvailabilityWidget extends Widget {
      * @memberof ApiAvailabilityWidget
      * */
     handleLimitChange(event) {
+        const { status } = this.state;
         const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(parseInt(limit, 10));
+        this.setQueryParam(parseInt(limit, 10), status);
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleApiAvailableQuery);
         } else {
             this.setState({ limit });
         }
+    }
+
+    /**
+     * Handle status Change
+     * @param {Event} event - listened event
+     * @memberof ApiAvailabilityWidget
+     * */
+    handleStatusChange(event) {
+        const { limit } = this.state;
+        this.setQueryParam(limit, event.target.value);
+        this.setState({ inProgress: true, status: event.target.value }, this.assembleApiAvailableQuery);
     }
 
     /**
@@ -248,7 +283,7 @@ class ApiAvailabilityWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, availableApiData, inProgress, limit,
+            localeMessages, faultyProviderConfig, height, availableApiData, inProgress, limit, status,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -256,38 +291,41 @@ class ApiAvailabilityWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiAvailabilityProps = {
-            themeName, height, availableApiData, inProgress, limit,
+            themeName, height, availableApiData, inProgress, limit, status,
         };
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConfig ? (
-                            <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for '
+                    <div id='apiAvailability'>
+                        {
+                            faultyProviderConfig ? (
+                                <div style={paperWrapper}>
+                                    <Paper elevation={1} style={paper}>
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage
+                                                id='config.error.heading'
+                                                defaultMessage='Configuration Error !'
+                                            />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='config.error.body'
+                                                defaultMessage={'Cannot fetch provider configuration for '
                                             + ' Api Availability widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <ApiAvailability
-                                {...apiAvailabilityProps}
-                                handleLimitChange={this.handleLimitChange}
-                            />
-                        )
-                    }
+                                            />
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <ApiAvailability
+                                    {...apiAvailabilityProps}
+                                    handleLimitChange={this.handleLimitChange}
+                                    handleStatusChange={this.handleStatusChange}
+                                />
+                            )
+                        }
+                    </div>
                 </MuiThemeProvider>
             </IntlProvider>
         );

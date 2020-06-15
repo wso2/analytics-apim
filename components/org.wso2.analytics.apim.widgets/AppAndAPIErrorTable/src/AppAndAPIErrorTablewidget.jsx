@@ -63,28 +63,6 @@ const lightTheme = createMuiTheme({
     },
 });
 
-const styles = {
-    root: {
-        display: 'flex',
-        '& > * + *': {
-            marginLeft: 1 * 2,
-        },
-    },
-    formControl: {
-        minWidth: '120px',
-    },
-    loadingIcon: {
-        margin: 'auto',
-        display: 'block',
-    },
-    loading: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        // height,
-    },
-};
-
 /**
  * Language
  * @type {string}
@@ -137,6 +115,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             mainDiv: {
                 backgroundColor: '#0e1e33',
                 padding: '20px',
+                height: this.props.height,
             },
             h3: {
                 borderBottom: '1px solid #fff',
@@ -165,6 +144,23 @@ class AppAndAPIErrorTablewidget extends Widget {
             content: {
                 marginTop: '20px',
                 textAlign: 'center',
+            },
+            root: {
+                backgroundColor: this.props.muiTheme.name === 'light' ? '#fff' : '#0e1e34',
+                height: '100%',
+            },
+            formControl: {
+                minWidth: '120px',
+            },
+            loadingIcon: {
+                margin: 'auto',
+                display: 'block',
+            },
+            loading: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: this.props.height,
             },
         };
 
@@ -626,7 +622,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                 <MuiThemeProvider
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
-                    <div style={this.styles.mainDiv}>
+                    <div style={this.styles.root}>
                         <div style={this.styles.headingWrapper}>
                             <h3 style={this.styles.h3}>
                                 <FormattedMessage
@@ -634,92 +630,92 @@ class AppAndAPIErrorTablewidget extends Widget {
                                     defaultMessage='Error Summary'
                                 />
                             </h3>
-                            <FormControl component='fieldset'>
-                                <RadioGroup
-                                    row
-                                    aria-label='viewType'
-                                    name='view'
-                                    value={viewType}
-                                    onChange={this.handleViewChange}
-                                >
-                                    <FormControlLabel
-                                        value={ViewTypeEnum.APP}
-                                        control={<Radio />}
-                                        label='Application and API View'
-                                    />
-                                    <FormControlLabel value={ViewTypeEnum.API} control={<Radio />} label='API View' />
-                                </RadioGroup>
-                                <RadioGroup
-                                    row
-                                    aria-label='gender'
-                                    name='gender1'
-                                    value={valueFormatType}
-                                    onChange={this.handleValueFormatTypeChange}
-                                >
-                                    <FormControlLabel value={ValueFormatType.COUNT} control={<Radio />} label='Count' />
-                                    <FormControlLabel
-                                        value={ValueFormatType.PERCENT}
-                                        control={<Radio />}
-                                        label='Percentage'
-                                    />
-                                </RadioGroup>
-                                <RadioGroup
-                                    row
-                                    aria-label='gender'
-                                    name='gender1'
-                                    value={drillDownType}
-                                    onChange={this.handleDrillDownChange}
-                                >
-                                    <FormControlLabel value={DrillDownEnum.API} control={<Radio />} label='API' />
-                                    <FormControlLabel
-                                        value={DrillDownEnum.VERSION}
-                                        control={<Radio />}
-                                        label='Version'
-                                    />
-                                    <FormControlLabel
-                                        value={DrillDownEnum.RESOURCE}
-                                        control={<Radio />}
-                                        label='Resource'
-                                    />
-                                </RadioGroup>
-                            </FormControl>
-                            <CustomFormGroup
+                        </div>
+                        <FormControl component='fieldset'>
+                            <RadioGroup
+                                row
+                                aria-label='viewType'
+                                name='view'
+                                value={viewType}
+                                onChange={this.handleViewChange}
+                            >
+                                <FormControlLabel
+                                    value={ViewTypeEnum.APP}
+                                    control={<Radio />}
+                                    label='Application and API View'
+                                />
+                                <FormControlLabel value={ViewTypeEnum.API} control={<Radio />} label='API View' />
+                            </RadioGroup>
+                            <RadioGroup
+                                row
+                                aria-label='gender'
+                                name='gender1'
+                                value={valueFormatType}
+                                onChange={this.handleValueFormatTypeChange}
+                            >
+                                <FormControlLabel value={ValueFormatType.COUNT} control={<Radio />} label='Count' />
+                                <FormControlLabel
+                                    value={ValueFormatType.PERCENT}
+                                    control={<Radio />}
+                                    label='Percentage'
+                                />
+                            </RadioGroup>
+                            <RadioGroup
+                                row
+                                aria-label='gender'
+                                name='gender1'
+                                value={drillDownType}
+                                onChange={this.handleDrillDownChange}
+                            >
+                                <FormControlLabel value={DrillDownEnum.API} control={<Radio />} label='API' />
+                                <FormControlLabel
+                                    value={DrillDownEnum.VERSION}
+                                    control={<Radio />}
+                                    label='Version'
+                                />
+                                <FormControlLabel
+                                    value={DrillDownEnum.RESOURCE}
+                                    control={<Radio />}
+                                    label='Resource'
+                                />
+                            </RadioGroup>
+                        </FormControl>
+                        <CustomFormGroup
+                            viewType={viewType}
+                            valueFormatType={valueFormatType}
+                            drillDownType={drillDownType}
+
+                            selectedApp={selectedApp}
+                            selectedAPI={selectedAPI}
+                            selectedVersion={selectedVersion}
+                            selectedResource={selectedResource}
+                            selectedLimit={selectedLimit}
+
+                            apiList={apiList}
+                            appList={appList}
+                            versionList={versionList}
+                            operationList={operationList}
+
+                            handleApplicationChange={this.handleApplicationChange}
+                            handleAPIChange={this.handleAPIChange}
+                            handleVersionChange={this.handleVersionChange}
+                            handleOperationChange={this.handleOperationChange}
+                            handleLimitChange={this.handleLimitChange}
+                        />
+                        {!loading ? (
+                            <this.renderDrillDownTable
+                                data={data}
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
                                 drillDownType={drillDownType}
-
-                                selectedApp={selectedApp}
-                                selectedAPI={selectedAPI}
-                                selectedVersion={selectedVersion}
-                                selectedResource={selectedResource}
-                                selectedLimit={selectedLimit}
-
-                                apiList={apiList}
-                                appList={appList}
-                                versionList={versionList}
-                                operationList={operationList}
-
-                                handleApplicationChange={this.handleApplicationChange}
-                                handleAPIChange={this.handleAPIChange}
-                                handleVersionChange={this.handleVersionChange}
-                                handleOperationChange={this.handleOperationChange}
-                                handleLimitChange={this.handleLimitChange}
                             />
-                            {!loading ? (
-                                <this.renderDrillDownTable
-                                    data={data}
-                                    viewType={viewType}
-                                    valueFormatType={valueFormatType}
-                                    drillDownType={drillDownType}
-                                />
+                        )
+                            : (
+                                <div style={this.styles.loading}>
+                                    <CircularProgress style={this.styles.loadingIcon} />
+                                </div>
                             )
-                                : (
-                                    <div style={styles.loading}>
-                                        <CircularProgress style={styles.loadingIcon} />
-                                    </div>
-                                )
-                            }
-                        </div>
+                        }
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>

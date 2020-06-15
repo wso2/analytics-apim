@@ -32,7 +32,7 @@ import Typography from '@material-ui/core/Typography';
  */
 export default function APIMOverallHighestLatency(props) {
     const {
-        themeName, apiName, apiVersion, highestLatency, inProgress,
+        themeName, apiName, apiVersion, highestLatency, inProgress, height
     } = props;
     const styles = {
         root: {
@@ -78,6 +78,16 @@ export default function APIMOverallHighestLatency(props) {
         latencyUnit: {
             fontSize: 20,
             color: green[500],
+        },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
         },
     };
 
@@ -152,5 +162,6 @@ APIMOverallHighestLatency.propTypes = {
     apiName: PropTypes.string.isRequired,
     apiVersion: PropTypes.string.isRequired,
     highestLatency: PropTypes.number.isRequired,
+    height: PropTypes.string.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

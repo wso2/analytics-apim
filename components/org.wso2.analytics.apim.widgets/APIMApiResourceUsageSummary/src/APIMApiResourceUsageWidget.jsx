@@ -294,8 +294,7 @@ class APIMApiResourceUsageWidget extends Widget {
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
-            this.setState({ inProgress: true, limit });
-            this.assembleApiUsageQuery();
+            this.setState({ inProgress: true, limit }, this.assembleApiUsageQuery);
         } else {
             this.setState({ limit });
         }
