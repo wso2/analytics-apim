@@ -24,7 +24,6 @@ import {
 import Axios from 'axios';
 import Moment from 'moment';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
@@ -91,10 +90,6 @@ class APIMApiUsageSummaryWidget extends Widget {
         };
 
         this.styles = {
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
             paper: {
                 padding: '5%',
                 border: '2px solid #4555BB',
@@ -103,12 +98,6 @@ class APIMApiUsageSummaryWidget extends Widget {
                 margin: 'auto',
                 width: '50%',
                 marginTop: '20%',
-            },
-            loading: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
             },
         };
 
@@ -274,22 +263,17 @@ class APIMApiUsageSummaryWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, lastDayCount, thisDayCount, inProgress,
+            messages, faultyProviderConf, lastDayCount, thisDayCount, inProgress, height,
         } = this.state;
         const {
-            loadingIcon, paper, paperWrapper, loading,
+            paper, paperWrapper,
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiCreatedProps = { themeName, lastDayCount, thisDayCount };
+        const apiUsageProps = {
+            themeName, lastDayCount, thisDayCount, inProgress, height,
+        };
 
-        if (inProgress) {
-            return (
-                <div style={loading}>
-                    <CircularProgress style={loadingIcon} />
-                </div>
-            );
-        }
         return (
             <IntlProvider locale={language} messages={messages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
@@ -313,7 +297,7 @@ class APIMApiUsageSummaryWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiUsageSummary {...apiCreatedProps} />
+                            <APIMApiUsageSummary {...apiUsageProps} />
                         )
                     }
                 </MuiThemeProvider>

@@ -80,6 +80,7 @@ class ErrorByAppAndAPIwidget extends Widget {
             appErrors: [],
             totalAppErrors: null,
             totalRequestCounts: 0,
+            loading: true,
 
             data4XX: [],
             total4XX: 0,
@@ -249,7 +250,6 @@ class ErrorByAppAndAPIwidget extends Widget {
         // Use this method to subscribe to the endpoint via web socket connection
         super.getWidgetChannelManager()
             .subscribeWidget(id + '_total', widgetName, this.handleTotalRequestResults, dataProviderConfigs);
-
     }
 
     handleTotalRequestResults(message) {
@@ -270,6 +270,7 @@ class ErrorByAppAndAPIwidget extends Widget {
                     totalFaulty: 0,
                     dataThrottled: [],
                     totalThrottled: 0,
+                    loading: false,
                 },
             );
         }
@@ -547,7 +548,7 @@ class ErrorByAppAndAPIwidget extends Widget {
         if (data.length !== 0) {
             this.setState({ totalThrottled }, this.assembleThrottledDataQuery);
         } else {
-            this.setState({ totalThrottled: 0, dataThrottled: [] });
+            this.setState({ totalThrottled: 0, dataThrottled: [], loading: false });
         }
     }
 
@@ -594,9 +595,9 @@ class ErrorByAppAndAPIwidget extends Widget {
             });
         }
         if (data.length !== 0) {
-            this.setState({ dataThrottled: errorData });
+            this.setState({ dataThrottled: errorData, loading: false });
         } else {
-            this.setState({ dataThrottled: [] });
+            this.setState({ dataThrottled: [], loading: false });
         }
     }
 
@@ -617,6 +618,7 @@ class ErrorByAppAndAPIwidget extends Widget {
         const { localeMessages } = this.state;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const errorProps = { themeName, ...this.state };
 
         return (
             <IntlProvider
@@ -634,12 +636,12 @@ class ErrorByAppAndAPIwidget extends Widget {
                                     defaultMessage='Top Error Summary'
                                 />
                             </h3>
-                            <ErrorsSummaryChart
-                                {...this.state}
-                                handleViewChange={this.handleViewChange}
-                                handleLimitChange={this.handleLimitChange}
-                            />
                         </div>
+                        <ErrorsSummaryChart
+                            {...errorProps}
+                            handleViewChange={this.handleViewChange}
+                            handleLimitChange={this.handleLimitChange}
+                        />
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>

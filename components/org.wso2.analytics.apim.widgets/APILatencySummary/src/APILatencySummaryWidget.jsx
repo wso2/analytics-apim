@@ -54,28 +54,6 @@ const lightTheme = createMuiTheme({
     },
 });
 
-const styles = {
-    root: {
-        display: 'flex',
-        '& > * + *': {
-            marginLeft: 1 * 2,
-        },
-    },
-    formControl: {
-        minWidth: '120px',
-    },
-    loadingIcon: {
-        margin: 'auto',
-        display: 'block',
-    },
-    loading: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        // height,
-    },
-};
-
 /**
  * Language
  * @type {string}
@@ -105,6 +83,7 @@ class APILatencySummaryWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             localeMessages: null,
+            loading: true,
 
             selectedAPI: -1,
             selectedVersion: -1,
@@ -151,6 +130,23 @@ class APILatencySummaryWidget extends Widget {
             content: {
                 marginTop: '20px',
                 textAlign: 'center',
+            },
+            root: {
+                backgroundColor: this.props.muiTheme.name === 'light' ? '#fff' : '#0e1e34',
+                height: '100%',
+            },
+            formControl: {
+                minWidth: '120px',
+            },
+            loadingIcon: {
+                margin: 'auto',
+                display: 'block',
+            },
+            loading: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: this.props.height,
             },
         };
 
@@ -465,7 +461,7 @@ class APILatencySummaryWidget extends Widget {
                 <MuiThemeProvider
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
-                    <div style={this.styles.mainDiv}>
+                    <div style={this.styles.root}>
                         <div style={this.styles.headingWrapper}>
                             <h3 style={this.styles.h3}>
                                 <FormattedMessage
@@ -473,38 +469,38 @@ class APILatencySummaryWidget extends Widget {
                                     defaultMessage='API Latency Summary'
                                 />
                             </h3>
-                            <CustomFormGroup
+                        </div>
+                        <CustomFormGroup
+                            viewType={viewType}
+                            valueFormatType={valueFormatType}
+
+                            selectedAPI={selectedAPI}
+                            selectedVersion={selectedVersion}
+                            selectedResource={selectedResource}
+                            selectedLimit={selectedLimit}
+
+                            apiList={apiList}
+                            versionList={versionList}
+                            operationList={operationList}
+
+                            handleAPIChange={this.handleAPIChange}
+                            handleVersionChange={this.handleVersionChange}
+                            handleOperationChange={this.handleOperationChange}
+                            handleLimitChange={this.handleLimitChange}
+                        />
+                        {!loading ? (
+                            <this.renderDrillDownTable
+                                data={data}
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
-
-                                selectedAPI={selectedAPI}
-                                selectedVersion={selectedVersion}
-                                selectedResource={selectedResource}
-                                selectedLimit={selectedLimit}
-
-                                apiList={apiList}
-                                versionList={versionList}
-                                operationList={operationList}
-
-                                handleAPIChange={this.handleAPIChange}
-                                handleVersionChange={this.handleVersionChange}
-                                handleOperationChange={this.handleOperationChange}
-                                handleLimitChange={this.handleLimitChange}
                             />
-                            {!loading ? (
-                                <this.renderDrillDownTable
-                                    data={data}
-                                    viewType={viewType}
-                                    valueFormatType={valueFormatType}
-                                />
+                        )
+                            : (
+                                <div style={this.styles.loading}>
+                                    <CircularProgress style={this.styles.loadingIcon} />
+                                </div>
                             )
-                                : (
-                                    <div style={styles.loading}>
-                                        <CircularProgress style={styles.loadingIcon} />
-                                    </div>
-                                )
-                            }
-                        </div>
+                        }
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>
