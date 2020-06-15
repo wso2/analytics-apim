@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -32,22 +33,12 @@ import { FormattedMessage } from 'react-intl';
 import { ViewTypeEnum } from '../../AppAndAPIErrorTable/src/Constants';
 import SummaryPieChart from './SummaryPieChart';
 
-const classes = {
-    table: {
-        minWidth: 650,
-        maxWidth: 650,
-        marginBottom: 50,
-        padding: 0,
-    },
-    formControl: {
-        minWidth: 120,
-    },
-};
 
 function ErrorsSummaryChart(props) {
     const {
         totalRequestCounts, data4XX, total4XX, data5XX, total5XX, dataFaulty, totalFaulty,
-        dataThrottled, totalThrottled, handleViewChange, handleLimitChange, viewType, selectedLimit,
+        dataThrottled, totalThrottled, handleViewChange, handleLimitChange, viewType, selectedLimit, themeName, height,
+        loading,
     } = props;
 
     let viewTypeName;
@@ -58,8 +49,34 @@ function ErrorsSummaryChart(props) {
         viewTypeName = 'Applications';
     }
 
+    const classes = {
+        table: {
+            minWidth: 650,
+            maxWidth: 650,
+            marginBottom: 50,
+            height,
+        },
+        formControl: {
+            minWidth: 120,
+        },
+        root: {
+            backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
+            height,
+        },
+        loadingIcon: {
+            margin: 'auto',
+            display: 'block',
+        },
+        loading: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
+        },
+    };
+
     return (
-        <div>
+        <div style={classes.root}>
             <Table className={classes.table}>
                 <TableBody>
                     <TableRow>
@@ -94,40 +111,52 @@ function ErrorsSummaryChart(props) {
                             />
                         </FormControl>
                     </TableRow>
-                    <TableRow>
-                        <TableCell align='right'>
-                            <SummaryPieChart
-                                heading={'4xx errors by ' + viewTypeName}
-                                data={data4XX}
-                                totalErrors={total4XX}
-                                totalRequestCounts={totalRequestCounts}
-                            />
-                        </TableCell>
-                        <TableCell align='right'>
-                            <SummaryPieChart
-                                heading={'5xx errors by ' + viewTypeName}
-                                data={data5XX}
-                                totalErrors={total5XX}
-                                totalRequestCounts={totalRequestCounts}
-                            />
-                        </TableCell>
-                        <TableCell align='right'>
-                            <SummaryPieChart
-                                heading={'Faulty summary by ' + viewTypeName}
-                                data={dataFaulty}
-                                totalErrors={totalFaulty}
-                                totalRequestCounts={totalRequestCounts}
-                            />
-                        </TableCell>
-                        <TableCell align='right'>
-                            <SummaryPieChart
-                                heading={'Throttled summary by ' + viewTypeName}
-                                data={dataThrottled}
-                                totalErrors={totalThrottled}
-                                totalRequestCounts={totalRequestCounts}
-                            />
-                        </TableCell>
-                    </TableRow>
+                    {loading ? (
+                        <TableRow style={{ height: '70%' }}>
+                            <div style={classes.loading}>
+                                <CircularProgress style={classes.loadingIcon} />
+                            </div>
+                        </TableRow>
+                    ) : (
+                        <TableRow style={{ height: '70%' }}>
+                            <TableCell align='right'>
+                                <SummaryPieChart
+                                    heading={'4xx errors by ' + viewTypeName}
+                                    data={data4XX}
+                                    totalErrors={total4XX}
+                                    totalRequestCounts={totalRequestCounts}
+                                    height
+                                />
+                            </TableCell>
+                            <TableCell align='right'>
+                                <SummaryPieChart
+                                    heading={'5xx errors by ' + viewTypeName}
+                                    data={data5XX}
+                                    totalErrors={total5XX}
+                                    totalRequestCounts={totalRequestCounts}
+                                    height
+                                />
+                            </TableCell>
+                            <TableCell align='right'>
+                                <SummaryPieChart
+                                    heading={'Faulty summary by ' + viewTypeName}
+                                    data={dataFaulty}
+                                    totalErrors={totalFaulty}
+                                    totalRequestCounts={totalRequestCounts}
+                                    height
+                                />
+                            </TableCell>
+                            <TableCell align='right'>
+                                <SummaryPieChart
+                                    heading={'Throttled summary by ' + viewTypeName}
+                                    data={dataThrottled}
+                                    totalErrors={totalThrottled}
+                                    totalRequestCounts={totalRequestCounts}
+                                    height
+                                />
+                            </TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
         </div>
@@ -147,6 +176,9 @@ ErrorsSummaryChart.propTypes = {
     handleViewChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     viewType: PropTypes.string.isRequired,
+    themeName: PropTypes.string.isRequired,
+    height: PropTypes.string.isRequired,
+    loading: PropTypes.bool.isRequired,
     selectedLimit: PropTypes.number.isRequired,
 };
 

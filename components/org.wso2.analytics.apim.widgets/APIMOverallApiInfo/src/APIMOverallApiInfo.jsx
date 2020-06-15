@@ -45,7 +45,6 @@ export default function APIMOverallApiInfo(props) {
             textAlign: 'center',
             fontWeight: 'normal',
             letterSpacing: 1.5,
-            paddingBottom: '10px',
             marginTop: 0,
         },
         dataWrapper: {
