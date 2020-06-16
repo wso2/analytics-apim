@@ -279,8 +279,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
      */
     publishSelection(message) {
         super.publish(message);
-    };
-
+    }
 
     /**
      * @inheritDoc
