@@ -48,7 +48,7 @@ class VersionViewErrorTable extends React.Component {
     }
 
     getTableHeadRowsForAPI() {
-        const { viewType, valueFormatType, data } = this.props;
+        const { viewType, valueFormatType, data, handleDrillDownClick, } = this.props;
         return (
             <Table className={styles.table} aria-label='simple table'>
                 <TableHead>
@@ -84,7 +84,7 @@ class VersionViewErrorTable extends React.Component {
                             successCount = ((successCount * 100) / totalRequests).toFixed(2) + ' %';
                         }
                         return (
-                            <TableRow key={row.apiName}>
+                            <TableRow key={apiVersion} onClick={() => handleDrillDownClick(apiVersion)}>
                                 { viewType === ViewTypeEnum.APP ? (
                                     <TableCell>
                                         {appName}

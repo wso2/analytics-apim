@@ -178,6 +178,7 @@ class AppAndAPIErrorTablewidget extends Widget {
         this.handleViewChange = this.handleViewChange.bind(this);
         this.handleDrillDownChange = this.handleDrillDownChange.bind(this);
         this.handleValueFormatTypeChange = this.handleValueFormatTypeChange.bind(this);
+        this.handleDrillDownClick = this.handleDrillDownClick.bind(this);
 
         this.getQueryForAPI = this.getQueryForAPI.bind(this);
         this.getQueryForVersion = this.getQueryForVersion.bind(this);
@@ -202,6 +203,8 @@ class AppAndAPIErrorTablewidget extends Widget {
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
 
         this.renderDrillDownTable = this.renderDrillDownTable.bind(this);
+
+        this.publishSelectedData = this.publishSelectedData.bind(this);
     }
 
     componentWillMount() {
@@ -262,14 +265,41 @@ class AppAndAPIErrorTablewidget extends Widget {
      * @memberof AppAndAPIErrorTablewidget
      * */
     handlePublisherParameters(receivedMsg) {
-        this.setState({
-            // Insert the code to handle publisher data
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-        }, this.loadApis);
-    }
+        const {
+            from, to, granularity, viewType, errorType, selected,
+        } = receivedMsg;
+        const { appList } = this.state;
 
+        if (from && to && granularity) {
+            this.setState({
+                // Insert the code to handle publisher data
+                timeFrom: receivedMsg.from,
+                timeTo: receivedMsg.to,
+                perValue: receivedMsg.granularity,
+            }, this.loadApis);
+        }
+        if (viewType && errorType && selected) {
+            if (viewType === ViewTypeEnum.APP) {
+                const app = appList.find(d => d.NAME === selected.name && d.CREATED_BY === selected.owner);
+                this.setState(
+                    {
+                        drillDownType: DrillDownEnum.API,
+                        viewType,
+                        selectedApp: app.APPLICATION_ID,
+                        selectedAPI: -1,
+                    }, this.loadingDrillDownData,
+                );
+            } else {
+                this.setState(
+                    {
+                        drillDownType: DrillDownEnum.API,
+                        viewType,
+                        selectedAPI: selected,
+                    }, this.loadingDrillDownData,
+                );
+            }
+        }
+    }
 
     // start of filter loading
     loadApps() {
@@ -288,6 +318,7 @@ class AppAndAPIErrorTablewidget extends Widget {
     loadApis() {
         const { viewType } = this.state;
         this.loadingDrillDownData();
+        this.loadApps();
         if (viewType === ViewTypeEnum.APP) {
             this.loadApps();
         }
@@ -328,23 +359,71 @@ class AppAndAPIErrorTablewidget extends Widget {
     }
 
     handleLoadApps(message) {
-        const { data } = message;
-        this.setState({ appList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ appList: newData });
+        } else {
+            this.setState({ appList: [] });
+        }
     }
 
     handleLoadApis(message) {
-        const { data } = message;
-        this.setState({ apiList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ apiList: newData });
+        } else {
+            this.setState({ apiList: [] });
+        }
     }
 
     handleLoadVersions(message) {
-        const { data } = message;
-        this.setState({ versionList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ versionList: newData });
+        } else {
+            this.setState({ versionList: [] });
+        }
     }
 
     handleLoadOperations(message) {
-        const { data } = message;
-        this.setState({ operationList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ operationList: newData });
+        } else {
+            this.setState({ operationList: [] });
+        }
     }
     // end of filter loading
 
@@ -453,10 +532,9 @@ class AppAndAPIErrorTablewidget extends Widget {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
         if (selectedApp !== -1) {
-            const appName = appList[selectedApp][0];
-            const appOwner = appList[selectedApp][1];
-            filterPhase.push('applicationName==\'' + appName + '\'');
-            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
+            const app = appList.find(d => d.APPLICATION_ID === selectedApp);
+            filterPhase.push('applicationName==\'' + app.NAME + '\'');
+            filterPhase.push('applicationOwner==\'' + app.CREATED_BY + '\'');
         }
 
         if (viewType === ViewTypeEnum.APP) {
@@ -485,15 +563,14 @@ class AppAndAPIErrorTablewidget extends Widget {
             return;
         }
         if (selectedVersion !== -1) {
-            const ver = versionList[selectedVersion][1];
-            filterPhase.push('apiVersion==\'' + ver + '\'');
+            const api = versionList.find(i => i.API_ID === selectedVersion);
+            filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
 
         if (selectedApp !== -1) {
-            const appName = appList[selectedApp][0];
-            const appOwner = appList[selectedApp][1];
-            filterPhase.push('applicationName==\'' + appName + '\'');
-            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
+            const app = appList.find(d => d.APPLICATION_ID === selectedApp);
+            filterPhase.push('applicationName==\'' + app.NAME + '\'');
+            filterPhase.push('applicationOwner==\'' + app.CREATED_BY + '\'');
         }
 
         if (viewType === ViewTypeEnum.APP) {
@@ -517,10 +594,9 @@ class AppAndAPIErrorTablewidget extends Widget {
         const filterPhase = [];
 
         if (selectedApp !== -1) {
-            const appName = appList[selectedApp][0];
-            const appOwner = appList[selectedApp][1];
-            filterPhase.push('applicationName==\'' + appName + '\'');
-            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
+            const app = appList.find(d => d.APPLICATION_ID === selectedApp);
+            filterPhase.push('applicationName==\'' + app.NAME + '\'');
+            filterPhase.push('applicationOwner==\'' + app.CREATED_BY + '\'');
         }
         if (selectedAPI !== -1) {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
@@ -528,16 +604,15 @@ class AppAndAPIErrorTablewidget extends Widget {
             return;
         }
         if (selectedVersion > -1) {
-            const ver = versionList[selectedVersion][1];
-            filterPhase.push('apiVersion==\'' + ver + '\'');
+            const api = versionList.find(i => i.API_ID === selectedVersion);
+            filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         } else {
             return;
         }
         if (selectedResource > -1) {
-            const template = operationList[selectedResource][0];
-            const verb = operationList[selectedResource][1];
-            filterPhase.push('apiResourceTemplate==\'' + template + '\'');
-            filterPhase.push('apiMethod==\'' + verb + '\'');
+            const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
+            filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
+            filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
         }
 
         if (viewType === ViewTypeEnum.APP) {
@@ -572,9 +647,7 @@ class AppAndAPIErrorTablewidget extends Widget {
         this.setState({ selectedVersion: event.target.value }, this.loadingDrillDownData);
         const { drillDownType } = this.state;
         if (drillDownType === DrillDownEnum.RESOURCE && event.target.value >= 0) {
-            const { versionList } = this.state;
-            const api = versionList[event.target.value];
-            this.loadOperations(api[0]);
+            this.loadOperations(event.target.value);
         }
     }
 
@@ -598,6 +671,45 @@ class AppAndAPIErrorTablewidget extends Widget {
             return (<ResourceViewErrorTable {...props} />);
         }
         return '';
+    }
+
+    handleDrillDownClick(selected) {
+        const {
+            drillDownType, versionList, operationList, viewType, appList,
+        } = this.state;
+        if (drillDownType === DrillDownEnum.API) {
+            this.setState({ selectedAPI: selected, drillDownType: DrillDownEnum.VERSION }, this.loadingDrillDownData);
+            this.loadVersions(selected);
+        } else if (drillDownType === DrillDownEnum.VERSION) {
+            const api = versionList.find(d => d.API_VERSION === selected);
+            this.setState({
+                selectedVersion: api.API_ID, drillDownType: DrillDownEnum.RESOURCE,
+            }, this.loadingDrillDownData);
+            this.loadOperations(api.API_ID);
+        } else if (drillDownType === DrillDownEnum.RESOURCE) {
+            const { selectedAPI, selectedVersion } = this.state;
+            const { applicationName, applicationOwner, apiResourceTemplate, apiMethod } = selected;
+            const operation = operationList.find(i => i.URL_PATTERN === apiResourceTemplate
+                && i.HTTP_METHOD === apiMethod);
+            if (viewType === ViewTypeEnum.APP) {
+                const app = appList.find(d => d.NAME === applicationName && d.CREATED_BY === applicationOwner);
+                this.publishSelectedData({
+                    apiName: selectedAPI,
+                    apiID: selectedVersion,
+                    operationID: operation.URL_MAPPING_ID,
+                    appID: app.APPLICATION_ID,
+                });
+            } else {
+                this.publishSelectedData({
+                    apiName: selectedAPI, apiID: selectedVersion, operationID: operation.URL_MAPPING_ID,
+                });
+            }
+        }
+        return '';
+    }
+
+    publishSelectedData(message) {
+        super.publish(message);
     }
 
     /**
@@ -708,6 +820,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
                                 drillDownType={drillDownType}
+                                handleDrillDownClick={this.handleDrillDownClick}
                             />
                         )
                             : (

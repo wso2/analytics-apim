@@ -38,7 +38,7 @@ function ErrorsSummaryChart(props) {
     const {
         totalRequestCounts, data4XX, total4XX, data5XX, total5XX, dataFaulty, totalFaulty,
         dataThrottled, totalThrottled, handleViewChange, handleLimitChange, viewType, selectedLimit, themeName, height,
-        loading,
+        loading, publishSelectedData,
     } = props;
 
     let viewTypeName;
@@ -125,6 +125,9 @@ function ErrorsSummaryChart(props) {
                                     data={data4XX}
                                     totalErrors={total4XX}
                                     totalRequestCounts={totalRequestCounts}
+                                    publishSelectedData={publishSelectedData}
+                                    viewType={viewType}
+                                    errorType='4xx'
                                     height
                                 />
                             </TableCell>
@@ -134,6 +137,9 @@ function ErrorsSummaryChart(props) {
                                     data={data5XX}
                                     totalErrors={total5XX}
                                     totalRequestCounts={totalRequestCounts}
+                                    publishSelectedData={publishSelectedData}
+                                    viewType={viewType}
+                                    errorType='5xx'
                                     height
                                 />
                             </TableCell>
@@ -143,6 +149,9 @@ function ErrorsSummaryChart(props) {
                                     data={dataFaulty}
                                     totalErrors={totalFaulty}
                                     totalRequestCounts={totalRequestCounts}
+                                    publishSelectedData={publishSelectedData}
+                                    viewType={viewType}
+                                    errorType='faulty'
                                     height
                                 />
                             </TableCell>
@@ -152,6 +161,9 @@ function ErrorsSummaryChart(props) {
                                     data={dataThrottled}
                                     totalErrors={totalThrottled}
                                     totalRequestCounts={totalRequestCounts}
+                                    publishSelectedData={publishSelectedData}
+                                    viewType={viewType}
+                                    errorType='throttled'
                                     height
                                 />
                             </TableCell>
@@ -175,6 +187,7 @@ ErrorsSummaryChart.propTypes = {
     totalRequestCounts: PropTypes.number.isRequired,
     handleViewChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
+    publishSelectedData: PropTypes.func.isRequired,
     viewType: PropTypes.string.isRequired,
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,

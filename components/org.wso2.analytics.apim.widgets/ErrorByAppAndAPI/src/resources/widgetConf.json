@@ -4,7 +4,8 @@
   "thumbnailURL": "",
   "configs": {
     "pubsub": {
-      "types": ["subscriber"]
+      "types": ["subscriber", "publisher"],
+      "publisherWidgetOutputs": ["viewType", "errorType", "selected"]
     },
     "providerConfig" : {
       "configs": {

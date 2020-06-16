@@ -49,7 +49,6 @@ function CustomFormGroup(props) {
         versionList, operationList, selectedLimit,
         handleApplicationChange, handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
-
     return (
         <div component={Paper}>
             <div>
@@ -62,8 +61,10 @@ function CustomFormGroup(props) {
                         onChange={handleApplicationChange}
                     >
                         <MenuItem value={-1}>All</MenuItem>
-                        {appList.map((row, i) => (
-                            <MenuItem value={i}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
+                        {appList.map(row => (
+                            <MenuItem value={row.APPLICATION_ID}>
+                                {row.NAME + ' ( ' + row.CREATED_BY + ' )'}
+                            </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -78,7 +79,7 @@ function CustomFormGroup(props) {
                     >
                         <MenuItem value={-1}>All</MenuItem>
                         {apiList.map(row => (
-                            <MenuItem value={row}>{row}</MenuItem>
+                            <MenuItem value={row[0]}>{row[0]}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -92,8 +93,8 @@ function CustomFormGroup(props) {
                         disabled={versionList && versionList.length === 0}
                     >
                         <MenuItem value={-1}>All</MenuItem>
-                        {versionList.map((row, i) => (
-                            <MenuItem value={i}>{row[1]}</MenuItem>
+                        {versionList.map(row => (
+                            <MenuItem value={row.API_ID}>{row.API_VERSION}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -107,8 +108,10 @@ function CustomFormGroup(props) {
                         disabled={operationList && operationList.length === 0}
                     >
                         <MenuItem value={-1}>All</MenuItem>
-                        {operationList.map((row, i) => (
-                            <MenuItem value={i}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
+                        {operationList.map(row => (
+                            <MenuItem value={row.URL_MAPPING_ID}>
+                                {row.URL_PATTERN + ' ( ' + row.HTTP_METHOD + ' )'}
+                            </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
