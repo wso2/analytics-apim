@@ -378,9 +378,6 @@ export default function APIMApiResourceTraffic(props) {
                                             }
                                             tickLabelComponent={(
                                                 <VictoryLabel
-                                                    // dx={-5}
-                                                    // dy={-5}
-                                                    // angle={-40}
                                                     style={{
                                                         fill: themeName === 'dark'
                                                             ? '#fff' : '#000',
