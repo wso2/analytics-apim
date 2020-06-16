@@ -41,12 +41,14 @@
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "headerTitle": "API Usage Summary"
+                                "headerTitle": "API Usage Summary",
+                                "drillDown": "traffic"
                               }
                             },
                             "widgetID": "APIMApiUsageSummary"
@@ -76,12 +78,14 @@
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "headerTitle": "API Faults Summary"
+                                "headerTitle": "API Faults Summary",
+                                "drillDown": "error"
                               }
                             },
                             "widgetID": "APIMApiFaultsSummary"
@@ -110,12 +114,14 @@
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "headerTitle": "API Throttle Summary"
+                                "headerTitle": "API Throttle Summary",
+                                "drillDown": "error"
                               }
                             },
                             "widgetID": "APIMApiThrottledSummary"
@@ -144,11 +150,13 @@
                               "pubsub": {
                                 "types": [
                                   "subscriber"
-                                ]
+                                ],
+                                "publishers": []
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": false
+                                "header": false,
+                                "drillDown": "latency"
                               }
                             },
                             "widgetID": "APIMOverallHighestLatency"
@@ -384,7 +392,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 11.808448811409718,
+                  "height": 6.599846216859277,
                   "content": [
                     {
                       "title": "[Date Time Range]",
@@ -426,25 +434,35 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 86.47228660855242,
+                  "height": 46.70007689157036,
                   "content": [
                     {
                       "title": "[APILatencySummaryWidget]",
                       "type": "component",
                       "component": "APILatencySummary",
                       "props": {
-                        "id": "fdab9400-c125-4dc7-8bcb-9a720951742b",
+                        "id": "7b84a011-8363-4985-84fd-3be17c7e3c90",
                         "configs": {
                           "pubsub": {
                             "types": [
-                              "subscriber"
+                              "subscriber",
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "api",
+                              "version",
+                              "resource"
                             ],
                             "publishers": [
                               "e7861496-6c61-4dde-84d1-fb96a6782286"
                             ]
                           },
                           "isGenerated": false,
-                          "options": {}
+                          "options": {
+                            "header": true,
+                            "headerTitle": "API Latency Summary",
+                            "drillDown": true
+                          }
                         },
                         "widgetID": "APILatencySummary"
                       },
@@ -460,7 +478,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 1.7192645800378619,
+                  "height": 46.70007689157036,
                   "content": [
                     {
                       "title": "[APILatencyOverTimeWidget]",
@@ -474,7 +492,8 @@
                               "subscriber"
                             ],
                             "publishers": [
-                              "e7861496-6c61-4dde-84d1-fb96a6782286"
+                              "e7861496-6c61-4dde-84d1-fb96a6782286",
+                              "7b84a011-8363-4985-84fd-3be17c7e3c90"
                             ]
                           },
                           "isGenerated": false,
@@ -493,7 +512,7 @@
               ]
             }
           ],
-          "height": 822
+          "height": 1616
         },
         {
           "id": "traffic",
