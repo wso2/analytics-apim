@@ -236,7 +236,7 @@ class APIMApiAvailabilityWidget extends Widget {
 
             if (drillDown !== undefined && drillDown) {
                 this.publishSelection({ status: data[0] });
-                document.getElementById('apiAvailability').scrollIntoView();
+                document.getElementById('api-availability').scrollIntoView();
             }
         }
         event.preventDefault();

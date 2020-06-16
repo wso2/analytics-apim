@@ -266,7 +266,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
             if (drillDown !== undefined && drillDown) {
                 const { apiname } = data;
                 this.publishSelection({ selectedApi: apiname });
-                document.getElementById('alertSummary').scrollIntoView();
+                document.getElementById('alert-summary').scrollIntoView();
             }
         }
         event.preventDefault();

@@ -417,7 +417,7 @@ class APIMAlertSummaryWidget extends Widget {
                 messages={localeMessages}
             >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    <div id='alertSummary'>
+                    <div id='alert-summary'>
                         {
                             faultyProviderConfig ? (
                                 <div style={paperWrapper}>
@@ -437,7 +437,7 @@ class APIMAlertSummaryWidget extends Widget {
                                         <Typography component='p'>
                                             <FormattedMessage
                                                 id='config.error.body'
-                                                defaultMessage={'Cannot fetch provider configuration for APIM ALert '
+                                                defaultMessage={'Cannot fetch provider configuration for APIM Alert '
                                             + 'Summary Widget'}
                                             />
                                         </Typography>

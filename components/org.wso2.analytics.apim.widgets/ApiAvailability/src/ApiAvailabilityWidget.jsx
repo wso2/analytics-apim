@@ -297,7 +297,7 @@ class ApiAvailabilityWidget extends Widget {
         return (
             <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    <div id='apiAvailability'>
+                    <div id='api-availability'>
                         {
                             faultyProviderConfig ? (
                                 <div style={paperWrapper}>
