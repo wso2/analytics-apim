@@ -421,15 +421,13 @@ class APIMApiResourceTrafficWidget extends Widget {
                 operationSelected.forEach((element) => {
                     const resFormat = element.split(' (');
                     operations.push(resFormat[0]);
+                    legenddata.push(
+                        { name: element },
+                    );
                     method = resFormat[1].replace(')', '');
                     operationTypes.push(method);
                 });
 
-                operations.forEach((element) => {
-                    legenddata.push(
-                        { name: element },
-                    );
-                });
                 this.setState({ legendDataSet: legenddata });
 
                 for (let index = 0; index < operations.length; index++) {
@@ -573,13 +571,11 @@ class APIMApiResourceTrafficWidget extends Widget {
                 operations.push(resFormat[0]);
                 method = resFormat[1].replace(')', '');
                 operationTypes.push(method);
-            });
-
-            operations.forEach((element) => {
                 legenddata.push(
                     { name: element },
                 );
             });
+
             this.setState({
                 operationSelected, inProgress: true, dataarray: [], legendDataSet: legenddata,
             });

@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "moment": "^2.24.0",
-        "react-vizgrammar": "^0.8.6"
+        "@analytics-apim/common-lib": "^1.0.0"
     },
     "scripts": {
         "build": "../node_modules/.bin/webpack -p",

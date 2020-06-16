@@ -20,6 +20,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { VictoryBar, VictoryChart, VictoryAxis } from 'victory';
+import { colorScale } from '@analytics-apim/common-lib';
 
 /**
  * Display API Traffic details
@@ -62,6 +63,7 @@ export default function TrafficChart(props) {
             domainPadding={{ x: 30 }}
             maxDomain={{ x: 5 }}
             height={245}
+            colorScale={colorScale}
         >
             <VictoryBar
                 barWidth={6}
@@ -70,6 +72,7 @@ export default function TrafficChart(props) {
                     duration: 1000,
                     onLoad: { duration: 500 },
                 }}
+                colorScale={colorScale}
                 data={data}
                 events={[
                     {

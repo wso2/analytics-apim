@@ -94,7 +94,7 @@ export default function APIMApiTrafficByVersion(props) {
                     <h3 style={styles.h3}>
                         <FormattedMessage
                             id='widget.heading'
-                            defaultMessage='TOTAL API TRAFFIC'
+                            defaultMessage='API TRAFFIC BY VERSION'
                         />
                     </h3>
                 </div>
@@ -138,7 +138,7 @@ export default function APIMApiTrafficByVersion(props) {
                             </InputLabel>
                             <Select
                                 value={apiSelected}
-                                onChange={setCurrentApi}
+                                onChange={e => setCurrentApi(e.target.value)}
                                 input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
                                 displayEmpty
                                 name='apiSelected'

@@ -33,13 +33,15 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
-import VizG from 'react-vizgrammar';
+import { colorScale } from '@analytics-apim/common-lib';
+import Moment from 'moment';
 
 import {
-    VictoryAxis, VictoryLabel, VictoryArea, VictoryStack,
-    VictoryGroup, VictoryPortal, VictoryScatter, VictoryChart,
+    VictoryAxis, VictoryLabel, VictoryTooltip, VictoryStack,
+    VictoryGroup, VictoryPortal, VictoryLegend, VictoryChart, VictoryBar,
 } from 'victory';
-import Moment from 'moment';
+
+const timeFormat = 'YY/DD/MM, HH:mm:ss';
 
 /**
  * React Component for APIM Resource Traffic widget body
@@ -151,14 +153,15 @@ export default function APIMApiResourceTraffic(props) {
     };
 
     const xValues = {};
-
-    if (legendDataSet.length) {
+    if (legendDataSet.length > 0) {
         dataarray.forEach((datum, i) => {
             datum.forEach((dataUnit) => {
-                const date = dataUnit[0];
-                const label = legendDataSet[i].name;
-                xValues[date] = xValues[date] || {};
-                xValues[date][label] = xValues[date][label] || [...dataUnit];
+                if (legendDataSet[i]) {
+                    const date = dataUnit[0];
+                    const label = legendDataSet[i].name;
+                    xValues[date] = xValues[date] || {};
+                    xValues[date][label] = xValues[date][label] || [...dataUnit];
+                }
             });
         });
     }
@@ -174,20 +177,21 @@ export default function APIMApiResourceTraffic(props) {
             }
         });
     });
+
     const stackGroups = Object.values(data).map((datum) => {
         return (
-            <VictoryGroup
-                data={datum.map(([x, y]) => {
-                    return { x, y };
+            <VictoryBar
+                alignment='start'
+                data={datum.map(([x, success = 0, throttled = 0, faulted = 0]) => {
+                    const y = success + throttled + faulted;
+                    return {
+                        x,
+                        y,
+                        label: `${Moment(x).format(timeFormat)}\n ${y} Hits`,
+                    };
                 })}
-            >
-                <VictoryArea />
-                <VictoryPortal>
-                    <VictoryScatter
-                        style={{ data: { fill: 'black' } }}
-                    />
-                </VictoryPortal>
-            </VictoryGroup>
+                labelComponent={<VictoryTooltip />}
+            />
         );
     });
 
@@ -331,11 +335,19 @@ export default function APIMApiResourceTraffic(props) {
                                 <div style={styles.chart}>
                                     <VictoryChart
                                         scale={{ x: 'time' }}
-                                        domainPadding={{ y: 20 }}
+                                        domainPadding={{ y: 20, x: 20 }}
                                     >
+                                        <VictoryLegend
+                                            standalone={false}
+                                            x={300}
+                                            colorScale={colorScale}
+                                            rowGutter={styles.rowGutter}
+                                            style={styles.victoryLegend}
+                                            data={legendDataSet}
+                                        />
                                         <VictoryLabel
                                             x={30}
-                                            y={65}
+                                            y={30}
                                             style={styles.svgViewBox}
                                             text='HITS'
                                         />
@@ -366,9 +378,9 @@ export default function APIMApiResourceTraffic(props) {
                                             }
                                             tickLabelComponent={(
                                                 <VictoryLabel
-                                                    dx={-5}
-                                                    dy={-5}
-                                                    angle={-40}
+                                                    // dx={-5}
+                                                    // dy={-5}
+                                                    // angle={-40}
                                                     style={{
                                                         fill: themeName === 'dark'
                                                             ? '#fff' : '#000',
@@ -380,7 +392,7 @@ export default function APIMApiResourceTraffic(props) {
                                             )}
                                             axisLabelComponent={(
                                                 <VictoryLabel
-                                                    dy={20}
+                                                    dy={15}
                                                     style={{
                                                         fill: themeName === 'dark' ? '#fff' : '#000',
                                                         fontFamily: 'inherit',
@@ -414,7 +426,7 @@ export default function APIMApiResourceTraffic(props) {
                                                 },
                                             }}
                                         />
-                                        <VictoryStack colorScale='blue'>
+                                        <VictoryStack colorScale={colorScale}>
                                             {stackGroups}
                                         </VictoryStack>
                                     </VictoryChart>
