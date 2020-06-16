@@ -263,11 +263,17 @@
                       "type": "component",
                       "component": "ErrorByAppAndAPI",
                       "props": {
-                        "id": "b16a5f89-1f07-4f24-bcb2-0eb3232c96a1",
+                        "id": "e3fe5621-45ce-4a5b-8af5-3704f53b9c5c",
                         "configs": {
                           "pubsub": {
                             "types": [
-                              "subscriber"
+                              "subscriber",
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "viewType",
+                              "errorType",
+                              "selected"
                             ],
                             "publishers": [
                               "f085d16c-922a-455e-ab32-718ff0ea26e5"
@@ -297,14 +303,19 @@
                       "type": "component",
                       "component": "AppAndAPIErrorTable",
                       "props": {
-                        "id": "531ee75d-35c5-4db8-a250-fc6fa73d56f3",
+                        "id": "28e98af9-e7c8-418d-9257-96f2e17caffb",
                         "configs": {
                           "pubsub": {
                             "types": [
-                              "subscriber"
+                              "subscriber",
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "operation"
                             ],
                             "publishers": [
-                              "f085d16c-922a-455e-ab32-718ff0ea26e5"
+                              "f085d16c-922a-455e-ab32-718ff0ea26e5",
+                              "e3fe5621-45ce-4a5b-8af5-3704f53b9c5c"
                             ]
                           },
                           "isGenerated": false,
@@ -338,7 +349,8 @@
                               "subscriber"
                             ],
                             "publishers": [
-                              "f085d16c-922a-455e-ab32-718ff0ea26e5"
+                              "f085d16c-922a-455e-ab32-718ff0ea26e5",
+                              "28e98af9-e7c8-418d-9257-96f2e17caffb"
                             ]
                           },
                           "isGenerated": false,

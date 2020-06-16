@@ -166,6 +166,8 @@ class ErrorByAppAndAPIwidget extends Widget {
         this.loadAllErrors = this.loadAllErrors.bind(this);
         this.handleViewChange = this.handleViewChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
+
+        this.publishSelectedData = this.publishSelectedData.bind(this);
     }
 
     componentWillMount() {
@@ -179,6 +181,7 @@ class ErrorByAppAndAPIwidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        const queryParam = super.getGlobalState('dtrp');
         // This function retrieves the provider configuration defined in the widgetConf.json file and make
         // it available to be used inside the widget
         super.getWidgetConfiguration(widgetID)
@@ -608,6 +611,11 @@ class ErrorByAppAndAPIwidget extends Widget {
     handleLimitChange(event) {
         this.setState({ selectedLimit: event.target.value }, this.loadAllErrors);
     }
+    //
+
+    publishSelectedData(message) {
+        super.publish(message);
+    }
 
     /**
      * @inheritDoc
@@ -641,6 +649,7 @@ class ErrorByAppAndAPIwidget extends Widget {
                             {...errorProps}
                             handleViewChange={this.handleViewChange}
                             handleLimitChange={this.handleLimitChange}
+                            publishSelectedData={this.publishSelectedData}
                         />
                     </div>
                 </MuiThemeProvider>

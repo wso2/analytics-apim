@@ -49,7 +49,9 @@ class APIViewErrorTable extends React.Component {
     }
 
     getTableHeadRowsForAPI() {
-        const { viewType, valueFormatType, classes, data } = this.props;
+        const {
+            viewType, valueFormatType, classes, data, handleDrillDownClick,
+        } = this.props;
         return (
             <Table className={styles.table} aria-label='simple table'>
                 <TableHead>
@@ -68,7 +70,7 @@ class APIViewErrorTable extends React.Component {
                 <TableBody>
                     {data.map(row => {
                         const {
-                            applicationName, applicationOwner, apiName
+                            applicationName, applicationOwner, apiName,
                         } = row;
                         let {
                             _4xx, _5xx, faultCount, throttledCount, successCount
@@ -85,7 +87,7 @@ class APIViewErrorTable extends React.Component {
                             successCount = ((successCount * 100) / totalRequests).toFixed(2) + ' %';
                         }
                         return (
-                            <TableRow key={row.apiName}>
+                            <TableRow key={apiName} onClick={() => handleDrillDownClick(apiName)}>
                                 { viewType === ViewTypeEnum.APP ? (
                                     <TableCell>
                                         {appName}

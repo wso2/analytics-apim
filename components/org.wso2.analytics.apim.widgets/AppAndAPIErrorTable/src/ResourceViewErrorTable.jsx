@@ -48,7 +48,7 @@ class ResourceViewErrorTable extends React.Component {
     }
 
     getTableHeadRowsForAPI() {
-        const { viewType, valueFormatType, data } = this.props;
+        const { viewType, valueFormatType, data, handleDrillDownClick } = this.props;
         return (
             <Table className={styles.table} aria-label='simple table'>
                 <TableHead>
@@ -85,7 +85,12 @@ class ResourceViewErrorTable extends React.Component {
                             successCount = ((successCount * 100) / totalRequests).toFixed(2) + ' %';
                         }
                         return (
-                            <TableRow key={row.apiName}>
+                            <TableRow
+                                key={{ apiResourceTemplate, apiMethod }}
+                                onClick={() => handleDrillDownClick({
+                                    applicationName, applicationOwner, apiResourceTemplate, apiMethod
+                                })}
+                            >
                                 { viewType === ViewTypeEnum.APP ? (
                                     <TableCell>
                                         {appName}

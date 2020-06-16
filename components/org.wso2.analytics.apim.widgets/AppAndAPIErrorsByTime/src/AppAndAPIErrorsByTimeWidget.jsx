@@ -190,6 +190,8 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
 
         this.renderDrillDownTable = this.renderDrillDownTable.bind(this);
+
+        this.versionLoadCallBack = this.versionLoadCallBack.bind(this);
     }
 
     componentWillMount() {
@@ -244,18 +246,48 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         });
     }
 
+    versionLoadCallBack() {
+        const { versionList, operationList } = this.state;
+        if (versionList.length > 0 && operationList.length > 0) {
+            this.loadingDrillDownData();
+        }
+    }
+
     /**
      * Retrieve params from publisher
      * @param {string} receivedMsg Received data from publisher
      * @memberof AppAndAPIErrorsByTimeWidget
      * */
     handlePublisherParameters(receivedMsg) {
-        this.setState({
-            // Insert the code to handle publisher data
-            timeFrom: receivedMsg.from,
-            timeTo: receivedMsg.to,
-            perValue: receivedMsg.granularity,
-        }, this.loadApis);
+        const {
+            from, to, granularity, apiName, apiID, operationID, appID,
+        } = receivedMsg;
+
+        if (from && to && granularity) {
+            this.setState({
+                // Insert the code to handle publisher data
+                timeFrom: receivedMsg.from,
+                timeTo: receivedMsg.to,
+                perValue: receivedMsg.granularity,
+            }, this.loadApis);
+        }
+
+        if (apiName && apiID && operationID) {
+            const state = {
+                selectedAPI: apiName,
+                selectedVersion: apiID,
+                selectedResource: operationID,
+                versionList: [],
+                operationList: [],
+            };
+            if (appID) {
+                state.selectedApp = appID;
+            }
+            this.setState(state, () => {
+                this.loadVersions(apiName);
+                this.loadOperations(apiID);
+            });
+        }
     }
 
 
@@ -313,8 +345,20 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     }
 
     handleLoadApps(message) {
-        const { data } = message;
-        this.setState({ appList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ appList: newData });
+        } else {
+            this.setState({ appList: [] });
+        }
     }
 
     handleLoadApis(message) {
@@ -323,13 +367,37 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     }
 
     handleLoadVersions(message) {
-        const { data } = message;
-        this.setState({ versionList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ versionList: newData }, this.versionLoadCallBack);
+        } else {
+            this.setState({ versionList: [] });
+        }
     }
 
     handleLoadOperations(message) {
-        const { data } = message;
-        this.setState({ operationList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ operationList: newData }, this.versionLoadCallBack);
+        } else {
+            this.setState({ operationList: [] });
+        }
     }
     // end of filter loading
 
@@ -401,21 +469,19 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         if (selectedAPI !== -1) {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
-        if (selectedVersion !== -1) {
-            const ver = versionList[selectedVersion][1];
-            filterPhase.push('apiVersion==\'' + ver + '\'');
+        if (versionList.length > 0 && selectedVersion !== -1) {
+            const api = versionList.find(i => i.API_ID === selectedVersion);
+            filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
-        if (selectedResource > -1) {
-            const template = operationList[selectedResource][0];
-            const verb = operationList[selectedResource][1];
-            filterPhase.push('apiResourceTemplate==\'' + template + '\'');
-            filterPhase.push('apiMethod==\'' + verb + '\'');
+        if (operationList.length > 0 && selectedResource > -1) {
+            const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
+            filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
+            filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
         }
         if (selectedApp !== -1) {
-            const appName = appList[selectedApp][0];
-            const appOwner = appList[selectedApp][1];
-            filterPhase.push('applicationName==\'' + appName + '\'');
-            filterPhase.push('applicationOwner==\'' + appOwner + '\'');
+            const app = appList.find(d => d.APPLICATION_ID === selectedApp);
+            filterPhase.push('applicationName==\'' + app.NAME + '\'');
+            filterPhase.push('applicationOwner==\'' + app.CREATED_BY + '\'');
         }
 
         selectPhase.push('AGG_TIMESTAMP', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
@@ -434,15 +500,23 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     }
 
     handleAPIChange(event) {
-        this.setState({ selectedAPI: event.target.value }, this.loadingDrillDownData);
+        this.setState({
+            selectedAPI: event.target.value,
+            versionList: [],
+            operationList: [],
+            selectedVersion: -1,
+            selectedResource: -1,
+        }, this.loadingDrillDownData);
         this.loadVersions(event.target.value);
     }
 
     handleVersionChange(event) {
-        this.setState({ selectedVersion: event.target.value }, this.loadingDrillDownData);
-        const { versionList } = this.state;
-        const api = versionList[event.target.value];
-        this.loadOperations(api[0]);
+        this.setState({
+            selectedVersion: event.target.value,
+            operationList: [],
+            selectedResource: -1,
+        }, this.loadingDrillDownData);
+        this.loadOperations(event.target.value);
     }
 
     handleOperationChange(event) {

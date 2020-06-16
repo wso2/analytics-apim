@@ -75,7 +75,7 @@ const colorScale = ['tomato', 'orange', 'gold', 'cyan', 'navy'];
 
 export default function SummaryPieChart(props) {
     const {
-        data, totalErrors, totalRequestCounts, heading,
+        data, totalErrors, totalRequestCounts, heading, publishSelectedData, viewType, errorType,
     } = props;
     const apiErrorsPerCent = totalRequestCounts === 0 ? '0.00' : ((totalErrors * 100) / totalRequestCounts).toFixed(2);
 
@@ -103,6 +103,24 @@ export default function SummaryPieChart(props) {
                                 // height={250}
                                 style={classes.pieChart}
                                 labelComponent={<CustomLabel totalRequestCounts={totalRequestCounts} />}
+                                events={[{
+                                    target: 'data',
+                                    eventHandlers: {
+                                        onClick: (e, clickedProps) => {
+                                            let selected;
+                                            if (viewType === 'app') {
+                                                const vals = clickedProps.datum.x.split(' ');
+                                                selected = { name: vals[0], owner: vals[2] };
+                                            } else {
+                                                selected = clickedProps.datum.x;
+                                            }
+                                            const message = {
+                                                viewType, errorType, selected,
+                                            };
+                                            publishSelectedData(message);
+                                        },
+                                    },
+                                }]}
                             />
                         </TableCell>
                     </TableRow>
@@ -141,4 +159,7 @@ SummaryPieChart.propTypes = {
     totalErrors: PropTypes.number.isRequired,
     totalRequestCounts: PropTypes.number.isRequired,
     heading: PropTypes.string.isRequired,
+    viewType: PropTypes.string.isRequired,
+    errorType: PropTypes.string.isRequired,
+    publishSelectedData: PropTypes.func.isRequired,
 };
