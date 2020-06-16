@@ -55,13 +55,15 @@ export default function TrafficChart(props) {
             },
         },
     };
-
     return (
         <VictoryChart
             theme={chartTheme}
             domainPadding={{ x: 30 }}
             maxDomain={{ x: 5 }}
-            height={245}
+            padding={{
+                top: 0, bottom: 20, right: 20, left: 20,
+            }}
+            height={150}
         >
             <VictoryBar
                 barWidth={6}
@@ -71,7 +73,7 @@ export default function TrafficChart(props) {
                     onLoad: { duration: 500 },
                 }}
                 data={data}
-                x='API'
+                x='apiVersion'
                 y='Traffic'
             />
             <VictoryAxis

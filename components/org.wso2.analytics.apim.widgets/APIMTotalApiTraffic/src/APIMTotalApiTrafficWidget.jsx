@@ -183,7 +183,6 @@ class APIMTotalApiTrafficWidget extends Widget {
     handlePublisherParameters(receivedMsg) {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
-
         this.setState({
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
@@ -229,12 +228,12 @@ class APIMTotalApiTrafficWidget extends Widget {
         if (data) {
             const usageData = [];
 
-            data.forEach((dataUnit) => {
+            data.forEach(([api, version, success = 0, throttled = 0, faulted = 0]) => {
                 usageData.push({
-                    API: dataUnit[0] + '(' + dataUnit[1] + ')',
-                    Traffic: dataUnit[2],
-                    apiId: dataUnit[0],
-                    apiVersion: dataUnit[1],
+                    API: `${api}(${version})`,
+                    Traffic: success + throttled + faulted,
+                    apiId: api,
+                    apiVersion: version,
                 });
             });
             this.setState({ usageData, inProgress: false });
@@ -250,13 +249,14 @@ class APIMTotalApiTrafficWidget extends Widget {
         const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
         if (limit) {
-            this.setState({ inProgress: false, limit });
+            this.setState({ inProgress: false });
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleApiUsageQuery();
-        } else {
-            this.setState({ limit });
         }
-        this.updateQueryParamsInURL();
+        this.setState({ limit, inProgress: true }, () => {
+            this.updateQueryParamsInURL();
+            this.assembleApiUsageQuery();
+        });
     }
 
     /**

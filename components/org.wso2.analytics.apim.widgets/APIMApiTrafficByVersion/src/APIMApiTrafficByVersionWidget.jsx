@@ -276,12 +276,12 @@ class APIMApiTrafficByVersionWidget extends Widget {
         const { data } = message;
         if (data) {
             const usageData = [];
-            data.forEach((dataUnit) => {
+            data.forEach(([api, version, success = 0, throttled = 0, faulted = 0]) => {
                 usageData.push({
-                    API: dataUnit[1],
-                    Traffic: dataUnit[2],
-                    apiId: dataUnit[0],
-                    apiVersion: dataUnit[1],
+                    API: api,
+                    Traffic: success + throttled + faulted,
+                    apiId: api,
+                    apiVersion: version,
                 });
             });
             this.setState({ usageData, inProgress: false });
@@ -297,13 +297,13 @@ class APIMApiTrafficByVersionWidget extends Widget {
         const { id } = this.props;
         const limit = (event.target.value).replace('-', '').split('.')[0];
         if (limit) {
-            this.setState({ inProgress: false, limit });
+            this.setState({ inProgress: false });
             super.getWidgetChannelManager().unsubscribeWidget(id);
-            this.assembleApiUsageQuery();
-        } else {
-            this.setState({ limit });
         }
-        this.updateQueryParamsInURL();
+        this.setState({ limit }, () => {
+            this.updateQueryParamsInURL();
+            this.assembleApiUsageQuery();
+        });
     }
 
     /**
@@ -313,8 +313,11 @@ class APIMApiTrafficByVersionWidget extends Widget {
     setCurrentApi(apiSelected) {
         this.setState({
             apiSelected,
+            inProgress: true,
+        }, () => {
+            this.updateQueryParamsInURL();
+            this.assembleApiUsageQuery();
         });
-        this.updateQueryParamsInURL();
     }
 
     /**
