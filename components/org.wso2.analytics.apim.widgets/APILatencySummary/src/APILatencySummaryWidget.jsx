@@ -77,7 +77,6 @@ class APILatencySummaryWidget extends Widget {
      * @memberof APILatencySummaryWidget
      */
     constructor(props) {
-        console.log('constructor')
         super(props);
         this.state = {
             width: this.props.width,
@@ -181,6 +180,7 @@ class APILatencySummaryWidget extends Widget {
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
 
         this.renderDrillDownTable = this.renderDrillDownTable.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     componentWillMount() {
@@ -241,11 +241,14 @@ class APILatencySummaryWidget extends Widget {
      * @memberof APILatencySummaryWidget
      * */
     handlePublisherParameters(receivedMsg) {
+        const queryParam = super.getGlobalState('dtrp');
+        const { sync } = queryParam;
         this.setState({
             // Insert the code to handle publisher data
             timeFrom: receivedMsg.from,
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
+            loading: !sync,
         }, this.loadApis);
     }
 
@@ -338,7 +341,6 @@ class APILatencySummaryWidget extends Widget {
      * @memberof APILatencySummaryWidget
      * */
     handleQueryResults(message) {
-        console.log(message);
         // Insert the code to handle the data received through query
         const { data, metadata: { names } } = message;
         const newData = data.map((row) => {
@@ -440,6 +442,37 @@ class APILatencySummaryWidget extends Widget {
     }
 
     /**
+     * Handle onClick and drill down
+     * @memberof APILatencySummaryWidget
+     * */
+    handleOnClick(event, data) {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown !== undefined && drillDown) {
+                const {
+                    apiName, apiVersion, apiResourceTemplate, apiMethod,
+                } = data;
+                this.publishSelection({
+                    api: apiName, version: apiVersion, resource: apiResourceTemplate + ' (' + apiMethod + ')',
+                });
+                document.getElementById('latency-over-time').scrollIntoView();
+            }
+        }
+        event.preventDefault();
+    }
+
+    /**
+     * Publishing the selection
+     * @memberof APILatencySummaryWidget
+     */
+    publishSelection(message) {
+        super.publish(message);
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APILatencySummaryWidget
      * @memberof APILatencySummaryWidget
@@ -493,6 +526,7 @@ class APILatencySummaryWidget extends Widget {
                                 data={data}
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
+                                handleOnClick={this.handleOnClick}
                             />
                         )
                             : (

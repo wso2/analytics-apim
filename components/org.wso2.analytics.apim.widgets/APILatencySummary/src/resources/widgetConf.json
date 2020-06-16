@@ -4,7 +4,8 @@
   "thumbnailURL": "",
   "configs": {
     "pubsub": {
-      "types": ["subscriber"]
+      "types": ["subscriber", "publisher"],
+      "publisherWidgetOutputs": ["api", "version", "resource"]
     },
     "providerConfig" : {
       "configs": {
@@ -22,6 +23,38 @@
       }
     },
     "options": [
+      {
+        "id": "header",
+        "title": "Header",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      },
+      {
+        "id": "headerTitle",
+        "title": "Widget Title",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "API Latency Summary"
+      },
+      {
+        "id": "drillDown",
+        "title": "Drill Down to API Latency Over Time",
+        "type": {
+          "name": "BOOLEAN",
+          "possibleValues": [
+            true,
+            false
+          ]
+        },
+        "defaultValue": true
+      }
     ]
   }
 }

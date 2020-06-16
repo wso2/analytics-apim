@@ -61,7 +61,7 @@ function CustomFormGroup(props) {
                         value={selectedAPI}
                         onChange={handleAPIChange}
                     >
-                        <MenuItem value={-1}>All</MenuItem>
+                        <MenuItem value='all'>All</MenuItem>
                         {apiList.map(row => (
                             <MenuItem value={row}>{row}</MenuItem>
                         ))}
@@ -76,9 +76,9 @@ function CustomFormGroup(props) {
                         onChange={handleVersionChange}
                         disabled={versionList && versionList.length === 0}
                     >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {versionList.map((row, i) => (
-                            <MenuItem value={i}>{row[1]}</MenuItem>
+                        <MenuItem value='all'>All</MenuItem>
+                        {versionList.map(row => (
+                            <MenuItem value={row[1]}>{row[1]}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -91,9 +91,9 @@ function CustomFormGroup(props) {
                         onChange={handleOperationChange}
                         disabled={operationList && operationList.length === 0}
                     >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {operationList.map((row, i) => (
-                            <MenuItem value={i}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
+                        <MenuItem value='all'>All</MenuItem>
+                        {operationList.map(row => (
+                            <MenuItem value={row[0] + ' (' + row[1] + ')'}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
