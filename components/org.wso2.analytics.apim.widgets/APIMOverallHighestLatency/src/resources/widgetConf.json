@@ -30,6 +30,14 @@
           ]
         },
         "defaultValue": false
+      },
+      {
+        "id": "drillDown",
+        "title": "Latency Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "latency"
       }
     ]
   }

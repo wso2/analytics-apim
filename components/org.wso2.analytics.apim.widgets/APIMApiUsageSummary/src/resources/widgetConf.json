@@ -38,6 +38,14 @@
           "name": "TEXT"
         },
         "defaultValue": "API Usage Summary"
+      },
+      {
+        "id": "drillDown",
+        "title": "Traffic Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "traffic"
       }
     ]
   }

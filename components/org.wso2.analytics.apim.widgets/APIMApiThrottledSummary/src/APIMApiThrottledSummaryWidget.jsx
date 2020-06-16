@@ -110,6 +110,7 @@ class APIMApiThrottledSummaryWidget extends Widget {
         }
         this.assembleUsageCountQuery = this.assembleUsageCountQuery.bind(this);
         this.handleUsageCountReceived = this.handleUsageCountReceived.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     /**
@@ -258,6 +259,26 @@ class APIMApiThrottledSummaryWidget extends Widget {
     }
 
     /**
+     * Handle onClick and drill down
+     * @memberof APIMApiThrottledSummaryWidget
+     * */
+    handleOnClick() {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1day"}}';
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Api Created widget
      * @memberof APIMApiThrottledSummaryWidget
@@ -298,7 +319,10 @@ class APIMApiThrottledSummaryWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiThrottledSummary {...apiThrottleProps} />
+                            <APIMApiThrottledSummary
+                                {...apiThrottleProps}
+                                handleOnClick={this.handleOnClick}
+                            />
                         )
                     }
                 </MuiThemeProvider>

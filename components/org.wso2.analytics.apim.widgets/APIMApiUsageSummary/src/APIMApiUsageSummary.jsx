@@ -31,7 +31,7 @@ import './styles.css';
  */
 export default function APIMApiUsageSummary(props) {
     const {
-        themeName, thisDayCount, lastDayCount, inProgress, height,
+        themeName, thisDayCount, lastDayCount, inProgress, height, handleOnClick,
     } = props;
     const styles = {
         root: {
@@ -88,15 +88,7 @@ export default function APIMApiUsageSummary(props) {
         <div
             style={styles.root}
             className={`overview-wrapper ${themeName}`}
-            // onClick={() => {
-            // comment out untile it is fixed
-            //     window.location.href = window.contextPath
-            //         + '/dashboards/apimpublisher/usage-summary#{"dtrp":{"tr":"7days","g":"day","sync":false},'
-            //         + '"apibackendusage":{"apiCreatedBy":"All","limit":5},"apiUsers":{"apiCreatedBy":"All",
-            //         "apiSelected":"All","apiVersion":"All","limit":5},"apiversionusage":{"apiCreatedBy":"All","limit":5},
-            //         "apiresourceusage":{"apiCreatedBy":"All","limit":5},"apilastaccess":{"apiCreatedBy":"All","limit":5},
-            //         "overallapiusage":{"apiCreatedBy":"all","limit":5}}';
-            // }}
+            onClick={() => handleOnClick()}
         >
             <div style={styles.headingWrapper}>
                 <h3
@@ -140,4 +132,5 @@ APIMApiUsageSummary.propTypes = {
     lastDayCount: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClick: PropTypes.func.isRequired,
 };
