@@ -502,6 +502,7 @@ class APILatencySummaryWidget extends Widget {
                                     viewType={viewType}
                                     valueFormatType={valueFormatType}
                                     handleOnClick={this.handleOnClick}
+                                    themeName={themeName}
                                 />
                             )
                                 : (

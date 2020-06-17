@@ -565,34 +565,36 @@ class APILatencyOverTimeWidget extends Widget {
                                 valueFormatType={valueFormatType}
                                 drillDownType={drillDownType}
 
-                            selectedAPI={selectedAPI}
-                            selectedVersion={selectedVersion}
-                            selectedResource={selectedResource}
-                            selectedLimit={selectedLimit}
+                                selectedAPI={selectedAPI}
+                                selectedVersion={selectedVersion}
+                                selectedResource={selectedResource}
+                                selectedLimit={selectedLimit}
 
-                            apiList={apiList}
-                            versionList={versionList}
-                            operationList={operationList}
+                                apiList={apiList}
+                                versionList={versionList}
+                                operationList={operationList}
 
-                            handleAPIChange={this.handleAPIChange}
-                            handleVersionChange={this.handleVersionChange}
-                            handleOperationChange={this.handleOperationChange}
-                            handleLimitChange={this.handleLimitChange}
-                        />
-                        {!loading ? (
-                            <this.renderDrillDownTable
-                                data={data}
-                                viewType={viewType}
-                                valueFormatType={valueFormatType}
-                                drillDownType={drillDownType}
+                                handleAPIChange={this.handleAPIChange}
+                                handleVersionChange={this.handleVersionChange}
+                                handleOperationChange={this.handleOperationChange}
+                                handleLimitChange={this.handleLimitChange}
                             />
-                        )
-                            : (
-                                <div style={this.styles.loading}>
-                                    <CircularProgress style={this.styles.loadingIcon} />
-                                </div>
+                            {!loading ? (
+                                <this.renderDrillDownTable
+                                    data={data}
+                                    viewType={viewType}
+                                    valueFormatType={valueFormatType}
+                                    drillDownType={drillDownType}
+                                    themeName={themeName}
+                                />
                             )
-                        }
+                                : (
+                                    <div style={this.styles.loading}>
+                                        <CircularProgress style={this.styles.loadingIcon} />
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>

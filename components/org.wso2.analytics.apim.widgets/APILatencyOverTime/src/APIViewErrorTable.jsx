@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -78,6 +79,19 @@ class APIViewErrorTable extends React.Component {
         this.handleRequestMedSelectChange = this.handleRequestMedSelectChange.bind(this);
         this.handleResponseMedSelectChange = this.handleResponseMedSelectChange.bind(this);
         this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
+
+        this.styles = {
+            dataWrapper: {
+                height: '75%',
+                paddingTop: 35,
+                margin: 'auto',
+                width: '90%',
+            },
+            paper: {
+                background: this.props.themeName === 'dark' ? '#152638' : '#E8E8E8',
+                padding: '4%',
+            },
+        };
     }
 
     getPieChartForAPI() {
@@ -311,12 +325,26 @@ class APIViewErrorTable extends React.Component {
         const { data } = this.props;
         if (data.length === 0) {
             return (
-                <Typography variant='h5' component='h3'>
-                    <FormattedMessage
-                        id='nodata.error.heading'
-                        defaultMessage='No Data Available !'
-                    />
-                </Typography>
+                <div style={this.styles.dataWrapper}>
+                    <Paper
+                        elevation={1}
+                        style={this.styles.paper}
+                    >
+                        <Typography variant='h5' component='h3'>
+                            <FormattedMessage
+                                id='nodata.error.heading'
+                                defaultMessage='No Data Available !'
+                            />
+                        </Typography>
+                        <Typography component='p'>
+                            <FormattedMessage
+                                id='nodata.error.body'
+                                defaultMessage={'No matching data available for the '
+                                + 'selected options.'}
+                            />
+                        </Typography>
+                    </Paper>
+                </div>
             );
         }
         return (
@@ -357,6 +385,7 @@ class APIViewErrorTable extends React.Component {
 
 APIViewErrorTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
+    themeName: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(APIViewErrorTable);
