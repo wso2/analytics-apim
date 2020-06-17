@@ -34,12 +34,30 @@ const styles = theme => ({
         maxWidth: 650,
         marginBottom: 50,
     },
-    formControl: {
-        margin: theme.spacing.unit,
-        minWidth: 120,
-    },
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
+    },
+    formWrapper: {
+        paddingTop: 10,
+    },
+    formControl: {
+        marginLeft: 10,
+        marginTop: 10,
+        width: '10%',
+    },
+    formControlSelect: {
+        paddingRight: 10,
+        marginLeft: 10,
+        marginTop: 10,
+        minWidth: 200,
+        width: '15%',
+    },
+    formLabel: {
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        width: '100%',
+        display: 'block',
+        overflow: 'hidden',
     },
 });
 
@@ -52,9 +70,9 @@ function CustomFormGroup(props) {
 
     return (
         <div component={Paper}>
-            <div>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>API Name</InputLabel>
+            <div className={classes.formWrapper}>
+                <FormControl className={classes.formControlSelect}>
+                    <InputLabel id='demo-simple-select-label' className={classes.formLabel}>API Name</InputLabel>
                     <Select
                         labelId='demo-simple-select-label'
                         id='demo-simple-select'
@@ -67,8 +85,8 @@ function CustomFormGroup(props) {
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>API Version</InputLabel>
+                <FormControl className={classes.formControlSelect}>
+                    <InputLabel id='demo-simple-select-label' className={classes.formLabel}>API Version</InputLabel>
                     <Select
                         labelId='demo-simple-select-label'
                         id='demo-simple-select'
@@ -82,8 +100,8 @@ function CustomFormGroup(props) {
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
+                <FormControl className={classes.formControlSelect}>
+                    <InputLabel id='demo-simple-select-label' className={classes.formLabel}>Operation</InputLabel>
                     <Select
                         labelId='demo-simple-select-label'
                         id='demo-simple-select'
@@ -100,7 +118,7 @@ function CustomFormGroup(props) {
                 <FormControl className={classes.formControl}>
                     <TextField
                         id='limit-number'
-                        label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                        label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                         value={selectedLimit}
                         onChange={handleLimitChange}
                         type='number'

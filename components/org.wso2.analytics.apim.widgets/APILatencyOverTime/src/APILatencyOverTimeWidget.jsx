@@ -39,9 +39,6 @@ const darkTheme = createMuiTheme({
     typography: {
         useNextVariants: true,
     },
-    formControl: {
-        minWidth: 120,
-    },
 });
 
 const lightTheme = createMuiTheme({
@@ -50,9 +47,6 @@ const lightTheme = createMuiTheme({
     },
     typography: {
         useNextVariants: true,
-    },
-    formControl: {
-        minWidth: 120,
     },
 });
 
@@ -110,41 +104,21 @@ class APILatencyOverTimeWidget extends Widget {
         };
 
         this.styles = {
-            // Insert styles Here
-            h3: {
-                borderBottom: '1px solid #fff',
-                paddingBottom: '10px',
+            heading: {
                 margin: 'auto',
-                marginTop: 0,
-                textAlign: 'left',
+                textAlign: 'center',
                 fontWeight: 'normal',
                 letterSpacing: 1.5,
+                paddingBottom: '10px',
+                marginTop: 0,
             },
             headingWrapper: {
                 margin: 'auto',
                 width: '95%',
             },
-            dataWrapper: {
-                margin: 'auto',
-                width: '95%',
-            },
-            title: {
-                textAlign: 'center',
-                marginTop: '100px',
-                marginBottom: '50px',
-                fontWeight: 'bold',
-                letterSpacing: 1.5,
-            },
-            content: {
-                marginTop: '20px',
-                textAlign: 'center',
-            },
             root: {
                 backgroundColor: this.props.muiTheme.name === 'light' ? '#fff' : '#0e1e34',
                 padding: '20px',
-            },
-            formControl: {
-                minWidth: '120px',
             },
             loadingIcon: {
                 margin: 'auto',
@@ -155,6 +129,10 @@ class APILatencyOverTimeWidget extends Widget {
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: this.props.height,
+            },
+            contentWrapper: {
+                margin: '10px',
+                padding: '20px',
             },
         };
 
@@ -573,49 +551,48 @@ class APILatencyOverTimeWidget extends Widget {
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
                     <div style={this.styles.root} id='latency-over-time'>
-                        <div style={this.styles.headingWrapper}>
-                            <h3 style={this.styles.h3}>
-                                <FormattedMessage
-                                    id='widget.heading.latency.overtime'
-                                    defaultMessage='API Latency Over Time'
-                                />
-                            </h3>
-                        </div>
-                        <div style={this.styles.dataWrapper}>
+                        <div style={this.styles.contentWrapper}>
+                            <div style={this.styles.headingWrapper}>
+                                <h3 style={this.styles.heading}>
+                                    <FormattedMessage
+                                        id='widget.heading.latency.overtime'
+                                        defaultMessage='API Latency Over Time'
+                                    />
+                                </h3>
+                            </div>
                             <CustomFormGroup
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
                                 drillDownType={drillDownType}
 
-                                selectedAPI={selectedAPI}
-                                selectedVersion={selectedVersion}
-                                selectedResource={selectedResource}
-                                selectedLimit={selectedLimit}
+                            selectedAPI={selectedAPI}
+                            selectedVersion={selectedVersion}
+                            selectedResource={selectedResource}
+                            selectedLimit={selectedLimit}
 
-                                apiList={apiList}
-                                versionList={versionList}
-                                operationList={operationList}
+                            apiList={apiList}
+                            versionList={versionList}
+                            operationList={operationList}
 
-                                handleAPIChange={this.handleAPIChange}
-                                handleVersionChange={this.handleVersionChange}
-                                handleOperationChange={this.handleOperationChange}
-                                handleLimitChange={this.handleLimitChange}
+                            handleAPIChange={this.handleAPIChange}
+                            handleVersionChange={this.handleVersionChange}
+                            handleOperationChange={this.handleOperationChange}
+                            handleLimitChange={this.handleLimitChange}
+                        />
+                        {!loading ? (
+                            <this.renderDrillDownTable
+                                data={data}
+                                viewType={viewType}
+                                valueFormatType={valueFormatType}
+                                drillDownType={drillDownType}
                             />
-                            {!loading ? (
-                                <this.renderDrillDownTable
-                                    data={data}
-                                    viewType={viewType}
-                                    valueFormatType={valueFormatType}
-                                    drillDownType={drillDownType}
-                                />
+                        )
+                            : (
+                                <div style={this.styles.loading}>
+                                    <CircularProgress style={this.styles.loadingIcon} />
+                                </div>
                             )
-                                : (
-                                    <div style={this.styles.loading}>
-                                        <CircularProgress style={this.styles.loadingIcon} />
-                                    </div>
-                                )
-                            }
-                        </div>
+                        }
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>
