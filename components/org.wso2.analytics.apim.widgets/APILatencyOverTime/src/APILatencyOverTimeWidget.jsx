@@ -56,6 +56,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'latencyOverTime';
+
 const CALLBACK_API = '-api';
 const CALLBACK_VERSION = '-version';
 const CALLBACK_OPERATION = '-operation';
@@ -197,6 +199,7 @@ class APILatencyOverTimeWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadQueryParams();
         // This function retrieves the provider configuration defined in the widgetConf.json
         // file and make it available to be used inside the widget
         super.getWidgetConfiguration(widgetID)
@@ -224,7 +227,7 @@ class APILatencyOverTimeWidget extends Widget {
     /**
       * Load locale file
       * @param {string} locale Locale name
-      * @memberofAPILatencyOverTimeWidget
+      * @memberof APILatencyOverTimeWidget
       * @returns {string}
       */
     loadLocale(locale = 'en') {
@@ -242,6 +245,44 @@ class APILatencyOverTimeWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APILatencyOverTimeWidget
+     * */
+    loadQueryParams() {
+        let {
+            selectedAPI, selectedVersion, selectedResource, limit: selectedLimit,
+        } = super.getGlobalState(queryParamKey);
+        if (!selectedLimit || selectedLimit < 0) {
+            selectedLimit = 5;
+            super.setGlobalState(queryParamKey, {
+                selectedAPI, selectedVersion, selectedResource, selectedLimit,
+            });
+        }
+        if (!selectedAPI) {
+            selectedAPI = 'all';
+        }
+        if (!selectedVersion) {
+            selectedVersion = 'all';
+        }
+        if (!selectedResource) {
+            selectedResource = 'all';
+        }
+        this.setState({
+            selectedAPI, selectedVersion, selectedResource, selectedLimit,
+        });
+    }
+
+    /**
+     * Updates query param values
+     * @memberof APILatencyOverTimeWidget
+     * */
+    setQueryParam(selectedAPI, selectedVersion, selectedResource, limit) {
+        super.setGlobalState(queryParamKey, {
+            selectedAPI, selectedVersion, selectedResource, limit,
+        });
+    }
+
+    /**
      * Retrieve params from publisher
      * @param {string} receivedMsg Received data from publisher
      * @memberofAPILatencyOverTimeWidget
@@ -252,6 +293,7 @@ class APILatencyOverTimeWidget extends Widget {
         const {
             from, to, granularity, api, version, resource,
         } = receivedMsg;
+        const { selectedLimit } = this.state;
 
         // Insert the code to handle publisher data
         if (from && api) {
@@ -264,6 +306,9 @@ class APILatencyOverTimeWidget extends Widget {
                 selectedResource: resource,
                 loading: true,
             }, this.loadApis);
+            super.setGlobalState(queryParamKey, {
+                selectedAPI: api, selectedVersion: version, selectedResource: resource, selectedLimit,
+            });
         } else if (from) {
             this.setState({
                 timeFrom: from,
@@ -278,14 +323,20 @@ class APILatencyOverTimeWidget extends Widget {
                 selectedResource: resource,
                 loading: true,
             }, this.loadApis);
+            super.setGlobalState(queryParamKey, {
+                selectedAPI: api, selectedVersion: version, selectedResource: resource, selectedLimit,
+            });
         }
     }
 
     // start of filter loading
     loadApis() {
-        const { providerConfig } = this.state;
+        const {
+            providerConfig, selectedAPI, selectedVersion, selectedResource,
+        } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
+        this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'listApisQuery';
         super.getWidgetChannelManager()
@@ -304,8 +355,6 @@ class APILatencyOverTimeWidget extends Widget {
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id + CALLBACK_VERSION, widgetName, this.handleLoadVersions, dataProviderConfigs);
-        } else {
-            this.loadingDrillDownData();
         }
     }
 
@@ -322,8 +371,6 @@ class APILatencyOverTimeWidget extends Widget {
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id + CALLBACK_OPERATION, widgetName, this.handleLoadOperations, dataProviderConfigs);
-        } else {
-            this.loadingDrillDownData();
         }
     }
 
@@ -365,7 +412,7 @@ class APILatencyOverTimeWidget extends Widget {
             this.setState({
                 operationList: data,
                 selectedResource: availableResource ? selectedResource : 'all',
-            }, this.loadingDrillDownData);
+            });
         } else {
             this.setState({ operationList: data, loading: false });
         }
@@ -423,10 +470,7 @@ class APILatencyOverTimeWidget extends Widget {
 
 
     // start table data type query constructor
-    loadingDrillDownData() {
-        const {
-            selectedAPI, selectedVersion, selectedResource,
-        } = this.state;
+    loadingDrillDownData(selectedAPI, selectedVersion, selectedResource) {
         const selectPhase = [];
         const groupByPhase = [];
         const filterPhase = [];
@@ -460,6 +504,9 @@ class APILatencyOverTimeWidget extends Widget {
 
     // start of handle filter change
     handleAPIChange(event) {
+        const { selectedLimit } = this.state;
+        this.loadingDrillDownData(event.target.value, 'all', 'all');
+        this.setQueryParam(event.target.value, 'all', 'all', selectedLimit);
         this.setState({
             selectedAPI: event.target.value,
             selectedVersion: 'all',
@@ -472,6 +519,9 @@ class APILatencyOverTimeWidget extends Widget {
     }
 
     handleVersionChange(event) {
+        const { selectedAPI, selectedLimit } = this.state;
+        this.loadingDrillDownData(selectedAPI, event.target.value, 'all');
+        this.setQueryParam(selectedAPI, event.target.value, 'all', selectedLimit);
         this.setState({
             selectedVersion: event.target.value,
             selectedResource: 'all',
@@ -481,11 +531,17 @@ class APILatencyOverTimeWidget extends Widget {
     }
 
     handleOperationChange(event) {
-        this.setState({ selectedResource: event.target.value, loading: true }, this.loadingDrillDownData);
+        const { selectedAPI, selectedVersion, selectedLimit } = this.state;
+        this.loadingDrillDownData(selectedAPI, selectedVersion, event.target.value);
+        this.setQueryParam(selectedAPI, selectedVersion, event.target.value, selectedLimit);
+        this.setState({ selectedResource: event.target.value, loading: true });
     }
 
     handleLimitChange(event) {
-        this.setState({ selectedLimit: event.target.value, loading: true }, this.loadingDrillDownData);
+        const { selectedAPI, selectedVersion, selectedResource } = this.state;
+        this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
+        this.setQueryParam(selectedAPI, selectedVersion, selectedResource, event.target.value);
+        this.setState({ selectedLimit: event.target.value, loading: true });
     }
 
     // end of handle filter change
