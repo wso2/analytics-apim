@@ -72,10 +72,10 @@ function CustomFormGroup(props) {
         <div component={Paper}>
             <div className={classes.formWrapper}>
                 <FormControl className={classes.formControlSelect}>
-                    <InputLabel id='demo-simple-select-label' className={classes.formLabel}>API Name</InputLabel>
+                    <InputLabel className={classes.formLabel}>
+                        <FormattedMessage id='label.apiname' defaultMessage='API Name' />
+                    </InputLabel>
                     <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
                         value={selectedAPI}
                         onChange={handleAPIChange}
                     >
@@ -86,10 +86,10 @@ function CustomFormGroup(props) {
                     </Select>
                 </FormControl>
                 <FormControl className={classes.formControlSelect}>
-                    <InputLabel id='demo-simple-select-label' className={classes.formLabel}>API Version</InputLabel>
+                    <InputLabel className={classes.formLabel}>
+                        <FormattedMessage id='label.apiversion' defaultMessage='API Version' />
+                    </InputLabel>
                     <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
                         value={selectedVersion}
                         onChange={handleVersionChange}
                         disabled={versionList && versionList.length === 0}
@@ -101,10 +101,10 @@ function CustomFormGroup(props) {
                     </Select>
                 </FormControl>
                 <FormControl className={classes.formControlSelect}>
-                    <InputLabel id='demo-simple-select-label' className={classes.formLabel}>Operation</InputLabel>
+                    <InputLabel className={classes.formLabel}>
+                        <FormattedMessage id='label.operation' defaultMessage='Operation' />
+                    </InputLabel>
                     <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
                         value={selectedResource}
                         onChange={handleOperationChange}
                         disabled={operationList && operationList.length === 0}

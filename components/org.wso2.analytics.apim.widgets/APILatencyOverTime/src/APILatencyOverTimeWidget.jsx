@@ -211,7 +211,7 @@ class APILatencyOverTimeWidget extends Widget {
     loadLocale(locale = 'en') {
         return new Promise((resolve, reject) => {
             Axios
-                .get(`${window.contextPath}/public/extensions/widgets/AppAndAPIErrorsByTime/locales/${locale}.json`)
+                .get(`${window.contextPath}/public/extensions/widgets/APILatencyOverTime/locales/${locale}.json`)
                 .then((response) => {
                     // eslint-disable-next-line global-require, import/no-dynamic-require
                     addLocaleData(require(`react-intl/locale-data/${locale}`));
@@ -555,7 +555,7 @@ class APILatencyOverTimeWidget extends Widget {
                             <div style={this.styles.headingWrapper}>
                                 <h3 style={this.styles.heading}>
                                     <FormattedMessage
-                                        id='widget.heading.latency.overtime'
+                                        id='widget.heading'
                                         defaultMessage='API Latency Over Time'
                                     />
                                 </h3>
