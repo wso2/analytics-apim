@@ -5,7 +5,7 @@
   "configs": {
     "pubsub": {
       "types": ["subscriber", "publisher"],
-      "publisherWidgetOutputs": ["operation"]
+      "publisherWidgetOutputs": ["apiName", "apiID", "operationID", "appID"]
     },
     "providerConfig" : {
       "configs": {

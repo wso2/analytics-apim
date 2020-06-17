@@ -133,6 +133,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             dataWrapper: {
                 margin: 'auto',
                 height: '500px',
+                width: '95%',
             },
             title: {
                 textAlign: 'center',
@@ -743,92 +744,94 @@ class AppAndAPIErrorTablewidget extends Widget {
                                 />
                             </h3>
                         </div>
-                        <FormControl component='fieldset'>
-                            <RadioGroup
-                                row
-                                aria-label='viewType'
-                                name='view'
-                                value={viewType}
-                                onChange={this.handleViewChange}
-                            >
-                                <FormControlLabel
-                                    value={ViewTypeEnum.APP}
-                                    control={<Radio />}
-                                    label='Application and API View'
-                                />
-                                <FormControlLabel value={ViewTypeEnum.API} control={<Radio />} label='API View' />
-                            </RadioGroup>
-                            <RadioGroup
-                                row
-                                aria-label='gender'
-                                name='gender1'
-                                value={valueFormatType}
-                                onChange={this.handleValueFormatTypeChange}
-                            >
-                                <FormControlLabel value={ValueFormatType.COUNT} control={<Radio />} label='Count' />
-                                <FormControlLabel
-                                    value={ValueFormatType.PERCENT}
-                                    control={<Radio />}
-                                    label='Percentage'
-                                />
-                            </RadioGroup>
-                            <RadioGroup
-                                row
-                                aria-label='gender'
-                                name='gender1'
-                                value={drillDownType}
-                                onChange={this.handleDrillDownChange}
-                            >
-                                <FormControlLabel value={DrillDownEnum.API} control={<Radio />} label='API' />
-                                <FormControlLabel
-                                    value={DrillDownEnum.VERSION}
-                                    control={<Radio />}
-                                    label='Version'
-                                />
-                                <FormControlLabel
-                                    value={DrillDownEnum.RESOURCE}
-                                    control={<Radio />}
-                                    label='Resource'
-                                />
-                            </RadioGroup>
-                        </FormControl>
-                        <CustomFormGroup
-                            viewType={viewType}
-                            valueFormatType={valueFormatType}
-                            drillDownType={drillDownType}
-
-                            selectedApp={selectedApp}
-                            selectedAPI={selectedAPI}
-                            selectedVersion={selectedVersion}
-                            selectedResource={selectedResource}
-                            selectedLimit={selectedLimit}
-
-                            apiList={apiList}
-                            appList={appList}
-                            versionList={versionList}
-                            operationList={operationList}
-
-                            handleApplicationChange={this.handleApplicationChange}
-                            handleAPIChange={this.handleAPIChange}
-                            handleVersionChange={this.handleVersionChange}
-                            handleOperationChange={this.handleOperationChange}
-                            handleLimitChange={this.handleLimitChange}
-                        />
-                        {!loading ? (
-                            <this.renderDrillDownTable
-                                data={data}
+                        <div style={this.styles.dataWrapper}>
+                            <FormControl component='fieldset'>
+                                <RadioGroup
+                                    row
+                                    aria-label='viewType'
+                                    name='view'
+                                    value={viewType}
+                                    onChange={this.handleViewChange}
+                                >
+                                    <FormControlLabel
+                                        value={ViewTypeEnum.APP}
+                                        control={<Radio />}
+                                        label='Application and API View'
+                                    />
+                                    <FormControlLabel value={ViewTypeEnum.API} control={<Radio />} label='API View' />
+                                </RadioGroup>
+                                <RadioGroup
+                                    row
+                                    aria-label='gender'
+                                    name='gender1'
+                                    value={valueFormatType}
+                                    onChange={this.handleValueFormatTypeChange}
+                                >
+                                    <FormControlLabel value={ValueFormatType.COUNT} control={<Radio />} label='Count' />
+                                    <FormControlLabel
+                                        value={ValueFormatType.PERCENT}
+                                        control={<Radio />}
+                                        label='Percentage'
+                                    />
+                                </RadioGroup>
+                                <RadioGroup
+                                    row
+                                    aria-label='gender'
+                                    name='gender1'
+                                    value={drillDownType}
+                                    onChange={this.handleDrillDownChange}
+                                >
+                                    <FormControlLabel value={DrillDownEnum.API} control={<Radio />} label='API' />
+                                    <FormControlLabel
+                                        value={DrillDownEnum.VERSION}
+                                        control={<Radio />}
+                                        label='Version'
+                                    />
+                                    <FormControlLabel
+                                        value={DrillDownEnum.RESOURCE}
+                                        control={<Radio />}
+                                        label='Resource'
+                                    />
+                                </RadioGroup>
+                            </FormControl>
+                            <CustomFormGroup
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
                                 drillDownType={drillDownType}
-                                handleDrillDownClick={this.handleDrillDownClick}
+
+                                selectedApp={selectedApp}
+                                selectedAPI={selectedAPI}
+                                selectedVersion={selectedVersion}
+                                selectedResource={selectedResource}
+                                selectedLimit={selectedLimit}
+
+                                apiList={apiList}
+                                appList={appList}
+                                versionList={versionList}
+                                operationList={operationList}
+
+                                handleApplicationChange={this.handleApplicationChange}
+                                handleAPIChange={this.handleAPIChange}
+                                handleVersionChange={this.handleVersionChange}
+                                handleOperationChange={this.handleOperationChange}
+                                handleLimitChange={this.handleLimitChange}
                             />
-                        )
-                            : (
-                                <div style={this.styles.loading}>
-                                    <CircularProgress style={this.styles.loadingIcon} />
-                                </div>
+                            {!loading ? (
+                                <this.renderDrillDownTable
+                                    data={data}
+                                    viewType={viewType}
+                                    valueFormatType={valueFormatType}
+                                    drillDownType={drillDownType}
+                                    handleDrillDownClick={this.handleDrillDownClick}
+                                />
                             )
-                        }
+                                : (
+                                    <div style={this.styles.loading}>
+                                        <CircularProgress style={this.styles.loadingIcon} />
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>

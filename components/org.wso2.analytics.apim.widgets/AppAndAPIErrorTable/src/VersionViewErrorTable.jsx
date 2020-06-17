@@ -39,6 +39,9 @@ const styles = theme => ({
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
     },
+    hover: {
+        cursor: 'pointer',
+    },
 });
 
 class VersionViewErrorTable extends React.Component {
@@ -48,7 +51,7 @@ class VersionViewErrorTable extends React.Component {
     }
 
     getTableHeadRowsForAPI() {
-        const { viewType, valueFormatType, data, handleDrillDownClick, } = this.props;
+        const { viewType, valueFormatType, data, handleDrillDownClick, classes, } = this.props;
         return (
             <Table className={styles.table} aria-label='simple table'>
                 <TableHead>
@@ -84,7 +87,12 @@ class VersionViewErrorTable extends React.Component {
                             successCount = ((successCount * 100) / totalRequests).toFixed(2) + ' %';
                         }
                         return (
-                            <TableRow key={apiVersion} onClick={() => handleDrillDownClick(apiVersion)}>
+                            <TableRow
+                                hover
+                                key={apiVersion}
+                                onClick={() => handleDrillDownClick(apiVersion)}
+                                className={classes.hover}
+                            >
                                 { viewType === ViewTypeEnum.APP ? (
                                     <TableCell>
                                         {appName}

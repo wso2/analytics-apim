@@ -104,10 +104,6 @@ class APILatencyOverTimeWidget extends Widget {
 
         this.styles = {
             // Insert styles Here
-            mainDiv: {
-                backgroundColor: '#0e1e33',
-                padding: '20px',
-            },
             h3: {
                 borderBottom: '1px solid #fff',
                 paddingBottom: '10px',
@@ -123,7 +119,7 @@ class APILatencyOverTimeWidget extends Widget {
             },
             dataWrapper: {
                 margin: 'auto',
-                height: '500px',
+                width: '95%',
             },
             title: {
                 textAlign: 'center',
@@ -138,7 +134,7 @@ class APILatencyOverTimeWidget extends Widget {
             },
             root: {
                 backgroundColor: this.props.muiTheme.name === 'light' ? '#fff' : '#0e1e34',
-                height: '100%',
+                padding: '20px',
             },
             formControl: {
                 minWidth: '120px',
@@ -461,39 +457,41 @@ class APILatencyOverTimeWidget extends Widget {
                                 />
                             </h3>
                         </div>
-                        <CustomFormGroup
-                            viewType={viewType}
-                            valueFormatType={valueFormatType}
-                            drillDownType={drillDownType}
-
-                            selectedAPI={selectedAPI}
-                            selectedVersion={selectedVersion}
-                            selectedResource={selectedResource}
-                            selectedLimit={selectedLimit}
-
-                            apiList={apiList}
-                            versionList={versionList}
-                            operationList={operationList}
-
-                            handleAPIChange={this.handleAPIChange}
-                            handleVersionChange={this.handleVersionChange}
-                            handleOperationChange={this.handleOperationChange}
-                            handleLimitChange={this.handleLimitChange}
-                        />
-                        {!loading ? (
-                            <this.renderDrillDownTable
-                                data={data}
+                        <div style={this.styles.dataWrapper}>
+                            <CustomFormGroup
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
                                 drillDownType={drillDownType}
+
+                                selectedAPI={selectedAPI}
+                                selectedVersion={selectedVersion}
+                                selectedResource={selectedResource}
+                                selectedLimit={selectedLimit}
+
+                                apiList={apiList}
+                                versionList={versionList}
+                                operationList={operationList}
+
+                                handleAPIChange={this.handleAPIChange}
+                                handleVersionChange={this.handleVersionChange}
+                                handleOperationChange={this.handleOperationChange}
+                                handleLimitChange={this.handleLimitChange}
                             />
-                        )
-                            : (
-                                <div style={this.styles.loading}>
-                                    <CircularProgress style={this.styles.loadingIcon} />
-                                </div>
+                            {!loading ? (
+                                <this.renderDrillDownTable
+                                    data={data}
+                                    viewType={viewType}
+                                    valueFormatType={valueFormatType}
+                                    drillDownType={drillDownType}
+                                />
                             )
-                        }
+                                : (
+                                    <div style={this.styles.loading}>
+                                        <CircularProgress style={this.styles.loadingIcon} />
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>
