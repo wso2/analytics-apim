@@ -1,5 +1,6 @@
 {
   "availability.all.label" : "All",
+  "availability.available" : "Available",
   "availability.available.label" : "Available",
   "availability.response.time.label" : "High Response Time",
   "availability.server.error.label" : "Server Malfunction",
