@@ -171,7 +171,9 @@ class ApiAvailabilityWidget extends Widget {
      * */
     handlePublisherParameters(receivedMsg) {
         const { status } = receivedMsg;
+        const { limit } = this.state;
 
+        this.setQueryParam(limit, status);
         this.setState({
             inProgress: true,
             status: status.split(' ').slice(0, 2).join(' '),
@@ -187,7 +189,7 @@ class ApiAvailabilityWidget extends Widget {
         if (!limit || limit < 0) {
             limit = 5;
         }
-        if (!status || !['all', 'available', 'response time', 'server error'].includes(status)) {
+        if (!status || !['all', 'available', 'response time', 'server error'].includes(status.toLowerCase())) {
             status = 'all';
         }
         this.setQueryParam(limit, status);
