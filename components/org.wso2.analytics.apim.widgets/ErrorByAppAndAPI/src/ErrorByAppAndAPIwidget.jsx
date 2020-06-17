@@ -274,6 +274,10 @@ class ErrorByAppAndAPIwidget extends Widget {
                     dataThrottled: [],
                     totalThrottled: 0,
                     loading: false,
+                    loading4xx: false,
+                    loading5xx: false,
+                    loadingFaulty: false,
+                    loadingThrottled: false,
                 },
             );
         }
@@ -311,9 +315,9 @@ class ErrorByAppAndAPIwidget extends Widget {
         const { data } = message;
         const total4XX = data[0];
         if (data.length !== 0) {
-            this.setState({ total4XX }, this.assemble4xxDataQuery);
+            this.setState({ total4XX, loading4xx: true }, this.assemble4xxDataQuery);
         } else {
-            this.setState({ total4XX: 0, data4XX: [] });
+            this.setState({ total4XX: 0, data4XX: [], loading4xx: false });
         }
     }
 
@@ -360,9 +364,9 @@ class ErrorByAppAndAPIwidget extends Widget {
             });
         }
         if (data.length !== 0) {
-            this.setState({ data4XX: errorData });
+            this.setState({ data4XX: errorData, loading4xx: false });
         } else {
-            this.setState({ data4XX: [] });
+            this.setState({ data4XX: [], loading4xx: false });
         }
     }
 
@@ -390,9 +394,9 @@ class ErrorByAppAndAPIwidget extends Widget {
         const { data } = message;
         const total5XX = data[0];
         if (data.length !== 0) {
-            this.setState({ total5XX }, this.assemble5xxDataQuery);
+            this.setState({ total5XX, loading5xx: true }, this.assemble5xxDataQuery);
         } else {
-            this.setState({ total5XX: 0, data5XX: [] });
+            this.setState({ total5XX: 0, data5XX: [], loading5xx: false });
         }
     }
 
@@ -439,9 +443,9 @@ class ErrorByAppAndAPIwidget extends Widget {
             });
         }
         if (data.length !== 0) {
-            this.setState({ data5XX: errorData });
+            this.setState({ data5XX: errorData, loading5xx: false });
         } else {
-            this.setState({ data5XX: [] });
+            this.setState({ data5XX: [], loading5xx: false });
         }
     }
 
@@ -469,9 +473,9 @@ class ErrorByAppAndAPIwidget extends Widget {
         const { data } = message;
         const totalFaulty = data[0];
         if (data.length !== 0) {
-            this.setState({ totalFaulty }, this.assembleFaultyDataQuery);
+            this.setState({ totalFaulty, loadingFaulty: true }, this.assembleFaultyDataQuery);
         } else {
-            this.setState({ totalFaulty: 0, dataFaulty: [] });
+            this.setState({ totalFaulty: 0, dataFaulty: [], loadingFaulty: false });
         }
     }
 
@@ -518,9 +522,9 @@ class ErrorByAppAndAPIwidget extends Widget {
             });
         }
         if (data.length !== 0) {
-            this.setState({ dataFaulty: errorData });
+            this.setState({ dataFaulty: errorData, loadingFaulty: false });
         } else {
-            this.setState({ dataFaulty: [] });
+            this.setState({ dataFaulty: [], loadingFaulty: false });
         }
     }
 
@@ -549,9 +553,9 @@ class ErrorByAppAndAPIwidget extends Widget {
         const { data } = message;
         const totalThrottled = data[0];
         if (data.length !== 0) {
-            this.setState({ totalThrottled }, this.assembleThrottledDataQuery);
+            this.setState({ totalThrottled, loadingThrottled: true }, this.assembleThrottledDataQuery);
         } else {
-            this.setState({ totalThrottled: 0, dataThrottled: [], loading: false });
+            this.setState({ totalThrottled: 0, dataThrottled: [], loadingThrottled: false });
         }
     }
 
@@ -598,9 +602,9 @@ class ErrorByAppAndAPIwidget extends Widget {
             });
         }
         if (data.length !== 0) {
-            this.setState({ dataThrottled: errorData, loading: false });
+            this.setState({ dataThrottled: errorData, loadingThrottled: false });
         } else {
-            this.setState({ dataThrottled: [], loading: false });
+            this.setState({ dataThrottled: [], loadingThrottled: false });
         }
     }
 
@@ -644,13 +648,13 @@ class ErrorByAppAndAPIwidget extends Widget {
                                     defaultMessage='Top Error Summary'
                                 />
                             </h3>
+                            <ErrorsSummaryChart
+                                {...errorProps}
+                                handleViewChange={this.handleViewChange}
+                                handleLimitChange={this.handleLimitChange}
+                                publishSelectedData={this.publishSelectedData}
+                            />
                         </div>
-                        <ErrorsSummaryChart
-                            {...errorProps}
-                            handleViewChange={this.handleViewChange}
-                            handleLimitChange={this.handleLimitChange}
-                            publishSelectedData={this.publishSelectedData}
-                        />
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>

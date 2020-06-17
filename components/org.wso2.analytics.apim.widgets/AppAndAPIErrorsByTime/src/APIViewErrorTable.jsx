@@ -80,6 +80,7 @@ class APIViewErrorTable extends React.Component {
             successSelected, _4xxSelected, _5xxSelected, faultySelected, throttleSelected,
         } = this.state;
         const barRatio = 0.2;
+        const barWidth = 15;
         return (
             <div>
                 <VictoryChart
@@ -124,7 +125,7 @@ class APIViewErrorTable extends React.Component {
                     <VictoryStack>
                         { successSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[0] } }}
+                                style={{ data: { fill: colorScale[0], width: barWidth } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({
@@ -140,7 +141,7 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { _4xxSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[1] } }}
+                                style={{ data: { fill: colorScale[1], width: barWidth } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({
@@ -156,7 +157,7 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { _5xxSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[2] } }}
+                                style={{ data: { fill: colorScale[2], width: barWidth } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({
@@ -172,7 +173,7 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { faultySelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[3] } }}
+                                style={{ data: { fill: colorScale[3], width: barWidth } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({
@@ -188,7 +189,7 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { throttleSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[4] } }}
+                                style={{ data: { fill: colorScale[4], width: barWidth } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({

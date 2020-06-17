@@ -39,6 +39,9 @@ const styles = theme => ({
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
     },
+    hover: {
+        cursor: 'pointer',
+    },
 });
 
 class ResourceViewErrorTable extends React.Component {
@@ -48,7 +51,7 @@ class ResourceViewErrorTable extends React.Component {
     }
 
     getTableHeadRowsForAPI() {
-        const { viewType, valueFormatType, data, handleDrillDownClick } = this.props;
+        const { viewType, valueFormatType, data, handleDrillDownClick, classes } = this.props;
         return (
             <Table className={styles.table} aria-label='simple table'>
                 <TableHead>
@@ -86,10 +89,12 @@ class ResourceViewErrorTable extends React.Component {
                         }
                         return (
                             <TableRow
+                                hover
                                 key={{ apiResourceTemplate, apiMethod }}
                                 onClick={() => handleDrillDownClick({
                                     applicationName, applicationOwner, apiResourceTemplate, apiMethod
                                 })}
+                                className={classes.hover}
                             >
                                 { viewType === ViewTypeEnum.APP ? (
                                     <TableCell>

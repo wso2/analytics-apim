@@ -39,6 +39,9 @@ const styles = theme => ({
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
     },
+    hover: {
+        cursor: 'pointer',
+    },
 });
 
 class APIViewErrorTable extends React.Component {
@@ -87,7 +90,12 @@ class APIViewErrorTable extends React.Component {
                             successCount = ((successCount * 100) / totalRequests).toFixed(2) + ' %';
                         }
                         return (
-                            <TableRow key={apiName} onClick={() => handleDrillDownClick(apiName)}>
+                            <TableRow
+                                hover
+                                key={apiName}
+                                onClick={() => handleDrillDownClick(apiName)}
+                                className={classes.hover}
+                            >
                                 { viewType === ViewTypeEnum.APP ? (
                                     <TableCell>
                                         {appName}

@@ -18,7 +18,6 @@
  */
 
 import React from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -38,7 +37,7 @@ function ErrorsSummaryChart(props) {
     const {
         totalRequestCounts, data4XX, total4XX, data5XX, total5XX, dataFaulty, totalFaulty,
         dataThrottled, totalThrottled, handleViewChange, handleLimitChange, viewType, selectedLimit, themeName, height,
-        loading, publishSelectedData,
+        publishSelectedData, loading4xx, loading5xx, loadingFaulty, loadingThrottled,
     } = props;
 
     let viewTypeName;
@@ -63,15 +62,8 @@ function ErrorsSummaryChart(props) {
             backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
             height,
         },
-        loadingIcon: {
-            margin: 'auto',
-            display: 'block',
-        },
-        loading: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height,
+        lastCell: {
+            'padding-right': '56px',
         },
     };
 
@@ -111,64 +103,64 @@ function ErrorsSummaryChart(props) {
                             />
                         </FormControl>
                     </TableRow>
-                    {loading ? (
-                        <TableRow style={{ height: '70%' }}>
-                            <div style={classes.loading}>
-                                <CircularProgress style={classes.loadingIcon} />
-                            </div>
-                        </TableRow>
-                    ) : (
-                        <TableRow style={{ height: '70%' }}>
-                            <TableCell align='right'>
-                                <SummaryPieChart
-                                    heading={'4xx errors by ' + viewTypeName}
-                                    data={data4XX}
-                                    totalErrors={total4XX}
-                                    totalRequestCounts={totalRequestCounts}
-                                    publishSelectedData={publishSelectedData}
-                                    viewType={viewType}
-                                    errorType='4xx'
-                                    height
-                                />
-                            </TableCell>
-                            <TableCell align='right'>
-                                <SummaryPieChart
-                                    heading={'5xx errors by ' + viewTypeName}
-                                    data={data5XX}
-                                    totalErrors={total5XX}
-                                    totalRequestCounts={totalRequestCounts}
-                                    publishSelectedData={publishSelectedData}
-                                    viewType={viewType}
-                                    errorType='5xx'
-                                    height
-                                />
-                            </TableCell>
-                            <TableCell align='right'>
-                                <SummaryPieChart
-                                    heading={'Faulty summary by ' + viewTypeName}
-                                    data={dataFaulty}
-                                    totalErrors={totalFaulty}
-                                    totalRequestCounts={totalRequestCounts}
-                                    publishSelectedData={publishSelectedData}
-                                    viewType={viewType}
-                                    errorType='faulty'
-                                    height
-                                />
-                            </TableCell>
-                            <TableCell align='right'>
-                                <SummaryPieChart
-                                    heading={'Throttled summary by ' + viewTypeName}
-                                    data={dataThrottled}
-                                    totalErrors={totalThrottled}
-                                    totalRequestCounts={totalRequestCounts}
-                                    publishSelectedData={publishSelectedData}
-                                    viewType={viewType}
-                                    errorType='throttled'
-                                    height
-                                />
-                            </TableCell>
-                        </TableRow>
-                    )}
+                    <TableRow style={{ height: '70%' }}>
+                        <TableCell align='right' width='25%'>
+                            <SummaryPieChart
+                                heading={'4xx errors by ' + viewTypeName}
+                                data={data4XX}
+                                totalErrors={total4XX}
+                                totalRequestCounts={totalRequestCounts}
+                                publishSelectedData={publishSelectedData}
+                                viewType={viewType}
+                                errorType='4xx'
+                                height
+                                loading={loading4xx}
+                                themeName={themeName}
+                            />
+                        </TableCell>
+                        <TableCell align='right' width='25%'>
+                            <SummaryPieChart
+                                heading={'5xx errors by ' + viewTypeName}
+                                data={data5XX}
+                                totalErrors={total5XX}
+                                totalRequestCounts={totalRequestCounts}
+                                publishSelectedData={publishSelectedData}
+                                viewType={viewType}
+                                errorType='5xx'
+                                height
+                                loading={loading5xx}
+                                themeName={themeName}
+                            />
+                        </TableCell>
+                        <TableCell align='right' width='25%'>
+                            <SummaryPieChart
+                                heading={'Faulty summary by ' + viewTypeName}
+                                data={dataFaulty}
+                                totalErrors={totalFaulty}
+                                totalRequestCounts={totalRequestCounts}
+                                publishSelectedData={publishSelectedData}
+                                viewType={viewType}
+                                errorType='faulty'
+                                height
+                                loading={loadingFaulty}
+                                themeName={themeName}
+                            />
+                        </TableCell>
+                        <TableCell style={classes.lastCell} align='right' width='25%'>
+                            <SummaryPieChart
+                                heading={'Throttled summary by ' + viewTypeName}
+                                data={dataThrottled}
+                                totalErrors={totalThrottled}
+                                totalRequestCounts={totalRequestCounts}
+                                publishSelectedData={publishSelectedData}
+                                viewType={viewType}
+                                errorType='throttled'
+                                height
+                                loading={loadingThrottled}
+                                themeName={themeName}
+                            />
+                        </TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
         </div>
@@ -191,7 +183,10 @@ ErrorsSummaryChart.propTypes = {
     viewType: PropTypes.string.isRequired,
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
-    loading: PropTypes.bool.isRequired,
+    loading4xx: PropTypes.bool.isRequired,
+    loading5xx: PropTypes.bool.isRequired,
+    loadingFaulty: PropTypes.bool.isRequired,
+    loadingThrottled: PropTypes.bool.isRequired,
     selectedLimit: PropTypes.number.isRequired,
 };
 

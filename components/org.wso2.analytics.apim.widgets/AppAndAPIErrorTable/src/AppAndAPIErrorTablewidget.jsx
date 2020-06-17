@@ -133,6 +133,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             dataWrapper: {
                 margin: 'auto',
                 height: '500px',
+                width: '95%',
             },
             title: {
                 textAlign: 'center',
@@ -742,6 +743,8 @@ class AppAndAPIErrorTablewidget extends Widget {
                                     defaultMessage='Error Summary'
                                 />
                             </h3>
+                        </div>
+                        <div style={this.styles.dataWrapper}>
                             <FormControl component='fieldset'>
                                 <RadioGroup
                                     row
@@ -813,22 +816,22 @@ class AppAndAPIErrorTablewidget extends Widget {
                                 handleOperationChange={this.handleOperationChange}
                                 handleLimitChange={this.handleLimitChange}
                             />
-                        </div>
-                        {!loading ? (
-                            <this.renderDrillDownTable
-                                data={data}
-                                viewType={viewType}
-                                valueFormatType={valueFormatType}
-                                drillDownType={drillDownType}
-                                handleDrillDownClick={this.handleDrillDownClick}
-                            />
-                        )
-                            : (
-                                <div style={this.styles.loading}>
-                                    <CircularProgress style={this.styles.loadingIcon} />
-                                </div>
+                            {!loading ? (
+                                <this.renderDrillDownTable
+                                    data={data}
+                                    viewType={viewType}
+                                    valueFormatType={valueFormatType}
+                                    drillDownType={drillDownType}
+                                    handleDrillDownClick={this.handleDrillDownClick}
+                                />
                             )
-                        }
+                                : (
+                                    <div style={this.styles.loading}>
+                                        <CircularProgress style={this.styles.loadingIcon} />
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>

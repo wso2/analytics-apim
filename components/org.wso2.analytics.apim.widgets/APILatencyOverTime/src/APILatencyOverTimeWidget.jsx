@@ -119,7 +119,7 @@ class APILatencyOverTimeWidget extends Widget {
             },
             dataWrapper: {
                 margin: 'auto',
-                height: '500px',
+                width: '95%',
             },
             title: {
                 textAlign: 'center',
@@ -456,6 +456,8 @@ class APILatencyOverTimeWidget extends Widget {
                                     defaultMessage='API Latency Over Time'
                                 />
                             </h3>
+                        </div>
+                        <div style={this.styles.dataWrapper}>
                             <CustomFormGroup
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}

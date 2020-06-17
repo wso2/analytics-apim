@@ -121,7 +121,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             },
             dataWrapper: {
                 margin: 'auto',
-                height: '500px',
+                width: '95%',
             },
             title: {
                 textAlign: 'center',
@@ -559,6 +559,8 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                     defaultMessage='Error Summary Over Time'
                                 />
                             </h3>
+                        </div>
+                        <div style={this.styles.dataWrapper}>
                             <CustomFormGroup
                                 viewType={viewType}
                                 valueFormatType={valueFormatType}
