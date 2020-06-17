@@ -118,7 +118,6 @@ class APILatencyOverTimeWidget extends Widget {
             },
             root: {
                 backgroundColor: this.props.muiTheme.name === 'light' ? '#fff' : '#0e1e34',
-                padding: '20px',
             },
             loadingIcon: {
                 margin: 'auto',
@@ -132,7 +131,9 @@ class APILatencyOverTimeWidget extends Widget {
             },
             contentWrapper: {
                 margin: '10px',
+                marginTop: '0px',
                 padding: '20px',
+                paddingTop: '30px',
             },
         };
 
@@ -556,7 +557,7 @@ class APILatencyOverTimeWidget extends Widget {
                                 <h3 style={this.styles.heading}>
                                     <FormattedMessage
                                         id='widget.heading'
-                                        defaultMessage='API Latency Over Time'
+                                        defaultMessage='API LATENCY OVER TIME'
                                     />
                                 </h3>
                             </div>

@@ -119,7 +119,9 @@ class APILatencySummaryWidget extends Widget {
             },
             contentWrapper: {
                 margin: '10px',
+                marginTop: '0px',
                 padding: '20px',
+                paddingTop: '30px',
             },
         };
 
@@ -474,7 +476,7 @@ class APILatencySummaryWidget extends Widget {
                                 <h3 style={this.styles.heading}>
                                     <FormattedMessage
                                         id='widget.heading'
-                                        defaultMessage='API Latency Summary'
+                                        defaultMessage='API LATENCY SUMMARY'
                                     />
                                 </h3>
                             </div>
