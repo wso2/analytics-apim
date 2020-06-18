@@ -215,6 +215,12 @@ class APIMAlertSummaryWidget extends Widget {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
         const { from, to, selectedApi } = receivedMsg;
+        const { limit } = this.state;
+
+        if (selectedApi) {
+            document.getElementById('alert-summary').scrollIntoView();
+            this.setQueryParam(selectedApi, limit);
+        }
 
         if (selectedApi && from) {
             this.setState({

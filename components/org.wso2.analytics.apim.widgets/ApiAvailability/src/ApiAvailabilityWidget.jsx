@@ -173,6 +173,7 @@ class ApiAvailabilityWidget extends Widget {
         const { status } = receivedMsg;
         const { limit } = this.state;
 
+        document.getElementById('api-availability').scrollIntoView();
         this.setQueryParam(limit, status);
         this.setState({
             inProgress: true,
