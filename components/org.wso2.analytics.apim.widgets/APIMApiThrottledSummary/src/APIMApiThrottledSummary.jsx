@@ -31,7 +31,7 @@ import './styles.css';
  */
 export default function APIMApiThrottledSummary(props) {
     const {
-        themeName, thisDayCount, lastDayCount, inProgress, height,
+        themeName, thisDayCount, lastDayCount, inProgress, height, handleOnClick,
     } = props;
     const styles = {
         root: {
@@ -88,12 +88,7 @@ export default function APIMApiThrottledSummary(props) {
         <div
             style={styles.root}
             className={`overview-wrapper ${themeName}`}
-            // commented until it is fixed
-            // onClick={() => {
-            //     window.location.href = window.contextPath
-            //         + '/dashboards/apimpublisher/faults#{"dtrp":{"tr":"7days","g":"day","sync":false},'
-            //         + '"faultyapis":{"limit":5},"throttledapis":{"limit":5}}';
-            // }}
+            onClick={() => handleOnClick()}
         >
             <div style={styles.headingWrapper}>
                 <h3
@@ -137,4 +132,5 @@ APIMApiThrottledSummary.propTypes = {
     lastDayCount: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClick: PropTypes.func.isRequired,
 };

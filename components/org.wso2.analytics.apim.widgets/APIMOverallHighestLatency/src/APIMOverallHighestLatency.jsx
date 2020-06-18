@@ -32,7 +32,7 @@ import Typography from '@material-ui/core/Typography';
  */
 export default function APIMOverallHighestLatency(props) {
     const {
-        themeName, apiName, apiVersion, highestLatency, inProgress, height
+        themeName, apiName, apiVersion, highestLatency, inProgress, height, handleOnClick,
     } = props;
     const styles = {
         root: {
@@ -92,9 +92,11 @@ export default function APIMOverallHighestLatency(props) {
     };
 
     return (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
             style={styles.root}
             className={`overview-wrapper ${themeName}`}
+            onClick={() => handleOnClick()}
         >
             <div style={styles.headingWrapper}>
                 <h3
@@ -164,4 +166,5 @@ APIMOverallHighestLatency.propTypes = {
     highestLatency: PropTypes.number.isRequired,
     height: PropTypes.string.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleOnClick: PropTypes.func.isRequired,
 };

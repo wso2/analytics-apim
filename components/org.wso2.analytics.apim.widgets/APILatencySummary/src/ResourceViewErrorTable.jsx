@@ -35,6 +35,7 @@ import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -73,10 +74,23 @@ class APIViewErrorTable extends React.Component {
         this.handleRequestMedSelectChange = this.handleRequestMedSelectChange.bind(this);
         this.handleResponseMedSelectChange = this.handleResponseMedSelectChange.bind(this);
         this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
+
+        this.styles = {
+            dataWrapper: {
+                height: '75%',
+                paddingTop: 35,
+                margin: 'auto',
+                width: '90%',
+            },
+            paper: {
+                background: this.props.themeName === 'dark' ? '#152638' : '#E8E8E8',
+                padding: '4%',
+            },
+        };
     }
 
     getPieChartForAPI() {
-        const { data } = this.props;
+        const { data, handleOnClick } = this.props;
         const {
             responseSelected, backendSelected, securitySelected, throttleSelected,
             requestMedSelected, responseMedSelected,
@@ -140,6 +154,20 @@ class APIViewErrorTable extends React.Component {
                                 y={d => d.responseTime}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
+                                events={[
+                                    {
+                                        target: 'data',
+                                        eventHandlers: {
+                                            onClick: (e) => {
+                                                return [{
+                                                    mutation: (val) => {
+                                                        handleOnClick(e, val.datum);
+                                                    },
+                                                }];
+                                            },
+                                        },
+                                    },
+                                ]}
                             />
                         )}
                         { backendSelected && (
@@ -162,6 +190,20 @@ class APIViewErrorTable extends React.Component {
                                 y={d => d.backendLatency}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
+                                events={[
+                                    {
+                                        target: 'data',
+                                        eventHandlers: {
+                                            onClick: (e) => {
+                                                return [{
+                                                    mutation: (val) => {
+                                                        handleOnClick(e, val.datum);
+                                                    },
+                                                }];
+                                            },
+                                        },
+                                    },
+                                ]}
                             />
                         )}
                         { securitySelected && (
@@ -184,6 +226,20 @@ class APIViewErrorTable extends React.Component {
                                 y={d => d.securityLatency}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
+                                events={[
+                                    {
+                                        target: 'data',
+                                        eventHandlers: {
+                                            onClick: (e) => {
+                                                return [{
+                                                    mutation: (val) => {
+                                                        handleOnClick(e, val.datum);
+                                                    },
+                                                }];
+                                            },
+                                        },
+                                    },
+                                ]}
                             />
                         )}
                         { throttleSelected && (
@@ -206,6 +262,20 @@ class APIViewErrorTable extends React.Component {
                                 y={d => d.throttlingLatency}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
+                                events={[
+                                    {
+                                        target: 'data',
+                                        eventHandlers: {
+                                            onClick: (e) => {
+                                                return [{
+                                                    mutation: (val) => {
+                                                        handleOnClick(e, val.datum);
+                                                    },
+                                                }];
+                                            },
+                                        },
+                                    },
+                                ]}
                             />
                         )}
                         { requestMedSelected && (
@@ -228,6 +298,20 @@ class APIViewErrorTable extends React.Component {
                                 y={d => d.requestMedLat}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
+                                events={[
+                                    {
+                                        target: 'data',
+                                        eventHandlers: {
+                                            onClick: (e) => {
+                                                return [{
+                                                    mutation: (val) => {
+                                                        handleOnClick(e, val.datum);
+                                                    },
+                                                }];
+                                            },
+                                        },
+                                    },
+                                ]}
                             />
                         )}
                         { responseMedSelected && (
@@ -250,6 +334,20 @@ class APIViewErrorTable extends React.Component {
                                 y={d => d.responseMedLat}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
+                                events={[
+                                    {
+                                        target: 'data',
+                                        eventHandlers: {
+                                            onClick: (e) => {
+                                                return [{
+                                                    mutation: (val) => {
+                                                        handleOnClick(e, val.datum);
+                                                    },
+                                                }];
+                                            },
+                                        },
+                                    },
+                                ]}
                             />
                         )}
                     </VictoryStack>
@@ -340,12 +438,26 @@ class APIViewErrorTable extends React.Component {
         ];
         if (data.length === 0) {
             return (
-                <Typography variant='h5' component='h3'>
-                    <FormattedMessage
-                        id='nodata.error.heading'
-                        defaultMessage='No Data Available !'
-                    />
-                </Typography>
+                <div style={this.styles.dataWrapper}>
+                    <Paper
+                        elevation={1}
+                        style={this.styles.paper}
+                    >
+                        <Typography variant='h5' component='h3'>
+                            <FormattedMessage
+                                id='nodata.error.heading'
+                                defaultMessage='No Data Available !'
+                            />
+                        </Typography>
+                        <Typography component='p'>
+                            <FormattedMessage
+                                id='nodata.error.body'
+                                defaultMessage={'No matching data available for the '
+                                + 'selected options.'}
+                            />
+                        </Typography>
+                    </Paper>
+                </div>
             );
         }
         return (
@@ -386,6 +498,8 @@ class APIViewErrorTable extends React.Component {
 
 APIViewErrorTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
+    handleOnClick: PropTypes.func.isRequired,
+    themeName: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(APIViewErrorTable);

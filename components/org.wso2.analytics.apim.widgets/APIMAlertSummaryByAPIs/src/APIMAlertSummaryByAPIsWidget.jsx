@@ -258,17 +258,8 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
      * @memberof APIMAlertSummaryByAPIsWidget
      * */
     handleOnClickAPI(event, data) {
-        const { configs } = this.props;
-
-        if (configs && configs.options) {
-            const { drillDown } = configs.options;
-
-            if (drillDown !== undefined && drillDown) {
-                const { apiname } = data;
-                this.publishSelection({ selectedApi: apiname });
-                document.getElementById('alertSummary').scrollIntoView();
-            }
-        }
+        const { apiname } = data;
+        this.publishSelection({ selectedApi: apiname });
         event.preventDefault();
     }
 
@@ -279,8 +270,7 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
      */
     publishSelection(message) {
         super.publish(message);
-    };
-
+    }
 
     /**
      * @inheritDoc

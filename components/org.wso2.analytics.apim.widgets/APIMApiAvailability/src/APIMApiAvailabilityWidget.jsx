@@ -229,16 +229,7 @@ class APIMApiAvailabilityWidget extends Widget {
      * @memberof APIMAlertSummaryByAPIsWidget
      * */
     handleOnClick(event, data) {
-        const { configs } = this.props;
-
-        if (configs && configs.options) {
-            const { drillDown } = configs.options;
-
-            if (drillDown !== undefined && drillDown) {
-                this.publishSelection({ status: data[0] });
-                document.getElementById('apiAvailability').scrollIntoView();
-            }
-        }
+        this.publishSelection({ status: data[0] });
         event.preventDefault();
     }
 

@@ -38,6 +38,14 @@
           "name": "TEXT"
         },
         "defaultValue": "API Faults Summary"
+      },
+      {
+        "id": "drillDown",
+        "title": "Error Page",
+        "type": {
+          "name": "TEXT"
+        },
+        "defaultValue": "error"
       }
     ]
   }

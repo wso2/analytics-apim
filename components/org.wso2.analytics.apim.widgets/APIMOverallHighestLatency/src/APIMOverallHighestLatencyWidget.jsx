@@ -105,6 +105,7 @@ class APIMOverallHighestLatencyWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     componentWillMount() {
@@ -205,9 +206,36 @@ class APIMOverallHighestLatencyWidget extends Widget {
         const { data } = message;
 
         if (data.length !== 0) {
-            this.setState({apiName: data[0][0], apiVersion: data[0][1], highestLatency: data[0][2], inProgress: false});
+            this.setState({
+                apiName: data[0][0], apiVersion: data[0][1], highestLatency: data[0][2], inProgress: false,
+            });
         } else {
             this.setState({ highestLatency: 0, inProgress: false });
+        }
+    }
+
+    /**
+     * Handle onClick and drill down
+     * @memberof APIMOverallHighestLatencyWidget
+     * */
+    handleOnClick() {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+                const queryParams = {
+                    dtrp: {
+                        tr: '1day',
+                    },
+                };
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '?widgetStates='
+                    + encodeURI(JSON.stringify(queryParams));
+            }
         }
     }
 
@@ -252,7 +280,10 @@ class APIMOverallHighestLatencyWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMOverallHighestLatency {...apiLatencyProps} />
+                            <APIMOverallHighestLatency
+                                {...apiLatencyProps}
+                                handleOnClick={this.handleOnClick}
+                            />
                         )
                     }
                 </MuiThemeProvider>

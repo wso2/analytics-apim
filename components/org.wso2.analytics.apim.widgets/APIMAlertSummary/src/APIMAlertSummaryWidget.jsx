@@ -215,6 +215,12 @@ class APIMAlertSummaryWidget extends Widget {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
         const { from, to, selectedApi } = receivedMsg;
+        const { limit } = this.state;
+
+        if (selectedApi) {
+            document.getElementById('alert-summary').scrollIntoView();
+            this.setQueryParam(selectedApi, limit);
+        }
 
         if (selectedApi && from) {
             this.setState({
@@ -417,7 +423,7 @@ class APIMAlertSummaryWidget extends Widget {
                 messages={localeMessages}
             >
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    <div id='alertSummary'>
+                    <div id='alert-summary'>
                         {
                             faultyProviderConfig ? (
                                 <div style={paperWrapper}>
@@ -437,7 +443,7 @@ class APIMAlertSummaryWidget extends Widget {
                                         <Typography component='p'>
                                             <FormattedMessage
                                                 id='config.error.body'
-                                                defaultMessage={'Cannot fetch provider configuration for APIM ALert '
+                                                defaultMessage={'Cannot fetch provider configuration for APIM Alert '
                                             + 'Summary Widget'}
                                             />
                                         </Typography>

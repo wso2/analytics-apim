@@ -110,6 +110,7 @@ class APIMApiFaultsSummaryWidget extends Widget {
         }
         this.assembleUsageCountQuery = this.assembleUsageCountQuery.bind(this);
         this.handleUsageCountReceived = this.handleUsageCountReceived.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     /**
@@ -258,6 +259,31 @@ class APIMApiFaultsSummaryWidget extends Widget {
     }
 
     /**
+     * Handle onClick and drill down
+     * @memberof APIMApiFaultsSummaryWidget
+     * */
+    handleOnClick() {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+                const queryParams = {
+                    dtrp: {
+                        tr: '1day',
+                    },
+                };
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '?widgetStates='
+                    + encodeURI(JSON.stringify(queryParams));
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Api Created widget
      * @memberof APIMApiFaultsSummaryWidget
@@ -273,7 +299,7 @@ class APIMApiFaultsSummaryWidget extends Widget {
         const themeName = muiTheme.name;
         const apiFaultsProps = {
             themeName, lastDayCount, thisDayCount, inProgress, height,
-        }
+        };
 
         return (
             <IntlProvider locale={language} messages={messages}>
@@ -298,7 +324,10 @@ class APIMApiFaultsSummaryWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiFaultsSummary {...apiFaultsProps} />
+                            <APIMApiFaultsSummary
+                                {...apiFaultsProps}
+                                handleOnClick={this.handleOnClick}
+                            />
                         )
                     }
                 </MuiThemeProvider>

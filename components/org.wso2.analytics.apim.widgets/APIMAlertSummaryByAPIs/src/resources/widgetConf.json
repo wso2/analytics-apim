@@ -39,20 +39,7 @@
           "name": "TEXT"
         },
         "defaultValue": "Top API by Alerts"
-      },
-      {
-        "id": "drillDown",
-        "title": "Drill Down to Alert Summary",
-        "type": {
-        "name": "BOOLEAN",
-        "possibleValues": [
-          true,
-          false
-        ]
-      },
-        "defaultValue": true
       }
     ]
-
   }
 }

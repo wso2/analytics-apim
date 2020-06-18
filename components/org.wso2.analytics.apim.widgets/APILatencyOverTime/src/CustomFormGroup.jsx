@@ -34,12 +34,30 @@ const styles = theme => ({
         maxWidth: 650,
         marginBottom: 50,
     },
-    formControl: {
-        margin: theme.spacing.unit,
-        minWidth: 120,
-    },
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
+    },
+    formWrapper: {
+        paddingTop: 10,
+    },
+    formControl: {
+        marginLeft: 10,
+        marginTop: 10,
+        width: '10%',
+    },
+    formControlSelect: {
+        paddingRight: 10,
+        marginLeft: 10,
+        marginTop: 10,
+        minWidth: 200,
+        width: '15%',
+    },
+    formLabel: {
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        width: '100%',
+        display: 'block',
+        overflow: 'hidden',
     },
 });
 
@@ -52,55 +70,55 @@ function CustomFormGroup(props) {
 
     return (
         <div component={Paper}>
-            <div>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>API Name</InputLabel>
+            <div className={classes.formWrapper}>
+                <FormControl className={classes.formControlSelect}>
+                    <InputLabel className={classes.formLabel}>
+                        <FormattedMessage id='label.apiname' defaultMessage='API Name' />
+                    </InputLabel>
                     <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
                         value={selectedAPI}
                         onChange={handleAPIChange}
                     >
-                        <MenuItem value={-1}>All</MenuItem>
+                        <MenuItem value='all'>All</MenuItem>
                         {apiList.map(row => (
                             <MenuItem value={row}>{row}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>API Version</InputLabel>
+                <FormControl className={classes.formControlSelect}>
+                    <InputLabel className={classes.formLabel}>
+                        <FormattedMessage id='label.apiversion' defaultMessage='API Version' />
+                    </InputLabel>
                     <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
                         value={selectedVersion}
                         onChange={handleVersionChange}
                         disabled={versionList && versionList.length === 0}
                     >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {versionList.map((row, i) => (
-                            <MenuItem value={i}>{row[1]}</MenuItem>
+                        <MenuItem value='all'>All</MenuItem>
+                        {versionList.map(row => (
+                            <MenuItem value={row[1]}>{row[1]}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
+                <FormControl className={classes.formControlSelect}>
+                    <InputLabel className={classes.formLabel}>
+                        <FormattedMessage id='label.operation' defaultMessage='Operation' />
+                    </InputLabel>
                     <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
                         value={selectedResource}
                         onChange={handleOperationChange}
                         disabled={operationList && operationList.length === 0}
                     >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {operationList.map((row, i) => (
-                            <MenuItem value={i}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
+                        <MenuItem value='all'>All</MenuItem>
+                        {operationList.map(row => (
+                            <MenuItem value={row[0] + ' (' + row[1] + ')'}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
                 <FormControl className={classes.formControl}>
                     <TextField
                         id='limit-number'
-                        label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                        label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                         value={selectedLimit}
                         onChange={handleLimitChange}
                         type='number'

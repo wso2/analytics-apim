@@ -110,6 +110,7 @@ class APIMApiUsageSummaryWidget extends Widget {
         }
         this.assembleUsageCountQuery = this.assembleUsageCountQuery.bind(this);
         this.handleUsageCountReceived = this.handleUsageCountReceived.bind(this);
+        this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     /**
@@ -257,6 +258,31 @@ class APIMApiUsageSummaryWidget extends Widget {
     }
 
     /**
+     * Handle onClick and drill down
+     * @memberof APIMApiUsageSummaryWidget
+     * */
+    handleOnClick() {
+        const { configs } = this.props;
+
+        if (configs && configs.options) {
+            const { drillDown } = configs.options;
+
+            if (drillDown) {
+                const locationParts = window.location.pathname.split('/');
+                const dashboard = locationParts[locationParts.length - 2];
+                const queryParams = {
+                    dtrp: {
+                        tr: '1day',
+                    },
+                };
+                window.location.href = window.contextPath
+                    + '/dashboards/' + dashboard + '/' + drillDown + '?widgetStates='
+                    + encodeURI(JSON.stringify(queryParams));
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Api Created widget
      * @memberof APIMApiUsageSummaryWidget
@@ -297,7 +323,10 @@ class APIMApiUsageSummaryWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApiUsageSummary {...apiUsageProps} />
+                            <APIMApiUsageSummary
+                                {...apiUsageProps}
+                                handleOnClick={this.handleOnClick}
+                            />
                         )
                     }
                 </MuiThemeProvider>

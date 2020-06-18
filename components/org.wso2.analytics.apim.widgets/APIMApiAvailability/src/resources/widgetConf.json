@@ -39,18 +39,6 @@
           "name": "TEXT"
         },
         "defaultValue": "API Availability Summary"
-      },
-      {
-        "id": "drillDown",
-        "title": "Drill Down to Api Availability",
-        "type": {
-          "name": "BOOLEAN",
-          "possibleValues": [
-            true,
-            false
-          ]
-        },
-        "defaultValue": true
       }
     ]
   }
