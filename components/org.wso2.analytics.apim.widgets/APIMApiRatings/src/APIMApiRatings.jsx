@@ -79,6 +79,9 @@ function APIMApiRatings(props) {
             id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
         },
         {
+            id: 'apiversion', numeric: true, disablePadding: false, label: 'table.heading.apiversion',
+        },
+        {
             id: 'ratings', numeric: true, disablePadding: false, label: 'table.heading.ratings',
         },
     ];

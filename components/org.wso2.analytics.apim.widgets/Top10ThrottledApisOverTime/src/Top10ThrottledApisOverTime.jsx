@@ -67,6 +67,9 @@ export default function Top10ThrottledApisOverTime(props) {
             paddingBottom: '10px',
             marginTop: 0,
         },
+        divClick: {
+            cursor: 'pointer',
+        },
     };
     const chartConfig = {
         x: 'TIME',
@@ -145,7 +148,11 @@ export default function Top10ThrottledApisOverTime(props) {
                                 </Paper>
                             </div>
                         ) : (
-                            <div onClick={() => handleOnClick()} onKeyDown={() => handleOnClick()}>
+                            <div
+                                style={styles.divClick}
+                                onClick={() => handleOnClick()}
+                                onKeyDown={() => handleOnClick()}
+                            >
                                 <VizG
                                     config={chartConfig}
                                     metadata={metadata}

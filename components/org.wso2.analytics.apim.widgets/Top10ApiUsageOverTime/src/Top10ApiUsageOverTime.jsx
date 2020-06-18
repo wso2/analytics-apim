@@ -71,6 +71,9 @@ export default function Top10ApiUsageOverTime(props) {
             paddingBottom: '10px',
             marginTop: 0,
         },
+        divClick: {
+            cursor: 'pointer',
+        },
     };
     const chartConfig = {
         x: 'TIME',
@@ -149,6 +152,7 @@ export default function Top10ApiUsageOverTime(props) {
                                 </div>
                             ) : (
                                 <div
+                                    style={styles.divClick}
                                     onClick={() => handleOnClick()}
                                     onKeyDown={() => handleOnClick()}
                                 >
