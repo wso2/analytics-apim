@@ -270,9 +270,14 @@ class APIMApiUsageSummaryWidget extends Widget {
             if (drillDown) {
                 const locationParts = window.location.pathname.split('/');
                 const dashboard = locationParts[locationParts.length - 2];
-
+                const queryParams = {
+                    dtrp: {
+                        tr: '1day',
+                    },
+                };
                 window.location.href = window.contextPath
-                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1day"}}';
+                    + '/dashboards/' + dashboard + '/' + drillDown + '?widgetStates='
+                    + encodeURI(JSON.stringify(queryParams));
             }
         }
     }
