@@ -527,7 +527,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 7.518531362610465,
+                  "height": 5.71284125379171,
                   "content": [
                     {
                       "title": "[Date Time Range]",
@@ -566,100 +566,17 @@
                   ]
                 },
                 {
-                  "type": "row",
-                  "isClosable": true,
-                  "title": "",
-                  "height": 53.23120204728209,
-                  "content": [
-                    {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "width": 50,
-                      "height": 60.968821272949555,
-                      "content": [
-                        {
-                          "title": "[APIM Total Api Traffic]",
-                          "type": "component",
-                          "component": "APIMTotalApiTraffic",
-                          "props": {
-                            "id": "7a77462f-bf38-4ded-935f-0f9a95a272be",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": [
-                                  "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true,
-                                "headerTitle": "Total Api Traffic"
-                              }
-                            },
-                            "widgetID": "APIMTotalApiTraffic"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "stack",
-                      "isClosable": true,
-                      "title": "",
-                      "width": 50,
-                      "content": [
-                        {
-                          "title": "[APIM Api Resource Traffic]",
-                          "type": "component",
-                          "component": "APIMApiResourceTraffic",
-                          "props": {
-                            "id": "cd52c269-96c0-46a1-8936-8c4e2b97a5bf",
-                            "configs": {
-                              "pubsub": {
-                                "types": [
-                                  "subscriber"
-                                ],
-                                "publishers": [
-                                  "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
-                                ]
-                              },
-                              "isGenerated": false,
-                              "options": {
-                                "header": true,
-                                "headerTitle": "API Resource Traffic"
-                              }
-                            },
-                            "widgetID": "APIMApiResourceTraffic"
-                          },
-                          "isClosable": false,
-                          "header": {
-                            "show": true
-                          },
-                          "componentName": "lm-react-component"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 39.25026659010746,
+                  "height": 94.28715874620832,
                   "content": [
                     {
-                      "title": "[APIM Api Traffic By Version]",
+                      "title": "API Traffic Summary]",
                       "type": "component",
-                      "component": "APIMApiTrafficByVersion",
+                      "component": "APITrafficSummary",
                       "props": {
-                        "id": "8c712b28-887b-4ab8-a2ac-08cd36707f03",
+                        "id": "7df421af-099d-4697-bda1-40095a6dc7ac",
                         "configs": {
                           "pubsub": {
                             "types": [
@@ -670,12 +587,9 @@
                             ]
                           },
                           "isGenerated": false,
-                          "options": {
-                            "header": true,
-                            "headerTitle": "Api Traffic By Version"
-                          }
+                          "options": {}
                         },
-                        "widgetID": "APIMApiTrafficByVersion"
+                        "widgetID": "APITrafficSummary"
                       },
                       "isClosable": false,
                       "header": {
@@ -688,7 +602,7 @@
               ]
             }
           ],
-          "height": 1382
+          "height": 1983
         },
         {
           "id": "alerts",
@@ -925,21 +839,18 @@
       "AppAndAPIErrorTable",
       "APIMOverallApiInfo",
       "APILatencyOverTime",
-      "APIMApiResourceTraffic",
       "APIMAlertSummary",
       "DateRangePicker",
       "APILatencySummary",
       "APIMOverallHighestLatency",
-      "APIMApiTrafficByVersion",
       "APIMAlertSummaryByAPIs",
       "APIMApiFaultsSummary",
       "APIMApiUsageSummary",
-      "APIMTotalApiTraffic"
+      "APITrafficSummary"
     ]
   },
   "permissions": {
     "viewers": [
-      "apim_analytics:admin_any",
       "apim_analytics:admin_carbon.super"
     ],
     "owners": [
