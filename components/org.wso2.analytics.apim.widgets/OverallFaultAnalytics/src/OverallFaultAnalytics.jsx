@@ -83,6 +83,8 @@ export default function OverallFaultAnalytics(props) {
         maxLength: 60,
         height: 400,
         legend: false,
+        disableVerticalGrid: true,
+        xAxisTickCount: 4,
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
         style: {
