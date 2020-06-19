@@ -37,7 +37,6 @@ import APIViewErrorTable from './APIViewErrorTable';
 import VersionViewErrorTable from './VersionViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
 import ResourceViewErrorTable from './ResourceViewErrorTable';
-import Moment from "../../APIMSubscriptionsAnalytics/src/APIMSubscriptionsAnalyticsWidget";
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -100,6 +99,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             selectedApp: -1,
             selectedVersion: -1,
             selectedResource: -1,
+            selectedGraphQLResources: [],
             selectedLimit: 5,
             data: [],
 
@@ -199,6 +199,7 @@ class AppAndAPIErrorTablewidget extends Widget {
         this.handleApplicationChange = this.handleApplicationChange.bind(this);
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleOperationChange = this.handleOperationChange.bind(this);
+        this.handleGraphQLOperationChange = this.handleGraphQLOperationChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
 
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
@@ -299,6 +300,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                     }, this.loadingDrillDownData,
                 );
             }
+            document.getElementById('AppAndAPIErrorTable').scrollIntoView();
         }
     }
 
@@ -387,9 +389,13 @@ class AppAndAPIErrorTablewidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ apiList: newData });
+            this.setState({
+                apiList: newData, selectedVersion: -1, selectedResource: -1, selectedGraphQLResources: [],
+            });
         } else {
-            this.setState({ apiList: [] });
+            this.setState({
+                apiList: [], selectedVersion: -1, selectedResource: -1, selectedGraphQLResources: [],
+            });
         }
     }
 
@@ -404,9 +410,9 @@ class AppAndAPIErrorTablewidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData });
+            this.setState({ versionList: newData, selectedResource: -1, selectedGraphQLResources: [] });
         } else {
-            this.setState({ versionList: [] });
+            this.setState({ versionList: [], selectedResource: -1, selectedGraphQLResources: [] });
         }
     }
 
@@ -501,6 +507,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                 selectedAPI: -1,
                 selectedVersion: -1,
                 selectedResource: -1,
+                selectedGraphQLResources: [],
                 versionList: [],
                 operationList: [],
             }, this.loadingDrillDownData,
@@ -588,6 +595,7 @@ class AppAndAPIErrorTablewidget extends Widget {
     getQueryForResource() {
         const {
             selectedAPI, selectedApp, selectedVersion, selectedResource, viewType, versionList, operationList, appList,
+            selectedGraphQLResources,
         } = this.state;
 
         const selectPhase = [];
@@ -614,6 +622,12 @@ class AppAndAPIErrorTablewidget extends Widget {
             const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
             filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
             filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
+        }
+
+        if (selectedGraphQLResources.length > 0) {
+            const opsString = selectedGraphQLResources.map(d => d.URL_PATTERN).join(',');
+            filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
+            filterPhase.push('apiMethod==\'' + selectedGraphQLResources[0].HTTP_METHOD + '\'');
         }
 
         if (viewType === ViewTypeEnum.APP) {
@@ -656,6 +670,11 @@ class AppAndAPIErrorTablewidget extends Widget {
         this.setState({ selectedResource: event.target.value }, this.loadingDrillDownData);
     }
 
+    handleGraphQLOperationChange(event, values) {
+        const list = values.filter(d => d !== -1);
+        this.setState({ selectedResource: -1, selectedGraphQLResources: list }, this.loadingDrillDownData);
+    }
+
     handleLimitChange(event) {
         this.setState({ selectedLimit: event.target.value }, this.loadingDrillDownData);
     }
@@ -689,22 +708,31 @@ class AppAndAPIErrorTablewidget extends Widget {
             this.loadOperations(api.API_ID);
         } else if (drillDownType === DrillDownEnum.RESOURCE) {
             const { selectedAPI, selectedVersion } = this.state;
-            const { applicationName, applicationOwner, apiResourceTemplate, apiMethod } = selected;
-            const operation = operationList.find(i => i.URL_PATTERN === apiResourceTemplate
-                && i.HTTP_METHOD === apiMethod);
-            if (viewType === ViewTypeEnum.APP) {
-                const app = appList.find(d => d.NAME === applicationName && d.CREATED_BY === applicationOwner);
-                this.publishSelectedData({
-                    apiName: selectedAPI,
-                    apiID: selectedVersion,
-                    operationID: operation.URL_MAPPING_ID,
-                    appID: app.APPLICATION_ID,
+            const {
+                applicationName, applicationOwner, apiResourceTemplate, apiMethod,
+            } = selected;
+            const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
+            let operationIds;
+            if (graphQLOps.includes(apiMethod)) {
+                const selectedOperations = apiResourceTemplate.split(',');
+                operationIds = selectedOperations.map((op) => {
+                    const foundOp = operationList.find(i => i.URL_PATTERN === op
+                        && i.HTTP_METHOD === apiMethod);
+                    return foundOp.URL_MAPPING_ID;
                 });
             } else {
-                this.publishSelectedData({
-                    apiName: selectedAPI, apiID: selectedVersion, operationID: operation.URL_MAPPING_ID,
-                });
+                const operation = operationList.find(i => i.URL_PATTERN === apiResourceTemplate
+                    && i.HTTP_METHOD === apiMethod);
+                operationIds = operation.URL_MAPPING_ID;
             }
+            const status = {
+                apiName: selectedAPI, apiID: selectedVersion, operationID: operationIds,
+            };
+            if (viewType === ViewTypeEnum.APP) {
+                const app = appList.find(d => d.NAME === applicationName && d.CREATED_BY === applicationOwner);
+                status.appID = app.APPLICATION_ID;
+            }
+            this.publishSelectedData(status);
         }
         return '';
     }
@@ -720,7 +748,7 @@ class AppAndAPIErrorTablewidget extends Widget {
      */
     render() {
         const {
-            localeMessages, viewType, drillDownType, valueFormatType, data, loading,
+            localeMessages, viewType, drillDownType, valueFormatType, data, loading, selectedGraphQLResources,
             selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit, apiList, appList,
             versionList, operationList,
         } = this.state;
@@ -735,7 +763,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                 <MuiThemeProvider
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
-                    <div style={this.styles.root}>
+                    <div style={this.styles.root} id='AppAndAPIErrorTable'>
                         <div style={this.styles.headingWrapper}>
                             <h3 style={this.styles.h3}>
                                 <FormattedMessage
@@ -803,6 +831,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                                 selectedAPI={selectedAPI}
                                 selectedVersion={selectedVersion}
                                 selectedResource={selectedResource}
+                                selectedGraphQLResources={selectedGraphQLResources}
                                 selectedLimit={selectedLimit}
 
                                 apiList={apiList}
@@ -814,6 +843,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                                 handleAPIChange={this.handleAPIChange}
                                 handleVersionChange={this.handleVersionChange}
                                 handleOperationChange={this.handleOperationChange}
+                                handleGraphQLOperationChange={this.handleGraphQLOperationChange}
                                 handleLimitChange={this.handleLimitChange}
                             />
                             {!loading ? (

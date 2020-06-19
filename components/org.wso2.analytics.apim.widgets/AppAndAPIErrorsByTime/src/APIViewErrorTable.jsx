@@ -20,16 +20,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
 import {
-    VictoryBar,
     VictoryChart,
     VictoryTheme,
-    VictoryStack,
     VictoryAxis,
     VictoryTooltip,
-    VictoryClipContainer,
     VictoryLabel,
+    VictoryLine,
+    VictoryVoronoiContainer,
 } from 'victory';
 import Moment from 'moment';
 import { FormattedMessage } from 'react-intl';
@@ -40,18 +38,6 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-
-const styles = theme => ({
-    table: {
-        minWidth: 650,
-        maxWidth: 650,
-        minHeight: 400,
-        marginBottom: 50,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing.unit * 2,
-    },
-});
 
 const colorScale = ['green', 'orange', 'gold', 'red', 'blue'];
 
@@ -80,7 +66,7 @@ class APIViewErrorTable extends React.Component {
             successSelected, _4xxSelected, _5xxSelected, faultySelected, throttleSelected,
         } = this.state;
         const barRatio = 0.2;
-        const barWidth = 15;
+        const strokeWidth = 1;
         return (
             <div>
                 <VictoryChart
@@ -94,6 +80,9 @@ class APIViewErrorTable extends React.Component {
                     padding={{
                         top: 50, bottom: 50, right: 50, left: 50,
                     }}
+                    containerComponent={
+                        <VictoryVoronoiContainer />
+                    }
                 >
                     <VictoryAxis
                         label={() => 'Time'}
@@ -122,88 +111,81 @@ class APIViewErrorTable extends React.Component {
                         }}
                     />
 
-                    <VictoryStack>
-                        { successSelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[0], width: barWidth } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['success', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.successCount],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='successCount'
-                                labelComponent={<VictoryTooltip />}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                            />
-                        )}
-                        { _4xxSelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[1], width: barWidth } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['4xx errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row._4xx],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='_4xx'
-                                labelComponent={<VictoryTooltip />}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                            />
-                        )}
-                        { _5xxSelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[2], width: barWidth } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['5xx errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row._5xx],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='_5xx'
-                                labelComponent={<VictoryTooltip />}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                            />
-                        )}
-                        { faultySelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[3], width: barWidth } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['fault errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.faultCount],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='faultCount'
-                                labelComponent={<VictoryTooltip />}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                            />
-                        )}
-                        { throttleSelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[4], width: barWidth } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['throttled errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.throttledCount],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y='throttledCount'
-                                labelComponent={<VictoryTooltip />}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                            />
-                        )}
-                    </VictoryStack>
+                    { successSelected && (
+                        <VictoryLine
+                            style={{ data: { stroke: colorScale[0], strokeWidth } }}
+                            alignment='start'
+                            barRatio={barRatio}
+                            data={data.map(row => ({
+                                ...row,
+                                label: ['success', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                    row.successCount],
+                            }))}
+                            x={d => d.AGG_TIMESTAMP + ''}
+                            y='successCount'
+                            labelComponent={<VictoryTooltip />}
+                        />
+                    )}
+                    { _4xxSelected && (
+                        <VictoryLine
+                            style={{ data: { stroke: colorScale[1], strokeWidth } }}
+                            alignment='start'
+                            barRatio={barRatio}
+                            data={data.map(row => ({
+                                ...row,
+                                label: ['4xx errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                    row._4xx],
+                            }))}
+                            x={d => d.AGG_TIMESTAMP + ''}
+                            y='_4xx'
+                            labelComponent={<VictoryTooltip />}
+                        />
+                    )}
+                    { _5xxSelected && (
+                        <VictoryLine
+                            style={{ data: { stroke: colorScale[2], strokeWidth } }}
+                            alignment='start'
+                            barRatio={barRatio}
+                            data={data.map(row => ({
+                                ...row,
+                                label: ['5xx errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                    row._5xx],
+                            }))}
+                            x={d => d.AGG_TIMESTAMP + ''}
+                            y='_5xx'
+                            labelComponent={<VictoryTooltip />}
+                        />
+                    )}
+                    { faultySelected && (
+                        <VictoryLine
+                            style={{ data: { stroke: colorScale[3], strokeWidth } }}
+                            alignment='start'
+                            barRatio={barRatio}
+                            data={data.map(row => ({
+                                ...row,
+                                label: ['fault errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                    row.faultCount],
+                            }))}
+                            x={d => d.AGG_TIMESTAMP + ''}
+                            y='faultCount'
+                            labelComponent={<VictoryTooltip />}
+                        />
+                    )}
+                    { throttleSelected && (
+                        <VictoryLine
+                            style={{ data: { stroke: colorScale[4], strokeWidth } }}
+                            alignment='start'
+                            barRatio={barRatio}
+                            data={data.map(row => ({
+                                ...row,
+                                label: ['throttled errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                    row.throttledCount],
+                            }))}
+                            x={d => d.AGG_TIMESTAMP + ''}
+                            y='throttledCount'
+                            labelComponent={<VictoryTooltip />}
+                        />
+                    )}
                 </VictoryChart>
             </div>
         );
@@ -326,4 +308,4 @@ APIViewErrorTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
 };
 
-export default withStyles(styles)(APIViewErrorTable);
+export default APIViewErrorTable;

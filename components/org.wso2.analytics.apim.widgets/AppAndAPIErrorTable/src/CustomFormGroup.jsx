@@ -27,6 +27,7 @@ import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { ViewTypeEnum, DrillDownEnum } from './Constants';
 
 const styles = theme => ({
@@ -36,21 +37,27 @@ const styles = theme => ({
         marginBottom: 50,
     },
     formControl: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
         minWidth: 120,
     },
+    autocomplete: {
+        margin: theme.spacing(1),
+        minWidth: 400,
+        width: '20%',
+    },
     selectEmpty: {
-        marginTop: theme.spacing.unit * 2,
+        marginTop: theme.spacing(2),
     },
 });
 
 function CustomFormGroup(props) {
     const {
         classes, viewType, drillDownType, selectedApp, selectedAPI, selectedVersion, selectedResource, apiList, appList,
-        versionList, operationList, selectedLimit,
+        versionList, operationList, selectedLimit, handleGraphQLOperationChange, selectedGraphQLResources,
         handleApplicationChange, handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
-
+    const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION']
+    const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
     return (
         <div component={Paper}>
             <div>
@@ -106,7 +113,8 @@ function CustomFormGroup(props) {
                     </FormControl>
                 ) : '' }
 
-                { drillDownType === DrillDownEnum.RESOURCE ? (
+                { drillDownType === DrillDownEnum.RESOURCE && !graphQL
+                && (
                     <FormControl className={classes.formControl}>
                         <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
                         <Select
@@ -124,7 +132,33 @@ function CustomFormGroup(props) {
                             ))}
                         </Select>
                     </FormControl>
-                ) : '' }
+                )}
+
+                { drillDownType === DrillDownEnum.RESOURCE && graphQL
+                && (
+                    <FormControl className={classes.autocomplete}>
+                        <Autocomplete
+                            multiple
+                            id='tags-standard'
+                            options={operationList}
+                            getOptionLabel={(option) => {
+                                if (option === -1) {
+                                    return 'ALL';
+                                }
+                                return option.URL_PATTERN + ' ( ' + option.HTTP_METHOD + ' )';
+                            }}
+                            defaultValue={selectedGraphQLResources}
+                            renderInput={params => (
+                                <TextField
+                                    {...params}
+                                    variant='standard'
+                                    label='Operations'
+                                />
+                            )}
+                            onChange={handleGraphQLOperationChange}
+                        />
+                    </FormControl>
+                )}
 
                 <FormControl className={classes.formControl}>
                     <TextField
@@ -149,6 +183,7 @@ CustomFormGroup.propTypes = {
     handleAPIChange: PropTypes.func.isRequired,
     handleVersionChange: PropTypes.func.isRequired,
     handleOperationChange: PropTypes.func.isRequired,
+    handleGraphQLOperationChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     selectedApp: PropTypes.number.isRequired,
     selectedAPI: PropTypes.number.isRequired,
@@ -159,6 +194,7 @@ CustomFormGroup.propTypes = {
     appList: PropTypes.instanceOf(Object).isRequired,
     versionList: PropTypes.instanceOf(Object).isRequired,
     operationList: PropTypes.instanceOf(Object).isRequired,
+    selectedGraphQLResources: PropTypes.instanceOf(Object).isRequired,
     viewType: PropTypes.string.isRequired,
     drillDownType: PropTypes.string.isRequired,
 };

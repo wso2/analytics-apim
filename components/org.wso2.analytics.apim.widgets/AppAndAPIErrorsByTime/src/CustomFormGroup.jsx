@@ -27,6 +27,10 @@ import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
+import Input from '@material-ui/core/Input';
+import Chip from '@material-ui/core/Chip';
+
+// import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const styles = theme => ({
     table: {
@@ -38,17 +42,35 @@ const styles = theme => ({
         margin: theme.spacing.unit,
         minWidth: 120,
     },
+    autocomplete: {
+        margin: theme.spacing.unit,
+        minWidth: 400,
+        width: '20%',
+    },
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
+    },
+    root: {
+        border: 0,
+        margin: theme.spacing.unit,
+        display: 'inline-flex',
+        padding: 0,
+        position: 'relative',
+        minWidth: 120,
+        flexDirection: 'column',
+        verticalAlign: 'top',
     },
 });
 
 function CustomFormGroup(props) {
     const {
         classes, selectedApp, selectedAPI, selectedVersion, selectedResource, apiList, appList,
-        versionList, operationList, selectedLimit,
+        versionList, operationList, selectedLimit, selectedGraphQLResources, handleGraphQLOperationChange,
         handleApplicationChange, handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
+    const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
+    const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
+
     return (
         <div component={Paper}>
             <div>
@@ -98,23 +120,63 @@ function CustomFormGroup(props) {
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
-                    <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
-                        value={selectedResource}
-                        onChange={handleOperationChange}
-                        disabled={operationList && operationList.length === 0}
-                    >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {operationList.map(row => (
-                            <MenuItem value={row.URL_MAPPING_ID}>
-                                {row.URL_PATTERN + ' ( ' + row.HTTP_METHOD + ' )'}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                { graphQL
+                    ? (
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id='demo-mutiple-chip-label'>Chip</InputLabel>
+                            <Select
+                                labelId='demo-mutiple-chip-label'
+                                id='demo-mutiple-chip'
+                                multiple
+                                value={selectedGraphQLResources}
+                                onChange={handleGraphQLOperationChange}
+                                input={<Input id='select-multiple-chip' />}
+                                renderValue={(selected) => {
+                                    return (
+                                        <div className={classes.chips}>
+                                            {selected.map((opID) => {
+                                                const foundOp = operationList.find(i => i.URL_MAPPING_ID === opID);
+                                                return (
+                                                    <Chip
+                                                        key={opID}
+                                                        label={foundOp.URL_PATTERN + ' ( ' + foundOp.HTTP_METHOD + ' )'}
+                                                        className={classes.chip}
+                                                    />
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                }}
+                                // MenuProps={MenuProps}
+                            >
+                                {operationList.map(row => (
+                                    <MenuItem value={row.URL_MAPPING_ID}>
+                                        {row.URL_PATTERN + ' ( ' + row.HTTP_METHOD + ' )'}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    ) : (
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
+                            <Select
+                                labelId='demo-simple-select-label'
+                                id='demo-simple-select'
+                                value={selectedResource}
+                                onChange={handleOperationChange}
+                                disabled={operationList && operationList.length === 0}
+                            >
+                                <MenuItem value={-1}>All</MenuItem>
+                                {operationList.map(row => (
+                                    <MenuItem value={row.URL_MAPPING_ID}>
+                                        {row.URL_PATTERN + ' ( ' + row.HTTP_METHOD + ' )'}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    )
+                }
+
                 <FormControl className={classes.formControl}>
                     <TextField
                         id='limit-number'
@@ -132,10 +194,6 @@ function CustomFormGroup(props) {
     );
 }
 
-CustomFormGroup.propTypes = {
-    classes: PropTypes.instanceOf(Object).isRequired,
-};
-
 export default withStyles(styles)(CustomFormGroup);
 
 CustomFormGroup.propTypes = {
@@ -144,6 +202,7 @@ CustomFormGroup.propTypes = {
     handleAPIChange: PropTypes.func.isRequired,
     handleVersionChange: PropTypes.func.isRequired,
     handleOperationChange: PropTypes.func.isRequired,
+    handleGraphQLOperationChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     selectedApp: PropTypes.number.isRequired,
     selectedAPI: PropTypes.number.isRequired,
@@ -154,4 +213,5 @@ CustomFormGroup.propTypes = {
     appList: PropTypes.instanceOf(Object).isRequired,
     versionList: PropTypes.instanceOf(Object).isRequired,
     operationList: PropTypes.instanceOf(Object).isRequired,
+    selectedGraphQLResources: PropTypes.instanceOf(Object).isRequired,
 };

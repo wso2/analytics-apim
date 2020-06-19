@@ -23,15 +23,15 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import {
-    VictoryPie,
+    VictoryPie, VictoryTheme, VictoryClipContainer,
 } from 'victory';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
+import { colorScale } from '@analytics-apim/common-lib';
 import CustomLabel from './CustomLabel';
-
 
 const classes = {
     table: {
@@ -93,8 +93,6 @@ const classes = {
     },
 };
 
-const colorScale = ['tomato', 'orange', 'gold', 'cyan', 'navy'];
-
 function renderData(props) {
     const {
         data, totalErrors, totalRequestCounts, publishSelectedData, viewType, errorType, loading, themeName,
@@ -104,7 +102,7 @@ function renderData(props) {
             background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
         },
-    }
+    };
     if (loading) {
         return (
             <div style={classes.loading}>
@@ -146,7 +144,10 @@ function renderData(props) {
                         data={data}
                         // height={250}
                         style={classes.pieChart}
+                        innerRadius={80}
+                        theme={VictoryTheme.material}
                         labelComponent={<CustomLabel totalRequestCounts={totalRequestCounts} />}
+                        groupComponent={<VictoryClipContainer clipId={0} />}
                         events={[{
                             target: 'data',
                             eventHandlers: {
