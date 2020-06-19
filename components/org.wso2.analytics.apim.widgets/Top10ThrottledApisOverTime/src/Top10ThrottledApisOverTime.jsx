@@ -74,10 +74,12 @@ export default function Top10ThrottledApisOverTime(props) {
     const chartConfig = {
         x: 'TIME',
         charts: [],
-        interactiveLegend: true,
-        legend: true,
         maxLength: 60,
         height: 400,
+        interactiveLegend: true,
+        legend: true,
+        disableVerticalGrid: true,
+        xAxisTickCount: 4,
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
         style: {

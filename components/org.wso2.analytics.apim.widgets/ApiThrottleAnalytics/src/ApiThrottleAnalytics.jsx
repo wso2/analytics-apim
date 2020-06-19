@@ -108,6 +108,7 @@ function ApiThrottleAnalytics(props) {
         maxLength: 60,
         width: 800,
         height: 400,
+        disableVerticalGrid: true,
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
         style: {

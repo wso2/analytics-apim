@@ -74,6 +74,7 @@ export default function PerformanceSummary(props) {
         maxLength: 60,
         interactiveLegend: true,
         legend: true,
+        disableVerticalGrid: true,
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
         style: {

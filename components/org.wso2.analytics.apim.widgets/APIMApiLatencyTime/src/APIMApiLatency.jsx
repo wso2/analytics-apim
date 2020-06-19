@@ -143,6 +143,7 @@ export default function APIMApiLatency(props) {
         height: 400,
         interactiveLegend: true,
         legend: true,
+        disableVerticalGrid: true,
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
         style: {
