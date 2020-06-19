@@ -22,8 +22,6 @@ import {
     VictoryLabel, VictoryTooltip,
 } from 'victory';
 
-// import TextSize from 'victory-util/textsize';
-
 import PropTypes from 'prop-types';
 
 const classes = {
