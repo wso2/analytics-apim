@@ -211,9 +211,14 @@ class OverallFaultAnalyticsWidget extends Widget {
             if (drillDown) {
                 const locationParts = window.location.pathname.split('/');
                 const dashboard = locationParts[locationParts.length - 2];
-
+                const queryParams = {
+                    dtrp: {
+                        tr: '1month',
+                    },
+                };
                 window.location.href = window.contextPath
-                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1month"}}';
+                    + '/dashboards/' + dashboard + '/' + drillDown + '?widgetStates='
+                    + encodeURI(JSON.stringify(queryParams));
             }
         }
     }

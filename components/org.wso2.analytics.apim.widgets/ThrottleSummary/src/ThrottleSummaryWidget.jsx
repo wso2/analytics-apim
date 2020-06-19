@@ -297,10 +297,18 @@ class ThrottleSummaryWidget extends Widget {
                 const provider = splitName[1].split(' (')[1].split(')')[0].trim();
                 const locationParts = window.location.pathname.split('/');
                 const dashboard = locationParts[locationParts.length - 2];
-
+                const queryParams = {
+                    dtrp: {
+                        tr: '1month',
+                    },
+                    dmSelc: {
+                        dm: 'api',
+                        op: [{ name: api, version: apiversion, provider }],
+                    },
+                };
                 window.location.href = window.contextPath
-                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1month"},"dmSelc":{"dm":"api",'
-                    + '"op":[{"name":"' + api + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+                    + '/dashboards/' + dashboard + '/' + drillDown + '?widgetStates='
+                    + encodeURI(JSON.stringify(queryParams));
             }
         }
     }

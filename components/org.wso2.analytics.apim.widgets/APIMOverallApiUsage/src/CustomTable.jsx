@@ -21,7 +21,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import { FormattedMessage } from 'react-intl';
-import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -133,6 +132,9 @@ const styles = theme => ({
     },
     paginationActions: {
         marginLeft: 0,
+    },
+    tableRow: {
+        cursor: 'pointer',
     },
 });
 
@@ -289,6 +291,8 @@ class CustomTable extends React.Component {
                                         <TableRow
                                             hover
                                             tabIndex={-1}
+                                            className={classes.tableRow}
+                                            onClick={() => onClickTableRow(option)}
                                         >
                                             <TableCell component='th' scope='row'>
                                                 <Checkbox
@@ -298,9 +302,7 @@ class CustomTable extends React.Component {
                                                         option.apiname + ':' + option.apiversion,
                                                     )}
                                                 />
-                                                <Link href='#' onClick={() => onClickTableRow(option)} color='inherit'>
-                                                    {option.apiname}
-                                                </Link>
+                                                {option.apiname}
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
                                                 {option.apiversion}

@@ -313,10 +313,15 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                 const provider = (apiname.split('(')[1]).split(')')[0].trim();
                 const locationParts = window.location.pathname.split('/');
                 const dashboard = locationParts[locationParts.length - 2];
-
+                const queryParams = {
+                    dmSelc: {
+                        dm: 'api',
+                        op: [{ name: api, version: apiversion, provider }],
+                    },
+                };
                 window.location.href = window.contextPath
-                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dmSelc":{"dm":"api","op":[{"name":"' + api
-                    + '","version":"' + apiversion + '","provider":"' + provider + '"}]}}';
+                    + '/dashboards/' + dashboard + '/' + drillDown + '?widgetStates='
+                    + encodeURI(JSON.stringify(queryParams));
             }
         }
     }

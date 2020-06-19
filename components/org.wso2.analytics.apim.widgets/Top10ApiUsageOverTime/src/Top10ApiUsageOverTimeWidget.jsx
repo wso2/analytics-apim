@@ -289,17 +289,20 @@ class Top10ApiUsageOverTimeWidget extends Widget {
             const { drillDown } = configs.options;
 
             if (drillDown) {
-                let apiList = selectedOptions.map((opt) => {
-                    return '{"name":"' + opt.name + '","version":"' + opt.version + '","provider":"'
-                        + opt.provider + '"}';
-                });
-                apiList = apiList.join(',');
                 const locationParts = window.location.pathname.split('/');
                 const dashboard = locationParts[locationParts.length - 2];
-
+                const queryParams = {
+                    dtrp: {
+                        tr: '1month',
+                    },
+                    dmSelc: {
+                        dm: 'api',
+                        op: selectedOptions,
+                    },
+                };
                 window.location.href = window.contextPath
-                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"1month"},"dmSelc":{"dm":"api",'
-                    + '"op":[' + apiList + ']}}';
+                    + '/dashboards/' + dashboard + '/' + drillDown + '?widgetStates='
+                    + encodeURI(JSON.stringify(queryParams));
             }
         }
     }

@@ -51,7 +51,7 @@ const lightTheme = createMuiTheme({
  * Query string parameter
  * @type {string}
  */
-const queryParamKey = 'apiUsers';
+const queryParamKey = 'apiUsage';
 
 /**
  * Language
@@ -321,12 +321,24 @@ class APIMApiUsageWidget extends Widget {
                 const provider = (api.split('(')[1]).split(')')[0].trim();
                 const locationParts = window.location.pathname.split('/');
                 const dashboard = locationParts[locationParts.length - 2];
-
+                const queryParams = {
+                    dtrp: {
+                        tr,
+                        sd,
+                        ed,
+                        g,
+                    },
+                    dmSelc: {
+                        dm: 'api',
+                        op: [{ name: apiname, version: apiversion, provider }],
+                    },
+                    apiUsageTime: {
+                        selectedApp: application,
+                    },
+                };
                 window.location.href = window.contextPath
-                    + '/dashboards/' + dashboard + '/' + drillDown + '#{"dtrp":{"tr":"' + tr + '","sd":"' + sd
-                    + '","ed":"' + ed + '","g":"' + g + '"},"dmSelc":{"dm":"api","op":[{"name":"'
-                    + apiname + '","version":"' + apiversion + '","provider":"' + provider + '"}]},'
-                    + '"apiUsageTime":{"selectedApp":"' + application + '"}}';
+                    + '/dashboards/' + dashboard + '/' + drillDown + '?widgetStates='
+                    + encodeURI(JSON.stringify(queryParams));
             }
         }
     }
