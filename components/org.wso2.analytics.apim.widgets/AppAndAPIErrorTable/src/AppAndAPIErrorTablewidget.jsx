@@ -37,7 +37,6 @@ import APIViewErrorTable from './APIViewErrorTable';
 import VersionViewErrorTable from './VersionViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
 import ResourceViewErrorTable from './ResourceViewErrorTable';
-import Moment from "../../APIMSubscriptionsAnalytics/src/APIMSubscriptionsAnalyticsWidget";
 
 const darkTheme = createMuiTheme({
     palette: {
