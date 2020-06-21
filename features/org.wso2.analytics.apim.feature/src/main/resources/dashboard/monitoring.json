@@ -244,8 +244,8 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "defaultValue": "3 Months",
-                            "availableGranularities": "From Second",
+                            "defaultValue": "7 Days",
+                            "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
                             "headerTitle": "Date Time Range"
                           }
@@ -414,8 +414,8 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "defaultValue": "3 Months",
-                            "availableGranularities": "From Second",
+                            "defaultValue": "7 Days",
+                            "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
                             "headerTitle": "Date Time Range"
                           }
@@ -549,8 +549,8 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "defaultValue": "3 Months",
-                            "availableGranularities": "From Second",
+                            "defaultValue": "7 Days",
+                            "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
                             "headerTitle": "Date Time Range"
                           }
@@ -763,8 +763,8 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "defaultValue": "3 Months",
-                            "availableGranularities": "From Second",
+                            "defaultValue": "7 Days",
+                            "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
                             "headerTitle": "Date Time Range"
                           }
@@ -851,6 +851,7 @@
   },
   "permissions": {
     "viewers": [
+      "apim_analytics:admin_any",
       "apim_analytics:admin_carbon.super"
     ],
     "owners": [

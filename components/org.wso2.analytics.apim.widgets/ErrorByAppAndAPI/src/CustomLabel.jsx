@@ -21,18 +21,13 @@ import React from 'react';
 import {
     VictoryLabel, VictoryTooltip,
 } from 'victory';
+
 import PropTypes from 'prop-types';
 
 const classes = {
-    labels: {
-        fill: 'black',
-        fontSize: 18,
-        strokeWidth: 0,
-        stroke: 'black',
-    },
-    flyout: {
+    flyOut: {
         stroke: 'none',
-        fill: 'white',
+        fill: 'black',
     },
 };
 
@@ -55,11 +50,8 @@ class CustomLabel extends React.Component {
                         />
                     )}
                     orientation='top'
-                    style={classes.labels}
-                    flyoutStyle={classes.flyout}
-                    flyoutHeight={70}
-                    // flyoutHeight={60}
-
+                    flyoutStyle={classes.flyOut}
+                    flyoutHeight={80}
                 />
             </g>
         );

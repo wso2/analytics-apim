@@ -94,7 +94,8 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             selectedApp: -1,
             selectedVersion: -1,
             selectedResource: -1,
-            selectedLimit: 5,
+            selectedGraphQLResources: [],
+            selectedLimit: 60,
             data: [],
 
             apiList: [],
@@ -181,6 +182,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         this.handleApplicationChange = this.handleApplicationChange.bind(this);
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleOperationChange = this.handleOperationChange.bind(this);
+        this.handleGraphQLOperationChange = this.handleGraphQLOperationChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
 
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
@@ -276,12 +278,19 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 versionList: [],
                 operationList: [],
             };
+            if (operationID && operationID.length > 0) {
+                state.selectedResource = -1;
+                state.selectedGraphQLResources = operationID;
+            } else {
+                state.selectedResource = operationID;
+            }
             if (appID) {
                 state.selectedApp = appID;
             }
             this.setState(state, () => {
                 this.loadVersions(apiName);
                 this.loadOperations(apiID);
+                document.getElementById('AppAndAPIErrorsByTime').scrollIntoView();
             });
         }
     }
@@ -457,6 +466,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     getQueryForAPI() {
         const {
             selectedAPI, selectedApp, selectedVersion, selectedResource, versionList, operationList, appList,
+            selectedGraphQLResources,
         } = this.state;
         const selectPhase = [];
         const groupByPhase = [];
@@ -473,6 +483,14 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
             filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
             filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
+        }
+        if (selectedGraphQLResources.length > 0) {
+            const opsString = selectedGraphQLResources
+                .map(id => operationList.find(i => i.URL_MAPPING_ID === id))
+                .map(d => d.URL_PATTERN).join(',');
+            const firstOp = operationList.find(i => i.URL_MAPPING_ID === selectedGraphQLResources[0]);
+            filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
+            filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
         }
         if (selectedApp !== -1) {
             const app = appList.find(d => d.APPLICATION_ID === selectedApp);
@@ -519,6 +537,11 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         this.setState({ selectedResource: event.target.value }, this.loadingDrillDownData);
     }
 
+    handleGraphQLOperationChange(event) {
+        const list = event.target.value.filter(d => d !== -1);
+        this.setState({ selectedResource: -1, selectedGraphQLResources: list }, this.loadingDrillDownData);
+    }
+
     handleLimitChange(event) {
         this.setState({ selectedLimit: event.target.value }, this.loadingDrillDownData);
     }
@@ -536,7 +559,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, viewType, drillDownType, valueFormatType, data, loading,
+            localeMessages, viewType, drillDownType, valueFormatType, data, loading, selectedGraphQLResources,
             selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit, apiList, appList,
             versionList, operationList,
         } = this.state;
@@ -551,7 +574,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 <MuiThemeProvider
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
-                    <div style={this.styles.root}>
+                    <div style={this.styles.root} id='AppAndAPIErrorsByTime'>
                         <div style={this.styles.headingWrapper}>
                             <h3 style={this.styles.h3}>
                                 <FormattedMessage
@@ -570,6 +593,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                 selectedAPI={selectedAPI}
                                 selectedVersion={selectedVersion}
                                 selectedResource={selectedResource}
+                                selectedGraphQLResources={selectedGraphQLResources}
                                 selectedLimit={selectedLimit}
 
                                 apiList={apiList}
@@ -581,6 +605,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                 handleAPIChange={this.handleAPIChange}
                                 handleVersionChange={this.handleVersionChange}
                                 handleOperationChange={this.handleOperationChange}
+                                handleGraphQLOperationChange={this.handleGraphQLOperationChange}
                                 handleLimitChange={this.handleLimitChange}
                             />
 
