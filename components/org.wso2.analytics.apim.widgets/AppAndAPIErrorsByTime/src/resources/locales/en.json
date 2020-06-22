@@ -1,3 +1,12 @@
 {
+    "error.count": "No of Errors",
+    "error.percentage": "Error Percentage",
+    "label.apiName": "API Name",
+    "label.app": "Application",
+    "label.apiVersion": "API Version",
+    "label.operation": "Operation",
+    "limit": "Limit",
+    "nodata.error.body": "No data available for the selected options.",
+    "nodata.error.heading": "No Data Available !",
     "widget.heading": "ERROR SUMMARY OVER TIME"
 }

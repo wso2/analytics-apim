@@ -785,49 +785,84 @@ class AppAndAPIErrorTablewidget extends Widget {
                                         <FormControlLabel
                                             value={ViewTypeEnum.APP}
                                             control={<Radio />}
-                                            label='Application and API View'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='view.appAndApi'
+                                                    defaultMessage='Application and API View'
+                                                />
+                                            )}
                                         />
                                         <FormControlLabel
                                             value={ViewTypeEnum.API}
                                             control={<Radio />}
-                                            label='API View'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='view.api'
+                                                    defaultMessage='API View'
+                                                />
+                                            )}
                                         />
                                     </RadioGroup>
                                     <RadioGroup
                                         row
-                                        aria-label='gender'
-                                        name='gender1'
                                         value={valueFormatType}
                                         onChange={this.handleValueFormatTypeChange}
                                     >
                                         <FormControlLabel
                                             value={ValueFormatType.COUNT}
                                             control={<Radio />}
-                                            label='Count'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='value.count'
+                                                    defaultMessage='Count'
+                                                />
+                                            )}
                                         />
                                         <FormControlLabel
                                             value={ValueFormatType.PERCENT}
                                             control={<Radio />}
-                                            label='Percentage'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='value.percentage'
+                                                    defaultMessage='Percentage'
+                                                />
+                                            )}
                                         />
                                     </RadioGroup>
                                     <RadioGroup
                                         row
-                                        aria-label='gender'
-                                        name='gender1'
                                         value={drillDownType}
                                         onChange={this.handleDrillDownChange}
                                     >
-                                        <FormControlLabel value={DrillDownEnum.API} control={<Radio />} label='API' />
+                                        <FormControlLabel
+                                            value={DrillDownEnum.API}
+                                            control={<Radio />}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='drill.api'
+                                                    defaultMessage='API'
+                                                />
+                                            )}
+                                        />
                                         <FormControlLabel
                                             value={DrillDownEnum.VERSION}
                                             control={<Radio />}
-                                            label='Version'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='drill.version'
+                                                    defaultMessage='Version'
+                                                />
+                                            )}
                                         />
                                         <FormControlLabel
                                             value={DrillDownEnum.RESOURCE}
                                             control={<Radio />}
-                                            label='Resource'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='drill.resource'
+                                                    defaultMessage='Resource'
+                                                />
+                                            )}
                                         />
                                     </RadioGroup>
                                 </FormControl>

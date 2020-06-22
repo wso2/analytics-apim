@@ -1,3 +1,10 @@
 {
-    "widget.heading.top.error.summary": "Top Error Summary"
+    "error.count": "No of Errors",
+    "error.percentage": "Error Percentage",
+    "limit": "Limit",
+    "nodata.error.body": "No data available for the selected options.",
+    "nodata.error.heading": "No Data Available !",
+    "view.api": "By APIs",
+    "view.app": "By Applications",
+    "widget.heading": "TOP ERROR SUMMARY"
 }

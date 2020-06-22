@@ -83,9 +83,13 @@ function ErrorsSummaryChart(props) {
                                 <FormControlLabel
                                     value={ViewTypeEnum.APP}
                                     control={<Radio />}
-                                    label='By Applications'
+                                    label={<FormattedMessage id='view.app' defaultMessage='By Applications' />}
                                 />
-                                <FormControlLabel value={ViewTypeEnum.API} control={<Radio />} label='By Apis' />
+                                <FormControlLabel
+                                    value={ViewTypeEnum.API}
+                                    control={<Radio />}
+                                    label={<FormattedMessage id='view.api' defaultMessage='By APIs' />}
+                                />
                             </RadioGroup>
                         </FormControl>
                     </TableRow>
@@ -93,7 +97,7 @@ function ErrorsSummaryChart(props) {
                         <FormControl className={classes.formControl}>
                             <TextField
                                 id='limit-number'
-                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                                 value={selectedLimit}
                                 onChange={handleLimitChange}
                                 type='number'
