@@ -1,3 +1,6 @@
 {
-    "widget.heading.error.summary": "Error Summary"
+    "limit": "Limit",
+    "nodata.error.body": "No data available for the selected options.",
+    "nodata.error.heading": "No Data Available !",
+    "widget.heading": "ERROR SUMMARY"
 }
