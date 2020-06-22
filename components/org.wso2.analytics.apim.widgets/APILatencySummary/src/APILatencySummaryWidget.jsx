@@ -121,7 +121,6 @@ class APILatencySummaryWidget extends Widget {
                 margin: '10px',
                 marginTop: '0px',
                 padding: '20px',
-                paddingTop: '30px',
             },
         };
 

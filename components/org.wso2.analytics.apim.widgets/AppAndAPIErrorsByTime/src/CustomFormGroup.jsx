@@ -75,7 +75,9 @@ function CustomFormGroup(props) {
         <div component={Paper}>
             <div>
                 <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>Application</InputLabel>
+                    <InputLabel id='demo-simple-select-label'>
+                        <FormattedMessage id='label.app' defaultMessage='Application' />
+                    </InputLabel>
                     <Select
                         labelId='demo-simple-select-label'
                         id='demo-simple-select'
@@ -92,7 +94,9 @@ function CustomFormGroup(props) {
                 </FormControl>
 
                 <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>API Name</InputLabel>
+                    <InputLabel id='demo-simple-select-label'>
+                        <FormattedMessage id='label.apiName' defaultMessage='API Name' />
+                    </InputLabel>
                     <Select
                         labelId='demo-simple-select-label'
                         id='demo-simple-select'
@@ -106,7 +110,9 @@ function CustomFormGroup(props) {
                     </Select>
                 </FormControl>
                 <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>API Version</InputLabel>
+                    <InputLabel id='demo-simple-select-label'>
+                        <FormattedMessage id='label.apiVersion' defaultMessage='API Version' />
+                    </InputLabel>
                     <Select
                         labelId='demo-simple-select-label'
                         id='demo-simple-select'
@@ -123,7 +129,9 @@ function CustomFormGroup(props) {
                 { graphQL
                     ? (
                         <FormControl className={classes.formControl}>
-                            <InputLabel id='demo-mutiple-chip-label'>Chip</InputLabel>
+                            <InputLabel id='demo-mutiple-chip-label'>
+                                <FormattedMessage id='label.operation' defaultMessage='Operation' />
+                            </InputLabel>
                             <Select
                                 labelId='demo-mutiple-chip-label'
                                 id='demo-mutiple-chip'
@@ -158,7 +166,9 @@ function CustomFormGroup(props) {
                         </FormControl>
                     ) : (
                         <FormControl className={classes.formControl}>
-                            <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
+                            <InputLabel id='demo-simple-select-label'>
+                                <FormattedMessage id='label.operation' defaultMessage='Operation' />
+                            </InputLabel>
                             <Select
                                 labelId='demo-simple-select-label'
                                 id='demo-simple-select'
@@ -180,7 +190,7 @@ function CustomFormGroup(props) {
                 <FormControl className={classes.formControl}>
                     <TextField
                         id='limit-number'
-                        label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                        label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                         value={selectedLimit}
                         onChange={handleLimitChange}
                         type='number'
