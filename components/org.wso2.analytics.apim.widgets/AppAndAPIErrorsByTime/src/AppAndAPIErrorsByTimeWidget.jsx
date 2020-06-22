@@ -655,6 +655,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                     handleAPIChange={this.handleAPIChange}
                                     handleVersionChange={this.handleVersionChange}
                                     handleOperationChange={this.handleOperationChange}
+                                    handleGraphQLOperationChange={this.handleGraphQLOperationChange}
                                     handleLimitChange={this.handleLimitChange}
                                 />
 

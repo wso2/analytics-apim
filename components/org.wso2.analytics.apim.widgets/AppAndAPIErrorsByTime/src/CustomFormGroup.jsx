@@ -78,7 +78,6 @@ function CustomFormGroup(props) {
                         options={appList}
                         value={selectedApp}
                         onChange={handleApplicationChange}
-                        disabled={appList && appList.length === 0}
                         placeholder='Select Application'
                         getLabel={item => item.NAME + ' ( ' + item.CREATED_BY + ' )'}
                         getValue={item => item.APPLICATION_ID}
@@ -89,7 +88,6 @@ function CustomFormGroup(props) {
                         options={apiList}
                         value={selectedAPI}
                         onChange={handleAPIChange}
-                        disabled={apiList && apiList.length === 0}
                         placeholder='Select API'
                         getLabel={item => item.API_NAME}
                         getValue={item => item.API_NAME}
@@ -100,7 +98,6 @@ function CustomFormGroup(props) {
                         options={versionList}
                         value={selectedVersion}
                         onChange={handleVersionChange}
-                        disabled={versionList && versionList.length === 0}
                         placeholder='Select Version'
                         getLabel={item => item.API_VERSION}
                         getValue={item => item.API_ID}
@@ -112,7 +109,6 @@ function CustomFormGroup(props) {
                         options={operationList}
                         value={selectedResource}
                         onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
-                        disabled={operationList && operationList.length === 0}
                         placeholder='Select Operation'
                         getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
                         getValue={item => item.URL_MAPPING_ID}

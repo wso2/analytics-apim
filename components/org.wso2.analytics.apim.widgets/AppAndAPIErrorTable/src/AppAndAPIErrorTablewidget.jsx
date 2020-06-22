@@ -669,7 +669,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             selectedAPI = value;
             const { drillDownType } = this.state;
             if (drillDownType === DrillDownEnum.VERSION || drillDownType === DrillDownEnum.RESOURCE) {
-                this.loadVersions(event.target.value);
+                this.loadVersions(selectedAPI);
             }
         }
         this.setState({
@@ -689,8 +689,8 @@ class AppAndAPIErrorTablewidget extends Widget {
             const { value } = data;
             selectedVersion = value;
             const { drillDownType } = this.state;
-            if (drillDownType === DrillDownEnum.RESOURCE && event.target.value >= 0) {
-                this.loadOperations(event.target.value);
+            if (drillDownType === DrillDownEnum.RESOURCE) {
+                this.loadOperations(selectedVersion);
             }
         }
         this.setState({
@@ -937,6 +937,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                                     handleAPIChange={this.handleAPIChange}
                                     handleVersionChange={this.handleVersionChange}
                                     handleOperationChange={this.handleOperationChange}
+                                    handleGraphQLOperationChange={this.handleGraphQLOperationChange}
                                     handleLimitChange={this.handleLimitChange}
                                 />
                                 {!loading ? (

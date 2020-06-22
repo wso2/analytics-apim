@@ -37,6 +37,10 @@ const styles = theme => ({
         margin: theme.spacing.unit,
         minWidth: 120,
     },
+    autoSelectForm: {
+        margin: theme.spacing.unit,
+        minWidth: 200,
+    },
     autocomplete: {
         margin: theme.spacing.unit,
         minWidth: 400,
@@ -59,7 +63,7 @@ function CustomFormGroup(props) {
         <div component={Paper}>
             <div>
                 { viewType === ViewTypeEnum.APP ? (
-                    <FormControl className={classes.formControl}>
+                    <FormControl className={classes.autoSelectForm}>
                         <IntegrationReactSelect
                             options={appList}
                             value={selectedApp}
@@ -72,7 +76,7 @@ function CustomFormGroup(props) {
                     </FormControl>
                 ) : '' }
 
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.autoSelectForm}>
                     <IntegrationReactSelect
                         options={apiList}
                         value={selectedAPI}
@@ -85,12 +89,12 @@ function CustomFormGroup(props) {
                 </FormControl>
 
                 { drillDownType === DrillDownEnum.VERSION || drillDownType === DrillDownEnum.RESOURCE ? (
-                    <FormControl className={classes.formControl}>
+                    <FormControl className={classes.autoSelectForm}>
                         <IntegrationReactSelect
                             options={versionList}
                             value={selectedVersion}
                             onChange={handleVersionChange}
-                            disabled={versionList && versionList.length === 0}
+                            // disabled={versionList && versionList.length === 0}
                             placeholder='Select Version'
                             getLabel={item => item.API_VERSION}
                             getValue={item => item.API_ID}
@@ -100,7 +104,7 @@ function CustomFormGroup(props) {
 
                 { drillDownType === DrillDownEnum.RESOURCE
                 && (
-                    <FormControl className={classes.autocomplete}>
+                    <FormControl className={classes.autoSelectForm}>
                         <IntegrationReactSelect
                             isMulti={graphQL}
                             options={operationList}
