@@ -616,6 +616,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                         viewType={viewType}
                                         valueFormatType={valueFormatType}
                                         drillDownType={drillDownType}
+                                        themeName
                                     />
                                 )
                                     : (
