@@ -29,6 +29,7 @@ import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
 import Input from '@material-ui/core/Input';
 import Chip from '@material-ui/core/Chip';
+import IntegrationReactSelect from './IntegrationReactSelect';
 
 // import Autocomplete from '@material-ui/lab/Autocomplete';
 
@@ -41,6 +42,10 @@ const styles = theme => ({
     formControl: {
         margin: theme.spacing.unit,
         minWidth: 120,
+    },
+    newFormControl: {
+        margin: theme.spacing.unit,
+        minWidth: 200,
     },
     autocomplete: {
         margin: theme.spacing.unit,
@@ -65,118 +70,59 @@ const styles = theme => ({
 function CustomFormGroup(props) {
     const {
         classes, selectedApp, selectedAPI, selectedVersion, selectedResource, apiList, appList,
-        versionList, operationList, selectedLimit, selectedGraphQLResources, handleGraphQLOperationChange,
+        versionList, operationList, selectedLimit, handleGraphQLOperationChange,
         handleApplicationChange, handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
     const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
     const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
-
     return (
         <div component={Paper}>
             <div>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>Application</InputLabel>
-                    <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
+                <FormControl className={classes.newFormControl}>
+                    <IntegrationReactSelect
+                        options={appList}
                         value={selectedApp}
                         onChange={handleApplicationChange}
-                    >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {appList.map(row => (
-                            <MenuItem value={row.APPLICATION_ID}>
-                                {row.NAME + ' ( ' + row.CREATED_BY + ' )'}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                        disabled={appList && appList.length === 0}
+                        placeholder='Select Application'
+                        getLabel={item => item.NAME + ' ( ' + item.CREATED_BY + ' )'}
+                        getValue={item => item.APPLICATION_ID}
+                    />
                 </FormControl>
-
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>API Name</InputLabel>
-                    <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
+                <FormControl className={classes.newFormControl}>
+                    <IntegrationReactSelect
+                        options={apiList}
                         value={selectedAPI}
                         onChange={handleAPIChange}
-                    >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {apiList.map(row => (
-                            <MenuItem value={row[0]}>{row[0]}</MenuItem>
-                        ))}
-                    </Select>
+                        disabled={apiList && apiList.length === 0}
+                        placeholder='Select API'
+                        getLabel={item => item.API_NAME}
+                        getValue={item => item.API_NAME}
+                    />
                 </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>API Version</InputLabel>
-                    <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
+                <FormControl className={classes.newFormControl}>
+                    <IntegrationReactSelect
+                        options={versionList}
                         value={selectedVersion}
                         onChange={handleVersionChange}
                         disabled={versionList && versionList.length === 0}
-                    >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {versionList.map(row => (
-                            <MenuItem value={row.API_ID}>{row.API_VERSION}</MenuItem>
-                        ))}
-                    </Select>
+                        placeholder='Select Version'
+                        getLabel={item => item.API_VERSION}
+                        getValue={item => item.API_ID}
+                    />
                 </FormControl>
-                { graphQL
-                    ? (
-                        <FormControl className={classes.formControl}>
-                            <InputLabel id='demo-mutiple-chip-label'>Chip</InputLabel>
-                            <Select
-                                labelId='demo-mutiple-chip-label'
-                                id='demo-mutiple-chip'
-                                multiple
-                                value={selectedGraphQLResources}
-                                onChange={handleGraphQLOperationChange}
-                                input={<Input id='select-multiple-chip' />}
-                                renderValue={(selected) => {
-                                    return (
-                                        <div className={classes.chips}>
-                                            {selected.map((opID) => {
-                                                const foundOp = operationList.find(i => i.URL_MAPPING_ID === opID);
-                                                return (
-                                                    <Chip
-                                                        key={opID}
-                                                        label={foundOp.URL_PATTERN + ' ( ' + foundOp.HTTP_METHOD + ' )'}
-                                                        className={classes.chip}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    );
-                                }}
-                                // MenuProps={MenuProps}
-                            >
-                                {operationList.map(row => (
-                                    <MenuItem value={row.URL_MAPPING_ID}>
-                                        {row.URL_PATTERN + ' ( ' + row.HTTP_METHOD + ' )'}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    ) : (
-                        <FormControl className={classes.formControl}>
-                            <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
-                            <Select
-                                labelId='demo-simple-select-label'
-                                id='demo-simple-select'
-                                value={selectedResource}
-                                onChange={handleOperationChange}
-                                disabled={operationList && operationList.length === 0}
-                            >
-                                <MenuItem value={-1}>All</MenuItem>
-                                {operationList.map(row => (
-                                    <MenuItem value={row.URL_MAPPING_ID}>
-                                        {row.URL_PATTERN + ' ( ' + row.HTTP_METHOD + ' )'}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    )
-                }
-
+                <FormControl className={classes.newFormControl}>
+                    <IntegrationReactSelect
+                        isMulti={graphQL}
+                        options={operationList}
+                        value={selectedResource}
+                        onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
+                        disabled={operationList && operationList.length === 0}
+                        placeholder='Select Operation'
+                        getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
+                        getValue={item => item.URL_MAPPING_ID}
+                    />
+                </FormControl>
                 <FormControl className={classes.formControl}>
                     <TextField
                         id='limit-number'
@@ -213,5 +159,4 @@ CustomFormGroup.propTypes = {
     appList: PropTypes.instanceOf(Object).isRequired,
     versionList: PropTypes.instanceOf(Object).isRequired,
     operationList: PropTypes.instanceOf(Object).isRequired,
-    selectedGraphQLResources: PropTypes.instanceOf(Object).isRequired,
 };

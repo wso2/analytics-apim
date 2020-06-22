@@ -94,7 +94,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             selectedApp: -1,
             selectedVersion: -1,
             selectedResource: -1,
-            selectedGraphQLResources: [],
             selectedLimit: 60,
             data: [],
 
@@ -260,6 +259,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         const {
             from, to, granularity, apiName, apiID, operationID, appID,
         } = receivedMsg;
+        console.log(receivedMsg)
 
         if (from && to && granularity) {
             this.setState({
@@ -278,9 +278,8 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 versionList: [],
                 operationList: [],
             };
-            if (operationID && operationID.length > 0) {
-                state.selectedResource = -1;
-                state.selectedGraphQLResources = operationID;
+            if (Array.isArray(operationID)) {
+                state.selectedResource = operationID;
             } else {
                 state.selectedResource = operationID;
             }
@@ -367,8 +366,19 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     }
 
     handleLoadApis(message) {
-        const { data } = message;
-        this.setState({ apiList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+        if (data.length !== 0) {
+            this.setState({ apiList: newData }, this.versionLoadCallBack);
+        } else {
+            this.setState({ apiList: [] });
+        }
     }
 
     handleLoadVersions(message) {
@@ -466,7 +476,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     getQueryForAPI() {
         const {
             selectedAPI, selectedApp, selectedVersion, selectedResource, versionList, operationList, appList,
-            selectedGraphQLResources,
         } = this.state;
         const selectPhase = [];
         const groupByPhase = [];
@@ -479,18 +488,21 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             const api = versionList.find(i => i.API_ID === selectedVersion);
             filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
-        if (operationList.length > 0 && selectedResource > -1) {
-            const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
-            filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
-            filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
-        }
-        if (selectedGraphQLResources.length > 0) {
-            const opsString = selectedGraphQLResources
-                .map(id => operationList.find(i => i.URL_MAPPING_ID === id))
-                .map(d => d.URL_PATTERN).join(',');
-            const firstOp = operationList.find(i => i.URL_MAPPING_ID === selectedGraphQLResources[0]);
-            filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
-            filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
+        if (Array.isArray(selectedResource)) {
+            if (selectedResource.length > 0) {
+                const opsString = selectedResource
+                    .map(id => operationList.find(i => i.URL_MAPPING_ID === id))
+                    .map(d => d.URL_PATTERN).join(',');
+                const firstOp = operationList.find(i => i.URL_MAPPING_ID === selectedResource[0]);
+                filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
+                filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
+            }
+        } else {
+            if (selectedResource > -1) {
+                const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
+                filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
+                filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
+            }
         }
         if (selectedApp !== -1) {
             const app = appList.find(d => d.APPLICATION_ID === selectedApp);
@@ -509,37 +521,77 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
 
     // start of handle filter change
-    handleApplicationChange(event) {
-        this.setState({ selectedApp: event.target.value }, this.loadingDrillDownData);
+    handleApplicationChange(data) {
+        let selectedApp;
+        if (data == null) {
+            selectedApp = -1;
+        } else {
+            const { value } = data;
+            selectedApp = value;
+        }
+        this.setState({
+            selectedApp,
+        }, this.loadingDrillDownData);
     }
 
-    handleAPIChange(event) {
+    handleAPIChange(data) {
+        let selectedAPI;
+        if (data == null) {
+            selectedAPI = -1;
+        } else {
+            const { value } = data;
+            selectedAPI = value;
+            this.loadVersions(value);
+        }
         this.setState({
-            selectedAPI: event.target.value,
+            selectedAPI,
             versionList: [],
             operationList: [],
             selectedVersion: -1,
             selectedResource: -1,
         }, this.loadingDrillDownData);
-        this.loadVersions(event.target.value);
     }
 
-    handleVersionChange(event) {
+    handleVersionChange(data) {
+        let selectedVersion;
+        if (data == null) {
+            selectedVersion = -1;
+        } else {
+            const { value } = data;
+            selectedVersion = value;
+            this.loadOperations(value);
+        }
         this.setState({
-            selectedVersion: event.target.value,
-            operationList: [],
+            selectedVersion,
             selectedResource: -1,
+            operationList: [],
         }, this.loadingDrillDownData);
-        this.loadOperations(event.target.value);
     }
 
-    handleOperationChange(event) {
-        this.setState({ selectedResource: event.target.value }, this.loadingDrillDownData);
+    handleOperationChange(data) {
+        let selectedResource;
+        if (data == null) {
+            selectedResource = -1;
+        } else {
+            const { value } = data;
+            selectedResource = value;
+        }
+        this.setState({
+            selectedResource,
+        }, this.loadingDrillDownData);
     }
 
-    handleGraphQLOperationChange(event) {
-        const list = event.target.value.filter(d => d !== -1);
-        this.setState({ selectedResource: -1, selectedGraphQLResources: list }, this.loadingDrillDownData);
+    handleGraphQLOperationChange(data) {
+        let selectedResource;
+        if (data == null || data.length === 0) {
+            selectedResource = -1;
+        } else {
+            const ids = data.map(row => row.value);
+            selectedResource = ids;
+        }
+        this.setState({
+            selectedResource,
+        }, this.loadingDrillDownData);
     }
 
     handleLimitChange(event) {
@@ -559,7 +611,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, viewType, drillDownType, valueFormatType, data, loading, selectedGraphQLResources,
+            localeMessages, viewType, drillDownType, valueFormatType, data, loading,
             selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit, apiList, appList,
             versionList, operationList,
         } = this.state;
@@ -593,7 +645,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                 selectedAPI={selectedAPI}
                                 selectedVersion={selectedVersion}
                                 selectedResource={selectedResource}
-                                selectedGraphQLResources={selectedGraphQLResources}
                                 selectedLimit={selectedLimit}
 
                                 apiList={apiList}

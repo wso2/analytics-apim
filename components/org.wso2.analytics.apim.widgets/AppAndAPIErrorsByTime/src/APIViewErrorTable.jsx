@@ -105,7 +105,7 @@ class APIViewErrorTable extends React.Component {
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
-                            grid: { stroke: () => 0 },
+                            grid: { strokeDasharray: '10, 5', strokeWidth: 0.5, strokeOpacity: 0.3 },
                             ticks: { stroke: 'grey', size: 5 },
                             tickLabels: { fontSize: 9, padding: 5 },
                         }}

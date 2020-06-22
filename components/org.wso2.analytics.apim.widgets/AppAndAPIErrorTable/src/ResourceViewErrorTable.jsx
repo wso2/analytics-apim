@@ -41,7 +41,7 @@ const styles = theme => ({
         overflowX: 'auto',
     },
     selectEmpty: {
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing.unit * 2,
     },
     hover: {
         cursor: 'pointer',
