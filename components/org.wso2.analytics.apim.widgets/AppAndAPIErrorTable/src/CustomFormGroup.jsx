@@ -21,9 +21,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
@@ -53,10 +50,10 @@ const styles = theme => ({
 function CustomFormGroup(props) {
     const {
         classes, viewType, drillDownType, selectedApp, selectedAPI, selectedVersion, selectedResource, apiList, appList,
-        versionList, operationList, selectedLimit, handleGraphQLOperationChange, selectedGraphQLResources,
+        versionList, operationList, selectedLimit, handleGraphQLOperationChange,
         handleApplicationChange, handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
-    const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION']
+    const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
     const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
     return (
         <div component={Paper}>
@@ -101,27 +98,6 @@ function CustomFormGroup(props) {
                     </FormControl>
                 ) : '' }
 
-                { drillDownType === DrillDownEnum.RESOURCE && !graphQL
-                && (
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
-                        <Select
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
-                            value={selectedResource}
-                            onChange={handleOperationChange}
-                            disabled={operationList && operationList.length === 0}
-                        >
-                            <MenuItem value={-1}>All</MenuItem>
-                            {operationList.map(row => (
-                                <MenuItem value={row.URL_MAPPING_ID}>
-                                    {row.URL_PATTERN + ' ( ' + row.HTTP_METHOD + ' )'}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                )}
-
                 { drillDownType === DrillDownEnum.RESOURCE
                 && (
                     <FormControl className={classes.autocomplete}>
@@ -141,7 +117,7 @@ function CustomFormGroup(props) {
                 <FormControl className={classes.formControl}>
                     <TextField
                         id='limit-number'
-                        label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                        label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                         value={selectedLimit}
                         onChange={handleLimitChange}
                         type='number'
@@ -172,7 +148,6 @@ CustomFormGroup.propTypes = {
     appList: PropTypes.instanceOf(Object).isRequired,
     versionList: PropTypes.instanceOf(Object).isRequired,
     operationList: PropTypes.instanceOf(Object).isRequired,
-    selectedGraphQLResources: PropTypes.instanceOf(Object).isRequired,
     viewType: PropTypes.string.isRequired,
     drillDownType: PropTypes.string.isRequired,
 };

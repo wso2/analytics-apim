@@ -106,14 +106,13 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
         this.styles = {
             // Insert styles Here
-            h3: {
-                borderBottom: '1px solid #fff',
-                paddingBottom: '10px',
+            heading: {
                 margin: 'auto',
-                marginTop: 0,
-                textAlign: 'left',
+                textAlign: 'center',
                 fontWeight: 'normal',
                 letterSpacing: 1.5,
+                paddingBottom: '10px',
+                marginTop: 0,
             },
             headingWrapper: {
                 margin: 'auto',
@@ -130,9 +129,10 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 fontWeight: 'bold',
                 letterSpacing: 1.5,
             },
-            content: {
-                marginTop: '20px',
-                textAlign: 'center',
+            contentWrapper: {
+                margin: '10px',
+                marginTop: '0px',
+                padding: '20px',
             },
             root: {
                 backgroundColor: this.props.muiTheme.name === 'light' ? '#fff' : '#0e1e34',
@@ -259,8 +259,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         const {
             from, to, granularity, apiName, apiID, operationID, appID,
         } = receivedMsg;
-        console.log(receivedMsg)
-
         if (from && to && granularity) {
             this.setState({
                 // Insert the code to handle publisher data
@@ -627,53 +625,55 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
                     <div style={this.styles.root} id='AppAndAPIErrorsByTime'>
-                        <div style={this.styles.headingWrapper}>
-                            <h3 style={this.styles.h3}>
-                                <FormattedMessage
-                                    id='widget.heading.error.summary.overtime'
-                                    defaultMessage='Error Summary Over Time'
-                                />
-                            </h3>
-                        </div>
-                        <div style={this.styles.dataWrapper}>
-                            <CustomFormGroup
-                                viewType={viewType}
-                                valueFormatType={valueFormatType}
-                                drillDownType={drillDownType}
-
-                                selectedApp={selectedApp}
-                                selectedAPI={selectedAPI}
-                                selectedVersion={selectedVersion}
-                                selectedResource={selectedResource}
-                                selectedLimit={selectedLimit}
-
-                                apiList={apiList}
-                                appList={appList}
-                                versionList={versionList}
-                                operationList={operationList}
-
-                                handleApplicationChange={this.handleApplicationChange}
-                                handleAPIChange={this.handleAPIChange}
-                                handleVersionChange={this.handleVersionChange}
-                                handleOperationChange={this.handleOperationChange}
-                                handleGraphQLOperationChange={this.handleGraphQLOperationChange}
-                                handleLimitChange={this.handleLimitChange}
-                            />
-
-                            {!loading ? (
-                                <this.renderDrillDownTable
-                                    data={data}
+                        <div style={this.styles.contentWrapper}>
+                            <div style={this.styles.headingWrapper}>
+                                <h3 style={this.styles.heading}>
+                                    <FormattedMessage
+                                        id='widget.heading'
+                                        defaultMessage='ERROR SUMMARY OVER TIME'
+                                    />
+                                </h3>
+                            </div>
+                            <div style={this.styles.dataWrapper}>
+                                <CustomFormGroup
                                     viewType={viewType}
                                     valueFormatType={valueFormatType}
                                     drillDownType={drillDownType}
+
+                                    selectedApp={selectedApp}
+                                    selectedAPI={selectedAPI}
+                                    selectedVersion={selectedVersion}
+                                    selectedResource={selectedResource}
+                                    selectedLimit={selectedLimit}
+
+                                    apiList={apiList}
+                                    appList={appList}
+                                    versionList={versionList}
+                                    operationList={operationList}
+
+                                    handleApplicationChange={this.handleApplicationChange}
+                                    handleAPIChange={this.handleAPIChange}
+                                    handleVersionChange={this.handleVersionChange}
+                                    handleOperationChange={this.handleOperationChange}
+                                    handleLimitChange={this.handleLimitChange}
                                 />
-                            )
-                                : (
-                                    <div style={this.styles.loading}>
-                                        <CircularProgress style={this.styles.loadingIcon} />
-                                    </div>
+
+                                {!loading ? (
+                                    <this.renderDrillDownTable
+                                        data={data}
+                                        viewType={viewType}
+                                        valueFormatType={valueFormatType}
+                                        drillDownType={drillDownType}
+                                        themeName
+                                    />
                                 )
-                            }
+                                    : (
+                                        <div style={this.styles.loading}>
+                                            <CircularProgress style={this.styles.loadingIcon} />
+                                        </div>
+                                    )
+                                }
+                            </div>
                         </div>
                     </div>
                 </MuiThemeProvider>

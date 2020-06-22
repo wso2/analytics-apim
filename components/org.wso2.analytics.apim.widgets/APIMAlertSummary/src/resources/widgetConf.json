@@ -38,7 +38,7 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "Overall Api Info"
+        "defaultValue": "Alert Summary"
       }
     ]
   }

@@ -168,28 +168,41 @@ class APIViewErrorTable extends React.Component {
                             <TableRow className={classes.header}>
                                 { viewType === ViewTypeEnum.APP ? (
                                     <TableCell rowSpan={2} className={classes.headerCell}>
-                                        Application
+                                        <FormattedMessage id='table.column.app' defaultMessage='Application' />
                                     </TableCell>
                                 ) : '' }
-                                <TableCell align='right' rowSpan={2} className={classes.headerCell}>API Name</TableCell>
+                                <TableCell align='right' rowSpan={2} className={classes.headerCell}>
+                                    <FormattedMessage id='table.column.apiName' defaultMessage='API Name' />
+                                </TableCell>
                                 <TableCell align='center' colSpan={4} className={classes.border}>
-                                    Response Hit
+                                    <FormattedMessage id='table.column.responseHit' defaultMessage='Response Hit' />
                                 </TableCell>
                                 <TableCell align='right' rowSpan={2} className={classes.headerCell}>
-                                    Total Faulty
+                                    <FormattedMessage id='table.column.totalFaulty' defaultMessage='Total Faulty' />
                                 </TableCell>
                                 <TableCell align='right' rowSpan={2} className={classes.headerCell}>
-                                    Total Throttled
+                                    <FormattedMessage
+                                        id='table.column.totalThrottled'
+                                        defaultMessage='Total Throttled'
+                                    />
                                 </TableCell>
                                 <TableCell align='right' rowSpan={2} className={classes.headerCell}>
-                                    Total Requests
+                                    <FormattedMessage id='table.column.totalRequests' defaultMessage='Total Requests' />
                                 </TableCell>
                             </TableRow>
                             <TableRow className={classes.header}>
-                                <TableCell align='right' className={classes.headerCell}>4xx</TableCell>
-                                <TableCell align='right' className={classes.headerCell}>5xx</TableCell>
-                                <TableCell align='right' className={classes.headerCell}>Total Errors</TableCell>
-                                <TableCell align='right' className={classes.headerCell}>Total Success</TableCell>
+                                <TableCell align='right' className={classes.headerCell}>
+                                    <FormattedMessage id='table.column.4xx' defaultMessage='4xx' />
+                                </TableCell>
+                                <TableCell align='right' className={classes.headerCell}>
+                                    <FormattedMessage id='table.column.5xx' defaultMessage='5xx' />
+                                </TableCell>
+                                <TableCell align='right' className={classes.headerCell}>
+                                    <FormattedMessage id='table.column.totalErrors' defaultMessage='Total Errors' />
+                                </TableCell>
+                                <TableCell align='right' className={classes.headerCell}>
+                                    <FormattedMessage id='table.column.totalSuccess' defaultMessage='Total Success' />
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
