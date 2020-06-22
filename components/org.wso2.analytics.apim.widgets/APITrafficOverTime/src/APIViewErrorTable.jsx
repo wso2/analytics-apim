@@ -20,28 +20,28 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
-import {
-    VictoryBar,
-    VictoryChart,
-    VictoryTheme,
-    VictoryStack,
-    VictoryAxis,
-    VictoryTooltip,
-    VictoryClipContainer,
-    VictoryLabel,
-} from 'victory';
-import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import { withStyles } from '@material-ui/core/styles';
+import {
+    VictoryVoronoiContainer,
+    VictoryChart,
+    VictoryTheme,
+    VictoryAxis,
+    VictoryTooltip,
+    VictoryLabel,
+    VictoryStack,
+    VictoryBar,
+} from 'victory';
 import Moment from 'moment';
+import { FormattedMessage } from 'react-intl';
 
 const styles = theme => ({
     table: {
@@ -53,12 +53,17 @@ const styles = theme => ({
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
     },
+    root: {
+        display: 'flex',
+    },
+    formControl: {
+        margin: 2,
+    },
 });
 
 const colorScale = ['tomato', 'orange', 'gold', 'green', 'blue', 'red'];
 
 class APIViewErrorTable extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -69,8 +74,7 @@ class APIViewErrorTable extends React.Component {
         this.handleSuccessSelectChange = this.handleSuccessSelectChange.bind(this);
         this.handleFaultySelectChange = this.handleFaultySelectChange.bind(this);
         this.handleTrottledSelectChange = this.handleTrottledSelectChange.bind(this);
-        this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
-        this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
+        this.getChartForAPI = this.getChartForAPI.bind(this);
 
         this.styles = {
             dataWrapper: {
@@ -86,13 +90,12 @@ class APIViewErrorTable extends React.Component {
         };
     }
 
-    getPieChartForAPI() {
-        const { data, handleOnClick } = this.props;
+    getChartForAPI() {
+        const timeFormat = 'DD/MM, HH:mm:ss';
+        const { data } = this.props;
         const {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
-        const barRatio = 0.2;
-        const timeFormat = 'DD/MM, HH:mm:ss';
         return (
             <div>
                 <VictoryChart
@@ -104,11 +107,18 @@ class APIViewErrorTable extends React.Component {
                     theme={VictoryTheme.material}
                     height={400}
                     width={800}
+                    containerComponent={
+                        <VictoryVoronoiContainer />
+                    }
                     // style={{ parent: { maxWidth: 800 } }}
                     // scale={{ x: 20 }}
                 >
                     <VictoryAxis
-                        label={() => 'API Operation'}
+                        label={() => 'Time'}
+                        tickFormat={(time) => {
+                            const moment = Moment(Number(time));
+                            return moment.format(timeFormat);
+                        }}
                         tickLabelComponent={<VictoryLabel angle={45} />}
                         style={{
                             axis: { stroke: '#756f6a' },
@@ -129,13 +139,12 @@ class APIViewErrorTable extends React.Component {
                             tickLabels: { fontSize: 9, padding: 5 },
                         }}
                     />
-
                     <VictoryStack>
                         { successSelected && (
                             <VictoryBar
                                 style={{ data: { fill: colorScale[3] } }}
                                 alignment='start'
-                                barRatio={barRatio}
+                                barRatio={0.5}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Success Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
@@ -144,28 +153,13 @@ class APIViewErrorTable extends React.Component {
                                 x={d => d.AGG_TIMESTAMP}
                                 y={d => d.successCount}
                                 labelComponent={<VictoryTooltip />}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                                events={[
-                                    {
-                                        target: 'data',
-                                        eventHandlers: {
-                                            onClick: (e) => {
-                                                return [{
-                                                    mutation: (val) => {
-                                                        handleOnClick(e, val.datum);
-                                                    },
-                                                }];
-                                            },
-                                        },
-                                    },
-                                ]}
                             />
-                        )}
+                        ) }
                         { faultySelected && (
                             <VictoryBar
                                 style={{ data: { fill: colorScale[1] } }}
                                 alignment='start'
-                                barRatio={barRatio}
+                                barRatio={0.5}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Faulty Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
@@ -173,28 +167,14 @@ class APIViewErrorTable extends React.Component {
                                 }))}
                                 x={d => d.AGG_TIMESTAMP}
                                 y={d => d.faultCount}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                                events={[
-                                    {
-                                        target: 'data',
-                                        eventHandlers: {
-                                            onClick: (e) => {
-                                                return [{
-                                                    mutation: (val) => {
-                                                        handleOnClick(e, val.datum);
-                                                    },
-                                                }];
-                                            },
-                                        },
-                                    },
-                                ]}
+                                labelComponent={<VictoryTooltip />}
                             />
-                        )}
+                        ) }
                         { throttledSelected && (
                             <VictoryBar
                                 style={{ data: { fill: colorScale[0] } }}
                                 alignment='start'
-                                barRatio={barRatio}
+                                barRatio={0.5}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Throttled Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
@@ -203,25 +183,11 @@ class APIViewErrorTable extends React.Component {
                                 x={d => d.AGG_TIMESTAMP}
                                 y={d => d.throttledCount}
                                 labelComponent={<VictoryTooltip />}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                                events={[
-                                    {
-                                        target: 'data',
-                                        eventHandlers: {
-                                            onClick: (e) => {
-                                                return [{
-                                                    mutation: (val) => {
-                                                        handleOnClick(e, val.datum);
-                                                    },
-                                                }];
-                                            },
-                                        },
-                                    },
-                                ]}
                             />
-                        )}
+                        ) }
                     </VictoryStack>
                 </VictoryChart>
+
             </div>
         );
     }
@@ -245,7 +211,6 @@ class APIViewErrorTable extends React.Component {
     }
 
     render() {
-        const { data } = this.props;
         const {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
@@ -269,6 +234,7 @@ class APIViewErrorTable extends React.Component {
                 color: colorScale[0],
             },
         ];
+        const { data } = this.props;
         if (data.length === 0) {
             return (
                 <div style={this.styles.dataWrapper}>
@@ -298,7 +264,7 @@ class APIViewErrorTable extends React.Component {
                 <TableBody>
                     <TableRow>
                         <TableCell>
-                            { this.getPieChartForAPI() }
+                            { this.getChartForAPI() }
                         </TableCell>
                         <TableCell>
                             <FormGroup>
@@ -331,7 +297,6 @@ class APIViewErrorTable extends React.Component {
 
 APIViewErrorTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
-    handleOnClick: PropTypes.func.isRequired,
     themeName: PropTypes.string.isRequired,
 };
 

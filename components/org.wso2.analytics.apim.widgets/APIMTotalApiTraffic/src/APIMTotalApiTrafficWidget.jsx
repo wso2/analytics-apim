@@ -285,7 +285,7 @@ class APIMTotalApiTrafficWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiUsageProps = {
-            themeName, height, usageData, limit, inProgress,
+            themeName, height, usageData, limit, inProgress, ...this.props,
         };
 
         return (

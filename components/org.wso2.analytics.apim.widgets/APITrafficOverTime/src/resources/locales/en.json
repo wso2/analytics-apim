@@ -1,0 +1,9 @@
+{
+    "label.apiname": "API Name",
+    "label.apiversion": "API Version",
+    "label.operation": "Operation",
+    "limit": "Limit",
+    "nodata.error.body": "No data available for the selected options",
+    "nodata.error.heading": "No Data Available !",
+    "widget.heading": "API TRAFFIC OVERTIME"
+}
