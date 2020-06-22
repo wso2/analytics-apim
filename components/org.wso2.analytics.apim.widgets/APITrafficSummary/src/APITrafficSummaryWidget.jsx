@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 /*
  *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -270,7 +271,10 @@ class APITrafficSummaryWidget extends Widget {
 
     handleLoadApis(message) {
         const { data } = message;
-        this.setState({ apiList: data });
+        const apiList = data.map(([apiName]) => {
+            return apiName;
+        });
+        this.setState({ apiList });
     }
 
     handleLoadVersions(message) {
@@ -361,18 +365,17 @@ class APITrafficSummaryWidget extends Widget {
         const selectPhase = [];
         const groupByPhase = [];
         const filterPhase = [];
-
         groupByPhase.push('apiName');
-        if (selectedAPI.length > 0) {
+        if (selectedAPI !== -1) {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
             groupByPhase.push('apiVersion');
         }
-        if (selectedVersion > -1) {
+        if (selectedVersion !== -1) {
             const ver = versionList[selectedVersion][1];
             filterPhase.push('apiVersion==\'' + ver + '\'');
             groupByPhase.push('apiResourceTemplate');
         }
-        if (selectedResource > -1) {
+        if (selectedResource !== -1) {
             const template = operationList[selectedResource][0];
             const verb = operationList[selectedResource][1];
             filterPhase.push('apiResourceTemplate==\'' + template + '\'');
@@ -384,8 +387,6 @@ class APITrafficSummaryWidget extends Widget {
             'sum(successCount) as successCount',
             'sum(faultCount) as faultCount',
             'sum(throttledCount) as throttledCount');
-            
-        console.log(selectedAPI, selectedVersion, selectedResource);
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
     }
 

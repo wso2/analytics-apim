@@ -67,7 +67,7 @@ function CustomFormGroup(props) {
         versionList, operationList, selectedLimit,
         handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
-
+    console.log('version',versionList);
     return (
         <div component={Paper}>
             <div className={classes.formWrapper}>

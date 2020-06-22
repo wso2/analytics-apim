@@ -31,6 +31,7 @@ import {
     VictoryTooltip,
     VictoryClipContainer,
     VictoryLabel,
+    VictoryGroup,
 } from 'victory';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -87,16 +88,17 @@ class APIViewErrorTable extends React.Component {
     }
 
     getPieChartForAPI() {
-        const { data, handleOnClick } = this.props;
+        const { data, handleOnClick, themeName } = this.props;
         const {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
         const barRatio = 0.2;
         const timeFormat = 'DD/MM, HH:mm:ss';
+        console.log(data);
         return (
             <div>
                 <VictoryChart
-                    responsive={false}
+                    responsive
                     domainPadding={{ x: [20, 20] }}
                     padding={{
                         top: 50, bottom: 50, right: 50, left: 50,
@@ -104,8 +106,6 @@ class APIViewErrorTable extends React.Component {
                     theme={VictoryTheme.material}
                     height={400}
                     width={800}
-                    // style={{ parent: { maxWidth: 800 } }}
-                    // scale={{ x: 20 }}
                 >
                     <VictoryAxis
                         label={() => 'API Operation'}
@@ -136,12 +136,15 @@ class APIViewErrorTable extends React.Component {
                                 style={{ data: { fill: colorScale[3] } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                x={
+                                    d => (d ? d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )' : undefined)
+                                }
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Success Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
                                         row.successCount],
                                 }))}
-                                x={d => d.AGG_TIMESTAMP}
                                 y={d => d.successCount}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
@@ -171,8 +174,12 @@ class APIViewErrorTable extends React.Component {
                                     label: ['Faulty Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
                                         row.faultCount],
                                 }))}
-                                x={d => d.AGG_TIMESTAMP}
+                                x={
+                                    d => (d ? d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )' : undefined)
+                                }
                                 y={d => d.faultCount}
+                                labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
                                 events={[
                                     {
@@ -190,6 +197,7 @@ class APIViewErrorTable extends React.Component {
                                 ]}
                             />
                         )}
+
                         { throttledSelected && (
                             <VictoryBar
                                 style={{ data: { fill: colorScale[0] } }}
@@ -200,7 +208,10 @@ class APIViewErrorTable extends React.Component {
                                     label: ['Throttled Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
                                         row.throttledCount],
                                 }))}
-                                x={d => d.AGG_TIMESTAMP}
+                                x={
+                                    d => (d ? d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )' : undefined)
+                                }
                                 y={d => d.throttledCount}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
