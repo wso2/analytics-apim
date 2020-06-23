@@ -439,7 +439,6 @@ class APITrafficOverTimeWidget extends Widget {
             }
             return obj;
         });
-
         if (data.length !== 0) {
             this.setState({ data: newData, loading: false });
         } else {

@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 /*
  *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -27,6 +28,7 @@ import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
+import { RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
 
 const styles = theme => ({
     table: {
@@ -67,7 +69,6 @@ function CustomFormGroup(props) {
         versionList, operationList, selectedLimit,
         handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
-    console.log('version',versionList);
     return (
         <div component={Paper}>
             <div className={classes.formWrapper}>
