@@ -527,14 +527,14 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 5.71284125379171,
+                  "height": 5.269192453421827,
                   "content": [
                     {
                       "title": "[Date Time Range]",
                       "type": "component",
                       "component": "DateRangePicker",
                       "props": {
-                        "id": "b9dc4573-f4b7-4d26-8080-6dedbcbfb737",
+                        "id": "8444e364-7fcb-4702-be59-5075bdd25b0a",
                         "configs": {
                           "pubsub": {
                             "types": [
@@ -549,8 +549,8 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "defaultValue": "7 Days",
-                            "availableGranularities": "From Hour",
+                            "defaultValue": "3 Months",
+                            "availableGranularities": "From Second",
                             "autoSyncInterval": "30",
                             "headerTitle": "Date Time Range"
                           }
@@ -569,27 +569,72 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 94.28715874620832,
+                  "height": 56.4411576260761,
                   "content": [
                     {
-                      "title": "API Traffic Summary]",
+                      "title": "API Traffic Summary",
                       "type": "component",
                       "component": "APITrafficSummary",
                       "props": {
-                        "id": "7df421af-099d-4697-bda1-40095a6dc7ac",
+                        "id": "1419a6d4-1b0c-4181-9e97-68332c791976",
+                        "configs": {
+                          "pubsub": {
+                            "types": [
+                              "subscriber",
+                              "publisher"
+                            ],
+                            "publisherWidgetOutputs": [
+                              "api",
+                              "version",
+                              "resource"
+                            ],
+                            "publishers": [
+                              "8444e364-7fcb-4702-be59-5075bdd25b0a"
+                            ]
+                          },
+                          "isGenerated": false,
+                          "options": {
+                            "header": true,
+                            "headerTitle": "API Traffic Summary",
+                            "drillDown": true
+                          }
+                        },
+                        "widgetID": "APITrafficSummary"
+                      },
+                      "isClosable": false,
+                      "header": {
+                        "show": true
+                      },
+                      "componentName": "lm-react-component"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "isClosable": true,
+                  "title": "",
+                  "height": 38.289649920502065,
+                  "content": [
+                    {
+                      "title": "[APITrafficOverTimeWidget]",
+                      "type": "component",
+                      "component": "APITrafficOverTime",
+                      "props": {
+                        "id": "5add67f8-3507-4519-9608-31dd4c40b90c",
                         "configs": {
                           "pubsub": {
                             "types": [
                               "subscriber"
                             ],
                             "publishers": [
-                              "b9dc4573-f4b7-4d26-8080-6dedbcbfb737"
+                              "8444e364-7fcb-4702-be59-5075bdd25b0a",
+                              "1419a6d4-1b0c-4181-9e97-68332c791976"
                             ]
                           },
                           "isGenerated": false,
                           "options": {}
                         },
-                        "widgetID": "APITrafficSummary"
+                        "widgetID": "APITrafficOverTime"
                       },
                       "isClosable": false,
                       "header": {
@@ -838,6 +883,7 @@
       "AppAndAPIErrorsByTime",
       "AppAndAPIErrorTable",
       "APIMOverallApiInfo",
+      "APITrafficOverTime",
       "APILatencyOverTime",
       "APIMAlertSummary",
       "DateRangePicker",
@@ -851,7 +897,6 @@
   },
   "permissions": {
     "viewers": [
-      "apim_analytics:admin_any",
       "apim_analytics:admin_carbon.super"
     ],
     "owners": [

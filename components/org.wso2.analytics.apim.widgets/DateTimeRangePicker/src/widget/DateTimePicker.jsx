@@ -806,13 +806,11 @@ class DateTimePicker extends Widget {
         this.state.granularityValue
       );
     }
-    const { granularityMode } = this.state;
-    let defaultSelectedGranularity = this.getSupportedGranularitiesForFixed(
-      granularityMode
-    );
-    return defaultSelectedGranularity[
-      defaultSelectedGranularity.length - 2
-    ].toLowerCase();
+    // const { granularityMode } = this.state;
+    // let defaultSelectedGranularity = this.getSupportedGranularitiesForFixed(
+    //   granularityMode
+    // );
+    return this.verifyDefaultGranularityOfTimeRange(this.state.granularityValue);
   }
 
   verifySelectedGranularityForCustom = (granularity) => {

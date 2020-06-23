@@ -67,7 +67,8 @@
     "PerformanceSummary",
     "ThrottleSummary",
     "ApiAvailability",
-    "APITrafficSummary"
+    "APITrafficSummary",
+    "APITrafficOverTime"
   ],
   "version": "1.0.0"
 }
