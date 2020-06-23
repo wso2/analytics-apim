@@ -306,7 +306,7 @@ class APITrafficSummaryWidget extends Widget {
             '{{per}}': perValue,
             '{{limit}}': selectedLimit,
             '{{selectPhase}}': selectPhase.join(','),
-            '{{groupByPhase}}': 'group by ' + groupByPhase.join(','),
+            '{{groupByPhase}}': groupByPhase.length ? 'group by ' + groupByPhase.join(',') : '',
             '{{querystring}}': filterPhase.length > 0 ? 'on ' + filterPhase.join(' AND ') : '',
             '{{orderBy}}': 'order by successCount desc',
         };
@@ -365,22 +365,19 @@ class APITrafficSummaryWidget extends Widget {
         const selectPhase = [];
         const groupByPhase = [];
         const filterPhase = [];
-        groupByPhase.push('apiName');
+        groupByPhase.push('apiName', 'apiResourceTemplate', 'apiVersion');
         if (selectedAPI !== -1) {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
-            groupByPhase.push('apiVersion');
         }
         if (selectedVersion !== -1) {
             const ver = versionList[selectedVersion][1];
             filterPhase.push('apiVersion==\'' + ver + '\'');
-            groupByPhase.push('apiResourceTemplate');
         }
         if (selectedResource !== -1) {
             const template = operationList[selectedResource][0];
             const verb = operationList[selectedResource][1];
             filterPhase.push('apiResourceTemplate==\'' + template + '\'');
             filterPhase.push('apiMethod==\'' + verb + '\'');
-            groupByPhase.push('apiMethod');
         }
 
         selectPhase.push('apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod',

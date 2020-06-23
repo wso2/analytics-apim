@@ -569,10 +569,10 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 56.4411576260761,
+                  "height": 47.53179277951843,
                   "content": [
                     {
-                      "title": "API Traffic Summary",
+                      "title": "[APITrafficSummaryWidget]",
                       "type": "component",
                       "component": "APITrafficSummary",
                       "props": {
@@ -613,7 +613,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 38.289649920502065,
+                  "height": 47.199014767059744,
                   "content": [
                     {
                       "title": "[APITrafficOverTimeWidget]",
@@ -647,7 +647,7 @@
               ]
             }
           ],
-          "height": 1983
+          "height": 1814
         },
         {
           "id": "alerts",
