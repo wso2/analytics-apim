@@ -28,7 +28,9 @@ import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
-import { RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
+import {
+    RadioGroup, FormControlLabel, Radio, FormLabel,
+} from '@material-ui/core';
 
 const styles = theme => ({
     table: {
@@ -67,25 +69,11 @@ function CustomFormGroup(props) {
     const {
         classes, selectedAPI, selectedVersion, selectedResource, apiList,
         versionList, operationList, selectedLimit,
-        handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
+        handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange, drillDownType, handleDrillDownTypeChange,
     } = props;
-    return (
-        <div component={Paper}>
-            <div className={classes.formWrapper}>
-                <FormControl className={classes.formControlSelect}>
-                    <InputLabel className={classes.formLabel}>
-                        <FormattedMessage id='label.apiname' defaultMessage='API Name' />
-                    </InputLabel>
-                    <Select
-                        value={selectedAPI}
-                        onChange={handleAPIChange}
-                    >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {apiList.map(row => (
-                            <MenuItem value={row}>{row}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+    function renderVersionControls() {
+        if (drillDownType === 'version' || drillDownType === 'resource') {
+            return (
                 <FormControl className={classes.formControlSelect}>
                     <InputLabel className={classes.formLabel}>
                         <FormattedMessage id='label.apiversion' defaultMessage='API Version' />
@@ -101,6 +89,14 @@ function CustomFormGroup(props) {
                         ))}
                     </Select>
                 </FormControl>
+            );
+        }
+        return null;
+    }
+
+    function renderResourceControl() {
+        if (drillDownType === 'resource') {
+            return (
                 <FormControl className={classes.formControlSelect}>
                     <InputLabel className={classes.formLabel}>
                         <FormattedMessage id='label.operation' defaultMessage='Operation' />
@@ -116,18 +112,75 @@ function CustomFormGroup(props) {
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl className={classes.formControl}>
-                    <TextField
-                        id='limit-number'
-                        label={<FormattedMessage id='limit' defaultMessage='Limit' />}
-                        value={selectedLimit}
-                        onChange={handleLimitChange}
-                        type='number'
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
+            );
+        }
+        return null;
+    }
+
+    return (
+        <div component={Paper}>
+            <div className={classes.formWrapper}>
+                <div>
+                    <FormControl component='fieldset'>
+                        <FormLabel component='legend'>
+                            <FormattedMessage id='label.filterBy' defaultMessage='Filter By' />
+                        </FormLabel>
+                        <RadioGroup
+                            row
+                            aria-label='drill-down-type'
+                            name='drill-down-type'
+                            value={drillDownType}
+                            onChange={handleDrillDownTypeChange}
+                        >
+                            <FormControlLabel
+                                value='api'
+                                control={<Radio />}
+                                label='API'
+                            />
+                            <FormControlLabel
+                                value='version'
+                                control={<Radio />}
+                                label='Version'
+                            />
+                            <FormControlLabel
+                                value='resource'
+                                control={<Radio />}
+                                label='Resource'
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                </div>
+
+                <FormControl className={classes.formControlSelect}>
+                    <InputLabel className={classes.formLabel}>
+                        <FormattedMessage id='label.apiname' defaultMessage='API Name' />
+                    </InputLabel>
+                    <Select
+                        value={selectedAPI}
+                        onChange={handleAPIChange}
+                    >
+                        <MenuItem value={-1}>All</MenuItem>
+                        {apiList.map(row => (
+                            <MenuItem value={row}>{row}</MenuItem>
+                        ))}
+                    </Select>
                 </FormControl>
+                {renderVersionControls()}
+                {renderResourceControl()}
+                <div>
+                    <FormControl className={classes.formControl}>
+                        <TextField
+                            id='limit-number'
+                            label={<FormattedMessage id='limit' defaultMessage='Limit' />}
+                            value={selectedLimit}
+                            onChange={handleLimitChange}
+                            type='number'
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                    </FormControl>
+                </div>
             </div>
         </div>
     );
@@ -152,4 +205,6 @@ CustomFormGroup.propTypes = {
     apiList: PropTypes.instanceOf(Object).isRequired,
     versionList: PropTypes.instanceOf(Object).isRequired,
     operationList: PropTypes.instanceOf(Object).isRequired,
+    drillDownType: PropTypes.string.isRequired,
+    handleDrillDownTypeChange: PropTypes.func.isRequired,
 };

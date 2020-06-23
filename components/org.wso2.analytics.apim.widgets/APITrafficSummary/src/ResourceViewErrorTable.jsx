@@ -91,7 +91,6 @@ class APIViewErrorTable extends React.Component {
         } = this.state;
         const barRatio = 0.2;
         const timeFormat = 'DD/MM, HH:mm:ss';
-        console.log(data);
         return (
             <div>
                 <VictoryChart

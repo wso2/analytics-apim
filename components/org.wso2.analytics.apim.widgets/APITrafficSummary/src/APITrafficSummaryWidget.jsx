@@ -83,6 +83,7 @@ class APITrafficSummaryWidget extends Widget {
             selectedVersion: -1,
             selectedResource: -1,
             selectedLimit: 5,
+            drillDownType: 'api',
             data: [],
 
             apiList: [],
@@ -137,7 +138,7 @@ class APITrafficSummaryWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.handleQueryResults = this.handleQueryResults.bind(this);
         this.assembleFetchDataQuery = this.assembleFetchDataQuery.bind(this);
-        this.handleDrillDownChange = this.handleDrillDownChange.bind(this);
+        this.handleDrillDownTypeChange = this.handleDrillDownTypeChange.bind(this);
 
         this.getQueryForResource = this.getQueryForResource.bind(this);
 
@@ -158,6 +159,7 @@ class APITrafficSummaryWidget extends Widget {
 
         this.renderDrillDownTable = this.renderDrillDownTable.bind(this);
         this.handleOnClick = this.handleOnClick.bind(this);
+        this.handleDrillDownTypeChange = this.handleDrillDownTypeChange.bind(this);
     }
 
     componentWillMount() {
@@ -339,7 +341,8 @@ class APITrafficSummaryWidget extends Widget {
     }
     // end data query functions
 
-    handleDrillDownChange(event) {
+    handleDrillDownTypeChange(event) {
+        this.setState({ drillDownType: event.target.value });
         this.setState(
             {
                 data: [],
@@ -359,13 +362,23 @@ class APITrafficSummaryWidget extends Widget {
 
     getQueryForResource() {
         const {
-            selectedAPI, selectedVersion, selectedResource, versionList, operationList,
+            selectedAPI, selectedVersion, selectedResource, versionList, operationList, drillDownType,
         } = this.state;
 
         const selectPhase = [];
         const groupByPhase = [];
         const filterPhase = [];
-        groupByPhase.push('apiName', 'apiResourceTemplate', 'apiVersion');
+
+        if (drillDownType === 'api') {
+            groupByPhase.push('apiName');
+        }
+        if (drillDownType === 'version') {
+            groupByPhase.push('apiName', 'apiResourceTemplate');
+        }
+        if (drillDownType === 'resource') {
+            groupByPhase.push('apiName', 'apiResourceTemplate', 'apiVersion');
+        }
+
         if (selectedAPI !== -1) {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
@@ -457,7 +470,7 @@ class APITrafficSummaryWidget extends Widget {
         const {
             localeMessages, viewType, valueFormatType, data, loading,
             selectedAPI, selectedVersion, selectedResource, selectedLimit, apiList,
-            versionList, operationList,
+            versionList, operationList, drillDownType,
         } = this.state;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -496,6 +509,8 @@ class APITrafficSummaryWidget extends Widget {
                                 handleAPIChange={this.handleAPIChange}
                                 handleVersionChange={this.handleVersionChange}
                                 handleOperationChange={this.handleOperationChange}
+                                handleDrillDownTypeChange={this.handleDrillDownTypeChange}
+                                drillDownType={drillDownType}
                                 handleLimitChange={this.handleLimitChange}
                             />
                             {!loading ? (
