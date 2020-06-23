@@ -31,7 +31,6 @@ import {
     VictoryTooltip,
     VictoryClipContainer,
     VictoryLabel,
-    VictoryGroup,
 } from 'victory';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -56,10 +55,8 @@ const styles = theme => ({
     },
 });
 
-const colorScale = ['tomato', 'orange', 'gold', 'green', 'blue', 'red'];
-
+const colorScale = ['#45b29d', '#b71c1c', '#ff9800'];
 class APIViewErrorTable extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -133,12 +130,12 @@ class APIViewErrorTable extends React.Component {
                     <VictoryStack>
                         { successSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[3] } }}
+                                style={{ data: { fill: colorScale[0] } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 x={
-                                    d => (d ? d.apiName + ':' + d.apiVersion + ':'
-                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )' : undefined)
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
                                 }
                                 data={data.map(row => ({
                                     ...row,
@@ -175,8 +172,8 @@ class APIViewErrorTable extends React.Component {
                                         row.faultCount],
                                 }))}
                                 x={
-                                    d => (d ? d.apiName + ':' + d.apiVersion + ':'
-                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )' : undefined)
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
                                 }
                                 y={d => d.faultCount}
                                 labelComponent={<VictoryTooltip />}
@@ -200,7 +197,7 @@ class APIViewErrorTable extends React.Component {
 
                         { throttledSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[0] } }}
+                                style={{ data: { fill: colorScale[2] } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 data={data.map(row => ({
@@ -209,8 +206,8 @@ class APIViewErrorTable extends React.Component {
                                         row.throttledCount],
                                 }))}
                                 x={
-                                    d => (d ? d.apiName + ':' + d.apiVersion + ':'
-                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )' : undefined)
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
                                 }
                                 y={d => d.throttledCount}
                                 labelComponent={<VictoryTooltip />}
@@ -265,7 +262,7 @@ class APIViewErrorTable extends React.Component {
                 selected: successSelected,
                 name: 'Success Count',
                 onChange: this.handleSuccessSelectChange,
-                color: colorScale[3],
+                color: colorScale[0],
             },
             {
                 selected: faultySelected,
@@ -277,7 +274,7 @@ class APIViewErrorTable extends React.Component {
                 selected: throttledSelected,
                 name: 'Throttled Count',
                 onChange: this.handleTrottledSelectChange,
-                color: colorScale[0],
+                color: colorScale[2],
             },
         ];
         if (data.length === 0) {

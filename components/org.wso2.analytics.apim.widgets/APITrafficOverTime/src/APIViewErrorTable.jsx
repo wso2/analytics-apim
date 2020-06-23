@@ -61,8 +61,7 @@ const styles = theme => ({
     },
 });
 
-const colorScale = ['tomato', 'orange', 'gold', 'green', 'blue', 'red'];
-
+const colorScale = ['#45b29d', '#b71c1c', '#ff9800'];
 class APIViewErrorTable extends React.Component {
     constructor(props) {
         super(props);
@@ -142,7 +141,7 @@ class APIViewErrorTable extends React.Component {
                     <VictoryStack>
                         { successSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[3] } }}
+                                style={{ data: { fill: colorScale[0] } }}
                                 alignment='start'
                                 barRatio={0.5}
                                 data={data.map(row => ({
@@ -172,7 +171,7 @@ class APIViewErrorTable extends React.Component {
                         ) }
                         { throttledSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[0] } }}
+                                style={{ data: { fill: colorScale[2] } }}
                                 alignment='start'
                                 barRatio={0.5}
                                 data={data.map(row => ({
@@ -219,7 +218,7 @@ class APIViewErrorTable extends React.Component {
                 selected: successSelected,
                 name: 'Success Count',
                 onChange: this.handleSuccessSelectChange,
-                color: colorScale[3],
+                color: colorScale[0],
             },
             {
                 selected: faultySelected,
@@ -231,7 +230,7 @@ class APIViewErrorTable extends React.Component {
                 selected: throttledSelected,
                 name: 'Throttled Count',
                 onChange: this.handleTrottledSelectChange,
-                color: colorScale[0],
+                color: colorScale[2],
             },
         ];
         const { data } = this.props;
