@@ -20,7 +20,7 @@
     "table.column.totalFaulty": "Total Faulty",
     "table.column.totalThrottled": "Total Throttled",
     "table.column.totalSuccess": "Total Success",
-    "table.column.totalRequests": "Total Requests",
+    "table.column.totalRequests": "Total",
     "view.appAndApi": "Application and API View",
     "view.api": "API View",
     "value.count": "Count",

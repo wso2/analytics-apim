@@ -27,7 +27,6 @@ import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 import { ViewTypeEnum, ValueFormatType, DrillDownEnum } from '../../AppAndAPIErrorTable/src/Constants';
 import APIViewErrorTable from './APIViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
@@ -456,8 +455,18 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             }
             return obj;
         });
-
-        if (data.length !== 0) {
+        if (newData.length === 1) {
+            const { timeFrom } = this.state;
+            newData.unshift({
+                AGG_TIMESTAMP: timeFrom,
+                successCount: 0,
+                _4xx: 0,
+                _5xx: 0,
+                faultCount: 0,
+                throttledCount: 0,
+            });
+        }
+        if (newData.length !== 0) {
             this.setState({ data: newData, loading: false });
         } else {
             this.setState({ data: [], loading: false });
@@ -665,7 +674,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                         viewType={viewType}
                                         valueFormatType={valueFormatType}
                                         drillDownType={drillDownType}
-                                        themeName
+                                        themeName={themeName}
                                     />
                                 )
                                     : (

@@ -28,22 +28,16 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 
 const rows = [
     {
-        id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname', rowSpan: 2, colSpan: 1,
     },
     {
-        id: 'successHits', numeric: true, disablePadding: false, label: 'table.heading.success',
+        id: 'successHits', numeric: true, disablePadding: false, label: 'table.heading.success', rowSpan: 1, colSpan: 3,
     },
     {
-        id: 'error4XX', numeric: true, disablePadding: false, label: 'table.heading.error4xx',
+        id: 'errorFaulty', numeric: true, disablePadding: false, label: 'table.heading.errorFaulty', rowSpan: 2, colSpan: 1,
     },
     {
-        id: 'error5XX', numeric: true, disablePadding: false, label: 'table.heading.error5xx',
-    },
-    {
-        id: 'errorFaulty', numeric: true, disablePadding: false, label: 'table.heading.errorFaulty',
-    },
-    {
-        id: 'errorThrottled', numeric: true, disablePadding: false, label: 'table.heading.errorThrottled',
+        id: 'errorThrottled', numeric: true, disablePadding: false, label: 'table.heading.errorThrottled', rowSpan: 2, colSpan: 1,
     },
 ];
 
@@ -73,6 +67,9 @@ export default class CustomTableHead extends React.Component {
                                 numeric={row.numeric}
                                 padding={row.disablePadding ? 'none' : 'default'}
                                 sortDirection={orderBy === row.id ? order : false}
+                                rowSpan={row.rowSpan}
+                                colSpan={row.colSpan}
+                                align={row.id === 'successHits' ? 'center' : ''}
                             >
                                 <Tooltip
                                     title={<FormattedMessage id='sort.label.title' defaultMessage='Sort' />}
@@ -93,6 +90,17 @@ export default class CustomTableHead extends React.Component {
                             </TableCell>
                         );
                     }, this)}
+                </TableRow>
+                <TableRow>
+                    <TableCell align='right'>
+                        <FormattedMessage id='table.column.apiName' defaultMessage='4xx' />
+                    </TableCell>
+                    <TableCell align='right'>
+                        <FormattedMessage id='table.column.responseHit' defaultMessage='5xx' />
+                    </TableCell>
+                    <TableCell align='right'>
+                        <FormattedMessage id='table.column.totalFaulty' defaultMessage='Total' />
+                    </TableCell>
                 </TableRow>
             </TableHead>
         );

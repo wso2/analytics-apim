@@ -201,7 +201,7 @@ class VersionViewErrorTable extends React.Component {
                                     <FormattedMessage id='table.column.totalErrors' defaultMessage='Total Errors' />
                                 </TableCell>
                                 <TableCell align='right' className={classes.headerCell}>
-                                    <FormattedMessage id='table.column.totalSuccess' defaultMessage='Total Success' />
+                                    <FormattedMessage id='table.column.totalSuccess' defaultMessage='Total' />
                                 </TableCell>
                             </TableRow>
                         </TableHead>
