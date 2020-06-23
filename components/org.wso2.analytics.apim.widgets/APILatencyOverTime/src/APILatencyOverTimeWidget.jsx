@@ -437,8 +437,19 @@ class APILatencyOverTimeWidget extends Widget {
             }
             return obj;
         });
-
-        if (data.length !== 0) {
+        if (newData.length === 1) {
+            const { timeFrom } = this.state;
+            newData.unshift({
+                AGG_TIMESTAMP: timeFrom,
+                responseTime: 0,
+                backendLatency: 0,
+                securityLatency: 0,
+                throttlingLatency: 0,
+                requestMedLat: 0,
+                responseMedLat: 0,
+            });
+        }
+        if (newData.length !== 0) {
             this.setState({ data: newData, loading: false });
         } else {
             this.setState({ data: [], loading: false });
@@ -453,6 +464,10 @@ class APILatencyOverTimeWidget extends Widget {
         const groupByPhase = [];
         const filterPhase = [];
 
+        if (selectedAPI === 'all' || selectedVersion === 'all' || selectedResource === 'all') {
+            this.setState({ data: [], loading: false });
+            return;
+        }
         if (selectedAPI !== 'all') {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
@@ -483,7 +498,6 @@ class APILatencyOverTimeWidget extends Widget {
     // start of handle filter change
     handleAPIChange(event) {
         const { selectedLimit } = this.state;
-        this.loadingDrillDownData(event.target.value, 'all', 'all');
         this.setQueryParam(event.target.value, 'all', 'all', selectedLimit);
         this.setState({
             selectedAPI: event.target.value,
@@ -492,27 +506,33 @@ class APILatencyOverTimeWidget extends Widget {
             versionList: [],
             operationList: [],
             loading: true,
-        },
-        this.loadVersions);
+        }, () => {
+            this.loadVersions();
+            this.loadingDrillDownData(event.target.value, 'all', 'all');
+        });
     }
 
     handleVersionChange(event) {
         const { selectedAPI, selectedLimit } = this.state;
-        this.loadingDrillDownData(selectedAPI, event.target.value, 'all');
         this.setQueryParam(selectedAPI, event.target.value, 'all', selectedLimit);
         this.setState({
             selectedVersion: event.target.value,
             selectedResource: 'all',
             operationList: [],
             loading: true,
-        }, this.loadOperations);
+        },  () => {
+            this.loadOperations();
+            this.loadingDrillDownData(selectedAPI, event.target.value, 'all');
+        });
     }
 
     handleOperationChange(event) {
         const { selectedAPI, selectedVersion, selectedLimit } = this.state;
-        this.loadingDrillDownData(selectedAPI, selectedVersion, event.target.value);
         this.setQueryParam(selectedAPI, selectedVersion, event.target.value, selectedLimit);
-        this.setState({ selectedResource: event.target.value, loading: true });
+        this.setState({ selectedResource: event.target.value, loading: true },
+            () => {
+                this.loadingDrillDownData(selectedAPI, selectedVersion, event.target.value);
+            });
     }
 
     handleLimitChange(event) {

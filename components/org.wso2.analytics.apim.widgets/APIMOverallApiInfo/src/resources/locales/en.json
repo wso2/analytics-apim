@@ -8,7 +8,7 @@
   "api.info.subheading": "(Last 24 Hours)",
   "table.heading.apiname": "API NAME",
   "table.heading.method": "METHOD",
-  "table.heading.success": "SUCCESS HITS",
+  "table.heading.success": "RESPONSE HITS",
   "table.heading.error4xx": "ERROR 4XX",
   "table.heading.error5xx": "ERROR 5XX",
   "table.heading.errorFaulty": "FAULTY HITS",

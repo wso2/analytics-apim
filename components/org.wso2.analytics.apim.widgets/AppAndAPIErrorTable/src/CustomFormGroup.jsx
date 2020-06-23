@@ -21,14 +21,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import { ViewTypeEnum, DrillDownEnum } from './Constants';
+import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
 
 const styles = theme => ({
     table: {
@@ -37,117 +34,86 @@ const styles = theme => ({
         marginBottom: 50,
     },
     formControl: {
-        margin: theme.spacing(1),
+        margin: theme.spacing.unit,
         minWidth: 120,
     },
+    autoSelectForm: {
+        margin: theme.spacing.unit,
+        minWidth: 200,
+    },
     autocomplete: {
-        margin: theme.spacing(1),
+        margin: theme.spacing.unit,
         minWidth: 400,
         width: '20%',
     },
     selectEmpty: {
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing.unit * 2,
     },
 });
 
 function CustomFormGroup(props) {
     const {
         classes, viewType, drillDownType, selectedApp, selectedAPI, selectedVersion, selectedResource, apiList, appList,
-        versionList, operationList, selectedLimit, handleGraphQLOperationChange, selectedGraphQLResources,
+        versionList, operationList, selectedLimit, handleGraphQLOperationChange,
         handleApplicationChange, handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
-    const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION']
+    const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
     const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
     return (
         <div component={Paper}>
             <div>
                 { viewType === ViewTypeEnum.APP ? (
-                    <FormControl className={classes.formControl}>
-                        <InputLabel><FormattedMessage id='label.app' defaultMessage='Application' /></InputLabel>
-                        <Select
+                    <FormControl className={classes.autoSelectForm}>
+                        <IntegrationReactSelect
+                            options={appList}
                             value={selectedApp}
                             onChange={handleApplicationChange}
-                        >
-                            <MenuItem value={-1}>All</MenuItem>
-                            {appList.map(row => (
-                                <MenuItem value={row.APPLICATION_ID}>
-                                    {row.NAME + ' ( ' + row.CREATED_BY + ' )'}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                            disabled={appList && appList.length === 0}
+                            placeholder='Select Application'
+                            getLabel={item => item.NAME + ' ( ' + item.CREATED_BY + ' )'}
+                            getValue={item => item.APPLICATION_ID}
+                        />
                     </FormControl>
                 ) : '' }
 
-                <FormControl className={classes.formControl}>
-                    <InputLabel><FormattedMessage id='label.apiName' defaultMessage='API Name' /></InputLabel>
-                    <Select
+                <FormControl className={classes.autoSelectForm}>
+                    <IntegrationReactSelect
+                        options={apiList}
                         value={selectedAPI}
                         onChange={handleAPIChange}
-                    >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {apiList.map(row => (
-                            <MenuItem value={row.API_NAME}>{row.API_NAME}</MenuItem>
-                        ))}
-                    </Select>
+                        disabled={apiList && apiList.length === 0}
+                        placeholder='Select API'
+                        getLabel={item => item.API_NAME}
+                        getValue={item => item.API_NAME}
+                    />
                 </FormControl>
 
                 { drillDownType === DrillDownEnum.VERSION || drillDownType === DrillDownEnum.RESOURCE ? (
-                    <FormControl className={classes.formControl}>
-                        <InputLabel><FormattedMessage id='label.apiVersion' defaultMessage='API Version' /></InputLabel>
-                        <Select
+                    <FormControl className={classes.autoSelectForm}>
+                        <IntegrationReactSelect
+                            options={versionList}
                             value={selectedVersion}
                             onChange={handleVersionChange}
-                            disabled={versionList && versionList.length === 0}
-                        >
-                            <MenuItem value={-1}>All</MenuItem>
-                            {versionList.map(row => (
-                                <MenuItem value={row.API_ID}>{row.API_VERSION}</MenuItem>
-                            ))}
-                        </Select>
+                            // disabled={versionList && versionList.length === 0}
+                            placeholder='Select Version'
+                            getLabel={item => item.API_VERSION}
+                            getValue={item => item.API_ID}
+                        />
                     </FormControl>
                 ) : '' }
 
-                { drillDownType === DrillDownEnum.RESOURCE && !graphQL
+                { drillDownType === DrillDownEnum.RESOURCE
                 && (
-                    <FormControl className={classes.formControl}>
-                        <InputLabel><FormattedMessage id='label.operation' defaultMessage='Operation' /></InputLabel>
-                        <Select
-                            value={selectedResource}
-                            onChange={handleOperationChange}
-                            disabled={operationList && operationList.length === 0}
-                        >
-                            <MenuItem value={-1}>All</MenuItem>
-                            {operationList.map(row => (
-                                <MenuItem value={row.URL_MAPPING_ID}>
-                                    {row.URL_PATTERN + ' ( ' + row.HTTP_METHOD + ' )'}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                )}
-
-                { drillDownType === DrillDownEnum.RESOURCE && graphQL
-                && (
-                    <FormControl className={classes.autocomplete}>
-                        <Autocomplete
-                            multiple
-                            id='tags-standard'
+                    <FormControl className={classes.autoSelectForm}>
+                        <IntegrationReactSelect
+                            isMulti={graphQL}
                             options={operationList}
-                            getOptionLabel={(option) => {
-                                if (option === -1) {
-                                    return 'ALL';
-                                }
-                                return option.URL_PATTERN + ' ( ' + option.HTTP_METHOD + ' )';
-                            }}
-                            defaultValue={selectedGraphQLResources}
-                            renderInput={params => (
-                                <TextField
-                                    {...params}
-                                    variant='standard'
-                                    label='Operations'
-                                />
-                            )}
-                            onChange={handleGraphQLOperationChange}
+                            value={selectedResource}
+                            onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
+                            disabled={operationList && operationList.length === 0}
+                            placeholder='Select Operation'
+                            getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
+                            getValue={item => item.URL_MAPPING_ID}
                         />
                     </FormControl>
                 )}
@@ -186,7 +152,6 @@ CustomFormGroup.propTypes = {
     appList: PropTypes.instanceOf(Object).isRequired,
     versionList: PropTypes.instanceOf(Object).isRequired,
     operationList: PropTypes.instanceOf(Object).isRequired,
-    selectedGraphQLResources: PropTypes.instanceOf(Object).isRequired,
     viewType: PropTypes.string.isRequired,
     drillDownType: PropTypes.string.isRequired,
 };

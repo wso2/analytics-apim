@@ -59,9 +59,10 @@ class APIViewErrorTable extends React.Component {
         this.handleThrottlingSelectChange = this.handleThrottlingSelectChange.bind(this);
         this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
 
+        const { themeName } = this.props;
         this.styles = {
             paper: {
-                background: this.props.themeName === 'dark' ? '#152638' : '#E8E8E8',
+                background: themeName === 'dark' ? '#152638' : '#E8E8E8',
                 padding: '4%',
             },
             paperWrapper: {
@@ -76,6 +77,7 @@ class APIViewErrorTable extends React.Component {
     getPieChartForAPI() {
         const timeFormat = 'YY/DD/MM, HH:mm:ss';
         const { data } = this.props;
+        console.log(data);
         const {
             successSelected, _4xxSelected, _5xxSelected, faultySelected, throttleSelected,
         } = this.state;
@@ -119,7 +121,7 @@ class APIViewErrorTable extends React.Component {
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
-                            grid: { stroke: () => 0 },
+                            grid: { strokeDasharray: '10, 5', strokeWidth: 0.5, strokeOpacity: 0.3 },
                             ticks: { stroke: 'grey', size: 5 },
                             tickLabels: { fontSize: 9, padding: 5 },
                         }}
@@ -333,6 +335,7 @@ class APIViewErrorTable extends React.Component {
 
 APIViewErrorTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
+    themeName: PropTypes.string.isRequired,
 };
 
 export default APIViewErrorTable;

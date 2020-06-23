@@ -41,7 +41,7 @@ const styles = theme => ({
         overflowX: 'auto',
     },
     selectEmpty: {
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing.unit * 2,
     },
     hover: {
         cursor: 'pointer',
@@ -201,7 +201,7 @@ class APIViewErrorTable extends React.Component {
                                     <FormattedMessage id='table.column.totalErrors' defaultMessage='Total Errors' />
                                 </TableCell>
                                 <TableCell align='right' className={classes.headerCell}>
-                                    <FormattedMessage id='table.column.totalSuccess' defaultMessage='Total Success' />
+                                    <FormattedMessage id='table.column.totalSuccess' defaultMessage='Total' />
                                 </TableCell>
                             </TableRow>
                         </TableHead>

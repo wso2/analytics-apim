@@ -275,13 +275,13 @@ class CustomTable extends React.Component {
                                                                 {n.apiName}
                                                             </TableCell>
                                                             <TableCell numeric>
-                                                                {n.successCount}
-                                                            </TableCell>
-                                                            <TableCell numeric>
                                                                 {n._4xx}
                                                             </TableCell>
                                                             <TableCell numeric>
                                                                 {n._5xx}
+                                                            </TableCell>
+                                                            <TableCell numeric>
+                                                                {n.successCount}
                                                             </TableCell>
                                                             <TableCell numeric>
                                                                 {n.faultCount}
