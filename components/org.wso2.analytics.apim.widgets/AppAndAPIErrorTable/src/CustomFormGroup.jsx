@@ -118,18 +118,20 @@ function CustomFormGroup(props) {
                     </FormControl>
                 )}
 
-                <FormControl className={classes.formControl}>
-                    <TextField
-                        id='limit-number'
-                        label={<FormattedMessage id='limit' defaultMessage='Limit' />}
-                        value={selectedLimit}
-                        onChange={handleLimitChange}
-                        type='number'
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                </FormControl>
+                <div>
+                    <FormControl className={classes.formControl}>
+                        <TextField
+                            id='limit-number'
+                            label={<FormattedMessage id='limit' defaultMessage='Limit' />}
+                            value={selectedLimit}
+                            onChange={handleLimitChange}
+                            type='number'
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                    </FormControl>
+                </div>
             </div>
         </div>
     );

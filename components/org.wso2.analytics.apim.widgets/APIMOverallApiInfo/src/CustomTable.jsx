@@ -265,7 +265,6 @@ class CustomTable extends React.Component {
                                             {stableSort(tableData, getSorting(order, orderBy))
                                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                                 .map((n) => {
-                                                    console.log(n);
                                                     return (
                                                         <TableRow
                                                             hover

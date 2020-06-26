@@ -21,12 +21,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
+import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
 
 const styles = theme => ({
     table: {
@@ -50,7 +48,6 @@ const styles = theme => ({
         marginLeft: 10,
         marginTop: 10,
         minWidth: 200,
-        width: '15%',
     },
     formLabel: {
         whiteSpace: 'nowrap',
@@ -64,69 +61,60 @@ const styles = theme => ({
 function CustomFormGroup(props) {
     const {
         classes, selectedAPI, selectedVersion, selectedResource, apiList,
-        versionList, operationList, selectedLimit,
+        versionList, operationList, selectedLimit, handleGraphQLOperationChange,
         handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange,
     } = props;
-
+    const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
+    const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
     return (
         <div component={Paper}>
             <div className={classes.formWrapper}>
                 <FormControl className={classes.formControlSelect}>
-                    <InputLabel className={classes.formLabel}>
-                        <FormattedMessage id='label.apiname' defaultMessage='API Name' />
-                    </InputLabel>
-                    <Select
+                    <IntegrationReactSelect
+                        options={apiList}
                         value={selectedAPI}
                         onChange={handleAPIChange}
-                    >
-                        <MenuItem value='all'>All</MenuItem>
-                        {apiList.map(row => (
-                            <MenuItem value={row}>{row}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <FormControl className={classes.formControlSelect}>
-                    <InputLabel className={classes.formLabel}>
-                        <FormattedMessage id='label.apiversion' defaultMessage='API Version' />
-                    </InputLabel>
-                    <Select
-                        value={selectedVersion}
-                        onChange={handleVersionChange}
-                        disabled={versionList && versionList.length === 0}
-                    >
-                        <MenuItem value='all'>All</MenuItem>
-                        {versionList.map(row => (
-                            <MenuItem value={row[1]}>{row[1]}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <FormControl className={classes.formControlSelect}>
-                    <InputLabel className={classes.formLabel}>
-                        <FormattedMessage id='label.operation' defaultMessage='Operation' />
-                    </InputLabel>
-                    <Select
-                        value={selectedResource}
-                        onChange={handleOperationChange}
-                        disabled={operationList && operationList.length === 0}
-                    >
-                        <MenuItem value='all'>All</MenuItem>
-                        {operationList.map(row => (
-                            <MenuItem value={row[0] + ' (' + row[1] + ')'}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <FormControl className={classes.formControl}>
-                    <TextField
-                        id='limit-number'
-                        label={<FormattedMessage id='limit' defaultMessage='Limit' />}
-                        value={selectedLimit}
-                        onChange={handleLimitChange}
-                        type='number'
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
+                        disabled={apiList && apiList.length === 0}
+                        placeholder='Select API'
+                        getLabel={item => item.API_NAME}
+                        getValue={item => item.API_NAME}
                     />
                 </FormControl>
+                <FormControl className={classes.formControlSelect}>
+                    <IntegrationReactSelect
+                        options={versionList}
+                        value={selectedVersion}
+                        onChange={handleVersionChange}
+                        placeholder='Select Version'
+                        getLabel={item => item.API_VERSION}
+                        getValue={item => item.API_VERSION}
+                    />
+                </FormControl>
+                <FormControl className={classes.formControlSelect}>
+                    <IntegrationReactSelect
+                        isMulti={graphQL}
+                        options={operationList}
+                        value={selectedResource}
+                        onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
+                        placeholder='Select Operation'
+                        getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
+                        getValue={item => item.URL_PATTERN + '#' + item.HTTP_METHOD}
+                    />
+                </FormControl>
+                <div>
+                    <FormControl className={classes.formControl}>
+                        <TextField
+                            id='limit-number'
+                            label={<FormattedMessage id='limit' defaultMessage='Limit' />}
+                            value={selectedLimit}
+                            onChange={handleLimitChange}
+                            type='number'
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                    </FormControl>
+                </div>
             </div>
         </div>
     );
@@ -143,6 +131,7 @@ CustomFormGroup.propTypes = {
     handleAPIChange: PropTypes.func.isRequired,
     handleVersionChange: PropTypes.func.isRequired,
     handleOperationChange: PropTypes.func.isRequired,
+    handleGraphQLOperationChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     selectedAPI: PropTypes.number.isRequired,
     selectedVersion: PropTypes.number.isRequired,

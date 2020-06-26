@@ -186,8 +186,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
 
         this.renderDrillDownTable = this.renderDrillDownTable.bind(this);
-
-        this.versionLoadCallBack = this.versionLoadCallBack.bind(this);
     }
 
     componentWillMount() {
@@ -240,13 +238,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 })
                 .catch(error => reject(error));
         });
-    }
-
-    versionLoadCallBack() {
-        const { versionList, operationList } = this.state;
-        if (versionList.length > 0 && operationList.length > 0) {
-            this.loadingDrillDownData();
-        }
     }
 
     /**
@@ -372,7 +363,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             return obj;
         });
         if (data.length !== 0) {
-            this.setState({ apiList: newData }, this.versionLoadCallBack);
+            this.setState({ apiList: newData }, this.loadingDrillDownData);
         } else {
             this.setState({ apiList: [] });
         }
@@ -389,9 +380,9 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData }, this.versionLoadCallBack);
+            this.setState({ versionList: newData, operationList: [] }, this.loadingDrillDownData);
         } else {
-            this.setState({ versionList: [] });
+            this.setState({ versionList: [], operationList: [] });
         }
     }
 
@@ -406,7 +397,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ operationList: newData }, this.versionLoadCallBack);
+            this.setState({ operationList: newData }, this.loadingDrillDownData);
         } else {
             this.setState({ operationList: [] });
         }
@@ -496,7 +487,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
         if (Array.isArray(selectedResource)) {
-            if (selectedResource.length > 0) {
+            if (selectedResource.length > 0 && operationList.length > 0) {
                 const opsString = selectedResource
                     .map(id => operationList.find(i => i.URL_MAPPING_ID === id))
                     .map(d => d.URL_PATTERN).join(',');
@@ -505,7 +496,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
             }
         } else {
-            if (selectedResource > -1) {
+            if (selectedResource > -1 && operationList.length > 0) {
                 const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
                 filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
                 filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');

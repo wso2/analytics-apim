@@ -57,7 +57,6 @@ const styles = theme => ({
 const colorScale = ['tomato', 'orange', 'gold', 'green', 'blue', 'red'];
 
 class APIViewErrorTable extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -76,6 +75,7 @@ class APIViewErrorTable extends React.Component {
         this.handleResponseMedSelectChange = this.handleResponseMedSelectChange.bind(this);
         this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
 
+        const { themeName } = this.props;
         this.styles = {
             dataWrapper: {
                 height: '75%',
@@ -84,7 +84,7 @@ class APIViewErrorTable extends React.Component {
                 width: '90%',
             },
             paper: {
-                background: this.props.themeName === 'dark' ? '#152638' : '#E8E8E8',
+                background: themeName === 'dark' ? '#152638' : '#E8E8E8',
                 padding: '4%',
             },
         };
@@ -97,6 +97,7 @@ class APIViewErrorTable extends React.Component {
             requestMedSelected, responseMedSelected,
         } = this.state;
         const barRatio = 0.2;
+        const barWidth = 15;
         return (
             <div>
                 <VictoryChart
@@ -108,12 +109,10 @@ class APIViewErrorTable extends React.Component {
                     theme={VictoryTheme.material}
                     height={400}
                     width={800}
-                    // style={{ parent: { maxWidth: 800 } }}
-                    // scale={{ x: 20 }}
                 >
                     <VictoryAxis
                         label={() => 'API Operation'}
-                        tickLabelComponent={<VictoryLabel angle={45} />}
+                        tickLabelComponent={<VictoryLabel angle={45} text='' />}
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
@@ -137,9 +136,10 @@ class APIViewErrorTable extends React.Component {
                     <VictoryStack>
                         { responseSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[0] } }}
+                                style={{ data: { fill: colorScale[0], cursor: 'pointer' } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Response Latency',
@@ -162,7 +162,7 @@ class APIViewErrorTable extends React.Component {
                                             onClick: (e) => {
                                                 return [{
                                                     mutation: (val) => {
-                                                        handleOnClick(e, val.datum);
+                                                        handleOnClick(e, val.datum, val);
                                                     },
                                                 }];
                                             },
@@ -173,9 +173,10 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { backendSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[1] } }}
+                                style={{ data: { fill: colorScale[1], cursor: 'pointer' } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Backend latency',
@@ -209,9 +210,10 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { securitySelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[2] } }}
+                                style={{ data: { fill: colorScale[2], cursor: 'pointer' } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Security latency',
@@ -245,9 +247,10 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { throttleSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[3] } }}
+                                style={{ data: { fill: colorScale[3], cursor: 'pointer' } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Throttling latency',
@@ -281,9 +284,10 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { requestMedSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[4] } }}
+                                style={{ data: { fill: colorScale[4], cursor: 'pointer' } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Request Mediation latency',
@@ -317,9 +321,10 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { responseMedSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[5] } }}
+                                style={{ data: { fill: colorScale[5], cursor: 'pointer' } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Response Mediation latency',

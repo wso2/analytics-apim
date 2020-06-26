@@ -85,7 +85,7 @@ class APILatencyOverTimeWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             localeMessages: null,
-            loading: true,
+            loading: false,
 
             viewType: ViewTypeEnum.API,
             valueFormatType: ValueFormatType.PERCENT,
@@ -159,6 +159,7 @@ class APILatencyOverTimeWidget extends Widget {
         this.handleAPIChange = this.handleAPIChange.bind(this);
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleOperationChange = this.handleOperationChange.bind(this);
+        this.handleGraphQLOperationChange = this.handleGraphQLOperationChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
 
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
@@ -272,6 +273,14 @@ class APILatencyOverTimeWidget extends Widget {
             from, to, granularity, api, version, resource,
         } = receivedMsg;
         const { selectedLimit } = this.state;
+        let selectedResource;
+        if (resource) {
+            if (Array.isArray(resource) && resource.length > 0) {
+                selectedResource = resource.map(op => op.apiResourceTemplate + '#' + op.apiMethod);
+            } else {
+                selectedResource = resource.apiResourceTemplate + '#' + resource.apiMethod;
+            }
+        }
 
         // Insert the code to handle publisher data
         if (from && api) {
@@ -281,9 +290,13 @@ class APILatencyOverTimeWidget extends Widget {
                 perValue: granularity,
                 selectedAPI: api,
                 selectedVersion: version,
-                selectedResource: resource,
-                loading: true,
-            }, this.loadApis);
+                selectedResource,
+                versionList: [],
+                operationList: [],
+            }, () => {
+                this.loadVersions();
+                this.loadingDrillDownData();
+            });
             super.setGlobalState(queryParamKey, {
                 selectedAPI: api, selectedVersion: version, selectedResource: resource, selectedLimit,
             });
@@ -292,29 +305,30 @@ class APILatencyOverTimeWidget extends Widget {
                 timeFrom: from,
                 timeTo: to,
                 perValue: granularity,
-                loading: !sync,
             }, this.loadApis);
         } else if (api) {
             this.setState({
                 selectedAPI: api,
                 selectedVersion: version,
-                selectedResource: resource,
-                loading: true,
-            }, this.loadApis);
+                selectedResource,
+                versionList: [],
+                operationList: [],
+            }, () => {
+                this.loadVersions();
+                this.loadingDrillDownData();
+            });
             super.setGlobalState(queryParamKey, {
-                selectedAPI: api, selectedVersion: version, selectedResource: resource, selectedLimit,
+                selectedAPI: api, selectedVersion: version, selectedResource, selectedLimit,
             });
         }
     }
 
     // start of filter loading
     loadApis() {
-        const {
-            providerConfig, selectedAPI, selectedVersion, selectedResource,
-        } = this.state;
+        const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
+        // this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'listApisQuery';
         super.getWidgetChannelManager()
@@ -323,76 +337,87 @@ class APILatencyOverTimeWidget extends Widget {
 
     loadVersions() {
         const { providerConfig, selectedAPI } = this.state;
+        if (selectedAPI === 'all') {
+            return;
+        }
         const { id, widgetID: widgetName } = this.props;
 
-        if (selectedAPI && selectedAPI !== 'all') {
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'listVersionsQuery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{selectedAPI}}': selectedAPI,
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id + CALLBACK_VERSION, widgetName, this.handleLoadVersions, dataProviderConfigs);
-        }
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'listVersionsQuery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{selectedAPI}}': selectedAPI,
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id + CALLBACK_VERSION, widgetName, this.handleLoadVersions, dataProviderConfigs);
     }
 
     loadOperations() {
-        const { providerConfig, selectedVersion, versionList } = this.state;
-        const { id, widgetID: widgetName } = this.props;
-        if (selectedVersion && selectedVersion !== 'all') {
-            // use == due to comparing int with string
-            const api = versionList.find(dataUnit => dataUnit[1] == selectedVersion);
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiID}}': api[0],
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id + CALLBACK_OPERATION, widgetName, this.handleLoadOperations, dataProviderConfigs);
+        const { providerConfig, selectedAPI, selectedVersion, versionList } = this.state;
+        if (selectedAPI === 'all' || selectedVersion === 'all') {
+            return;
         }
+        const api = versionList.find(item => item.API_NAME === selectedAPI && item.API_VERSION === selectedVersion);
+        if (!api) {
+            return;
+        }
+        const { id, widgetID: widgetName } = this.props;
+
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        dataProviderConfigs.configs.config.queryData.queryValues = {
+            '{{API_ID}}': api.API_ID,
+        };
+        super.getWidgetChannelManager()
+            .subscribeWidget(id + CALLBACK_OPERATION, widgetName, this.handleLoadOperations, dataProviderConfigs);
     }
 
     handleLoadApis(message) {
-        const { data } = message;
-        const { selectedAPI } = this.state;
-        if (data) {
-            const availableApi = data.find(dataUnit => dataUnit[0] === selectedAPI);
-            const apiList = data.map((dataUnit) => { return dataUnit[0]; });
-            this.setState({ apiList, selectedAPI: availableApi ? selectedAPI : 'all' }, this.loadVersions);
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+        if (data.length !== 0) {
+            this.setState({ apiList: newData, versionList: [], operationList: [] }, this.loadVersions);
         } else {
-            this.setState({ apiList: [], loading: false });
+            this.setState({ apiList: [], versionList: [], operationList: [] });
         }
     }
 
     handleLoadVersions(message) {
-        const { data } = message;
-        const { selectedVersion } = this.state;
-        if (data) {
-            // use == because comparing int with string
-            const availableVersion = data.find(dataUnit => dataUnit[1] == selectedVersion);
-            this.setState({ versionList: data, selectedVersion: availableVersion ? selectedVersion : 'all' },
-                this.loadOperations);
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ versionList: newData, operationList: [] }, this.loadOperations);
         } else {
-            this.setState({ versionList: [], loading: false });
+            this.setState({ versionList: [], operationList: [], selectedResource: 'all' });
         }
     }
 
     handleLoadOperations(message) {
-        const { data } = message;
-        const { selectedResource } = this.state;
-        if (data && data.length > 0) {
-            let availableResource;
-            if (selectedResource !== 'all') {
-                const template = (selectedResource.split(' (')[0]).trim();
-                const verb = ((selectedResource.split(' (')[1]).split(')')[0]).trim();
-                availableResource = data.find(dataUnit => dataUnit[0] === template && dataUnit[1] === verb);
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
             }
-            this.setState({
-                operationList: data,
-                selectedResource: availableResource ? selectedResource : 'all',
-            });
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ operationList: newData });
         } else {
-            this.setState({ operationList: data, loading: false });
+            this.setState({ operationList: [] });
         }
     }
     // end of filter loading
@@ -459,7 +484,10 @@ class APILatencyOverTimeWidget extends Widget {
 
 
     // start table data type query constructor
-    loadingDrillDownData(selectedAPI, selectedVersion, selectedResource) {
+    loadingDrillDownData() {
+        const {
+            selectedAPI, selectedVersion, selectedResource,
+        } = this.state;
         const selectPhase = [];
         const groupByPhase = [];
         const filterPhase = [];
@@ -474,13 +502,18 @@ class APILatencyOverTimeWidget extends Widget {
         if (selectedVersion !== 'all') {
             filterPhase.push('apiVersion==\'' + selectedVersion + '\'');
         }
-        if (selectedResource !== 'all') {
-            const template = (selectedResource.split(' (')[0]).trim();
-            const verb = ((selectedResource.split(' (')[1]).split(')')[0]).trim();
-            filterPhase.push('apiResourceTemplate==\'' + template + '\'');
-            filterPhase.push('apiMethod==\'' + verb + '\'');
+        if (Array.isArray(selectedResource)) {
+            if (selectedResource.length > 0) {
+                const firstOp = selectedResource[0].split('#')[1];
+                const opsString = selectedResource.map(op => op.split('#')[0]).join(',');
+                filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
+                filterPhase.push('apiMethod==\'' + firstOp + '\'');
+            }
+        } else {
+            const operation = selectedResource.split('#');
+            filterPhase.push('apiResourceTemplate==\'' + operation[0] + '\'');
+            filterPhase.push('apiMethod==\'' + operation[1] + '\'');
         }
-
         selectPhase.push('AGG_TIMESTAMP',
             'avg(responseTime * 1.0) as responseTime',
             'avg(backendLatency * 1.0) as backendLatency',
@@ -496,43 +529,68 @@ class APILatencyOverTimeWidget extends Widget {
 
 
     // start of handle filter change
-    handleAPIChange(event) {
-        const { selectedLimit } = this.state;
-        this.setQueryParam(event.target.value, 'all', 'all', selectedLimit);
+    handleAPIChange(data) {
+        let selectedAPI;
+        if (data == null) {
+            selectedAPI = 'all';
+        } else {
+            const { value } = data;
+            selectedAPI = value;
+        }
         this.setState({
-            selectedAPI: event.target.value,
-            selectedVersion: 'all',
-            selectedResource: 'all',
+            selectedAPI,
             versionList: [],
             operationList: [],
-            loading: true,
+            selectedVersion: 'all',
+            selectedResource: 'all',
         }, () => {
-            this.loadVersions();
-            this.loadingDrillDownData(event.target.value, 'all', 'all');
+            this.loadingDrillDownData();
+            this.loadVersions(selectedAPI);
         });
     }
 
-    handleVersionChange(event) {
-        const { selectedAPI, selectedLimit } = this.state;
-        this.setQueryParam(selectedAPI, event.target.value, 'all', selectedLimit);
+    handleVersionChange(data) {
+        let selectedVersion;
+        if (data == null) {
+            selectedVersion = 'all';
+        } else {
+            const { value } = data;
+            selectedVersion = value;
+        }
         this.setState({
-            selectedVersion: event.target.value,
+            selectedVersion,
             selectedResource: 'all',
             operationList: [],
-            loading: true,
-        },  () => {
+        }, () => {
+            this.loadingDrillDownData();
             this.loadOperations();
-            this.loadingDrillDownData(selectedAPI, event.target.value, 'all');
         });
     }
 
-    handleOperationChange(event) {
-        const { selectedAPI, selectedVersion, selectedLimit } = this.state;
-        this.setQueryParam(selectedAPI, selectedVersion, event.target.value, selectedLimit);
-        this.setState({ selectedResource: event.target.value, loading: true },
-            () => {
-                this.loadingDrillDownData(selectedAPI, selectedVersion, event.target.value);
-            });
+    handleOperationChange(data) {
+        let selectedResource;
+        if (data == null) {
+            selectedResource = 'all';
+        } else {
+            const { value } = data;
+            selectedResource = value;
+        }
+        this.setState({
+            selectedResource,
+        }, this.loadingDrillDownData);
+    }
+
+    handleGraphQLOperationChange(data) {
+        let selectedResource;
+        if (data == null || data.length === 0) {
+            selectedResource = 'all';
+        } else {
+            const ids = data.map(row => row.value);
+            selectedResource = ids;
+        }
+        this.setState({
+            selectedResource,
+        }, this.loadingDrillDownData);
     }
 
     handleLimitChange(event) {
@@ -597,6 +655,7 @@ class APILatencyOverTimeWidget extends Widget {
                                 handleAPIChange={this.handleAPIChange}
                                 handleVersionChange={this.handleVersionChange}
                                 handleOperationChange={this.handleOperationChange}
+                                handleGraphQLOperationChange={this.handleGraphQLOperationChange}
                                 handleLimitChange={this.handleLimitChange}
                             />
                             {!loading ? (

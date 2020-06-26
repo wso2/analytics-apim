@@ -77,7 +77,6 @@ class APIViewErrorTable extends React.Component {
     getPieChartForAPI() {
         const timeFormat = 'YY/DD/MM, HH:mm:ss';
         const { data } = this.props;
-        console.log(data);
         const {
             successSelected, _4xxSelected, _5xxSelected, faultySelected, throttleSelected,
         } = this.state;
