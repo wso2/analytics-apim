@@ -16,7 +16,7 @@
             "drillDownQuery": "from ApiExeTime {{querystring}} within {{from}}L, {{to}}L per \"{{per}}s\" select {{selectPhase}} {{groupByPhase}} {{orderBy}} limit {{limit}};",
             "listApisQuery": "from AM_API on {{contextContainsCondition}} select API_NAME group by API_NAME",
             "listVersionsQuery": "from AM_API on (API_NAME == '{{selectedAPI}}' ) select API_ID, API_VERSION group by API_ID, API_VERSION",
-            "listOperationsQuery": "from AM_API_URL_MAPPING on (API_ID == {{selectedVersion}} ) select URL_PATTERN,HTTP_METHOD group by URL_PATTERN,HTTP_METHOD"
+            "listOperationsQuery": "from AM_API_URL_MAPPING on (API_ID == {{selectedVersion}} ) select URL_MAPPING_ID,URL_PATTERN,HTTP_METHOD group by URL_MAPPING_ID,URL_PATTERN,HTTP_METHOD"
           },
           "publishingInterval": 60
         }

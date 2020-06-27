@@ -22,7 +22,7 @@ const styles = theme => ({
     },
     valueContainer: {
         display: 'flex',
-        flexWrap: 'wrap',
+        // flexWrap: 'wrap',
         flex: 1,
         alignItems: 'center',
         overflow: 'hidden',
@@ -48,6 +48,7 @@ const styles = theme => ({
         fontSize: 16,
     },
     paper: {
+        width: 'fit-content',
         position: 'absolute',
         zIndex: 1,
         marginTop: theme.spacing.unit,

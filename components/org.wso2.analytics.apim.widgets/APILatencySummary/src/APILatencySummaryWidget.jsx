@@ -150,6 +150,7 @@ class APILatencySummaryWidget extends Widget {
         this.handleAPIChange = this.handleAPIChange.bind(this);
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleOperationChange = this.handleOperationChange.bind(this);
+        this.handleGraphQLOperationChange = this.handleGraphQLOperationChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
 
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
@@ -268,18 +269,53 @@ class APILatencySummaryWidget extends Widget {
     }
 
     handleLoadApis(message) {
-        const { data } = message;
-        this.setState({ apiList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+        if (data.length !== 0) {
+            this.setState({ apiList: newData }, this.versionLoadCallBack);
+        } else {
+            this.setState({ apiList: [] });
+        }
     }
 
     handleLoadVersions(message) {
-        const { data } = message;
-        this.setState({ versionList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ versionList: newData, selectedResource: -1 });
+        } else {
+            this.setState({ versionList: [], selectedResource: -1 });
+        }
     }
 
     handleLoadOperations(message) {
-        const { data } = message;
-        this.setState({ operationList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ operationList: newData });
+        } else {
+            this.setState({ operationList: [] });
+        }
     }
     // end of filter loading
 
@@ -365,14 +401,24 @@ class APILatencySummaryWidget extends Widget {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
         if (selectedVersion > -1) {
-            const ver = versionList[selectedVersion][1];
-            filterPhase.push('apiVersion==\'' + ver + '\'');
+            const api = versionList.find(i => i.API_ID === selectedVersion);
+            filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
-        if (selectedResource > -1) {
-            const template = operationList[selectedResource][0];
-            const verb = operationList[selectedResource][1];
-            filterPhase.push('apiResourceTemplate==\'' + template + '\'');
-            filterPhase.push('apiMethod==\'' + verb + '\'');
+        if (Array.isArray(selectedResource)) {
+            if (selectedResource.length > 0) {
+                const opsString = selectedResource
+                    .map(id => operationList.find(i => i.URL_MAPPING_ID === id))
+                    .map(d => d.URL_PATTERN).join(',');
+                const firstOp = operationList.find(i => i.URL_MAPPING_ID === selectedResource[0]);
+                filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
+                filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
+            }
+        } else {
+            if (selectedResource > -1) {
+                const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
+                filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
+                filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
+            }
         }
 
         selectPhase.push('apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod',
@@ -390,20 +436,64 @@ class APILatencySummaryWidget extends Widget {
 
 
     // start of handle filter change
-    handleAPIChange(event) {
-        this.setState({ selectedAPI: event.target.value }, this.loadingDrillDownData);
-        this.loadVersions(event.target.value);
+    handleAPIChange(data) {
+        let selectedAPI;
+        if (data == null) {
+            selectedAPI = -1;
+        } else {
+            const { value } = data;
+            selectedAPI = value;
+            this.loadVersions(selectedAPI);
+        }
+        this.setState({
+            selectedAPI,
+            versionList: [],
+            operationList: [],
+            selectedVersion: -1,
+            selectedResource: -1,
+        }, this.loadingDrillDownData);
     }
 
-    handleVersionChange(event) {
-        this.setState({ selectedVersion: event.target.value }, this.loadingDrillDownData);
-        const { versionList } = this.state;
-        const api = versionList[event.target.value];
-        this.loadOperations(api[0]);
+    handleVersionChange(data) {
+        let selectedVersion;
+        if (data == null) {
+            selectedVersion = -1;
+        } else {
+            const { value } = data;
+            selectedVersion = value;
+            this.loadOperations(selectedVersion);
+        }
+        this.setState({
+            selectedVersion,
+            selectedResource: -1,
+            operationList: [],
+        }, this.loadingDrillDownData);
     }
 
-    handleOperationChange(event) {
-        this.setState({ selectedResource: event.target.value }, this.loadingDrillDownData);
+    handleOperationChange(data) {
+        let selectedResource;
+        if (data == null) {
+            selectedResource = -1;
+        } else {
+            const { value } = data;
+            selectedResource = value;
+        }
+        this.setState({
+            selectedResource,
+        }, this.loadingDrillDownData);
+    }
+
+    handleGraphQLOperationChange(data) {
+        let selectedResource;
+        if (data == null || data.length === 0) {
+            selectedResource = -1;
+        } else {
+            const ids = data.map(row => row.value);
+            selectedResource = ids;
+        }
+        this.setState({
+            selectedResource,
+        }, this.loadingDrillDownData);
     }
 
     handleLimitChange(event) {
@@ -430,8 +520,18 @@ class APILatencySummaryWidget extends Widget {
                 const {
                     apiName, apiVersion, apiResourceTemplate, apiMethod,
                 } = data;
+                const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
+                const graphQL = graphQLOps.includes(apiMethod);
+                let resource;
+                if (graphQL) {
+                    resource = apiResourceTemplate.split(',').map((path) => {
+                        return { apiResourceTemplate: path, apiMethod };
+                    });
+                } else {
+                    resource = { apiResourceTemplate, apiMethod };
+                }
                 this.publishSelection({
-                    api: apiName, version: apiVersion, resource: apiResourceTemplate + ' (' + apiMethod + ')',
+                    api: apiName, version: apiVersion, resource,
                 });
                 document.getElementById('latency-over-time').scrollIntoView();
             }
@@ -495,6 +595,7 @@ class APILatencySummaryWidget extends Widget {
                                 handleAPIChange={this.handleAPIChange}
                                 handleVersionChange={this.handleVersionChange}
                                 handleOperationChange={this.handleOperationChange}
+                                handleGraphQLOperationChange={this.handleGraphQLOperationChange}
                                 handleLimitChange={this.handleLimitChange}
                             />
                             {!loading ? (

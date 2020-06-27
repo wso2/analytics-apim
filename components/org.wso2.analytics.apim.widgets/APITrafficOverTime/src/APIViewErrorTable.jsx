@@ -91,6 +91,8 @@ class APIViewErrorTable extends React.Component {
 
     getChartForAPI() {
         const timeFormat = 'DD/MM, HH:mm:ss';
+        const barRatio = 0.2;
+        const barWidth = 15;
         const { data } = this.props;
         const {
             successSelected, faultySelected, throttledSelected,
@@ -143,7 +145,8 @@ class APIViewErrorTable extends React.Component {
                             <VictoryBar
                                 style={{ data: { fill: colorScale[0] } }}
                                 alignment='start'
-                                barRatio={0.5}
+                                barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Success Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
@@ -158,7 +161,8 @@ class APIViewErrorTable extends React.Component {
                             <VictoryBar
                                 style={{ data: { fill: colorScale[1] } }}
                                 alignment='start'
-                                barRatio={0.5}
+                                barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Faulty Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
@@ -173,7 +177,8 @@ class APIViewErrorTable extends React.Component {
                             <VictoryBar
                                 style={{ data: { fill: colorScale[2] } }}
                                 alignment='start'
-                                barRatio={0.5}
+                                barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Throttled Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),

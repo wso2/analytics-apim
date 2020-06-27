@@ -90,6 +90,7 @@ class APIViewErrorTable extends React.Component {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
         const barRatio = 0.2;
+        const barWidth = 15;
         const timeFormat = 'DD/MM, HH:mm:ss';
         return (
             <div>
@@ -129,9 +130,10 @@ class APIViewErrorTable extends React.Component {
                     <VictoryStack>
                         { successSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[0] } }}
+                                style={{ data: { fill: colorScale[0], cursor: 'pointer' } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                barWidth={barWidth}
                                 x={
                                     d => d.apiName + ':' + d.apiVersion + ':'
                                         + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
@@ -162,9 +164,10 @@ class APIViewErrorTable extends React.Component {
                         )}
                         { faultySelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[1] } }}
+                                style={{ data: { fill: colorScale[1], cursor: 'pointer' } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Faulty Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
@@ -196,9 +199,10 @@ class APIViewErrorTable extends React.Component {
 
                         { throttledSelected && (
                             <VictoryBar
-                                style={{ data: { fill: colorScale[2] } }}
+                                style={{ data: { fill: colorScale[2], cursor: 'pointer' } }}
                                 alignment='start'
                                 barRatio={barRatio}
+                                barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Throttled Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),

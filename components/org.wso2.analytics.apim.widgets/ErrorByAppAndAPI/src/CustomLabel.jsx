@@ -38,7 +38,6 @@ class CustomLabel extends React.Component {
         const { totalRequestCounts } = this.props;
         return (
             <g>
-                <VictoryLabel renderInPortal {...this.props} />
                 <VictoryTooltip
                     {...this.props}
                     labelComponent={(

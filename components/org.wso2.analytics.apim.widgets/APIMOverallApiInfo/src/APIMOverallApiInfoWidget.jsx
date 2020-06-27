@@ -206,7 +206,6 @@ class APIMOverallApiInfoWidget extends Widget {
             }
             return obj;
         });
-        console.log('newData', newData);
         const { id } = this.props;
         this.setState({ apiInfoData: newData, inProgress: false });
         super.getWidgetChannelManager().unsubscribeWidget(id);

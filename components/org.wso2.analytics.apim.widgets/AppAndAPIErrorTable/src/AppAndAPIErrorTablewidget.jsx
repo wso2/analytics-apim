@@ -566,6 +566,7 @@ class AppAndAPIErrorTablewidget extends Widget {
         if (selectedAPI !== -1) {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         } else {
+            this.setState({ data: [] });
             return;
         }
         if (selectedVersion !== -1) {
@@ -607,12 +608,14 @@ class AppAndAPIErrorTablewidget extends Widget {
         if (selectedAPI !== -1) {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         } else {
+            this.setState({ data: [] });
             return;
         }
         if (selectedVersion > -1) {
             const api = versionList.find(i => i.API_ID === selectedVersion);
             filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         } else {
+            this.setState({ data: [] });
             return;
         }
         if (Array.isArray(selectedResource)) {
