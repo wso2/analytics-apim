@@ -138,7 +138,6 @@ class APITrafficSummaryWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.handleQueryResults = this.handleQueryResults.bind(this);
         this.assembleFetchDataQuery = this.assembleFetchDataQuery.bind(this);
-        this.handleDrillDownTypeChange = this.handleDrillDownTypeChange.bind(this);
 
         this.getQueryForResource = this.getQueryForResource.bind(this);
 
@@ -160,6 +159,7 @@ class APITrafficSummaryWidget extends Widget {
         this.renderDrillDownTable = this.renderDrillDownTable.bind(this);
         this.handleOnClick = this.handleOnClick.bind(this);
         this.handleDrillDownTypeChange = this.handleDrillDownTypeChange.bind(this);
+        this.handleGraphQLOperationChange = this.handleGraphQLOperationChange.bind(this);
     }
 
     componentWillMount() {
@@ -342,9 +342,9 @@ class APITrafficSummaryWidget extends Widget {
     // end data query functions
 
     handleDrillDownTypeChange(event) {
-        this.setState({ drillDownType: event.target.value });
         this.setState(
             {
+                drillDownType: event.target.value,
                 data: [],
                 selectedAPI: -1,
                 selectedVersion: -1,
@@ -373,7 +373,7 @@ class APITrafficSummaryWidget extends Widget {
             groupByPhase.push('apiName');
         }
         if (drillDownType === 'version') {
-            groupByPhase.push('apiName', 'apiResourceTemplate');
+            groupByPhase.push('apiName', 'apiVersion');
         }
         if (drillDownType === 'resource') {
             groupByPhase.push('apiName', 'apiResourceTemplate', 'apiVersion');
@@ -383,16 +383,29 @@ class APITrafficSummaryWidget extends Widget {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
         if (selectedVersion !== -1) {
-            const ver = versionList[selectedVersion][1];
-            filterPhase.push('apiVersion==\'' + ver + '\'');
+            const ver = versionList.filter(([versionId]) => {
+                return versionId === selectedVersion;
+            });
+            filterPhase.push('apiVersion==\'' + ver[0][1] + '\'');
         }
-        if (selectedResource !== -1) {
-            const template = operationList[selectedResource][0];
-            const verb = operationList[selectedResource][1];
-            filterPhase.push('apiResourceTemplate==\'' + template + '\'');
-            filterPhase.push('apiMethod==\'' + verb + '\'');
-        }
+        if (Array.isArray(selectedResource)) {
+            if (selectedResource.length > 0) {
+                const opsString = selectedResource
+                    .map(urlId => operationList.find(i => i[0] === urlId))
+                    .map(([, pattern]) => pattern).join(',');
 
+                const operation = operationList.find(i => i[0] === selectedResource[0]);
+                const [,, method] = operation;
+
+                filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
+                filterPhase.push('apiMethod==\'' + method + '\'');
+            }
+        } else if (selectedResource > -1) {
+            const operation = operationList.find(i => i[0] === selectedResource);
+            const [, pattern, method] = operation;
+            filterPhase.push('apiResourceTemplate==\'' + pattern + '\'');
+            filterPhase.push('apiMethod==\'' + method + '\'');
+        }
         selectPhase.push('apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod',
             'sum(successCount) as successCount',
             'sum(faultCount) as faultCount',
@@ -405,19 +418,66 @@ class APITrafficSummaryWidget extends Widget {
 
     // start of handle filter change
     handleAPIChange(event) {
-        this.setState({ selectedAPI: event.target.value }, this.loadingDrillDownData);
-        this.loadVersions(event.target.value);
+        let value;
+        if (!event) {
+            // handle clear dropdown
+            value = -1;
+        } else {
+            value = event.value;
+        }
+        this.setState({
+            selectedAPI: value,
+            selectedResource: -1,
+            selectedVersion: -1,
+            versionList: [],
+            operationList: [],
+        }, this.loadingDrillDownData);
+        this.loadVersions(value);
     }
 
     handleVersionChange(event) {
-        this.setState({ selectedVersion: event.target.value }, this.loadingDrillDownData);
+        let value;
+        if (!event) {
+            // handle clear dropdown
+            value = -1;
+        } else {
+            value = event.value;
+        }
+        this.setState({
+            selectedVersion: value,
+            operationList: [],
+            selectedResource: -1,
+        }, this.loadingDrillDownData);
         const { versionList } = this.state;
-        const api = versionList[event.target.value];
-        this.loadOperations(api[0]);
+        const api = versionList.filter(([apiVersionID]) => {
+            return apiVersionID === value;
+        });
+        this.loadOperations(api[0][0]);
     }
 
     handleOperationChange(event) {
-        this.setState({ selectedResource: event.target.value }, this.loadingDrillDownData);
+        let value;
+        if (!event) {
+            // handle clear dropdown
+            value = -1;
+            return this.setState({ selectedResource: value }, this.loadingDrillDownData);
+        } else {
+            value = event.value;
+        }
+        this.setState({ selectedResource: value }, this.loadingDrillDownData);
+    }
+
+    handleGraphQLOperationChange(data) {
+        let selectedResource;
+        if (data == null || data.length === 0) {
+            selectedResource = -1;
+        } else {
+            const ids = data.map(row => row.value);
+            selectedResource = ids;
+        }
+        this.setState({
+            selectedResource,
+        }, this.loadingDrillDownData);
     }
 
     handleLimitChange(event) {

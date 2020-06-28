@@ -56,7 +56,7 @@ const queryParamKey = 'latencyOverTime';
 const CALLBACK_API = '-api';
 const CALLBACK_VERSION = '-version';
 const CALLBACK_OPERATION = '-operation';
-const CALLBACK_LATENCY = '-latency';
+const CALLBACK_TRAFFIC = '-latency';
 
 /**
  * Language
@@ -201,7 +201,7 @@ class APITrafficOverTimeWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_API);
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_VERSION);
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_OPERATION);
-        super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_LATENCY);
+        super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_TRAFFIC);
     }
 
     /**
@@ -421,7 +421,7 @@ class APITrafficOverTimeWidget extends Widget {
         };
         // Use this method to subscribe to the endpoint via web socket connection
         super.getWidgetChannelManager()
-            .subscribeWidget(id + CALLBACK_LATENCY, widgetName, this.handleQueryResults, dataProviderConfigs);
+            .subscribeWidget(id + CALLBACK_TRAFFIC, widgetName, this.handleQueryResults, dataProviderConfigs);
     }
 
     /**
