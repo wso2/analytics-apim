@@ -26,7 +26,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- *  Responsible to remove expired access tokens from the tokenData map.
+ * Responsible to remove expired access tokens from the tokenData map.
  */
 public class TokenDataMapCleaner extends TimerTask {
 
