@@ -345,6 +345,9 @@ public class Authorizer implements DataProviderAuthorizer {
             } else {
                 if (response.status() == 200) {
                     TenantIdInfo tenantIdInfo = (TenantIdInfo) new GsonDecoder().decode(response, TenantIdInfo.class);
+                    if (tenantIdInfo.getTenantId() == null) {
+                        throw new DataProviderException("Tenant Id cannot be null");
+                    }
                     String tenantId = tenantIdInfo.getTenantId().toString();
                     if (tenantId.isEmpty()) {
                         throw new DataProviderException("Tenant Id cannot be found.");
