@@ -31,6 +31,7 @@ import { FormattedMessage } from 'react-intl';
 import {
     RadioGroup, FormControlLabel, Radio, FormLabel,
 } from '@material-ui/core';
+import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
 
 const styles = theme => ({
     table: {
@@ -63,54 +64,51 @@ const styles = theme => ({
         display: 'block',
         overflow: 'hidden',
     },
+    autoSelectForm: {
+        margin: theme.spacing.unit,
+        minWidth: 200,
+    },
 });
 
 function CustomFormGroup(props) {
     const {
         classes, selectedAPI, selectedVersion, selectedResource, apiList,
-        versionList, operationList, selectedLimit,
-        handleAPIChange, handleVersionChange, handleOperationChange, handleLimitChange, drillDownType, handleDrillDownTypeChange,
+        versionList, operationList = [], selectedLimit,
+        handleAPIChange, handleVersionChange, handleOperationChange,
+        handleLimitChange, drillDownType, handleDrillDownTypeChange, handleGraphQLOperationChange,
     } = props;
+    const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
+    const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
     function renderVersionControls() {
         if (drillDownType === 'version' || drillDownType === 'resource') {
             return (
-                <FormControl className={classes.formControlSelect}>
-                    <InputLabel className={classes.formLabel}>
-                        <FormattedMessage id='label.apiversion' defaultMessage='API Version' />
-                    </InputLabel>
-                    <Select
+                <FormControl className={classes.autoSelectForm}>
+                    <IntegrationReactSelect
+                        options={versionList}
                         value={selectedVersion}
                         onChange={handleVersionChange}
-                        disabled={versionList && versionList.length === 0}
-                    >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {versionList.map((row, i) => (
-                            <MenuItem value={i}>{row[1]}</MenuItem>
-                        ))}
-                    </Select>
+                        placeholder='Select Version'
+                        getLabel={item => item[1]}
+                        getValue={item => item[0]}
+                    />
                 </FormControl>
             );
         }
         return null;
     }
-
     function renderResourceControl() {
         if (drillDownType === 'resource') {
             return (
-                <FormControl className={classes.formControlSelect}>
-                    <InputLabel className={classes.formLabel}>
-                        <FormattedMessage id='label.operation' defaultMessage='Operation' />
-                    </InputLabel>
-                    <Select
+                <FormControl className={classes.autoSelectForm}>
+                    <IntegrationReactSelect
+                        isMulti={graphQL}
+                        options={operationList}
                         value={selectedResource}
-                        onChange={handleOperationChange}
-                        disabled={operationList && operationList.length === 0}
-                    >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {operationList.map((row, i) => (
-                            <MenuItem value={i}>{row[0] + ' ( ' + row[1] + ' )'}</MenuItem>
-                        ))}
-                    </Select>
+                        onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
+                        placeholder='Select Operation'
+                        getLabel={([, pattern, method]) => pattern + ' ( ' + method + ' )'}
+                        getValue={([urlId]) => urlId}
+                    />
                 </FormControl>
             );
         }
@@ -151,19 +149,16 @@ function CustomFormGroup(props) {
                     </FormControl>
                 </div>
 
-                <FormControl className={classes.formControlSelect}>
-                    <InputLabel className={classes.formLabel}>
-                        <FormattedMessage id='label.apiname' defaultMessage='API Name' />
-                    </InputLabel>
-                    <Select
+                <FormControl className={classes.autoSelectForm}>
+                    <IntegrationReactSelect
+                        options={apiList}
                         value={selectedAPI}
                         onChange={handleAPIChange}
-                    >
-                        <MenuItem value={-1}>All</MenuItem>
-                        {apiList.map(row => (
-                            <MenuItem value={row}>{row}</MenuItem>
-                        ))}
-                    </Select>
+                        disabled={apiList && apiList.length === 0}
+                        placeholder='Select API'
+                        getLabel={item => item}
+                        getValue={item => item}
+                    />
                 </FormControl>
                 {renderVersionControls()}
                 {renderResourceControl()}
@@ -207,4 +202,5 @@ CustomFormGroup.propTypes = {
     operationList: PropTypes.instanceOf(Object).isRequired,
     drillDownType: PropTypes.string.isRequired,
     handleDrillDownTypeChange: PropTypes.func.isRequired,
+    handleGraphQLOperationChange: PropTypes.func.isRequired,
 };
