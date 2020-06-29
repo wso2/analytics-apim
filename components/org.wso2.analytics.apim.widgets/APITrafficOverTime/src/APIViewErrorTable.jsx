@@ -39,6 +39,7 @@ import {
     VictoryLabel,
     VictoryStack,
     VictoryBar,
+    VictoryLine,
 } from 'victory';
 import Moment from 'moment';
 import { FormattedMessage } from 'react-intl';
@@ -97,6 +98,7 @@ class APIViewErrorTable extends React.Component {
         const {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
+        const strokeWidth = 1;
         return (
             <div>
                 <VictoryChart
@@ -142,8 +144,8 @@ class APIViewErrorTable extends React.Component {
                     />
                     <VictoryStack>
                         { successSelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[0] } }}
+                            <VictoryLine
+                                style={{ data: { stroke: colorScale[0], strokeWidth } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 barWidth={barWidth}
@@ -158,8 +160,8 @@ class APIViewErrorTable extends React.Component {
                             />
                         ) }
                         { faultySelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[1] } }}
+                            <VictoryLine
+                                style={{ data: { stroke: colorScale[1], strokeWidth } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 barWidth={barWidth}
@@ -174,8 +176,8 @@ class APIViewErrorTable extends React.Component {
                             />
                         ) }
                         { throttledSelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[2] } }}
+                            <VictoryLine
+                                style={{ data: { stroke: colorScale[2], strokeWidth } }}
                                 alignment='start'
                                 barRatio={barRatio}
                                 barWidth={barWidth}
