@@ -452,7 +452,9 @@ class APITrafficSummaryWidget extends Widget {
         const api = versionList.filter(([apiVersionID]) => {
             return apiVersionID === value;
         });
-        this.loadOperations(api[0][0]);
+        if (api && api[0]) {
+            this.loadOperations(api[0][0]);
+        }
     }
 
     handleOperationChange(event) {
