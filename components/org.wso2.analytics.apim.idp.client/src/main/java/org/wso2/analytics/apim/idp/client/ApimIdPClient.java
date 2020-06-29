@@ -133,10 +133,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
         this.oAuthAppDAO.init();
         if (!this.oAuthAppDAO.systemAppsTableExists()) {
-            String error
-                    = OAUTHAPP_TABLE + " does not exists in the " + this.oAuthAppDAO.getDatabaseName() + " database.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException(
+                    OAUTHAPP_TABLE + " does not exists in the " + this.oAuthAppDAO.getDatabaseName() + " database.");
         }
         String clientName = getClientName(appContext);
         String tenantDomain = SUPER_TENANT_DOMAIN;
@@ -216,9 +214,7 @@ public class ApimIdPClient extends ExternalIdPClient {
     @Override
     public Role getAdminRole() throws IdPClientException {
         if (this.adminScopeName == null) {
-            String error = "Error occurred while getting the admin scope name.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Error occurred while getting the admin scope name.");
         }
         return new Role(this.adminScopeName, this.adminScopeName);
     }
@@ -261,16 +257,12 @@ public class ApimIdPClient extends ExternalIdPClient {
      */
     private String extractTenantDomainFromUserName(String username) throws IdPClientException {
         if (username == null || username.isEmpty()) {
-            String error = "Username cannot be empty.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Username cannot be empty.");
         }
         String[] usernameSections = username.split(AT);
         String tenantDomain = usernameSections[usernameSections.length - 1];
         if (tenantDomain == null) {
-            String error = "Cannot get the tenant domain from the given username: " + username;
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Cannot get the tenant domain from the given username: " + username);
         }
         return tenantDomain;
     }
@@ -284,9 +276,7 @@ public class ApimIdPClient extends ExternalIdPClient {
      */
     private ArrayList<Role> getRolesFromArray(String[] scopes) throws IdPClientException {
         if (scopes.length == 0) {
-            String error = "Cannot get roles from the list as the scope list is empty.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Cannot get roles from the list as the scope list is empty.");
         }
         ArrayList<Role> roles = new ArrayList<>();
         Role newRole;
@@ -345,10 +335,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
 
         if (response == null) {
-            String error = "Error occurred while generating an access token for grant type '" +
-                    removeCRLFCharacters(grantType) + "'. Response is null.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Error occurred while generating an access token for grant type '" +
+                    removeCRLFCharacters(grantType) + "'. Response is null.");
         }
         int responseStatus = response.status();
         if (responseStatus == 200) {   //200 - Success
@@ -397,10 +385,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                         new ExternalSession(username, oAuth2TokenInfo.getAccessToken()));
                 return returnProperties;
             } catch (IOException e) {
-                String error = "Error occurred while parsing token response for user. Response: '" +
-                        response.body().toString() + "'.";
-                LOG.error(error, e);
-                throw new IdPClientException(error, e);
+                throw new IdPClientException("Error occurred while parsing token response for user. Response: '" +
+                        response.body().toString() + "'.", e);
             }
         } else if (responseStatus == 401) {
             String invalidResponse = "Unable to get access token for the request with grant type : '" + grantType +
@@ -411,10 +397,8 @@ public class ApimIdPClient extends ExternalIdPClient {
             returnProperties.put(IdPClientConstants.ERROR_DESCRIPTION, invalidResponse);
             return returnProperties;
         } else {  //Error case
-            String errorMessage = "Token generation request failed. HTTP error code: '" + responseStatus +
-                    "'. Error Response: '" + response.body().toString() + "'.";
-            LOG.error(errorMessage);
-            throw new IdPClientException(errorMessage);
+            throw new IdPClientException("Token generation request failed. HTTP error code: '" + responseStatus +
+                    "'. Error Response: '" + response.body().toString() + "'.");
         }
     }
 
@@ -434,9 +418,7 @@ public class ApimIdPClient extends ExternalIdPClient {
                 OAuth2IntrospectionResponse introspectResponse = getIntrospectResponse(token);
                 username = introspectResponse.getUsername();
             } catch (AuthenticationException e) {
-                String error = "Error occurred while introspecting the token '" + token + "'. " + e.getMessage();
-                LOG.error(error, e);
-                throw new IdPClientException(error, e);
+                throw new IdPClientException( "Error occurred while introspecting the token '" + token + "'.", e);
             }
         } else {
             username = session.getUserName();
@@ -510,10 +492,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                         ApimIdPClientConstants.CALLBACK_URL_SUFFIX, null,
                 oAuthApplicationInfo.getClientId(), oAuthApplicationInfo.getClientSecret());
         if (response == null) {
-            String error = "Error occurred while generating an access token from code '" + code + "'. " +
-                    "Response is null.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Error occurred while generating an access token from code '" + code + "'. " +
+                    "Response is null.");
         }
         int responseStatus = response.status();
         if (responseStatus == 200) {   //200 - Success
@@ -560,10 +540,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                 }
                 return returnProperties;
             } catch (IOException e) {
-                String error = "Error occurred while parsing token response. Response : '" +
-                        response.body().toString() + "'";
-                LOG.error(error, e);
-                throw new IdPClientException(error, e);
+                throw new IdPClientException("Error occurred while parsing token response. Response : '" +
+                        response.body().toString() + "'", e);
             }
         } else if (responseStatus == 401) {
             String invalidResponse = "Unauthorized user for accessing token form code '" + code + "'. for the app " +
@@ -573,10 +551,8 @@ public class ApimIdPClient extends ExternalIdPClient {
             returnProperties.put(IdPClientConstants.ERROR_DESCRIPTION, invalidResponse);
             return returnProperties;
         } else {  //Error case
-            String error = "Token generation request failed. HTTP error code: '" + responseStatus +
-                    "'. Error Response Body: '" + response.body().toString() + "'.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Token generation request failed. HTTP error code: '" + responseStatus +
+                    "'. Error Response Body: '" + response.body().toString() + "'.");
         }
     }
 
@@ -606,9 +582,8 @@ public class ApimIdPClient extends ExternalIdPClient {
         Response response = oAuth2ServiceStubs.getIntrospectionServiceStub().introspectAccessToken(token);
 
         if (response == null) {
-            String error = "Error occurred while authenticating token '" + token + "'. Response is null.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Error occurred while authenticating token '" + token
+                    + "'. Response is null.");
         }
         try {
             int responseStatus = response.status();
@@ -627,26 +602,18 @@ public class ApimIdPClient extends ExternalIdPClient {
             } else if (responseStatus == 400) {  //400 - Known Error
                 try {
                     DCRError error = (DCRError) new GsonDecoder().decode(response, DCRError.class);
-                    String errorString = "Error occurred while introspecting the token. Error: " + error.getErrorCode()
-                            + ". Error Description: " + error.getErrorDescription() + ". Status Code: "
-                            + responseStatus;
-                    LOG.error(errorString);
-                    throw new IdPClientException(errorString);
+                    throw new IdPClientException("Error occurred while introspecting the token. Error: "
+                            + error.getErrorCode() + ". Error Description: " + error.getErrorDescription()
+                            + ". Status Code: " + responseStatus);
                 } catch (IOException e) {
-                    String error = "Error occurred while parsing the Introspection error message.";
-                    LOG.error(error, e);
-                    throw new IdPClientException(error, e);
+                    throw new IdPClientException("Error occurred while parsing the Introspection error message.", e);
                 }
             } else {  //Unknown Error
-                String error = "Error occurred while authenticating. Error: '" + response.body().toString()
-                        + "'. Status Code: '" + responseStatus + "'.";
-                LOG.error(error);
-                throw new IdPClientException(error);
+                throw new IdPClientException("Error occurred while authenticating. Error: '"
+                        + response.body().toString() + "'. Status Code: '" + responseStatus + "'.");
             }
         } catch (IOException e) {
-            String error = "Error occurred while parsing the authentication response.";
-            LOG.error(error, e);
-            throw new IdPClientException(error, e);
+            throw new IdPClientException("Error occurred while parsing the authentication response.", e);
         }
     }
 
@@ -697,10 +664,8 @@ public class ApimIdPClient extends ExternalIdPClient {
 
         Response response = dcrmServiceStub.registerApplication(new Gson().toJson(dcrClientInfo));
         if (response == null) {
-            String error = "Error occurred while DCR application '" + dcrClientInfo + "' creation. " +
-                    "Response is null.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Error occurred while DCR application '" + dcrClientInfo + "' creation. " +
+                    "Response is null.");
         }
         int responseStatus = response.status();
         if (responseStatus == 200) {  //200 - OK
@@ -725,30 +690,22 @@ public class ApimIdPClient extends ExternalIdPClient {
                     LOG.debug("System app created: " + oAuthApplicationInfo.toString());
                 }
             } catch (IOException e) {
-                String error = "Error occurred while parsing the DCR application creation response " +
-                        "message. Response: '" + response.body().toString() + "'.";
-                LOG.error(error, e);
-                throw new IdPClientException(error, e);
+                throw new IdPClientException("Error occurred while parsing the DCR application creation response " +
+                        "message. Response: '" + response.body().toString() + "'.", e);
             }
         } else if (responseStatus == 400) {  //400 - Known Error
             try {
                 DCRError error = (DCRError) new GsonDecoder().decode(response, DCRError.class);
-                String errorMessage = "Error occurred while DCR application creation. Error: " +
+                throw new IdPClientException("Error occurred while DCR application creation. Error: " +
                         error.getErrorCode() + ". Error Description: " + error.getErrorDescription() +
-                        ". Status Code: " + responseStatus;
-                LOG.error(errorMessage);
-                throw new IdPClientException(errorMessage);
+                        ". Status Code: " + responseStatus);
             } catch (IOException e) {
-                String error = "Error occurred while parsing the DCR error message. Error: " +
-                        "'" + response.body().toString() + "'.";
-                LOG.error(error, e);
-                throw new IdPClientException(error, e);
+                throw new IdPClientException("Error occurred while parsing the DCR error message. Error: " +
+                        "'" + response.body().toString() + "'.", e);
             }
         } else {  //Unknown Error
-            String error = "Error occurred while DCR application creation. Error: '" +
-                    response.body().toString() + "'. Status Code: '" + responseStatus + "'.";
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Error occurred while DCR application creation. Error: '" +
+                    response.body().toString() + "'. Status Code: '" + responseStatus + "'.");
         }
     }
 
@@ -764,9 +721,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         Response response = apimAdminApiClient.getCustomUrlInfo(tenantDomain);
         CustomUrlInfo customUrlInfo;
         if (response == null) {
-            String error = "Error occurred while fetching custom url info for tenant :" + tenantDomain;
-            LOG.error(error);
-            throw new IdPClientException(error);
+            throw new IdPClientException("Error occurred while fetching custom url info for tenant :" + tenantDomain);
         }
         if (response.status() == 200) {
             if (LOG.isDebugEnabled()) {
@@ -784,10 +739,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                     LOG.debug(customUrlInfo.toString());
                 }
             } catch (IOException e) {
-                String error = "Error occurred while parsing the Custom Url info response for tenant :" + tenantDomain +
-                        ". message. Response: '" + response.body().toString() + "'.";
-                LOG.error(error, e);
-                throw new IdPClientException(error, e);
+                throw new IdPClientException("Error occurred while parsing the Custom Url info response for tenant :"
+                        + tenantDomain + ". message. Response: '" + response.body().toString() + "'.", e);
             }
             return customUrlInfo;
         }

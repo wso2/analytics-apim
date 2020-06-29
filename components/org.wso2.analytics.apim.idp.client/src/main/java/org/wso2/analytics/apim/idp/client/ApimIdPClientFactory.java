@@ -209,28 +209,22 @@ public class ApimIdPClientFactory implements IdPClientFactory {
             cacheTimeout = Integer.parseInt(properties.getOrDefault(ApimIdPClientConstants.CACHE_TIMEOUT,
                     ApimIdPClientConstants.DEFAULT_CACHE_TIMEOUT));
         } catch (NumberFormatException e) {
-            String error = "Cache timeout overriding property '" +
-                    properties.get(ApimIdPClientConstants.CACHE_TIMEOUT) + "' is invalid.";
-            LOG.error(error);
-            throw new IdPClientException(error, e);
+            throw new IdPClientException("Cache timeout overriding property '" +
+                    properties.get(ApimIdPClientConstants.CACHE_TIMEOUT) + "' is invalid.", e);
         }
         try {
             connectionTimeout = Integer.parseInt(properties.getOrDefault(ApimIdPClientConstants.CONNECTION_TIMEOUT,
                     ApimIdPClientConstants.DEFAULT_CONNECTION_TIMEOUT));
         } catch (NumberFormatException e) {
-            String error = "Connection timeout overriding property '" +
-                    properties.get(ApimIdPClientConstants.CONNECTION_TIMEOUT) + "' is invalid.";
-            LOG.error(error);
-            throw new IdPClientException(error, e);
+            throw new IdPClientException( "Connection timeout overriding property '" +
+                    properties.get(ApimIdPClientConstants.CONNECTION_TIMEOUT) + "' is invalid.", e);
         }
         try {
             readTimeout = Integer.parseInt(properties.getOrDefault(ApimIdPClientConstants.READ_TIMEOUT,
                     ApimIdPClientConstants.DEFAULT_READ_TIMEOUT));
         } catch (NumberFormatException e) {
-            String error = "Read timeout overriding property '" +
-                    properties.get(ApimIdPClientConstants.READ_TIMEOUT) + "' is invalid.";
-            LOG.error(error);
-            throw new IdPClientException(error, e);
+            throw new IdPClientException("Read timeout overriding property '" +
+                    properties.get(ApimIdPClientConstants.READ_TIMEOUT) + "' is invalid.", e);
         }
 
         String databaseName = properties.getOrDefault(ApimIdPClientConstants.DATABASE_NAME,
