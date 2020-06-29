@@ -216,7 +216,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
             connectionTimeout = Integer.parseInt(properties.getOrDefault(ApimIdPClientConstants.CONNECTION_TIMEOUT,
                     ApimIdPClientConstants.DEFAULT_CONNECTION_TIMEOUT));
         } catch (NumberFormatException e) {
-            throw new IdPClientException( "Connection timeout overriding property '" +
+            throw new IdPClientException("Connection timeout overriding property '" +
                     properties.get(ApimIdPClientConstants.CONNECTION_TIMEOUT) + "' is invalid.", e);
         }
         try {

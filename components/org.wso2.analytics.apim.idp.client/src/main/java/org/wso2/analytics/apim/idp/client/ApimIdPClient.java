@@ -418,7 +418,7 @@ public class ApimIdPClient extends ExternalIdPClient {
                 OAuth2IntrospectionResponse introspectResponse = getIntrospectResponse(token);
                 username = introspectResponse.getUsername();
             } catch (AuthenticationException e) {
-                throw new IdPClientException( "Error occurred while introspecting the token '" + token + "'.", e);
+                throw new IdPClientException("Error occurred while introspecting the token '" + token + "'.", e);
             }
         } else {
             username = session.getUserName();
