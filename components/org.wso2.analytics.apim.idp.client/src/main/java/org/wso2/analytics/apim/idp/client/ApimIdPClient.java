@@ -134,7 +134,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         this.oAuthAppDAO.init();
         if (!this.oAuthAppDAO.systemAppsTableExists()) {
             throw new IdPClientException(
-                    OAUTHAPP_TABLE + " does not exists in the " + this.oAuthAppDAO.getDatabaseName() + " database.");
+                    OAUTHAPP_TABLE + " does not exist in the " + this.oAuthAppDAO.getDatabaseName() + " database.");
         }
         String clientName = getClientName(appContext);
         String tenantDomain = SUPER_TENANT_DOMAIN;
