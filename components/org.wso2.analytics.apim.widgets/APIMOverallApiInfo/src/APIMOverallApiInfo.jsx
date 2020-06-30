@@ -94,7 +94,7 @@ export default function APIMOverallApiInfo(props) {
             >
                 <div style={styles.headingWrapper}>
                     <h3 style={styles.heading} >
-                        <FormattedMessage id='api.info.heading' defaultMessage='OVERALL API INFO' />
+                        <FormattedMessage id='api.info.heading' defaultMessage='API INFO SUMMARY' />
                     </h3>
                     <p style={styles.subheading}>
                         <FormattedMessage id='api.info.subheading' defaultMessage='(Last 24 Hours)' />

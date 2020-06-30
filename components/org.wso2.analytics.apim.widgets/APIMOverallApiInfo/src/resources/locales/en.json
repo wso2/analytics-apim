@@ -1,10 +1,10 @@
 {
-  "config.error.body": "Cannot fetch provider configuration for APIM Overall Api Info widget",
+  "config.error.body": "Cannot fetch provider configuration for APIM Api Info widget",
   "config.error.heading": "Configuration Error !",
   "createdBy.label": "API Created By",
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
-  "api.info.heading": "OVERALL API INFO",
+  "api.info.heading": "API INFO SUMMARY",
   "api.info.subheading": "(Last 24 Hours)",
   "table.heading.apiname": "API NAME",
   "table.heading.method": "METHOD",
