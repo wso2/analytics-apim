@@ -92,11 +92,15 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
 
         File faviconFile = new File(System.getProperty("carbon.home") + THEME_DIR + faviconPath);
         if (faviconFile.exists()) {
-            LOGGER.debug("Custom favicon file '{}' returned via '{}' class for user: '{}.'",
-                    faviconPath, this.getClass().getName(), username);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Custom favicon file '{}' returned via '{}' class for user: '{}.'",
+                        faviconPath, this.getClass().getName(), username);
+            }
             return getAppUrl() + THEME_URL + faviconPath;
         } else {
-            LOGGER.debug("Custom favicon file doesn't exist and falling back to defaults");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Custom favicon file doesn't exist and falling back to defaults");
+            }
             return getAppUrl() + DEFAULT_IMAGE_DIR + DEFAULT_FAVICON_FILE;
         }
     }
@@ -109,11 +113,15 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
 
         File logoFile = new File(System.getProperty("carbon.home") + THEME_DIR + logoPath);
         if (logoFile.exists()) {
-            LOGGER.debug("Custom logo file '{}' returned via '{}' class for user: '{}.'",
-                    logoPath, this.getClass().getName(), username);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Custom logo file '{}' returned via '{}' class for user: '{}.'",
+                        logoPath, this.getClass().getName(), username);
+            }
             return getAppUrl() + THEME_URL + logoPath;
         } else {
-            LOGGER.debug("Custom logo file doesn't exist and falling back to defaults");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Custom logo file doesn't exist and falling back to defaults");
+            }
             return getAppUrl() + DEFAULT_IMAGE_DIR + DEFAULT_LOGO_FILE;
         }
     }
@@ -128,16 +136,12 @@ public class CustomDashboardThemeConfigProvider implements DashboardThemeConfigP
      */
     private String extractTenantDomainFromUserName(String username) throws DashboardException {
         if (username == null || username.isEmpty()) {
-            String error = "Username cannot be empty.";
-            LOGGER.error(error);
-            throw new DashboardException(error);
+            throw new DashboardException("Username cannot be empty.");
         }
         String[] usernameSections = username.split(AT);
         String tenantDomain = usernameSections[usernameSections.length - 1];
         if (tenantDomain == null) {
-            String error = "Cannot get the tenant domain from the given username: " + username;
-            LOGGER.error(error);
-            throw new DashboardException(error);
+            throw new DashboardException("Cannot get the tenant domain from the given username: " + username);
         }
         return tenantDomain;
     }

@@ -45,7 +45,7 @@ public class TokenDataHolder {
     }
 
     /**
-     *  Adds a given key, value pair to the map.
+     * Adds a given key, value pair to the map.
      * @param key name of the user which the access token belongs to.
      * @param value data of the token.
      */
@@ -57,7 +57,7 @@ public class TokenDataHolder {
     }
 
     /**
-     *  Removes a given key, value pair from the map.
+     * Removes a given key, value pair from the map.
      * @param key name of the user which the access token belongs to.
      */
     public void removeTokenDataFromMap(String key) {

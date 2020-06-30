@@ -145,19 +145,13 @@ public class Authorizer implements DataProviderAuthorizer {
         String username = dataProviderConfigRoot.getUsername();
         String widgetName = dataProviderConfigRoot.getWidgetName();
         if (dashboardId == null || dashboardId.isEmpty()) {
-            String error = "Dashboard Id in the Data Provider Config cannot be empty.";
-            LOGGER.error(error);
-            throw new DataProviderException(error);
+            throw new DataProviderException("Dashboard Id in the Data Provider Config cannot be empty.");
         }
         if (username == null || username.isEmpty()) {
-            String error = "Username in the Data Provider Config cannot be empty.";
-            LOGGER.error(error);
-            throw new DataProviderException(error);
+            throw new DataProviderException("Username in the Data Provider Config cannot be empty.");
         }
         if (widgetName == null || widgetName.isEmpty()) {
-            String error = "Widget Name in the Data Provider Config cannot be empty.";
-            LOGGER.error(error);
-            throw new DataProviderException(error);
+            throw new DataProviderException("Widget Name in the Data Provider Config cannot be empty.");
         }
 
         Optional<DashboardMetadata> dashboardMetadata;
@@ -167,9 +161,7 @@ public class Authorizer implements DataProviderAuthorizer {
         } catch (UnauthorizedException e) {
             return false;
         } catch (DashboardException e) {
-            String error = e.getMessage();
-            LOGGER.error(error, e);
-            throw new DataProviderException(error, e);
+            throw new DataProviderException(e);
         }
 
         if (!dashboardMetadata.isPresent()) {
@@ -206,14 +198,11 @@ public class Authorizer implements DataProviderAuthorizer {
         try {
             widgetMetaInfo = widgetMetadataProvider.getWidgetConfiguration(widgetName);
         } catch (DashboardException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new DataProviderException(e.getMessage(), e);
+            throw new DataProviderException(e);
         }
 
         if (!widgetMetaInfo.isPresent()) {
-            String error = "Widget configuration cannot be found.";
-            LOGGER.error(error);
-            throw new DataProviderException(error);
+            throw new DataProviderException("Widget configuration cannot be found.");
         }
         WidgetConfigs widgetConfigs = widgetMetaInfo.get().getConfigs();
         JsonElement dataProviderConfig = widgetConfigs.getProviderConfig();
@@ -250,9 +239,7 @@ public class Authorizer implements DataProviderAuthorizer {
             queryData = dataProviderConfig.getAsJsonObject().get(MAIN_CONFIG).getAsJsonObject()
                     .get(DATA_PROVIDER_CONFIG).getAsJsonObject().get(QUERY_DATA);
         } else {
-            String error = "Cannot find the query data in the widget configuration.";
-            LOGGER.error(error);
-            throw new DataProviderException(error);
+            throw new DataProviderException("Cannot find the query data in the widget configuration.");
         }
 
         // capture the query name sent from front-end
@@ -263,18 +250,14 @@ public class Authorizer implements DataProviderAuthorizer {
             queryName = dataProviderConfigRoot.getDataProviderConfiguration()
                     .getAsJsonObject().get(QUERY_DATA).getAsJsonObject().get(QUERY_NAME).getAsString();
         } else {
-            String error = "Query Name cannot be found in the data provider configuration root.";
-            LOGGER.error(error);
-            throw new DataProviderException(error);
+            throw new DataProviderException("Query Name cannot be found in the data provider configuration root.");
         }
 
         // get the query need to be run, from widget conf read from backend
         if (queryName != null && !queryName.isEmpty() && queryData.getAsJsonObject().get(queryName) != null) {
             query = queryData.getAsJsonObject().get(queryName).getAsString();
         } else {
-            String error = "Cannot find the query in the widget configuration.";
-            LOGGER.error(error);
-            throw new DataProviderException(error);
+            throw new DataProviderException("Cannot find the query in the widget configuration.");
         }
 
         // capture the query values sent from front-end
@@ -291,9 +274,7 @@ public class Authorizer implements DataProviderAuthorizer {
             for (String key : queryValues.getAsJsonObject().keySet()) {
                 String keyValue = queryValues.getAsJsonObject().get(key).getAsString();
                 if (keyValue == null) {
-                    String error = "Cannot find the replaceable value for " + key + ".";
-                    LOGGER.error(error);
-                    throw new DataProviderException(error);
+                    throw new DataProviderException("Cannot find the replaceable value for " + key + ".");
                 }
                 query = query.replace(key, keyValue);
             }
@@ -331,32 +312,24 @@ public class Authorizer implements DataProviderAuthorizer {
         try {
             Map authConfigs = (Map) this.configProvider.getConfigurationObject(AUTH_CONFIGS_HEADER);
             if (authConfigs == null) {
-                String error = "Cannot find " + AUTH_CONFIGS_HEADER + " in the deployment.yaml file.";
-                LOGGER.error(error);
-                throw new DataProviderException(error);
+                throw new DataProviderException("Cannot find " + AUTH_CONFIGS_HEADER + " in the deployment.yaml file.");
             }
             if (authConfigs.containsKey(AUTH_CONFIGS_PROPERTIES_HEADER)) {
                 Map properties = (Map) authConfigs.get(AUTH_CONFIGS_PROPERTIES_HEADER);
                 if (properties == null) {
-                    String error = AUTH_CONFIGS_PROPERTIES_HEADER + " header under " + AUTH_CONFIGS_HEADER + " in " +
-                            "the deployment.yaml file cannot be empty";
-                    LOGGER.error(error);
-                    throw new DataProviderException(error);
+                    throw new DataProviderException(AUTH_CONFIGS_PROPERTIES_HEADER + " header under "
+                            + AUTH_CONFIGS_HEADER + " in the deployment.yaml file cannot be empty");
                 }
                 adminServiceUrl = getPropertyValueFromParentMap(properties, ADMIN_SERVICE_BASE_URL_KEY);
                 adminUsername = getPropertyValueFromParentMap(properties, ADMIN_USERNAME_KEY);
                 adminPassword = getPropertyValueFromParentMap(properties, ADMIN_PASSWORD_KEY);
             } else {
-                String error = "Cannot find " + AUTH_CONFIGS_PROPERTIES_HEADER + " header under the "
-                        + AUTH_CONFIGS_HEADER + " in the deployment.yaml file.";
-                LOGGER.error(error);
-                throw new DataProviderException(error);
+                throw new DataProviderException("Cannot find " + AUTH_CONFIGS_PROPERTIES_HEADER + " header under the "
+                        + AUTH_CONFIGS_HEADER + " in the deployment.yaml file.");
             }
         } catch (ConfigurationException e) {
-            String error = "Error occurred while getting the " + AUTH_CONFIGS_HEADER + " configuration from " +
-                    "deployment.yaml file.";
-            LOGGER.error(error);
-            throw new DataProviderException(error);
+            throw new DataProviderException("Error occurred while getting the " + AUTH_CONFIGS_HEADER
+                    + " configuration from deployment.yaml file.");
         }
         try {
             String encodedUsername = Base64.getEncoder().encodeToString(username.getBytes(StandardCharsets.UTF_8));
@@ -368,39 +341,31 @@ public class Authorizer implements DataProviderAuthorizer {
                             adminPassword)
                     .getTenantId(encodedUsername);
             if (response == null) {
-                String error = "Response returned from the admin rest api is null.";
-                LOGGER.error(error);
-                throw new DataProviderException(error);
+                throw new DataProviderException("Response returned from the admin rest api is null.");
             } else {
                 if (response.status() == 200) {
                     TenantIdInfo tenantIdInfo = (TenantIdInfo) new GsonDecoder().decode(response, TenantIdInfo.class);
+                    if (tenantIdInfo.getTenantId() == null) {
+                        throw new DataProviderException("Tenant Id cannot be null");
+                    }
                     String tenantId = tenantIdInfo.getTenantId().toString();
                     if (tenantId.isEmpty()) {
-                        String error = "Tenant Id cannot be found.";
-                        LOGGER.error(error);
-                        throw new DataProviderException(error);
+                        throw new DataProviderException("Tenant Id cannot be found.");
                     }
                     return tenantId;
                 } else if (response.status() == 401) {
-                    String error
-                            = "Unauthorized to get response from admin rest api. Status Code: " + response.status();
-                    LOGGER.error(error);
-                    throw new DataProviderException(error);
+                    throw new DataProviderException("Unauthorized to get response from admin rest api." +
+                            " Status Code: " + response.status());
                 } else {
-                    String error = "Unknown Error occurred while getting response from admin rest api. Status Code: "
-                            + response.status();
-                    LOGGER.error(error);
-                    throw new DataProviderException(error);
+                    throw new DataProviderException("Unknown Error occurred while getting response from admin rest" +
+                            " api. Status Code: "
+                            + response.status());
                 }
             }
         } catch (RetryableException e) {
-            String error = "Unable to reach the admin rest api.";
-            LOGGER.error(error, e);
-            throw new DataProviderException(error, e);
+            throw new DataProviderException("Unable to reach the admin rest api.", e);
         } catch (IOException e) {
-            String error = "Error occurred while parsing the admin rest api response.";
-            LOGGER.error(error, e);
-            throw new DataProviderException(error, e);
+            throw new DataProviderException("Error occurred while parsing the admin rest api response.", e);
         }
     }
 
@@ -417,17 +382,14 @@ public class Authorizer implements DataProviderAuthorizer {
         if (parentConfigMap.containsKey(keyToBeChecked)) {
             String value = (String) parentConfigMap.get(keyToBeChecked);
             if (value == null || value.isEmpty()) {
-                String error = "Value of the property '" + keyToBeChecked + "' cannot be empty. Please define the " +
-                        "value for the property under " + AUTH_CONFIGS_HEADER + " in the deployment.yaml file.";
-                LOGGER.error(error);
-                throw new DataProviderException(error);
+                throw new DataProviderException("Value of the property '" + keyToBeChecked + "' cannot be empty." +
+                        " Please define the value for the property under " + AUTH_CONFIGS_HEADER
+                        + " in the deployment.yaml file.");
             }
             return value;
         } else {
-            String error = "Cannot find property " + keyToBeChecked + " under " + AUTH_CONFIGS_HEADER + " in the " +
-                    "deployment.yaml file.";
-            LOGGER.error(error);
-            throw new DataProviderException(error);
+            throw new DataProviderException("Cannot find property " + keyToBeChecked + " under "
+                    + AUTH_CONFIGS_HEADER + " in the deployment.yaml file.");
         }
     }
 }
