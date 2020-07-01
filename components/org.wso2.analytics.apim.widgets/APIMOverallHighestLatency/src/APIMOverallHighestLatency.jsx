@@ -102,7 +102,7 @@ export default function APIMOverallHighestLatency(props) {
                 <h3
                     style={styles.heading}
                 >
-                    <FormattedMessage id='widget.heading' defaultMessage='OVERALL HIGHEST LATENCY' />
+                    <FormattedMessage id='widget.heading' defaultMessage='HIGHEST LATENCY' />
                 </h3>
                 <p style={styles.subheading}>
                     <FormattedMessage id='api.info.subheading' defaultMessage='(Last 24 Hours)' />

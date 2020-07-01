@@ -12,7 +12,7 @@
         "config": {
           "datasourceName": "AM_DB",
           "queryData": {
-            "mainquery": "select count(subc.SUBSCRIPTION_ID) as count, subc.CREATED_TIME as CREATED_TIME, api.API_NAME, api.CREATED_BY as API_CREATED_BY, app.NAME, app.CREATED_BY as APP_CREATED_BY, api.API_VERSION from AM_API api, AM_APPLICATION app, AM_SUBSCRIPTION subc where api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID AND api.CONTEXT {{contextCondition}} {{apiName}} AND (subc.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}') group by api.API_NAME, subc.CREATED_TIME, api.CREATED_BY, app.NAME, app.CREATED_BY"
+            "mainquery": "select count(subc.SUBSCRIPTION_ID) as count, subc.CREATED_TIME as CREATED_TIME, api.API_NAME, api.CREATED_BY as API_CREATED_BY, app.NAME, app.CREATED_BY as APP_CREATED_BY, api.API_VERSION from AM_API api, AM_APPLICATION app, AM_SUBSCRIPTION subc where api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID AND api.CONTEXT {{contextCondition}} {{apiName}} AND (subc.CREATED_TIME between '{{timeFrom}}' AND '{{timeTo}}') group by api.API_NAME, subc.CREATED_TIME, api.CREATED_BY, app.NAME, app.CREATED_BY, api.API_VERSION"
           },
           "tableName": "{{tableName}}",
           "incrementalColumn": "{{incrementalColumn}}",

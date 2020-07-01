@@ -336,7 +336,7 @@ public class Authorizer implements DataProviderAuthorizer {
             Response response = DashboardAuthorizerServiceFactory
                     .getAuthorizerHttpsClient(
                             this.clientBuilderService,
-                            (adminServiceUrl + "/api/am/admin/v0.16/tenant-info"),
+                            (adminServiceUrl + "/api/am/admin/v1/tenant-info"),
                             adminUsername,
                             adminPassword)
                     .getTenantId(encodedUsername);

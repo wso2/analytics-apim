@@ -57,7 +57,7 @@ public class ApimIdPClientFactory implements IdPClientFactory {
     private DataSourceService dataSourceService;
     private boolean isHostnameVerifierEnabled;
     private AnalyticsHttpClientBuilderService analyticsHttpClientBuilderService;
-    private static final String CUSTOM_URL_API_ENDPOINT = "/api/am/admin/v0.16/custom-urls";
+    private static final String CUSTOM_URL_API_ENDPOINT = "/api/am/admin/v1/custom-urls";
     private TokenDataMapCleaner tokenDataMapCleaner;
 
     @Activate
