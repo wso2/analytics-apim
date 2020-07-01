@@ -1,9 +1,9 @@
 {
   "dashboard": {
-    "url": "apimdevportal",
+    "url": "application",
     "owner": "admin",
-    "name": "APIM Developer Portal ",
-    "description": "Dashboard for APIM Developer statistics",
+    "name": "Application Analytics",
+    "description": "Dashboard for application related analytics",
     "landingPage": "analytics",
     "parentId": "0",
     "content": {

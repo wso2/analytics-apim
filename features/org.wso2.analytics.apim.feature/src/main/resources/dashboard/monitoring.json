@@ -1,9 +1,9 @@
 {
   "dashboard": {
     "url": "monitoring",
-    "owner": "admin@carbon.super",
+    "owner": "admin",
     "name": "Monitoring",
-    "description": "",
+    "description": "Dashboard related to monitoring analytics",
     "landingPage": "home",
     "parentId": "0",
     "content": {

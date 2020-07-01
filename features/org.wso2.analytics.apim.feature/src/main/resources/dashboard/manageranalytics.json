@@ -1,9 +1,9 @@
 {
   "dashboard": {
-    "url": "manageranalytics",
-    "owner": "admin@carbon.super",
-    "name": "Manager Analytics",
-    "description": "",
+    "url": "business",
+    "owner": "admin",
+    "name": "Business Analytics",
+    "description": "Dashboard for business related analytics",
     "landingPage": "overview",
     "parentId": "0",
     "content": {

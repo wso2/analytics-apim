@@ -1,9 +1,9 @@
 {
   "dashboard": {
-    "url": "publisheranalytics",
-    "owner": "admin@carbon.super",
-    "name": "Publisher Analytics",
-    "description": "",
+    "url": "apis",
+    "owner": "admin",
+    "name": "API Analytics",
+    "description": "Dashboard for APIs related analytics",
     "landingPage": "usage-summary",
     "parentId": "0",
     "content": {
