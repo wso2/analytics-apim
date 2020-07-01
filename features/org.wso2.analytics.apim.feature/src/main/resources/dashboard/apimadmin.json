@@ -1,9 +1,9 @@
 {
   "dashboard": {
-    "url": "apimadmin",
-    "owner": "admin@carbon.super",
-    "name": "APIM Admin",
-    "description": "Dashboard for APIM Admin statistics ",
+    "url": "reports",
+    "owner": "admin",
+    "name": "Reports",
+    "description": "Dashboard for reports generation",
     "landingPage": "home",
     "parentId": "0",
     "content": {
