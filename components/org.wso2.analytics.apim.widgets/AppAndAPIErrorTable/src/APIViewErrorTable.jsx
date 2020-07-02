@@ -171,40 +171,37 @@ class APIViewErrorTable extends React.Component {
                                         <FormattedMessage id='table.column.app' defaultMessage='Application' />
                                     </TableCell>
                                 ) : '' }
-                                <TableCell align='right' rowSpan={2} className={classes.headerCell}>
+                                <TableCell rowSpan={2} className={classes.headerCell}>
                                     <FormattedMessage id='table.column.apiName' defaultMessage='API Name' />
                                 </TableCell>
-                                <TableCell align='center' colSpan={5} className={classes.border}>
+                                <TableCell align='center' colSpan={4} className={classes.border}>
                                     <FormattedMessage id='table.column.responseHit' defaultMessage='Response Hit' />
                                 </TableCell>
-                                <TableCell align='right' rowSpan={2} className={classes.headerCell}>
-                                    <FormattedMessage id='table.column.totalFaulty' defaultMessage='Total Faulty' />
+                                <TableCell rowSpan={2} className={classes.headerCell}>
+                                    <FormattedMessage id='table.column.totalFaulty' defaultMessage='Faulty' />
                                 </TableCell>
-                                <TableCell align='right' rowSpan={2} className={classes.headerCell}>
+                                <TableCell rowSpan={2} className={classes.headerCell}>
                                     <FormattedMessage
                                         id='table.column.totalThrottled'
-                                        defaultMessage='Total Throttled'
+                                        defaultMessage='Throttled'
                                     />
                                 </TableCell>
-                                <TableCell align='right' rowSpan={2} className={classes.headerCell}>
+                                <TableCell rowSpan={2} className={classes.headerCell}>
                                     <FormattedMessage id='table.column.totalRequests' defaultMessage='Total Requests' />
                                 </TableCell>
                             </TableRow>
                             <TableRow className={classes.header}>
-                                <TableCell align='right' className={classes.headerCell}>
+                                <TableCell className={classes.headerCell}>
                                     <FormattedMessage id='table.column.4xx' defaultMessage='2xx' />
                                 </TableCell>
-                                <TableCell align='right' className={classes.headerCell}>
+                                <TableCell className={classes.headerCell}>
                                     <FormattedMessage id='table.column.4xx' defaultMessage='4xx' />
                                 </TableCell>
-                                <TableCell align='right' className={classes.headerCell}>
+                                <TableCell className={classes.headerCell}>
                                     <FormattedMessage id='table.column.5xx' defaultMessage='5xx' />
                                 </TableCell>
-                                <TableCell align='right' className={classes.headerCell}>
-                                    <FormattedMessage id='table.column.totalErrors' defaultMessage='Total Errors' />
-                                </TableCell>
-                                <TableCell align='right' className={classes.headerCell}>
-                                    <FormattedMessage id='table.column.totalSuccess' defaultMessage='Total' />
+                                <TableCell className={classes.headerCell} padding={'default'}>
+                                    <FormattedMessage id='table.column.totalErrors' defaultMessage='Other' />
                                 </TableCell>
                             </TableRow>
                         </TableHead>
@@ -212,22 +209,21 @@ class APIViewErrorTable extends React.Component {
                             {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
                                     const {
-                                        applicationName, applicationOwner, apiName,
+                                        applicationName, applicationOwner, apiName, responseCount,
                                     } = row;
                                     let {
-                                        _2xx, _4xx, _5xx, faultCount, throttledCount, responseCount,
+                                        _2xx, _4xx, _5xx, faultCount, throttledCount,
                                     } = row;
                                     const appName = applicationName + ' ( ' + applicationOwner + ' )';
-                                    let totalErrors = _4xx + _5xx;
+                                    let other = responseCount - (_2xx + _4xx + _5xx);
                                     const totalRequests = responseCount + faultCount + throttledCount;
                                     if (valueFormatType === ValueFormatType.PERCENT) {
                                         _2xx = ((_2xx * 100) / totalRequests).toFixed(2) + ' %';
                                         _4xx = ((_4xx * 100) / totalRequests).toFixed(2) + ' %';
                                         _5xx = ((_5xx * 100) / totalRequests).toFixed(2) + ' %';
-                                        totalErrors = ((totalErrors * 100) / totalRequests).toFixed(2) + ' %';
                                         faultCount = ((faultCount * 100) / totalRequests).toFixed(2) + ' %';
                                         throttledCount = ((throttledCount * 100) / totalRequests).toFixed(2) + ' %';
-                                        responseCount = ((responseCount * 100) / totalRequests).toFixed(2) + ' %';
+                                        other = ((other * 100) / totalRequests).toFixed(2) + ' %';
                                     }
                                     return (
                                         <TableRow
@@ -241,15 +237,14 @@ class APIViewErrorTable extends React.Component {
                                                     {appName}
                                                 </TableCell>
                                             ) : '' }
-                                            <TableCell align='right'>{apiName}</TableCell>
-                                            <TableCell align='right'>{_2xx}</TableCell>
-                                            <TableCell align='right'>{_4xx}</TableCell>
-                                            <TableCell align='right'>{_5xx}</TableCell>
-                                            <TableCell align='right'>{totalErrors}</TableCell>
-                                            <TableCell align='right'>{responseCount}</TableCell>
-                                            <TableCell align='right'>{faultCount}</TableCell>
-                                            <TableCell align='right'>{throttledCount}</TableCell>
-                                            <TableCell align='right'>{totalRequests}</TableCell>
+                                            <TableCell>{apiName}</TableCell>
+                                            <TableCell>{_2xx}</TableCell>
+                                            <TableCell>{_4xx}</TableCell>
+                                            <TableCell>{_5xx}</TableCell>
+                                            <TableCell>{other}</TableCell>
+                                            <TableCell>{faultCount}</TableCell>
+                                            <TableCell>{throttledCount}</TableCell>
+                                            <TableCell>{totalRequests}</TableCell>
                                         </TableRow>
                                     );
                                 })}
