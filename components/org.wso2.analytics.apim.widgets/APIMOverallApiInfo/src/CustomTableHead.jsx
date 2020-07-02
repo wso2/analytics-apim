@@ -36,7 +36,7 @@ const rows = [
         disablePadding: false,
         label: 'table.heading.response',
         rowSpan: 1,
-        colSpan: 4,
+        colSpan: 3,
     },
     {
         id: 'errorFaulty',
@@ -115,9 +115,6 @@ export default class CustomTableHead extends React.Component {
                     </TableCell>
                     <TableCell align='right'>
                         <FormattedMessage id='table.column.5xx' defaultMessage='5xx' />
-                    </TableCell>
-                    <TableCell align='right'>
-                        <FormattedMessage id='table.column.total' defaultMessage='Total' />
                     </TableCell>
                 </TableRow>
             </TableHead>

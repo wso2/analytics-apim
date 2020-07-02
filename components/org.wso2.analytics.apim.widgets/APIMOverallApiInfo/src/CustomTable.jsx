@@ -286,9 +286,6 @@ class CustomTable extends React.Component {
                                                                 {n._5xx}
                                                             </TableCell>
                                                             <TableCell numeric>
-                                                                {n.responseCount}
-                                                            </TableCell>
-                                                            <TableCell numeric>
                                                                 {n.faultCount}
                                                             </TableCell>
                                                             <TableCell numeric>
