@@ -247,7 +247,7 @@ class ErrorByAppAndAPIwidget extends Widget {
             '{{from}}': timeFrom,
             '{{to}}': timeTo,
             '{{per}}': perValue,
-            '{{selectPhase}}': '(sum(successCount) + sum(faultCount) + sum(throttledCount)) as count',
+            '{{selectPhase}}': '(sum(responseCount) + sum(faultCount) + sum(throttledCount)) as count',
         };
         // Use this method to subscribe to the endpoint via web socket connection
         super.getWidgetChannelManager()

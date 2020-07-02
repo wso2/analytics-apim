@@ -152,10 +152,10 @@ class APIViewErrorTable extends React.Component {
                                 data={data.map(row => ({
                                     ...row,
                                     label: ['Success Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.successCount],
+                                        row.responseCount],
                                 }))}
                                 x={d => d.AGG_TIMESTAMP}
-                                y={d => d.successCount}
+                                y={d => d.responseCount}
                                 labelComponent={<VictoryTooltip />}
                             />
                         ) }

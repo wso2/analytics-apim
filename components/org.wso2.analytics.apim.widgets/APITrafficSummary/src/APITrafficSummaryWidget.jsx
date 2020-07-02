@@ -310,7 +310,7 @@ class APITrafficSummaryWidget extends Widget {
             '{{selectPhase}}': selectPhase.join(','),
             '{{groupByPhase}}': groupByPhase.length ? 'group by ' + groupByPhase.join(',') : '',
             '{{querystring}}': filterPhase.length > 0 ? 'on ' + filterPhase.join(' AND ') : '',
-            '{{orderBy}}': 'order by successCount desc',
+            '{{orderBy}}': 'order by responseCount desc',
         };
         // Use this method to subscribe to the endpoint via web socket connection
         super.getWidgetChannelManager()
@@ -407,7 +407,7 @@ class APITrafficSummaryWidget extends Widget {
             filterPhase.push('apiMethod==\'' + method + '\'');
         }
         selectPhase.push('apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod',
-            'sum(successCount) as successCount',
+            'sum(responseCount) as responseCount',
             'sum(faultCount) as faultCount',
             'sum(throttledCount) as throttledCount');
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
