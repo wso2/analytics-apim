@@ -90,40 +90,6 @@ class APILatencySummaryWidget extends Widget {
 
         };
 
-        this.styles = {
-            heading: {
-                margin: 'auto',
-                textAlign: 'center',
-                fontWeight: 'normal',
-                letterSpacing: 1.5,
-                paddingBottom: '10px',
-                marginTop: 0,
-            },
-            headingWrapper: {
-                margin: 'auto',
-                width: '95%',
-            },
-            root: {
-                backgroundColor: this.props.muiTheme.name === 'light' ? '#fff' : '#0e1e34',
-                height: '100%',
-            },
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
-            loading: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
-            },
-            contentWrapper: {
-                margin: '10px',
-                marginTop: '0px',
-                padding: '20px',
-            },
-        };
-
         // This will re-size the widget when the glContainer's width is changed.
         if (this.props.glContainer !== undefined) {
             this.props.glContainer.on('resize', () => this.setState({
@@ -558,9 +524,42 @@ class APILatencySummaryWidget extends Widget {
             selectedAPI, selectedVersion, selectedResource, selectedLimit, apiList,
             versionList, operationList,
         } = this.state;
-        const { muiTheme } = this.props;
+        const { muiTheme, height } = this.props;
         const themeName = muiTheme.name;
 
+        const styles = {
+            heading: {
+                margin: 'auto',
+                textAlign: 'center',
+                fontWeight: 'normal',
+                letterSpacing: 1.5,
+                paddingBottom: '10px',
+                marginTop: 0,
+            },
+            headingWrapper: {
+                margin: 'auto',
+                width: '95%',
+            },
+            root: {
+                backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
+                height: '100%',
+            },
+            loadingIcon: {
+                margin: 'auto',
+                display: 'block',
+            },
+            loading: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height,
+            },
+            contentWrapper: {
+                margin: '10px',
+                marginTop: '0px',
+                padding: '20px',
+            },
+        };
         return (
             <IntlProvider
                 locale={language}
@@ -569,10 +568,10 @@ class APILatencySummaryWidget extends Widget {
                 <MuiThemeProvider
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
-                    <div style={this.styles.root}>
-                        <div style={this.styles.contentWrapper}>
-                            <div style={this.styles.headingWrapper}>
-                                <h3 style={this.styles.heading}>
+                    <div style={styles.root}>
+                        <div style={styles.contentWrapper}>
+                            <div style={styles.headingWrapper}>
+                                <h3 style={styles.heading}>
                                     <FormattedMessage
                                         id='widget.heading'
                                         defaultMessage='API LATENCY SUMMARY'
@@ -608,8 +607,8 @@ class APILatencySummaryWidget extends Widget {
                                 />
                             )
                                 : (
-                                    <div style={this.styles.loading}>
-                                        <CircularProgress style={this.styles.loadingIcon} />
+                                    <div style={styles.loading}>
+                                        <CircularProgress style={styles.loadingIcon} />
                                     </div>
                                 )
                             }

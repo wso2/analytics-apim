@@ -95,41 +95,6 @@ class ErrorByAppAndAPIwidget extends Widget {
             selectedLimit: 10,
         };
 
-        this.styles = {
-            // Insert styles Here
-            mainDiv: {
-                backgroundColor: '#0e1e33',
-                padding: '20px',
-            },
-            heading: {
-                margin: 'auto',
-                textAlign: 'center',
-                fontWeight: 'normal',
-                letterSpacing: 1.5,
-                paddingBottom: '10px',
-                marginTop: 0,
-            },
-            headingWrapper: {
-                margin: 'auto',
-                width: '95%',
-            },
-            dataWrapper: {
-                margin: 'auto',
-                height: '500px',
-            },
-            title: {
-                textAlign: 'center',
-                marginTop: '100px',
-                marginBottom: '50px',
-                fontWeight: 'bold',
-                letterSpacing: 1.5,
-            },
-            content: {
-                marginTop: '20px',
-                textAlign: 'center',
-            },
-        };
-
         // This will re-size the widget when the glContainer's width is changed.
         if (this.props.glContainer !== undefined) {
             this.props.glContainer.on('resize', () => this.setState({
@@ -630,6 +595,41 @@ class ErrorByAppAndAPIwidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const errorProps = { themeName, ...this.state };
+
+        this.styles = {
+            // Insert styles Here
+            mainDiv: {
+                backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
+                padding: '20px',
+            },
+            heading: {
+                margin: 'auto',
+                textAlign: 'center',
+                fontWeight: 'normal',
+                letterSpacing: 1.5,
+                paddingBottom: '10px',
+                marginTop: 0,
+            },
+            headingWrapper: {
+                margin: 'auto',
+                width: '95%',
+            },
+            dataWrapper: {
+                margin: 'auto',
+                height: '500px',
+            },
+            title: {
+                textAlign: 'center',
+                marginTop: '100px',
+                marginBottom: '50px',
+                fontWeight: 'bold',
+                letterSpacing: 1.5,
+            },
+            content: {
+                marginTop: '20px',
+                textAlign: 'center',
+            },
+        };
 
         return (
             <IntlProvider
