@@ -212,19 +212,20 @@ class ResourceViewErrorTable extends React.Component {
                                         applicationName, applicationOwner, apiResourceTemplate, apiMethod,
                                     } = row;
                                     let {
-                                        _4xx, _5xx, faultCount, throttledCount, successCount,
+                                        _2xx, _4xx, _5xx, faultCount, throttledCount, responseCount,
                                     } = row;
                                     const appName = applicationName + ' ( ' + applicationOwner + ' )';
                                     const operation = apiResourceTemplate + ' ( ' + apiMethod + ' )';
                                     let totalErrors = _4xx + _5xx;
-                                    const totalRequests = successCount + faultCount + throttledCount;
+                                    const totalRequests = responseCount + faultCount + throttledCount;
                                     if (valueFormatType === ValueFormatType.PERCENT) {
+                                        _2xx = ((_2xx * 100) / totalRequests).toFixed(2) + ' %';
                                         _4xx = ((_4xx * 100) / totalRequests).toFixed(2) + ' %';
                                         _5xx = ((_5xx * 100) / totalRequests).toFixed(2) + ' %';
                                         totalErrors = ((totalErrors * 100) / totalRequests).toFixed(2) + ' %';
                                         faultCount = ((faultCount * 100) / totalRequests).toFixed(2) + ' %';
                                         throttledCount = ((throttledCount * 100) / totalRequests).toFixed(2) + ' %';
-                                        successCount = ((successCount * 100) / totalRequests).toFixed(2) + ' %';
+                                        responseCount = ((responseCount * 100) / totalRequests).toFixed(2) + ' %';
                                     }
                                     return (
                                         <TableRow
@@ -241,10 +242,11 @@ class ResourceViewErrorTable extends React.Component {
                                                 </TableCell>
                                             ) : '' }
                                             <TableCell align='right'>{operation}</TableCell>
+                                            <TableCell align='right'>{_2xx}</TableCell>
                                             <TableCell align='right'>{_4xx}</TableCell>
                                             <TableCell align='right'>{_5xx}</TableCell>
                                             <TableCell align='right'>{totalErrors}</TableCell>
-                                            <TableCell align='right'>{successCount}</TableCell>
+                                            <TableCell align='right'>{responseCount}</TableCell>
                                             <TableCell align='right'>{faultCount}</TableCell>
                                             <TableCell align='right'>{throttledCount}</TableCell>
                                             <TableCell align='right'>{totalRequests}</TableCell>

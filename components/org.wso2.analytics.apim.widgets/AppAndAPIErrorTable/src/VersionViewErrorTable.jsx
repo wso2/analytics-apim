@@ -174,7 +174,7 @@ class VersionViewErrorTable extends React.Component {
                                 <TableCell align='right' rowSpan={2} className={classes.headerCell}>
                                     <FormattedMessage id='table.column.version' defaultMessage='Version' />
                                 </TableCell>
-                                <TableCell align='center' colSpan={4} className={classes.border}>
+                                <TableCell align='center' colSpan={5} className={classes.border}>
                                     <FormattedMessage id='table.column.responseHit' defaultMessage='Response Hit' />
                                 </TableCell>
                                 <TableCell align='right' rowSpan={2} className={classes.headerCell}>
@@ -191,6 +191,9 @@ class VersionViewErrorTable extends React.Component {
                                 </TableCell>
                             </TableRow>
                             <TableRow className={classes.header}>
+                                <TableCell align='right' className={classes.headerCell}>
+                                    <FormattedMessage id='table.column.2xx' defaultMessage='2xx' />
+                                </TableCell>
                                 <TableCell align='right' className={classes.headerCell}>
                                     <FormattedMessage id='table.column.4xx' defaultMessage='4xx' />
                                 </TableCell>
@@ -212,18 +215,19 @@ class VersionViewErrorTable extends React.Component {
                                         applicationName, applicationOwner, apiVersion,
                                     } = row;
                                     let {
-                                        _4xx, _5xx, faultCount, throttledCount, successCount,
+                                        _2xx, _4xx, _5xx, faultCount, throttledCount, responseCount,
                                     } = row;
                                     const appName = applicationName + ' ( ' + applicationOwner + ' )';
                                     let totalErrors = _4xx + _5xx;
-                                    const totalRequests = successCount + faultCount + throttledCount;
+                                    const totalRequests = responseCount + faultCount + throttledCount;
                                     if (valueFormatType === ValueFormatType.PERCENT) {
+                                        _2xx = ((_2xx * 100) / totalRequests).toFixed(2) + ' %';
                                         _4xx = ((_4xx * 100) / totalRequests).toFixed(2) + ' %';
                                         _5xx = ((_5xx * 100) / totalRequests).toFixed(2) + ' %';
                                         totalErrors = ((totalErrors * 100) / totalRequests).toFixed(2) + ' %';
                                         faultCount = ((faultCount * 100) / totalRequests).toFixed(2) + ' %';
                                         throttledCount = ((throttledCount * 100) / totalRequests).toFixed(2) + ' %';
-                                        successCount = ((successCount * 100) / totalRequests).toFixed(2) + ' %';
+                                        responseCount = ((responseCount * 100) / totalRequests).toFixed(2) + ' %';
                                     }
                                     return (
                                         <TableRow
@@ -238,10 +242,11 @@ class VersionViewErrorTable extends React.Component {
                                                 </TableCell>
                                             ) : '' }
                                             <TableCell align='right'>{apiVersion}</TableCell>
+                                            <TableCell align='right'>{_2xx}</TableCell>
                                             <TableCell align='right'>{_4xx}</TableCell>
                                             <TableCell align='right'>{_5xx}</TableCell>
                                             <TableCell align='right'>{totalErrors}</TableCell>
-                                            <TableCell align='right'>{successCount}</TableCell>
+                                            <TableCell align='right'>{responseCount}</TableCell>
                                             <TableCell align='right'>{faultCount}</TableCell>
                                             <TableCell align='right'>{throttledCount}</TableCell>
                                             <TableCell align='right'>{totalRequests}</TableCell>

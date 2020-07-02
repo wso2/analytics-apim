@@ -31,13 +31,28 @@ const rows = [
         id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname', rowSpan: 2, colSpan: 1,
     },
     {
-        id: 'successHits', numeric: true, disablePadding: false, label: 'table.heading.success', rowSpan: 1, colSpan: 3,
+        id: 'responseHits',
+        numeric: true,
+        disablePadding: false,
+        label: 'table.heading.response',
+        rowSpan: 1,
+        colSpan: 4,
     },
     {
-        id: 'errorFaulty', numeric: true, disablePadding: false, label: 'table.heading.errorFaulty', rowSpan: 2, colSpan: 1,
+        id: 'errorFaulty',
+        numeric: true,
+        disablePadding: false,
+        label: 'table.heading.errorFaulty',
+        rowSpan: 2,
+        colSpan: 1,
     },
     {
-        id: 'errorThrottled', numeric: true, disablePadding: false, label: 'table.heading.errorThrottled', rowSpan: 2, colSpan: 1,
+        id: 'errorThrottled',
+        numeric: true,
+        disablePadding: false,
+        label: 'table.heading.errorThrottled',
+        rowSpan: 2,
+        colSpan: 1,
     },
 ];
 
@@ -69,7 +84,7 @@ export default class CustomTableHead extends React.Component {
                                 sortDirection={orderBy === row.id ? order : false}
                                 rowSpan={row.rowSpan}
                                 colSpan={row.colSpan}
-                                align={row.id === 'successHits' ? 'center' : ''}
+                                align={row.id === 'responseHits' ? 'center' : ''}
                             >
                                 <Tooltip
                                     title={<FormattedMessage id='sort.label.title' defaultMessage='Sort' />}
@@ -93,13 +108,16 @@ export default class CustomTableHead extends React.Component {
                 </TableRow>
                 <TableRow>
                     <TableCell align='right'>
-                        <FormattedMessage id='table.column.apiName' defaultMessage='4xx' />
+                        <FormattedMessage id='table.column.2xx' defaultMessage='2xx' />
                     </TableCell>
                     <TableCell align='right'>
-                        <FormattedMessage id='table.column.responseHit' defaultMessage='5xx' />
+                        <FormattedMessage id='table.column.4xx' defaultMessage='4xx' />
                     </TableCell>
                     <TableCell align='right'>
-                        <FormattedMessage id='table.column.totalFaulty' defaultMessage='Total' />
+                        <FormattedMessage id='table.column.5xx' defaultMessage='5xx' />
+                    </TableCell>
+                    <TableCell align='right'>
+                        <FormattedMessage id='table.column.total' defaultMessage='Total' />
                     </TableCell>
                 </TableRow>
             </TableHead>

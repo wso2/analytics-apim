@@ -93,7 +93,7 @@ export default function APIMOverallApiInfo(props) {
             }}
             >
                 <div style={styles.headingWrapper}>
-                    <h3 style={styles.heading} >
+                    <h3 style={styles.heading}>
                         <FormattedMessage id='api.info.heading' defaultMessage='API INFO SUMMARY' />
                     </h3>
                     <p style={styles.subheading}>

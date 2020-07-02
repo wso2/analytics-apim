@@ -450,7 +450,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             const { timeFrom } = this.state;
             newData.unshift({
                 AGG_TIMESTAMP: timeFrom,
-                successCount: 0,
+                responseCount: 0,
                 _4xx: 0,
                 _5xx: 0,
                 faultCount: 0,
@@ -509,7 +509,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         }
 
         selectPhase.push('AGG_TIMESTAMP', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
-            'sum(successCount) as successCount',
+            'sum(responseCount) as responseCount',
             'sum(faultCount) as faultCount', 'sum(throttledCount) as throttledCount');
         groupByPhase.push('AGG_TIMESTAMP');
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);

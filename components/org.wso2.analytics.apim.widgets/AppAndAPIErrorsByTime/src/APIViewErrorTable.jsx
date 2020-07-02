@@ -133,11 +133,11 @@ class APIViewErrorTable extends React.Component {
                             barRatio={barRatio}
                             data={data.map(row => ({
                                 ...row,
-                                label: ['success', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.successCount],
+                                label: ['Response Hit', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                    row.responseCount],
                             }))}
                             x={d => d.AGG_TIMESTAMP + ''}
-                            y='successCount'
+                            y='responseCount'
                             labelComponent={<VictoryTooltip />}
                         />
                     )}
@@ -244,7 +244,7 @@ class APIViewErrorTable extends React.Component {
         const checkBoxData = [
             {
                 selected: successSelected,
-                name: 'Success Hits',
+                name: 'Response Hit',
                 onChange: this.handleSuccessSelectChange,
                 color: colorScale[0],
             },

@@ -547,8 +547,8 @@ class AppAndAPIErrorTablewidget extends Widget {
             selectPhase.push('applicationName', 'applicationOwner');
             groupByPhase.push('applicationName', 'applicationOwner');
         }
-        selectPhase.push('apiName', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
-            'sum(successCount) as successCount',
+        selectPhase.push('apiName', 'sum(_2xx) as _2xx', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
+            'sum(responseCount) as responseCount',
             'sum(faultCount) as faultCount', 'sum(throttledCount) as throttledCount');
         groupByPhase.push('apiName');
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
@@ -584,8 +584,8 @@ class AppAndAPIErrorTablewidget extends Widget {
             selectPhase.push('applicationName', 'applicationOwner');
             groupByPhase.push('applicationName', 'applicationOwner');
         }
-        selectPhase.push('apiVersion', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
-            'sum(successCount) as successCount',
+        selectPhase.push('apiVersion', 'sum(_2xx) as _2xx', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
+            'sum(responseCount) as responseCount',
             'sum(faultCount) as faultCount', 'sum(throttledCount) as throttledCount');
         groupByPhase.push('apiVersion');
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
@@ -639,8 +639,8 @@ class AppAndAPIErrorTablewidget extends Widget {
             selectPhase.push('applicationName', 'applicationOwner');
             groupByPhase.push('applicationName', 'applicationOwner');
         }
-        selectPhase.push('apiResourceTemplate', 'apiMethod', 'sum(_4xx) as _4xx', 'sum(_5xx) as _5xx',
-            'sum(successCount) as successCount',
+        selectPhase.push('apiResourceTemplate', 'apiMethod', 'sum(_2xx) as _2xx', 'sum(_4xx) as _4xx',
+            'sum(_5xx) as _5xx', 'sum(responseCount) as responseCount',
             'sum(faultCount) as faultCount', 'sum(throttledCount) as throttledCount');
         groupByPhase.push('apiResourceTemplate', 'apiMethod');
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);

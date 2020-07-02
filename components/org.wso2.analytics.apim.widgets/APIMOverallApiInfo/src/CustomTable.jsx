@@ -222,6 +222,9 @@ class CustomTable extends React.Component {
             <MenuItem value='hits'>
                 <FormattedMessage id='table.heading.success' defaultMessage='SUCCESS HITS' />
             </MenuItem>,
+            <MenuItem value='_2xx'>
+                <FormattedMessage id='table.heading.error4xx' defaultMessage='2XX' />
+            </MenuItem>,
             <MenuItem value='error4xx'>
                 <FormattedMessage id='table.heading.error4xx' defaultMessage='ERROR 4XX' />
             </MenuItem>,
@@ -274,13 +277,16 @@ class CustomTable extends React.Component {
                                                                 {n.apiName}
                                                             </TableCell>
                                                             <TableCell numeric>
+                                                                {n._2xx}
+                                                            </TableCell>
+                                                            <TableCell numeric>
                                                                 {n._4xx}
                                                             </TableCell>
                                                             <TableCell numeric>
                                                                 {n._5xx}
                                                             </TableCell>
                                                             <TableCell numeric>
-                                                                {n.successCount}
+                                                                {n.responseCount}
                                                             </TableCell>
                                                             <TableCell numeric>
                                                                 {n.faultCount}

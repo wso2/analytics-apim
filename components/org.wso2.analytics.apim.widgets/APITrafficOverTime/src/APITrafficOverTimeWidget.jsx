@@ -439,7 +439,16 @@ class APITrafficOverTimeWidget extends Widget {
             }
             return obj;
         });
-        if (data.length !== 0) {
+        if (newData.length === 1) {
+            const { timeFrom } = this.state;
+            newData.unshift({
+                AGG_TIMESTAMP: timeFrom,
+                responseCount: 0,
+                faultCount: 0,
+                throttledCount: 0,
+            });
+        }
+        if (newData.length !== 0) {
             this.setState({ data: newData, loading: false });
         } else {
             this.setState({ data: [], loading: false });
@@ -467,7 +476,7 @@ class APITrafficOverTimeWidget extends Widget {
             filterPhase.push('apiMethod==\'' + verb + '\'');
         }
         selectPhase.push('AGG_TIMESTAMP', 'apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod',
-            'sum(successCount) as successCount',
+            'sum(responseCount) as responseCount',
             'sum(faultCount) as faultCount',
             'sum(throttledCount) as throttledCount');
         groupByPhase.push('AGG_TIMESTAMP');
