@@ -109,61 +109,6 @@ class AppAndAPIErrorTablewidget extends Widget {
 
         };
 
-        this.styles = {
-            // Insert styles Here
-            mainDiv: {
-                backgroundColor: '#0e1e33',
-                padding: '20px',
-                height: this.props.height,
-            },
-            heading: {
-                margin: 'auto',
-                textAlign: 'center',
-                fontWeight: 'normal',
-                letterSpacing: 1.5,
-                paddingBottom: '10px',
-                marginTop: 0,
-            },
-            headingWrapper: {
-                margin: 'auto',
-                width: '95%',
-            },
-            dataWrapper: {
-                margin: 'auto',
-                height: '500px',
-                width: '95%',
-            },
-            title: {
-                textAlign: 'center',
-                marginTop: '100px',
-                marginBottom: '50px',
-                fontWeight: 'bold',
-                letterSpacing: 1.5,
-            },
-            contentWrapper: {
-                margin: '10px',
-                marginTop: '0px',
-                padding: '20px',
-            },
-            root: {
-                backgroundColor: this.props.muiTheme.name === 'light' ? '#fff' : '#0e1e34',
-                height: '100%',
-            },
-            formControl: {
-                minWidth: '120px',
-            },
-            loadingIcon: {
-                margin: 'auto',
-                display: 'block',
-            },
-            loading: {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: this.props.height,
-            },
-        };
-
         // This will re-size the widget when the glContainer's width is changed.
         if (this.props.glContainer !== undefined) {
             this.props.glContainer.on('resize', () => this.setState({
@@ -806,9 +751,63 @@ class AppAndAPIErrorTablewidget extends Widget {
             selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit, apiList, appList,
             versionList, operationList,
         } = this.state;
-        const { muiTheme } = this.props;
+        const { muiTheme, height } = this.props;
         const themeName = muiTheme.name;
 
+        const styles = {
+            // Insert styles Here
+            mainDiv: {
+                backgroundColor: '#0e1e33',
+                padding: '20px',
+                height: this.props.height,
+            },
+            heading: {
+                margin: 'auto',
+                textAlign: 'center',
+                fontWeight: 'normal',
+                letterSpacing: 1.5,
+                paddingBottom: '10px',
+                marginTop: 0,
+            },
+            headingWrapper: {
+                margin: 'auto',
+                width: '95%',
+            },
+            dataWrapper: {
+                margin: 'auto',
+                height: '500px',
+                width: '95%',
+            },
+            title: {
+                textAlign: 'center',
+                marginTop: '100px',
+                marginBottom: '50px',
+                fontWeight: 'bold',
+                letterSpacing: 1.5,
+            },
+            contentWrapper: {
+                margin: '10px',
+                marginTop: '0px',
+                padding: '20px',
+            },
+            root: {
+                backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
+                height: '100%',
+            },
+            formControl: {
+                minWidth: '120px',
+            },
+            loadingIcon: {
+                margin: 'auto',
+                display: 'block',
+            },
+            loading: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height,
+            },
+        };
         return (
             <IntlProvider
                 locale={language}
@@ -817,17 +816,17 @@ class AppAndAPIErrorTablewidget extends Widget {
                 <MuiThemeProvider
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
-                    <div style={this.styles.root} id='AppAndAPIErrorTable'>
-                        <div style={this.styles.contentWrapper}>
-                            <div style={this.styles.headingWrapper}>
-                                <h3 style={this.styles.heading}>
+                    <div style={styles.root} id='AppAndAPIErrorTable'>
+                        <div style={styles.contentWrapper}>
+                            <div style={styles.headingWrapper}>
+                                <h3 style={styles.heading}>
                                     <FormattedMessage
                                         id='widget.heading'
                                         defaultMessage='ERROR SUMMARY'
                                     />
                                 </h3>
                             </div>
-                            <div style={this.styles.dataWrapper}>
+                            <div style={styles.dataWrapper}>
                                 <FormControl component='fieldset'>
                                     <RadioGroup
                                         row
@@ -953,8 +952,8 @@ class AppAndAPIErrorTablewidget extends Widget {
                                     />
                                 )
                                     : (
-                                        <div style={this.styles.loading}>
-                                            <CircularProgress style={this.styles.loadingIcon} />
+                                        <div style={styles.loading}>
+                                            <CircularProgress style={styles.loadingIcon} />
                                         </div>
                                     )
                                 }

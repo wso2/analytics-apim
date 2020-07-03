@@ -80,19 +80,6 @@ class APIViewErrorTable extends React.Component {
         this.handleRequestMedSelectChange = this.handleRequestMedSelectChange.bind(this);
         this.handleResponseMedSelectChange = this.handleResponseMedSelectChange.bind(this);
         this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
-
-        this.styles = {
-            dataWrapper: {
-                height: '75%',
-                paddingTop: 35,
-                margin: 'auto',
-                width: '90%',
-            },
-            paper: {
-                background: this.props.themeName === 'dark' ? '#152638' : '#E8E8E8',
-                padding: '4%',
-            },
-        };
     }
 
     getPieChartForAPI() {
@@ -323,13 +310,25 @@ class APIViewErrorTable extends React.Component {
                 color: colorScale[5],
             },
         ];
-        const { data } = this.props;
+        const { data, themeName } = this.props;
+        const styles = {
+            dataWrapper: {
+                height: '75%',
+                paddingTop: 35,
+                margin: 'auto',
+                width: '90%',
+            },
+            paper: {
+                background: themeName === 'dark' ? '#152638' : '#E8E8E8',
+                padding: '4%',
+            },
+        };
         if (data.length === 0) {
             return (
-                <div style={this.styles.dataWrapper}>
+                <div style={styles.dataWrapper}>
                     <Paper
                         elevation={1}
-                        style={this.styles.paper}
+                        style={styles.paper}
                     >
                         <Typography variant='h5' component='h3'>
                             <FormattedMessage
