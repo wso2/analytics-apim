@@ -152,7 +152,7 @@ function renderData(props) {
                         style={classes.pieChart}
                         innerRadius={80}
                         theme={VictoryTheme.material}
-                        labelComponent={<CustomLabel totalRequestCounts={totalRequestCounts} />}
+                        labelComponent={<CustomLabel totalRequestCounts={totalRequestCounts} viewType={viewType}/>}
                         groupComponent={<VictoryClipContainer clipId={0} />}
                         events={[{
                             target: 'data',

@@ -441,7 +441,9 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             if (selectedResource.length > 0 && operationList.length > 0) {
                 const opsString = selectedResource
                     .map(id => operationList.find(i => i.URL_MAPPING_ID === id))
-                    .map(d => d.URL_PATTERN).join(',');
+                    .map(d => d.URL_PATTERN)
+                    .sort()
+                    .join(',');
                 const firstOp = operationList.find(i => i.URL_MAPPING_ID === selectedResource[0]);
                 filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
                 filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');

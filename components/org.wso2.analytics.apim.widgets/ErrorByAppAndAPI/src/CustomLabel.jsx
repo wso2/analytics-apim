@@ -23,6 +23,7 @@ import {
 } from 'victory';
 
 import PropTypes from 'prop-types';
+import {ViewTypeEnum} from "../../AppAndAPIErrorTable/src/Constants";
 
 const classes = {
     flyOut: {
@@ -35,7 +36,8 @@ class CustomLabel extends React.Component {
     static defaultEvents = VictoryTooltip.defaultEvents;
 
     render() {
-        const { totalRequestCounts } = this.props;
+        const { totalRequestCounts, viewType } = this.props;
+        const labelPrefix = viewType === ViewTypeEnum.API ? 'API' : 'App';
         return (
             <g>
                 <VictoryTooltip
@@ -43,7 +45,7 @@ class CustomLabel extends React.Component {
                     labelComponent={(
                         <VictoryLabel
                             text={
-                                e => ['API: ' + e.datum.x,
+                                e => [labelPrefix + ': ' + e.datum.x,
                                     'Errors: ' + e.datum.y,
                                     'Percentage: ' + ((e.datum.y * 100) / totalRequestCounts).toFixed(2) + '%']}
                         />
@@ -59,6 +61,7 @@ class CustomLabel extends React.Component {
 
 CustomLabel.propTypes = {
     totalRequestCounts: PropTypes.number.isRequired,
+    viewType: PropTypes.string.isRequired,
 };
 
 export default CustomLabel;
