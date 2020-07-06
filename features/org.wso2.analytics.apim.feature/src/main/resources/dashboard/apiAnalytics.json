@@ -846,15 +846,15 @@
   "permissions": {
     "viewers": [
       "apim_analytics:admin_any",
-      "apim_analytics:publisher_dashboard:view_any"
+      "apim_analytics:api_analytics:view_any"
     ],
     "owners": [
       "apim_analytics:admin_carbon.super",
-      "apim_analytics:publisher_dashboard:own_carbon.super"
+      "apim_analytics:api_analytics:own_carbon.super"
     ],
     "editors": [
       "apim_analytics:admin_carbon.super",
-      "apim_analytics:publisher_dashboard:edit_carbon.super"
+      "apim_analytics:api_analytics:edit_carbon.super"
     ]
   }
 }
