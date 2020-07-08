@@ -293,8 +293,10 @@ class APIMApiBackendUsageWidget extends Widget {
      * @memberof APIMApiBackendUsageWidget
      * */
     handleChange(event) {
-        const limit = (event.target.value).replace('-', '').split('.')[0];
-
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (parseInt(limit, 10) < 1) {
+            limit = 5;
+        }
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleApiUsageQuery);

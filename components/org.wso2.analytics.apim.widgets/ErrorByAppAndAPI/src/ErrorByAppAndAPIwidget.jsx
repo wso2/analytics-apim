@@ -577,7 +577,11 @@ class ErrorByAppAndAPIwidget extends Widget {
     }
 
     handleLimitChange(event) {
-        this.setState({ selectedLimit: event.target.value }, this.loadAllErrors);
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (parseInt(limit, 10) < 1) {
+            limit = 10;
+        }
+        this.setState({ selectedLimit: limit }, this.loadAllErrors);
     }
     //
 
