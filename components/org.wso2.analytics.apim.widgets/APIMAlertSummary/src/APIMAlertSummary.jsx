@@ -37,7 +37,8 @@ import Moment from "moment/moment";
  */
 function APIMAlertSummary(props) {
     const {
-        height, alertData, inProgress, themeName, selectedApi, apiList, handleApiChange, limit, handleLimitChange, intl,
+        height, alertData, inProgress, themeName, selectedApi, apiList, handleApiChange, limit, handleLimitChange,
+        intl, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -103,6 +104,27 @@ function APIMAlertSummary(props) {
             time: data.time,
         };
     });
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'type', numeric: false, disablePadding: false, label: 'table.heading.type',
+        },
+        {
+            id: 'severity', numeric: true, disablePadding: false, label: 'table.heading.severity',
+        },
+        {
+            id: 'details', numeric: false, disablePadding: false, label: 'table.heading.details',
+        },
+        {
+            id: 'time', numeric: false, disablePadding: false, label: 'table.heading.time',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
 
     return (
         <Scrollbars style={{
@@ -185,7 +207,13 @@ function APIMAlertSummary(props) {
                                     </div>
                                 ) : (
                                     <div style={styles.tableWrapper}>
-                                        <CustomTable data={tableData} />
+                                        <CustomTable
+                                            data={tableData}
+                                            columns={columns}
+                                            strColumns={strColumns}
+                                            title={title}
+                                            username={username}
+                                        />
                                     </div>
                                 )
                             }
@@ -208,6 +236,7 @@ APIMAlertSummary.propTypes = {
     handleApiChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(APIMAlertSummary);

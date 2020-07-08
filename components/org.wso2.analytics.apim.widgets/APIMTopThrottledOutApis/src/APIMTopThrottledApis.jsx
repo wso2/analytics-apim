@@ -132,7 +132,7 @@ function APIMTopThrottledApis(props) {
             id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
         },
         {
-            id: 'apiVersion', numeric: true, disablePadding: false, label: 'table.heading.apiVersion',
+            id: 'apiVersion', numeric: true, disablePadding: false, label: 'table.heading.apiversion',
         },
         {
             id: 'throttledcount', numeric: true, disablePadding: false, label: 'table.heading.throttledcount',

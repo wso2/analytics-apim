@@ -15,5 +15,6 @@
   "table.heading.apiname": "API NAME",
   "table.heading.apiversion": "VERSION",
   "table.heading.status": "STATUS",
+  "table.heading.reason": "REASON",
   "widget.heading": "API AVAILABILITY"
 }
