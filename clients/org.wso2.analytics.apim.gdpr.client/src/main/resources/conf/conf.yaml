@@ -369,6 +369,30 @@ wso2.gdpr:
           columnName: APICREATOR
         - tableName: MonetizationAgg_YEARS
           columnName: APICREATOR
+        - tableName: ApiErrorAnalysisAgg_DAYS
+          columnName: APICREATOR
+        - tableName: ApiErrorAnalysisAgg_HOURS
+          columnName: APICREATOR
+        - tableName: ApiErrorAnalysisAgg_MINUTES
+          columnName: APICREATOR
+        - tableName: ApiErrorAnalysisAgg_MONTHS
+          columnName: APICREATOR
+        - tableName: ApiErrorAnalysisAgg_SECONDS
+          columnName: APICREATOR
+        - tableName: ApiErrorAnalysisAgg_YEARS
+          columnName: APICREATOR
+        - tableName: ApiErrorAnalysisAgg_DAYS
+          columnName: APPLICATIONOWNER
+        - tableName: ApiErrorAnalysisAgg_HOURS
+          columnName: APPLICATIONOWNER
+        - tableName: ApiErrorAnalysisAgg_MINUTES
+          columnName: APPLICATIONOWNER
+        - tableName: ApiErrorAnalysisAgg_MONTHS
+          columnName: APPLICATIONOWNER
+        - tableName: ApiErrorAnalysisAgg_SECONDS
+          columnName: APPLICATIONOWNER
+        - tableName: ApiErrorAnalysisAgg_YEARS
+          columnName: APPLICATIONOWNER
 
     - databaseName: WSO2_DASHBOARD_DB
       tableEntries:
