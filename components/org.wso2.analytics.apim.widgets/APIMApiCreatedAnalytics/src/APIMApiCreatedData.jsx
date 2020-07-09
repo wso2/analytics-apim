@@ -103,7 +103,7 @@ function APIMApiCreatedData(props) {
             id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
         },
         {
-            id: 'apiVersion', numeric: false, disablePadding: false, label: 'table.heading.apiVersion',
+            id: 'apiVersion', numeric: false, disablePadding: false, label: 'table.heading.apiversion',
         },
         {
             id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.createdtime',
@@ -171,4 +171,3 @@ APIMApiCreatedData.propTypes = {
 };
 
 export default injectIntl(APIMApiCreatedData);
-

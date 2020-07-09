@@ -246,9 +246,9 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             const tableData = data.map((dataUnit) => {
                 return {
                     apiname: dataUnit[2] + ' (' + dataUnit[3] + ')',
+                    apiversion: dataUnit[6],
                     application: dataUnit[4] + ' (' + dataUnit[5] + ')',
                     subscribedtime: Moment(dataUnit[1]).format('YYYY-MMM-DD hh:mm:ss A'),
-                    apiversion: dataUnit[6],
                 };
             });
 

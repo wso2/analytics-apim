@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -56,9 +56,9 @@ const lightTheme = createMuiTheme({
  * @param {any} props @inheritDoc
  * @returns {ReactElement} Render the APIM Alert Summary By APIs widget body
  */
-export default function APIMAlertSummaryByAPIs(props) {
+function APIMAlertSummaryByAPIs(props) {
     const {
-        themeName, height, limit, alertData, handleChange, inProgress, width, handleOnClickAPI,
+        themeName, height, limit, alertData, handleChange, inProgress, width, handleOnClickAPI, username, intl,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -136,7 +136,18 @@ export default function APIMAlertSummaryByAPIs(props) {
             color: '#b5b5b5',
         },
     };
-
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'count', numeric: true, disablePadding: false, label: 'table.heading.count',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    const title = intl.formatMessage({ id: 'widget.heading' });
     const { pieChartData, legendData } = Utils.summarizePieData(alertData, 'apiname', 'count');
     return (
         <MuiThemeProvider
@@ -264,6 +275,10 @@ export default function APIMAlertSummaryByAPIs(props) {
                                             <CustomTable
                                                 data={alertData}
                                                 onClickTableRow={(e, v) => handleOnClickAPI(e, v)}
+                                                columns={columns}
+                                                strColumns={strColumns}
+                                                title={title}
+                                                username={username}
                                             />
                                         </div>
                                     </div>
@@ -286,4 +301,8 @@ APIMAlertSummaryByAPIs.propTypes = {
     handleChange: PropTypes.func.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
+
+export default injectIntl(APIMAlertSummaryByAPIs);

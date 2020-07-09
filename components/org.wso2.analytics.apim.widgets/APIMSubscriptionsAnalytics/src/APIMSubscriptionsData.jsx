@@ -88,7 +88,10 @@ function APIMSubscriptionsData(props) {
             id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
         },
         {
-            id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.appname',
+            id: 'apiversion', numeric: true, disablePadding: false, label: 'table.heading.apiversion',
+        },
+        {
+            id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.application',
         },
         {
             id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.subscribedtime',
@@ -112,7 +115,7 @@ function APIMSubscriptionsData(props) {
                 </div>
                 <div style={styles.tableWrapper}>
                     <CustomTable
-                        tableData={tableData}
+                        data={tableData}
                         columns={columns}
                         onClickTableRow={e => onClickAPI(e)}
                         strColumns={strColumns}

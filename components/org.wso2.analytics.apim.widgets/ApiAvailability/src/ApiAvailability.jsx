@@ -39,7 +39,7 @@ import CustomTable from './CustomTable';
 function ApiAvailability(props) {
     const {
         themeName, height, availableApiData, inProgress, limit, handleLimitChange, intl, status,
-        handleStatusChange,
+        handleStatusChange, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -104,6 +104,22 @@ function ApiAvailability(props) {
             overflow: 'hidden',
         },
     };
+    const columns = [
+        {
+            id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
+        },
+        {
+            id: 'apiversion', numeric: true, disablePadding: false, label: 'table.heading.apiversion',
+        },
+        {
+            id: 'status', numeric: false, disablePadding: false, label: 'table.heading.status',
+        },
+    ];
+    const strColumns = columns.map((colObj) => {
+        return intl.formatMessage({ id: colObj.label });
+    });
+    strColumns.push(intl.formatMessage({ id: 'table.heading.reason' }));
+    const title = intl.formatMessage({ id: 'widget.heading' });
     const tableData = availableApiData.map((data) => {
         return {
             apiname: data.apiname,
@@ -219,6 +235,10 @@ function ApiAvailability(props) {
                                     <div style={styles.tableWrapper}>
                                         <CustomTable
                                             data={tableData}
+                                            columns={columns}
+                                            strColumns={strColumns}
+                                            title={title}
+                                            username={username}
                                         />
                                     </div>
                                 )
@@ -241,6 +261,7 @@ ApiAvailability.propTypes = {
     status: PropTypes.string.isRequired,
     handleStatusChange: PropTypes.func.isRequired,
     intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
 export default injectIntl(ApiAvailability);

@@ -296,8 +296,9 @@ class ApiAvailabilityWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const apiAvailabilityProps = {
-            themeName, height, availableApiData, inProgress, limit, status,
+            themeName, height, availableApiData, inProgress, limit, status, username,
         };
 
         return (

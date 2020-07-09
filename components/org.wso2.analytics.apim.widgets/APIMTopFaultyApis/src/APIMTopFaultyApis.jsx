@@ -132,7 +132,7 @@ function APIMTopFaultyApis(props) {
             id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname',
         },
         {
-            id: 'apiVersion', numeric: true, disablePadding: false, label: 'table.heading.apiVersion',
+            id: 'apiVersion', numeric: true, disablePadding: false, label: 'table.heading.apiversion',
         },
         {
             id: 'faultcount', numeric: true, disablePadding: false, label: 'table.heading.faultcount',

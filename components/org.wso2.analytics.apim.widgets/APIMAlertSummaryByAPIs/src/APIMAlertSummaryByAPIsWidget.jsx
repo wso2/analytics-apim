@@ -289,8 +289,9 @@ class APIMAlertSummaryByAPIsWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const alertApisProps = {
-            themeName, height, limit, alertData, legendData, inProgress, width,
+            themeName, height, limit, alertData, legendData, inProgress, width, username,
         };
 
         return (
