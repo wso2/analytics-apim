@@ -31,12 +31,15 @@ import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import { colorScale } from '@analytics-apim/common-lib';
+import { withStyles } from '@material-ui/core/styles';
 import CustomLabel from './CustomLabel';
 
-const classes = {
+const styles = {
+    header: {
+        textAlign: 'center',
+    },
     table: {
-        minWidth: 650,
-        maxWidth: 650,
+        maxWidth: 300,
         marginBottom: 50,
         padding: 0,
     },
@@ -50,6 +53,16 @@ const classes = {
         marginBottom: '10%',
         display: 'flex',
         justifyContent: 'center',
+    },
+    loading: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '75%',
+    },
+    loadingIcon: {
+        margin: 'auto',
+        display: 'block',
     },
     leftContainer: {
         justifyContent: 'flex-start',
@@ -67,7 +80,7 @@ const classes = {
     },
     pieChart: {
         labels: {
-            fill: 'white',
+            fill: 'black',
             fontSize: 18,
         },
         parent: { margin: 0 },
@@ -75,27 +88,11 @@ const classes = {
             cursor: 'pointer',
         },
     },
-    loading: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '75%',
-    },
-    loadingIcon: {
-        margin: 'auto',
-        display: 'block',
-    },
-    paperWrapper: {
-        height: '75%',
-        width: '95%',
-        margin: 'auto',
-        paddingTop: 35,
-    },
 };
 
 function renderData(props) {
     const {
-        data, totalErrors, totalRequestCounts, publishSelectedData, viewType, errorType, loading, themeName,
+        data, totalErrors, totalRequestCounts, publishSelectedData, viewType, errorType, loading, themeName, classes,
     } = props;
     const localClass = {
         paper: {
@@ -107,12 +104,13 @@ function renderData(props) {
             paddingTop: 35,
             margin: 'auto',
             width: '90%',
+            textAlign: 'center',
         },
     };
     if (loading) {
         return (
-            <div style={classes.loading}>
-                <CircularProgress style={classes.loadingIcon} />
+            <div className={classes.loading}>
+                <CircularProgress className={classes.loadingIcon} />
             </div>
         );
     }
@@ -149,7 +147,7 @@ function renderData(props) {
                         colorScale={colorScale}
                         data={data}
                         // height={250}
-                        style={classes.pieChart}
+                        style={styles.pieChart}
                         innerRadius={80}
                         theme={VictoryTheme.material}
                         labelComponent={<CustomLabel totalRequestCounts={totalRequestCounts} viewType={viewType}/>}
@@ -177,20 +175,20 @@ function renderData(props) {
             </TableRow>
             <TableRow>
                 <TableCell component='th' scope='row'>
-                    <div style={classes.dataWrapper}>
-                        <div style={classes.leftContainer}>
+                    <div className={classes.dataWrapper}>
+                        <div className={classes.leftContainer}>
                             <FormattedMessage
                                 id='error.count'
                                 defaultMessage='No of Errors'
                             />
-                            <div style={classes.dataBlock}>{totalErrors}</div>
+                            <div className={classes.dataBlock}>{totalErrors}</div>
                         </div>
-                        <div style={classes.rightContainer}>
+                        <div className={classes.rightContainer}>
                             <FormattedMessage
                                 id='error.percentage'
                                 defaultMessage='Error Percentage'
                             />
-                            <div style={classes.dataBlock}>
+                            <div className={classes.dataBlock}>
                                 {apiErrorsPerCent}
                                 {' '}
                                 {'%'}
@@ -203,14 +201,14 @@ function renderData(props) {
     );
 }
 
-export default function SummaryPieChart(props) {
-    const { heading, themeName } = props;
+function SummaryPieChart(props) {
+    const { heading, classes } = props;
     return (
         <div>
             <Table className={classes.table}>
                 <TableBody>
                     <TableRow>
-                        <TableCell component='th' scope='row'>
+                        <TableCell className={classes.header}>
                             <h3>{heading}</h3>
                         </TableCell>
                     </TableRow>
@@ -221,8 +219,11 @@ export default function SummaryPieChart(props) {
     );
 }
 
+export default withStyles(styles)(SummaryPieChart);
+
 SummaryPieChart.propTypes = {
     heading: PropTypes.string.isRequired,
+    classes: PropTypes.func.isRequired,
 };
 
 renderData.propTypes = {
@@ -231,6 +232,8 @@ renderData.propTypes = {
     totalRequestCounts: PropTypes.number.isRequired,
     viewType: PropTypes.string.isRequired,
     errorType: PropTypes.string.isRequired,
+    themeName: PropTypes.string.isRequired,
     publishSelectedData: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
+    classes: PropTypes.func.isRequired,
 };
