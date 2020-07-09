@@ -60,14 +60,14 @@ class APIViewErrorTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            responseSelected: true,
+            miscellaneousSelected: true,
             backendSelected: true,
             securitySelected: true,
             throttleSelected: true,
             requestMedSelected: true,
             responseMedSelected: true,
         };
-        this.handleResponseSelectChange = this.handleResponseSelectChange.bind(this);
+        this.handleMiscellaneousSelectChange = this.handleMiscellaneousSelectChange.bind(this);
         this.handleBackendSelectChange = this.handleBackendSelectChange.bind(this);
         this.handleSecuritySelectChange = this.handleSecuritySelectChange.bind(this);
         this.handleThrottlingSelectChange = this.handleThrottlingSelectChange.bind(this);
@@ -93,7 +93,7 @@ class APIViewErrorTable extends React.Component {
     getPieChartForAPI() {
         const { data, handleOnClick } = this.props;
         const {
-            responseSelected, backendSelected, securitySelected, throttleSelected,
+            miscellaneousSelected, backendSelected, securitySelected, throttleSelected,
             requestMedSelected, responseMedSelected,
         } = this.state;
         const barRatio = 0.2;
@@ -134,43 +134,6 @@ class APIViewErrorTable extends React.Component {
                     />
 
                     <VictoryStack>
-                        { responseSelected && (
-                            <VictoryBar
-                                style={{ data: { fill: colorScale[0], cursor: 'pointer' } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                barWidth={barWidth}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Response Latency',
-                                        'API: ' + row.apiName,
-                                        'Version: ' + row.apiVersion,
-                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
-                                        'Max Latency: ' + row.responseTime],
-                                }))}
-                                x={
-                                    d => d.apiName + ':' + d.apiVersion + ':'
-                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
-                                }
-                                y={d => d.responseTime}
-                                labelComponent={<VictoryTooltip />}
-                                groupComponent={<VictoryClipContainer clipId={0} />}
-                                events={[
-                                    {
-                                        target: 'data',
-                                        eventHandlers: {
-                                            onClick: (e) => {
-                                                return [{
-                                                    mutation: (val) => {
-                                                        handleOnClick(e, val.datum, val);
-                                                    },
-                                                }];
-                                            },
-                                        },
-                                    },
-                                ]}
-                            />
-                        )}
                         { backendSelected && (
                             <VictoryBar
                                 style={{ data: { fill: colorScale[1], cursor: 'pointer' } }}
@@ -356,15 +319,57 @@ class APIViewErrorTable extends React.Component {
                                 ]}
                             />
                         )}
+                        { miscellaneousSelected && (
+                            <VictoryBar
+                                style={{ data: { fill: colorScale[0], cursor: 'pointer' } }}
+                                alignment='start'
+                                barRatio={barRatio}
+                                barWidth={barWidth}
+                                data={data.map(row => ({
+                                    ...row,
+                                    label: ['Miscellaneous Latency',
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Max Latency: ' + (row.responseTime - row.backendLatency - row.securityLatency
+                                        - row.throttlingLatency - row.requestMedLat - row.responseMedLat)
+                                            .toString(10)],
+                                }))}
+                                x={
+                                    d => d.apiName + ':' + d.apiVersion + ':'
+                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
+                                }
+                                y={
+                                    d => d.responseTime - d.backendLatency - d.securityLatency - d.throttlingLatency
+                                    - d.requestMedLat - d.responseMedLat
+                                }
+                                labelComponent={<VictoryTooltip />}
+                                groupComponent={<VictoryClipContainer clipId={0} />}
+                                events={[
+                                    {
+                                        target: 'data',
+                                        eventHandlers: {
+                                            onClick: (e) => {
+                                                return [{
+                                                    mutation: (val) => {
+                                                        handleOnClick(e, val.datum, val);
+                                                    },
+                                                }];
+                                            },
+                                        },
+                                    },
+                                ]}
+                            />
+                        )}
                     </VictoryStack>
                 </VictoryChart>
             </div>
         );
     }
 
-    handleResponseSelectChange(event) {
+    handleMiscellaneousSelectChange(event) {
         this.setState({
-            responseSelected: event.target.checked,
+            miscellaneousSelected: event.target.checked,
         });
     }
 
@@ -401,16 +406,10 @@ class APIViewErrorTable extends React.Component {
     render() {
         const { data } = this.props;
         const {
-            responseSelected, backendSelected, securitySelected, throttleSelected,
+            miscellaneousSelected, backendSelected, securitySelected, throttleSelected,
             requestMedSelected, responseMedSelected,
         } = this.state;
         const checkBoxData = [
-            {
-                selected: responseSelected,
-                name: 'Response Latency',
-                onChange: this.handleResponseSelectChange,
-                color: colorScale[0],
-            },
             {
                 selected: backendSelected,
                 name: 'Backend Latency',
@@ -440,6 +439,12 @@ class APIViewErrorTable extends React.Component {
                 name: 'Response Mediation Latency',
                 onChange: this.handleResponseMedSelectChange,
                 color: colorScale[5],
+            },
+            {
+                selected: miscellaneousSelected,
+                name: 'Miscellaneous',
+                onChange: this.handleMiscellaneousSelectChange,
+                color: colorScale[0],
             },
         ];
         if (data.length === 0) {
