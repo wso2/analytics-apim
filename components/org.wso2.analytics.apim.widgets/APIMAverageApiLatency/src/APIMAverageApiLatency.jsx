@@ -181,12 +181,12 @@ export default function APIMAverageApiLatency(props) {
                                             y='AvgLatency'
                                         />
                                         <VictoryAxis
-                                            label='Api Name'
+                                            label={'Api Name'.toUpperCase()}
                                             style={styles.victoryaxis}
                                         />
                                         <VictoryAxis
                                             dependentAxis
-                                            label='Average Latency (ms)'
+                                            label={'Average Latency (ms)'.toUpperCase()}
                                             style={styles.victoryaxis}
                                         />
                                     </VictoryChart>

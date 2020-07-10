@@ -77,12 +77,12 @@ export default function TrafficChart(props) {
                 y='Traffic'
             />
             <VictoryAxis
-                label='API Version'
+                label={'API Version'.toUpperCase()}
                 style={styles.victoryaxis}
             />
             <VictoryAxis
                 dependentAxis
-                label='Total Traffic'
+                label={'Total Traffic'.toUpperCase()}
                 style={styles.victoryaxis}
             />
         </VictoryChart>

@@ -91,7 +91,7 @@ class APIViewErrorTable extends React.Component {
     }
 
     getChartForAPI() {
-        const timeFormat = 'DD/MM, HH:mm:ss';
+        const timeFormat = 'Y-m-d HH:MM:SS';
         const barRatio = 0.2;
         const barWidth = 15;
         const { data } = this.props;
@@ -117,7 +117,7 @@ class APIViewErrorTable extends React.Component {
                     // scale={{ x: 20 }}
                 >
                     <VictoryAxis
-                        label={() => 'Time'}
+                        label={() => 'Time'.toUpperCase()}
                         tickFormat={(time) => {
                             const moment = Moment(Number(time));
                             return moment.format(timeFormat);
@@ -133,7 +133,7 @@ class APIViewErrorTable extends React.Component {
                     />
                     <VictoryAxis
                         dependentAxis
-                        label={() => 'API Hits'}
+                        label={() => 'API Hits'.toUpperCase()}
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
