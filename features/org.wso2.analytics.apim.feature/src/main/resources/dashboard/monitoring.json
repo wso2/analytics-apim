@@ -572,7 +572,7 @@
                   "height": 47.53179277951843,
                   "content": [
                     {
-                      "title": "[APITrafficSummaryWidget]",
+                      "title": "API TRAFFIC SUMMARY",
                       "type": "component",
                       "component": "APITrafficSummary",
                       "props": {
