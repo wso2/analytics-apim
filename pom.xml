@@ -495,8 +495,8 @@
             </dependency>
 
             <dependency>
-                <groupId>com.h2database.wso2</groupId>
-                <artifactId>h2-database-engine</artifactId>
+                <groupId>org.wso2.orbit.com.h2database</groupId>
+                <artifactId>h2</artifactId>
                 <version>${h2.database.version}</version>
             </dependency>
 
@@ -1077,7 +1077,7 @@
 
         <carbon.datasources.version>1.1.8</carbon.datasources.version>
         <org.wso2.carbon.datasource.version.range>[1.1.1, 2.0.0)</org.wso2.carbon.datasource.version.range>
-        <carbon.metrics.version>2.3.8</carbon.metrics.version>
+        <carbon.metrics.version>2.3.13</carbon.metrics.version>
         <carbon.jndi.version>1.0.5</carbon.jndi.version>
 
         <carbon.cache.version>1.1.3</carbon.cache.version>
@@ -1095,7 +1095,7 @@
         <pdfbox.version>1.8.16</pdfbox.version>
         <pdfbox.import.version.range>[1.8,2.0)</pdfbox.import.version.range>
         <!--Dashboard-->
-        <carbon.dashboards.version>4.1.23</carbon.dashboards.version>
+        <carbon.dashboards.version>4.1.24</carbon.dashboards.version>
         <carbon.dashboards.version.range.version>[4.1,4.2)</carbon.dashboards.version.range.version>
         <carbon.uis.version>1.0.6</carbon.uis.version>
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
@@ -1156,7 +1156,7 @@
         <pax.logging.api.version>1.8.5</pax.logging.api.version>
         <javax.servlet.version>3.1.0</javax.servlet.version>
 
-        <h2.database.version>1.2.140.wso2v3</h2.database.version>
+        <h2.database.version>1.4.199.wso2v1</h2.database.version>
 
         <org.wso2.json.version>3.0.0.wso2v1</org.wso2.json.version>
         <orbit.axis2.client.version>1.6.1.wso2v5</orbit.axis2.client.version>
