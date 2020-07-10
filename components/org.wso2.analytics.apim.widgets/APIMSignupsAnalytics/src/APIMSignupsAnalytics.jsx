@@ -31,7 +31,7 @@ import APIMSignupsData from './APIMSignupsData';
  */
 export default function APIMSignupsAnalytics(props) {
     const {
-        themeName, height, chartData, tableData, width, inProgress,
+        themeName, height, chartData, tableData, width, inProgress, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -58,7 +58,7 @@ export default function APIMSignupsAnalytics(props) {
         },
     };
     const signedDataProps = {
-        themeName, chartData, tableData, width,
+        themeName, chartData, tableData, width, username,
     };
     return (
         <Scrollbars style={{
@@ -97,4 +97,5 @@ APIMSignupsAnalytics.propTypes = {
     chartData: PropTypes.instanceOf(Object).isRequired,
     tableData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
+    username: PropTypes.string.isRequired,
 };

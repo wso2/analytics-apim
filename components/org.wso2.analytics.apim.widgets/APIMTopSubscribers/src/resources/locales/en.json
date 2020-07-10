@@ -10,5 +10,6 @@
   "sort.label.title": "Sort",
   "table.heading.subscriptions": "SUBSCRIPTIONS",
   "table.heading.creator": "API PROVIDER",
+  "table.heading.subcount": "COUNT",
   "widget.heading": "TOP SUBSCRIPTIONS PER API PROVIDER"
 }

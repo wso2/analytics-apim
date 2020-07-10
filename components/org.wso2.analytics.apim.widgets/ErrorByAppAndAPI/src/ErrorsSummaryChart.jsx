@@ -110,7 +110,7 @@ function ErrorsSummaryChart(props) {
                     <TableRow style={{ height: '70%' }}>
                         <TableCell align='right' width='25%'>
                             <SummaryPieChart
-                                heading={'4xx errors by ' + viewTypeName}
+                                heading={'4xx'}
                                 data={data4XX}
                                 totalErrors={total4XX}
                                 totalRequestCounts={totalRequestCounts}
@@ -124,7 +124,7 @@ function ErrorsSummaryChart(props) {
                         </TableCell>
                         <TableCell align='right' width='25%'>
                             <SummaryPieChart
-                                heading={'5xx errors by ' + viewTypeName}
+                                heading={'5xx'}
                                 data={data5XX}
                                 totalErrors={total5XX}
                                 totalRequestCounts={totalRequestCounts}
@@ -138,7 +138,7 @@ function ErrorsSummaryChart(props) {
                         </TableCell>
                         <TableCell align='right' width='25%'>
                             <SummaryPieChart
-                                heading={'Faulty summary by ' + viewTypeName}
+                                heading={'Faulty'}
                                 data={dataFaulty}
                                 totalErrors={totalFaulty}
                                 totalRequestCounts={totalRequestCounts}
@@ -152,7 +152,7 @@ function ErrorsSummaryChart(props) {
                         </TableCell>
                         <TableCell style={classes.lastCell} align='right' width='25%'>
                             <SummaryPieChart
-                                heading={'Throttled summary by ' + viewTypeName}
+                                heading={'Throttled'}
                                 data={dataThrottled}
                                 totalErrors={totalThrottled}
                                 totalRequestCounts={totalRequestCounts}

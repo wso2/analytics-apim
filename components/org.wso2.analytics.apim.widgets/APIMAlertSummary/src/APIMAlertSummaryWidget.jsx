@@ -379,7 +379,10 @@ class APIMAlertSummaryWidget extends Widget {
      * */
     handleLimitChange(event) {
         const { selectedApi } = this.state;
-        const limit = (event.target.value).replace('-', '').split('.')[0];
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (parseInt(limit, 10) < 1) {
+            limit = 5;
+        }
 
         this.setQueryParam(selectedApi, parseInt(limit, 10));
         if (limit) {
@@ -413,8 +416,9 @@ class APIMAlertSummaryWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const apiAlertProps = {
-            themeName, height, alertData, inProgress, selectedApi, apiList, limit,
+            themeName, height, alertData, inProgress, selectedApi, apiList, limit, username,
         };
 
         return (
