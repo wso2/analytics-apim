@@ -560,7 +560,7 @@ class APITrafficOverTimeWidget extends Widget {
                                 <h3 style={styles.heading}>
                                     <FormattedMessage
                                         id='widget.heading'
-                                        defaultMessage='API TRAFFIC OVERTIME'
+                                        defaultMessage='API USAGE OVER TIME'
                                     />
                                 </h3>
                             </div>
