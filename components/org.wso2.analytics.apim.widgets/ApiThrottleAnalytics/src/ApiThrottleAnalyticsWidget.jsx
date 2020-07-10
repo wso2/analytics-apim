@@ -245,10 +245,10 @@ class ApiThrottleAnalyticsWidget extends Widget {
         if (data && data.length > 0) {
             const tableData = data.map((dataUnit) => {
                 return ({
-                    appName: dataUnit[0],
-                    count: dataUnit[1],
-                    reason: dataUnit[2].split('_').join(' ').toLowerCase(),
                     time: Moment(dataUnit[3]).format('YYYY-MMM-DD hh:mm:ss A'),
+                    appName: dataUnit[0],
+                    reason: dataUnit[2].split('_').join(' ').toLowerCase(),
+                    count: dataUnit[1],
                 });
             });
             const dataGroupByTime = data.reduce((acc, obj) => {

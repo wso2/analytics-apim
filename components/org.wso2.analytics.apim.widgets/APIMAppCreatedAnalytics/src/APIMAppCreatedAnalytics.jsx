@@ -38,6 +38,7 @@ import APIMAppCreatedData from './APIMAppCreatedData';
 export default function APIMAppCreatedAnalytics(props) {
     const {
         themeName, height, appCreatedBy, sublist, chartData, tableData, width, appCreatedHandleChange, inProgress,
+        username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -82,7 +83,7 @@ export default function APIMAppCreatedAnalytics(props) {
         },
     };
     const createdDataProps = {
-        themeName, chartData, tableData, width,
+        themeName, chartData, tableData, width, username,
     };
     return (
         <Scrollbars style={{
@@ -164,4 +165,5 @@ APIMAppCreatedAnalytics.propTypes = {
     tableData: PropTypes.instanceOf(Object).isRequired,
     appCreatedHandleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    username: PropTypes.string.isRequired,
 };

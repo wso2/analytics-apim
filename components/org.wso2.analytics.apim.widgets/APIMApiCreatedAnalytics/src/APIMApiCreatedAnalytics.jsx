@@ -31,7 +31,7 @@ import APIMApiCreatedData from './APIMApiCreatedData';
  */
 export default function APIMApiCreatedAnalytics(props) {
     const {
-        themeName, height, chartData, tableData, inProgress, width, handleOnClickAPI,
+        themeName, height, chartData, tableData, inProgress, width, handleOnClickAPI, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -59,7 +59,7 @@ export default function APIMApiCreatedAnalytics(props) {
         },
     };
     const createdDataProps = {
-        themeName, chartData, tableData, width,
+        themeName, chartData, tableData, width, username,
     };
     return (
         <Scrollbars style={{
@@ -106,4 +106,5 @@ APIMApiCreatedAnalytics.propTypes = {
     tableData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
+    username: PropTypes.string.isRequired,
 };

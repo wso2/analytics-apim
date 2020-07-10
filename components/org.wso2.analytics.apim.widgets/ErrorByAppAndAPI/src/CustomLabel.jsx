@@ -23,12 +23,12 @@ import {
 } from 'victory';
 
 import PropTypes from 'prop-types';
-import {ViewTypeEnum} from "../../AppAndAPIErrorTable/src/Constants";
+import { ViewTypeEnum } from '../../AppAndAPIErrorTable/src/Constants';
 
 const classes = {
     flyOut: {
         stroke: 'none',
-        fill: 'black',
+        fill: 'white',
     },
 };
 

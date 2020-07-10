@@ -31,7 +31,7 @@ import APIMSubscriptionsData from './APIMSubscriptionsData';
  */
 export default function APIMSubscriptionsAnalytics(props) {
     const {
-        themeName, height, width, chartData, tableData, inProgress, handleOnClickAPI,
+        themeName, height, width, chartData, tableData, inProgress, handleOnClickAPI, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -58,7 +58,7 @@ export default function APIMSubscriptionsAnalytics(props) {
         },
     };
     const subDataProps = {
-        themeName, chartData, tableData, width,
+        themeName, chartData, tableData, width, username,
     };
     return (
         <Scrollbars style={{
@@ -104,4 +104,5 @@ APIMSubscriptionsAnalytics.propTypes = {
     tableData: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
+    username: PropTypes.string.isRequired,
 };

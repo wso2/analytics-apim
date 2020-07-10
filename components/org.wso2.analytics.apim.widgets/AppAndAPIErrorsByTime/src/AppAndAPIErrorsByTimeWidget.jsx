@@ -546,7 +546,11 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     }
 
     handleLimitChange(event) {
-        this.setState({ selectedLimit: event.target.value }, this.loadingDrillDownData);
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (parseInt(limit, 10) < 1) {
+            limit = 60;
+        }
+        this.setState({ selectedLimit: limit }, this.loadingDrillDownData);
     }
 
     // end of handle filter change
@@ -564,7 +568,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         const {
             localeMessages, viewType, drillDownType, valueFormatType, data, loading,
             selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit, apiList, appList,
-            versionList, operationList,
+            versionList, operationList, perValue,
         } = this.state;
         const { muiTheme, height } = this.props;
         const themeName = muiTheme.name;
@@ -667,6 +671,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                                         valueFormatType={valueFormatType}
                                         drillDownType={drillDownType}
                                         themeName={themeName}
+                                        perValue={perValue}
                                     />
                                 )
                                     : (

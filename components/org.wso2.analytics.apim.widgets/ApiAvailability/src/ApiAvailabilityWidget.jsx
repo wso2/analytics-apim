@@ -258,7 +258,10 @@ class ApiAvailabilityWidget extends Widget {
      * */
     handleLimitChange(event) {
         const { status } = this.state;
-        const limit = (event.target.value).replace('-', '').split('.')[0];
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (parseInt(limit, 10) < 1) {
+            limit = 5;
+        }
 
         this.setQueryParam(parseInt(limit, 10), status);
         if (limit) {
@@ -293,8 +296,9 @@ class ApiAvailabilityWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
         const apiAvailabilityProps = {
-            themeName, height, availableApiData, inProgress, limit, status,
+            themeName, height, availableApiData, inProgress, limit, status, username,
         };
 
         return (

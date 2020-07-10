@@ -162,7 +162,7 @@ class CustomTable extends React.Component {
         super(props);
 
         this.state = {
-            data: [],
+            tableData: [],
             page: 0,
             rowsPerPage: 5,
             orderBy: 'subscribedtime',
@@ -208,17 +208,17 @@ class CustomTable extends React.Component {
      */
     render() {
         const {
-            classes, tableData, onClickTableRow, columns, strColumns, title, username,
+            classes, data, onClickTableRow, columns, strColumns, title, username,
         } = this.props;
         const { query, expanded, filterColumn } = this.state;
 
-        this.state.data = query
-            ? tableData.filter(x => x[filterColumn].toString().toLowerCase().includes(query.toLowerCase()))
-            : tableData;
+        this.state.tableData = query
+            ? data.filter(x => x[filterColumn].toString().toLowerCase().includes(query.toLowerCase()))
+            : data;
         const {
-            data, order, orderBy, rowsPerPage, page,
+            tableData, order, orderBy, rowsPerPage, page,
         } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
         let sortedData = [];
         if (tableData.length > 0) {
             sortedData = stableSort(tableData, getSorting(order, orderBy));
@@ -340,7 +340,7 @@ class CustomTable extends React.Component {
 }
 
 CustomTable.propTypes = {
-    tableData: PropTypes.instanceOf(Object).isRequired,
+    data: PropTypes.instanceOf(Object).isRequired,
     classes: PropTypes.instanceOf(Object).isRequired,
     onClickTableRow: PropTypes.func.isRequired,
     columns: PropTypes.instanceOf(Object).isRequired,

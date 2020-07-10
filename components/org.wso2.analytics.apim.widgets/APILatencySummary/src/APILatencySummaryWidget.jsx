@@ -463,7 +463,11 @@ class APILatencySummaryWidget extends Widget {
     }
 
     handleLimitChange(event) {
-        this.setState({ selectedLimit: event.target.value }, this.loadingDrillDownData);
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (parseInt(limit, 10) < 1) {
+            limit = 5;
+        }
+        this.setState({ selectedLimit: limit }, this.loadingDrillDownData);
     }
 
     // end of handle filter change
