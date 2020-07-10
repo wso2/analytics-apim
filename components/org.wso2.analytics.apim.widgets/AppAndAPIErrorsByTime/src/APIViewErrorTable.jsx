@@ -123,7 +123,7 @@ class APIViewErrorTable extends React.Component {
                         top: 50, bottom: 100, right: 50, left: 50,
                     }}
                 >
-                    <VictoryAxi
+                    <VictoryAxis
                         label={label}
                         tickFormat={(time) => {
                             const moment = Moment(Number(time));
