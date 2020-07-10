@@ -27,7 +27,9 @@ import {
     VictoryTooltip,
     VictoryLabel,
     VictoryLine,
-    VictoryVoronoiContainer,
+    VictoryScatter,
+    VictoryGroup,
+
 } from 'victory';
 import Moment from 'moment';
 import { FormattedMessage } from 'react-intl';
@@ -58,6 +60,7 @@ class APIViewErrorTable extends React.Component {
         this.handleFaultySelectChange = this.handleFaultySelectChange.bind(this);
         this.handleThrottlingSelectChange = this.handleThrottlingSelectChange.bind(this);
         this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
+        this.renderLineAndScatter = this.renderLineAndScatter.bind(this);
 
         const { themeName } = this.props;
         this.styles = {
@@ -75,13 +78,39 @@ class APIViewErrorTable extends React.Component {
     }
 
     getPieChartForAPI() {
-        const timeFormat = 'YY/DD/MM, HH:mm:ss';
-        const { data } = this.props;
+        const { perValue } = this.props;
+        let { data } = this.props;
         const {
             successSelected, _4xxSelected, _5xxSelected, faultySelected, throttleSelected,
         } = this.state;
-        const barRatio = 0.2;
-        const strokeWidth = 1;
+        const timeFormat = 'MMM DD, YYYY hh:mm:ss A';
+        let unit;
+        let label;
+        if (perValue === 'day') {
+            unit = 'days';
+            label = 'Time (Day)';
+        } else if (perValue === 'hour') {
+            unit = 'hour';
+            label = 'Time (Hour)';
+        } else if (perValue === 'minute') {
+            unit = 'minutes';
+            label = 'Time (Minute)';
+        } else if (perValue === 'second') {
+            unit = 'seconds';
+            label = 'Time (Second)';
+        } else if (perValue === 'month') {
+            unit = 'months';
+            label = 'Time (Month)';
+        } else if (perValue === 'year') {
+            unit = 'years';
+            label = 'Time (Year)';
+        }
+
+        data = data.map((item) => {
+            item.from = Moment(item.AGG_TIMESTAMP).format(timeFormat);
+            item.to = Moment(item.AGG_TIMESTAMP).add(1, unit).format(timeFormat);
+            return item;
+        });
         return (
             <div>
                 <VictoryChart
@@ -90,28 +119,24 @@ class APIViewErrorTable extends React.Component {
                     theme={VictoryTheme.material}
                     height={400}
                     width={800}
-                    // style={{ parent: { maxWidth: 800 } }}
-                    // scale={{ x: 20 }}
                     padding={{
-                        top: 50, bottom: 50, right: 50, left: 50,
+                        top: 50, bottom: 100, right: 50, left: 50,
                     }}
-                    containerComponent={
-                        <VictoryVoronoiContainer />
-                    }
                 >
                     <VictoryAxis
-                        label={() => 'Time'}
+                        label={label}
                         tickFormat={(time) => {
                             const moment = Moment(Number(time));
                             return moment.format(timeFormat);
                         }}
+                        tickCount={10}
                         tickLabelComponent={<VictoryLabel angle={45} />}
                         style={{
                             axis: { stroke: '#756f6a' },
-                            axisLabel: { fontSize: 15, padding: 30 },
+                            axisLabel: { fontSize: 15 },
                             grid: { stroke: () => 0 },
                             ticks: { stroke: 'grey', size: 5 },
-                            tickLabels: { fontSize: 9, padding: 5 },
+                            tickLabels: { fontSize: 9, textAnchor: 'start' },
                         }}
                     />
                     <VictoryAxis
@@ -125,82 +150,12 @@ class APIViewErrorTable extends React.Component {
                             tickLabels: { fontSize: 9, padding: 5 },
                         }}
                     />
-
-                    { successSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[0], strokeWidth } }}
-                            alignment='start'
-                            barRatio={barRatio}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Response Hit', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.responseCount],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y='responseCount'
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    )}
-                    { _4xxSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[1], strokeWidth } }}
-                            alignment='start'
-                            barRatio={barRatio}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['4xx errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row._4xx],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y='_4xx'
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    )}
-                    { _5xxSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[2], strokeWidth } }}
-                            alignment='start'
-                            barRatio={barRatio}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['5xx errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row._5xx],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y='_5xx'
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    )}
-                    { faultySelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[3], strokeWidth } }}
-                            alignment='start'
-                            barRatio={barRatio}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['fault errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.faultCount],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y='faultCount'
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    )}
-                    { throttleSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[4], strokeWidth } }}
-                            alignment='start'
-                            barRatio={barRatio}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['throttled errors', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.throttledCount],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y='throttledCount'
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    )}
+                    {this.renderLineAndScatter(successSelected, data, colorScale[0], 'responseCount', 'Response Hit')}
+                    {this.renderLineAndScatter(_4xxSelected, data, colorScale[1], '_4xx', '4xx Errors')}
+                    {this.renderLineAndScatter(_5xxSelected, data, colorScale[2], '_5xx', '5xx Errors')}
+                    {this.renderLineAndScatter(faultySelected, data, colorScale[3], 'faultCount', 'Fault Errors')}
+                    {this.renderLineAndScatter(throttleSelected, data, colorScale[4],
+                        'throttledCount', 'Throttled Errors')}
                 </VictoryChart>
             </div>
         );
@@ -234,6 +189,38 @@ class APIViewErrorTable extends React.Component {
         this.setState({
             throttleSelected: event.target.checked,
         });
+    }
+
+    renderLineAndScatter(enabled, data, color, y, label) {
+        const barRatio = 0.2;
+        const strokeWidth = 1;
+        if (!enabled) {
+            return null;
+        }
+        return (
+            <VictoryGroup>
+                <VictoryLine
+                    style={{ data: { stroke: color, strokeWidth } }}
+                    alignment='start'
+                    barRatio={barRatio}
+                    data={data}
+                    x={d => d.AGG_TIMESTAMP}
+                    y={y}
+                />
+                <VictoryScatter
+                    style={{ data: { fill: color } }}
+                    size={3}
+                    data={data.map(row => ({
+                        ...row,
+                        label: [label, 'From: ' + row.from, 'To: ' + row.to,
+                            'Count: ' + row[y]],
+                    }))}
+                    x={d => d.AGG_TIMESTAMP}
+                    y={y}
+                    labelComponent={<VictoryTooltip />}
+                />
+            </VictoryGroup>
+        );
     }
 
     render() {
@@ -335,6 +322,7 @@ class APIViewErrorTable extends React.Component {
 APIViewErrorTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     themeName: PropTypes.string.isRequired,
+    perValue: PropTypes.string.isRequired,
 };
 
 export default APIViewErrorTable;

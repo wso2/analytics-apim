@@ -267,7 +267,7 @@
                   "height": 42.11978177122716,
                   "content": [
                     {
-                      "title": "[ErrorByAppAndAPIwidget]",
+                      "title": "TOP ERROR SUMMARY",
                       "type": "component",
                       "component": "ErrorByAppAndAPI",
                       "props": {
@@ -307,7 +307,7 @@
                   "height": 49.86001731877273,
                   "content": [
                     {
-                      "title": "[AppAndAPIErrorTablewidget]",
+                      "title": "ERROR SUMMARY",
                       "type": "component",
                       "component": "AppAndAPIErrorTable",
                       "props": {
@@ -346,7 +346,7 @@
                   "height": 1.5706806282722534,
                   "content": [
                     {
-                      "title": "[AppAndAPIErrorsByTimeWidget]",
+                      "title": "ERROR SUMMARY OVER TIME",
                       "type": "component",
                       "component": "AppAndAPIErrorsByTime",
                       "props": {
@@ -437,7 +437,7 @@
                   "height": 46.70007689157036,
                   "content": [
                     {
-                      "title": "[APILatencySummaryWidget]",
+                      "title": "API LATENCY OVER TIME",
                       "type": "component",
                       "component": "APILatencySummary",
                       "props": {
@@ -481,7 +481,7 @@
                   "height": 46.70007689157036,
                   "content": [
                     {
-                      "title": "[APILatencyOverTimeWidget]",
+                      "title": "API LATENCY OVER TIME",
                       "type": "component",
                       "component": "APILatencyOverTime",
                       "props": {
@@ -616,7 +616,7 @@
                   "height": 47.199014767059744,
                   "content": [
                     {
-                      "title": "[APITrafficOverTimeWidget]",
+                      "title": "API TRAFFIC OVER TIME",
                       "type": "component",
                       "component": "APITrafficOverTime",
                       "props": {
