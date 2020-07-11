@@ -84,14 +84,24 @@ class APIViewErrorTable extends React.Component {
         };
     }
 
-    getPieChartForAPI() {
-        const { data, handleOnClick, themeName } = this.props;
+    getPieChartForAPI(data) {
+        const { handleOnClick } = this.props;
         const {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
         const barRatio = 0.2;
         const barWidth = 15;
-        const timeFormat = 'DD/MM, HH:mm:ss';
+        const xFunction = (d) => {
+            let label = d.apiName;
+            if (d.apiVersion) {
+                label = `${label}:${d.apiVersion}`;
+            }
+            if (d.apiResourceTemplate) {
+                label = `${label}:${d.apiResourceTemplate} ( ${d.apiMethod} )`;
+            }
+            return label;
+        };
+
         return (
             <div>
                 <VictoryChart
@@ -134,16 +144,13 @@ class APIViewErrorTable extends React.Component {
                                 alignment='start'
                                 barRatio={barRatio}
                                 barWidth={barWidth}
-                                x={
-                                    d => d.apiName + ':' + d.apiVersion + ':'
-                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
-                                }
+                                x={xFunction}
                                 data={data.map(row => ({
                                     ...row,
                                     label: [
                                         'API: ' + row.apiName,
-                                        'Version: ' + row.apiVersion,
-                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        row.apiVersion === undefined ? '' : 'Version: ' + row.apiVersion,
+                                        row.apiResourceTemplate === undefined ? '' : 'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
                                         'Success Count: ' + row.responseCount],
                                 }))}
                                 y={d => d.responseCount}
@@ -175,14 +182,11 @@ class APIViewErrorTable extends React.Component {
                                     ...row,
                                     label: [
                                         'API: ' + row.apiName,
-                                        'Version: ' + row.apiVersion,
-                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        row.apiVersion === undefined ? '' : 'Version: ' + row.apiVersion,
+                                        row.apiResourceTemplate === undefined ? '' : 'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
                                         'Faulty Count: ' + row.faultCount],
                                 }))}
-                                x={
-                                    d => d.apiName + ':' + d.apiVersion + ':'
-                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
-                                }
+                                x={xFunction}
                                 y={d => d.faultCount}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
@@ -213,14 +217,11 @@ class APIViewErrorTable extends React.Component {
                                     ...row,
                                     label: [
                                         'API: ' + row.apiName,
-                                        'Version: ' + row.apiVersion,
-                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        row.apiVersion === undefined ? '' : 'Version: ' + row.apiVersion,
+                                        row.apiResourceTemplate === undefined ? '' : 'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
                                         'Throttled Count: ' + row.throttledCount],
                                 }))}
-                                x={
-                                    d => d.apiName + ':' + d.apiVersion + ':'
-                                        + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
-                                }
+                                x={xFunction}
                                 y={d => d.throttledCount}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
@@ -265,7 +266,7 @@ class APIViewErrorTable extends React.Component {
     }
 
     render() {
-        const { data } = this.props;
+        const { data, drillDownType } = this.props;
         const {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
@@ -289,7 +290,21 @@ class APIViewErrorTable extends React.Component {
                 color: colorScale[2],
             },
         ];
-        if (data.length === 0) {
+        const newData = data.map((d) => {
+            const newD = {
+                ...d,
+            };
+            if (drillDownType === 'api') {
+                newD.apiVersion = undefined;
+                newD.apiResourceTemplate = undefined;
+            }
+            if (drillDownType === 'version') {
+                newD.apiResourceTemplate = undefined;
+            }
+            return newD;
+        });
+
+        if (newData.length === 0) {
             return (
                 <div style={this.styles.dataWrapper}>
                     <Paper
@@ -318,7 +333,7 @@ class APIViewErrorTable extends React.Component {
                 <TableBody>
                     <TableRow>
                         <TableCell>
-                            { this.getPieChartForAPI() }
+                            { this.getPieChartForAPI(newData) }
                         </TableCell>
                         <TableCell>
                             <FormGroup>
@@ -353,6 +368,7 @@ APIViewErrorTable.propTypes = {
     data: PropTypes.instanceOf(Object).isRequired,
     handleOnClick: PropTypes.func.isRequired,
     themeName: PropTypes.string.isRequired,
+    drillDownType: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(APIViewErrorTable);

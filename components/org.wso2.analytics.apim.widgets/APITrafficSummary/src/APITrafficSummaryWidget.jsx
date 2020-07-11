@@ -30,6 +30,7 @@ import {
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CustomFormGroup from './CustomFormGroup';
 import ResourceViewErrorTable from './ResourceViewErrorTable';
+import Scrollbars from 'react-custom-scrollbars';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -121,7 +122,6 @@ class APITrafficSummaryWidget extends Widget {
 
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
 
-        this.renderDrillDownTable = this.renderDrillDownTable.bind(this);
         this.handleOnClick = this.handleOnClick.bind(this);
         this.handleDrillDownTypeChange = this.handleDrillDownTypeChange.bind(this);
         this.handleGraphQLOperationChange = this.handleGraphQLOperationChange.bind(this);
@@ -360,7 +360,7 @@ class APITrafficSummaryWidget extends Widget {
                     .map(([, pattern]) => pattern).join(',');
 
                 const operation = operationList.find(i => i[0] === selectedResource[0]);
-                const [,, method] = operation;
+                const [, , method] = operation;
 
                 filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
                 filterPhase.push('apiMethod==\'' + method + '\'');
@@ -457,10 +457,6 @@ class APITrafficSummaryWidget extends Widget {
 
     // end of handle filter change
 
-    renderDrillDownTable(props) {
-        return (<ResourceViewErrorTable {...props} />);
-    }
-
     /**
      * Handle onClick and drill down
      * @memberof APITrafficSummaryWidget
@@ -503,7 +499,7 @@ class APITrafficSummaryWidget extends Widget {
             selectedAPI, selectedVersion, selectedResource, selectedLimit, apiList,
             versionList, operationList, drillDownType,
         } = this.state;
-        const { muiTheme } = this.props;
+        const { muiTheme, height } = this.props;
         const themeName = muiTheme.name;
         const styles = {
             heading: {
@@ -530,7 +526,7 @@ class APITrafficSummaryWidget extends Widget {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: this.props.height,
+                height,
             },
             contentWrapper: {
                 margin: '10px',
@@ -548,52 +544,60 @@ class APITrafficSummaryWidget extends Widget {
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
                     <div style={styles.root}>
-                        <div style={styles.contentWrapper}>
-                            <div style={styles.headingWrapper}>
-                                <h3 style={styles.heading}>
-                                    <FormattedMessage
-                                        id='widget.heading'
-                                        defaultMessage='API USAGE SUMMARY'
-                                    />
-                                </h3>
-                            </div>
-                            <CustomFormGroup
-                                viewType={viewType}
-                                valueFormatType={valueFormatType}
-
-                                selectedAPI={selectedAPI}
-                                selectedVersion={selectedVersion}
-                                selectedResource={selectedResource}
-                                selectedLimit={selectedLimit}
-
-                                apiList={apiList}
-                                versionList={versionList}
-                                operationList={operationList}
-
-                                handleAPIChange={this.handleAPIChange}
-                                handleVersionChange={this.handleVersionChange}
-                                handleOperationChange={this.handleOperationChange}
-                                handleDrillDownTypeChange={this.handleDrillDownTypeChange}
-                                drillDownType={drillDownType}
-                                handleLimitChange={this.handleLimitChange}
-                            />
-                            {!loading ? (
-                                <this.renderDrillDownTable
-                                    data={data}
+                        <Scrollbars style={{
+                            height,
+                            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                        }}
+                        >
+                            <div style={styles.contentWrapper}>
+                                <div style={styles.headingWrapper}>
+                                    <h3 style={styles.heading}>
+                                        <FormattedMessage
+                                            id='widget.heading'
+                                            defaultMessage='API USAGE SUMMARY'
+                                        />
+                                    </h3>
+                                </div>
+                                <CustomFormGroup
                                     viewType={viewType}
                                     valueFormatType={valueFormatType}
-                                    handleOnClick={this.handleOnClick}
-                                    themeName={themeName}
+
+                                    selectedAPI={selectedAPI}
+                                    selectedVersion={selectedVersion}
+                                    selectedResource={selectedResource}
+                                    selectedLimit={selectedLimit}
+
+                                    apiList={apiList}
+                                    versionList={versionList}
+                                    operationList={operationList}
+
+                                    handleAPIChange={this.handleAPIChange}
+                                    handleVersionChange={this.handleVersionChange}
+                                    handleOperationChange={this.handleOperationChange}
+                                    handleDrillDownTypeChange={this.handleDrillDownTypeChange}
+                                    drillDownType={drillDownType}
+                                    handleLimitChange={this.handleLimitChange}
                                 />
-                            )
-                                : (
-                                    <div style={styles.loading}>
-                                        <CircularProgress style={styles.loadingIcon} />
-                                    </div>
+                                {!loading ? (
+                                    <ResourceViewErrorTable
+                                        data={data}
+                                        viewType={viewType}
+                                        valueFormatType={valueFormatType}
+                                        handleOnClick={this.handleOnClick}
+                                        themeName={themeName}
+                                        drillDownType={drillDownType}
+                                    />
                                 )
-                            }
-                        </div>
+                                    : (
+                                        <div style={styles.loading}>
+                                            <CircularProgress style={styles.loadingIcon} />
+                                        </div>
+                                    )
+                                }
+                            </div>
+                        </Scrollbars>
                     </div>
+
                 </MuiThemeProvider>
             </IntlProvider>
         );
