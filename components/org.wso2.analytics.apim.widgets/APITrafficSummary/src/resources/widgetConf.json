@@ -41,11 +41,11 @@
         "type": {
           "name": "TEXT"
         },
-        "defaultValue": "API Traffic Summary"
+        "defaultValue": "API USAGE SUMMARY"
       },
       {
         "id": "drillDown",
-        "title": "Drill Down to API Traffic Over Time",
+        "title": "Drill Down to API USAGE OVER TIME",
         "type": {
           "name": "BOOLEAN",
           "possibleValues": [

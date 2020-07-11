@@ -141,7 +141,7 @@ class APIViewErrorTable extends React.Component {
                     />
                     <VictoryAxis
                         dependentAxis
-                        label={() => 'Error count'}
+                        label={() => 'Error count'.toUpperCase()}
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },

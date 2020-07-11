@@ -105,7 +105,7 @@ class APIViewErrorTable extends React.Component {
                     width={800}
                 >
                     <VictoryAxis
-                        label={() => 'API Operation'}
+                        label={() => 'API Operation'.toUpperCase()}
                         tickLabelComponent={<VictoryLabel angle={45} />}
                         style={{
                             axis: { stroke: '#756f6a' },
@@ -117,7 +117,7 @@ class APIViewErrorTable extends React.Component {
                     />
                     <VictoryAxis
                         dependentAxis
-                        label={() => 'API Hits'}
+                        label={() => 'API Hits'.toUpperCase()}
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
@@ -140,8 +140,11 @@ class APIViewErrorTable extends React.Component {
                                 }
                                 data={data.map(row => ({
                                     ...row,
-                                    label: ['Success Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.responseCount],
+                                    label: [
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Success Count: ' + row.responseCount],
                                 }))}
                                 y={d => d.responseCount}
                                 labelComponent={<VictoryTooltip />}
@@ -170,8 +173,11 @@ class APIViewErrorTable extends React.Component {
                                 barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
-                                    label: ['Faulty Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.faultCount],
+                                    label: [
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Faulty Count: ' + row.faultCount],
                                 }))}
                                 x={
                                     d => d.apiName + ':' + d.apiVersion + ':'
@@ -205,8 +211,11 @@ class APIViewErrorTable extends React.Component {
                                 barWidth={barWidth}
                                 data={data.map(row => ({
                                     ...row,
-                                    label: ['Throttled Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.throttledCount],
+                                    label: [
+                                        'API: ' + row.apiName,
+                                        'Version: ' + row.apiVersion,
+                                        'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
+                                        'Throttled Count: ' + row.throttledCount],
                                 }))}
                                 x={
                                     d => d.apiName + ':' + d.apiVersion + ':'

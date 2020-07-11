@@ -595,7 +595,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "API Traffic Summary",
+                            "headerTitle": "API Usage Summary",
                             "drillDown": true
                           }
                         },

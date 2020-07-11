@@ -553,7 +553,7 @@ class APITrafficSummaryWidget extends Widget {
                                 <h3 style={styles.heading}>
                                     <FormattedMessage
                                         id='widget.heading'
-                                        defaultMessage='API TRAFFIC SUMMARY'
+                                        defaultMessage='API USAGE SUMMARY'
                                     />
                                 </h3>
                             </div>

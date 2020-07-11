@@ -111,7 +111,7 @@ class APIViewErrorTable extends React.Component {
                     width={800}
                 >
                     <VictoryAxis
-                        label={() => 'API Operation'}
+                        label={() => 'API Operation'.toUpperCase()}
                         tickLabelComponent={<VictoryLabel angle={45} text='' />}
                         style={{
                             axis: { stroke: '#756f6a' },
@@ -123,7 +123,7 @@ class APIViewErrorTable extends React.Component {
                     />
                     <VictoryAxis
                         dependentAxis
-                        label={() => 'Latency Time (ms)'}
+                        label={() => 'Latency Time (ms)'.toUpperCase()}
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
