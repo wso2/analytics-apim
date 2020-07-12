@@ -99,7 +99,6 @@ class APIViewErrorTable extends React.Component {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
         const strokeWidth = 1;
-        console.log(data);
         return (
             <div>
                 <VictoryChart
