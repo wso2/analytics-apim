@@ -422,7 +422,14 @@ class APIMFaultyPerAppWidget extends Widget {
      * @param {Event} event - listened event
      * @memberof APIMFaultyPerAppWidget
      * */
-    applicationSelectedHandleChange(event) {
+    applicationSelectedHandleChange(data) {
+        let applicationSelected;
+        if (data === null) {
+            applicationSelected = null;
+        } else {
+            const { value } = data;
+            applicationSelected = value;
+        }
         this.setState({ inProgress: true });
         let { limit } = this.state;
         const { id } = this.props;
@@ -430,8 +437,8 @@ class APIMFaultyPerAppWidget extends Widget {
         if (!limit) {
             limit = 5;
         }
-        this.setQueryParam(event.target.value, limit);
-        this.setState({ applicationSelected: event.target.value, limit });
+        this.setQueryParam(applicationSelected, limit);
+        this.setState({ applicationSelected, limit });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
