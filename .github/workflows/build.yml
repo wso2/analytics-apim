@@ -18,16 +18,16 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ matrix.os }}-${{ matrix.node }}-${{ matrix.java }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: ${{ matrix.os }}-${{ matrix.java }}-${{ matrix.node }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.node }}-${{ matrix.java }}-maven-
+            ${{ matrix.os }}-${{ matrix.java }}-${{ matrix.node }}-maven-
 
       - uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ matrix.os }}-${{ matrix.node }}-${{ matrix.java }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ matrix.os }}-${{ matrix.java }}-${{ matrix.node }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.node }}-${{ matrix.java }}-node-
+            ${{ matrix.os }}-${{ matrix.java }}-${{ matrix.node }}-npm-
 
       - uses: actions/checkout@v1
 
@@ -44,5 +44,7 @@ jobs:
         run: mvn clean install
 
       - uses: actions/upload-artifact@v2
+        if: matrix.os == 'ubuntu-latest'
         with:
+          name: wso2am-analytics-${{ matrix.os }}-java${{ matrix.java }}-node${{ matrix.node }}
           path: product/distribution/target/*.zip
