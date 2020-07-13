@@ -113,8 +113,8 @@ class APIViewErrorTable extends React.Component {
                     containerComponent={
                         <VictoryVoronoiContainer />
                     }
-                    // style={{ parent: { maxWidth: 800 } }}
-                    // scale={{ x: 20 }}
+                // style={{ parent: { maxWidth: 800 } }}
+                // scale={{ x: 20 }}
                 >
                     <VictoryAxis
                         label={() => 'Time'.toUpperCase()}
@@ -142,56 +142,54 @@ class APIViewErrorTable extends React.Component {
                             tickLabels: { fontSize: 9, padding: 5 },
                         }}
                     />
-                    <VictoryStack>
-                        { successSelected && (
-                            <VictoryLine
-                                style={{ data: { stroke: colorScale[0], strokeWidth } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                barWidth={barWidth}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Success Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.responseCount],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP}
-                                y={d => d.responseCount}
-                                labelComponent={<VictoryTooltip />}
-                            />
-                        ) }
-                        { faultySelected && (
-                            <VictoryLine
-                                style={{ data: { stroke: colorScale[1], strokeWidth } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                barWidth={barWidth}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Faulty Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.faultCount],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP}
-                                y={d => d.faultCount}
-                                labelComponent={<VictoryTooltip />}
-                            />
-                        ) }
-                        { throttledSelected && (
-                            <VictoryLine
-                                style={{ data: { stroke: colorScale[2], strokeWidth } }}
-                                alignment='start'
-                                barRatio={barRatio}
-                                barWidth={barWidth}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Throttled Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.throttledCount],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP}
-                                y={d => d.throttledCount}
-                                labelComponent={<VictoryTooltip />}
-                            />
-                        ) }
-                    </VictoryStack>
+                    {successSelected && (
+                        <VictoryLine
+                            style={{ data: { stroke: colorScale[0], strokeWidth } }}
+                            alignment='start'
+                            barRatio={barRatio}
+                            barWidth={barWidth}
+                            data={data.map(row => ({
+                                ...row,
+                                label: ['Success Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                    row.responseCount],
+                            }))}
+                            x={d => d.AGG_TIMESTAMP}
+                            y={d => d.responseCount}
+                            labelComponent={<VictoryTooltip />}
+                        />
+                    )}
+                    {faultySelected && (
+                        <VictoryLine
+                            style={{ data: { stroke: colorScale[1], strokeWidth } }}
+                            alignment='start'
+                            barRatio={barRatio}
+                            barWidth={barWidth}
+                            data={data.map(row => ({
+                                ...row,
+                                label: ['Faulty Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                    row.faultCount],
+                            }))}
+                            x={d => d.AGG_TIMESTAMP}
+                            y={d => d.faultCount}
+                            labelComponent={<VictoryTooltip />}
+                        />
+                    )}
+                    {throttledSelected && (
+                        <VictoryLine
+                            style={{ data: { stroke: colorScale[2], strokeWidth } }}
+                            alignment='start'
+                            barRatio={barRatio}
+                            barWidth={barWidth}
+                            data={data.map(row => ({
+                                ...row,
+                                label: ['Throttled Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                    row.throttledCount],
+                            }))}
+                            x={d => d.AGG_TIMESTAMP}
+                            y={d => d.throttledCount}
+                            labelComponent={<VictoryTooltip />}
+                        />
+                    )}
                 </VictoryChart>
 
             </div>
@@ -258,7 +256,7 @@ class APIViewErrorTable extends React.Component {
                             <FormattedMessage
                                 id='nodata.error.body'
                                 defaultMessage={'No matching data available for the '
-                                + 'selected options.'}
+                                    + 'selected options.'}
                             />
                         </Typography>
                     </Paper>
@@ -270,7 +268,7 @@ class APIViewErrorTable extends React.Component {
                 <TableBody>
                     <TableRow>
                         <TableCell>
-                            { this.getChartForAPI() }
+                            {this.getChartForAPI()}
                         </TableCell>
                         <TableCell>
                             <FormGroup>
