@@ -295,13 +295,6 @@ class CustomTable extends React.Component {
                                             onClick={() => onClickTableRow(option)}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                <Checkbox
-                                                    value={option.apiname + ':' + option.apiversion}
-                                                    onChange={this.handleSelectedAPIChange}
-                                                    checked={selectedAPIs.includes(
-                                                        option.apiname + ':' + option.apiversion,
-                                                    )}
-                                                />
                                                 {option.apiname}
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
