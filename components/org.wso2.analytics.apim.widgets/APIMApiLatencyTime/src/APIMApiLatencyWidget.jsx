@@ -323,26 +323,36 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     handleResourceReceived(message) {
-        const { data } = message;
-        const { operationSelected, resourceSelected } = this.state;
-
+        const { data, metadata: { names } } = message;
+        const resourceList = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+        const { operationSelected } = this.state;
         if (data) {
-            const resourceList = [];
-            data.forEach((dataUnit) => {
-                resourceList.push([dataUnit[0] + ' (' + dataUnit[1]] + ')');
-            });
             this.setState({ resourceList });
-
             // verify whether the selected operations/resource provided in query param are available in the
             // API resource list
-            const filterSelectedOperations = operationSelected.filter(op => resourceList.includes[op]);
-            const filterSelectedResource = resourceList.includes(resourceSelected) ? resourceSelected : '';
-            this.setQueryParam(filterSelectedOperations, filterSelectedResource);
-
+            let filterSelectedOperations;
+            if (Array.isArray(operationSelected)) {
+                filterSelectedOperations = operationSelected
+                    .filter(op => resourceList.find(item => item.URL_PATTERN + '_' + item.HTTP_METHOD === op));
+            } else {
+                const selectedItem = resourceList
+                    .find(item => item.URL_PATTERN + '_' + item.HTTP_METHOD === operationSelected);
+                if (selectedItem) {
+                    filterSelectedOperations = operationSelected;
+                } else {
+                    filterSelectedOperations = -1;
+                }
+            }
+            this.setQueryParam(filterSelectedOperations);
             this.setState({
                 resourceList,
                 operationSelected: filterSelectedOperations,
-                resourceSelected: filterSelectedResource,
             }, this.assembleMainQuery);
         } else {
             this.setState({ inProgress: false, latencyData: [] });
@@ -355,44 +365,35 @@ class APIMApiLatencyWidget extends Widget {
      * */
     assembleMainQuery() {
         const {
-            providerConfig, timeFrom, timeTo, perValue, operationSelected, resourceSelected, selectedOptions,
+            providerConfig, timeFrom, timeTo, perValue, operationSelected, selectedOptions,
         } = this.state;
         const { widgetID: widgetName, id } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-
-        if (selectedOptions && selectedOptions.length > 0
-            && (operationSelected.length > 0 || resourceSelected.length > 0)) {
+        if (selectedOptions && selectedOptions.length > 0) {
             let resources = '';
-            let numberOfSelectedElements = 0;
-
-            if (operationSelected.length > 0) {
-                const operations = [];
-                const operationTypes = [];
-                let operationsString = '';
-                let method = '';
-                operationSelected.forEach((res) => {
-                    const resFormat = res.split(' (');
-                    operations.push(resFormat[0]);
-                    method = resFormat[1].replace(')', '');
-                    operationTypes.push(method);
-                    numberOfSelectedElements += 1;
-                });
-
-                for (let i = 0; i < operations.length - 1; i++) {
-                    operationsString += 'str:contains(apiResourceTemplate,\'' + operations[i] + '\') AND ';
+            if (Array.isArray(operationSelected)) {
+                if (operationSelected.length > 0) {
+                    const opsString = operationSelected
+                        .map(item => item.split('_')[0])
+                        .sort()
+                        .join(',');
+                    const firstOp = operationSelected[0].split('_')[1];
+                    resources = 'apiResourceTemplate==\'' + opsString + '\' AND apiMethod==\''
+                        + firstOp + '\'';
+                } else {
+                    this.setState({ inProgress: false, latencyData: [] });
+                    return;
                 }
-                operationsString += 'str:contains(apiResourceTemplate,\'' + operations[operations.length - 1] + '\')';
-
-                resources = '((' + operationsString + ') AND apiMethod==\'' + method + '\')';
-            } else if (resourceSelected.length > 0) {
-                const resFormat = resourceSelected.split(' (');
-                const resource = resFormat[0];
-                const method = resFormat[1].replace(')', '');
-                numberOfSelectedElements = 1;
-                resources = '(apiResourceTemplate==\'' + resource + '\' AND apiMethod==\'' + method + '\')';
+            } else {
+                if (operationSelected !== -1) {
+                    const operation = operationSelected.split('_');
+                    resources = 'apiResourceTemplate==\'' + operation[0] + '\' AND apiMethod==\'' + operation[1] + '\'';
+                } else {
+                    this.setState({ inProgress: false, latencyData: [] });
+                    return;
+                }
             }
-
             const filterCondition = '(apiName==\'' + selectedOptions[0].name + '\' AND apiVersion==\''
                 + selectedOptions[0].version + '\' AND (' + resources + '))';
 
@@ -401,7 +402,6 @@ class APIMApiLatencyWidget extends Widget {
                 '{{timeTo}}': timeTo,
                 '{{per}}': perValue,
                 '{{filterCondition}}': filterCondition,
-                '{{numberOfCommas}}': numberOfSelectedElements - 1,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id + API_LATENCY_CALLBACK, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -439,10 +439,9 @@ class APIMApiLatencyWidget extends Widget {
      * @param {string} resourceSelected - Resources selected
      * @memberof APIMApiLatencyWidget
      * */
-    setQueryParam(operationSelected, resourceSelected) {
+    setQueryParam(operationSelected) {
         super.setGlobalState(queryParamKey, {
             operationSelected,
-            resourceSelected,
         });
     }
 
@@ -451,16 +450,14 @@ class APIMApiLatencyWidget extends Widget {
      * @param {Event} event - listened event
      * @memberof APIMApiLatencyWidget
      * */
-    apiOperationHandleChange(event) {
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { operationSelected } = this.state;
-
-        if (queryParam.operationSelected.includes(event.target.value)) {
-            operationSelected.splice(operationSelected.indexOf(event.target.value), 1);
+    apiOperationHandleChange(data) {
+        let operationSelected;
+        if (data == null || data.length === 0) {
+            operationSelected = -1;
         } else {
-            operationSelected.push(event.target.value);
+            operationSelected = data.map(row => row.value);
         }
-        this.setQueryParam(operationSelected, '');
+        this.setQueryParam(operationSelected);
         this.setState({ operationSelected, inProgress: true }, this.assembleMainQuery);
     }
 
@@ -469,11 +466,17 @@ class APIMApiLatencyWidget extends Widget {
          * @param {Event} event - listened event
          * @memberof APIMApiLatencyWidget
          * */
-    apiResourceHandleChange(event) {
-        const resourceSelected = event.target.value;
+    apiResourceHandleChange(data) {
+        let operationSelected;
+        if (data == null) {
+            operationSelected = -1;
+        } else {
+            const { value } = data;
+            operationSelected = value;
+        }
 
-        this.setQueryParam([], resourceSelected);
-        this.setState({ resourceSelected, inProgress: true }, this.assembleMainQuery);
+        this.setQueryParam(operationSelected);
+        this.setState({ operationSelected, inProgress: true }, this.assembleMainQuery);
     }
 
     /**

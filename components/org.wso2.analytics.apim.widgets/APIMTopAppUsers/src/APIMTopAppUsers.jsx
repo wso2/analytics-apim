@@ -25,9 +25,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import sumBy from 'lodash/sumBy';
@@ -36,6 +34,7 @@ import {
 } from 'victory';
 import { colorScale, Utils } from '@analytics-apim/common-lib';
 import CustomTable from './CustomTable';
+import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
 
 /**
  * Display Top Application Users stats
@@ -72,6 +71,13 @@ function APIMTopAppUsers(props) {
         formControl: {
             marginTop: '5%',
             marginLeft: '5%',
+        },
+        autoSelectForm: {
+            marginTop: '5%',
+            minWidth: 200,
+        },
+        selectWrapper: {
+            marginTop: '5%',
         },
         textField: {
             marginTop: '5%',
@@ -166,7 +172,7 @@ function APIMTopAppUsers(props) {
                 </div>
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
-                        <FormControl style={styles.formControl}>
+                        <FormControl style={styles.autoSelectForm}>
                             <Tooltip
                                 placement='top'
                                 title={(
@@ -184,35 +190,16 @@ function APIMTopAppUsers(props) {
                                     <FormattedMessage id='applicationName.label' defaultMessage='Application Name' />
                                 </InputLabel>
                             </Tooltip>
-                            <Select
-                                value={applicationSelected}
-                                onChange={applicationSelectedHandleChange}
-                                input={(
-                                    <Input
-                                        name='applicationSelected'
-                                        id='applicationSelected-label-placeholder'
-                                    />
-                                )}
-                                displayEmpty
-                                name='applicationSelected'
-                                style={styles.select}
-                            >
-                                { applicationList.length > 0
-                                    ? applicationList.map(option => (
-                                        <MenuItem key={option.appId} value={option.appId}>
-                                            {option.appName}
-                                        </MenuItem>
-                                    ))
-                                    : (
-                                        <MenuItem disabled>
-                                            <FormattedMessage
-                                                id='no.applications'
-                                                defaultMessage='No Application Available'
-                                            />
-                                        </MenuItem>
-                                    )
-                                }
-                            </Select>
+                            <div style={styles.selectWrapper}>
+                                <IntegrationReactSelect
+                                    options={applicationList}
+                                    value={applicationSelected}
+                                    onChange={applicationSelectedHandleChange}
+                                    placeholder='Select Application'
+                                    getLabel={item => item.appName}
+                                    getValue={item => item.appId}
+                                />
+                            </div>
                         </FormControl>
                         <FormControl style={styles.formControl}>
                             <Tooltip

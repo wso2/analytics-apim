@@ -32,6 +32,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import VizG from 'react-vizgrammar';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
+import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
 
 /**
  * React Component for APIM Api Latency Time widget body
@@ -59,6 +60,9 @@ export default function APIMApiLatency(props) {
             marginLeft: '5%',
             marginTop: '5%',
             minWidth: 120,
+        },
+        autoSelectForm: {
+            minWidth: 200,
         },
         dataWrapper: {
             height: '70%',
@@ -160,16 +164,11 @@ export default function APIMApiLatency(props) {
             'Response Mediation', 'Backend', 'Other', 'REQUEST_TIME'],
         types: ['linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'linear', 'time'],
     };
-
     // Check whether the API is graphQL.
     // Evaluated by checking the method of the first resource.
-    let isGraphQL;
-    if (resourceList && resourceList.length > 0) {
-        const resFormat = resourceList[0].split(' (');
-        const method = resFormat[1].replace(')', '');
-        isGraphQL = (method === 'QUERY' || method === 'MUTATION' || method === 'SUBSCRIPTION');
-    }
-
+    const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
+    const isGraphQL = resourceList.length > 0 && !!resourceList.find(op => graphQLOps.includes(op.HTTP_METHOD));
+    const { operationSelected } = queryParam;
 
     return (
         <Scrollbars style={{
@@ -192,52 +191,17 @@ export default function APIMApiLatency(props) {
                         resourceList && resourceList.length > 0 && (
                             <div style={styles.formWrapper}>
                                 <form style={styles.form}>
-                                    <FormControl component='fieldset' style={styles.formControl}>
-                                        <FormLabel component='legend'>
-                                            <FormattedMessage id='resources.label' defaultMessage='Resources' />
-                                        </FormLabel>
-                                        {
-                                            isGraphQL ? (
-                                                <FormGroup>
-                                                    {
-                                                        resourceList.map(option => (
-                                                            <FormControlLabel
-                                                                control={(
-                                                                    <Checkbox
-                                                                        checked={
-                                                                            queryParam.operationSelected
-                                                                                .includes(option.toString())
-                                                                        }
-                                                                        onChange={apiOperationHandleChange}
-                                                                        value={option.toString()}
-                                                                    />
-                                                                )}
-                                                                label={option}
-                                                            />
-                                                        ))
-                                                    }
-                                                </FormGroup>
-                                            ) : (
-                                                <RadioGroup>
-                                                    {
-                                                        resourceList.map(option => (
-                                                            <FormControlLabel
-                                                                control={(
-                                                                    <Radio
-                                                                        checked={
-                                                                            queryParam.resourceSelected
-                                                                                .includes(option.toString())}
-                                                                        onChange={apiResourceHandleChange}
-                                                                        value={option.toString()}
-                                                                    />
-                                                                )}
-                                                                label={option}
-                                                            />
-                                                        ))
-                                                    }
-                                                </RadioGroup>
-                                            )
-                                        }
+                                    <FormControl component='fieldset' style={styles.autoSelectForm}>
+                                        <IntegrationReactSelect
+                                            isMulti={isGraphQL}
+                                            options={resourceList}
+                                            value={operationSelected}
+                                            onChange={isGraphQL ? apiOperationHandleChange : apiResourceHandleChange}
+                                            // disabled={operationList && operationList.length === 0}
+                                            placeholder='Select Operation'
+                                            getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
+                                            getValue={item => item.URL_PATTERN + '_' + item.HTTP_METHOD}
+                                        />
                                     </FormControl>
                                 </form>
                             </div>

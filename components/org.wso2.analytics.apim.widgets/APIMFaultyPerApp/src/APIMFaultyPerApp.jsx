@@ -25,12 +25,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import CustomTable from './CustomTable';
+import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
 
 /**
  * React Component for Faulty Invocations per App widget body
@@ -58,6 +57,13 @@ function APIMFaultyPerApp(props) {
             minWidth: 120,
             marginTop: '5%',
             marginLeft: '5%',
+        },
+        autoSelectForm: {
+            marginTop: '5%',
+            minWidth: 200,
+        },
+        selectWrapper: {
+            marginTop: '5%',
         },
         textField: {
             marginLeft: '5%',
@@ -138,7 +144,7 @@ function APIMFaultyPerApp(props) {
                 </div>
                 <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
-                        <FormControl style={styles.formControl}>
+                        <FormControl style={styles.autoSelectForm}>
                             <Tooltip
                                 placement='top'
                                 title={(
@@ -156,35 +162,16 @@ function APIMFaultyPerApp(props) {
                                     <FormattedMessage id='applicationName.label' defaultMessage='Application Name' />
                                 </InputLabel>
                             </Tooltip>
-                            <Select
-                                value={applicationSelected}
-                                onChange={applicationSelectedHandleChange}
-                                input={(
-                                    <Input
-                                        name='applicationSelected'
-                                        id='applicationSelected-label-placeholder'
-                                    />
-                                )}
-                                displayEmpty
-                                name='applicationSelected'
-                                style={styles.select}
-                            >
-                                { applicationList.length > 0
-                                    ? applicationList.map(option => (
-                                        <MenuItem key={option.appId} value={option.appId}>
-                                            {option.appName}
-                                        </MenuItem>
-                                    ))
-                                    : (
-                                        <MenuItem disabled>
-                                            <FormattedMessage
-                                                id='no.applications'
-                                                defaultMessage='No Applications Available'
-                                            />
-                                        </MenuItem>
-                                    )
-                                }
-                            </Select>
+                            <div style={styles.selectWrapper}>
+                                <IntegrationReactSelect
+                                    options={applicationList}
+                                    value={applicationSelected}
+                                    onChange={applicationSelectedHandleChange}
+                                    placeholder='Select Application'
+                                    getLabel={item => item.appName}
+                                    getValue={item => item.appId}
+                                />
+                            </div>
                         </FormControl>
                         <FormControl style={styles.formControl}>
                             <Tooltip
