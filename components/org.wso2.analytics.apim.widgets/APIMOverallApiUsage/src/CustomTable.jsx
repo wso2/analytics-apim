@@ -194,23 +194,6 @@ class CustomTable extends React.Component {
         this.setState({ query: event.target.value });
     };
 
-    handleSelectedAPIChange = (event) => {
-        const { selectedAPIs, selectedAPIChangeCallback } = this.state;
-        const tickedApi = event.target.value;
-        if (selectedAPIs.includes(tickedApi)) {
-            selectedAPIs.splice(selectedAPIs.indexOf(tickedApi), 1);
-        } else {
-            selectedAPIs.push(tickedApi);
-        }
-        this.setState({ selectedAPIs });
-        const { data } = this.props;
-        const tickedApiParts = tickedApi.split(':');
-        const foundElement = data.filter((element) => {
-            return (tickedApiParts[0] === element[0] + ' (' + element[1] + ')' && tickedApiParts[1] === element[4]);
-        });
-        selectedAPIChangeCallback(foundElement[0]);
-    };
-
     /**
      * Render the Overall Api Usage table
      * @return {ReactElement} customTable
@@ -295,13 +278,6 @@ class CustomTable extends React.Component {
                                             onClick={() => onClickTableRow(option)}
                                         >
                                             <TableCell component='th' scope='row'>
-                                                <Checkbox
-                                                    value={option.apiname + ':' + option.apiversion}
-                                                    onChange={this.handleSelectedAPIChange}
-                                                    checked={selectedAPIs.includes(
-                                                        option.apiname + ':' + option.apiversion,
-                                                    )}
-                                                />
                                                 {option.apiname}
                                             </TableCell>
                                             <TableCell component='th' scope='row' numeric>
