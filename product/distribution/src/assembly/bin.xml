@@ -370,5 +370,12 @@
             <outputDirectory>wso2/dashboard/deployment/web-ui-apps/analytics-dashboard/public/locales</outputDirectory>
             <fileMode>644</fileMode>
         </file>
+
+        <!--Default logo for downloadable PDF reports from widgets-->
+        <file>
+            <source>src/dashboard/pdf-report-logo.jpg</source>
+            <outputDirectory>wso2/dashboard/deployment/web-ui-apps/analytics-dashboard/public/images</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
     </files>
 </assembly>
