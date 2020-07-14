@@ -612,6 +612,9 @@ class DimensionSelectorWidget extends Widget {
             apis, dimension, isManager, selectAll,
         } = this.state;
         const filteredValues = isManager && selectAll ? this.filterSelectionChange(value) : value;
+        if (filteredValues.length == 0) {
+            return;
+        }
 
         this.setState({ selectedOptions: filteredValues });
         const publishValue = filteredValues === null ? [] : filteredValues;
