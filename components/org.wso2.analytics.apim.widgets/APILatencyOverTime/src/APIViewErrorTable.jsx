@@ -61,7 +61,7 @@ const styles = theme => ({
     },
 });
 
-const colorScale = ['tomato', 'orange', 'gold', 'green', 'blue', 'red'];
+const colorScale = ['tomato', 'magenta', 'gold', 'green', 'blue', 'red'];
 
 class APIViewErrorTable extends React.Component {
     constructor(props) {
