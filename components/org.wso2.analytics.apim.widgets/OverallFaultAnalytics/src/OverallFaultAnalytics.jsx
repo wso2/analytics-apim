@@ -73,6 +73,7 @@ export default function OverallFaultAnalytics(props) {
     };
     const chartConfig = {
         x: 'TIME',
+        yAxisLabel: 'COUNT',
         charts: [
             {
                 type: 'line',
