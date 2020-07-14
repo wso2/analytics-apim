@@ -2,6 +2,7 @@
   "app.createdBy.label": "App Owner",
   "config.error.body": "Cannot fetch provider configuration for APIM App Created Analytics widget",
   "config.error.heading": "Configuration Error !",
+  "limit": "Limit",
   "nodata.error.body": "No data available for the selected options.",
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
