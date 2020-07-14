@@ -15,6 +15,20 @@ jobs:
         node: ['10.x']
         java: [1.8]
     steps:
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ matrix.os }}-${{ matrix.java }}-${{ matrix.node }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.java }}-${{ matrix.node }}-maven-
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ matrix.os }}-${{ matrix.java }}-${{ matrix.node }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.java }}-${{ matrix.node }}-npm-
+
       - uses: actions/checkout@v1
 
       - uses: actions/setup-node@v1
@@ -28,3 +42,9 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install
+
+      - uses: actions/upload-artifact@v2
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          name: wso2am-analytics-${{ matrix.os }}-java${{ matrix.java }}-node${{ matrix.node }}
+          path: product/distribution/target/*.zip
