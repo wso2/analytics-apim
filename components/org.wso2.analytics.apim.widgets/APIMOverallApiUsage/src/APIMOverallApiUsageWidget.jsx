@@ -441,16 +441,13 @@ class APIMOverallApiUsageWidget extends Widget {
      * @memberof APIMOverallApiUsageWidget
      * */
     limitHandleChange(event) {
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
-        }
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleApiUsageQuery);
         } else {
-            this.setState({ limit });
+            this.setState({ limit, usageData1: [], usageData2: [] });
         }
     }
 

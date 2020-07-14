@@ -679,11 +679,12 @@ class AppAndAPIErrorTablewidget extends Widget {
     }
 
     handleLimitChange(event) {
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit) {
+            this.setState({ selectedLimit: limit }, this.loadingDrillDownData);
+        } else {
+            this.setState({selectedLimit: limit, data: []});
         }
-        this.setState({ selectedLimit: limit }, this.loadingDrillDownData);
     }
 
     // end of handle filter change

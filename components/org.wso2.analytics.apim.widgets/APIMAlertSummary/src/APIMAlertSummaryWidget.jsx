@@ -294,16 +294,21 @@ class APIMAlertSummaryWidget extends Widget {
         } = this.state;
 
         if (timeFrom) {
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'alertquery';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': timeFrom,
-                '{{timeTo}}': timeTo,
-                '{{apiName}}': selectedApi !== 'All' ? 'AND apiName == \'' + selectedApi + '\'' : '',
-                '{{limit}}': limit,
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id + ALERT_CALLBACK, widgetName, this.handleApiAlertsReceived, dataProviderConfigs);
+            if (limit > 0) {
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'alertquery';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': timeFrom,
+                    '{{timeTo}}': timeTo,
+                    '{{apiName}}': selectedApi !== 'All' ? 'AND apiName == \'' + selectedApi + '\'' : '',
+                    '{{limit}}': limit,
+                };
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id + ALERT_CALLBACK, widgetName, this.handleApiAlertsReceived,
+                        dataProviderConfigs);
+            } else {
+                this.setState({ alertData: [], inProgress: false });
+            }
         }
     }
 
@@ -379,16 +384,13 @@ class APIMAlertSummaryWidget extends Widget {
      * */
     handleLimitChange(event) {
         const { selectedApi } = this.state;
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
-        }
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(selectedApi, parseInt(limit, 10));
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleApiAlerts);
         } else {
-            this.setState({ limit });
+            this.setState({ limit, alertData: [] });
         }
     }
 
