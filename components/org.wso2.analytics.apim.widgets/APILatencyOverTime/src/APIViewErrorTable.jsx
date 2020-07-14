@@ -35,6 +35,7 @@ import {
     VictoryLine,
     VictoryChart,
     VictoryTheme,
+    VictoryStack,
     VictoryAxis,
     VictoryTooltip,
     VictoryLabel,
@@ -66,27 +67,41 @@ class APIViewErrorTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            responseSelected: true,
+            miscellaneousSelected: true,
             backendSelected: true,
             securitySelected: true,
             throttleSelected: true,
             requestMedSelected: true,
             responseMedSelected: true,
         };
-        this.handleResponseSelectChange = this.handleResponseSelectChange.bind(this);
+        this.handleMiscellaneousSelectChange = this.handleMiscellaneousSelectChange.bind(this);
         this.handleBackendSelectChange = this.handleBackendSelectChange.bind(this);
         this.handleSecuritySelectChange = this.handleSecuritySelectChange.bind(this);
         this.handleThrottlingSelectChange = this.handleThrottlingSelectChange.bind(this);
         this.handleRequestMedSelectChange = this.handleRequestMedSelectChange.bind(this);
         this.handleResponseMedSelectChange = this.handleResponseMedSelectChange.bind(this);
         this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
+
+        const { themeName } = this.props;
+        this.styles = {
+            dataWrapper: {
+                height: '75%',
+                paddingTop: 35,
+                margin: 'auto',
+                width: '90%',
+            },
+            paper: {
+                background: themeName === 'dark' ? '#152638' : '#E8E8E8',
+                padding: '4%',
+            },
+        };
     }
 
     getPieChartForAPI() {
         const timeFormat = 'Y-m-d HH:MM:SS';
         const { data } = this.props;
         const {
-            responseSelected, backendSelected, securitySelected, throttleSelected,
+            miscellaneousSelected, backendSelected, securitySelected, throttleSelected,
             requestMedSelected, responseMedSelected,
         } = this.state;
         const strokeWidth = 1;
@@ -133,106 +148,112 @@ class APIViewErrorTable extends React.Component {
                             tickLabels: { fontSize: 9, padding: 5 },
                         }}
                     />
-
-                    { responseSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[0], strokeWidth } }}
-                            alignment='start'
-                            barRatio={0.5}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Response latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.responseTime],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y={d => d.responseTime}
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    ) }
-                    { backendSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[1], strokeWidth } }}
-                            alignment='start'
-                            barRatio={0.5}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Backend latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.backendLatency],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y={d => d.backendLatency}
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    ) }
-                    { securitySelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[2], strokeWidth } }}
-                            alignment='start'
-                            barRatio={0.5}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Security latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.securityLatency],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y={d => d.securityLatency}
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    ) }
-                    { throttleSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[3], strokeWidth } }}
-                            alignment='start'
-                            barRatio={0.5}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Throttling latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.throttlingLatency],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y={d => d.throttlingLatency}
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    ) }
-                    { requestMedSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[4], strokeWidth } }}
-                            alignment='start'
-                            barRatio={0.5}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Request Mediation latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.requestMedLat],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y={d => d.requestMedLat}
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    ) }
-                    { responseMedSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[5], strokeWidth } }}
-                            alignment='start'
-                            barRatio={0.5}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Response Mediation latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.responseMedLat],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP + ''}
-                            y={d => d.responseMedLat}
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    ) }
+                    <VictoryStack>
+                        { backendSelected && (
+                            <VictoryLine
+                                style={{ data: { stroke: colorScale[1], strokeWidth } }}
+                                alignment='start'
+                                barRatio={0.5}
+                                data={data.map(row => ({
+                                    ...row,
+                                    label: ['Backend latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                        row.backendLatency],
+                                }))}
+                                x={d => d.AGG_TIMESTAMP + ''}
+                                y={d => d.backendLatency}
+                                labelComponent={<VictoryTooltip />}
+                            />
+                        ) }
+                        { securitySelected && (
+                            <VictoryLine
+                                style={{ data: { stroke: colorScale[2], strokeWidth } }}
+                                alignment='start'
+                                barRatio={0.5}
+                                data={data.map(row => ({
+                                    ...row,
+                                    label: ['Security latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                        row.securityLatency],
+                                }))}
+                                x={d => d.AGG_TIMESTAMP + ''}
+                                y={d => d.securityLatency}
+                                labelComponent={<VictoryTooltip />}
+                            />
+                        ) }
+                        { throttleSelected && (
+                            <VictoryLine
+                                style={{ data: { stroke: colorScale[3], strokeWidth } }}
+                                alignment='start'
+                                barRatio={0.5}
+                                data={data.map(row => ({
+                                    ...row,
+                                    label: ['Throttling latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                        row.throttlingLatency],
+                                }))}
+                                x={d => d.AGG_TIMESTAMP + ''}
+                                y={d => d.throttlingLatency}
+                                labelComponent={<VictoryTooltip />}
+                            />
+                        ) }
+                        { requestMedSelected && (
+                            <VictoryLine
+                                style={{ data: { stroke: colorScale[4], strokeWidth } }}
+                                alignment='start'
+                                barRatio={0.5}
+                                data={data.map(row => ({
+                                    ...row,
+                                    label: ['Request Mediation latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                        row.requestMedLat],
+                                }))}
+                                x={d => d.AGG_TIMESTAMP + ''}
+                                y={d => d.requestMedLat}
+                                labelComponent={<VictoryTooltip />}
+                            />
+                        ) }
+                        { responseMedSelected && (
+                            <VictoryLine
+                                style={{ data: { stroke: colorScale[5], strokeWidth } }}
+                                alignment='start'
+                                barRatio={0.5}
+                                data={data.map(row => ({
+                                    ...row,
+                                    label: ['Response Mediation latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                        row.responseMedLat],
+                                }))}
+                                x={d => d.AGG_TIMESTAMP + ''}
+                                y={d => d.responseMedLat}
+                                labelComponent={<VictoryTooltip />}
+                            />
+                        ) }
+                        { miscellaneousSelected && (
+                            <VictoryLine
+                                style={{ data: { stroke: colorScale[0], strokeWidth } }}
+                                alignment='start'
+                                barRatio={0.5}
+                                data={data.map(row => ({
+                                    ...row,
+                                    label: ['Miscellaneous latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
+                                        (row.responseTime - row.backendLatency - row.securityLatency
+                                            - row.throttlingLatency - row.requestMedLat - row.responseMedLat)
+                                            .toString(10)],
+                                }))}
+                                x={d => d.AGG_TIMESTAMP + ''}
+                                y={
+                                    d => d.responseTime - d.backendLatency - d.securityLatency - d.throttlingLatency
+                                        - d.requestMedLat - d.responseMedLat
+                                }
+                                labelComponent={<VictoryTooltip />}
+                            />
+                        ) }
+                    </VictoryStack>
                 </VictoryChart>
 
             </div>
         );
     }
 
-    handleResponseSelectChange(event) {
+    handleMiscellaneousSelectChange(event) {
         this.setState({
-            responseSelected: event.target.checked,
+            miscellaneousSelected: event.target.checked,
         });
     }
 
@@ -268,17 +289,12 @@ class APIViewErrorTable extends React.Component {
 
 
     render() {
+        const { data } = this.props;
         const {
-            responseSelected, backendSelected, securitySelected, throttleSelected,
+            miscellaneousSelected, backendSelected, securitySelected, throttleSelected,
             requestMedSelected, responseMedSelected,
         } = this.state;
         const checkBoxData = [
-            {
-                selected: responseSelected,
-                name: 'Response Latency',
-                onChange: this.handleResponseSelectChange,
-                color: colorScale[0],
-            },
             {
                 selected: backendSelected,
                 name: 'Backend Latency',
@@ -309,26 +325,20 @@ class APIViewErrorTable extends React.Component {
                 onChange: this.handleResponseMedSelectChange,
                 color: colorScale[5],
             },
+            {
+                selected: miscellaneousSelected,
+                name: 'Miscellaneous',
+                onChange: this.handleMiscellaneousSelectChange,
+                color: colorScale[0],
+            },
         ];
-        const { data, themeName } = this.props;
-        const styles = {
-            dataWrapper: {
-                height: '75%',
-                paddingTop: 35,
-                margin: 'auto',
-                width: '90%',
-            },
-            paper: {
-                background: themeName === 'dark' ? '#152638' : '#E8E8E8',
-                padding: '4%',
-            },
-        };
+
         if (data.length === 0) {
             return (
-                <div style={styles.dataWrapper}>
+                <div style={this.styles.dataWrapper}>
                     <Paper
                         elevation={1}
-                        style={styles.paper}
+                        style={this.styles.paper}
                     >
                         <Typography variant='h5' component='h3'>
                             <FormattedMessage
