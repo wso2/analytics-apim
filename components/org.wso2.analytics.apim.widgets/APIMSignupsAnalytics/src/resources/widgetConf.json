@@ -17,6 +17,7 @@
           "tableName": "AM_SUBSCRIBER",
           "incrementalColumn": "CREATED_TIME",
           "publishingLimit": 2147483647,
+          "publishingInterval": 360000,
           "isPurgingEnable": false
         }
       }

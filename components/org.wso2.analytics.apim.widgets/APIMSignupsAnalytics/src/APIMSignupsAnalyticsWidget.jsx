@@ -48,6 +48,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'signupStats';
+
 /**
  * Language
  * @type {string}
@@ -88,6 +90,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
+            limit: 5,
             timeTo: null,
             timeFrom: null,
             perValue: null,
@@ -108,6 +111,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
     }
 
     componentWillMount() {
@@ -121,6 +125,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -161,6 +166,19 @@ class APIMSignupsAnalyticsWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMSignupsAnalyticsWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof APIMSignupsAnalyticsWidget
      * */
@@ -184,18 +202,25 @@ class APIMSignupsAnalyticsWidget extends Widget {
      * @memberof APIMSignupsAnalyticsWidget
      * */
     assembleQuery() {
-        const { providerConfig, timeFrom, timeTo } = this.state;
+        const {
+            providerConfig, timeFrom, timeTo, limit,
+        } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         if (timeFrom) {
-            const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'query';
-            dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
-            };
-            super.getWidgetChannelManager()
-                .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+            if (limit > 0) {
+                const dataProviderConfigs = cloneDeep(providerConfig);
+                dataProviderConfigs.configs.config.queryData.queryName = 'query';
+                dataProviderConfigs.configs.config.queryData.queryValues = {
+                    '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                    '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+                };
+                dataProviderConfigs.configs.config.publishingLimit = limit;
+                super.getWidgetChannelManager()
+                    .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
+            } else {
+                this.setState({ inProgress: false, chartData: [], tableData: [] });
+            }
         }
     }
 
@@ -259,13 +284,38 @@ class APIMSignupsAnalyticsWidget extends Widget {
     }
 
     /**
+     * Updates query param values
+     * @param {number} limit - data limitation value
+     * @memberof APIMSignupsAnalyticsWidget
+     * */
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
+    }
+
+    /**
+     * Handle Limit select Change
+     * @param {Event} event - listened event
+     * @memberof APIMSignupsAnalyticsWidget
+     * */
+    handleLimitChange(event) {
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
+        } else {
+            this.setState({ limit, chartData: [], tableData: [] });
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Signups Analytics widget
      * @memberof APIMSignupsAnalyticsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, chartData, tableData, width, inProgress,
+            localeMessages, faultyProviderConfig, height, chartData, tableData, width, inProgress, limit,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -274,7 +324,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const signupsProps = {
-            themeName, height, chartData, tableData, width, inProgress, username,
+            themeName, height, chartData, tableData, width, inProgress, username, limit,
         };
 
         return (
@@ -300,7 +350,10 @@ class APIMSignupsAnalyticsWidget extends Widget {
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMSignupsAnalytics {...signupsProps} />
+                            <APIMSignupsAnalytics
+                                {...signupsProps}
+                                handleLimitChange={this.handleLimitChange}
+                            />
                         )
                     }
                 </MuiThemeProvider>
