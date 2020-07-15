@@ -23,7 +23,7 @@
                   "type": "row",
                   "isClosable": true,
                   "title": "",
-                  "height": 48.34902934718262,
+                  "height": 29.91498799134023,
                   "content": [
                     {
                       "type": "stack",
@@ -175,7 +175,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 51.650970652817385,
+                  "height": 70.08501200865977,
                   "content": [
                     {
                       "title": "[APIM Overall Api Info]",
@@ -207,7 +207,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "height": 952
         },
         {
           "id": "error",
@@ -222,7 +223,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 6.4495202817278505,
+                  "height": 4.393136445437864,
                   "content": [
                     {
                       "title": "[Date Time Range]",
@@ -239,11 +240,12 @@
                               "granularity",
                               "from",
                               "to"
-                            ]
+                            ],
+                            "publishers": []
                           },
                           "isGenerated": false,
                           "options": {
-                            "header": true,
+                            "header": false,
                             "defaultValue": "7 Days",
                             "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
@@ -264,7 +266,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 42.11978177122716,
+                  "height": 26.944767053332562,
                   "content": [
                     {
                       "title": "TOP ERROR SUMMARY",
@@ -304,7 +306,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 49.86001731877273,
+                  "height": 32.8996149674568,
                   "content": [
                     {
                       "title": "ERROR SUMMARY",
@@ -343,7 +345,7 @@
                   "type": "stack",
                   "isClosable": true,
                   "title": "",
-                  "height": 1.5706806282722534,
+                  "height": 35.76248153377277,
                   "content": [
                     {
                       "title": "ERROR SUMMARY OVER TIME",
@@ -377,7 +379,7 @@
               ]
             }
           ],
-          "height": 1458
+          "height": 2356.29638671875
         },
         {
           "id": "latency",
@@ -409,11 +411,12 @@
                               "granularity",
                               "from",
                               "to"
-                            ]
+                            ],
+                            "publishers": []
                           },
                           "isGenerated": false,
                           "options": {
-                            "header": true,
+                            "header": false,
                             "defaultValue": "7 Days",
                             "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
@@ -544,11 +547,12 @@
                               "granularity",
                               "from",
                               "to"
-                            ]
+                            ],
+                            "publishers": []
                           },
                           "isGenerated": false,
                           "options": {
-                            "header": true,
+                            "header": false,
                             "defaultValue": "3 Months",
                             "availableGranularities": "From Second",
                             "autoSyncInterval": "30",
@@ -803,11 +807,12 @@
                               "granularity",
                               "from",
                               "to"
-                            ]
+                            ],
+                            "publishers": []
                           },
                           "isGenerated": false,
                           "options": {
-                            "header": true,
+                            "header": false,
                             "defaultValue": "7 Days",
                             "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
