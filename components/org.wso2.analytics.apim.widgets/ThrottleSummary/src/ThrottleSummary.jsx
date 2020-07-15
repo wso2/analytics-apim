@@ -70,6 +70,7 @@ export default function ThrottleSummary(props) {
     };
     const chartConfig = {
         x: 'TIME',
+        yAxisLabel: 'COUNT',
         charts: [
         ],
         maxLength: 60,

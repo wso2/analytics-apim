@@ -82,6 +82,7 @@ export default function ApiUsageOverTime(props) {
     };
     const chartConfig = {
         x: 'TIME',
+        yAxisLabel: 'HITS',
         charts: [],
         maxLength: 60,
         interactiveLegend: true,
