@@ -135,6 +135,11 @@ function APIMAlertSummaryByAPIs(props) {
             fontSize: 14,
             color: '#b5b5b5',
         },
+        pieChart: {
+            data: {
+                cursor: 'pointer',
+            },
+        },
     };
     const columns = [
         {
@@ -248,6 +253,7 @@ function APIMAlertSummaryByAPIs(props) {
                                                     padding={50}
                                                     theme={VictoryTheme.material}
                                                     colorScale={colorScale}
+                                                    style={styles.pieChart}
                                                     data={pieChartData}
                                                     x={d => d.apiname}
                                                     y={d => d.count}
