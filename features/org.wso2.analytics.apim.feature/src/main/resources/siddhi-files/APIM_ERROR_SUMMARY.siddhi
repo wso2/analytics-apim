@@ -38,7 +38,7 @@ _2xx int, _4xx int, _5xx int, responseCount int, faultCount int, throttledCount 
 
 
 -- API details summary(Error details, traffic details)
-@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "apiMethod:40")
+@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB',field.length = "apiMethod:40, applicationId:40")
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='5 minutes', min='72 hours', hours='90 days', days='1 year', months='10 years'))
 define aggregation ApiErrorAnalysisAgg
 from ErrorSummaryStream
