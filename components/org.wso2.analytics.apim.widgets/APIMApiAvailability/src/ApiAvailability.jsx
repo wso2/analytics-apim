@@ -32,6 +32,14 @@ import sumBy from 'lodash/sumBy';
  */
 export default function ApiAvailability(props) {
     const { availableApiData, legendData, handleOnClick } = props;
+    const styles = {
+        pieChart: {
+            data: {
+                cursor: 'pointer',
+            },
+        },
+    };
+
     return (
         <div>
             <VictoryContainer height={400}>
@@ -68,6 +76,7 @@ export default function ApiAvailability(props) {
                     theme={VictoryTheme.material}
                     standalone={false}
                     colorScale={colorScale}
+                    style={styles.pieChart}
                     data={availableApiData}
                     x={0}
                     y={1}

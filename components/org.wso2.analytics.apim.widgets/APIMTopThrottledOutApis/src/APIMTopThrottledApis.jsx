@@ -126,6 +126,11 @@ function APIMTopThrottledApis(props) {
             paddingBottom: '10px',
             marginTop: 0,
         },
+        pieChart: {
+            data: {
+                cursor: 'pointer',
+            },
+        },
     };
     const columns = [
         {
@@ -240,6 +245,7 @@ function APIMTopThrottledApis(props) {
                                                     padding={50}
                                                     theme={VictoryTheme.material}
                                                     colorScale={colorScale}
+                                                    style={styles.pieChart}
                                                     data={pieChartData}
                                                     x={d => d.apiname}
                                                     y={d => d.throttledcount}
