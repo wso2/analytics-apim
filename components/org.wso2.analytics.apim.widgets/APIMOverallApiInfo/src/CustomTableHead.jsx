@@ -26,6 +26,12 @@ import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
+const styles = {
+    resetPadding: {
+        paddingRight: '56px',
+    },
+};
+
 const rows = [
     {
         id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname', rowSpan: 2, colSpan: 1,
@@ -107,13 +113,13 @@ export default class CustomTableHead extends React.Component {
                     }, this)}
                 </TableRow>
                 <TableRow>
-                    <TableCell align='right'>
+                    <TableCell align='right' numeric>
                         <FormattedMessage id='table.column.2xx' defaultMessage='2xx' />
                     </TableCell>
-                    <TableCell align='right'>
+                    <TableCell align='right' numeric>
                         <FormattedMessage id='table.column.4xx' defaultMessage='4xx' />
                     </TableCell>
-                    <TableCell align='right'>
+                    <TableCell align='right' numeric style={styles.resetPadding}>
                         <FormattedMessage id='table.column.5xx' defaultMessage='5xx' />
                     </TableCell>
                 </TableRow>

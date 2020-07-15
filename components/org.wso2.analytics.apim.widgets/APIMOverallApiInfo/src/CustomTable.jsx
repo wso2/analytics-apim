@@ -204,7 +204,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, loadingApiInfo, themeName } = this.props;
+        const { data, classes, loadingApiInfo } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -220,10 +220,10 @@ class CustomTable extends React.Component {
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
             </MenuItem>,
             <MenuItem value='hits'>
-                <FormattedMessage id='table.heading.success' defaultMessage='SUCCESS HITS' />
+                <FormattedMessage id='table.heading.response' defaultMessage='RESPONSE HITS' />
             </MenuItem>,
             <MenuItem value='_2xx'>
-                <FormattedMessage id='table.heading.error4xx' defaultMessage='2XX' />
+                <FormattedMessage id='table.heading.error2xx' defaultMessage='ERROR 2XX' />
             </MenuItem>,
             <MenuItem value='error4xx'>
                 <FormattedMessage id='table.heading.error4xx' defaultMessage='ERROR 4XX' />
@@ -350,7 +350,7 @@ class CustomTable extends React.Component {
 CustomTable.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
     data: PropTypes.instanceOf(Object).isRequired,
-    themeName: PropTypes.string.isRequired,
+    loadingApiInfo: PropTypes.bool.isRequired,
 };
 
 export default withStyles(styles)(CustomTable);
