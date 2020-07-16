@@ -73,7 +73,7 @@ export default function Top10ApiPerformanceOverTime(props) {
     };
     const chartConfig = {
         x: 'TIME',
-        yAxisLabel: 'Latency Time (ms)',
+        yAxisLabel: 'LATENCY TIME (MS)',
         charts: [],
         maxLength: 60,
         height: 400,

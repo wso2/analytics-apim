@@ -102,7 +102,7 @@ export default function APIMApiLatency(props) {
     };
     const chartConfig = {
         x: 'REQUEST_TIME',
-        yAxisLabel: 'Latency Time (ms)',
+        yAxisLabel: 'LATENCY TIME (MS)',
         charts: [
             {
                 type: 'line',
