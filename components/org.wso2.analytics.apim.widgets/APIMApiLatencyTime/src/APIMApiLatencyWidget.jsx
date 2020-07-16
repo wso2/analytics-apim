@@ -267,17 +267,19 @@ class APIMApiLatencyWidget extends Widget {
         } = this.state;
         let apiCondition = '';
         if (selectedOptions && selectedOptions.length > 0) {
-            apiCondition = '(API_NAME==\'' + selectedOptions[0].name + '\' AND API_VERSION==\''
+            apiCondition = 'on (API_NAME==\'' + selectedOptions[0].name + '\' AND API_VERSION==\''
                 + selectedOptions[0].version + '\' AND API_PROVIDER==\'' + selectedOptions[0].provider + '\')';
+            const { id, widgetID: widgetName } = this.props;
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{apiCondition}}': apiCondition,
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, latencyData: [] });
         }
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{apiCondition}}': apiCondition === '' ? '' : 'on' + apiCondition,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
     }
 
     /**
@@ -323,16 +325,28 @@ class APIMApiLatencyWidget extends Widget {
      * */
     handleResourceReceived(message) {
         const { data, metadata: { names } } = message;
-        const resourceList = data.map((row) => {
-            const obj = {};
-            for (let j = 0; j < row.length; j++) {
-                obj[names[j]] = row[j];
-            }
-            return obj;
-        });
+        const resourceList = data
+            .map((row) => {
+                const obj = {};
+                for (let j = 0; j < row.length; j++) {
+                    obj[names[j]] = row[j];
+                }
+                return obj;
+            })
+            .sort((a, b) => {
+                const tempa = (a.URL_PATTERN + '_' + a.HTTP_METHOD).toLowerCase();
+                const tempb = (b.URL_PATTERN + '_' + b.HTTP_METHOD).toLowerCase();
+
+                if (tempb > tempa) {
+                    return -1;
+                }
+                if (tempb < tempa) {
+                    return 1;
+                }
+                return 0;
+            });
         const { operationSelected, limit } = this.state;
         if (data) {
-            this.setState({ resourceList });
             // verify whether the selected operations/resource provided in query param are available in the
             // API resource list
             let filterSelectedOperations;
@@ -346,6 +360,17 @@ class APIMApiLatencyWidget extends Widget {
                     filterSelectedOperations = operationSelected;
                 } else {
                     filterSelectedOperations = -1;
+                }
+            }
+
+            if (!filterSelectedOperations.length > 0) {
+                const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
+                const isGraphQL = resourceList.length > 0
+                    && !!resourceList.find(op => graphQLOps.includes(op.HTTP_METHOD));
+                if (isGraphQL) {
+                    filterSelectedOperations = [resourceList[0]];
+                } else {
+                    filterSelectedOperations = resourceList[0].URL_PATTERN + '_' + resourceList[0].HTTP_METHOD;
                 }
             }
             this.setQueryParam(filterSelectedOperations, limit);
@@ -384,14 +409,12 @@ class APIMApiLatencyWidget extends Widget {
                     this.setState({ inProgress: false, latencyData: [] });
                     return;
                 }
+            } else if (operationSelected !== -1) {
+                const operation = operationSelected.split('_');
+                resources = 'apiResourceTemplate==\'' + operation[0] + '\' AND apiMethod==\'' + operation[1] + '\'';
             } else {
-                if (operationSelected !== -1) {
-                    const operation = operationSelected.split('_');
-                    resources = 'apiResourceTemplate==\'' + operation[0] + '\' AND apiMethod==\'' + operation[1] + '\'';
-                } else {
-                    this.setState({ inProgress: false, latencyData: [] });
-                    return;
-                }
+                this.setState({ inProgress: false, latencyData: [] });
+                return;
             }
             const filterCondition = '(apiName==\'' + selectedOptions[0].name + '\' AND apiVersion==\''
                 + selectedOptions[0].version + '\' AND (' + resources + '))';
