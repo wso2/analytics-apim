@@ -246,7 +246,9 @@ class APIMTopApiCreatorsWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
-            this.setState({ limit, creatorData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, creatorData: [] });
         }
     }
 

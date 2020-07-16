@@ -281,7 +281,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             if (!sublist.includes(appCreatedBy)) {
                 [appCreatedBy] = sublist;
             }
-            this.setQueryParam(appCreatedBy,limit);
+            this.setQueryParam(appCreatedBy, limit);
             this.setState({ sublist, appCreatedBy }, this.assembleMainQuery);
         } else {
             this.setState({ chartData: [], tableData: [], inProgress: false });
@@ -418,7 +418,11 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleMainQuery);
         } else {
-            this.setState({ limit, chartData: [], tableData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id + MAIN_CALLBACK);
+            this.setState({
+                limit, inProgress: false, chartData: [], tableData: [],
+            });
         }
     }
 

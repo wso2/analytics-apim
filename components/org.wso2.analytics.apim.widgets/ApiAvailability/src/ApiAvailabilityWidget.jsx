@@ -264,7 +264,9 @@ class ApiAvailabilityWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleApiAvailableQuery);
         } else {
-            this.setState({ limit, availableApiData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, availableApiData: [] });
         }
     }
 

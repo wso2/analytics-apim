@@ -143,7 +143,8 @@ class APIMTopFaultyApisWidget extends Widget {
     }
 
     componentWillUnmount() {
-        super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
+        const { id } = this.props;
+        super.getWidgetChannelManager().unsubscribeWidget(id);
     }
 
     /**
@@ -275,7 +276,9 @@ class APIMTopFaultyApisWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
-            this.setState({ limit, faultData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, faultData: [] });
         }
     }
 

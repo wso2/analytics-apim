@@ -447,7 +447,11 @@ class APIMOverallApiUsageWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleApiUsageQuery);
         } else {
-            this.setState({ limit, usageData1: [], usageData2: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id + API_USAGE_CALLBACK);
+            this.setState({
+                limit, inProgress: false, usageData1: [], usageData2: [],
+            });
         }
     }
 

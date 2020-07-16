@@ -306,7 +306,9 @@ class APIMTopPlatformsWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleMainQuery);
         } else {
-            this.setState({ limit, platformData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, platformData: [] });
         }
     }
 

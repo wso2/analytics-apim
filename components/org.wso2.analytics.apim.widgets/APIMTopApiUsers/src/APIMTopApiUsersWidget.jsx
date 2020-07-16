@@ -297,7 +297,9 @@ class APIMTopApiUsersWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleMainQuery);
         } else {
-            this.setState({ limit, userData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, userData: [] });
         }
     }
 

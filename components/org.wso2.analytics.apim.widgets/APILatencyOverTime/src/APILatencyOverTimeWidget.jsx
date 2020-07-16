@@ -571,7 +571,9 @@ class APILatencyOverTimeWidget extends Widget {
             this.setQueryParam(selectedAPI, selectedVersion, selectedResource, event.target.value);
             this.setState({ selectedLimit: limit, loading: true });
         } else {
-            this.setState({ selectedLimit: limit, data: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_LATENCY);
+            this.setState({ selectedLimit: limit, data: [], loading: false });
         }
     }
 

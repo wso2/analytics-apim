@@ -169,6 +169,10 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     componentWillUnmount() {
         const { id } = this.props;
         super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadApps');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadApis');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadVersions');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadOperations');
     }
 
     /**
@@ -548,9 +552,11 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     handleLimitChange(event) {
         const limit = (event.target.value).replace('-', '').split('.')[0];
         if (limit) {
-            this.setState({ selectedLimit: limit }, this.loadingDrillDownData);
+            this.setState({ selectedLimit: limit, loading: true }, this.loadingDrillDownData);
         } else {
-            this.setState({ selectedLimit: limit, data: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ selectedLimit: limit, data: [], loading: false });
         }
     }
 

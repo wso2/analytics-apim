@@ -304,7 +304,9 @@ class APIMTopAgentsWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleMainQuery);
         } else {
-            this.setState({ limit, agentData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, agentData: [] });
         }
     }
 

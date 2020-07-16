@@ -417,7 +417,9 @@ class APIMAppApiUsageWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleMainQuery();
         } else {
-            this.setState({ limit, usageData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, usageData: [] });
         }
     }
 

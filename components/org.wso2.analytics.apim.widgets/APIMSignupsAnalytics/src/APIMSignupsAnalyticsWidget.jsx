@@ -304,7 +304,11 @@ class APIMSignupsAnalyticsWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
-            this.setState({ limit, chartData: [], tableData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({
+                limit, inProgress: false, chartData: [], tableData: [],
+            });
         }
     }
 

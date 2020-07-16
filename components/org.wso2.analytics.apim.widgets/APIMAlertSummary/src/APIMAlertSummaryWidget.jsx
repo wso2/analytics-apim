@@ -390,7 +390,9 @@ class APIMAlertSummaryWidget extends Widget {
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleApiAlerts);
         } else {
-            this.setState({ limit, alertData: [] });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id + ALERT_CALLBACK);
+            this.setState({ limit, alertData: [], inProgress: false });
         }
     }
 

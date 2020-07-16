@@ -164,7 +164,15 @@ class ErrorByAppAndAPIwidget extends Widget {
 
     componentWillUnmount() {
         const { id } = this.props;
-        super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_total');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_4xx_total');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_4xx');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_5xx_total');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_5xx');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_faulty_total');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_faulty');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_throttle');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_throttled_total');
     }
 
     /**
@@ -579,12 +587,21 @@ class ErrorByAppAndAPIwidget extends Widget {
     handleLimitChange(event) {
         const limit = (event.target.value).replace('-', '').split('.')[0];
         if (limit) {
-            this.setState({ selectedLimit: limit }, this.loadAllErrors);
+            this.setState({ selectedLimit: limit, loading: true }, this.loadAllErrors);
         } else {
-            this.setState({selectedLimit: limit, data: []});
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id + '_total');
+            super.getWidgetChannelManager().unsubscribeWidget(id + '_4xx_total');
+            super.getWidgetChannelManager().unsubscribeWidget(id + '_4xx');
+            super.getWidgetChannelManager().unsubscribeWidget(id + '_5xx_total');
+            super.getWidgetChannelManager().unsubscribeWidget(id + '_5xx');
+            super.getWidgetChannelManager().unsubscribeWidget(id + '_faulty_total');
+            super.getWidgetChannelManager().unsubscribeWidget(id + '_faulty');
+            super.getWidgetChannelManager().unsubscribeWidget(id + '_throttle');
+            super.getWidgetChannelManager().unsubscribeWidget(id + '_throttled_total');
+            this.setState({ selectedLimit: limit, data: [], loading: false });
         }
     }
-    //
 
     publishSelectedData(message) {
         super.publish(message);
