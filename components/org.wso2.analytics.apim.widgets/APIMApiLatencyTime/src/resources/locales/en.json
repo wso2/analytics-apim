@@ -3,6 +3,7 @@
   "nodata.error.heading": "No Data Available !",
   "config.error.body": "Cannot fetch provider configuration for APIM Api Latency Time widget",
   "config.error.heading": "Configuration Error !",
+  "limit": "Limit",
   "resources.label": "Resources",
   "widget.heading": "API LATENCY TIME"
 }
