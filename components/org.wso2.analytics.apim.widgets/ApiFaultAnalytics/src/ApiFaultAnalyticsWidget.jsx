@@ -48,6 +48,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'apiFault';
+
 /**
  * Language
  * @type {string}
@@ -104,6 +106,7 @@ class ApiFaultAnalyticsWidget extends Widget {
             inProgress: true,
             dimension: null,
             selectedOptions: [],
+            limit: 5,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -117,6 +120,7 @@ class ApiFaultAnalyticsWidget extends Widget {
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
     }
 
     componentWillMount() {
@@ -170,6 +174,19 @@ class ApiFaultAnalyticsWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof ApiFaultAnalyticsWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Retrieve params from publisher - DateTimeRange
      * @memberof ApiFaultAnalyticsWidget
      * */
@@ -210,11 +227,11 @@ class ApiFaultAnalyticsWidget extends Widget {
      * */
     assembleMainQuery() {
         const {
-            providerConfig, timeFrom, timeTo, perValue, dimension, selectedOptions,
+            providerConfig, timeFrom, timeTo, perValue, dimension, selectedOptions, limit,
         } = this.state;
         const { widgetID: widgetName, id } = this.props;
         if (dimension && timeFrom) {
-            if (selectedOptions && selectedOptions.length > 0) {
+            if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
                 const filterCondition = '(apiName==\'' + selectedOptions[0].name + '\' AND apiVersion==\''
                     + selectedOptions[0].version + '\' AND apiCreator==\'' + selectedOptions[0].provider + '\')';
 
@@ -225,6 +242,7 @@ class ApiFaultAnalyticsWidget extends Widget {
                     '{{timeTo}}': timeTo,
                     '{{per}}': perValue,
                     '{{filterCondition}}': filterCondition,
+                    '{{limit}}': limit,
                 };
                 super.getWidgetChannelManager()
                     .subscribeWidget(id, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -267,13 +285,42 @@ class ApiFaultAnalyticsWidget extends Widget {
     }
 
     /**
+     * Updates query param values
+     * @param {number} limit - data limitation value
+     * @memberof ApiFaultAnalyticsWidget
+     * */
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
+    }
+
+    /**
+     * Handle Limit select Change
+     * @param {Event} event - listened event
+     * @memberof ApiFaultAnalyticsWidget
+     * */
+    handleLimitChange(event) {
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit }, this.assembleMainQuery);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({
+                limit, faultData: [], tableData: [], inProgress: false,
+            });
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the Api Fault Analytics widget
      * @memberof ApiFaultAnalyticsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, width, inProgress, faultData,
+            localeMessages, faultyProviderConfig, height, width, inProgress, faultData, limit,
             tableData,
         } = this.state;
         const {
@@ -290,6 +337,7 @@ class ApiFaultAnalyticsWidget extends Widget {
             tableData,
             inProgress,
             username,
+            limit,
         };
 
         return (
@@ -321,6 +369,7 @@ class ApiFaultAnalyticsWidget extends Widget {
                             ) : (
                                 <ApiFaultAnalytics
                                     {...faultProps}
+                                    handleLimitChange={this.handleLimitChange}
                                 />
                             )
                         }
