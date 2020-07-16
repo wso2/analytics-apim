@@ -22,6 +22,9 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
 import APIMSubscriptionsData from './APIMSubscriptionsData';
 
 /**
@@ -31,7 +34,8 @@ import APIMSubscriptionsData from './APIMSubscriptionsData';
  */
 export default function APIMSubscriptionsAnalytics(props) {
     const {
-        themeName, height, width, chartData, tableData, inProgress, handleOnClickAPI, username,
+        themeName, height, width, chartData, tableData, inProgress, handleOnClickAPI, username, limit,
+        handleLimitChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -56,6 +60,21 @@ export default function APIMSubscriptionsAnalytics(props) {
             paddingBottom: '10px',
             marginTop: 0,
         },
+        formWrapper: {
+            paddingBottom: 20,
+        },
+        formControl: {
+            marginLeft: 10,
+            marginTop: 10,
+            width: '10%',
+        },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
+        },
     };
     const subDataProps = {
         themeName, chartData, tableData, width, username,
@@ -77,6 +96,24 @@ export default function APIMSubscriptionsAnalytics(props) {
                     <div style={styles.heading}>
                         <FormattedMessage id='widget.heading' defaultMessage='SUBSCRIPTIONS OVER TIME' />
                     </div>
+                </div>
+                <div style={styles.formWrapper}>
+                    <form noValidate autoComplete='off'>
+                        <FormControl style={styles.formControl}>
+                            <InputLabel
+                                shrink
+                                style={styles.formLabel}
+                            >
+                                <FormattedMessage id='limit' defaultMessage='Limit' />
+                            </InputLabel>
+                            <Input
+                                value={limit}
+                                onChange={handleLimitChange}
+                                type='number'
+                                margin='normal'
+                            />
+                        </FormControl>
+                    </form>
                 </div>
                 { inProgress
                     ? (
@@ -105,4 +142,6 @@ APIMSubscriptionsAnalytics.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     handleOnClickAPI: PropTypes.func.isRequired,
     username: PropTypes.string.isRequired,
+    handleLimitChange: PropTypes.func.isRequired,
+    limit: PropTypes.string.isRequired,
 };

@@ -91,10 +91,10 @@ function APIMSubscriptionsData(props) {
             id: 'apiversion', numeric: true, disablePadding: false, label: 'table.heading.apiversion',
         },
         {
-            id: 'appname', numeric: false, disablePadding: false, label: 'table.heading.application',
+            id: 'application', numeric: false, disablePadding: false, label: 'table.heading.application',
         },
         {
-            id: 'createdtime', numeric: false, disablePadding: false, label: 'table.heading.subscribedtime',
+            id: 'subscribedtime', numeric: false, disablePadding: false, label: 'table.heading.subscribedtime',
         },
     ];
     const strColumns = columns.map((colObj) => {

@@ -4,6 +4,7 @@
   "filter.column.menu.heading": "Column Name",
   "filter.label.title": "Filter By",
   "filter.search.placeholder": "Search Field",
+  "limit": "Limit",
   "nodata.error.body": "No matching data available for the selected options.",
   "nodata.error.heading": "No Data Available !",
   "sort.label.title": "Sort",
