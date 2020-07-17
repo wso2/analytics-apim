@@ -81,7 +81,7 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": true
+                                "header": false
                               }
                             },
                             "widgetID": "APIMApiMonthlyUsageReport"
