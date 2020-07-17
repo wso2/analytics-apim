@@ -42,6 +42,9 @@ const DIMENSION_PROVIDER = 'api provider';
 const darkTheme = createMuiTheme({
     palette: {
         type: 'dark',
+        action: {
+            disabled: 'dark',
+        },
     },
     typography: {
         useNextVariants: true,
@@ -51,6 +54,9 @@ const darkTheme = createMuiTheme({
 const lightTheme = createMuiTheme({
     palette: {
         type: 'light',
+        action: {
+            disabled: 'light',
+        },
     },
     typography: {
         useNextVariants: true,
@@ -688,7 +694,6 @@ class DimensionSelectorWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        button.color = muiTheme.palette.textColor;
 
         if (inProgress) {
             return (
