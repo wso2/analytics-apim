@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "dependencies": {
-        "react-vizgrammar": "^0.8.6"
+        "react-vizgrammar": "^0.8.7"
     },
     "scripts": {
         "build": "../node_modules/.bin/webpack -p",

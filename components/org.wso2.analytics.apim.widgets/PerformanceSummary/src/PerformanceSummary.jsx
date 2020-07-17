@@ -78,6 +78,7 @@ export default function PerformanceSummary(props) {
         disableVerticalGrid: true,
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
+        ignoreYaxisDecimalPoints: true,
         style: {
             xAxisTickAngle: -8,
             tickLabelColor: '#a7b0c8',
