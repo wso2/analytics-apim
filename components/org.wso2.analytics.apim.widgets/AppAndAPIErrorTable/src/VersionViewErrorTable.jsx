@@ -30,7 +30,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import TablePagination from '@material-ui/core/TablePagination';
 import MenuItem from '@material-ui/core/MenuItem';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { ViewTypeEnum, ValueFormatType } from './Constants';
 
 const styles = theme => ({
@@ -134,17 +134,22 @@ class VersionViewErrorTable extends React.Component {
         this.handleExpandClick = this.getTableHeadRowsForAPI.bind(this);
         this.handleColumnSelect = this.getTableHeadRowsForAPI.bind(this);
         this.handleQueryChange = this.getTableHeadRowsForAPI.bind(this);
+        this.getColumnList = this.getColumnList.bind(this);
+        this.summarizeData = this.summarizeData.bind(this);
     }
 
     getTableHeadRowsForAPI() {
         const {
-            viewType, valueFormatType, classes, data, handleDrillDownClick,
+            viewType, classes, data, handleDrillDownClick, username, intl,
         } = this.props;
         const {
             query, expanded, filterColumn, rowsPerPage, page,
         } = this.state;
         this.state.tableData = data;
         const { tableData } = this.state;
+        const summarizedData = this.summarizeData();
+        const strColumns = this.getColumnList();
+        const title = intl.formatMessage({ id: 'widget.heading', defaultMessage: 'ERROR SUMMARY' });
         const menuItems = [
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
@@ -161,6 +166,10 @@ class VersionViewErrorTable extends React.Component {
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
                     menuItems={menuItems}
+                    title={title}
+                    data={summarizedData}
+                    strColumns={strColumns}
+                    username={username}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-label='simple table'>
@@ -170,7 +179,7 @@ class VersionViewErrorTable extends React.Component {
                                     <TableCell rowSpan={2} className={classes.headerCell}>
                                         <FormattedMessage id='table.column.app' defaultMessage='Application' />
                                     </TableCell>
-                                ): '' }
+                                ) : '' }
                                 <TableCell rowSpan={2} className={classes.headerCell}>
                                     <FormattedMessage id='table.column.version' defaultMessage='Version' />
                                 </TableCell>
@@ -201,53 +210,35 @@ class VersionViewErrorTable extends React.Component {
                                     <FormattedMessage id='table.column.5xx' defaultMessage='5xx' />
                                 </TableCell>
                                 <TableCell className={classes.headerCell}>
-                                    <FormattedMessage id='table.column.totalErrors' defaultMessage='Other' />
+                                    <FormattedMessage id='table.column.other' defaultMessage='Other' />
                                 </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row) => {
-                                    const {
-                                        applicationName, applicationOwner, apiVersion, responseCount,
-                                    } = row;
-                                    let {
-                                        _2xx, _4xx, _5xx, faultCount, throttledCount,
-                                    } = row;
-                                    const appName = applicationName + ' ( ' + applicationOwner + ' )';
-                                    let other = responseCount - (_2xx + _4xx + _5xx);
-                                    const totalRequests = responseCount + faultCount + throttledCount;
-                                    if (valueFormatType === ValueFormatType.PERCENT) {
-                                        _2xx = ((_2xx * 100) / totalRequests).toFixed(2) + ' %';
-                                        _4xx = ((_4xx * 100) / totalRequests).toFixed(2) + ' %';
-                                        _5xx = ((_5xx * 100) / totalRequests).toFixed(2) + ' %';
-                                        faultCount = ((faultCount * 100) / totalRequests).toFixed(2) + ' %';
-                                        throttledCount = ((throttledCount * 100) / totalRequests).toFixed(2) + ' %';
-                                        other = ((other * 100) / totalRequests).toFixed(2) + ' %';
-                                    }
-                                    return (
-                                        <TableRow
-                                            hover
-                                            key={apiVersion}
-                                            onClick={() => handleDrillDownClick(apiVersion)}
-                                            className={classes.hover}
-                                        >
-                                            { viewType === ViewTypeEnum.APP ? (
-                                                <TableCell>
-                                                    {appName}
-                                                </TableCell>
-                                            ) : '' }
-                                            <TableCell>{apiVersion}</TableCell>
-                                            <TableCell>{_2xx}</TableCell>
-                                            <TableCell>{_4xx}</TableCell>
-                                            <TableCell>{_5xx}</TableCell>
-                                            <TableCell>{other}</TableCell>
-                                            <TableCell>{faultCount}</TableCell>
-                                            <TableCell>{throttledCount}</TableCell>
-                                            <TableCell>{totalRequests}</TableCell>
-                                        </TableRow>
-                                    );
-                                })}
+                            {summarizedData.map((row) => {
+                                return (
+                                    <TableRow
+                                        hover
+                                        key={row.apiVersion}
+                                        onClick={() => handleDrillDownClick(row.apiVersion)}
+                                        className={classes.hover}
+                                    >
+                                        { viewType === ViewTypeEnum.APP ? (
+                                            <TableCell>
+                                                {row.appName}
+                                            </TableCell>
+                                        ) : '' }
+                                        <TableCell>{row.apiVersion}</TableCell>
+                                        <TableCell>{row._2xx}</TableCell>
+                                        <TableCell>{row._4xx}</TableCell>
+                                        <TableCell>{row._5xx}</TableCell>
+                                        <TableCell>{row.other}</TableCell>
+                                        <TableCell>{row.faultCount}</TableCell>
+                                        <TableCell>{row.throttledCount}</TableCell>
+                                        <TableCell>{row.totalRequests}</TableCell>
+                                    </TableRow>
+                                );
+                            })}
                         </TableBody>
                     </Table>
                 </div>
@@ -281,6 +272,26 @@ class VersionViewErrorTable extends React.Component {
         );
     }
 
+    getColumnList = () => {
+        const { viewType, intl } = this.props;
+        const columns = [
+            { id: 'table.column.version', label: 'Version' },
+            { id: 'table.column.2xx', label: '2xx' },
+            { id: 'table.column.4xx', label: '4xx' },
+            { id: 'table.column.5xx', label: '5xx' },
+            { id: 'table.column.other', label: 'Other' },
+            { id: 'table.column.totalFaulty', label: 'Faulty ' },
+            { id: 'table.column.totalThrottled', label: 'Throttled' },
+            { id: 'table.column.totalRequests', label: 'Total Requests' }];
+
+        if (viewType === ViewTypeEnum.APP) {
+            columns.unshift({ id: 'table.column.app', label: 'Application' });
+        }
+        return columns.map((colObj) => {
+            return intl.formatMessage({ id: colObj.id, defaultMessage: colObj.label });
+        });
+    };
+
     handleChangePage = (event, page) => {
         this.setState({ page });
     };
@@ -301,6 +312,46 @@ class VersionViewErrorTable extends React.Component {
         this.setState({ query: event.target.value });
     };
 
+    summarizeData = () => {
+        const { viewType, valueFormatType, data } = this.props;
+        const { rowsPerPage, page } = this.state;
+
+        return data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((row) => {
+                const {
+                    applicationName, applicationOwner, apiVersion, responseCount,
+                } = row;
+                let {
+                    _2xx, _4xx, _5xx, faultCount, throttledCount,
+                } = row;
+                const appName = applicationName + ' ( ' + applicationOwner + ' )';
+                let other = responseCount - (_2xx + _4xx + _5xx);
+                const totalRequests = responseCount + faultCount + throttledCount;
+                if (valueFormatType === ValueFormatType.PERCENT) {
+                    _2xx = ((_2xx * 100) / totalRequests).toFixed(2) + ' %';
+                    _4xx = ((_4xx * 100) / totalRequests).toFixed(2) + ' %';
+                    _5xx = ((_5xx * 100) / totalRequests).toFixed(2) + ' %';
+                    faultCount = ((faultCount * 100) / totalRequests).toFixed(2) + ' %';
+                    throttledCount = ((throttledCount * 100) / totalRequests).toFixed(2) + ' %';
+                    other = ((other * 100) / totalRequests).toFixed(2) + ' %';
+                }
+                const dataUnit = {};
+                if (viewType === ViewTypeEnum.APP) {
+                    dataUnit.appName = appName;
+                }
+                dataUnit.apiVersion = apiVersion;
+                dataUnit._2xx = _2xx;
+                dataUnit._4xx = _4xx;
+                dataUnit._5xx = _5xx;
+                dataUnit.other = other;
+                dataUnit.faultCount = faultCount;
+                dataUnit.throttledCount = throttledCount;
+                dataUnit.totalRequests = totalRequests;
+
+                return dataUnit;
+            });
+    };
+
     render() {
         return (
             <div component={Paper}>
@@ -317,6 +368,8 @@ VersionViewErrorTable.propTypes = {
     valueFormatType: PropTypes.string.isRequired,
     data: PropTypes.instanceOf(Object).isRequired,
     handleDrillDownClick: PropTypes.instanceOf(Object).isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(VersionViewErrorTable);
+export default withStyles(styles)(injectIntl(VersionViewErrorTable));

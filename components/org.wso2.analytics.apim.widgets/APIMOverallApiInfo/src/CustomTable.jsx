@@ -20,7 +20,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Table from '@material-ui/core/Table';
@@ -199,12 +199,29 @@ class CustomTable extends React.Component {
         this.setState({ query: event.target.value });
     };
 
+    getColumnList = () => {
+        const { intl } = this.props;
+        const columns = [
+            { id: 'table.heading.apiname', label: 'API NAME' },
+            { id: 'table.heading.error2xx', label: '2xx' },
+            { id: 'table.heading.error4xx', label: '4xx' },
+            { id: 'table.heading.error5xx', label: '5xx' },
+            { id: 'table.heading.errorFaulty', label: 'FAULTY HITS' },
+            { id: 'table.heading.errorThrottled', label: 'THROTTLED HIT' }];
+
+        return columns.map((colObj) => {
+            return intl.formatMessage({ id: colObj.id, defaultMessage: colObj.label });
+        });
+    };
+
     /**
      * Render the Custom Table
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes, loadingApiInfo } = this.props;
+        const {
+            data, classes, loadingApiInfo, username, intl,
+        } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -214,7 +231,12 @@ class CustomTable extends React.Component {
             : data;
         const { tableData } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
-
+        let sortedData = [];
+        if (tableData.length > 0) {
+            sortedData = stableSort(tableData, getSorting(order, orderBy));
+        }
+        const title = intl.formatMessage({ id: 'widget.heading', defaultMessage: 'API INFO SUMMARY' });
+        const strColumns = this.getColumnList();
         const menuItems = [
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
@@ -248,6 +270,10 @@ class CustomTable extends React.Component {
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
                     menuItems={menuItems}
+                    title={title}
+                    data={sortedData}
+                    strColumns={strColumns}
+                    username={username}
                 />
                 { loadingApiInfo ? (
                     <div className={classes.inProgress} style={{ height: rowsPerPage * 49 }}>
@@ -265,8 +291,7 @@ class CustomTable extends React.Component {
                                             onRequestSort={this.handleRequestSort}
                                         />
                                         <TableBody>
-                                            {stableSort(tableData, getSorting(order, orderBy))
-                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                                 .map((n) => {
                                                     return (
                                                         <TableRow
@@ -351,6 +376,8 @@ CustomTable.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
     data: PropTypes.instanceOf(Object).isRequired,
     loadingApiInfo: PropTypes.bool.isRequired,
+    username: PropTypes.string.isRequired,
+    intl: intlShape.isRequired,
 };
 
-export default withStyles(styles)(CustomTable);
+export default withStyles(styles)(injectIntl(CustomTable));
