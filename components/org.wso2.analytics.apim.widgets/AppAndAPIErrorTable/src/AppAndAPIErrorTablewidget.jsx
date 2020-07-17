@@ -774,6 +774,7 @@ class AppAndAPIErrorTablewidget extends Widget {
         } = this.state;
         const { muiTheme, height } = this.props;
         const themeName = muiTheme.name;
+        const { username } = super.getCurrentUser();
 
         const styles = {
             // Insert styles Here
@@ -970,6 +971,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                                         valueFormatType={valueFormatType}
                                         drillDownType={drillDownType}
                                         handleDrillDownClick={this.handleDrillDownClick}
+                                        username={username}
                                     />
                                 )
                                     : (
