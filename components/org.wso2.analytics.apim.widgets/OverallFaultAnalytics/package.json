@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "dependencies": {
-        "react-vizgrammar": "^0.8.6",
+        "react-vizgrammar": "git://github.com/pahans/react-vizgrammar.git#bump-victory-versions",
         "moment": "^2.24.0"
     },
     "scripts": {
