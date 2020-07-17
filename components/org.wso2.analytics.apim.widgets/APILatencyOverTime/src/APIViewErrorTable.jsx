@@ -39,6 +39,9 @@ import {
     VictoryAxis,
     VictoryTooltip,
     VictoryLabel,
+    VictoryGroup,
+    VictoryScatter,
+    VictoryContainer,
 } from 'victory';
 import Moment from 'moment';
 import { FormattedMessage } from 'react-intl';
@@ -60,6 +63,15 @@ const styles = theme => ({
         margin: 2,
     },
 });
+
+const chartStyle = {
+    hideAxis: {
+        grid: { stroke: 'transparent' },
+        axis: { stroke: 'transparent' },
+        ticks: { stroke: 'transparent' },
+        tickLabels: { fill: 'transparent' },
+    },
+};
 
 const colorScale = ['tomato', 'magenta', 'gold', 'green', 'blue', 'red'];
 
@@ -98,43 +110,70 @@ class APIViewErrorTable extends React.Component {
     }
 
     getPieChartForAPI() {
-        const timeFormat = 'Y-m-d HH:MM:SS';
-        const { data } = this.props;
+        const { perValue } = this.props;
+        let { data } = this.props;
+        const timeFormat = 'MMM DD, YYYY hh:mm:ss A';
+        let unit;
+        let label;
+        if (perValue === 'day') {
+            unit = 'days';
+            label = 'Time (Day)';
+        } else if (perValue === 'hour') {
+            unit = 'hour';
+            label = 'Time (Hour)';
+        } else if (perValue === 'minute') {
+            unit = 'minutes';
+            label = 'Time (Minute)';
+        } else if (perValue === 'second') {
+            unit = 'seconds';
+            label = 'Time (Second)';
+        } else if (perValue === 'month') {
+            unit = 'months';
+            label = 'Time (Month)';
+        } else if (perValue === 'year') {
+            unit = 'years';
+            label = 'Time (Year)';
+        } else {
+            label = '';
+        }
+        data = data.map((item) => {
+            item.from = Moment(item.AGG_TIMESTAMP).format(timeFormat);
+            item.to = Moment(item.AGG_TIMESTAMP).add(1, unit).format(timeFormat);
+            item.miscellaneous = item.responseTime - (item.backendLatency + item.securityLatency
+                + item.throttlingLatency + item.requestMedLat + item.responseMedLat);
+            return item;
+        });
+
         const {
             miscellaneousSelected, backendSelected, securitySelected, throttleSelected,
             requestMedSelected, responseMedSelected,
         } = this.state;
-        const strokeWidth = 1;
         return (
             <div>
                 <VictoryChart
                     responsive={false}
                     domainPadding={{ x: [20, 20] }}
                     padding={{
-                        top: 50, bottom: 50, right: 50, left: 50,
+                        top: 50, bottom: 100, right: 50, left: 50,
                     }}
                     theme={VictoryTheme.material}
                     height={400}
                     width={800}
-                    containerComponent={
-                        <VictoryVoronoiContainer />
-                    }
-                    // style={{ parent: { maxWidth: 800 } }}
-                    // scale={{ x: 20 }}
                 >
                     <VictoryAxis
-                        label={() => 'Time'.toUpperCase()}
+                        label={label.toUpperCase()}
                         tickFormat={(time) => {
                             const moment = Moment(Number(time));
                             return moment.format(timeFormat);
                         }}
+                        tickCount={10}
                         tickLabelComponent={<VictoryLabel angle={45} />}
                         style={{
                             axis: { stroke: '#756f6a' },
-                            axisLabel: { fontSize: 15, padding: 30 },
+                            axisLabel: { fontSize: 15 },
                             grid: { stroke: () => 0 },
                             ticks: { stroke: 'grey', size: 5 },
-                            tickLabels: { fontSize: 9, padding: 5 },
+                            tickLabels: { fontSize: 9, textAnchor: 'start' },
                         }}
                     />
                     <VictoryAxis
@@ -143,107 +182,24 @@ class APIViewErrorTable extends React.Component {
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
-                            grid: { stroke: () => 0 },
+                            grid: { strokeDasharray: '10, 5', strokeWidth: 0.5, strokeOpacity: 0.3 },
                             ticks: { stroke: 'grey', size: 5 },
                             tickLabels: { fontSize: 9, padding: 5 },
                         }}
                     />
                     <VictoryStack>
-                        { backendSelected && (
-                            <VictoryLine
-                                style={{ data: { stroke: colorScale[1], strokeWidth } }}
-                                alignment='start'
-                                barRatio={0.5}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Backend latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.backendLatency],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y={d => d.backendLatency}
-                                labelComponent={<VictoryTooltip />}
-                            />
-                        ) }
-                        { securitySelected && (
-                            <VictoryLine
-                                style={{ data: { stroke: colorScale[2], strokeWidth } }}
-                                alignment='start'
-                                barRatio={0.5}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Security latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.securityLatency],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y={d => d.securityLatency}
-                                labelComponent={<VictoryTooltip />}
-                            />
-                        ) }
-                        { throttleSelected && (
-                            <VictoryLine
-                                style={{ data: { stroke: colorScale[3], strokeWidth } }}
-                                alignment='start'
-                                barRatio={0.5}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Throttling latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.throttlingLatency],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y={d => d.throttlingLatency}
-                                labelComponent={<VictoryTooltip />}
-                            />
-                        ) }
-                        { requestMedSelected && (
-                            <VictoryLine
-                                style={{ data: { stroke: colorScale[4], strokeWidth } }}
-                                alignment='start'
-                                barRatio={0.5}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Request Mediation latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.requestMedLat],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y={d => d.requestMedLat}
-                                labelComponent={<VictoryTooltip />}
-                            />
-                        ) }
-                        { responseMedSelected && (
-                            <VictoryLine
-                                style={{ data: { stroke: colorScale[5], strokeWidth } }}
-                                alignment='start'
-                                barRatio={0.5}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Response Mediation latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        row.responseMedLat],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y={d => d.responseMedLat}
-                                labelComponent={<VictoryTooltip />}
-                            />
-                        ) }
-                        { miscellaneousSelected && (
-                            <VictoryLine
-                                style={{ data: { stroke: colorScale[0], strokeWidth } }}
-                                alignment='start'
-                                barRatio={0.5}
-                                data={data.map(row => ({
-                                    ...row,
-                                    label: ['Miscellaneous latency', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                        (row.responseTime - row.backendLatency - row.securityLatency
-                                            - row.throttlingLatency - row.requestMedLat - row.responseMedLat)
-                                            .toString(10)],
-                                }))}
-                                x={d => d.AGG_TIMESTAMP + ''}
-                                y={
-                                    d => d.responseTime - d.backendLatency - d.securityLatency - d.throttlingLatency
-                                        - d.requestMedLat - d.responseMedLat
-                                }
-                                labelComponent={<VictoryTooltip />}
-                            />
-                        ) }
+                        {this.renderLineAndScatter(backendSelected, data, colorScale[0], 'backendLatency',
+                            'Backend latency')}
+                        {this.renderLineAndScatter(securitySelected, data, colorScale[1], 'securityLatency',
+                            'Security latency')}
+                        {this.renderLineAndScatter(throttleSelected, data, colorScale[2], 'throttlingLatency',
+                            'Throttling latency')}
+                        {this.renderLineAndScatter(requestMedSelected, data, colorScale[3], 'requestMedLat',
+                            'Request Mediation latency')}
+                        {this.renderLineAndScatter(responseMedSelected, data, colorScale[4], 'responseMedLat',
+                            'Response Mediation latency')}
+                        {this.renderLineAndScatter(miscellaneousSelected, data, colorScale[5], 'miscellaneous',
+                            'Miscellaneous latency')}
                     </VictoryStack>
                 </VictoryChart>
 
@@ -287,6 +243,39 @@ class APIViewErrorTable extends React.Component {
         });
     }
 
+    renderLineAndScatter(enabled, data, color, y, label) {
+        const barRatio = 0.2;
+        const strokeWidth = 1;
+        if (!enabled) {
+            return null;
+        }
+        return (
+            <VictoryChart>
+                <VictoryAxis style={chartStyle.hideAxis} />
+                <VictoryAxis style={chartStyle.hideAxis} />
+                <VictoryLine
+                    style={{ data: { stroke: color, strokeWidth } }}
+                    alignment='start'
+                    barRatio={barRatio}
+                    data={data}
+                    x={d => d.AGG_TIMESTAMP}
+                    y={y}
+                />
+                <VictoryScatter
+                    style={{ data: { fill: color } }}
+                    size={3}
+                    data={data.map(row => ({
+                        ...row,
+                        label: [label, 'From: ' + row.from, 'To: ' + row.to,
+                            'Latency: ' + row[y]],
+                    }))}
+                    x={d => d.AGG_TIMESTAMP}
+                    y={y}
+                    labelComponent={<VictoryTooltip />}
+                />
+            </VictoryChart>
+        );
+    }
 
     render() {
         const { data } = this.props;
@@ -299,37 +288,37 @@ class APIViewErrorTable extends React.Component {
                 selected: backendSelected,
                 name: 'Backend Latency',
                 onChange: this.handleBackendSelectChange,
-                color: colorScale[1],
+                color: colorScale[0],
             },
             {
                 selected: securitySelected,
                 name: 'Security Latency',
                 onChange: this.handleSecuritySelectChange,
-                color: colorScale[2],
+                color: colorScale[1],
             },
             {
                 selected: throttleSelected,
                 name: 'Throttling Latency',
                 onChange: this.handleThrottlingSelectChange,
-                color: colorScale[3],
+                color: colorScale[2],
             },
             {
                 selected: requestMedSelected,
                 name: 'Request Mediation Latency',
                 onChange: this.handleRequestMedSelectChange,
-                color: colorScale[4],
+                color: colorScale[3],
             },
             {
                 selected: responseMedSelected,
                 name: 'Response Mediation Latency',
                 onChange: this.handleResponseMedSelectChange,
-                color: colorScale[5],
+                color: colorScale[4],
             },
             {
                 selected: miscellaneousSelected,
                 name: 'Miscellaneous',
                 onChange: this.handleMiscellaneousSelectChange,
-                color: colorScale[0],
+                color: colorScale[5],
             },
         ];
 

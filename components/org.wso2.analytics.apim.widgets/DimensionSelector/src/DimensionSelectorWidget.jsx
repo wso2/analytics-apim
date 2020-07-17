@@ -420,7 +420,11 @@ class DimensionSelectorWidget extends Widget {
 
         if (data && data.length > 0) {
             apis = data.map(
-                (opt) => { return { name: opt[0], version: opt[1], provider: opt[2] }; },
+                (opt) => {
+                    return {
+                        name: opt[0], version: opt[1], provider: opt[2], apiType: opt[3],
+                    };
+                },
             );
         }
         this.handleApiListReceived(apis);
