@@ -213,7 +213,7 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": true,
+                                "header": false,
                                 "defaultValue": "3 Months",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "10"

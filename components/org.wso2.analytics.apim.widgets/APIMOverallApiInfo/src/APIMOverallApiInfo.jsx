@@ -33,7 +33,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiInfo(props) {
     const {
-        height, apiInfoData, inProgress, themeName,
+        height, apiInfoData, inProgress, themeName, username,
     } = props;
     const styles = {
         headingWrapper: {
@@ -132,7 +132,11 @@ export default function APIMOverallApiInfo(props) {
                                 ) : (
                                     <div>
                                         <div style={{ marginTop: '2%' }}>
-                                            <CustomTable data={apiInfoData} loadingApiInfo={inProgress} />
+                                            <CustomTable
+                                                data={apiInfoData}
+                                                loadingApiInfo={inProgress}
+                                                username={username}
+                                            />
                                         </div>
                                     </div>
                                 )
@@ -151,4 +155,5 @@ APIMOverallApiInfo.propTypes = {
     loadingApiInfo: PropTypes.instanceOf(Object).isRequired,
     inProgress: PropTypes.bool.isRequired,
     themeName: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
 };

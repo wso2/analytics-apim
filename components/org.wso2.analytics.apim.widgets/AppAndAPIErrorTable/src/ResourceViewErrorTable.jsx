@@ -30,7 +30,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { CustomTableToolbar } from '@analytics-apim/common-lib';
 import TablePagination from '@material-ui/core/TablePagination';
 import MenuItem from '@material-ui/core/MenuItem';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { ViewTypeEnum, ValueFormatType } from './Constants';
 
 const styles = theme => ({
@@ -134,17 +134,23 @@ class ResourceViewErrorTable extends React.Component {
         this.handleExpandClick = this.getTableHeadRowsForAPI.bind(this);
         this.handleColumnSelect = this.getTableHeadRowsForAPI.bind(this);
         this.handleQueryChange = this.getTableHeadRowsForAPI.bind(this);
+        this.getColumnList = this.getColumnList.bind(this);
+        this.summarizeData = this.summarizeData.bind(this);
+        this.processTableData = this.processTableData.bind(this);
     }
 
     getTableHeadRowsForAPI() {
         const {
-            viewType, valueFormatType, classes, data, handleDrillDownClick,
+            viewType, classes, data, handleDrillDownClick, username, intl,
         } = this.props;
         const {
             query, expanded, filterColumn, rowsPerPage, page,
         } = this.state;
         this.state.tableData = data;
         const { tableData } = this.state;
+        const summarizedData = this.summarizeData();
+        const strColumns = this.getColumnList();
+        const title = intl.formatMessage({ id: 'widget.heading', defaultMessage: 'ERROR SUMMARY' });
         const menuItems = [
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
@@ -161,6 +167,10 @@ class ResourceViewErrorTable extends React.Component {
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
                     menuItems={menuItems}
+                    title={title}
+                    data={summarizedData}
+                    strColumns={strColumns}
+                    username={username}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={styles.table} aria-label='simple table'>
@@ -201,7 +211,7 @@ class ResourceViewErrorTable extends React.Component {
                                     <FormattedMessage id='table.column.5xx' defaultMessage='5xx' />
                                 </TableCell>
                                 <TableCell className={classes.headerCell}>
-                                    <FormattedMessage id='table.column.totalErrors' defaultMessage='Other' />
+                                    <FormattedMessage id='table.column.other' defaultMessage='Other' />
                                 </TableCell>
                             </TableRow>
                         </TableHead>
@@ -210,23 +220,8 @@ class ResourceViewErrorTable extends React.Component {
                                 .map((row) => {
                                     const {
                                         applicationName, applicationOwner, apiResourceTemplate, apiMethod,
-                                        responseCount,
                                     } = row;
-                                    let {
-                                        _2xx, _4xx, _5xx, faultCount, throttledCount,
-                                    } = row;
-                                    const appName = applicationName + ' ( ' + applicationOwner + ' )';
-                                    const operation = apiResourceTemplate + ' ( ' + apiMethod + ' )';
-                                    let other = responseCount - (_2xx + _4xx + _5xx);
-                                    const totalRequests = responseCount + faultCount + throttledCount;
-                                    if (valueFormatType === ValueFormatType.PERCENT) {
-                                        _2xx = ((_2xx * 100) / totalRequests).toFixed(2) + ' %';
-                                        _4xx = ((_4xx * 100) / totalRequests).toFixed(2) + ' %';
-                                        _5xx = ((_5xx * 100) / totalRequests).toFixed(2) + ' %';
-                                        faultCount = ((faultCount * 100) / totalRequests).toFixed(2) + ' %';
-                                        throttledCount = ((throttledCount * 100) / totalRequests).toFixed(2) + ' %';
-                                        other = ((other * 100) / totalRequests).toFixed(2) + ' %';
-                                    }
+                                    const rowSummary = this.processTableData(row);
                                     return (
                                         <TableRow
                                             hover
@@ -238,17 +233,17 @@ class ResourceViewErrorTable extends React.Component {
                                         >
                                             { viewType === ViewTypeEnum.APP ? (
                                                 <TableCell>
-                                                    {appName}
+                                                    {rowSummary.appName}
                                                 </TableCell>
                                             ) : '' }
-                                            <TableCell>{operation}</TableCell>
-                                            <TableCell>{_2xx}</TableCell>
-                                            <TableCell>{_4xx}</TableCell>
-                                            <TableCell>{_5xx}</TableCell>
-                                            <TableCell>{other}</TableCell>
-                                            <TableCell>{faultCount}</TableCell>
-                                            <TableCell>{throttledCount}</TableCell>
-                                            <TableCell>{totalRequests}</TableCell>
+                                            <TableCell>{rowSummary.operation}</TableCell>
+                                            <TableCell>{rowSummary._2xx}</TableCell>
+                                            <TableCell>{rowSummary._4xx}</TableCell>
+                                            <TableCell>{rowSummary._5xx}</TableCell>
+                                            <TableCell>{rowSummary.other}</TableCell>
+                                            <TableCell>{rowSummary.faultCount}</TableCell>
+                                            <TableCell>{rowSummary.throttledCount}</TableCell>
+                                            <TableCell>{rowSummary.totalRequests}</TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -285,6 +280,26 @@ class ResourceViewErrorTable extends React.Component {
         );
     }
 
+    getColumnList = () => {
+        const { viewType, intl } = this.props;
+        const columns = [
+            { id: 'table.column.operation', label: 'Operation' },
+            { id: 'table.column.2xx', label: '2xx' },
+            { id: 'table.column.4xx', label: '4xx' },
+            { id: 'table.column.5xx', label: '5xx' },
+            { id: 'table.column.other', label: 'Other' },
+            { id: 'table.column.totalFaulty', label: 'Faulty ' },
+            { id: 'table.column.totalThrottled', label: 'Throttled' },
+            { id: 'table.column.totalRequests', label: 'Total Requests' }];
+
+        if (viewType === ViewTypeEnum.APP) {
+            columns.unshift({ id: 'table.column.app', label: 'Application' });
+        }
+        return columns.map((colObj) => {
+            return intl.formatMessage({ id: colObj.id, defaultMessage: colObj.label });
+        });
+    };
+
     handleChangePage = (event, page) => {
         this.setState({ page });
     };
@@ -305,6 +320,53 @@ class ResourceViewErrorTable extends React.Component {
         this.setState({ query: event.target.value });
     };
 
+    summarizeData = () => {
+        const { data } = this.props;
+        const { rowsPerPage, page } = this.state;
+
+        return data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((row) => {
+                return this.processTableData(row);
+            });
+    };
+
+    processTableData = (row) => {
+        const { viewType, valueFormatType } = this.props;
+        const {
+            applicationName, applicationOwner, apiResourceTemplate, apiMethod,
+            responseCount,
+        } = row;
+        let {
+            _2xx, _4xx, _5xx, faultCount, throttledCount,
+        } = row;
+        const appName = applicationName + ' ( ' + applicationOwner + ' )';
+        const operation = apiResourceTemplate + ' ( ' + apiMethod + ' )';
+        let other = responseCount - (_2xx + _4xx + _5xx);
+        const totalRequests = responseCount + faultCount + throttledCount;
+        if (valueFormatType === ValueFormatType.PERCENT) {
+            _2xx = ((_2xx * 100) / totalRequests).toFixed(2) + ' %';
+            _4xx = ((_4xx * 100) / totalRequests).toFixed(2) + ' %';
+            _5xx = ((_5xx * 100) / totalRequests).toFixed(2) + ' %';
+            faultCount = ((faultCount * 100) / totalRequests).toFixed(2) + ' %';
+            throttledCount = ((throttledCount * 100) / totalRequests).toFixed(2) + ' %';
+            other = ((other * 100) / totalRequests).toFixed(2) + ' %';
+        }
+        const dataUnit = {};
+        if (viewType === ViewTypeEnum.APP) {
+            dataUnit.appName = appName;
+        }
+        dataUnit.operation = operation;
+        dataUnit._2xx = _2xx;
+        dataUnit._4xx = _4xx;
+        dataUnit._5xx = _5xx;
+        dataUnit.other = other;
+        dataUnit.faultCount = faultCount;
+        dataUnit.throttledCount = throttledCount;
+        dataUnit.totalRequests = totalRequests;
+
+        return dataUnit;
+    };
+
     render() {
         return (
             <div component={Paper}>
@@ -321,6 +383,8 @@ ResourceViewErrorTable.propTypes = {
     valueFormatType: PropTypes.string.isRequired,
     data: PropTypes.instanceOf(Object).isRequired,
     handleDrillDownClick: PropTypes.instanceOf(Object).isRequired,
+    intl: intlShape.isRequired,
+    username: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(ResourceViewErrorTable);
+export default withStyles(styles)(injectIntl(ResourceViewErrorTable));

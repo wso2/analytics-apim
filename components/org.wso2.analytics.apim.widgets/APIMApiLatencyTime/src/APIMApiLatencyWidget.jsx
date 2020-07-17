@@ -374,7 +374,7 @@ class APIMApiLatencyWidget extends Widget {
                 const isGraphQL = resourceList.length > 0
                     && !!resourceList.find(op => graphQLOps.includes(op.HTTP_METHOD));
                 if (isGraphQL) {
-                    filterSelectedOperations = [resourceList[0]];
+                    filterSelectedOperations = [];
                 } else {
                     filterSelectedOperations = resourceList[0].URL_PATTERN + '_' + resourceList[0].HTTP_METHOD;
                 }
