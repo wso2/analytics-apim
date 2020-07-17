@@ -510,7 +510,11 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         } else {
             const { value } = data;
             selectedVersion = value;
-            this.loadOperations(value);
+            const { versionList } = this.state;
+            const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
+            if (selectedVersion && selectedAPI.API_TYPE !== 'WS') {
+                this.loadOperations(selectedVersion);
+            }
         }
         this.setState({
             selectedVersion,

@@ -59,6 +59,10 @@ function CustomFormGroup(props) {
     } = props;
     const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
     const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
+    let filteredAPIList = apiList;
+    if (drillDownType === DrillDownEnum.RESOURCE) {
+        filteredAPIList = apiList.filter(item => item.API_TYPE !== 'WS');
+    }
     return (
         <div component={Paper}>
             <div>
@@ -78,10 +82,10 @@ function CustomFormGroup(props) {
 
                 <FormControl className={classes.autoSelectForm}>
                     <IntegrationReactSelect
-                        options={apiList}
+                        options={filteredAPIList}
                         value={selectedAPI}
                         onChange={handleAPIChange}
-                        disabled={apiList && apiList.length === 0}
+                        disabled={filteredAPIList && filteredAPIList.length === 0}
                         placeholder='Select API'
                         getLabel={item => item.API_NAME}
                         getValue={item => item.API_NAME}

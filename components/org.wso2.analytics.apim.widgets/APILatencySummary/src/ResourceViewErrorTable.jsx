@@ -41,6 +41,7 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import Moment from "../../APILatencyOverTime/src/APIViewErrorTable";
 
 const styles = theme => ({
     table: {
@@ -331,18 +332,13 @@ class APIViewErrorTable extends React.Component {
                                         'API: ' + row.apiName,
                                         'Version: ' + row.apiVersion,
                                         'Operation: ' + row.apiResourceTemplate + ' ( ' + row.apiMethod + ' )',
-                                        'Max Latency: ' + (row.responseTime - row.backendLatency - row.securityLatency
-                                        - row.throttlingLatency - row.requestMedLat - row.responseMedLat)
-                                            .toString(10)],
+                                        'Max Latency: ' + row.miscellaneous],
                                 }))}
                                 x={
                                     d => d.apiName + ':' + d.apiVersion + ':'
                                         + d.apiResourceTemplate + ' ( ' + d.apiMethod + ' )'
                                 }
-                                y={
-                                    d => d.responseTime - d.backendLatency - d.securityLatency - d.throttlingLatency
-                                    - d.requestMedLat - d.responseMedLat
-                                }
+                                y={d => d.miscellaneous}
                                 labelComponent={<VictoryTooltip />}
                                 groupComponent={<VictoryClipContainer clipId={0} />}
                                 events={[

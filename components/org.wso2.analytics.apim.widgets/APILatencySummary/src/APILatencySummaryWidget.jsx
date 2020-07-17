@@ -29,6 +29,7 @@ import {
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CustomFormGroup from './CustomFormGroup';
 import ResourceViewErrorTable from './ResourceViewErrorTable';
+import {DrillDownEnum} from "../../AppAndAPIErrorTable/src/Constants";
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -393,7 +394,9 @@ class APILatencySummaryWidget extends Widget {
             'max(securityLatency * 1.0) as securityLatency',
             'max(throttlingLatency * 1.0) as throttlingLatency',
             'max(requestMedLat * 1.0) as requestMedLat',
-            'max(responseMedLat * 1.0) as responseMedLat');
+            'max(responseMedLat * 1.0) as responseMedLat',
+            'max((responseTime - backendLatency - securityLatency - throttlingLatency - requestMedLat - '
+            + 'responseMedLat) * 1.0) as miscellaneous');
         groupByPhase.push('apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod');
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
     }
@@ -427,7 +430,11 @@ class APILatencySummaryWidget extends Widget {
         } else {
             const { value } = data;
             selectedVersion = value;
-            this.loadOperations(selectedVersion);
+            const { versionList } = this.state;
+            const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
+            if (selectedVersion && selectedAPI.API_TYPE !== 'WS') {
+                this.loadOperations(selectedVersion);
+            }
         }
         this.setState({
             selectedVersion,
@@ -490,6 +497,11 @@ class APILatencySummaryWidget extends Widget {
                 const {
                     apiName, apiVersion, apiResourceTemplate, apiMethod,
                 } = data;
+                const { apiList } = this.state;
+                const selectedAPI = apiList.find(item => item.API_NAME === apiName);
+                if (selectedAPI && selectedAPI.API_TYPE === 'WS') {
+                    return;
+                }
                 const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
                 const graphQL = graphQLOps.includes(apiMethod);
                 let resource;

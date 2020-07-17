@@ -289,6 +289,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             '{{selectedAPI}}': selectedAPI,
         };
         super.getWidgetChannelManager().unsubscribeWidget(id + '_loadVersions');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadOperations');
         super.getWidgetChannelManager()
             .subscribeWidget(id + '_loadVersions', widgetName, this.handleLoadVersions, dataProviderConfigs);
     }
@@ -640,9 +641,12 @@ class AppAndAPIErrorTablewidget extends Widget {
         } else {
             const { value } = data;
             selectedVersion = value;
-            const { drillDownType } = this.state;
-            if (drillDownType === DrillDownEnum.RESOURCE) {
-                this.loadOperations(selectedVersion);
+            const { drillDownType, versionList } = this.state;
+            const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
+            if (selectedVersion) {
+                if (drillDownType === DrillDownEnum.RESOURCE && selectedAPI.API_TYPE !== 'WS') {
+                    this.loadOperations(selectedVersion);
+                }
             }
         }
         this.setState({
@@ -709,6 +713,10 @@ class AppAndAPIErrorTablewidget extends Widget {
             this.loadVersions(selected);
         } else if (drillDownType === DrillDownEnum.VERSION) {
             const api = versionList.find(d => d.API_VERSION === selected);
+            if (api.API_TYPE === 'WS') {
+                console.debug('WS APIs doesn\'t support resource level drill down');
+                return;
+            }
             this.setState({
                 selectedVersion: api.API_ID, drillDownType: DrillDownEnum.RESOURCE,
             }, this.loadingDrillDownData);

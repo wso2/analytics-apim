@@ -289,7 +289,13 @@ class APIMApiLatencyWidget extends Widget {
     handleApiIdReceived(message) {
         const { data } = message;
         if (data && data.length > 0) {
-            this.setState({ apiId: data[0][0] }, this.assembleResourceQuery);
+            this.setState({ apiId: data[0][0] }, () => {
+                if (data[0][4] !== 'WS') {
+                    this.assembleResourceQuery();
+                } else {
+                    this.assembleMainQuery('WS');
+                }
+            });
         } else {
             this.setState({ inProgress: false, latencyData: [] });
         }
@@ -363,7 +369,7 @@ class APIMApiLatencyWidget extends Widget {
      * Formats the siddhi query - mainquery
      * @memberof APIMApiLatencyWidget
      * */
-    assembleMainQuery() {
+    assembleMainQuery(apiType) {
         const {
             providerConfig, timeFrom, timeTo, perValue, operationSelected, selectedOptions,
         } = this.state;
@@ -372,30 +378,34 @@ class APIMApiLatencyWidget extends Widget {
         dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
         if (selectedOptions && selectedOptions.length > 0) {
             let resources = '';
-            if (Array.isArray(operationSelected)) {
-                if (operationSelected.length > 0) {
-                    const opsString = operationSelected
-                        .map(item => item.split('_')[0])
-                        .sort()
-                        .join(',');
-                    const firstOp = operationSelected[0].split('_')[1];
-                    resources = 'apiResourceTemplate==\'' + opsString + '\' AND apiMethod==\''
-                        + firstOp + '\'';
+            if (apiType !== 'WS') {
+                if (Array.isArray(operationSelected)) {
+                    if (operationSelected.length > 0) {
+                        const opsString = operationSelected
+                            .map(item => item.split('_')[0])
+                            .sort()
+                            .join(',');
+                        const firstOp = operationSelected[0].split('_')[1];
+                        resources = 'apiResourceTemplate==\'' + opsString + '\' AND apiMethod==\''
+                            + firstOp + '\'';
+                    } else {
+                        this.setState({ inProgress: false, latencyData: [] });
+                        return;
+                    }
                 } else {
-                    this.setState({ inProgress: false, latencyData: [] });
-                    return;
+                    if (operationSelected !== -1) {
+                        const operation = operationSelected.split('_');
+                        resources = 'apiResourceTemplate==\'' + operation[0] + '\' AND apiMethod==\''
+                            + operation[1] + '\'';
+                    } else {
+                        this.setState({ inProgress: false, latencyData: [] });
+                        return;
+                    }
                 }
-            } else {
-                if (operationSelected !== -1) {
-                    const operation = operationSelected.split('_');
-                    resources = 'apiResourceTemplate==\'' + operation[0] + '\' AND apiMethod==\'' + operation[1] + '\'';
-                } else {
-                    this.setState({ inProgress: false, latencyData: [] });
-                    return;
-                }
+                resources = ' AND (' + resources + ')';
             }
             const filterCondition = '(apiName==\'' + selectedOptions[0].name + '\' AND apiVersion==\''
-                + selectedOptions[0].version + '\' AND (' + resources + '))';
+                + selectedOptions[0].version + '\'' + resources + ')';
 
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{timeFrom}}': timeFrom,
