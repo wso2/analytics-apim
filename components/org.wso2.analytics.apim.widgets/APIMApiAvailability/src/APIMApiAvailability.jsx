@@ -33,7 +33,7 @@ import ApiAvailability from './ApiAvailability';
  */
 export default function APIMApiAvailability(props) {
     const {
-        themeName, height, availableApiData, legendData, inProgress, handleOnClick,
+        themeName, height, availableApiData, legendData, inProgress, handleOnClick, colorScales,
     } = props;
     const styles = {
         headingWrapper: {
@@ -80,7 +80,7 @@ export default function APIMApiAvailability(props) {
             height,
         },
     };
-    const availabilityProps = { availableApiData, legendData };
+    const availabilityProps = { availableApiData, legendData, colorScales };
 
     return (
         <Scrollbars style={{
@@ -164,4 +164,5 @@ APIMApiAvailability.propTypes = {
     availableApiData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
     handleOnClick: PropTypes.func.isRequired,
+    colorScales: PropTypes.instanceOf(Object).isRequired,
 };

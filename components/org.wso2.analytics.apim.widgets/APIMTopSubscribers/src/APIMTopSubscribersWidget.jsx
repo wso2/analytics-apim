@@ -247,16 +247,15 @@ class APIMTopSubscribersWidget extends Widget {
      * @memberof APIMTopSubscribersWidget
      * */
     handleChange(event) {
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
-        }
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10));
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleQuery);
         } else {
-            this.setState({ limit });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, creatorData: [] });
         }
     }
 

@@ -52,7 +52,7 @@ const lightTheme = createMuiTheme({
  * Query string parameter
  * @type {string}
  */
-const queryParamKey = 'apps';
+const queryParamKey = 'appCreatedStats';
 
 /**
  * Callback suffixes
@@ -102,6 +102,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             appCreatedBy: 'All',
+            limit: 5,
             timeTo: null,
             timeFrom: null,
             sublist: [],
@@ -127,6 +128,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
         this.handleSubListReceived = this.handleSubListReceived.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.appCreatedHandleChange = this.appCreatedHandleChange.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
     }
 
     componentWillMount() {
@@ -187,7 +189,12 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * */
     loadQueryParam() {
         const { appCreatedBy } = super.getGlobalState(queryParamKey);
-        this.setState({ appCreatedBy });
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(appCreatedBy, limit);
+        this.setState({ appCreatedBy, limit });
     }
 
     /**
@@ -261,6 +268,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     handleSubListReceived(message) {
         const { data } = message;
         let { appCreatedBy } = { ...this.state };
+        const { limit } = this.state;
 
         if (data && data.length > 0) {
             let sublist = data.map((dataUnit) => {
@@ -273,7 +281,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             if (!sublist.includes(appCreatedBy)) {
                 [appCreatedBy] = sublist;
             }
-            this.setQueryParam(appCreatedBy);
+            this.setQueryParam(appCreatedBy, limit);
             this.setState({ sublist, appCreatedBy }, this.assembleMainQuery);
         } else {
             this.setState({ chartData: [], tableData: [], inProgress: false });
@@ -286,30 +294,35 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * */
     assembleMainQuery() {
         const {
-            providerConfig, timeFrom, timeTo, appCreatedBy, selectedOptions, sublist,
+            providerConfig, timeFrom, timeTo, appCreatedBy, selectedOptions, sublist, limit,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         const { config } = dataProviderConfigs.configs;
         const apiList = selectedOptions.map((opt) => { return opt.name; });
 
-        config.queryData.queryName = 'mainquery';
-        config.tableName = 'AM_APPLICATION';
-        config.incrementalColumn = 'CREATED_TIME';
-        config.queryData.queryValues = {
-            '{{subscriptionTable}}':
-                (appCreatedBy !== 'All' || apiList[0] !== 'All') ? ', AM_API api, AM_SUBSCRIPTION subc' : '',
-            '{{subscription}}': (appCreatedBy !== 'All' || apiList[0] !== 'All')
-                ? 'AND api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID' : '',
-            '{{apiName}}': apiList[0] !== 'All' ? 'AND api.API_NAME in (\'' + apiList.join('\', \'') + '\')' : '',
-            '{{subscriberId}}': appCreatedBy !== 'All' ? 'AND sub.USER_ID = \'' + appCreatedBy + '\''
-                : 'AND sub.USER_ID IN (\'' + sublist.join('\', \'') + '\')',
-            '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
-            '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
-        };
-        dataProviderConfigs.configs.config = config;
-        super.getWidgetChannelManager().subscribeWidget(id + MAIN_CALLBACK, widgetName,
-            this.handleDataReceived, dataProviderConfigs);
+        if (limit > 0) {
+            config.queryData.queryName = 'mainquery';
+            config.tableName = 'AM_APPLICATION';
+            config.incrementalColumn = 'CREATED_TIME';
+            config.queryData.queryValues = {
+                '{{subscriptionTable}}':
+                    (appCreatedBy !== 'All' || apiList[0] !== 'All') ? ', AM_API api, AM_SUBSCRIPTION subc' : '',
+                '{{subscription}}': (appCreatedBy !== 'All' || apiList[0] !== 'All')
+                    ? 'AND api.API_ID=subc.API_ID AND app.APPLICATION_ID=subc.APPLICATION_ID' : '',
+                '{{apiName}}': apiList[0] !== 'All' ? 'AND api.API_NAME in (\'' + apiList.join('\', \'') + '\')' : '',
+                '{{subscriberId}}': appCreatedBy !== 'All' ? 'AND sub.USER_ID = \'' + appCreatedBy + '\''
+                    : 'AND sub.USER_ID IN (\'' + sublist.join('\', \'') + '\')',
+                '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
+                '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
+            };
+            config.publishingLimit = limit;
+            dataProviderConfigs.configs.config = config;
+            super.getWidgetChannelManager().subscribeWidget(id + MAIN_CALLBACK, widgetName,
+                this.handleDataReceived, dataProviderConfigs);
+        } else {
+            this.setState({ chartData: [], tableData: [], inProgress: false });
+        }
     }
 
     /**
@@ -374,10 +387,11 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     /**
      * Updates query param values
      * @param {string} appCreatedBy - APP Created By menu option selected
+     * @param {number} limit - data limitation value
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
-    setQueryParam(appCreatedBy) {
-        super.setGlobalState(queryParamKey, { appCreatedBy });
+    setQueryParam(appCreatedBy, limit) {
+        super.setGlobalState(queryParamKey, { appCreatedBy, limit });
     }
 
     /**
@@ -386,8 +400,30 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      * @memberof APIMAppCreatedAnalyticsWidget
      * */
     appCreatedHandleChange(event) {
-        this.setQueryParam(event.target.value);
+        const { limit } = this.state;
+        this.setQueryParam(event.target.value, limit);
         this.setState({ appCreatedBy: event.target.value, inProgress: true }, this.assembleMainQuery);
+    }
+
+    /**
+     * Handle Limit select Change
+     * @param {Event} event - listened event
+     * @memberof APIMAppCreatedAnalyticsWidget
+     * */
+    handleLimitChange(event) {
+        const { appCreatedBy } = this.state;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(appCreatedBy, parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit }, this.assembleMainQuery);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id + MAIN_CALLBACK);
+            this.setState({
+                limit, inProgress: false, chartData: [], tableData: [],
+            });
+        }
     }
 
     /**
@@ -397,7 +433,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, appCreatedBy, sublist, chartData, tableData,
+            localeMessages, faultyProviderConfig, height, appCreatedBy, sublist, chartData, tableData, limit,
             width, inProgress,
         } = this.state;
         const {
@@ -416,6 +452,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             width,
             inProgress,
             username,
+            limit,
         };
 
         return (
@@ -444,6 +481,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
                             <APIMAppCreatedAnalytics
                                 {...appCreatedProps}
                                 appCreatedHandleChange={this.appCreatedHandleChange}
+                                handleLimitChange={this.handleLimitChange}
                             />
                         )
                     }

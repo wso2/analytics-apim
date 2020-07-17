@@ -114,7 +114,6 @@ class APIMApiLatencyWidget extends Widget {
             latencyData: null,
             resourceList: [],
             operationSelected: [],
-            resourceSelected: '',
             inProgress: true,
             apiId: null,
             dimension: null,
@@ -122,6 +121,7 @@ class APIMApiLatencyWidget extends Widget {
             timeFrom: null,
             timeTo: null,
             perValue: null,
+            limit: 5,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -141,6 +141,7 @@ class APIMApiLatencyWidget extends Widget {
         this.handleResourceReceived = this.handleResourceReceived.bind(this);
         this.apiOperationHandleChange = this.apiOperationHandleChange.bind(this);
         this.apiResourceHandleChange = this.apiResourceHandleChange.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
     }
 
     componentWillMount() {
@@ -201,17 +202,15 @@ class APIMApiLatencyWidget extends Widget {
      * @memberof APIMApiLatencyWidget
      * */
     loadQueryParam() {
-        const query = super.getGlobalState(queryParamKey);
-        let { operationSelected, resourceSelected } = query;
-
+        let { limit, operationSelected } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
         if (!operationSelected) {
             operationSelected = [];
         }
-        if (!resourceSelected) {
-            resourceSelected = '';
-        }
-        this.setQueryParam(operationSelected, resourceSelected);
-        this.setState({ operationSelected, resourceSelected });
+        this.setQueryParam(operationSelected, limit);
+        this.setState({ operationSelected });
     }
 
     /**
@@ -264,21 +263,23 @@ class APIMApiLatencyWidget extends Widget {
      * */
     assembleApiIdQuery() {
         const {
-            providerConfig, dimension, selectedOptions, timeFrom,
+            providerConfig, selectedOptions,
         } = this.state;
         let apiCondition = '';
         if (selectedOptions && selectedOptions.length > 0) {
-            apiCondition = '(API_NAME==\'' + selectedOptions[0].name + '\' AND API_VERSION==\''
+            apiCondition = 'on (API_NAME==\'' + selectedOptions[0].name + '\' AND API_VERSION==\''
                 + selectedOptions[0].version + '\' AND API_PROVIDER==\'' + selectedOptions[0].provider + '\')';
+            const { id, widgetID: widgetName } = this.props;
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{apiCondition}}': apiCondition,
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, latencyData: [] });
         }
-        const { id, widgetID: widgetName } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'apiidquery';
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{apiCondition}}': apiCondition === '' ? '' : 'on' + apiCondition,
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id + API_ID_CALLBACK, widgetName, this.handleApiIdReceived, dataProviderConfigs);
     }
 
     /**
@@ -330,16 +331,28 @@ class APIMApiLatencyWidget extends Widget {
      * */
     handleResourceReceived(message) {
         const { data, metadata: { names } } = message;
-        const resourceList = data.map((row) => {
-            const obj = {};
-            for (let j = 0; j < row.length; j++) {
-                obj[names[j]] = row[j];
-            }
-            return obj;
-        });
-        const { operationSelected } = this.state;
+        const resourceList = data
+            .map((row) => {
+                const obj = {};
+                for (let j = 0; j < row.length; j++) {
+                    obj[names[j]] = row[j];
+                }
+                return obj;
+            })
+            .sort((a, b) => {
+                const tempa = (a.URL_PATTERN + '_' + a.HTTP_METHOD).toLowerCase();
+                const tempb = (b.URL_PATTERN + '_' + b.HTTP_METHOD).toLowerCase();
+
+                if (tempb > tempa) {
+                    return -1;
+                }
+                if (tempb < tempa) {
+                    return 1;
+                }
+                return 0;
+            });
+        const { operationSelected, limit } = this.state;
         if (data) {
-            this.setState({ resourceList });
             // verify whether the selected operations/resource provided in query param are available in the
             // API resource list
             let filterSelectedOperations;
@@ -355,7 +368,18 @@ class APIMApiLatencyWidget extends Widget {
                     filterSelectedOperations = -1;
                 }
             }
-            this.setQueryParam(filterSelectedOperations);
+
+            if (!filterSelectedOperations.length > 0) {
+                const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
+                const isGraphQL = resourceList.length > 0
+                    && !!resourceList.find(op => graphQLOps.includes(op.HTTP_METHOD));
+                if (isGraphQL) {
+                    filterSelectedOperations = [resourceList[0]];
+                } else {
+                    filterSelectedOperations = resourceList[0].URL_PATTERN + '_' + resourceList[0].HTTP_METHOD;
+                }
+            }
+            this.setQueryParam(filterSelectedOperations, limit);
             this.setState({
                 resourceList,
                 operationSelected: filterSelectedOperations,
@@ -371,12 +395,12 @@ class APIMApiLatencyWidget extends Widget {
      * */
     assembleMainQuery(apiType) {
         const {
-            providerConfig, timeFrom, timeTo, perValue, operationSelected, selectedOptions,
+            providerConfig, timeFrom, timeTo, perValue, operationSelected, selectedOptions, limit,
         } = this.state;
         const { widgetID: widgetName, id } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'mainquery';
-        if (selectedOptions && selectedOptions.length > 0) {
+        if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
             let resources = '';
             if (apiType !== 'WS') {
                 if (Array.isArray(operationSelected)) {
@@ -392,15 +416,12 @@ class APIMApiLatencyWidget extends Widget {
                         this.setState({ inProgress: false, latencyData: [] });
                         return;
                     }
+                } else if (operationSelected !== -1) {
+                    const operation = operationSelected.split('_');
+                    resources = 'apiResourceTemplate==\'' + operation[0] + '\' AND apiMethod==\'' + operation[1] + '\'';
                 } else {
-                    if (operationSelected !== -1) {
-                        const operation = operationSelected.split('_');
-                        resources = 'apiResourceTemplate==\'' + operation[0] + '\' AND apiMethod==\''
-                            + operation[1] + '\'';
-                    } else {
-                        this.setState({ inProgress: false, latencyData: [] });
-                        return;
-                    }
+                    this.setState({ inProgress: false, latencyData: [] });
+                    return;
                 }
                 resources = ' AND (' + resources + ')';
             }
@@ -412,6 +433,7 @@ class APIMApiLatencyWidget extends Widget {
                 '{{timeTo}}': timeTo,
                 '{{per}}': perValue,
                 '{{filterCondition}}': filterCondition,
+                '{{limit}}': limit,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id + API_LATENCY_CALLBACK, widgetName, this.handleDataReceived, dataProviderConfigs);
@@ -430,14 +452,14 @@ class APIMApiLatencyWidget extends Widget {
 
         if (data) {
             const {
-                operationSelected, resourceSelected,
+                operationSelected, limit,
             } = this.state;
             const latencyData = data.map((dataUnit) => {
                 return ([dataUnit[0], dataUnit[1], dataUnit[2], dataUnit[3], dataUnit[4],
                     dataUnit[5], dataUnit[6], dataUnit[7]]);
             });
             this.setState({ latencyData, inProgress: false });
-            this.setQueryParam(operationSelected, resourceSelected);
+            this.setQueryParam(operationSelected, limit);
         } else {
             this.setState({ inProgress: false, latencyData: [] });
         }
@@ -446,13 +468,32 @@ class APIMApiLatencyWidget extends Widget {
     /**
      * Updates query param values
      * @param {string} operationSelected - Operations selected
-     * @param {string} resourceSelected - Resources selected
+     * @param {number} limit - data limitation value
      * @memberof APIMApiLatencyWidget
      * */
-    setQueryParam(operationSelected) {
+    setQueryParam(operationSelected, limit) {
         super.setGlobalState(queryParamKey, {
-            operationSelected,
+            operationSelected, limit,
         });
+    }
+
+    /**
+     * Handle Limit select Change
+     * @param {Event} event - listened event
+     * @memberof APIMApiLatencyWidget
+     * */
+    handleLimitChange(event) {
+        const { operationSelected } = this.state;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(operationSelected, parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit }, this.assembleMainQuery);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id + API_LATENCY_CALLBACK);
+            this.setState({ limit, latencyData: [], inProgress: false });
+        }
     }
 
     /**
@@ -497,7 +538,7 @@ class APIMApiLatencyWidget extends Widget {
     render() {
         const queryParam = super.getGlobalState(queryParamKey);
         const {
-            localeMessages, faultyProviderConfig, height, width, inProgress,
+            localeMessages, faultyProviderConfig, height, width, inProgress, limit,
             latencyData, resourceList,
         } = this.state;
         const {
@@ -513,6 +554,7 @@ class APIMApiLatencyWidget extends Widget {
             latencyData,
             resourceList,
             inProgress,
+            limit,
         };
 
         return (
@@ -545,6 +587,7 @@ class APIMApiLatencyWidget extends Widget {
                                 {...latencyProps}
                                 apiOperationHandleChange={this.apiOperationHandleChange}
                                 apiResourceHandleChange={this.apiResourceHandleChange}
+                                handleLimitChange={this.handleLimitChange}
                             />
                         )
                     }

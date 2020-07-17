@@ -79,6 +79,7 @@ class APIMApiAvailabilityWidget extends Widget {
             legendData: [],
             localeMessages: null,
             inProgress: true,
+            colorScales: [],
         };
 
         this.styles = {
@@ -206,19 +207,25 @@ class APIMApiAvailabilityWidget extends Widget {
             });
 
             const legendData = [];
+            const colorScales = [];
             if (availableCount > 0) {
                 legendData.push(legend[0]);
                 dataModified[0] = [legend[0].name, availableCount];
+                colorScales.push('#45b29d');
             }
             if (responseHighCount > 0) {
                 legendData.push(legend[1]);
                 dataModified[dataModified.length] = [legend[1].name, responseHighCount];
+                colorScales.push('#ff9800');
             }
             if (serverErrorCount > 0) {
                 legendData.push(legend[2]);
                 dataModified[dataModified.length] = [legend[2].name, serverErrorCount];
+                colorScales.push('#ef5350');
             }
-            this.setState({ legendData, availableApiData: dataModified, inProgress: false });
+            this.setState({
+                legendData, availableApiData: dataModified, inProgress: false, colorScales,
+            });
         } else {
             this.setState({ inProgress: false });
         }
@@ -240,7 +247,7 @@ class APIMApiAvailabilityWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, availableApiData, legendData, inProgress,
+            localeMessages, faultyProviderConfig, height, availableApiData, legendData, inProgress, colorScales,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -248,7 +255,7 @@ class APIMApiAvailabilityWidget extends Widget {
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiAvailabilityProps = {
-            themeName, height, availableApiData, legendData, inProgress,
+            themeName, height, availableApiData, legendData, inProgress, colorScales,
         };
 
         return (

@@ -133,6 +133,8 @@ class APIViewErrorTable extends React.Component {
         } else if (perValue === 'year') {
             unit = 'years';
             label = 'Time (Year)';
+        } else {
+            label = '';
         }
         data = data.map((item) => {
             item.from = Moment(item.AGG_TIMESTAMP).format(timeFormat);

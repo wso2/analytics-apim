@@ -70,7 +70,7 @@ export default function PerformanceSummary(props) {
     };
     const chartConfig = {
         x: 'TIME',
-        yAxisLabel: 'Latency Time (ms)',
+        yAxisLabel: 'LATENCY TIME (MS)',
         charts: [],
         maxLength: 60,
         interactiveLegend: true,

@@ -29,7 +29,6 @@ import {
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CustomFormGroup from './CustomFormGroup';
 import ResourceViewErrorTable from './ResourceViewErrorTable';
-import {DrillDownEnum} from "../../AppAndAPIErrorTable/src/Constants";
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -102,7 +101,6 @@ class APILatencySummaryWidget extends Widget {
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.handleQueryResults = this.handleQueryResults.bind(this);
         this.assembleFetchDataQuery = this.assembleFetchDataQuery.bind(this);
-        this.handleDrillDownChange = this.handleDrillDownChange.bind(this);
 
         this.getQueryForResource = this.getQueryForResource.bind(this);
 
@@ -156,6 +154,10 @@ class APILatencySummaryWidget extends Widget {
     componentWillUnmount() {
         const { id } = this.props;
         super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadApis');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadVersions');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadOperations');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadOperations');
     }
 
     /**
@@ -337,19 +339,6 @@ class APILatencySummaryWidget extends Widget {
     }
     // end data query functions
 
-    handleDrillDownChange(event) {
-        this.setState(
-            {
-                data: [],
-                selectedAPI: -1,
-                selectedVersion: -1,
-                selectedResource: -1,
-                versionList: [],
-                operationList: [],
-            }, this.loadingDrillDownData,
-        );
-    }
-
     // start table data type query constructor
     loadingDrillDownData() {
         this.getQueryForResource();
@@ -470,11 +459,14 @@ class APILatencySummaryWidget extends Widget {
     }
 
     handleLimitChange(event) {
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit) {
+            this.setState({ selectedLimit: limit, loading: true }, this.loadingDrillDownData);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ selectedLimit: limit, data: [], loading: false });
         }
-        this.setState({ selectedLimit: limit }, this.loadingDrillDownData);
     }
 
     // end of handle filter change

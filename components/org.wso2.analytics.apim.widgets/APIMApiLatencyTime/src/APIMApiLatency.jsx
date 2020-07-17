@@ -23,15 +23,11 @@ import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Checkbox from '@material-ui/core/Checkbox';
 import VizG from 'react-vizgrammar';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
 import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
 
 /**
@@ -42,7 +38,7 @@ import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationR
 export default function APIMApiLatency(props) {
     const {
         themeName, queryParam, height, width, inProgress, latencyData, resourceList, apiOperationHandleChange,
-        apiResourceHandleChange,
+        apiResourceHandleChange, limit, handleLimitChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -57,12 +53,12 @@ export default function APIMApiLatency(props) {
             flexWrap: 'wrap',
         },
         formControl: {
-            marginLeft: '5%',
-            marginTop: '5%',
-            minWidth: 120,
+            marginLeft: 10,
+            minWidth: '10%',
         },
         autoSelectForm: {
             minWidth: 200,
+            marginTop: 10,
         },
         dataWrapper: {
             height: '70%',
@@ -106,7 +102,7 @@ export default function APIMApiLatency(props) {
     };
     const chartConfig = {
         x: 'REQUEST_TIME',
-        yAxisLabel: 'Latency Time (ms)',
+        yAxisLabel: 'LATENCY TIME (MS)',
         charts: [
             {
                 type: 'line',
@@ -204,6 +200,22 @@ export default function APIMApiLatency(props) {
                                             getValue={item => item.URL_PATTERN + '_' + item.HTTP_METHOD}
                                         />
                                     </FormControl>
+                                    <FormControl style={styles.formControl}>
+                                        <InputLabel
+                                            shrink
+                                            htmlFor='limit-number'
+                                            style={styles.formLabel}
+                                        >
+                                            <FormattedMessage id='limit' defaultMessage='Limit' />
+                                        </InputLabel>
+                                        <Input
+                                            id='limit-number'
+                                            value={limit}
+                                            onChange={handleLimitChange}
+                                            type='number'
+                                            margin='normal'
+                                        />
+                                    </FormControl>
                                 </form>
                             </div>
                         )
@@ -262,4 +274,6 @@ APIMApiLatency.propTypes = {
     apiOperationHandleChange: PropTypes.func.isRequired,
     apiResourceHandleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
+    handleLimitChange: PropTypes.func.isRequired,
+    limit: PropTypes.string.isRequired,
 };

@@ -488,14 +488,17 @@ class APITrafficOverTimeWidget extends Widget {
     }
 
     handleLimitChange(event) {
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit) {
+            const { selectedAPI, selectedVersion, selectedResource } = this.state;
+            this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
+            this.setQueryParam(selectedAPI, selectedVersion, selectedResource, event.target.value);
+            this.setState({ selectedLimit: limit, loading: true });
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_TRAFFIC);
+            this.setState({ selectedLimit: limit, data: [], loading: false  });
         }
-        const { selectedAPI, selectedVersion, selectedResource } = this.state;
-        this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
-        this.setQueryParam(selectedAPI, selectedVersion, selectedResource, event.target.value);
-        this.setState({ selectedLimit: limit, loading: true });
     }
 
     // end of handle filter change

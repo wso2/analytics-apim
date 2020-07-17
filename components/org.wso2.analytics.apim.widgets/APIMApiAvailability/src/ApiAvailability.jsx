@@ -22,7 +22,6 @@ import PropTypes from 'prop-types';
 import {
     VictoryPie, VictoryLegend, VictoryTooltip, VictoryTheme, VictoryContainer,
 } from 'victory';
-import { colorScale } from '@analytics-apim/common-lib';
 import sumBy from 'lodash/sumBy';
 
 /**
@@ -31,14 +30,24 @@ import sumBy from 'lodash/sumBy';
  * @returns {ReactElement} Render the Api Availability Chart
  */
 export default function ApiAvailability(props) {
-    const { availableApiData, legendData, handleOnClick } = props;
+    const {
+        availableApiData, legendData, handleOnClick, colorScales,
+    } = props;
+    const styles = {
+        pieChart: {
+            data: {
+                cursor: 'pointer',
+            },
+        },
+    };
+
     return (
         <div>
             <VictoryContainer height={400}>
                 <VictoryLegend
                     standalone={false}
                     theme={VictoryTheme.material}
-                    colorScale={['#45b29d', '#ff9800', '#ef5350']}
+                    colorScale={colorScales}
                     x={380}
                     y={20}
                     gutter={20}
@@ -67,7 +76,8 @@ export default function ApiAvailability(props) {
                     innerRadius={80}
                     theme={VictoryTheme.material}
                     standalone={false}
-                    colorScale={colorScale}
+                    colorScale={colorScales}
+                    style={styles.pieChart}
                     data={availableApiData}
                     x={0}
                     y={1}
@@ -96,4 +106,5 @@ ApiAvailability.propTypes = {
     availableApiData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.instanceOf(Object).isRequired,
     handleOnClick: PropTypes.func.isRequired,
+    colorScales: PropTypes.instanceOf(Object).isRequired,
 };

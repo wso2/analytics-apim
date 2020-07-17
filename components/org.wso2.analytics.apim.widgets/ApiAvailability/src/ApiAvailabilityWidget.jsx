@@ -258,16 +258,15 @@ class ApiAvailabilityWidget extends Widget {
      * */
     handleLimitChange(event) {
         const { status } = this.state;
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
-        }
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(parseInt(limit, 10), status);
         if (limit) {
             this.setState({ inProgress: true, limit }, this.assembleApiAvailableQuery);
         } else {
-            this.setState({ limit });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, availableApiData: [] });
         }
     }
 

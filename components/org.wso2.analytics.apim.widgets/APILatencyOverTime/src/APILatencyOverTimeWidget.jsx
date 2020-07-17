@@ -145,14 +145,16 @@ class APILatencyOverTimeWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
-        this.loadQueryParams();
         // This function retrieves the provider configuration defined in the widgetConf.json
         // file and make it available to be used inside the widget
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
-                }, () => super.subscribe(this.handlePublisherParameters));
+                }, () => {
+                    super.subscribe(this.handlePublisherParameters);
+                    this.loadQueryParams();
+                });
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -215,7 +217,7 @@ class APILatencyOverTimeWidget extends Widget {
         }
         this.setState({
             selectedAPI, selectedVersion, selectedResource, selectedLimit,
-        });
+        }, this.loadingDrillDownData);
     }
 
     /**
@@ -297,7 +299,6 @@ class APILatencyOverTimeWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_API);
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_VERSION);
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_OPERATION);
-        super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_LATENCY);
 
         // this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
         const dataProviderConfigs = cloneDeep(providerConfig);
@@ -314,7 +315,6 @@ class APILatencyOverTimeWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_VERSION);
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_OPERATION);
-        super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_LATENCY);
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'listVersionsQuery';
@@ -326,7 +326,9 @@ class APILatencyOverTimeWidget extends Widget {
     }
 
     loadOperations() {
-        const { providerConfig, selectedAPI, selectedVersion, versionList } = this.state;
+        const {
+            providerConfig, selectedAPI, selectedVersion, versionList,
+        } = this.state;
         if (selectedAPI === 'all' || selectedVersion === 'all') {
             return;
         }
@@ -336,7 +338,6 @@ class APILatencyOverTimeWidget extends Widget {
         }
         const { id, widgetID: widgetName } = this.props;
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_OPERATION);
-        super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_LATENCY);
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
@@ -462,7 +463,7 @@ class APILatencyOverTimeWidget extends Widget {
     // start table data type query constructor
     loadingDrillDownData() {
         const {
-            selectedAPI, selectedVersion, selectedResource, versionList,
+            selectedAPI, selectedVersion, selectedResource, apiList,
         } = this.state;
         const selectPhase = [];
         const groupByPhase = [];
@@ -478,7 +479,7 @@ class APILatencyOverTimeWidget extends Widget {
         if (selectedVersion !== 'all') {
             filterPhase.push('apiVersion==\'' + selectedVersion + '\'');
         }
-        const selectedAPIObj = versionList.find(item => item.API_VERSION === selectedVersion);
+        const selectedAPIObj = apiList.find(item => item.API_NAME === selectedAPI);
         if (selectedAPIObj && selectedAPIObj.API_TYPE !== 'WS' && selectedResource !== 'all') {
             if (Array.isArray(selectedResource)) {
                 if (selectedResource.length > 0) {
@@ -594,14 +595,17 @@ class APILatencyOverTimeWidget extends Widget {
     handleLimitChange(event) {
         const { id } = this.props;
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_LATENCY);
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        if (limit) {
+            const { selectedAPI, selectedVersion, selectedResource } = this.state;
+            this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
+            this.setQueryParam(selectedAPI, selectedVersion, selectedResource, event.target.value);
+            this.setState({ selectedLimit: limit, loading: true });
+        } else {
+            super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_LATENCY);
+            this.setState({ selectedLimit: limit, data: [], loading: false });
         }
-        const { selectedAPI, selectedVersion, selectedResource } = this.state;
-        this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
-        this.setQueryParam(selectedAPI, selectedVersion, selectedResource, event.target.value);
-        this.setState({ selectedLimit: limit, loading: true });
     }
 
     // end of handle filter change
