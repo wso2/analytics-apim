@@ -4,6 +4,6 @@
   "config.error.body": "Cannot fetch provider configuration for APIM Api Latency Time widget",
   "config.error.heading": "Configuration Error !",
   "limit": "Limit",
-  "resources.label": "Resources",
+  "resource.label": "Resource",
   "widget.heading": "API LATENCY TIME"
 }

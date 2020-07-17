@@ -53,11 +53,12 @@ export default function APIMApiLatency(props) {
             flexWrap: 'wrap',
         },
         formControl: {
-            marginLeft: 10,
+            marginLeft: 15,
             minWidth: '10%',
+            marginTop: 12,
         },
         autoSelectForm: {
-            minWidth: 200,
+            minWidth: 300,
             marginTop: 10,
         },
         dataWrapper: {
@@ -98,6 +99,9 @@ export default function APIMApiLatency(props) {
             letterSpacing: 1.5,
             paddingBottom: '10px',
             marginTop: 0,
+        },
+        selectDiv: {
+            marginTop: 15,
         },
     };
     const chartConfig = {
@@ -190,16 +194,26 @@ export default function APIMApiLatency(props) {
                             <div style={styles.formWrapper}>
                                 <form style={styles.form}>
                                     <FormControl component='fieldset' style={styles.autoSelectForm}>
-                                        <IntegrationReactSelect
-                                            isMulti={isGraphQL}
-                                            options={resourceList}
-                                            value={operationSelected}
-                                            onChange={isGraphQL ? apiOperationHandleChange : apiResourceHandleChange}
-                                            // disabled={operationList && operationList.length === 0}
-                                            placeholder='Select Operation'
-                                            getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
-                                            getValue={item => item.URL_PATTERN + '_' + item.HTTP_METHOD}
-                                        />
+                                        <InputLabel
+                                            shrink
+                                            htmlFor='limit-number'
+                                            style={styles.formLabel}
+                                        >
+                                            <FormattedMessage id='resource.label' defaultMessage='Resource' />
+                                        </InputLabel>
+                                        <div style={styles.selectDiv}>
+                                            <IntegrationReactSelect
+                                                isMulti={isGraphQL}
+                                                options={resourceList}
+                                                value={operationSelected}
+                                                onChange={isGraphQL
+                                                    ? apiOperationHandleChange : apiResourceHandleChange}
+                                                // disabled={operationList && operationList.length === 0}
+                                                placeholder='Select Operation'
+                                                getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
+                                                getValue={item => item.URL_PATTERN + '_' + item.HTTP_METHOD}
+                                            />
+                                        </div>
                                     </FormControl>
                                     <FormControl style={styles.formControl}>
                                         <InputLabel
