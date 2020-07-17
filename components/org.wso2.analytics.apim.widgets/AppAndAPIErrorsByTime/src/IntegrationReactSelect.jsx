@@ -184,12 +184,11 @@ class IntegrationReactSelect extends React.Component {
         }
         let selected = null;
         if (Array.isArray(value)) {
-            const selectedItems = value.map(val => options.find(i => getValue(i) === val));
-            if (selectedItems) {
-                selected = selectedItems.map((item) => {
-                    return {value: getValue(item), label: getLabel(item)};
+            selected = value.filter(val => options.filter(op => getValue(op) === val).length > 0)
+                .map((val) => {
+                    const item = options.find(op => getValue(op) === val);
+                    return { value: getValue(item), label: getLabel(item) };
                 });
-            }
         } else {
             const selectedItem = options.find(i => getValue(i) === value);
             if (selectedItem) {
