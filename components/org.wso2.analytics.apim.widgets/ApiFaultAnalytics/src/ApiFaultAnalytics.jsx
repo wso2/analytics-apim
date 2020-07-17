@@ -114,6 +114,7 @@ function ApiFaultAnalytics(props) {
         disableVerticalGrid: true,
         timeFormat: '%d-%b-%y %H:%M',
         tipTimeFormat: '%Y-%m-%d %H:%M:%S',
+        ignoreYaxisDecimalPoints: true,
         style: {
             xAxisTickAngle: -10,
             tickLabelColor: '#a7b0c8',

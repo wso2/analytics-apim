@@ -126,6 +126,7 @@ function APIMOverallApiUsage(props) {
             },
         ],
         append: false,
+        ignoreYaxisDecimalPoints: true,
         style: {
             xAxisTickAngle: -8,
             tickLabelColor: '#506482',
