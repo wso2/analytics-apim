@@ -47,6 +47,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'apiRating';
+
 /**
  * Callback suffixes
  * */
@@ -87,6 +89,7 @@ class APIMApiRatingsWidget extends Widget {
             localeMessages: null,
             inProgress: true,
             refreshInterval: 60000, // 1min
+            limit: 5,
         };
 
         this.styles = {
@@ -114,6 +117,7 @@ class APIMApiRatingsWidget extends Widget {
         this.handleAPIDataReceived = this.handleAPIDataReceived.bind(this);
         this.handleTopAPIReceived = this.handleTopAPIReceived.bind(this);
         this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
     }
 
     componentWillMount() {
@@ -128,6 +132,7 @@ class APIMApiRatingsWidget extends Widget {
     componentDidMount() {
         const { widgetID } = this.props;
         const { refreshInterval } = this.state;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -176,6 +181,19 @@ class APIMApiRatingsWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMApiRatingsWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
      * Formats the siddhi query - apilistquery
      * @memberof APIMApiRatingsWidget
      * */
@@ -210,16 +228,17 @@ class APIMApiRatingsWidget extends Widget {
      * @memberof APIMApiRatingsWidget
      * */
     assembleTopAPIQuery() {
-        const { providerConfig, apiIdMap } = this.state;
+        const { providerConfig, apiIdMap, limit } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
-        if (apiIdMap && Object.keys(apiIdMap).length > 0) {
+        if (apiIdMap && Object.keys(apiIdMap).length > 0 && limit > 0) {
             let apiIds = Object.keys(apiIdMap).map((apiId) => { return 'API_ID==' + apiId; });
             apiIds = apiIds.join(' OR ');
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'topapiquery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{apiList}}': apiIds,
+                '{{limit}}': limit,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id + API_RATING_CALLBACK, widgetName, this.handleTopAPIReceived, dataProviderConfigs);
@@ -282,6 +301,35 @@ class APIMApiRatingsWidget extends Widget {
     }
 
     /**
+     * Updates query param values
+     * @param {number} limit - data limitation value
+     * @memberof APIMApiRatingsWidget
+     * */
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
+    }
+
+    /**
+     * Handle Limit select Change
+     * @param {Event} event - listened event
+     * @memberof APIMApiRatingsWidget
+     * */
+    handleLimitChange(event) {
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit }, this.assembleTopAPIQuery);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id + API_RATING_CALLBACK);
+            this.setState({
+                limit, topApiNameData: [], legendData: [], availableApiData: [], inProgress: false,
+            });
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Api Ratings widget
      * @memberof APIMApiRatingsWidget
@@ -289,6 +337,7 @@ class APIMApiRatingsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, availableApiData, legendData, topApiNameData, inProgress,
+            limit,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -297,7 +346,7 @@ class APIMApiRatingsWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const apiRatingProps = {
-            themeName, height, availableApiData, legendData, topApiNameData, inProgress, username,
+            themeName, height, availableApiData, legendData, topApiNameData, inProgress, username, limit,
         };
 
         return (
@@ -326,6 +375,7 @@ class APIMApiRatingsWidget extends Widget {
                             <APIMApiRatings
                                 {...apiRatingProps}
                                 handleOnClickAPI={this.handleOnClickAPI}
+                                handleLimitChange={this.handleLimitChange}
                             />
                         )
                     }

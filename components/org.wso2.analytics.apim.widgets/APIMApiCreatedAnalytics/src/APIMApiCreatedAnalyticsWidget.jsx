@@ -48,6 +48,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'apiCreatedStats';
+
 /**
  * Language
  * @type {string}
@@ -88,7 +90,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         this.state = {
             width: this.props.width,
             height: this.props.height,
-            createdBy: 'all',
+            limit: 5,
             timeTo: null,
             timeFrom: null,
             chartData: null,
@@ -109,6 +111,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         }
 
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
         this.assembleQuery = this.assembleQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
@@ -125,6 +128,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -162,6 +166,19 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                 })
                 .catch(error => reject(error));
         });
+    }
+
+    /**
+     * Retrieve the limit from query param
+     * @memberof APIMApiCreatedAnalyticsWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
     }
 
     /**
@@ -206,11 +223,11 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
      * */
     assembleQuery() {
         const {
-            providerConfig, timeFrom, timeTo, selectedOptions, dimension,
+            providerConfig, timeFrom, timeTo, selectedOptions, dimension, limit,
         } = this.state;
 
         if (dimension && timeFrom) {
-            if (selectedOptions && selectedOptions.length > 0) {
+            if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
                 const { id, widgetID: widgetName } = this.props;
                 let filterCondition = '';
                 if (selectedOptions[0].name !== 'All') {
@@ -228,6 +245,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                     '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
                     '{{filterCondition}}': filterCondition,
                 };
+                dataProviderConfigs.configs.config.publishingLimit = limit;
                 super.getWidgetChannelManager().subscribeWidget(id, widgetName, this.handleDataReceived,
                     dataProviderConfigs);
             } else {
@@ -327,13 +345,42 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     }
 
     /**
+     * Updates query param values
+     * @param {number} limit - data limitation value
+     * @memberof APIMApiCreatedAnalyticsWidget
+     * */
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
+    }
+
+    /**
+     * Handle Limit select Change
+     * @param {Event} event - listened event
+     * @memberof APIMApiCreatedAnalyticsWidget
+     * */
+    handleLimitChange(event) {
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit }, this.assembleQuery);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({
+                limit, inProgress: false, chartData: [], tableData: [],
+            });
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Api Created Analytics widget
      * @memberof APIMApiCreatedAnalyticsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, chartData, tableData, width, inProgress,
+            localeMessages, faultyProviderConfig, height, chartData, tableData, width, inProgress, limit,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -342,7 +389,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const apiCreatedProps = {
-            themeName, height, chartData, tableData, inProgress, width, username,
+            themeName, height, chartData, tableData, inProgress, width, username, limit,
         };
 
         return (
@@ -371,6 +418,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                             <APIMApiCreatedAnalytics
                                 {...apiCreatedProps}
                                 handleOnClickAPI={this.handleOnClickAPI}
+                                handleLimitChange={this.handleLimitChange}
                             />
                         )
                     }

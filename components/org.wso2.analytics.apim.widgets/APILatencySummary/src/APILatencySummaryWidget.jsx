@@ -155,6 +155,10 @@ class APILatencySummaryWidget extends Widget {
     componentWillUnmount() {
         const { id } = this.props;
         super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadApis');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadVersions');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadOperations');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadOperations');
     }
 
     /**
@@ -463,11 +467,14 @@ class APILatencySummaryWidget extends Widget {
     }
 
     handleLimitChange(event) {
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit) {
+            this.setState({ selectedLimit: limit, loading: true }, this.loadingDrillDownData);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ selectedLimit: limit, data: [], loading: false });
         }
-        this.setState({ selectedLimit: limit }, this.loadingDrillDownData);
     }
 
     // end of handle filter change

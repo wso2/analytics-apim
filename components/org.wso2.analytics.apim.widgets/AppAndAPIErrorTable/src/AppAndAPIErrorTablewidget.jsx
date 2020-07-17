@@ -183,6 +183,10 @@ class AppAndAPIErrorTablewidget extends Widget {
     componentWillUnmount() {
         const { id } = this.props;
         super.getWidgetChannelManager().unsubscribeWidget(id);
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadApps');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadApis');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadVersions');
+        super.getWidgetChannelManager().unsubscribeWidget(id + '_loadOperations');
     }
 
     /**
@@ -576,12 +580,10 @@ class AppAndAPIErrorTablewidget extends Widget {
                 filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
                 filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
             }
-        } else {
-            if (selectedResource > -1) {
-                const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
-                filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
-                filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
-            }
+        } else if (selectedResource > -1) {
+            const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
+            filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
+            filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
         }
 
         if (viewType === ViewTypeEnum.APP) {
@@ -679,11 +681,14 @@ class AppAndAPIErrorTablewidget extends Widget {
     }
 
     handleLimitChange(event) {
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit) {
+            this.setState({ selectedLimit: limit, loading: true }, this.loadingDrillDownData);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ selectedLimit: limit, data: [], loading: false });
         }
-        this.setState({ selectedLimit: limit }, this.loadingDrillDownData);
     }
 
     // end of handle filter change

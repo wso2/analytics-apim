@@ -409,10 +409,7 @@ class APIMAppApiUsageWidget extends Widget {
         const { id } = this.props;
         const { applicationSelected } = this.state;
         // disallow negative and decimal values
-        let limit = (event.target.value).replace('-', '').split('.')[0];
-        if (parseInt(limit, 10) < 1) {
-            limit = 5;
-        }
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
         this.setQueryParam(applicationSelected, parseInt(limit, 10));
         if (limit) {
@@ -420,7 +417,9 @@ class APIMAppApiUsageWidget extends Widget {
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleMainQuery();
         } else {
-            this.setState({ limit });
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, usageData: [] });
         }
     }
 

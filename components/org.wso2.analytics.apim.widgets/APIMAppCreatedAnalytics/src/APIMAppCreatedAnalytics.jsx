@@ -38,7 +38,7 @@ import APIMAppCreatedData from './APIMAppCreatedData';
 export default function APIMAppCreatedAnalytics(props) {
     const {
         themeName, height, appCreatedBy, sublist, chartData, tableData, width, appCreatedHandleChange, inProgress,
-        username,
+        username, limit, handleLimitChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -51,10 +51,13 @@ export default function APIMAppCreatedAnalytics(props) {
         formControl: {
             marginLeft: 10,
             marginTop: 10,
+            width: '20%',
             minWidth: 120,
         },
-        selectEmpty: {
+        formControl2: {
+            marginLeft: 10,
             marginTop: 10,
+            width: '10%',
         },
         loadingIcon: {
             margin: 'auto',
@@ -129,7 +132,6 @@ export default function APIMAppCreatedAnalytics(props) {
                                 input={<Input name='app-createdBy' id='app-createdBy-label-placeholder' />}
                                 displayEmpty
                                 name='appCreatedBy'
-                                style={styles.selectEmpty}
                             >
                                 {
                                     sublist.map(option => (
@@ -139,6 +141,22 @@ export default function APIMAppCreatedAnalytics(props) {
                                     ))
                                 }
                             </Select>
+                        </FormControl>
+                        <FormControl style={styles.formControl2}>
+                            <InputLabel
+                                shrink
+                                htmlFor='limit-number'
+                                style={styles.formLabel}
+                            >
+                                <FormattedMessage id='limit' defaultMessage='Limit' />
+                            </InputLabel>
+                            <Input
+                                id='limit-number'
+                                value={limit}
+                                onChange={handleLimitChange}
+                                type='number'
+                                margin='normal'
+                            />
                         </FormControl>
                     </form>
                 </div>
@@ -166,4 +184,6 @@ APIMAppCreatedAnalytics.propTypes = {
     appCreatedHandleChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     username: PropTypes.string.isRequired,
+    limit: PropTypes.string.isRequired,
+    handleLimitChange: PropTypes.func.isRequired,
 };

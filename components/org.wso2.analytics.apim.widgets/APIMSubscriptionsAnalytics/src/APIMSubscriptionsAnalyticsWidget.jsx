@@ -48,6 +48,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'subscriptionStats';
+
 /**
  * Language
  * @type {string}
@@ -97,6 +99,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             inProgress: true,
             dimension: null,
             selectedOptions: [],
+            limit: 5,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -111,6 +114,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.handleDataReceived = this.handleDataReceived.bind(this);
         this.handleOnClickAPI = this.handleOnClickAPI.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
     }
 
     componentWillMount() {
@@ -124,6 +128,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadLimit();
 
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
@@ -162,6 +167,19 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                 })
                 .catch(error => reject(error));
         });
+    }
+
+    /**
+     * Retrieve the limit from query param
+     * @memberof APIMSubscriptionsAnalyticsWidget
+     * */
+    loadLimit() {
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
+        this.setQueryParam(limit);
+        this.setState({ limit });
     }
 
     /**
@@ -206,12 +224,12 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
      * */
     assembleMainQuery() {
         const {
-            timeFrom, timeTo, providerConfig, dimension, selectedOptions,
+            timeFrom, timeTo, providerConfig, dimension, selectedOptions, limit,
         } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         if (providerConfig && dimension && timeFrom) {
-            if (selectedOptions && selectedOptions.length > 0) {
+            if (selectedOptions && selectedOptions.length > 0 && limit > 0) {
                 const apiList = selectedOptions.map((opt) => { return opt.name; });
                 const dataProviderConfigs = cloneDeep(providerConfig);
                 const { config } = dataProviderConfigs.configs;
@@ -225,6 +243,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                     '{{timeFrom}}': Moment(timeFrom).format('YYYY-MM-DD HH:mm:ss'),
                     '{{timeTo}}': Moment(timeTo).format('YYYY-MM-DD HH:mm:ss'),
                 };
+                config.publishingLimit = limit;
                 dataProviderConfigs.configs.config = config;
                 super.getWidgetChannelManager().subscribeWidget(id, widgetName,
                     this.handleDataReceived, dataProviderConfigs);
@@ -324,13 +343,42 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     }
 
     /**
+     * Updates query param values
+     * @param {number} limit - data limitation value
+     * @memberof APIMSubscriptionsAnalyticsWidget
+     * */
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
+    }
+
+    /**
+     * Handle Limit select Change
+     * @param {Event} event - listened event
+     * @memberof APIMSubscriptionsAnalyticsWidget
+     * */
+    handleLimitChange(event) {
+        const limit = (event.target.value).replace('-', '').split('.')[0];
+
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit }, this.assembleMainQuery);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({
+                limit, chartData: [], tableData: [], inProgress: false,
+            });
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Subscriptions Analytics widget
      * @memberof APIMSubscriptionsAnalyticsWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, inProgress, chartData, tableData, width,
+            localeMessages, faultyProviderConfig, height, inProgress, chartData, tableData, width, limit,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -346,6 +394,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             tableData,
             inProgress,
             username,
+            limit,
         };
 
         return (
@@ -374,6 +423,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                             <APIMSubscriptionsAnalytics
                                 {...subscriptionsProps}
                                 handleOnClickAPI={this.handleOnClickAPI}
+                                handleLimitChange={this.handleLimitChange}
                             />
                         )
                     }

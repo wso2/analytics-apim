@@ -22,6 +22,9 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import VizG from 'react-vizgrammar';
@@ -34,7 +37,7 @@ import CustomTable from './CustomTable';
  */
 function ApiFaultAnalytics(props) {
     const {
-        themeName, height, width, inProgress, faultData, tableData, intl, username,
+        themeName, height, width, inProgress, faultData, tableData, intl, username, limit, handleLimitChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -78,6 +81,21 @@ function ApiFaultAnalytics(props) {
         },
         chartWrapper: {
             width: '95%',
+        },
+        formWrapper: {
+            paddingBottom: 20,
+        },
+        formControl: {
+            marginLeft: 10,
+            marginTop: 10,
+            width: '10%',
+        },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
         },
     };
     const chartConfig = {
@@ -143,6 +161,24 @@ function ApiFaultAnalytics(props) {
                         <FormattedMessage id='widget.heading' defaultMessage='API ERRORS OVER TIME' />
                     </div>
                 </div>
+                <div style={styles.formWrapper}>
+                    <form noValidate autoComplete='off'>
+                        <FormControl style={styles.formControl}>
+                            <InputLabel
+                                shrink
+                                style={styles.formLabel}
+                            >
+                                <FormattedMessage id='limit' defaultMessage='Limit' />
+                            </InputLabel>
+                            <Input
+                                value={limit}
+                                onChange={handleLimitChange}
+                                type='number'
+                                margin='normal'
+                            />
+                        </FormControl>
+                    </form>
+                </div>
                 { inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
@@ -206,6 +242,8 @@ ApiFaultAnalytics.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     intl: intlShape.isRequired,
     username: PropTypes.string.isRequired,
+    handleLimitChange: PropTypes.func.isRequired,
+    limit: PropTypes.string.isRequired,
 };
 
 export default injectIntl(ApiFaultAnalytics);
