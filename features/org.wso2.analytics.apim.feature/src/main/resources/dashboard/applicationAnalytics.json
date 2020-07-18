@@ -55,7 +55,8 @@
                                   },
                                   "isGenerated": false,
                                   "options": {
-                                    "header": true
+                                    "header": true,
+                                    "headerTitle": "FAULTY INVOCATIONS PER APPLICATION"
                                   }
                                 },
                                 "widgetID": "APIMFaultyPerApp"
@@ -91,7 +92,8 @@
                                   },
                                   "isGenerated": false,
                                   "options": {
-                                    "header": true
+                                    "header": true,
+                                    "headerTitle": "TOP APPLICATION USERS"
                                   }
                                 },
                                 "widgetID": "APIMTopAppUsers"
@@ -128,7 +130,8 @@
                                 "configs": {
                                   "isGenerated": false,
                                   "options": {
-                                    "header": true
+                                    "header": true,
+                                    "headerTitle": "REGISTERED APPLICATION USERS"
                                   }
                                 },
                                 "widgetID": "APIMRegisteredAppUsers"
@@ -164,7 +167,8 @@
                                   },
                                   "isGenerated": false,
                                   "options": {
-                                    "header": true
+                                    "header": true,
+                                    "headerTitle": "RESOURCE USAGE OF APPLICATION"
                                   }
                                 },
                                 "widgetID": "APIMAppResourceUsage"
@@ -252,7 +256,8 @@
                               },
                               "isGenerated": false,
                               "options": {
-                                "header": true
+                                "header": true,
+                                "headerTitle": "API USAGE OF APPLICATION"
                               }
                             },
                             "widgetID": "APIMAppApiUsage"
