@@ -28,9 +28,9 @@ import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Scrollbars from 'react-custom-scrollbars';
 import CustomFormGroup from './CustomFormGroup';
 import ResourceViewErrorTable from './ResourceViewErrorTable';
-import Scrollbars from 'react-custom-scrollbars';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -463,6 +463,7 @@ class APITrafficSummaryWidget extends Widget {
      * */
     handleOnClick(event, data) {
         const { configs } = this.props;
+        const { operationList } = this.state;
 
         if (configs && configs.options) {
             const { drillDown } = configs.options;
@@ -471,9 +472,17 @@ class APITrafficSummaryWidget extends Widget {
                 const {
                     apiName, apiVersion, apiResourceTemplate, apiMethod,
                 } = data;
-                this.publishSelection({
-                    api: apiName, version: apiVersion, resource: apiResourceTemplate + ' (' + apiMethod + ')',
-                });
+                const operation = operationList.find(i => i[1] === apiResourceTemplate && i[2] === apiMethod);
+                if (operation) {
+                    const [resourceId] = operation;
+                    this.publishSelection({
+                        api: apiName, version: apiVersion, resource: resourceId,
+                    });
+                } else {
+                    this.publishSelection({
+                        api: apiName, version: apiVersion,
+                    });
+                }
                 document.getElementById('traffic-over-time').scrollIntoView();
             }
         }
@@ -575,6 +584,7 @@ class APITrafficSummaryWidget extends Widget {
                                     handleVersionChange={this.handleVersionChange}
                                     handleOperationChange={this.handleOperationChange}
                                     handleDrillDownTypeChange={this.handleDrillDownTypeChange}
+                                    handleGraphQLOperationChange={this.handleGraphQLOperationChange}
                                     drillDownType={drillDownType}
                                     handleLimitChange={this.handleLimitChange}
                                 />
