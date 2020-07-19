@@ -32,6 +32,7 @@ import {
     RadioGroup, FormControlLabel, Radio, FormLabel,
 } from '@material-ui/core';
 import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
+import {DrillDownEnum} from "../../AppAndAPIErrorTable/src/Constants";
 
 const styles = theme => ({
     table: {
@@ -79,6 +80,10 @@ function CustomFormGroup(props) {
     } = props;
     const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
     const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
+    let filteredAPIList = apiList;
+    if (drillDownType === DrillDownEnum.RESOURCE) {
+        filteredAPIList = apiList.filter(item => item.API_TYPE !== 'WS');
+    }
     function renderVersionControls() {
         if (drillDownType === 'version' || drillDownType === 'resource') {
             return (
@@ -88,8 +93,8 @@ function CustomFormGroup(props) {
                         value={selectedVersion}
                         onChange={handleVersionChange}
                         placeholder='Select Version'
-                        getLabel={item => item[1]}
-                        getValue={item => item[0]}
+                        getLabel={item => item.API_VERSION}
+                        getValue={item => item.API_ID}
                     />
                 </FormControl>
             );
@@ -106,8 +111,8 @@ function CustomFormGroup(props) {
                         value={selectedResource}
                         onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
                         placeholder='Select Operation'
-                        getLabel={([, pattern, method]) => pattern + ' ( ' + method + ' )'}
-                        getValue={([urlId]) => urlId}
+                        getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
+                        getValue={item => item.URL_MAPPING_ID}
                     />
                 </FormControl>
             );
@@ -151,13 +156,13 @@ function CustomFormGroup(props) {
 
                 <FormControl className={classes.autoSelectForm}>
                     <IntegrationReactSelect
-                        options={apiList}
+                        options={filteredAPIList}
                         value={selectedAPI}
                         onChange={handleAPIChange}
-                        disabled={apiList && apiList.length === 0}
+                        disabled={filteredAPIList && filteredAPIList.length === 0}
                         placeholder='Select API'
-                        getLabel={item => item}
-                        getValue={item => item}
+                        getLabel={item => item.API_NAME}
+                        getValue={item => item.API_NAME}
                     />
                 </FormControl>
                 {renderVersionControls()}
