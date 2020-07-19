@@ -127,6 +127,7 @@ class APITrafficOverTimeWidget extends Widget {
         this.handleAPIChange = this.handleAPIChange.bind(this);
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleOperationChange = this.handleOperationChange.bind(this);
+        this.handleGraphQLOperationChange = this.handleGraphQLOperationChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
 
         this.loadingDrillDownData = this.loadingDrillDownData.bind(this);
@@ -309,7 +310,7 @@ class APITrafficOverTimeWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         if (selectedVersion && selectedVersion !== 'all') {
             // use == due to comparing int with string
-            const api = versionList.find(dataUnit => dataUnit[1] == selectedVersion);
+            const api = versionList.find(dataUnit => dataUnit[1] === selectedVersion);
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
@@ -334,11 +335,9 @@ class APITrafficOverTimeWidget extends Widget {
 
     handleLoadVersions(message) {
         const { data } = message;
-        const { selectedVersion } = this.state;
         if (data) {
             // use == because comparing int with string
-            const availableVersion = data.find(dataUnit => dataUnit[1] == selectedVersion);
-            this.setState({ versionList: data, selectedVersion: availableVersion ? selectedVersion : 'all' },
+            this.setState({ versionList: data },
                 this.loadOperations);
         } else {
             this.setState({ versionList: [], loading: false });
@@ -349,15 +348,9 @@ class APITrafficOverTimeWidget extends Widget {
         const { data } = message;
         const { selectedResource } = this.state;
         if (data && data.length > 0) {
-            let availableResource;
-            if (selectedResource !== 'all') {
-                const template = (selectedResource.split(' (')[0]).trim();
-                const verb = ((selectedResource.split(' (')[1]).split(')')[0]).trim();
-                availableResource = data.find(dataUnit => dataUnit[0] === template && dataUnit[1] === verb);
-            }
             this.setState({
                 operationList: data,
-                selectedResource: availableResource ? selectedResource : 'all',
+                selectedResource: selectedResource || 'all',
             });
         } else {
             this.setState({ operationList: data, loading: false });
@@ -429,17 +422,33 @@ class APITrafficOverTimeWidget extends Widget {
         const groupByPhase = [];
         const filterPhase = [];
 
+        const { operationList } = this.state;
         if (selectedAPI !== 'all') {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
-        if (selectedVersion !== 'all') {
+        if (selectedVersion && selectedVersion !== 'all') {
             filterPhase.push('apiVersion==\'' + selectedVersion + '\'');
         }
-        if (selectedResource !== 'all') {
-            const template = (selectedResource.split(' (')[0]).trim();
-            const verb = ((selectedResource.split(' (')[1]).split(')')[0]).trim();
-            filterPhase.push('apiResourceTemplate==\'' + template + '\'');
-            filterPhase.push('apiMethod==\'' + verb + '\'');
+        if (Array.isArray(selectedResource)) {
+            if (selectedResource.length > 0) {
+                const opsString = selectedResource
+                    .map(urlId => operationList.find(i => i[0] === urlId))
+                    .map(([, pattern]) => pattern).join(',');
+
+                const operation = operationList.find(i => i[0] === selectedResource[0]);
+                if (operation) {
+                    const [, , method] = operation;
+                    filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
+                    filterPhase.push('apiMethod==\'' + method + '\'');
+                }
+            }
+        } else if (selectedResource !== 'all') {
+            const operation = operationList.find(i => i[0] === selectedResource);
+            if (operation) {
+                const [, pattern, method] = operation;
+                filterPhase.push('apiResourceTemplate==\'' + pattern + '\'');
+                filterPhase.push('apiMethod==\'' + method + '\'');
+            }
         }
         selectPhase.push('AGG_TIMESTAMP', 'apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod',
             'sum(responseCount) as responseCount',
@@ -454,11 +463,18 @@ class APITrafficOverTimeWidget extends Widget {
 
     // start of handle filter change
     handleAPIChange(event) {
+        let value;
+        if (!event) {
+            // handle clear dropdown
+            value = 'all';
+        } else {
+            value = event.value;
+        }
         const { selectedLimit } = this.state;
-        this.loadingDrillDownData(event.target.value, 'all', 'all');
-        this.setQueryParam(event.target.value, 'all', 'all', selectedLimit);
+        this.loadingDrillDownData(value, 'all', 'all');
+        this.setQueryParam(value, 'all', 'all', selectedLimit);
         this.setState({
-            selectedAPI: event.target.value,
+            selectedAPI: value,
             selectedVersion: 'all',
             selectedResource: 'all',
             versionList: [],
@@ -469,11 +485,18 @@ class APITrafficOverTimeWidget extends Widget {
     }
 
     handleVersionChange(event) {
+        let value;
+        if (!event) {
+            // handle clear dropdown
+            value = 'all';
+        } else {
+            value = event.value;
+        }
         const { selectedAPI, selectedLimit } = this.state;
-        this.loadingDrillDownData(selectedAPI, event.target.value, 'all');
-        this.setQueryParam(selectedAPI, event.target.value, 'all', selectedLimit);
+        this.loadingDrillDownData(selectedAPI, value, 'all');
+        this.setQueryParam(selectedAPI, value, 'all', selectedLimit);
         this.setState({
-            selectedVersion: event.target.value,
+            selectedVersion: value,
             selectedResource: 'all',
             operationList: [],
             loading: true,
@@ -481,10 +504,37 @@ class APITrafficOverTimeWidget extends Widget {
     }
 
     handleOperationChange(event) {
-        const { selectedAPI, selectedVersion, selectedLimit } = this.state;
-        this.loadingDrillDownData(selectedAPI, selectedVersion, event.target.value);
-        this.setQueryParam(selectedAPI, selectedVersion, event.target.value, selectedLimit);
-        this.setState({ selectedResource: event.target.value, loading: true });
+        let value;
+        if (!event) {
+            // handle clear dropdown
+            value = 'all';
+        } else {
+            value = event.value;
+        }
+        const {
+            selectedAPI, selectedVersion, selectedLimit,
+        } = this.state;
+
+        this.loadingDrillDownData(selectedAPI, selectedVersion, value);
+        this.setQueryParam(selectedAPI, selectedVersion, value, selectedLimit);
+        this.setState({ selectedResource: value, loading: true });
+    }
+
+    handleGraphQLOperationChange(data) {
+        let selectedResource;
+        if (data == null || data.length === 0) {
+            selectedResource = 'all';
+        } else {
+            const ids = data.map(row => row.value);
+            selectedResource = ids;
+        }
+        const {
+            selectedAPI, selectedVersion,
+        } = this.state;
+        this.setState({
+            selectedResource,
+        });
+        this.loadingDrillDownData(selectedAPI, selectedVersion, selectedResource);
     }
 
     handleLimitChange(event) {
@@ -588,6 +638,7 @@ class APITrafficOverTimeWidget extends Widget {
                                 handleAPIChange={this.handleAPIChange}
                                 handleVersionChange={this.handleVersionChange}
                                 handleOperationChange={this.handleOperationChange}
+                                handleGraphQLOperationChange={this.handleGraphQLOperationChange}
                                 handleLimitChange={this.handleLimitChange}
                             />
                             {!loading ? (
