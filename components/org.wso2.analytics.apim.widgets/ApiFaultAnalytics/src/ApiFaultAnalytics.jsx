@@ -159,7 +159,7 @@ function ApiFaultAnalytics(props) {
             >
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='API ERRORS OVER TIME' />
+                        <FormattedMessage id='widget.heading' defaultMessage='API FAULTS OVER TIME' />
                     </div>
                 </div>
                 <div style={styles.formWrapper}>

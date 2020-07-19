@@ -8,5 +8,5 @@
   "table.heading.count": "COUNT",
   "table.heading.time": "TIME",
   "table.title": "ERRORS BY APPLICATION",
-  "widget.heading": "API ERRORS OVER TIME"
+  "widget.heading": "API FAULTS OVER TIME"
 }

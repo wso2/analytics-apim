@@ -117,7 +117,7 @@ export default function OverallFaultAnalytics(props) {
             >
                 <div style={styles.headingWrapper}>
                     <div style={styles.heading}>
-                        <FormattedMessage id='widget.heading' defaultMessage='ERRORS DURING PAST 30 DAYS' />
+                        <FormattedMessage id='widget.heading' defaultMessage='FAULTS DURING PAST 30 DAYS' />
                     </div>
                 </div>
                 { inProgress ? (

@@ -122,7 +122,7 @@ export default function Top10ApiPerformanceOverTime(props) {
                     <div style={styles.heading}>
                         <FormattedMessage
                             id='widget.heading'
-                            defaultMessage='TOP 10 API PERFORMANCE DURING PAST 30 DAYS'
+                            defaultMessage="TOP 10 API's PERFORMANCE DURING PAST 30 DAYS"
                         />
                     </div>
                 </div>
