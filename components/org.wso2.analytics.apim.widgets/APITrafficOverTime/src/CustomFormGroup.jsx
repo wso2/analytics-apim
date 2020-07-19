@@ -104,7 +104,7 @@ function CustomFormGroup(props) {
                     onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
                     placeholder='Select Operation'
                     getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
-                    getValue={item => item.URL_MAPPING_ID}
+                    getValue={item => item.id}
                 />
             </FormControl>
         );

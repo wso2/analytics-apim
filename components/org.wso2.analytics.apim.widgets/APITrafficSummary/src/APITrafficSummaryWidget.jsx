@@ -506,7 +506,7 @@ class APITrafficSummaryWidget extends Widget {
      * */
     handleOnClick(event, data) {
         const { configs } = this.props;
-        const { operationList } = this.state;
+        const { drillDownType } = this.state;
 
         if (configs && configs.options) {
             const { drillDown } = configs.options;
@@ -515,17 +515,19 @@ class APITrafficSummaryWidget extends Widget {
                 const {
                     apiName, apiVersion, apiResourceTemplate, apiMethod,
                 } = data;
-                const operation = operationList.find(i => i[1] === apiResourceTemplate && i[2] === apiMethod);
-                if (operation) {
-                    const [resourceId] = operation;
-                    this.publishSelection({
-                        api: apiName, version: apiVersion, resource: resourceId,
-                    });
-                } else {
-                    this.publishSelection({
-                        api: apiName, version: apiVersion,
-                    });
+                const dataObj = {};
+                if (drillDownType === DrillDownEnum.API) {
+                    dataObj.api = apiName;
+                } else if (drillDownType === DrillDownEnum.VERSION) {
+                    dataObj.api = apiName;
+                    dataObj.version = apiVersion;
+                } else if (drillDownType === DrillDownEnum.RESOURCE) {
+                    dataObj.api = apiName;
+                    dataObj.version = apiVersion;
+                    dataObj.apiResourceTemplate = apiResourceTemplate;
+                    dataObj.apiMethod = apiMethod;
                 }
+                this.publishSelection(dataObj);
                 document.getElementById('traffic-over-time').scrollIntoView();
             }
         }
