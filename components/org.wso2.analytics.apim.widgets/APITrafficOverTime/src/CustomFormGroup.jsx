@@ -32,6 +32,7 @@ import {
     RadioGroup, FormControlLabel, Radio, FormLabel,
 } from '@material-ui/core';
 import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
+import {DrillDownEnum} from "../../AppAndAPIErrorTable/src/Constants";
 
 const styles = theme => ({
     table: {
@@ -87,8 +88,8 @@ function CustomFormGroup(props) {
                     value={selectedVersion}
                     onChange={handleVersionChange}
                     placeholder='Select Version'
-                    getLabel={item => item[1]}
-                    getValue={item => item[1]}
+                    getLabel={item => item.API_VERSION}
+                    getValue={item => item.API_VERSION}
                 />
             </FormControl>
         );
@@ -102,8 +103,8 @@ function CustomFormGroup(props) {
                     value={selectedResource}
                     onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
                     placeholder='Select Operation'
-                    getLabel={([, pattern, method]) => pattern + ' ( ' + method + ' )'}
-                    getValue={([urlId]) => urlId}
+                    getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
+                    getValue={item => item.id}
                 />
             </FormControl>
         );

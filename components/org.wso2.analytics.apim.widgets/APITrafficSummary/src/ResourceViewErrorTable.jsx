@@ -107,22 +107,23 @@ class APIViewErrorTable extends React.Component {
                 <VictoryChart
                     responsive
                     domainPadding={{ x: [20, 20] }}
-                    padding={{
-                        top: 50, bottom: 50, right: 50, left: 50,
-                    }}
                     theme={VictoryTheme.material}
                     height={400}
                     width={800}
+                    padding={{
+                        top: 50, bottom: 100, right: 50, left: 50,
+                    }}
                 >
                     <VictoryAxis
                         label={() => 'API Operation'.toUpperCase()}
+                        tickCount={10}
                         tickLabelComponent={<VictoryLabel angle={45} />}
                         style={{
                             axis: { stroke: '#756f6a' },
-                            axisLabel: { fontSize: 15, padding: 30 },
+                            axisLabel: { fontSize: 15 },
                             grid: { stroke: () => 0 },
                             ticks: { stroke: 'grey', size: 5 },
-                            tickLabels: { fontSize: 9, padding: 5 },
+                            tickLabels: { fontSize: 9, textAnchor: 'start' },
                         }}
                     />
                     <VictoryAxis
@@ -131,7 +132,7 @@ class APIViewErrorTable extends React.Component {
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
-                            grid: { stroke: () => 0 },
+                            grid: { strokeDasharray: '10, 5', strokeWidth: 0.5, strokeOpacity: 0.3 },
                             ticks: { stroke: 'grey', size: 5 },
                             tickLabels: { fontSize: 9, padding: 5 },
                         }}

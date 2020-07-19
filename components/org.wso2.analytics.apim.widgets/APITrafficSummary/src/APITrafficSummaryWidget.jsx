@@ -31,6 +31,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Scrollbars from 'react-custom-scrollbars';
 import CustomFormGroup from './CustomFormGroup';
 import ResourceViewErrorTable from './ResourceViewErrorTable';
+import {DrillDownEnum} from "../../AppAndAPIErrorTable/src/Constants";
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -83,7 +84,7 @@ class APITrafficSummaryWidget extends Widget {
             selectedAPI: -1,
             selectedVersion: -1,
             selectedResource: -1,
-            selectedLimit: 5,
+            selectedLimit: 10,
             drillDownType: 'api',
             data: [],
 
@@ -240,21 +241,58 @@ class APITrafficSummaryWidget extends Widget {
     }
 
     handleLoadApis(message) {
-        const { data } = message;
-        const apiList = data.map(([apiName]) => {
-            return apiName;
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
         });
-        this.setState({ apiList });
+
+        if (data.length !== 0) {
+            this.setState({
+                apiList: newData,
+            });
+        } else {
+            this.setState({
+                apiList: [], selectedVersion: -1, selectedResource: -1,
+            });
+        }
     }
 
     handleLoadVersions(message) {
-        const { data } = message;
-        this.setState({ versionList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ versionList: newData, selectedResource: -1 });
+        } else {
+            this.setState({ versionList: [], selectedResource: -1 });
+        }
     }
 
     handleLoadOperations(message) {
-        const { data } = message;
-        this.setState({ operationList: data });
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+
+        if (data.length !== 0) {
+            this.setState({ operationList: newData });
+        } else {
+            this.setState({ operationList: [] });
+        }
     }
     // end of filter loading
 
@@ -351,28 +389,24 @@ class APITrafficSummaryWidget extends Widget {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
         if (selectedVersion !== -1) {
-            const ver = versionList.filter(([versionId]) => {
-                return versionId === selectedVersion;
-            });
-            filterPhase.push('apiVersion==\'' + ver[0][1] + '\'');
+            const api = versionList.find(i => i.API_ID === selectedVersion);
+            filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
         if (Array.isArray(selectedResource)) {
             if (selectedResource.length > 0) {
                 const opsString = selectedResource
-                    .map(urlId => operationList.find(i => i[0] === urlId))
-                    .map(([, pattern]) => pattern).join(',');
-
-                const operation = operationList.find(i => i[0] === selectedResource[0]);
-                const [, , method] = operation;
-
+                    .map(id => operationList.find(i => i.URL_MAPPING_ID === id))
+                    .map(d => d.URL_PATTERN)
+                    .sort()
+                    .join(',');
+                const firstOp = operationList.find(i => i.URL_MAPPING_ID === selectedResource[0]);
                 filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
-                filterPhase.push('apiMethod==\'' + method + '\'');
+                filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
             }
         } else if (selectedResource > -1) {
-            const operation = operationList.find(i => i[0] === selectedResource);
-            const [, pattern, method] = operation;
-            filterPhase.push('apiResourceTemplate==\'' + pattern + '\'');
-            filterPhase.push('apiMethod==\'' + method + '\'');
+            const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
+            filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
+            filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
         }
         selectPhase.push('apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod',
             'sum(responseCount) as responseCount',
@@ -385,56 +419,59 @@ class APITrafficSummaryWidget extends Widget {
 
 
     // start of handle filter change
-    handleAPIChange(event) {
-        let value;
-        if (!event) {
-            // handle clear dropdown
-            value = -1;
+    handleAPIChange(data) {
+        let selectedAPI;
+        if (data == null) {
+            selectedAPI = -1;
         } else {
-            value = event.value;
+            const { value } = data;
+            selectedAPI = value;
+            const { drillDownType } = this.state;
+            if (drillDownType === DrillDownEnum.VERSION || drillDownType === DrillDownEnum.RESOURCE) {
+                this.loadVersions(selectedAPI);
+            }
         }
         this.setState({
-            selectedAPI: value,
-            selectedResource: -1,
-            selectedVersion: -1,
+            selectedAPI,
             versionList: [],
             operationList: [],
-        }, this.loadingDrillDownData);
-        this.loadVersions(value);
-    }
-
-    handleVersionChange(event) {
-        let value;
-        if (!event) {
-            // handle clear dropdown
-            value = -1;
-        } else {
-            value = event.value;
-        }
-        this.setState({
-            selectedVersion: value,
-            operationList: [],
+            selectedVersion: -1,
             selectedResource: -1,
         }, this.loadingDrillDownData);
-        const { versionList } = this.state;
-        const api = versionList.filter(([apiVersionID]) => {
-            return apiVersionID === value;
-        });
-        if (api && api[0]) {
-            this.loadOperations(api[0][0]);
+    }
+
+    handleVersionChange(data) {
+        let selectedVersion;
+        if (data == null) {
+            selectedVersion = -1;
+        } else {
+            const { value } = data;
+            selectedVersion = value;
+            const { drillDownType, versionList } = this.state;
+            const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
+            if (selectedVersion) {
+                if (drillDownType === DrillDownEnum.RESOURCE && selectedAPI.API_TYPE !== 'WS') {
+                    this.loadOperations(selectedVersion);
+                }
+            }
         }
+        this.setState({
+            selectedVersion,
+            selectedResource: -1,
+            operationList: [],
+        }, this.loadingDrillDownData);
     }
 
     handleOperationChange(event) {
-        let value;
+        let selectedResource;
         if (!event) {
             // handle clear dropdown
-            value = -1;
-            return this.setState({ selectedResource: value }, this.loadingDrillDownData);
+            selectedResource = -1;
         } else {
-            value = event.value;
+            const { value } = event;
+            selectedResource = value;
         }
-        this.setState({ selectedResource: value }, this.loadingDrillDownData);
+        this.setState({ selectedResource }, this.loadingDrillDownData);
     }
 
     handleGraphQLOperationChange(data) {
@@ -469,7 +506,7 @@ class APITrafficSummaryWidget extends Widget {
      * */
     handleOnClick(event, data) {
         const { configs } = this.props;
-        const { operationList } = this.state;
+        const { drillDownType } = this.state;
 
         if (configs && configs.options) {
             const { drillDown } = configs.options;
@@ -478,17 +515,19 @@ class APITrafficSummaryWidget extends Widget {
                 const {
                     apiName, apiVersion, apiResourceTemplate, apiMethod,
                 } = data;
-                const operation = operationList.find(i => i[1] === apiResourceTemplate && i[2] === apiMethod);
-                if (operation) {
-                    const [resourceId] = operation;
-                    this.publishSelection({
-                        api: apiName, version: apiVersion, resource: resourceId,
-                    });
-                } else {
-                    this.publishSelection({
-                        api: apiName, version: apiVersion,
-                    });
+                const dataObj = {};
+                if (drillDownType === DrillDownEnum.API) {
+                    dataObj.api = apiName;
+                } else if (drillDownType === DrillDownEnum.VERSION) {
+                    dataObj.api = apiName;
+                    dataObj.version = apiVersion;
+                } else if (drillDownType === DrillDownEnum.RESOURCE) {
+                    dataObj.api = apiName;
+                    dataObj.version = apiVersion;
+                    dataObj.apiResourceTemplate = apiResourceTemplate;
+                    dataObj.apiMethod = apiMethod;
                 }
+                this.publishSelection(dataObj);
                 document.getElementById('traffic-over-time').scrollIntoView();
             }
         }

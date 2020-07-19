@@ -40,6 +40,8 @@ import {
     VictoryStack,
     VictoryBar,
     VictoryLine,
+    VictoryGroup,
+    VictoryScatter,
 } from 'victory';
 import Moment from 'moment';
 import { FormattedMessage } from 'react-intl';
@@ -75,6 +77,7 @@ class APIViewErrorTable extends React.Component {
         this.handleFaultySelectChange = this.handleFaultySelectChange.bind(this);
         this.handleTrottledSelectChange = this.handleTrottledSelectChange.bind(this);
         this.getChartForAPI = this.getChartForAPI.bind(this);
+        this.renderLineAndScatter = this.renderLineAndScatter.bind(this);
 
         this.styles = {
             dataWrapper: {
@@ -91,30 +94,51 @@ class APIViewErrorTable extends React.Component {
     }
 
     getChartForAPI() {
-        const timeFormat = 'Y-m-d HH:MM:SS';
-        const barRatio = 0.2;
-        const barWidth = 15;
-        const { data } = this.props;
+        const { perValue } = this.props;
+        let { data } = this.props;
         const {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
-        const strokeWidth = 1;
+        const timeFormat = 'MMM DD, YYYY hh:mm:ss A';
+        let unit;
+        let label;
+        if (perValue === 'day') {
+            unit = 'days';
+            label = 'Time (Day)';
+        } else if (perValue === 'hour') {
+            unit = 'hour';
+            label = 'Time (Hour)';
+        } else if (perValue === 'minute') {
+            unit = 'minutes';
+            label = 'Time (Minute)';
+        } else if (perValue === 'second') {
+            unit = 'seconds';
+            label = 'Time (Second)';
+        } else if (perValue === 'month') {
+            unit = 'months';
+            label = 'Time (Month)';
+        } else if (perValue === 'year') {
+            unit = 'years';
+            label = 'Time (Year)';
+        }
+
+        data = data.map((item) => {
+            item.from = Moment(item.AGG_TIMESTAMP).format(timeFormat);
+            item.to = Moment(item.AGG_TIMESTAMP).add(1, unit).format(timeFormat);
+            return item;
+        });
+
         return (
             <div>
                 <VictoryChart
                     responsive={false}
                     domainPadding={{ x: [20, 20] }}
-                    padding={{
-                        top: 50, bottom: 50, right: 50, left: 50,
-                    }}
                     theme={VictoryTheme.material}
                     height={400}
                     width={800}
-                    containerComponent={
-                        <VictoryVoronoiContainer />
-                    }
-                // style={{ parent: { maxWidth: 800 } }}
-                // scale={{ x: 20 }}
+                    padding={{
+                        top: 50, bottom: 100, right: 50, left: 50,
+                    }}
                 >
                     <VictoryAxis
                         label={() => 'Time'.toUpperCase()}
@@ -122,13 +146,14 @@ class APIViewErrorTable extends React.Component {
                             const moment = Moment(Number(time));
                             return moment.format(timeFormat);
                         }}
+                        tickCount={10}
                         tickLabelComponent={<VictoryLabel angle={45} />}
                         style={{
                             axis: { stroke: '#756f6a' },
-                            axisLabel: { fontSize: 15, padding: 30 },
+                            axisLabel: { fontSize: 15 },
                             grid: { stroke: () => 0 },
                             ticks: { stroke: 'grey', size: 5 },
-                            tickLabels: { fontSize: 9, padding: 5 },
+                            tickLabels: { fontSize: 9, textAnchor: 'start' },
                         }}
                     />
                     <VictoryAxis
@@ -137,59 +162,14 @@ class APIViewErrorTable extends React.Component {
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
-                            grid: { stroke: () => 0 },
+                            grid: { strokeDasharray: '10, 5', strokeWidth: 0.5, strokeOpacity: 0.3 },
                             ticks: { stroke: 'grey', size: 5 },
                             tickLabels: { fontSize: 9, padding: 5 },
                         }}
                     />
-                    {successSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[0], strokeWidth } }}
-                            alignment='start'
-                            barRatio={barRatio}
-                            barWidth={barWidth}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Success Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.responseCount],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP}
-                            y={d => d.responseCount}
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    )}
-                    {faultySelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[1], strokeWidth } }}
-                            alignment='start'
-                            barRatio={barRatio}
-                            barWidth={barWidth}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Faulty Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.faultCount],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP}
-                            y={d => d.faultCount}
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    )}
-                    {throttledSelected && (
-                        <VictoryLine
-                            style={{ data: { stroke: colorScale[2], strokeWidth } }}
-                            alignment='start'
-                            barRatio={barRatio}
-                            barWidth={barWidth}
-                            data={data.map(row => ({
-                                ...row,
-                                label: ['Throttled Count', Moment(row.AGG_TIMESTAMP).format(timeFormat),
-                                    row.throttledCount],
-                            }))}
-                            x={d => d.AGG_TIMESTAMP}
-                            y={d => d.throttledCount}
-                            labelComponent={<VictoryTooltip />}
-                        />
-                    )}
+                    {this.renderLineAndScatter(successSelected, data, colorScale[0], 'responseCount', 'Success Count')}
+                    {this.renderLineAndScatter(faultySelected, data, colorScale[1], 'faultCount', 'Faulty Count')}
+                    {this.renderLineAndScatter(throttledSelected, data, colorScale[2], 'throttledCount', 'Throttled Count')}
                 </VictoryChart>
 
             </div>
@@ -212,6 +192,38 @@ class APIViewErrorTable extends React.Component {
         this.setState({
             throttledSelected: event.target.checked,
         });
+    }
+
+    renderLineAndScatter(enabled, data, color, y, label) {
+        const barRatio = 0.2;
+        const strokeWidth = 1;
+        if (!enabled) {
+            return null;
+        }
+        return (
+            <VictoryGroup>
+                <VictoryLine
+                    style={{ data: { stroke: color, strokeWidth } }}
+                    alignment='start'
+                    barRatio={barRatio}
+                    data={data}
+                    x={d => d.AGG_TIMESTAMP}
+                    y={y}
+                />
+                <VictoryScatter
+                    style={{ data: { fill: color } }}
+                    size={3}
+                    data={data.map(row => ({
+                        ...row,
+                        label: [label, 'From: ' + row.from, 'To: ' + row.to,
+                            'Count: ' + row[y]],
+                    }))}
+                    x={d => d.AGG_TIMESTAMP}
+                    y={y}
+                    labelComponent={<VictoryTooltip />}
+                />
+            </VictoryGroup>
+        );
     }
 
     render() {

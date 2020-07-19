@@ -95,7 +95,7 @@ class APITrafficOverTimeWidget extends Widget {
             selectedAPI: 'all',
             selectedVersion: 'all',
             selectedResource: 'all',
-            selectedLimit: 5,
+            selectedLimit: 10,
             data: [],
 
             apiList: [],
@@ -200,7 +200,7 @@ class APITrafficOverTimeWidget extends Widget {
             selectedAPI, selectedVersion, selectedResource, limit: selectedLimit,
         } = super.getGlobalState(queryParamKey);
         if (!selectedLimit || selectedLimit < 0) {
-            selectedLimit = 5;
+            selectedLimit = 10;
             super.setGlobalState(queryParamKey, {
                 selectedAPI, selectedVersion, selectedResource, selectedLimit,
             });
@@ -238,8 +238,20 @@ class APITrafficOverTimeWidget extends Widget {
         const queryParam = super.getGlobalState('dtrp');
         const { sync } = queryParam;
         const {
-            from, to, granularity, api, version, resource,
+            from, to, granularity, api, version, apiResourceTemplate, apiMethod,
         } = receivedMsg;
+        let selectedResource;
+        if (apiResourceTemplate && apiMethod) {
+            const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
+            const isGraphQL = graphQLOps.includes(apiMethod);
+            if (isGraphQL) {
+                selectedResource = apiResourceTemplate.split(',').map(resource => resource + '_' + apiMethod);
+            } else {
+                selectedResource = apiResourceTemplate + '_' + apiMethod;
+            }
+        } else {
+            selectedResource = 'all';
+        }
         const { selectedLimit } = this.state;
 
         // Insert the code to handle publisher data
@@ -254,7 +266,7 @@ class APITrafficOverTimeWidget extends Widget {
                 loading: true,
             }, this.loadApis);
             super.setGlobalState(queryParamKey, {
-                selectedAPI: api, selectedVersion: version, selectedResource: resource, selectedLimit,
+                selectedAPI: api, selectedVersion: version, selectedResource, selectedLimit,
             });
         } else if (from) {
             this.setState({
@@ -267,11 +279,11 @@ class APITrafficOverTimeWidget extends Widget {
             this.setState({
                 selectedAPI: api,
                 selectedVersion: version,
-                selectedResource: resource,
+                selectedResource,
                 loading: true,
             }, this.loadApis);
             super.setGlobalState(queryParamKey, {
-                selectedAPI: api, selectedVersion: version, selectedResource: resource, selectedLimit,
+                selectedAPI: api, selectedVersion: version, selectedResource, selectedLimit,
             });
         }
     }
@@ -310,11 +322,11 @@ class APITrafficOverTimeWidget extends Widget {
         const { id, widgetID: widgetName } = this.props;
         if (selectedVersion && selectedVersion !== 'all') {
             // use == due to comparing int with string
-            const api = versionList.find(dataUnit => dataUnit[1] === selectedVersion);
+            const api = versionList.find(dataUnit => dataUnit.API_VERSION === selectedVersion);
             const dataProviderConfigs = cloneDeep(providerConfig);
             dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
             dataProviderConfigs.configs.config.queryData.queryValues = {
-                '{{apiID}}': api[0],
+                '{{apiID}}': api.API_ID,
             };
             super.getWidgetChannelManager()
                 .subscribeWidget(id + CALLBACK_OPERATION, widgetName, this.handleLoadOperations, dataProviderConfigs);
@@ -322,11 +334,18 @@ class APITrafficOverTimeWidget extends Widget {
     }
 
     handleLoadApis(message) {
-        const { data } = message;
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
         const { selectedAPI } = this.state;
-        if (data) {
-            const availableApi = data.find(dataUnit => dataUnit[0] === selectedAPI);
-            const apiList = data.map((dataUnit) => { return dataUnit[0]; });
+        if (newData) {
+            const availableApi = newData.find(dataUnit => dataUnit.API_NAME === selectedAPI);
+            const apiList = newData.map((dataUnit) => { return dataUnit.API_NAME; });
             this.setState({ apiList, selectedAPI: availableApi ? selectedAPI : 'all' }, this.loadVersions);
         } else {
             this.setState({ apiList: [], loading: false });
@@ -334,26 +353,47 @@ class APITrafficOverTimeWidget extends Widget {
     }
 
     handleLoadVersions(message) {
-        const { data } = message;
-        if (data) {
+        const { data, metadata: { names } } = message;
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        });
+        if (newData) {
             // use == because comparing int with string
-            this.setState({ versionList: data },
-                this.loadOperations);
+            this.setState({ versionList: newData, operationList: [] }, () => {
+                if (newData[0] && newData[0].API_TYPE !== 'WS') {
+                    this.loadOperations();
+                }
+            });
         } else {
-            this.setState({ versionList: [], loading: false });
+            this.setState({ versionList: [], operationList: [], loading: false });
         }
     }
 
     handleLoadOperations(message) {
-        const { data } = message;
+        const { data, metadata: { names } } = message;
         const { selectedResource } = this.state;
-        if (data && data.length > 0) {
+        const newData = data.map((row) => {
+            const obj = {};
+            for (let j = 0; j < row.length; j++) {
+                obj[names[j]] = row[j];
+            }
+            return obj;
+        })
+            .map((item) => {
+                item.id = item.URL_PATTERN + '_' + item.HTTP_METHOD;
+                return item;
+            });
+        if (newData && newData.length > 0) {
             this.setState({
-                operationList: data,
+                operationList: newData,
                 selectedResource: selectedResource || 'all',
             });
         } else {
-            this.setState({ operationList: data, loading: false });
+            this.setState({ operationList: newData, loading: false });
         }
     }
     // end of filter loading
@@ -432,22 +472,17 @@ class APITrafficOverTimeWidget extends Widget {
         if (Array.isArray(selectedResource)) {
             if (selectedResource.length > 0) {
                 const opsString = selectedResource
-                    .map(urlId => operationList.find(i => i[0] === urlId))
-                    .map(([, pattern]) => pattern).join(',');
-
-                const operation = operationList.find(i => i[0] === selectedResource[0]);
-                if (operation) {
-                    const [, , method] = operation;
-                    filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
-                    filterPhase.push('apiMethod==\'' + method + '\'');
-                }
+                    .map(d => d.split('_')[0])
+                    .sort()
+                    .join(',');
+                filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
+                filterPhase.push('apiMethod==\'' + selectedResource[0].split('_')[1] + '\'');
             }
         } else if (selectedResource !== 'all') {
-            const operation = operationList.find(i => i[0] === selectedResource);
+            const operation = selectedResource.split('_');
             if (operation) {
-                const [, pattern, method] = operation;
-                filterPhase.push('apiResourceTemplate==\'' + pattern + '\'');
-                filterPhase.push('apiMethod==\'' + method + '\'');
+                filterPhase.push('apiResourceTemplate==\'' + operation[0] + '\'');
+                filterPhase.push('apiMethod==\'' + operation[1] + '\'');
             }
         }
         selectPhase.push('AGG_TIMESTAMP', 'apiName', 'apiVersion', 'apiResourceTemplate', 'apiMethod',
@@ -485,22 +520,29 @@ class APITrafficOverTimeWidget extends Widget {
     }
 
     handleVersionChange(event) {
-        let value;
+        let selectedVersion;
         if (!event) {
             // handle clear dropdown
-            value = 'all';
+            selectedVersion = 'all';
         } else {
-            value = event.value;
+            const { value } = event;
+            selectedVersion = value;
         }
         const { selectedAPI, selectedLimit } = this.state;
-        this.loadingDrillDownData(selectedAPI, value, 'all');
-        this.setQueryParam(selectedAPI, value, 'all', selectedLimit);
+        this.loadingDrillDownData(selectedAPI, selectedVersion, 'all');
+        this.setQueryParam(selectedAPI, selectedVersion, 'all', selectedLimit);
         this.setState({
-            selectedVersion: value,
+            selectedVersion,
             selectedResource: 'all',
             operationList: [],
             loading: true,
-        }, this.loadOperations);
+        }, () => {
+            const { versionList } = this.state;
+            const selectedVersionObj = versionList.find(item => item.API_VERSION === selectedVersion);
+            if (selectedVersionObj && selectedVersionObj.API_TYPE !== 'WS') {
+                this.loadOperations();
+            }
+        });
     }
 
     handleOperationChange(event) {
