@@ -373,8 +373,8 @@ class APIMAlertSummaryWidget extends Widget {
      * */
     handleApiChange(value) {
         const { limit } = this.state;
-        this.setQueryParam(value, limit);
-        this.setState({ selectedApi: value, inProgress: true }, this.assembleApiAlerts);
+        this.setQueryParam(value.value, limit);
+        this.setState({ selectedApi: value.value, inProgress: true }, this.assembleApiAlerts);
     }
 
     /**
