@@ -23,18 +23,17 @@ import {
 } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Axios from 'axios';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import Button from '@material-ui/core/Button';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import PersonIcon from '@material-ui/icons/Person';
-import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
 import cloneDeep from 'lodash/cloneDeep';
 import CustomIcon from './CustomIcon';
+import Autocomplete from './Autocomplete';
 
 const DIMENSION_API = 'api';
 const DIMENSION_PROVIDER = 'api provider';
@@ -95,7 +94,6 @@ class DimensionSelectorWidget extends Widget {
             providers: [],
             dimension: null,
             options: null,
-            optionLabel: null,
             refreshInterval: 3600000, // 1hr
             refreshIntervalId: null,
             inProgress: true,
@@ -437,7 +435,7 @@ class DimensionSelectorWidget extends Widget {
      * */
     handleApiListReceived(list) {
         let {
-            options, optionLabel, noOptionsText,
+            options, noOptionsText,
         } = { ...this.state };
         const {
             selectMultiple, defaultDimension, selectedDimensions, isManager, selectAll,
@@ -477,11 +475,8 @@ class DimensionSelectorWidget extends Widget {
 
             if (dimension === DIMENSION_API) {
                 options = apis;
-                optionLabel = option => (option.name === 'All' ? option.name
-                    : option.name + ' :: ' + option.version + ' (' + option.provider + ')');
             } else if (dimension === DIMENSION_PROVIDER) {
                 options = providers;
-                optionLabel = option => option;
             }
 
             const selectedOptions = this.filterSelectedOption(dimension, options, op, selectMultiple);
@@ -494,7 +489,6 @@ class DimensionSelectorWidget extends Widget {
                 apis,
                 providers,
                 options,
-                optionLabel,
                 noOptionsText,
                 inProgress: false,
                 selectedOptions: selectMultiple ? selectedOptions : selectedOptions[0],
@@ -507,7 +501,6 @@ class DimensionSelectorWidget extends Widget {
                 apis: [],
                 providers: [],
                 options: [],
-                optionLabel: option => option,
                 noOptionsText,
                 selectedOptions: selectMultiple ? [] : null,
                 inProgress: false,
@@ -580,17 +573,13 @@ class DimensionSelectorWidget extends Widget {
 
         let noOptionsText = '';
         let options = [];
-        let optionLabel;
 
         if (dimension === DIMENSION_API) {
             noOptionsText = 'No APIs available';
             options = apis;
-            optionLabel = option => (option.name === 'All' ? option.name
-                : option.name + ' :: ' + option.version + ' (' + option.provider + ')');
         } else if (dimension === DIMENSION_PROVIDER) {
             noOptionsText = 'No providers available';
             options = providers;
-            optionLabel = option => option;
         }
 
         const selectedOptions = options.length > 0 ? [options[0]] : [];
@@ -603,7 +592,6 @@ class DimensionSelectorWidget extends Widget {
         this.setState({
             dimension,
             options,
-            optionLabel,
             noOptionsText,
             selectedOptions: selectMultiple ? selectedOptions : selectedOptions[0],
             inProgress: false,
@@ -689,7 +677,7 @@ class DimensionSelectorWidget extends Widget {
      */
     render() {
         const {
-            messages, faultyProviderConf, options, optionLabel, inProgress, proxyError, noOptionsText, height,
+            messages, faultyProviderConf, options, inProgress, proxyError, noOptionsText, height,
             selectedOptions, dimension, selectMultiple, selectedDimensions,
         } = this.state;
         const {
@@ -698,6 +686,14 @@ class DimensionSelectorWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
+
+        const autocompleteProps = {
+            options,
+            selectMultiple,
+            selectedOptions,
+            noOptionsText,
+            dimension,
+        };
 
         if (inProgress) {
             return (
@@ -826,28 +822,8 @@ class DimensionSelectorWidget extends Widget {
                                         )}
                                         >
                                             <Autocomplete
-                                                multiple={selectMultiple}
-                                                filterSelectedOptions
-                                                id='tags-standard'
-                                                ListboxProps={{ style: { maxHeight: 400, overflow: 'auto' } }}
-                                                options={options}
-                                                getOptionLabel={optionLabel}
-                                                renderInput={params => (
-                                                    <TextField
-                                                        {...params}
-                                                        variant='outlined'
-                                                        fullWidth
-                                                    />
-                                                )}
-                                                value={selectedOptions}
-                                                onChange={(event, value) => this.handleChangeSelection(value)}
-                                                noOptionsText={noOptionsText}
-                                                loadingText={(
-                                                    <FormattedMessage
-                                                        id='search.loading'
-                                                        defaultMessage='Loading options...'
-                                                    />
-                                                )}
+                                                {...autocompleteProps}
+                                                onChange={value => this.handleChangeSelection(value)}
                                             />
                                         </Tooltip>
                                     </div>

@@ -8,6 +8,8 @@
   "dimension.api.tooltip" : "Viewing stats by 'API'. Click to change the view to 'API Provider'",
   "dimension.provider" : "API Provider",
   "dimension.provider.tooltip" : "Viewing stats by 'API Provider'. Click to change the view to 'API'.",
+  "no.options.api": "No APIs available",
+  "no.options.provider": "No providers available",
   "search.loading": "Loading options...",
   "search.tooltip.api": "Select API(s) to view stats",
   "search.tooltip.provider": "Select API Provider(s) to view stats",
