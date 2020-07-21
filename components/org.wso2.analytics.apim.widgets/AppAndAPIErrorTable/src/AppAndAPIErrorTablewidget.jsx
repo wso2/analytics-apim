@@ -298,12 +298,19 @@ class AppAndAPIErrorTablewidget extends Widget {
             .subscribeWidget(id + '_loadVersions', widgetName, this.handleLoadVersions, dataProviderConfigs);
     }
 
-    loadOperations(selectedVersion) {
+    loadOperations(selectedVersion, apiType) {
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        if (apiType === 'APIProduct') {
+            dataProviderConfigs.configs = dataProviderConfigs.listProductQueryConfigs;
+            const { config } = dataProviderConfigs.configs;
+            config.queryData.queryName = 'productOperationsQuery';
+            dataProviderConfigs.configs.config = config;
+        } else {
+            dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        }
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{selectedVersion}}': selectedVersion,
         };
@@ -647,7 +654,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
             if (selectedVersion) {
                 if (drillDownType === DrillDownEnum.RESOURCE && selectedAPI.API_TYPE !== 'WS') {
-                    this.loadOperations(selectedVersion);
+                    this.loadOperations(selectedVersion, selectedAPI.API_TYPE);
                 }
             }
         }
@@ -725,9 +732,9 @@ class AppAndAPIErrorTablewidget extends Widget {
             this.setState({
                 selectedVersion: api.API_ID, drillDownType: DrillDownEnum.RESOURCE,
             }, this.loadingDrillDownData);
-            this.loadOperations(api.API_ID);
+            this.loadOperations(api.API_ID, api.API_TYPE);
         } else if (drillDownType === DrillDownEnum.RESOURCE) {
-            const { selectedAPI, selectedVersion } = this.state;
+            const { selectedAPI, selectedVersion, apiList } = this.state;
             const {
                 applicationName, applicationOwner, apiResourceTemplate, apiMethod,
             } = selected;
@@ -745,8 +752,9 @@ class AppAndAPIErrorTablewidget extends Widget {
                     && i.HTTP_METHOD === apiMethod);
                 operationIds = operation.URL_MAPPING_ID;
             }
+            const apiType = apiList.find(i => i.API_NAME === selectedAPI).API_TYPE;
             const status = {
-                apiName: selectedAPI, apiID: selectedVersion, operationID: operationIds,
+                apiName: selectedAPI, apiID: selectedVersion, operationID: operationIds, apiType,
             };
             if (viewType === ViewTypeEnum.APP) {
                 const app = appList.find(d => d.NAME === applicationName && d.CREATED_BY === applicationOwner);

@@ -202,7 +202,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
      * */
     handlePublisherParameters(receivedMsg) {
         const {
-            from, to, granularity, apiName, apiID, operationID, appID,
+            from, to, granularity, apiName, apiID, operationID, apiType, appID,
         } = receivedMsg;
         if (from && to && granularity) {
             this.setState({
@@ -231,7 +231,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             }
             this.setState(state, () => {
                 this.loadVersions(apiName);
-                this.loadOperations(apiID);
+                this.loadOperations(apiID, apiType);
                 document.getElementById('AppAndAPIErrorsByTime').scrollIntoView();
             });
         }
@@ -278,12 +278,19 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             .subscribeWidget(id + '_loadVersions', widgetName, this.handleLoadVersions, dataProviderConfigs);
     }
 
-    loadOperations(selectedVersion) {
+    loadOperations(selectedVersion, apiType) {
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        if (apiType === 'APIProduct') {
+            dataProviderConfigs.configs = dataProviderConfigs.listProductQueryConfigs;
+            const { config } = dataProviderConfigs.configs;
+            config.queryData.queryName = 'productOperationsQuery';
+            dataProviderConfigs.configs.config = config;
+        } else {
+            dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        }
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{selectedVersion}}': selectedVersion,
         };
@@ -517,7 +524,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             const { versionList } = this.state;
             const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
             if (selectedVersion && selectedAPI.API_TYPE !== 'WS') {
-                this.loadOperations(selectedVersion);
+                this.loadOperations(selectedVersion, selectedAPI.API_TYPE);
             }
         }
         this.setState({

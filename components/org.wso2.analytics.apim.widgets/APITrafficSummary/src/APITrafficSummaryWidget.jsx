@@ -227,12 +227,19 @@ class APITrafficSummaryWidget extends Widget {
             .subscribeWidget(id + '_loadVersions', widgetName, this.handleLoadVersions, dataProviderConfigs);
     }
 
-    loadOperations(selectedVersion) {
+    loadOperations(selectedVersion, apiType) {
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        if (apiType === 'APIProduct') {
+            dataProviderConfigs.configs = dataProviderConfigs.listProductQueryConfigs;
+            const { config } = dataProviderConfigs.configs;
+            config.queryData.queryName = 'productOperationsQuery';
+            dataProviderConfigs.configs.config = config;
+        } else {
+            dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        }
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{selectedVersion}}': selectedVersion,
         };
@@ -451,7 +458,7 @@ class APITrafficSummaryWidget extends Widget {
             const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
             if (selectedVersion) {
                 if (drillDownType === DrillDownEnum.RESOURCE && selectedAPI.API_TYPE !== 'WS') {
-                    this.loadOperations(selectedVersion);
+                    this.loadOperations(selectedVersion, selectedAPI.API_TYPE);
                 }
             }
         }
@@ -506,7 +513,7 @@ class APITrafficSummaryWidget extends Widget {
      * */
     handleOnClick(event, data) {
         const { configs } = this.props;
-        const { drillDownType } = this.state;
+        const { drillDownType, apiList } = this.state;
 
         if (configs && configs.options) {
             const { drillDown } = configs.options;
@@ -515,7 +522,8 @@ class APITrafficSummaryWidget extends Widget {
                 const {
                     apiName, apiVersion, apiResourceTemplate, apiMethod,
                 } = data;
-                const dataObj = {};
+                const apiType = apiList.find(i => i.API_NAME === apiName).API_TYPE;
+                const dataObj = { apiType };
                 if (drillDownType === DrillDownEnum.API) {
                     dataObj.api = apiName;
                 } else if (drillDownType === DrillDownEnum.VERSION) {
