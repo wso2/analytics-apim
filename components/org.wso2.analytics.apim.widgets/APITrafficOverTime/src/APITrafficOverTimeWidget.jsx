@@ -415,7 +415,7 @@ class APITrafficOverTimeWidget extends Widget {
             '{{limit}}': selectedLimit,
             '{{selectPhase}}': selectPhase.join(','),
             '{{groupByPhase}}': 'group by ' + groupByPhase.join(','),
-            '{{querystring}}': filterPhase.length > 0 ? 'on ' + filterPhase.join(' AND ') : '',
+            '{{querystring}}': filterPhase.length > 0 ? 'AND ' + filterPhase.join(' AND ') : '',
             '{{orderBy}}': 'order by AGG_TIMESTAMP asc',
         };
         // Use this method to subscribe to the endpoint via web socket connection
