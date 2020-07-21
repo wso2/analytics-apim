@@ -16,6 +16,7 @@
             "listApisQuery": "from AM_API on {{contextContainsCondition}} select API_NAME,API_TYPE group by API_NAME,API_TYPE",
             "listVersionsQuery": "from AM_API on ({{contextContainsCondition}} AND API_NAME == '{{selectedAPI}}' ) select API_ID, API_VERSION,API_TYPE group by API_ID, API_VERSION, API_TYPE",
             "listOperationsQuery": "from AM_API_URL_MAPPING on (API_ID == {{selectedVersion}} ) select URL_MAPPING_ID,URL_PATTERN,HTTP_METHOD group by URL_MAPPING_ID,URL_PATTERN,HTTP_METHOD",
+            "productOperationsQuery": "SELECT AM_API_PRODUCT_MAPPING.API_ID as API_ID, AM_API_URL_MAPPING.URL_MAPPING_ID as URL_MAPPING_ID, URL_PATTERN, HTTP_METHOD FROM AM_API_URL_MAPPING INNER JOIN AM_API_PRODUCT_MAPPING ON AM_API_URL_MAPPING.URL_MAPPING_ID=AM_API_PRODUCT_MAPPING.URL_MAPPING_ID where AM_API_PRODUCT_MAPPING.API_ID = {{selectedVersion}}",
             "listAppsQuery": "select NAME,AM_APPLICATION.CREATED_BY,APPLICATION_ID from AM_APPLICATION INNER JOIN AM_SUBSCRIBER on AM_APPLICATION.SUBSCRIBER_ID = AM_SUBSCRIBER.SUBSCRIBER_ID where TENANT_ID={{tenantId}} group by NAME,AM_APPLICATION.CREATED_BY,APPLICATION_ID"
           },
           "publishingInterval": 60
@@ -30,6 +31,21 @@
           },
           "tableName": "AM_APPLICATION",
           "incrementalColumn": "APPLICATION_ID",
+          "publishingLimit": 2147483647,
+          "purgingInterval": 6,
+          "purgingLimit": 6,
+          "isPurgingEnable": false
+        }
+      },
+      "listProductQueryConfigs" : {
+        "type" : "RDBMSStreamingDataProvider",
+        "config" : {
+          "datasourceName": "AM_DB",
+          "queryData" : {
+            "queryName": "listApisQuery"
+          },
+          "tableName": "AM_API_URL_MAPPING",
+          "incrementalColumn": "URL_MAPPING_ID",
           "publishingLimit": 2147483647,
           "purgingInterval": 6,
           "purgingLimit": 6,

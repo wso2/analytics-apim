@@ -14,10 +14,26 @@
           "queryData": {
             "apiidquery": "from AM_API {{apiCondition}} select API_ID,API_NAME,API_VERSION,API_PROVIDER,API_TYPE;",
             "resourcequery": "from AM_API_URL_MAPPING on API_ID=={{apiID}} select URL_PATTERN,HTTP_METHOD;",
+            "productResourceQuery": "SELECT AM_API_PRODUCT_MAPPING.API_ID as API_ID, AM_API_URL_MAPPING.URL_MAPPING_ID as URL_MAPPING_ID, URL_PATTERN, HTTP_METHOD FROM AM_API_URL_MAPPING INNER JOIN AM_API_PRODUCT_MAPPING ON AM_API_URL_MAPPING.URL_MAPPING_ID=AM_API_PRODUCT_MAPPING.URL_MAPPING_ID where AM_API_PRODUCT_MAPPING.API_ID = {{apiID}}",
             "mainquery": "from ApiExeTime on apiCreatorTenantDomain=='{{tenantDomain}}' AND {{filterCondition}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select responseTime,securityLatency,throttlingLatency,requestMedLat,responseMedLat,backendLatency,otherLatency,AGG_TIMESTAMP order by AGG_TIMESTAMP asc limit {{limit}}",
             "mainquery1": "from ApiExeTime on apiCreatorTenantDomain=='{{tenantDomain}}' AND {{filterCondition}} within {{timeFrom}}L, {{timeTo}}L per \"{{per}}s\" select responseTime,securityLatency,throttlingLatency,requestMedLat,responseMedLat,backendLatency,otherLatency,AGG_TIMESTAMP,apiResourceTemplate order by AGG_TIMESTAMP asc limit {{limit}}"
           },
           "publishingInterval": 360000
+        }
+      },
+      "listProductQueryConfigs" : {
+        "type" : "RDBMSStreamingDataProvider",
+        "config" : {
+          "datasourceName": "AM_DB",
+          "queryData" : {
+            "queryName": "listApisQuery"
+          },
+          "tableName": "AM_API_URL_MAPPING",
+          "incrementalColumn": "URL_MAPPING_ID",
+          "publishingLimit": 2147483647,
+          "purgingInterval": 6,
+          "purgingLimit": 6,
+          "isPurgingEnable": false
         }
       }
     },

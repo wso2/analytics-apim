@@ -340,7 +340,14 @@ class APILatencyOverTimeWidget extends Widget {
         super.getWidgetChannelManager().unsubscribeWidget(id + CALLBACK_OPERATION);
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        if (api.API_TYPE === 'APIProduct') {
+            dataProviderConfigs.configs = dataProviderConfigs.listProductQueryConfigs;
+            const { config } = dataProviderConfigs.configs;
+            config.queryData.queryName = 'productOperationsQuery';
+            dataProviderConfigs.configs.config = config;
+        } else {
+            dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        }
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{API_ID}}': api.API_ID,
         };

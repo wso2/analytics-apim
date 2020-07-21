@@ -224,12 +224,19 @@ class APILatencySummaryWidget extends Widget {
             .subscribeWidget(id + '_loadVersions', widgetName, this.handleLoadVersions, dataProviderConfigs);
     }
 
-    loadOperations(selectedVersion) {
+    loadOperations(selectedVersion, apiType) {
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
-        dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        if (apiType === 'APIProduct') {
+            dataProviderConfigs.configs = dataProviderConfigs.listProductQueryConfigs;
+            const { config } = dataProviderConfigs.configs;
+            config.queryData.queryName = 'productOperationsQuery';
+            dataProviderConfigs.configs.config = config;
+        } else {
+            dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+        }
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{selectedVersion}}': selectedVersion,
         };
@@ -422,7 +429,7 @@ class APILatencySummaryWidget extends Widget {
             const { versionList } = this.state;
             const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
             if (selectedVersion && selectedAPI.API_TYPE !== 'WS') {
-                this.loadOperations(selectedVersion);
+                this.loadOperations(selectedVersion, selectedAPI.API_TYPE);
             }
         }
         this.setState({
@@ -505,7 +512,7 @@ class APILatencySummaryWidget extends Widget {
                     resource = { apiResourceTemplate, apiMethod };
                 }
                 this.publishSelection({
-                    api: apiName, version: apiVersion, resource,
+                    api: apiName, version: apiVersion, resource, apiType: selectedAPI.API_TYPE,
                 });
                 document.getElementById('latency-over-time').scrollIntoView();
             }

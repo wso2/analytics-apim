@@ -317,14 +317,21 @@ class APITrafficOverTimeWidget extends Widget {
         }
     }
 
-    loadOperations() {
+    loadOperations(apiType) {
         const { providerConfig, selectedVersion, versionList } = this.state;
         const { id, widgetID: widgetName } = this.props;
         if (selectedVersion && selectedVersion !== 'all') {
             // use == due to comparing int with string
             const api = versionList.find(dataUnit => dataUnit.API_VERSION === selectedVersion);
             const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+            if (apiType === 'APIProduct') {
+                dataProviderConfigs.configs = dataProviderConfigs.listProductQueryConfigs;
+                const { config } = dataProviderConfigs.configs;
+                config.queryData.queryName = 'productOperationsQuery';
+                dataProviderConfigs.configs.config = config;
+            } else {
+                dataProviderConfigs.configs.config.queryData.queryName = 'listOperationsQuery';
+            }
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{apiID}}': api.API_ID,
             };
@@ -365,7 +372,7 @@ class APITrafficOverTimeWidget extends Widget {
             // use == because comparing int with string
             this.setState({ versionList: newData, operationList: [] }, () => {
                 if (newData[0] && newData[0].API_TYPE !== 'WS') {
-                    this.loadOperations();
+                    this.loadOperations(newData[0].API_TYPE);
                 }
             });
         } else {
@@ -540,7 +547,7 @@ class APITrafficOverTimeWidget extends Widget {
             const { versionList } = this.state;
             const selectedVersionObj = versionList.find(item => item.API_VERSION === selectedVersion);
             if (selectedVersionObj && selectedVersionObj.API_TYPE !== 'WS') {
-                this.loadOperations();
+                this.loadOperations(selectedVersionObj.API_TYPE);
             }
         });
     }

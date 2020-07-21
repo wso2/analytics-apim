@@ -291,8 +291,9 @@ class APIMApiLatencyWidget extends Widget {
         const { data } = message;
         if (data && data.length > 0) {
             this.setState({ apiId: data[0][0] }, () => {
-                if (data[0][4] !== 'WS') {
-                    this.assembleResourceQuery();
+                const apiType = data[0][4];
+                if (apiType !== 'WS') {
+                    this.assembleResourceQuery(apiType);
                 } else {
                     this.assembleMainQuery('WS');
                 }
@@ -306,13 +307,20 @@ class APIMApiLatencyWidget extends Widget {
      * Formats the siddhi query - resourcequery
      * @memberof APIMApiLatencyWidget
      * */
-    assembleResourceQuery() {
+    assembleResourceQuery(apiType) {
         const { providerConfig, apiId } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         if (apiId) {
             const dataProviderConfigs = cloneDeep(providerConfig);
-            dataProviderConfigs.configs.config.queryData.queryName = 'resourcequery';
+            if (apiType === 'APIProduct') {
+                dataProviderConfigs.configs = dataProviderConfigs.listProductQueryConfigs;
+                const { config } = dataProviderConfigs.configs;
+                config.queryData.queryName = 'productResourceQuery';
+                dataProviderConfigs.configs.config = config;
+            } else {
+                dataProviderConfigs.configs.config.queryData.queryName = 'resourcequery';
+            }
             dataProviderConfigs.configs.config.queryData.queryValues = {
                 '{{apiID}}': apiId,
             };
@@ -368,15 +376,16 @@ class APIMApiLatencyWidget extends Widget {
                     filterSelectedOperations = -1;
                 }
             }
-
             if (!filterSelectedOperations.length > 0) {
                 const graphQLOps = ['MUTATION', 'QUERY', 'SUBSCRIPTION'];
                 const isGraphQL = resourceList.length > 0
                     && !!resourceList.find(op => graphQLOps.includes(op.HTTP_METHOD));
                 if (isGraphQL) {
                     filterSelectedOperations = [];
-                } else {
+                } else if (resourceList.length > 0) {
                     filterSelectedOperations = resourceList[0].URL_PATTERN + '_' + resourceList[0].HTTP_METHOD;
+                } else {
+                    filterSelectedOperations = [];
                 }
             }
             this.setQueryParam(filterSelectedOperations, limit);
