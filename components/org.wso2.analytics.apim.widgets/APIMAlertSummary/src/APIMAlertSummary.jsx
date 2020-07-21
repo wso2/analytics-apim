@@ -21,14 +21,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { FormattedMessage, intlShape, injectIntl } from 'react-intl';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CustomTable from './CustomTable';
-import Moment from "moment/moment";
+import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
 
 /**
  * Display API Alert Summary
@@ -88,10 +88,18 @@ function APIMAlertSummary(props) {
         formControlAutocomplete: {
             marginRight: 20,
             marginTop: 15,
+            paddingTop: 13,
             minWidth: 300,
         },
         formControlLimit: {
             width: '10%',
+        },
+        formLabel: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            display: 'block',
+            overflow: 'hidden',
         },
     };
     const tableData = alertData.map((data) => {
@@ -147,18 +155,21 @@ function APIMAlertSummary(props) {
                 <div style={styles.formWrapper}>
                     <form noValidate autoComplete='off'>
                         <FormControl style={styles.formControlAutocomplete}>
-                            <Autocomplete
+                            <InputLabel
+                                shrink
+                                style={styles.formLabel}
+                            >
+                                <FormattedMessage id='api.label' defaultMessage='API' />
+                            </InputLabel>
+                            <IntegrationReactSelect
+                                isMulti={false}
                                 options={apiList}
-                                getOptionLabel={option => option}
                                 value={selectedApi}
-                                onChange={(event, value) => handleApiChange(value)}
-                                renderInput={params => (
-                                    <TextField
-                                        {...params}
-                                        label={<FormattedMessage id='api.label' defaultMessage='API' />}
-                                        variant='standard'
-                                    />
-                                )}
+                                onChange={handleApiChange}
+                                disabled={apiList && apiList.length === 0}
+                                placeholder=''
+                                getLabel={item => item}
+                                getValue={item => item}
                             />
                         </FormControl>
                         <FormControl style={styles.formControlLimit}>
