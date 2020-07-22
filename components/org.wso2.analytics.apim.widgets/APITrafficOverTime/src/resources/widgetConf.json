@@ -14,7 +14,7 @@
           "queryData": {
             "drillDownQuery": "from ApiErrorAnalysisAgg on apiCreatorTenantDomain=='{{tenantDomain}}' {{querystring}} within {{from}}L, {{to}}L per \"{{per}}s\" select {{selectPhase}} {{groupByPhase}} {{orderBy}} limit {{limit}};",
             "listApisQuery": "from AM_API on {{contextContainsCondition}} select API_NAME,API_TYPE group by API_NAME,API_TYPE",
-            "listVersionsQuery": "from AM_API on (API_NAME == '{{selectedAPI}}' ) select API_ID, API_VERSION, API_TYPE group by API_ID, API_VERSION, API_TYPE",
+            "listVersionsQuery": "from AM_API on ({{contextContainsCondition}} AND API_NAME == '{{selectedAPI}}' ) select API_ID, API_VERSION, API_TYPE group by API_ID, API_VERSION, API_TYPE",
             "listOperationsQuery": "from AM_API_URL_MAPPING on (API_ID == {{apiID}} ) select URL_MAPPING_ID, URL_PATTERN,HTTP_METHOD group by URL_PATTERN,HTTP_METHOD,URL_MAPPING_ID",
             "productOperationsQuery": "SELECT AM_API_PRODUCT_MAPPING.API_ID as API_ID, AM_API_URL_MAPPING.URL_MAPPING_ID as URL_MAPPING_ID, URL_PATTERN, HTTP_METHOD FROM AM_API_URL_MAPPING INNER JOIN AM_API_PRODUCT_MAPPING ON AM_API_URL_MAPPING.URL_MAPPING_ID=AM_API_PRODUCT_MAPPING.URL_MAPPING_ID where AM_API_PRODUCT_MAPPING.API_ID = {{apiID}}"
           },
