@@ -31,7 +31,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Scrollbars from 'react-custom-scrollbars';
 import CustomFormGroup from './CustomFormGroup';
 import ResourceViewErrorTable from './ResourceViewErrorTable';
-import {DrillDownEnum} from "../../AppAndAPIErrorTable/src/Constants";
+import { DrillDownEnum } from '../../AppAndAPIErrorTable/src/Constants';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -322,7 +322,7 @@ class APITrafficSummaryWidget extends Widget {
             '{{limit}}': selectedLimit,
             '{{selectPhase}}': selectPhase.join(','),
             '{{groupByPhase}}': groupByPhase.length ? 'group by ' + groupByPhase.join(',') : '',
-            '{{querystring}}': filterPhase.length > 0 ? 'on ' + filterPhase.join(' AND ') : '',
+            '{{querystring}}': filterPhase.length > 0 ? 'AND ' + filterPhase.join(' AND ') : '',
             '{{orderBy}}': 'order by responseCount desc',
         };
         // Use this method to subscribe to the endpoint via web socket connection
