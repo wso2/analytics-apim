@@ -192,7 +192,10 @@ class APIMOverallApiInfoWidget extends Widget {
      * @memberof APIMOverallApiInfoWidget
      * */
     loadLimit() {
-        const { limit } = super.getGlobalState(queryParamKey);
+        let { limit } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 5;
+        }
         this.setQueryParam(limit);
         this.setState({ limit });
     }
