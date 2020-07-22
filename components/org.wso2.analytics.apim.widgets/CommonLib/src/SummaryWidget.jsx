@@ -49,6 +49,12 @@ function SummaryWidget(props) {
     if(diff === 0) {
         arrow = '';
     }
+    let percentLabel = '';
+    if (lastWeekCount > 0) {
+        const percentage = (Math.abs(diff) * 100) / lastWeekCount;
+        percentLabel = ' (' + percentage.toFixed(2) + '%)';
+    }
+
     return (
         <div
             style={{
@@ -62,9 +68,9 @@ function SummaryWidget(props) {
             <span>{shortNumber(thisWeekCount)}</span>
 
             <Tooltip title={tooltip}>
-                <span style={{ fontSize: 20, color: diffColor }}>{arrow}{shortNumber(Math.abs(diff))}</span>
-            </Tooltip> 
-      
+                <span style={{ fontSize: 20, color: diffColor }}>{arrow}{shortNumber(Math.abs(diff))}{percentLabel}</span>
+            </Tooltip>
+
         </div>
     );
 }
