@@ -27,6 +27,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
+import cloneDeep from 'lodash/cloneDeep';
 import APIMOverallApiInfo from './APIMOverallApiInfo';
 
 const darkTheme = createMuiTheme({
@@ -59,6 +60,12 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
  * Language without region code
  */
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
+
+/**
+ * Query string parameter
+ * @type {string}
+ */
+const queryParamKey = 'apiInfoSummary';
 
 let refreshIntervalId = null;
 
@@ -101,6 +108,7 @@ class APIMOverallApiInfoWidget extends Widget {
             refreshIntervalId: null,
             localeMessages: null,
             inProgress: true,
+            limit: 5,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -114,6 +122,7 @@ class APIMOverallApiInfoWidget extends Widget {
         this.assembleApiInfo = this.assembleApiInfo.bind(this);
         this.handleApiInfoReceived = this.handleApiInfoReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
     }
 
     componentWillMount() {
@@ -128,15 +137,21 @@ class APIMOverallApiInfoWidget extends Widget {
     componentDidMount() {
         const { widgetID } = this.props;
         const { refreshInterval } = this.state;
+        this.loadLimit();
+
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
                 // set an interval to periodically retrieve data
                 const refresh = () => {
                     super.getWidgetChannelManager().unsubscribeWidget(widgetID);
-                    this.assembleApiInfo(message.data.configs.providerConfig);
+                    this.setState({
+                        providerConfig: message.data.configs.providerConfig,
+                    }, this.assembleApiInfo);
                 };
                 refreshIntervalId = setInterval(refresh, refreshInterval);
-                this.assembleApiInfo(message.data.configs.providerConfig);
+                this.setState({
+                    providerConfig: message.data.configs.providerConfig,
+                }, this.assembleApiInfo);
             })
             .catch((error) => {
                 console.error("Error occurred when loading widget '" + widgetID + "'. " + error);
@@ -173,23 +188,50 @@ class APIMOverallApiInfoWidget extends Widget {
     }
 
     /**
+     * Retrieve the limit from query param
+     * @memberof APIMOverallApiInfoWidget
+     * */
+    loadLimit() {
+        const { limit } = super.getGlobalState(queryParamKey);
+        this.setQueryParam(limit);
+        this.setState({ limit });
+    }
+
+    /**
+     * Updates query param values
+     * @param {number} limit - data limitation value
+     * @memberof APIMOverallApiInfoWidget
+     * */
+    setQueryParam(limit) {
+        super.setGlobalState(queryParamKey, { limit });
+    }
+
+    /**
      * Retreive the API info for sub rows
      * @memberof APIMOverallApiInfoWidget
      * */
-    assembleApiInfo(dataProviderConfigs) {
+    assembleApiInfo() {
+        const { providerConfig, limit } = this.state;
         const { id, widgetID: widgetName } = this.props;
-        dataProviderConfigs.configs.config.queryData.queryName = 'infoquery';
 
-        const timeTo = new Date().getTime();
-        const timeFrom = Moment(timeTo).subtract(1, 'days').toDate().getTime();
+        if (limit > 0) {
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            dataProviderConfigs.configs.config.queryData.queryName = 'infoquery';
 
-        dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{from}}': timeFrom,
-            '{{to}}': timeTo,
-            '{{per}}': 'day',
-        };
-        super.getWidgetChannelManager()
-            .subscribeWidget(id, widgetName, this.handleApiInfoReceived, dataProviderConfigs);
+            const timeTo = new Date().getTime();
+            const timeFrom = Moment(timeTo).subtract(1, 'days').toDate().getTime();
+
+            dataProviderConfigs.configs.config.queryData.queryValues = {
+                '{{from}}': timeFrom,
+                '{{to}}': timeTo,
+                '{{per}}': 'day',
+                '{{limit}}': limit,
+            };
+            super.getWidgetChannelManager()
+                .subscribeWidget(id, widgetName, this.handleApiInfoReceived, dataProviderConfigs);
+        } else {
+            this.setState({ inProgress: false, usageData: [] });
+        }
     }
 
     /**
@@ -212,13 +254,34 @@ class APIMOverallApiInfoWidget extends Widget {
     }
 
     /**
+     * Handle limit Change
+     * @param {Event} event - listened event
+     * @memberof APIMOverallApiInfoWidget
+     * */
+    handleLimitChange(event) {
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        this.setQueryParam(parseInt(limit, 10));
+        if (limit < 1) {
+            limit = 5;
+        }
+
+        if (limit) {
+            this.setState({ inProgress: true, limit }, this.assembleApiInfo);
+        } else {
+            const { id } = this.props;
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ limit, inProgress: false, usageData: [] });
+        }
+    }
+
+    /**
      * @inheritDoc
      * @returns {ReactElement} Render the APIM Api Overall Api Info widget
      * @memberof APIMOverallApiInfoWidget
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, apiInfoData, inProgress,
+            localeMessages, faultyProviderConfig, height, apiInfoData, inProgress, limit,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -227,7 +290,7 @@ class APIMOverallApiInfoWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const apiUsageProps = {
-            themeName, height, apiInfoData, inProgress, username,
+            themeName, height, apiInfoData, inProgress, username, limit,
         };
 
         return (
@@ -264,6 +327,7 @@ class APIMOverallApiInfoWidget extends Widget {
                         ) : (
                             <APIMOverallApiInfo
                                 {...apiUsageProps}
+                                handleLimitChange={this.handleLimitChange}
                             />
                         )
                     }
