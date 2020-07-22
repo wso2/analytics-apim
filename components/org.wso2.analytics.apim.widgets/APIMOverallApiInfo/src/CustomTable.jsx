@@ -162,10 +162,10 @@ class CustomTable extends React.Component {
             tableData: [],
             page: 0,
             rowsPerPage: 5,
-            orderBy: 'apiname',
+            orderBy: 'apiName',
             order: 'asc',
             expanded: false,
-            filterColumn: 'apiname',
+            filterColumn: 'apiName',
             query: '',
         };
     }
@@ -238,25 +238,22 @@ class CustomTable extends React.Component {
         const title = intl.formatMessage({ id: 'widget.heading', defaultMessage: 'API INFO SUMMARY' });
         const strColumns = this.getColumnList();
         const menuItems = [
-            <MenuItem value='apiname'>
+            <MenuItem value='apiName'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
-            </MenuItem>,
-            <MenuItem value='hits'>
-                <FormattedMessage id='table.heading.response' defaultMessage='RESPONSE HITS' />
             </MenuItem>,
             <MenuItem value='_2xx'>
                 <FormattedMessage id='table.heading.error2xx' defaultMessage='ERROR 2XX' />
             </MenuItem>,
-            <MenuItem value='error4xx'>
+            <MenuItem value='_4xx'>
                 <FormattedMessage id='table.heading.error4xx' defaultMessage='ERROR 4XX' />
             </MenuItem>,
-            <MenuItem value='error5xx'>
+            <MenuItem value='_5xx'>
                 <FormattedMessage id='table.heading.error5xx' defaultMessage='ERROR 5XX' />
             </MenuItem>,
-            <MenuItem value='errorFaulty'>
+            <MenuItem value='faultCount'>
                 <FormattedMessage id='table.heading.errorFaulty' defaultMessage='FAULTY HITS' />
             </MenuItem>,
-            <MenuItem value='errorThrottled'>
+            <MenuItem value='throttledCount'>
                 <FormattedMessage id='table.heading.errorThrottled' defaultMessage='THROTTLED HIT' />
             </MenuItem>,
         ];
