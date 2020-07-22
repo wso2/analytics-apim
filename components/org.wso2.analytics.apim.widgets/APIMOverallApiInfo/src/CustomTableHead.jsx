@@ -34,7 +34,7 @@ const styles = {
 
 const rows = [
     {
-        id: 'apiname', numeric: false, disablePadding: false, label: 'table.heading.apiname', rowSpan: 2, colSpan: 1,
+        id: 'apiName', numeric: false, disablePadding: false, label: 'table.heading.apiname', rowSpan: 2, colSpan: 1,
     },
     {
         id: 'responseHits',
@@ -45,7 +45,7 @@ const rows = [
         colSpan: 3,
     },
     {
-        id: 'errorFaulty',
+        id: 'faultCount',
         numeric: true,
         disablePadding: false,
         label: 'table.heading.errorFaulty',
@@ -53,7 +53,7 @@ const rows = [
         colSpan: 1,
     },
     {
-        id: 'errorThrottled',
+        id: 'throttledCount',
         numeric: true,
         disablePadding: false,
         label: 'table.heading.errorThrottled',
