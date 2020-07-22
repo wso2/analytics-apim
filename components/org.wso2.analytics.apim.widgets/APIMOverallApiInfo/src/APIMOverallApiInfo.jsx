@@ -24,6 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
 import CustomTable from './CustomTable';
 
 /**
@@ -33,7 +34,7 @@ import CustomTable from './CustomTable';
  */
 export default function APIMOverallApiInfo(props) {
     const {
-        height, apiInfoData, inProgress, themeName, username,
+        height, apiInfoData, inProgress, themeName, username, limit, handleLimitChange,
     } = props;
     const styles = {
         headingWrapper: {
@@ -78,6 +79,14 @@ export default function APIMOverallApiInfo(props) {
             fontSize: 14,
             color: '#b5b5b5',
         },
+        form: {
+            display: 'flex',
+            flexWrap: 'wrap',
+        },
+        formControl: {
+            marginLeft: '5%',
+            minWidth: 120,
+        },
     };
 
     return (
@@ -99,6 +108,22 @@ export default function APIMOverallApiInfo(props) {
                     <p style={styles.subheading}>
                         <FormattedMessage id='api.info.subheading' defaultMessage='(Last 24 Hours)' />
                     </p>
+                </div>
+                <div style={styles.formWrapper}>
+                    <form style={styles.form} noValidate autoComplete='off'>
+                        <TextField
+                            id='limit-number'
+                            label={<FormattedMessage id='limit' defaultMessage='Limit' />}
+                            value={limit}
+                            onChange={handleLimitChange}
+                            type='number'
+                            style={styles.formControl}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            margin='normal'
+                        />
+                    </form>
                 </div>
                 <div>
                     { inProgress ? (
@@ -156,4 +181,6 @@ APIMOverallApiInfo.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     themeName: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,
+    limit: PropTypes.string.isRequired,
+    handleLimitChange: PropTypes.func.isRequired,
 };

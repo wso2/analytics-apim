@@ -14,5 +14,6 @@
   "table.heading.error5xx": "ERROR 5XX",
   "table.heading.errorFaulty": "FAULTY HITS",
   "table.heading.errorThrottled": "THROTTLED HIT",
-  "sort.label.title": "Sort"
+  "sort.label.title": "Sort",
+  "limit": "Limit"
 }
