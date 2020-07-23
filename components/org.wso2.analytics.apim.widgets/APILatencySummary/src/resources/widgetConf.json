@@ -19,7 +19,7 @@
             "listOperationsQuery": "from AM_API_URL_MAPPING on (API_ID == {{selectedVersion}} ) select URL_MAPPING_ID,URL_PATTERN,HTTP_METHOD group by URL_MAPPING_ID,URL_PATTERN,HTTP_METHOD",
             "productOperationsQuery": "SELECT AM_API_PRODUCT_MAPPING.API_ID as API_ID, AM_API_URL_MAPPING.URL_MAPPING_ID as URL_MAPPING_ID, URL_PATTERN, HTTP_METHOD FROM AM_API_URL_MAPPING INNER JOIN AM_API_PRODUCT_MAPPING ON AM_API_URL_MAPPING.URL_MAPPING_ID=AM_API_PRODUCT_MAPPING.URL_MAPPING_ID where AM_API_PRODUCT_MAPPING.API_ID = {{selectedVersion}}"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       },
       "listProductQueryConfigs" : {

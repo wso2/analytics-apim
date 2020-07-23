@@ -16,7 +16,7 @@
             "errorQuery": "from ApiErrorAnalysisAgg on (apiCreatorTenantDomain=='{{tenantDomain}}' {{querystring}}) within {{from}}L, {{to}}L per \"{{per}}s\" select {{selectPhase}} group by {{groupByPhase}} {{orderBy}} limit {{limit}};",
             "totalErrorQuery": "from ApiErrorAnalysisAgg on apiCreatorTenantDomain=='{{tenantDomain}}' within {{from}}L, {{to}}L per \"{{per}}s\" select {{selectPhase}};"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

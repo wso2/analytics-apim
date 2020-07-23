@@ -15,7 +15,7 @@
           "queryData": {
             "apiavailablequery": "from ApimApiAvailabilityInfo on tenantDomain=='{{tenantDomain}}' select status,count(apiName) as count group by status;"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },
