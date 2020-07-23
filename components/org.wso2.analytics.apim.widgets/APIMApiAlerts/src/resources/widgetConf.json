@@ -17,7 +17,8 @@
           "tableName": "{{tableName}}",
           "incrementalColumn": "{{incrementalColumn}}",
           "publishingLimit": 2147483647,
-          "isPurgingEnable": false
+          "isPurgingEnable": false,
+          "publishingInterval": 360000
         }
       }
     },

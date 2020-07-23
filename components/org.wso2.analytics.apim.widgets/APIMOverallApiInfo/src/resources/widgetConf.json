@@ -14,7 +14,7 @@
           "queryData": {
             "infoquery": "from ApiErrorAnalysisAgg on apiCreatorTenantDomain=='{{tenantDomain}}' within {{from}}L, {{to}}L per \"{{per}}s\" select apiName, sum(_2xx) as _2xx, sum(_4xx) as _4xx, sum(_5xx) as _5xx, sum(faultCount) as faultCount, sum(throttledCount) as throttledCount group by apiName limit {{limit}}"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },

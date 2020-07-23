@@ -15,7 +15,7 @@
             "apiquery": "from AM_API on {{contextContainsCondition}} select API_NAME;",
             "alertquery": "from ApimAllAlert on tenantDomain=='{{tenantDomain}}' AND alertTimestamp >= {{timeFrom}}L AND alertTimestamp <= {{timeTo}}L {{apiName}} select apiName, type, severity, message, alertTimestamp order by alertTimestamp desc limit {{limit}}"
           },
-          "publishingInterval": 60
+          "publishingInterval": 360000
         }
       }
     },
