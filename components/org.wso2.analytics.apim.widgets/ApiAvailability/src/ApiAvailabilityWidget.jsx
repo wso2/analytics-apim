@@ -170,14 +170,15 @@ class ApiAvailabilityWidget extends Widget {
      * @memberof ApiAvailabilityWidget
      * */
     handlePublisherParameters(receivedMsg) {
-        const { status } = receivedMsg;
+        let { status } = receivedMsg;
         const { limit } = this.state;
+        status = status.split(' ').slice(0, 2).join(' ');
 
         document.getElementById('api-availability').scrollIntoView();
         this.setQueryParam(limit, status);
         this.setState({
             inProgress: true,
-            status: status.split(' ').slice(0, 2).join(' '),
+            status,
         }, this.assembleApiAvailableQuery);
     }
 
