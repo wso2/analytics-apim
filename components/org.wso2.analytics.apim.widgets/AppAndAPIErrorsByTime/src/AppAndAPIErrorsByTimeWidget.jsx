@@ -30,6 +30,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ViewTypeEnum, ValueFormatType, DrillDownEnum } from '../../AppAndAPIErrorTable/src/Constants';
 import APIViewErrorTable from './APIViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
+import Scrollbars from 'react-custom-scrollbars';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -624,6 +625,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             root: {
                 backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
                 padding: '20px',
+                height: '100%',
             },
             formControl: {
                 minWidth: '120px',
@@ -648,58 +650,64 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
                     <div style={styles.root} id='AppAndAPIErrorsByTime'>
-                        <div style={styles.contentWrapper}>
-                            <div style={styles.headingWrapper}>
-                                <h3 style={styles.heading}>
-                                    <FormattedMessage
-                                        id='widget.heading'
-                                        defaultMessage='ERROR SUMMARY OVER TIME'
-                                    />
-                                </h3>
-                            </div>
-                            <div style={styles.dataWrapper}>
-                                <CustomFormGroup
-                                    viewType={viewType}
-                                    valueFormatType={valueFormatType}
-                                    drillDownType={drillDownType}
-
-                                    selectedApp={selectedApp}
-                                    selectedAPI={selectedAPI}
-                                    selectedVersion={selectedVersion}
-                                    selectedResource={selectedResource}
-                                    selectedLimit={selectedLimit}
-
-                                    apiList={apiList}
-                                    appList={appList}
-                                    versionList={versionList}
-                                    operationList={operationList}
-
-                                    handleApplicationChange={this.handleApplicationChange}
-                                    handleAPIChange={this.handleAPIChange}
-                                    handleVersionChange={this.handleVersionChange}
-                                    handleOperationChange={this.handleOperationChange}
-                                    handleGraphQLOperationChange={this.handleGraphQLOperationChange}
-                                    handleLimitChange={this.handleLimitChange}
-                                />
-
-                                {!loading ? (
-                                    <this.renderDrillDownTable
-                                        data={data}
+                        <Scrollbars style={{
+                            height,
+                            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                        }}
+                        >
+                            <div style={styles.contentWrapper}>
+                                <div style={styles.headingWrapper}>
+                                    <h3 style={styles.heading}>
+                                        <FormattedMessage
+                                            id='widget.heading'
+                                            defaultMessage='ERROR SUMMARY OVER TIME'
+                                        />
+                                    </h3>
+                                </div>
+                                <div style={styles.dataWrapper}>
+                                    <CustomFormGroup
                                         viewType={viewType}
                                         valueFormatType={valueFormatType}
                                         drillDownType={drillDownType}
-                                        themeName={themeName}
-                                        perValue={perValue}
+
+                                        selectedApp={selectedApp}
+                                        selectedAPI={selectedAPI}
+                                        selectedVersion={selectedVersion}
+                                        selectedResource={selectedResource}
+                                        selectedLimit={selectedLimit}
+
+                                        apiList={apiList}
+                                        appList={appList}
+                                        versionList={versionList}
+                                        operationList={operationList}
+
+                                        handleApplicationChange={this.handleApplicationChange}
+                                        handleAPIChange={this.handleAPIChange}
+                                        handleVersionChange={this.handleVersionChange}
+                                        handleOperationChange={this.handleOperationChange}
+                                        handleGraphQLOperationChange={this.handleGraphQLOperationChange}
+                                        handleLimitChange={this.handleLimitChange}
                                     />
-                                )
-                                    : (
-                                        <div style={styles.loading}>
-                                            <CircularProgress style={styles.loadingIcon} />
-                                        </div>
+
+                                    {!loading ? (
+                                        <this.renderDrillDownTable
+                                            data={data}
+                                            viewType={viewType}
+                                            valueFormatType={valueFormatType}
+                                            drillDownType={drillDownType}
+                                            themeName={themeName}
+                                            perValue={perValue}
+                                        />
                                     )
-                                }
+                                        : (
+                                            <div style={styles.loading}>
+                                                <CircularProgress style={styles.loadingIcon} />
+                                            </div>
+                                        )
+                                    }
+                                </div>
                             </div>
-                        </div>
+                        </Scrollbars>
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>
