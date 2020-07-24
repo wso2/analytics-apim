@@ -84,6 +84,7 @@ function APIMApiCreatedData(props) {
         width: 800,
         height: 400,
         append: false,
+        xAxisTickCount: 4,
         legend: false,
         disableVerticalGrid: true,
         timeFormat: '%d-%b-%y %H:%M',

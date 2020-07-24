@@ -124,6 +124,7 @@ function ApiThrottleAnalytics(props) {
             },
         ],
         append: false,
+        xAxisTickCount: 4,
         maxLength: 60,
         width: 800,
         height: 400,

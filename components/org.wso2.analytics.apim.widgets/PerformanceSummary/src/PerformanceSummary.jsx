@@ -74,6 +74,7 @@ export default function PerformanceSummary(props) {
         charts: [],
         maxLength: 60,
         append: false,
+        xAxisTickCount: 6,
         interactiveLegend: true,
         legend: true,
         disableVerticalGrid: true,
