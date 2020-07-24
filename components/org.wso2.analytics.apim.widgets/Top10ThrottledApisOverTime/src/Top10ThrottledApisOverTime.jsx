@@ -74,6 +74,7 @@ export default function Top10ThrottledApisOverTime(props) {
     const chartConfig = {
         x: 'TIME',
         yAxisLabel: 'COUNT',
+        append: false,
         charts: [],
         maxLength: 60,
         height: 400,

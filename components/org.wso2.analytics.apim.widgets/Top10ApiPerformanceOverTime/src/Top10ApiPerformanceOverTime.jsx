@@ -77,6 +77,7 @@ export default function Top10ApiPerformanceOverTime(props) {
         charts: [],
         maxLength: 60,
         height: 400,
+        append: false,
         interactiveLegend: true,
         legend: true,
         disableVerticalGrid: true,
