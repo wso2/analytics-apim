@@ -73,6 +73,7 @@ export default function PerformanceSummary(props) {
         yAxisLabel: 'LATENCY TIME (MS)',
         charts: [],
         maxLength: 60,
+        append: false,
         interactiveLegend: true,
         legend: true,
         disableVerticalGrid: true,

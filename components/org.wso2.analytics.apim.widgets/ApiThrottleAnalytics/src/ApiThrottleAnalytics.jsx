@@ -123,6 +123,7 @@ function ApiThrottleAnalytics(props) {
                 fill: '#958E94',
             },
         ],
+        append: false,
         maxLength: 60,
         width: 800,
         height: 400,

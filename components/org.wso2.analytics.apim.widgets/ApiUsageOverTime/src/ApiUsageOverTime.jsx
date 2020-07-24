@@ -85,6 +85,7 @@ export default function ApiUsageOverTime(props) {
         yAxisLabel: 'HITS',
         charts: [],
         maxLength: 60,
+        append: false,
         interactiveLegend: true,
         legend: true,
         disableVerticalGrid: true,

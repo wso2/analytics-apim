@@ -74,6 +74,7 @@ export default function ThrottleSummary(props) {
         charts: [
         ],
         maxLength: 60,
+        append: false,
         interactiveLegend: true,
         legend: true,
         disableVerticalGrid: true,

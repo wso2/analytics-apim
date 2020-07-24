@@ -68,6 +68,7 @@ function APIMSubscriptionsData(props) {
         maxLength: 60,
         width: 800,
         height: 400,
+        append: false,
         legend: false,
         disableVerticalGrid: true,
         timeFormat: '%d-%b-%y %H:%M',
