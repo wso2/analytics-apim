@@ -46,6 +46,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'topErrorSummary';
+
 /**
  * Language
  * @type {string}
@@ -146,6 +148,7 @@ class ErrorByAppAndAPIwidget extends Widget {
     componentDidMount() {
         const { widgetID } = this.props;
         const queryParam = super.getGlobalState('dtrp');
+        this.loadQueryParams();
         // This function retrieves the provider configuration defined in the widgetConf.json file and make
         // it available to be used inside the widget
         super.getWidgetConfiguration(widgetID)
@@ -193,6 +196,38 @@ class ErrorByAppAndAPIwidget extends Widget {
                 })
                 .catch(error => reject(error));
         });
+    }
+
+    /**
+     * Retrieve the limit from query param
+     * @memberof ErrorByAppAndAPI
+     * */
+    loadQueryParams() {
+        let { limit, viewType } = super.getGlobalState(queryParamKey);
+        if (!limit || limit < 0) {
+            limit = 10;
+        }
+        if (!viewType) {
+            viewType = ViewTypeEnum.API;
+        }
+        this.setQueryParams({ limit, viewType });
+        this.setState({ selectedLimit: limit, viewType });
+    }
+
+    /**
+     * Updates query param values
+     * @memberof ErrorByAppAndAPI
+     * */
+    setQueryParams(paramsObj) {
+        const existParams = super.getGlobalState(queryParamKey);
+        const newParams = {};
+        for (const [key, value] of Object.entries(existParams)) {
+            newParams[key] = value;
+        }
+        for (const [key, value] of Object.entries(paramsObj)) {
+            newParams[key] = value;
+        }
+        super.setGlobalState(queryParamKey, newParams);
     }
 
     /**
@@ -581,12 +616,19 @@ class ErrorByAppAndAPIwidget extends Widget {
     }
 
     handleViewChange(event) {
-        this.setState({ viewType: event.target.value }, this.loadAllErrors);
+        const viewType = event.target.value;
+        this.setQueryParams({ viewType });
+        this.setState({ viewType }, this.loadAllErrors);
     }
 
     handleLimitChange(event) {
-        const limit = (event.target.value).replace('-', '').split('.')[0];
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit < 1) {
+            limit = 10;
+        }
+
         if (limit) {
+            this.setQueryParams({ limit });
             this.setState({ selectedLimit: limit, loading: true }, this.loadAllErrors);
         } else {
             const { id } = this.props;

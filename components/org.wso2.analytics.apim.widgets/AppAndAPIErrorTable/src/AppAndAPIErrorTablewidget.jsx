@@ -62,6 +62,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'errorSummary';
+
 /**
  * Language
  * @type {string}
@@ -100,6 +102,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             selectedVersion: -1,
             selectedResource: -1,
             selectedLimit: 5,
+            apiType: null,
             data: [],
 
             apiList: [],
@@ -164,6 +167,7 @@ class AppAndAPIErrorTablewidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadQueryParams();
         // This function retrieves the provider configuration defined in the widgetConf.json
         // file and make it available to be used inside the widget
         super.getWidgetConfiguration(widgetID)
@@ -210,6 +214,99 @@ class AppAndAPIErrorTablewidget extends Widget {
     }
 
     /**
+     * Retrieve the filter values from query param
+     * @memberof AppAndAPIErrorTableWidget
+     * */
+    loadQueryParams() {
+        let {
+            viewType, valueFormatType, drillDownType, selectedAPI, selectedApp, selectedVersion, selectedResource,
+            selectedLimit,
+        } = super.getGlobalState(queryParamKey);
+        const { apiType } = super.getGlobalState(queryParamKey);
+
+        viewType = (!viewType) ? ViewTypeEnum.API : viewType;
+        valueFormatType = (!valueFormatType) ? ValueFormatType.PERCENT : valueFormatType;
+        drillDownType = (!drillDownType) ? DrillDownEnum.API : drillDownType;
+        selectedLimit = (!selectedLimit || selectedLimit < 1) ? 5 : selectedLimit;
+        selectedApp = (!selectedApp) ? -1 : selectedApp;
+        selectedAPI = (!selectedAPI) ? -1 : selectedAPI;
+        selectedVersion = (!selectedVersion) ? -1 : selectedVersion;
+        selectedResource = (!selectedResource) ? -1 : selectedResource;
+
+        this.setState({
+            viewType,
+            valueFormatType,
+            drillDownType,
+            selectedAPI,
+            selectedApp,
+            selectedVersion,
+            selectedResource,
+            selectedLimit,
+            apiType,
+        });
+    }
+
+    /**
+     * Updates query param values
+     * @memberof AppAndAPIErrorTableWidget
+     * */
+    setQueryParams(paramsObj) {
+        const existParams = super.getGlobalState(queryParamKey);
+        const newParams = {};
+        for (const [key, value] of Object.entries(existParams)) {
+            newParams[key] = value;
+        }
+        for (const [key, value] of Object.entries(paramsObj)) {
+            newParams[key] = value;
+        }
+        super.setGlobalState(queryParamKey, newParams);
+    }
+
+    loadArtifacts() {
+        const {
+            selectedAPI, selectedApp, selectedVersion, selectedResource, apiType,
+        } = this.state;
+
+        this.loadApps();
+        if (selectedVersion !== -1) {
+            this.loadVersions(selectedAPI);
+        }
+        if (selectedResource !== -1) {
+            this.loadOperations(selectedVersion, apiType);
+        }
+        if (selectedVersion === -1 && selectedResource === -1 && selectedApp === -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadApps() {
+        const {
+            selectedVersion, selectedResource, selectedApp,
+        } = this.state;
+        if (selectedVersion === -1 && selectedResource === -1 && selectedApp !== -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadVersions() {
+        const {
+            selectedVersion, selectedResource,
+        } = this.state;
+        if (selectedVersion !== -1 && selectedResource === -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadOperations() {
+        const {
+            selectedVersion, selectedResource,
+        } = this.state;
+        if (selectedVersion !== -1 && selectedResource !== -1) {
+            this.loadApis();
+        }
+    }
+
+    /**
      * Retrieve params from publisher
      * @param {string} receivedMsg Received data from publisher
      * @memberof AppAndAPIErrorTablewidget
@@ -226,7 +323,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                 timeFrom: receivedMsg.from,
                 timeTo: receivedMsg.to,
                 perValue: receivedMsg.granularity,
-            }, this.loadApis);
+            }, this.loadArtifacts);
         }
         if (viewType && errorType && selected) {
             if (viewType === ViewTypeEnum.APP) {
@@ -267,13 +364,7 @@ class AppAndAPIErrorTablewidget extends Widget {
     }
 
     loadApis() {
-        const { viewType } = this.state;
         this.loadingDrillDownData();
-        this.loadApps();
-        if (viewType === ViewTypeEnum.APP) {
-            this.loadApps();
-        }
-
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
@@ -330,7 +421,7 @@ class AppAndAPIErrorTablewidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ appList: newData });
+            this.setState({ appList: newData }, this.delayedLoadApps);
         } else {
             this.setState({ appList: [] });
         }
@@ -368,7 +459,7 @@ class AppAndAPIErrorTablewidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData, selectedResource: -1 });
+            this.setState({ versionList: newData }, this.delayedLoadVersions);
         } else {
             this.setState({ versionList: [], selectedResource: -1 });
         }
@@ -385,7 +476,7 @@ class AppAndAPIErrorTablewidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ operationList: newData });
+            this.setState({ operationList: newData }, this.delayedLoadOperations);
         } else {
             this.setState({ operationList: [] });
         }
@@ -446,20 +537,32 @@ class AppAndAPIErrorTablewidget extends Widget {
 
     // start handling table data type
     handleViewChange(event) {
-        this.setState({ viewType: event.target.value }, this.loadingDrillDownData);
-        if (event.target.value === ViewTypeEnum.APP) {
+        const viewType = event.target.value;
+        this.setQueryParams({ viewType });
+        this.setState({ viewType }, this.loadingDrillDownData);
+        if (viewType === ViewTypeEnum.APP) {
             this.loadApps();
         }
     }
 
     handleValueFormatTypeChange(event) {
-        this.setState({ valueFormatType: event.target.value });
+        const valueFormatType = event.target.value;
+        this.setQueryParams({ valueFormatType });
+        this.setState({ valueFormatType });
     }
 
     handleDrillDownChange(event) {
+        const drillDownType = event.target.value;
+        this.setQueryParams({
+            drillDownType,
+            selectedApp: -1,
+            selectedAPI: -1,
+            selectedVersion: -1,
+            selectedResource: -1,
+        });
         this.setState(
             {
-                drillDownType: event.target.value,
+                drillDownType,
                 data: [],
                 selectedApp: -1,
                 selectedAPI: -1,
@@ -605,9 +708,6 @@ class AppAndAPIErrorTablewidget extends Widget {
         this.assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase);
     }
 
-    // end table data type query constructor
-
-
     // start of handle filter change
     handleApplicationChange(data) {
         let selectedApp;
@@ -617,6 +717,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             const { value } = data;
             selectedApp = value;
         }
+        this.setQueryParams({ selectedApp });
         this.setState({
             selectedApp,
         }, this.loadingDrillDownData);
@@ -634,6 +735,11 @@ class AppAndAPIErrorTablewidget extends Widget {
                 this.loadVersions(selectedAPI);
             }
         }
+        this.setQueryParams({
+            selectedAPI,
+            selectedVersion: -1,
+            selectedResource: -1,
+        });
         this.setState({
             selectedAPI,
             versionList: [],
@@ -645,6 +751,7 @@ class AppAndAPIErrorTablewidget extends Widget {
 
     handleVersionChange(data) {
         let selectedVersion;
+        let apiType;
         if (data == null) {
             selectedVersion = -1;
         } else {
@@ -652,12 +759,14 @@ class AppAndAPIErrorTablewidget extends Widget {
             selectedVersion = value;
             const { drillDownType, versionList } = this.state;
             const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
+            apiType = selectedAPI.API_TYPE;
             if (selectedVersion) {
                 if (drillDownType === DrillDownEnum.RESOURCE && selectedAPI.API_TYPE !== 'WS') {
                     this.loadOperations(selectedVersion, selectedAPI.API_TYPE);
                 }
             }
         }
+        this.setQueryParams({ selectedVersion, selectedResource: -1, apiType });
         this.setState({
             selectedVersion,
             selectedResource: -1,
@@ -673,6 +782,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             const { value } = data;
             selectedResource = value;
         }
+        this.setQueryParams({ selectedResource });
         this.setState({
             selectedResource,
         }, this.loadingDrillDownData);
@@ -692,8 +802,12 @@ class AppAndAPIErrorTablewidget extends Widget {
     }
 
     handleLimitChange(event) {
-        const limit = (event.target.value).replace('-', '').split('.')[0];
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit < 1) {
+            limit = 5;
+        }
         if (limit) {
+            this.setQueryParams({ selectedLimit: limit });
             this.setState({ selectedLimit: limit, loading: true }, this.loadingDrillDownData);
         } else {
             const { id } = this.props;
