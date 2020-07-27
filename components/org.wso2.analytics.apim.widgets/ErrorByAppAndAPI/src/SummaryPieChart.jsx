@@ -23,7 +23,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import {
-    VictoryPie, VictoryTheme, VictoryClipContainer,
+    VictoryPie, VictoryTheme, VictoryClipContainer, VictoryTooltip,
 } from 'victory';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
@@ -32,7 +32,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import { colorScale } from '@analytics-apim/common-lib';
 import { withStyles } from '@material-ui/core/styles';
-import CustomLabel from './CustomLabel';
+import { ViewTypeEnum } from '../../AppAndAPIErrorTable/src/Constants';
 
 const styles = {
     header: {
@@ -139,6 +139,7 @@ function renderData(props) {
         );
     }
     const apiErrorsPerCent = totalRequestCounts === 0 ? '0.00' : ((totalErrors * 100) / totalRequestCounts).toFixed(2);
+    const labelPrefix = viewType === ViewTypeEnum.API ? 'API' : 'App';
     return (
         <div>
             <TableRow>
@@ -146,11 +147,19 @@ function renderData(props) {
                     <VictoryPie
                         colorScale={colorScale}
                         data={data}
-                        // height={250}
                         style={styles.pieChart}
                         innerRadius={80}
                         theme={VictoryTheme.material}
-                        labelComponent={<CustomLabel totalRequestCounts={totalRequestCounts} viewType={viewType}/>}
+                        labelComponent={(
+                            <VictoryTooltip
+                                text={
+                                    e => [labelPrefix + ': ' + e.datum.x,
+                                        'Errors: ' + e.datum.y,
+                                        'Percentage: ' + ((e.datum.y * 100) / totalRequestCounts).toFixed(2) + '%']}
+                                orientation='top'
+                                flyoutStyle={classes.flyOut}
+                            />
+                        )}
                         groupComponent={<VictoryClipContainer clipId={0} />}
                         events={[{
                             target: 'data',

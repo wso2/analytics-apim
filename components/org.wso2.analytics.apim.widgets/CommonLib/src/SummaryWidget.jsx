@@ -68,7 +68,11 @@ function SummaryWidget(props) {
             <span>{shortNumber(thisWeekCount)}</span>
 
             <Tooltip title={tooltip}>
-                <span style={{ fontSize: 20, color: diffColor }}>{arrow}{shortNumber(Math.abs(diff))}{percentLabel}</span>
+                <div style={{ fontSize: 20, color: diffColor }}>
+                    {arrow}
+                    {shortNumber(Math.abs(diff))}
+                    {percentLabel}
+                </div>
             </Tooltip>
 
         </div>

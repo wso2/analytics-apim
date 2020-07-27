@@ -78,6 +78,7 @@ export default function Top10ApiUsageOverTime(props) {
     const chartConfig = {
         x: 'TIME',
         yAxisLabel: 'HITS',
+        append: false,
         charts: [],
         maxLength: 60,
         height: 400,

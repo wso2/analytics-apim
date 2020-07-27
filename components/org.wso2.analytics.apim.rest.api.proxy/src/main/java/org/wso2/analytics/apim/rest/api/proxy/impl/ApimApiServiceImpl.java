@@ -73,7 +73,7 @@ public class ApimApiServiceImpl extends ApimApiService {
     private static final String PUBLISHER_URL = "publisherUrl";
     private static final String READ_TIMEOUT = "readTimeout";
     private static final String SCOPE_MONITORING_DASHBOARD = "apim_analytics:monitoring_dashboard";
-    private static final String SCOPE_MANAGER_DASHBOARD = "apim_analytics:manager_dashboard";
+    private static final String SCOPE_MANAGER_DASHBOARD = "apim_analytics:business_analytics";
     private static final String SERVER_NAME_TEMPLATE = "{serverName}";
     private static final String SERVER_URL_TEMPLATE = "{serverUrl}";
     private static final String STORE = "store";

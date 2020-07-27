@@ -772,7 +772,6 @@ class APITrafficSummaryWidget extends Widget {
                             </div>
                         </Scrollbars>
                     </div>
-
                 </MuiThemeProvider>
             </IntlProvider>
         );

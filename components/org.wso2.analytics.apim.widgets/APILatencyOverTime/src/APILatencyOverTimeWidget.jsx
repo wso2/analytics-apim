@@ -31,6 +31,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ViewTypeEnum, ValueFormatType, DrillDownEnum } from '../../AppAndAPIErrorTable/src/Constants';
 import APIViewErrorTable from './APIViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
+import Scrollbars from 'react-custom-scrollbars';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -654,6 +655,7 @@ class APILatencyOverTimeWidget extends Widget {
                 width: '95%',
             },
             root: {
+                height: '100%',
                 backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
             },
             loadingIcon: {
@@ -681,51 +683,56 @@ class APILatencyOverTimeWidget extends Widget {
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
                     <div style={styles.root} id='latency-over-time'>
-                        <div style={styles.contentWrapper}>
-                            <div style={styles.headingWrapper}>
-                                <h3 style={styles.heading}>
-                                    <FormattedMessage
-                                        id='widget.heading'
-                                        defaultMessage='API LATENCY OVER TIME'
-                                    />
-                                </h3>
-                            </div>
-                            <CustomFormGroup
-                                viewType={viewType}
-                                valueFormatType={valueFormatType}
-                                drillDownType={drillDownType}
-
-                                selectedAPI={selectedAPI}
-                                selectedVersion={selectedVersion}
-                                selectedResource={selectedResource}
-                                selectedLimit={selectedLimit}
-
-                                apiList={apiList}
-                                versionList={versionList}
-                                operationList={operationList}
-
-                                handleAPIChange={this.handleAPIChange}
-                                handleVersionChange={this.handleVersionChange}
-                                handleOperationChange={this.handleOperationChange}
-                                handleGraphQLOperationChange={this.handleGraphQLOperationChange}
-                                handleLimitChange={this.handleLimitChange}
-                            />
-                            {!loading ? (
-                                <this.renderDrillDownTable
-                                    data={data}
+                        <Scrollbars style={{
+                            height,
+                            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                        }}>
+                            <div style={styles.contentWrapper}>
+                                <div style={styles.headingWrapper}>
+                                    <h3 style={styles.heading}>
+                                        <FormattedMessage
+                                            id='widget.heading'
+                                            defaultMessage='API LATENCY OVER TIME'
+                                        />
+                                    </h3>
+                                </div>
+                                <CustomFormGroup
                                     viewType={viewType}
                                     valueFormatType={valueFormatType}
                                     drillDownType={drillDownType}
-                                    themeName={themeName}
+
+                                    selectedAPI={selectedAPI}
+                                    selectedVersion={selectedVersion}
+                                    selectedResource={selectedResource}
+                                    selectedLimit={selectedLimit}
+
+                                    apiList={apiList}
+                                    versionList={versionList}
+                                    operationList={operationList}
+
+                                    handleAPIChange={this.handleAPIChange}
+                                    handleVersionChange={this.handleVersionChange}
+                                    handleOperationChange={this.handleOperationChange}
+                                    handleGraphQLOperationChange={this.handleGraphQLOperationChange}
+                                    handleLimitChange={this.handleLimitChange}
                                 />
-                            )
-                                : (
-                                    <div style={styles.loading}>
-                                        <CircularProgress style={styles.loadingIcon} />
-                                    </div>
+                                {!loading ? (
+                                    <this.renderDrillDownTable
+                                        data={data}
+                                        viewType={viewType}
+                                        valueFormatType={valueFormatType}
+                                        drillDownType={drillDownType}
+                                        themeName={themeName}
+                                    />
                                 )
-                            }
-                        </div>
+                                    : (
+                                        <div style={styles.loading}>
+                                            <CircularProgress style={styles.loadingIcon} />
+                                        </div>
+                                    )
+                                }
+                            </div>
+                        </Scrollbars>
                     </div>
                 </MuiThemeProvider>
             </IntlProvider>

@@ -83,6 +83,7 @@ export default function OverallFaultAnalytics(props) {
         ],
         maxLength: 60,
         height: 400,
+        append: false,
         legend: false,
         disableVerticalGrid: true,
         xAxisTickCount: 4,
