@@ -56,6 +56,7 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'errorOverTime';
 /**
  * Language
  * @type {string}
@@ -95,6 +96,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             selectedVersion: -1,
             selectedResource: -1,
             selectedLimit: 60,
+            apiType: null,
             data: [],
 
             apiList: [],
@@ -151,6 +153,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadQueryParams();
         // This function retrieves the provider configuration defined in the widgetConf.json
         // file and make it available to be used inside the widget
         super.getWidgetConfiguration(widgetID)
@@ -197,6 +200,58 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     }
 
     /**
+     * Retrieve the filter values from query param
+     * @memberof AppAndAPIErrorsByTimeWidget
+     * */
+    loadQueryParams() {
+        let {
+            selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit,
+        } = super.getGlobalState(queryParamKey);
+        const { apiType } = super.getGlobalState(queryParamKey);
+
+        if (!selectedLimit || selectedLimit < 1) {
+            selectedLimit = 60;
+        }
+        if (!selectedAPI) {
+            selectedAPI = -1;
+        }
+        if (!selectedApp) {
+            selectedApp = -1;
+        }
+        if (!selectedVersion) {
+            selectedVersion = -1;
+        }
+        if (!selectedResource) {
+            selectedResource = -1;
+        }
+
+        this.setState({
+            selectedAPI,
+            selectedApp,
+            selectedVersion,
+            selectedResource,
+            selectedLimit,
+            apiType,
+        });
+    }
+
+    /**
+     * Updates query param values
+     * @memberof AppAndAPIErrorsByTimeWidget
+     * */
+    setQueryParams(paramsObj) {
+        const existParams = super.getGlobalState(queryParamKey);
+        const newParams = {};
+        for (const [key, value] of Object.entries(existParams)) {
+            newParams[key] = value;
+        }
+        for (const [key, value] of Object.entries(paramsObj)) {
+            newParams[key] = value;
+        }
+        super.setGlobalState(queryParamKey, newParams);
+    }
+
+    /**
      * Retrieve params from publisher
      * @param {string} receivedMsg Received data from publisher
      * @memberof AppAndAPIErrorsByTimeWidget
@@ -211,7 +266,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 timeFrom: receivedMsg.from,
                 timeTo: receivedMsg.to,
                 perValue: receivedMsg.granularity,
-            }, this.loadApis);
+            }, this.loadArtifacts);
         }
 
         if (apiName && apiID && operationID) {
@@ -238,6 +293,49 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         }
     }
 
+    loadArtifacts() {
+        const {
+            selectedAPI, selectedApp, selectedVersion, selectedResource, apiType,
+        } = this.state;
+
+        this.loadApps();
+        if (selectedVersion !== -1) {
+            this.loadVersions(selectedAPI);
+        }
+        if (selectedResource !== -1) {
+            this.loadOperations(selectedVersion, apiType);
+        }
+        if (selectedVersion === -1 && selectedResource === -1 && selectedApp === -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadApps() {
+        const {
+            selectedVersion, selectedResource, selectedApp,
+        } = this.state;
+        if (selectedVersion === -1 && selectedResource === -1 && selectedApp !== -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadVersions() {
+        const {
+            selectedVersion, selectedResource,
+        } = this.state;
+        if (selectedVersion !== -1 && selectedResource === -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadOperations() {
+        const {
+            selectedVersion, selectedResource,
+        } = this.state;
+        if (selectedVersion !== -1 && selectedResource !== -1) {
+            this.loadApis();
+        }
+    }
 
     // start of filter loading
     loadApps() {
@@ -255,7 +353,6 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
     loadApis() {
         this.loadingDrillDownData();
-        this.loadApps();
 
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
@@ -310,7 +407,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ appList: newData });
+            this.setState({ appList: newData }, this.delayedLoadApps);
         } else {
             this.setState({ appList: [] });
         }
@@ -326,7 +423,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             return obj;
         });
         if (data.length !== 0) {
-            this.setState({ apiList: newData }, this.loadingDrillDownData);
+            this.setState({ apiList: newData });
         } else {
             this.setState({ apiList: [] });
         }
@@ -343,7 +440,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData, operationList: [] }, this.loadingDrillDownData);
+            this.setState({ versionList: newData, operationList: [] }, this.delayedLoadVersions);
         } else {
             this.setState({ versionList: [], operationList: [] });
         }
@@ -360,7 +457,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ operationList: newData }, this.loadingDrillDownData);
+            this.setState({ operationList: newData }, this.delayedLoadOperations);
         } else {
             this.setState({ operationList: [] });
         }
@@ -492,6 +589,9 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             const { value } = data;
             selectedApp = value;
         }
+        this.setQueryParams({
+            selectedApp,
+        });
         this.setState({
             selectedApp,
         }, this.loadingDrillDownData);
@@ -506,6 +606,11 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             selectedAPI = value;
             this.loadVersions(value);
         }
+        this.setQueryParams({
+            selectedAPI,
+            selectedVersion: -1,
+            selectedResource: -1,
+        });
         this.setState({
             selectedAPI,
             versionList: [],
@@ -517,6 +622,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
 
     handleVersionChange(data) {
         let selectedVersion;
+        let apiType;
         if (data == null) {
             selectedVersion = -1;
         } else {
@@ -524,14 +630,19 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             selectedVersion = value;
             const { versionList } = this.state;
             const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
+            apiType = selectedAPI.API_TYPE;
             if (selectedVersion && selectedAPI.API_TYPE !== 'WS') {
                 this.loadOperations(selectedVersion, selectedAPI.API_TYPE);
             }
         }
+        this.setQueryParams({
+            selectedVersion, selectedResource: -1, apiType,
+        });
         this.setState({
             selectedVersion,
             selectedResource: -1,
             operationList: [],
+            apiType,
         }, this.loadingDrillDownData);
     }
 
@@ -543,6 +654,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             const { value } = data;
             selectedResource = value;
         }
+        this.setQueryParams({ selectedResource });
         this.setState({
             selectedResource,
         }, this.loadingDrillDownData);
@@ -562,8 +674,12 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     }
 
     handleLimitChange(event) {
-        const limit = (event.target.value).replace('-', '').split('.')[0];
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit < 1) {
+            limit = 60;
+        }
         if (limit) {
+            this.setQueryParams({ selectedLimit: limit });
             this.setState({ selectedLimit: limit, loading: true }, this.loadingDrillDownData);
         } else {
             const { id } = this.props;

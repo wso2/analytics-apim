@@ -51,6 +51,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'trafficSummary';
+
 /**
  * Language
  * @type {string}
@@ -85,6 +87,7 @@ class APITrafficSummaryWidget extends Widget {
             selectedVersion: -1,
             selectedResource: -1,
             selectedLimit: 10,
+            apiType: null,
             drillDownType: 'api',
             data: [],
 
@@ -139,6 +142,7 @@ class APITrafficSummaryWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadQueryParams();
         // This function retrieves the provider configuration defined in the widgetConf.json
         // file and make it available to be used inside the widget
         super.getWidgetConfiguration(widgetID)
@@ -184,6 +188,58 @@ class APITrafficSummaryWidget extends Widget {
     }
 
     /**
+     * Retrieve the filter values from query param
+     * @memberof APITrafficSummary
+     * */
+    loadQueryParams() {
+        let {
+            selectedAPI, selectedVersion, selectedResource, selectedLimit, drillDownType,
+        } = super.getGlobalState(queryParamKey);
+        const { apiType } = super.getGlobalState(queryParamKey);
+
+        if (!selectedLimit || selectedLimit < 0) {
+            selectedLimit = 5;
+        }
+        if (!selectedAPI) {
+            selectedAPI = -1;
+        }
+        if (!selectedVersion) {
+            selectedVersion = -1;
+        }
+        if (!selectedResource) {
+            selectedResource = -1;
+        }
+        if (!drillDownType) {
+            drillDownType = 'api';
+        }
+
+        this.setState({
+            selectedAPI,
+            selectedVersion,
+            selectedResource,
+            selectedLimit,
+            drillDownType,
+            apiType,
+        });
+    }
+
+    /**
+     * Updates query param values
+     * @memberof APITrafficSummary
+     * */
+    setQueryParams(paramsObj) {
+        const existParams = super.getGlobalState(queryParamKey);
+        const newParams = {};
+        for (const [key, value] of Object.entries(existParams)) {
+            newParams[key] = value;
+        }
+        for (const [key, value] of Object.entries(paramsObj)) {
+            newParams[key] = value;
+        }
+        super.setGlobalState(queryParamKey, newParams);
+    }
+
+    /**
      * Retrieve params from publisher
      * @param {string} receivedMsg Received data from publisher
      * @memberof APITrafficSummaryWidget
@@ -197,9 +253,41 @@ class APITrafficSummaryWidget extends Widget {
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
             loading: !sync,
-        }, this.loadApis);
+        }, this.loadArtifacts);
     }
 
+    loadArtifacts() {
+        const {
+            selectedAPI, selectedVersion, selectedResource, apiType,
+        } = this.state;
+        if (selectedVersion !== -1) {
+            this.loadVersions(selectedAPI);
+        }
+        if (selectedResource !== -1) {
+            this.loadOperations(selectedVersion, apiType);
+        }
+        if (selectedVersion === -1 && selectedResource === -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadVersions() {
+        const {
+            selectedVersion, selectedResource,
+        } = this.state;
+        if (selectedVersion !== -1 && selectedResource === -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadOperations() {
+        const {
+            selectedVersion, selectedResource,
+        } = this.state;
+        if (selectedVersion !== -1 && selectedResource !== -1) {
+            this.loadApis();
+        }
+    }
 
     // start of filter loading
     loadApis() {
@@ -270,6 +358,7 @@ class APITrafficSummaryWidget extends Widget {
 
     handleLoadVersions(message) {
         const { data, metadata: { names } } = message;
+        const { selectedResource } = this.state;
         const newData = data.map((row) => {
             const obj = {};
             for (let j = 0; j < row.length; j++) {
@@ -279,7 +368,11 @@ class APITrafficSummaryWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData, selectedResource: -1 });
+            if (selectedResource !== -1) {
+                this.setState({ versionList: newData }, this.delayedLoadVersions);
+            } else {
+                this.setState({ versionList: newData, selectedResource: -1 }, this.delayedLoadVersions);
+            }
         } else {
             this.setState({ versionList: [], selectedResource: -1 });
         }
@@ -296,13 +389,11 @@ class APITrafficSummaryWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ operationList: newData });
+            this.setState({ operationList: newData }, this.delayedLoadOperations);
         } else {
             this.setState({ operationList: [] });
         }
     }
-    // end of filter loading
-
 
     // start data query functions
     assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase) {
@@ -355,9 +446,16 @@ class APITrafficSummaryWidget extends Widget {
     // end data query functions
 
     handleDrillDownTypeChange(event) {
+        const drillDownType = event.target.value;
+        this.setQueryParams({
+            drillDownType,
+            selectedAPI: -1,
+            selectedVersion: -1,
+            selectedResource: -1,
+        });
         this.setState(
             {
-                drillDownType: event.target.value,
+                drillDownType,
                 data: [],
                 selectedAPI: -1,
                 selectedVersion: -1,
@@ -438,6 +536,11 @@ class APITrafficSummaryWidget extends Widget {
                 this.loadVersions(selectedAPI);
             }
         }
+        this.setQueryParams({
+            selectedAPI,
+            selectedVersion: -1,
+            selectedResource: -1,
+        });
         this.setState({
             selectedAPI,
             versionList: [],
@@ -449,6 +552,7 @@ class APITrafficSummaryWidget extends Widget {
 
     handleVersionChange(data) {
         let selectedVersion;
+        let apiType;
         if (data == null) {
             selectedVersion = -1;
         } else {
@@ -456,16 +560,19 @@ class APITrafficSummaryWidget extends Widget {
             selectedVersion = value;
             const { drillDownType, versionList } = this.state;
             const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
+            apiType = selectedAPI.API_TYPE;
             if (selectedVersion) {
                 if (drillDownType === DrillDownEnum.RESOURCE && selectedAPI.API_TYPE !== 'WS') {
                     this.loadOperations(selectedVersion, selectedAPI.API_TYPE);
                 }
             }
         }
+        this.setQueryParams({ selectedVersion, selectedResource: -1, apiType });
         this.setState({
             selectedVersion,
             selectedResource: -1,
             operationList: [],
+            apiType,
         }, this.loadingDrillDownData);
     }
 
@@ -478,6 +585,7 @@ class APITrafficSummaryWidget extends Widget {
             const { value } = event;
             selectedResource = value;
         }
+        this.setQueryParams({ selectedResource });
         this.setState({ selectedResource }, this.loadingDrillDownData);
     }
 
@@ -495,8 +603,12 @@ class APITrafficSummaryWidget extends Widget {
     }
 
     handleLimitChange(event) {
-        const limit = (event.target.value).replace('-', '').split('.')[0];
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit < 1) {
+            limit = 5;
+        }
         if (limit) {
+            this.setQueryParams({ selectedLimit: limit });
             this.setState({ selectedLimit: limit, loading: true }, this.loadingDrillDownData);
         } else {
             const { id } = this.props;

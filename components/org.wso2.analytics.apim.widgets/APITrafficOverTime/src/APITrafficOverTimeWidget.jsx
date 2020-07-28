@@ -52,7 +52,7 @@ const lightTheme = createMuiTheme({
     },
 });
 
-const queryParamKey = 'latencyOverTime';
+const queryParamKey = 'trafficOverTime';
 
 const CALLBACK_API = '-api';
 const CALLBACK_VERSION = '-version';

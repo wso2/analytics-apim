@@ -49,6 +49,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const queryParamKey = 'latencySummary';
+
 /**
  * Language
  * @type {string}
@@ -83,6 +85,7 @@ class APILatencySummaryWidget extends Widget {
             selectedVersion: -1,
             selectedResource: -1,
             selectedLimit: 5,
+            apiType: null,
             data: [],
 
             apiList: [],
@@ -108,6 +111,7 @@ class APILatencySummaryWidget extends Widget {
         this.loadApis = this.loadApis.bind(this);
         this.loadVersions = this.loadVersions.bind(this);
         this.loadOperations = this.loadOperations.bind(this);
+        this.loadArtifacts = this.loadArtifacts.bind(this);
 
         this.handleLoadApis = this.handleLoadApis.bind(this);
         this.handleLoadVersions = this.handleLoadVersions.bind(this);
@@ -123,6 +127,7 @@ class APILatencySummaryWidget extends Widget {
 
         this.renderDrillDownTable = this.renderDrillDownTable.bind(this);
         this.handleOnClick = this.handleOnClick.bind(this);
+        this.loadQueryParams = this.loadQueryParams.bind(this);
     }
 
     componentWillMount() {
@@ -136,6 +141,7 @@ class APILatencySummaryWidget extends Widget {
 
     componentDidMount() {
         const { widgetID } = this.props;
+        this.loadQueryParams();
         // This function retrieves the provider configuration defined in the widgetConf.json
         // file and make it available to be used inside the widget
         super.getWidgetConfiguration(widgetID)
@@ -182,6 +188,54 @@ class APILatencySummaryWidget extends Widget {
     }
 
     /**
+     * Retrieve the filter values from query param
+     * @memberof APILatencySummaryWidget
+     * */
+    loadQueryParams() {
+        let {
+            selectedAPI, selectedVersion, selectedResource, selectedLimit,
+        } = super.getGlobalState(queryParamKey);
+        const { apiType } = super.getGlobalState(queryParamKey);
+
+        if (!selectedLimit || selectedLimit < 1) {
+            selectedLimit = 5;
+        }
+        if (!selectedAPI) {
+            selectedAPI = -1;
+        }
+        if (!selectedVersion) {
+            selectedVersion = -1;
+        }
+        if (!selectedResource) {
+            selectedResource = -1;
+        }
+
+        this.setState({
+            selectedAPI,
+            selectedVersion,
+            selectedResource,
+            selectedLimit,
+            apiType,
+        });
+    }
+
+    /**
+     * Updates query param values
+     * @memberof APILatencySummary
+     * */
+    setQueryParams(paramsObj) {
+        const existParams = super.getGlobalState(queryParamKey);
+        const newParams = {};
+        for (const [key, value] of Object.entries(existParams)) {
+            newParams[key] = value;
+        }
+        for (const [key, value] of Object.entries(paramsObj)) {
+            newParams[key] = value;
+        }
+        super.setGlobalState(queryParamKey, newParams);
+    }
+
+    /**
      * Retrieve params from publisher
      * @param {string} receivedMsg Received data from publisher
      * @memberof APILatencySummaryWidget
@@ -195,9 +249,41 @@ class APILatencySummaryWidget extends Widget {
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
             loading: !sync,
-        }, this.loadApis);
+        }, this.loadArtifacts);
     }
 
+    loadArtifacts() {
+        const {
+            selectedAPI, selectedVersion, selectedResource, apiType,
+        } = this.state;
+        if (selectedVersion !== -1) {
+            this.loadVersions(selectedAPI);
+        }
+        if (selectedResource !== -1) {
+            this.loadOperations(selectedVersion, apiType);
+        }
+        if (selectedVersion === -1 && selectedResource === -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadVersions() {
+        const {
+            selectedVersion, selectedResource,
+        } = this.state;
+        if (selectedVersion !== -1 && selectedResource === -1) {
+            this.loadApis();
+        }
+    }
+
+    delayedLoadOperations() {
+        const {
+            selectedVersion, selectedResource,
+        } = this.state;
+        if (selectedVersion !== -1 && selectedResource !== -1) {
+            this.loadApis();
+        }
+    }
 
     // start of filter loading
     loadApis() {
@@ -254,10 +340,11 @@ class APILatencySummaryWidget extends Widget {
             }
             return obj;
         });
+
         if (data.length !== 0) {
-            this.setState({ apiList: newData }, this.versionLoadCallBack);
+            this.setState({ apiList: newData });
         } else {
-            this.setState({ apiList: [] });
+            this.setState({ apiList: [], selectedVersion: -1 });
         }
     }
 
@@ -272,7 +359,7 @@ class APILatencySummaryWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData, selectedResource: -1 });
+            this.setState({ versionList: newData }, this.delayedLoadVersions);
         } else {
             this.setState({ versionList: [], selectedResource: -1 });
         }
@@ -289,13 +376,11 @@ class APILatencySummaryWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ operationList: newData });
+            this.setState({ operationList: newData }, this.delayedLoadOperations);
         } else {
             this.setState({ operationList: [] });
         }
     }
-    // end of filter loading
-
 
     // start data query functions
     assembleFetchDataQuery(selectPhase, groupByPhase, filterPhase) {
@@ -411,6 +496,11 @@ class APILatencySummaryWidget extends Widget {
             selectedAPI = value;
             this.loadVersions(selectedAPI);
         }
+        this.setQueryParams({
+            selectedAPI,
+            selectedVersion: -1,
+            selectedResource: -1,
+        });
         this.setState({
             selectedAPI,
             versionList: [],
@@ -422,6 +512,7 @@ class APILatencySummaryWidget extends Widget {
 
     handleVersionChange(data) {
         let selectedVersion;
+        let apiType;
         if (data == null) {
             selectedVersion = -1;
         } else {
@@ -429,14 +520,19 @@ class APILatencySummaryWidget extends Widget {
             selectedVersion = value;
             const { versionList } = this.state;
             const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
+            apiType = selectedAPI.API_TYPE;
             if (selectedVersion && selectedAPI.API_TYPE !== 'WS') {
                 this.loadOperations(selectedVersion, selectedAPI.API_TYPE);
             }
         }
+        this.setQueryParams({
+            selectedVersion, selectedResource: -1, apiType,
+        });
         this.setState({
             selectedVersion,
             selectedResource: -1,
             operationList: [],
+            apiType,
         }, this.loadingDrillDownData);
     }
 
@@ -448,6 +544,7 @@ class APILatencySummaryWidget extends Widget {
             const { value } = data;
             selectedResource = value;
         }
+        this.setQueryParams({ selectedResource });
         this.setState({
             selectedResource,
         }, this.loadingDrillDownData);
@@ -467,8 +564,12 @@ class APILatencySummaryWidget extends Widget {
     }
 
     handleLimitChange(event) {
-        const limit = (event.target.value).replace('-', '').split('.')[0];
+        let limit = (event.target.value).replace('-', '').split('.')[0];
+        if (limit < 1) {
+            limit = 5;
+        }
         if (limit) {
+            this.setQueryParams({ selectedLimit: limit });
             this.setState({ selectedLimit: limit, loading: true }, this.loadingDrillDownData);
         } else {
             const { id } = this.props;
