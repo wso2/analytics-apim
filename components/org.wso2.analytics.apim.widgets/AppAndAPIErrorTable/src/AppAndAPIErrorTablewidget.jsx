@@ -328,6 +328,12 @@ class AppAndAPIErrorTablewidget extends Widget {
         if (viewType && errorType && selected) {
             if (viewType === ViewTypeEnum.APP) {
                 const app = appList.find(d => d.NAME === selected.name && d.CREATED_BY === selected.owner);
+                this.setQueryParams({
+                    drillDownType: DrillDownEnum.API,
+                    viewType,
+                    selectedApp: app.APPLICATION_ID,
+                    selectedAPI: -1,
+                });
                 this.setState(
                     {
                         drillDownType: DrillDownEnum.API,
@@ -337,6 +343,7 @@ class AppAndAPIErrorTablewidget extends Widget {
                     }, this.loadingDrillDownData,
                 );
             } else {
+                this.setQueryParams({ drillDownType: DrillDownEnum.API, viewType, selectedAPI: selected });
                 this.setState(
                     {
                         drillDownType: DrillDownEnum.API,
@@ -835,6 +842,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             drillDownType, versionList, operationList, viewType, appList,
         } = this.state;
         if (drillDownType === DrillDownEnum.API) {
+            this.setQueryParams({ selectedAPI: selected, drillDownType: DrillDownEnum.VERSION });
             this.setState({ selectedAPI: selected, drillDownType: DrillDownEnum.VERSION }, this.loadingDrillDownData);
             this.loadVersions(selected);
         } else if (drillDownType === DrillDownEnum.VERSION) {
@@ -843,8 +851,11 @@ class AppAndAPIErrorTablewidget extends Widget {
                 console.debug('WS APIs doesn\'t support resource level drill down');
                 return;
             }
+            this.setQueryParams({
+                selectedVersion: api.API_ID, drillDownType: DrillDownEnum.RESOURCE, apiType: api.API_TYPE,
+            });
             this.setState({
-                selectedVersion: api.API_ID, drillDownType: DrillDownEnum.RESOURCE,
+                selectedVersion: api.API_ID, drillDownType: DrillDownEnum.RESOURCE, apiType: api.API_TYPE,
             }, this.loadingDrillDownData);
             this.loadOperations(api.API_ID, api.API_TYPE);
         } else if (drillDownType === DrillDownEnum.RESOURCE) {
