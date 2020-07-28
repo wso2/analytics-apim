@@ -47,7 +47,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "headerTitle": "API USAGE SUMMARY",
+                                "headerTitle": " ",
                                 "drillDown": "traffic"
                               }
                             },
@@ -84,7 +84,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "headerTitle": "API FAULTS SUMMARY",
+                                "headerTitle": " ",
                                 "drillDown": "error"
                               }
                             },
@@ -120,7 +120,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "headerTitle": "API Throttle Summary",
+                                "headerTitle": " ",
                                 "drillDown": "error"
                               }
                             },
@@ -192,7 +192,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "OVERALL API INFO"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "APIMOverallApiInfo"
@@ -249,7 +249,7 @@
                             "defaultValue": "7 Days",
                             "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
-                            "headertitle": "DATE TIME RANGE"
+                            "headertitle": " "
                           }
                         },
                         "widgetID": "DateRangePicker"
@@ -290,7 +290,10 @@
                             ]
                           },
                           "isGenerated": false,
-                          "options": {}
+                          "options": {
+                            "header": true,
+                            "headertitle": " "
+                          }
                         },
                         "widgetID": "ErrorByAppAndAPI"
                       },
@@ -329,7 +332,10 @@
                             ]
                           },
                           "isGenerated": false,
-                          "options": {}
+                          "options": {
+                            "header": true,
+                            "headertitle": " "
+                          }
                         },
                         "widgetID": "AppAndAPIErrorTable"
                       },
@@ -364,7 +370,10 @@
                             ]
                           },
                           "isGenerated": false,
-                          "options": {}
+                          "options": {
+                            "header": true,
+                            "headertitle": " "
+                          }
                         },
                         "widgetID": "AppAndAPIErrorsByTime"
                       },
@@ -420,7 +429,7 @@
                             "defaultValue": "7 Days",
                             "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
-                            "headerTitle": "DATE TIME RANGE"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "DateRangePicker"
@@ -463,7 +472,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "API LATENCY SUMMARY",
+                            "headerTitle": " ",
                             "drillDown": true
                           }
                         },
@@ -500,7 +509,10 @@
                             ]
                           },
                           "isGenerated": false,
-                          "options": {}
+                          "options": {
+                            "header": true,
+                            "headertitle": " "
+                          }
                         },
                         "widgetID": "APILatencyOverTime"
                       },
@@ -556,7 +568,7 @@
                             "defaultValue": "3 Months",
                             "availableGranularities": "From Second",
                             "autoSyncInterval": "30",
-                            "headerTitle": "DATE TIME RANGE"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "DateRangePicker"
@@ -599,7 +611,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headertitle": "API USAGE SUMMARY",
+                            "headertitle": " ",
                             "drillDown": true
                           }
                         },
@@ -636,7 +648,10 @@
                             ]
                           },
                           "isGenerated": false,
-                          "options": {}
+                          "options": {
+                            "header": true,
+                            "headertitle": " "
+                          }
                         },
                         "widgetID": "APITrafficOverTime"
                       },
@@ -693,7 +708,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API AVAILABILITY SUMMARY",
+                                "headerTitle": " ",
                                 "drillDown": true
                               }
                             },
@@ -732,7 +747,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API AVAILABILITY"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "ApiAvailability"
@@ -772,7 +787,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "TOP API BY ALERTS",
+                            "headerTitle": " ",
                             "drillDown": true
                           }
                         },
@@ -816,7 +831,7 @@
                             "defaultValue": "7 Days",
                             "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
-                            "headerTitle": "DATE TIME RANGE"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "DateRangePicker"
@@ -854,7 +869,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "ALERT SUMMARY"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "APIMAlertSummary"

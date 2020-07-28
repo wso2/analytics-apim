@@ -48,7 +48,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP 10 API USAGE FOR MONTH",
+                                "headerTitle": " ",
                                 "drillDown": "api-usage"
                               }
                             },
@@ -84,7 +84,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP 10 API PERFORMANCE FOR MONTH",
+                                "headerTitle": " ",
                                 "drillDown": "performance-summary"
                               }
                             },
@@ -129,7 +129,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP 10 THROTTLED OUT APIS OVER TIME",
+                                "headerTitle": " ",
                                 "drillDown": "throttle-summary"
                               }
                             },
@@ -165,7 +165,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "OVERALL FAULTY REQUESTS OVER TIME",
+                                "headerTitle": " ",
                                 "drillDown": "error-summary"
                               }
                             },
@@ -276,7 +276,7 @@
                                 "defaultValue": "1 Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -323,7 +323,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "OVERALL API USAGE",
+                                "headerTitle": " ",
                                 "drillDown": "api-usage"
                               }
                             },
@@ -363,7 +363,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API USAGE BY APPLICATION",
+                                "headerTitle": " ",
                                 "drillDown": "api-usage"
                               }
                             },
@@ -405,7 +405,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "API BACKEND USAGE SUMMARY"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "APIMApiBackendUsageSummary"
@@ -449,7 +449,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API RESOURCE USAGE SUMMARY"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "APIMApiResourceUsageSummary"
@@ -487,7 +487,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP API USERS"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "APIMTopApiUsers"
@@ -596,7 +596,7 @@
                                 "defaultValue": "1 Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -636,7 +636,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "API USAGE OVER TIME"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "ApiUsageOverTime"
@@ -743,7 +743,7 @@
                                 "defaultValue": "1 Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -783,7 +783,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "PERFORMANCE SUMMARY",
+                            "headerTitle": " ",
                             "drillDown": "api-performance"
                           }
                         },
@@ -891,7 +891,7 @@
                                 "defaultValue": "1 Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -932,7 +932,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "API LATENCY OVER TIME"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "APIMApiLatencyTime"
@@ -1040,7 +1040,7 @@
                                 "defaultValue": "1 Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -1080,7 +1080,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "THROTTLE SUMMARY",
+                            "headerTitle": " ",
                             "drillDown": "api-errors"
                           }
                         },
@@ -1137,7 +1137,7 @@
                             "defaultValue": "1 Month",
                             "availableGranularities": "From Second",
                             "autoSyncInterval": "30",
-                            "headerTitle": "DATE TIME RANGE"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "DateRangePicker"
@@ -1181,7 +1181,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP FAULTY APIS",
+                                "headerTitle": " ",
                                 "drillDown": "api-errors"
                               }
                             },
@@ -1219,7 +1219,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP THROTTLED OUT APIS",
+                                "headerTitle": " ",
                                 "drillDown": "api-errors"
                               }
                             },
@@ -1330,7 +1330,7 @@
                                 "defaultValue": "7 Days",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -1377,7 +1377,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API FAULTY REQUESTS OVER TIME"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "ApiFaultAnalytics"
@@ -1415,7 +1415,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API THROTTLED OUT REQUESTS OVER TIME"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "ApiThrottleAnalytics"
@@ -1523,7 +1523,7 @@
                                 "defaultValue": "3 Months",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -1570,7 +1570,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP PLATFORMS"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "APIMTopPlatforms"
@@ -1608,7 +1608,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP USER AGENTS"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "APIMTopUserAgents"
@@ -1716,7 +1716,7 @@
                                 "defaultValue": "3 Months",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -1756,7 +1756,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "API USAGE BY GEO LOCATION"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "APIMGeoBasedInvocations"
@@ -1870,7 +1870,7 @@
                                     "defaultValue": "1 Month",
                                     "availableGranularities": "From Second",
                                     "autoSyncInterval": "30",
-                                    "headerTitle": "DATE TIME RANGE"
+                                    "headerTitle": " "
                                   }
                                 },
                                 "widgetID": "DateRangePicker"
@@ -1911,7 +1911,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "APIS CREATED OVER TIME",
+                                "headerTitle": " ",
                                 "drillDown": "usage-summary"
                               }
                             },
@@ -1956,7 +1956,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP RATED APIS",
+                                "headerTitle": " ",
                                 "drillDown": "usage-summary"
                               }
                             },
@@ -1992,7 +1992,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP API CREATORS",
+                                "headerTitle": " ",
                                 "drillDown": ""
                               }
                             },
@@ -2110,7 +2110,7 @@
                                     "defaultValue": "1 Month",
                                     "availableGranularities": "From Second",
                                     "autoSyncInterval": "30",
-                                    "headerTitle": "DATE TIME RANGE"
+                                    "headerTitle": " "
                                   }
                                 },
                                 "widgetID": "DateRangePicker"
@@ -2151,7 +2151,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API SUBSCRIPTIONS OVER TIME",
+                                "headerTitle": " ",
                                 "drillDown": "usage-summary"
                               }
                             },
@@ -2190,7 +2190,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "APPLICATIONS CREATED OVER TIME"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "APIMAppCreatedAnalytics"
@@ -2227,7 +2227,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "DEVELOPER SIGNUPS OVER TIME"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "APIMSignupsAnalytics"
@@ -2271,7 +2271,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP APPLICATION CREATORS",
+                                "headerTitle": " ",
                                 "drillDown": ""
                               }
                             },
@@ -2308,7 +2308,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP SUBSCRIPTIONS PER PROVIDER",
+                                "headerTitle": " ",
                                 "drillDown": ""
                               }
                             },

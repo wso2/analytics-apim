@@ -56,7 +56,7 @@
                                   "isGenerated": false,
                                   "options": {
                                     "header": true,
-                                    "headerTitle": "FAULTY INVOCATIONS PER APPLICATION"
+                                    "headerTitle": " "
                                   }
                                 },
                                 "widgetID": "APIMFaultyPerApp"
@@ -93,7 +93,7 @@
                                   "isGenerated": false,
                                   "options": {
                                     "header": true,
-                                    "headerTitle": "TOP APPLICATION USERS"
+                                    "headerTitle": " "
                                   }
                                 },
                                 "widgetID": "APIMTopAppUsers"
@@ -131,7 +131,7 @@
                                   "isGenerated": false,
                                   "options": {
                                     "header": true,
-                                    "headerTitle": "REGISTERED APPLICATION USERS"
+                                    "headerTitle": " "
                                   }
                                 },
                                 "widgetID": "APIMRegisteredAppUsers"
@@ -168,7 +168,7 @@
                                   "isGenerated": false,
                                   "options": {
                                     "header": true,
-                                    "headerTitle": "RESOURCE USAGE OF APPLICATION"
+                                    "headerTitle": " "
                                   }
                                 },
                                 "widgetID": "APIMAppResourceUsage"
@@ -257,7 +257,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API USAGE OF APPLICATION"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "APIMAppApiUsage"

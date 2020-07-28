@@ -100,7 +100,7 @@
                                 "defaultValue": "3 Months",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -147,7 +147,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "OVERALL API USAGE",
+                                "headerTitle": " ",
                                 "drillDown": "api-usage"
                               }
                             },
@@ -187,7 +187,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API USAGE BY APPLICATION",
+                                "headerTitle": " ",
                                 "drillDown": "api-usage"
                               }
                             },
@@ -229,7 +229,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "API BACKEND USAGE SUMMARY"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "APIMApiBackendUsageSummary"
@@ -273,7 +273,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API RESOURCE USAGE SUMMARY"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "APIMApiResourceUsageSummary"
@@ -311,7 +311,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "TOP API USERS"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "APIMTopApiUsers"
@@ -419,7 +419,7 @@
                                 "defaultValue": "3 Months",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -459,7 +459,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "API USAGE OVER TIME"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "ApiUsageOverTime"
@@ -567,7 +567,7 @@
                                 "defaultValue": "1 Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -608,7 +608,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": true,
-                            "headerTitle": "API LATENCY OVER TIME"
+                            "headerTitle": " "
                           }
                         },
                         "widgetID": "APIMApiLatencyTime"
@@ -716,7 +716,7 @@
                                 "defaultValue": "7 Days",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
-                                "headerTitle": "DATE TIME RANGE"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "DateRangePicker"
@@ -763,7 +763,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API FAULTY REQUESTS OVER TIME"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "ApiFaultAnalytics"
@@ -801,7 +801,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": true,
-                                "headerTitle": "API THROTTLED OUT REQUESTS OVER TIME"
+                                "headerTitle": " "
                               }
                             },
                             "widgetID": "ApiThrottleAnalytics"
