@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import { Scrollbars } from 'react-custom-scrollbars';
 import {
     addLocaleData, defineMessages, IntlProvider, FormattedMessage,
 } from 'react-intl';
@@ -303,32 +304,38 @@ class APIMApiUsageSummaryWidget extends Widget {
         return (
             <IntlProvider locale={language} messages={messages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    {
-                        faultyProviderConf ? (
-                            <div style={paperWrapper}>
-                                <Paper elevation={1} style={paper}>
-                                    <Typography variant='h5' component='h3'>
-                                        <FormattedMessage
-                                            id='config.error.heading'
-                                            defaultMessage='Configuration Error !'
-                                        />
-                                    </Typography>
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='config.error.body'
-                                            defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                                + 'Usage Summary widget'}
-                                        />
-                                    </Typography>
-                                </Paper>
-                            </div>
-                        ) : (
-                            <APIMApiUsageSummary
-                                {...apiUsageProps}
-                                handleOnClick={this.handleOnClick}
-                            />
-                        )
-                    }
+                    <Scrollbars style={{
+                                    height,
+                                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                                }}
+                    >
+                        {
+                            faultyProviderConf ? (
+                                <div style={paperWrapper}>
+                                    <Paper elevation={1} style={paper}>
+                                        <Typography variant='h5' component='h3'>
+                                            <FormattedMessage
+                                                id='config.error.heading'
+                                                defaultMessage='Configuration Error !'
+                                            />
+                                        </Typography>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='config.error.body'
+                                                defaultMessage={'Cannot fetch provider configuration for APIM Api '
+                                                    + 'Usage Summary widget'}
+                                            />
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ) : (
+                                <APIMApiUsageSummary
+                                    {...apiUsageProps}
+                                    handleOnClick={this.handleOnClick}
+                                />
+                            )
+                        }
+                    </Scrollbars>
                 </MuiThemeProvider>
             </IntlProvider>
         );
