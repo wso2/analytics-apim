@@ -276,7 +276,11 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 selectedResource: operationID,
                 versionList: [],
                 operationList: [],
+                apiType,
             };
+            this.setQueryParams({
+                selectedAPI: apiName, selectedVersion: apiID, selectedResource: operationID, apiType,
+            });
             if (Array.isArray(operationID)) {
                 state.selectedResource = operationID;
             } else {
@@ -284,6 +288,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             }
             if (appID) {
                 state.selectedApp = appID;
+                this.setQueryParams({ selectedApp: appID });
             }
             this.setState(state, () => {
                 this.loadVersions(apiName);
