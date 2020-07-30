@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import { Scrollbars } from 'react-custom-scrollbars';
 import Widget from '@wso2-dashboards/widget';
 import cloneDeep from 'lodash/cloneDeep';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -655,7 +656,7 @@ class ErrorByAppAndAPIwidget extends Widget {
      * @memberof ErrorByAppAndAPIwidget
      */
     render() {
-        const { localeMessages } = this.state;
+        const { localeMessages, height } = this.state;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const errorProps = { themeName, ...this.state };
@@ -703,22 +704,28 @@ class ErrorByAppAndAPIwidget extends Widget {
                 <MuiThemeProvider
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
-                    <div style={this.styles.mainDiv}>
-                        <div style={this.styles.headingWrapper}>
-                            <h3 style={this.styles.heading}>
-                                <FormattedMessage
-                                    id='widget.heading'
-                                    defaultMessage='TOP ERROR SUMMARY'
+                    <Scrollbars style={{
+                                    height,
+                                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                                }}
+                    >
+                        <div style={this.styles.mainDiv}>
+                            <div style={this.styles.headingWrapper}>
+                                <h3 style={this.styles.heading}>
+                                    <FormattedMessage
+                                        id='widget.heading'
+                                        defaultMessage='TOP ERROR SUMMARY'
+                                    />
+                                </h3>
+                                <ErrorsSummaryChart
+                                    {...errorProps}
+                                    handleViewChange={this.handleViewChange}
+                                    handleLimitChange={this.handleLimitChange}
+                                    publishSelectedData={this.publishSelectedData}
                                 />
-                            </h3>
-                            <ErrorsSummaryChart
-                                {...errorProps}
-                                handleViewChange={this.handleViewChange}
-                                handleLimitChange={this.handleLimitChange}
-                                publishSelectedData={this.publishSelectedData}
-                            />
+                            </div>
                         </div>
-                    </div>
+                    </Scrollbars>
                 </MuiThemeProvider>
             </IntlProvider>
         );

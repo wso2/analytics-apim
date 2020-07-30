@@ -366,7 +366,8 @@ class APILatencyOverTimeWidget extends Widget {
             return obj;
         });
         if (data.length !== 0) {
-            this.setState({ apiList: newData, versionList: [], operationList: [] }, this.loadVersions);
+            this.setState({ apiList: newData, selectedAPI: newData[0].API_NAME, versionList: [], operationList: [] },
+             this.loadVersions);
         } else {
             this.setState({ apiList: [], versionList: [], operationList: [] });
         }
@@ -383,7 +384,8 @@ class APILatencyOverTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData, operationList: [] }, this.loadOperations);
+            this.setState({ versionList: newData, selectedVersion: newData[0].API_VERSION, operationList: [] },
+             this.loadOperations);
         } else {
             this.setState({ versionList: [], operationList: [], selectedResource: 'all' });
         }
@@ -400,10 +402,12 @@ class APILatencyOverTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ operationList: newData });
+            this.setState({ operationList: newData, selectedResource: newData[0].URL_PATTERN + '#'
+            + newData[0].HTTP_METHOD });
         } else {
             this.setState({ operationList: [] });
         }
+        this.loadingDrillDownData();
     }
     // end of filter loading
 
@@ -565,11 +569,12 @@ class APILatencyOverTimeWidget extends Widget {
             selectedResource: 'all',
             operationList: [],
         }, () => {
-            this.loadingDrillDownData();
             const { versionList } = this.state;
             const SelectedAPI = versionList.find(item => item.API_VERSION === selectedVersion);
             if (SelectedAPI && SelectedAPI.API_TYPE !== 'WS') {
                 this.loadOperations();
+            } else {
+                this.loadingDrillDownData();
             }
         });
     }
