@@ -27,10 +27,10 @@ import {
     defineMessages, IntlProvider, FormattedMessage, addLocaleData,
 } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Scrollbars from 'react-custom-scrollbars';
 import { ViewTypeEnum, ValueFormatType, DrillDownEnum } from '../../AppAndAPIErrorTable/src/Constants';
 import APIViewErrorTable from './APIViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
-import Scrollbars from 'react-custom-scrollbars';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -727,29 +727,16 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 margin: 'auto',
                 width: '95%',
             },
-            dataWrapper: {
-                margin: 'auto',
-                width: '95%',
-            },
-            title: {
-                textAlign: 'center',
-                marginTop: '100px',
-                marginBottom: '50px',
-                fontWeight: 'bold',
-                letterSpacing: 1.5,
-            },
             contentWrapper: {
                 margin: '10px',
                 marginTop: '0px',
                 padding: '20px',
+                paddingTop: '30px',
             },
             root: {
                 backgroundColor: themeName === 'light' ? '#fff' : '#0e1e34',
                 padding: '20px',
                 height: '100%',
-            },
-            formControl: {
-                minWidth: '120px',
             },
             loadingIcon: {
                 margin: 'auto',
