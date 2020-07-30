@@ -22,27 +22,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
-import {
-    RadioGroup, FormControlLabel, Radio, FormLabel,
-} from '@material-ui/core';
 import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
-import {DrillDownEnum} from "../../AppAndAPIErrorTable/src/Constants";
 
 const styles = theme => ({
-    table: {
-        minWidth: 650,
-        maxWidth: 650,
-        marginBottom: 50,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing.unit * 2,
-    },
     formWrapper: {
         paddingTop: 10,
     },
@@ -50,20 +35,6 @@ const styles = theme => ({
         marginLeft: 10,
         marginTop: 10,
         width: '10%',
-    },
-    formControlSelect: {
-        paddingRight: 10,
-        marginLeft: 10,
-        marginTop: 10,
-        minWidth: 200,
-        width: '15%',
-    },
-    formLabel: {
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-        width: '100%',
-        display: 'block',
-        overflow: 'hidden',
     },
     autoSelectForm: {
         margin: theme.spacing.unit,
@@ -88,6 +59,7 @@ function CustomFormGroup(props) {
                     value={selectedVersion}
                     onChange={handleVersionChange}
                     placeholder='All'
+                    displayName='Version :'
                     getLabel={item => item.API_VERSION}
                     getValue={item => item.API_VERSION}
                 />
@@ -103,6 +75,7 @@ function CustomFormGroup(props) {
                     value={selectedResource}
                     onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
                     placeholder='All'
+                    displayName='Operation :'
                     getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
                     getValue={item => item.id}
                 />
@@ -119,6 +92,7 @@ function CustomFormGroup(props) {
                         onChange={handleAPIChange}
                         disabled={apiList && apiList.length === 0}
                         placeholder='All'
+                        displayName='API :'
                         getLabel={item => item}
                         getValue={item => item}
                     />
@@ -146,12 +120,6 @@ function CustomFormGroup(props) {
 
 CustomFormGroup.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
-};
-
-export default withStyles(styles)(CustomFormGroup);
-
-CustomFormGroup.propTypes = {
-    classes: PropTypes.func.isRequired,
     handleAPIChange: PropTypes.func.isRequired,
     handleVersionChange: PropTypes.func.isRequired,
     handleOperationChange: PropTypes.func.isRequired,
@@ -165,3 +133,5 @@ CustomFormGroup.propTypes = {
     operationList: PropTypes.instanceOf(Object).isRequired,
     handleGraphQLOperationChange: PropTypes.func.isRequired,
 };
+
+export default withStyles(styles)(CustomFormGroup);

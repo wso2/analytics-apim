@@ -11,6 +11,8 @@ import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { emphasize } from '@material-ui/core/styles/colorManipulator';
+import { FormattedMessage } from 'react-intl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const styles = theme => ({
     root: {
@@ -58,6 +60,9 @@ const styles = theme => ({
     divider: {
         height: theme.spacing.unit * 2,
     },
+    formLabel: {
+        marginBottom: theme.spacing.unit * 2,
+    },
 });
 
 class IntegrationReactSelect extends React.Component {
@@ -73,6 +78,7 @@ class IntegrationReactSelect extends React.Component {
         this.getValueContainer = this.getValueContainer.bind(this);
         this.getMultiValue = this.getMultiValue.bind(this);
         this.getMenu = this.getMenu.bind(this);
+        this.getLabel = this.getLabel.bind(this);
     }
 
     getNoOptionsMessage(props) {
@@ -175,6 +181,23 @@ class IntegrationReactSelect extends React.Component {
         );
     }
 
+    getLabel() {
+        const { classes, displayName } = this.props;
+        if (displayName) {
+            return (
+                <InputLabel
+                    shrink
+                    htmlFor='limit-number'
+                    classes={classes.formLabel}
+                    style={{ position: 'relative' }}
+                >
+                    <FormattedMessage id={'select.' + displayName} defaultMessage={displayName} />
+                </InputLabel>
+            );
+        }
+        return null;
+    }
+
     render() {
         const {
             classes, theme, isMulti, options, onChange, placeholder, value, getLabel, getValue,
@@ -230,6 +253,7 @@ class IntegrationReactSelect extends React.Component {
 
         return (
             <div className={classes.root}>
+                {this.getLabel()}
                 <NoSsr>
                     { isMulti
                         ? (
@@ -270,6 +294,7 @@ IntegrationReactSelect.propTypes = {
     placeholder: PropTypes.string.isRequired,
     getLabel: PropTypes.func.isRequired,
     getValue: PropTypes.func.isRequired,
+    displayName: PropTypes.string.isRequired,
     value: PropTypes.instanceOf(Object).isRequired,
 };
 

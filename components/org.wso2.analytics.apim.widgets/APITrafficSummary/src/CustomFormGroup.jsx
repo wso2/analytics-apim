@@ -22,9 +22,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
@@ -32,7 +29,7 @@ import {
     RadioGroup, FormControlLabel, Radio, FormLabel,
 } from '@material-ui/core';
 import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
-import {DrillDownEnum} from "../../AppAndAPIErrorTable/src/Constants";
+import { DrillDownEnum } from '../../AppAndAPIErrorTable/src/Constants';
 
 const styles = theme => ({
     table: {
@@ -93,6 +90,7 @@ function CustomFormGroup(props) {
                         value={selectedVersion}
                         onChange={handleVersionChange}
                         placeholder='All'
+                        displayName='Version :'
                         getLabel={item => item.API_VERSION}
                         getValue={item => item.API_ID}
                     />
@@ -111,6 +109,7 @@ function CustomFormGroup(props) {
                         value={selectedResource}
                         onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
                         placeholder='All'
+                        displayName='Operation :'
                         getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
                         getValue={item => item.URL_MAPPING_ID}
                     />
@@ -161,6 +160,7 @@ function CustomFormGroup(props) {
                         onChange={handleAPIChange}
                         disabled={filteredAPIList && filteredAPIList.length === 0}
                         placeholder='All'
+                        displayName='API :'
                         getLabel={item => item.API_NAME}
                         getValue={item => item.API_NAME}
                     />

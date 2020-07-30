@@ -28,11 +28,6 @@ import { ViewTypeEnum, DrillDownEnum } from './Constants';
 import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationReactSelect';
 
 const styles = theme => ({
-    table: {
-        minWidth: 650,
-        maxWidth: 650,
-        marginBottom: 50,
-    },
     formControl: {
         margin: theme.spacing.unit,
         minWidth: 120,
@@ -40,14 +35,6 @@ const styles = theme => ({
     autoSelectForm: {
         margin: theme.spacing.unit,
         minWidth: 200,
-    },
-    autocomplete: {
-        margin: theme.spacing.unit,
-        minWidth: 400,
-        width: '20%',
-    },
-    selectEmpty: {
-        marginTop: theme.spacing.unit * 2,
     },
 });
 
@@ -74,6 +61,7 @@ function CustomFormGroup(props) {
                             onChange={handleApplicationChange}
                             disabled={appList && appList.length === 0}
                             placeholder='All'
+                            displayName='Application :'
                             getLabel={item => item.NAME + ' ( ' + item.CREATED_BY + ' )'}
                             getValue={item => item.APPLICATION_ID}
                         />
@@ -87,6 +75,7 @@ function CustomFormGroup(props) {
                         onChange={handleAPIChange}
                         disabled={filteredAPIList && filteredAPIList.length === 0}
                         placeholder='All'
+                        displayName='API :'
                         getLabel={item => item.API_NAME}
                         getValue={item => item.API_NAME}
                     />
@@ -98,8 +87,8 @@ function CustomFormGroup(props) {
                             options={versionList}
                             value={selectedVersion}
                             onChange={handleVersionChange}
-                            // disabled={versionList && versionList.length === 0}
                             placeholder='All'
+                            displayName='Version :'
                             getLabel={item => item.API_VERSION}
                             getValue={item => item.API_ID}
                         />
@@ -116,6 +105,7 @@ function CustomFormGroup(props) {
                             onChange={graphQL ? handleGraphQLOperationChange : handleOperationChange}
                             disabled={operationList && operationList.length === 0}
                             placeholder='All'
+                            displayName='Operation :'
                             getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
                             getValue={item => item.URL_MAPPING_ID}
                         />
