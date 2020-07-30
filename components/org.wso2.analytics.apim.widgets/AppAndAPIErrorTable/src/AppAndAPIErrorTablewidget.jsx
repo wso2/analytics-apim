@@ -906,7 +906,7 @@ class AppAndAPIErrorTablewidget extends Widget {
             selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit, apiList, appList,
             versionList, operationList, height,
         } = this.state;
-        const { muiTheme, height } = this.props;
+        const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
 
