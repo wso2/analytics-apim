@@ -406,7 +406,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         const newData = data.map((row) => {
             const obj = {};
             for (let j = 0; j < row.length; j++) {
-                obj[names[j]] = row[j];
+                obj[(names[j]).toUpperCase()] = row[j];
             }
             return obj;
         });
@@ -456,7 +456,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         const newData = data.map((row) => {
             const obj = {};
             for (let j = 0; j < row.length; j++) {
-                obj[names[j]] = row[j];
+                obj[(names[j]).toUpperCase()] = row[j];
             }
             return obj;
         });
