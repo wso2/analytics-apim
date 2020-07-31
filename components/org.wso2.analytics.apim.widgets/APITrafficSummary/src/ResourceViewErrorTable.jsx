@@ -85,7 +85,7 @@ class APIViewErrorTable extends React.Component {
     }
 
     getPieChartForAPI(data) {
-        const { handleOnClick } = this.props;
+        const { handleOnClick, drillDownType } = this.props;
         const {
             successSelected, faultySelected, throttledSelected,
         } = this.state;
@@ -101,6 +101,12 @@ class APIViewErrorTable extends React.Component {
             }
             return label;
         };
+        let label = 'api';
+        if (drillDownType === 'version') {
+            label = 'API Version';
+        } else if (drillDownType === 'resource') {
+            label = 'API Operation';
+        }
 
         return (
             <div>
@@ -115,7 +121,7 @@ class APIViewErrorTable extends React.Component {
                     }}
                 >
                     <VictoryAxis
-                        label={() => 'API Operation'.toUpperCase()}
+                        label={label.toUpperCase()}
                         tickCount={10}
                         tickLabelComponent={<VictoryLabel angle={45} />}
                         style={{
