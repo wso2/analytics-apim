@@ -120,6 +120,8 @@ class APIViewErrorTable extends React.Component {
         } else if (perValue === 'year') {
             unit = 'years';
             label = 'Time (Year)';
+        } else {
+            label = 'Time';
         }
 
         data = data.map((item) => {
@@ -141,7 +143,7 @@ class APIViewErrorTable extends React.Component {
                     }}
                 >
                     <VictoryAxis
-                        label={() => 'Time'.toUpperCase()}
+                        label={label.toUpperCase()}
                         tickFormat={(time) => {
                             const moment = Moment(Number(time));
                             return moment.format(timeFormat);

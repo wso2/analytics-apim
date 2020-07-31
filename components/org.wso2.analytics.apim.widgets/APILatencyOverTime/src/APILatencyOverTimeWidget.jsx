@@ -642,7 +642,7 @@ class APILatencyOverTimeWidget extends Widget {
         const {
             localeMessages, viewType, drillDownType, valueFormatType, data, loading,
             selectedAPI, selectedVersion, selectedResource, selectedLimit, apiList,
-            versionList, operationList,
+            versionList, operationList, perValue,
         } = this.state;
         const { muiTheme, height } = this.props;
         const themeName = muiTheme.name;
@@ -728,6 +728,7 @@ class APILatencyOverTimeWidget extends Widget {
                                         valueFormatType={valueFormatType}
                                         drillDownType={drillDownType}
                                         themeName={themeName}
+                                        perValue={perValue}
                                     />
                                 )
                                     : (
