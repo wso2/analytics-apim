@@ -28,10 +28,10 @@ import {
 } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+import Scrollbars from 'react-custom-scrollbars';
 import { ViewTypeEnum, ValueFormatType, DrillDownEnum } from '../../AppAndAPIErrorTable/src/Constants';
 import APIViewErrorTable from './APIViewErrorTable';
 import CustomFormGroup from './CustomFormGroup';
-import Scrollbars from 'react-custom-scrollbars';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -358,6 +358,7 @@ class APILatencyOverTimeWidget extends Widget {
 
     handleLoadApis(message) {
         const { data, metadata: { names } } = message;
+        const { selectedAPI } = this.state;
         const newData = data.map((row) => {
             const obj = {};
             for (let j = 0; j < row.length; j++) {
@@ -366,8 +367,13 @@ class APILatencyOverTimeWidget extends Widget {
             return obj;
         });
         if (data.length !== 0) {
-            this.setState({ apiList: newData, selectedAPI: newData[0].API_NAME, versionList: [], operationList: [] },
-             this.loadVersions);
+            if (selectedAPI === 'all') {
+                this.setState({
+                    apiList: newData, selectedAPI: newData[0].API_NAME, versionList: [], operationList: [],
+                }, this.loadVersions);
+            } else {
+                this.setState({ apiList: newData, versionList: [], operationList: [] }, this.loadVersions);
+            }
         } else {
             this.setState({ apiList: [], versionList: [], operationList: [] });
         }
@@ -375,6 +381,7 @@ class APILatencyOverTimeWidget extends Widget {
 
     handleLoadVersions(message) {
         const { data, metadata: { names } } = message;
+        const { selectedVersion } = this.state;
         const newData = data.map((row) => {
             const obj = {};
             for (let j = 0; j < row.length; j++) {
@@ -384,8 +391,12 @@ class APILatencyOverTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData, selectedVersion: newData[0].API_VERSION, operationList: [] },
-             this.loadOperations);
+            if (selectedVersion === 'all') {
+                this.setState({ versionList: newData, selectedVersion: newData[0].API_VERSION, operationList: [] },
+                    this.loadOperations);
+            } else {
+                this.setState({ versionList: newData, operationList: [] }, this.loadOperations);
+            }
         } else {
             this.setState({ versionList: [], operationList: [], selectedResource: 'all' });
         }
@@ -393,6 +404,7 @@ class APILatencyOverTimeWidget extends Widget {
 
     handleLoadOperations(message) {
         const { data, metadata: { names } } = message;
+        const { selectedResource } = this.state;
         const newData = data.map((row) => {
             const obj = {};
             for (let j = 0; j < row.length; j++) {
@@ -402,8 +414,15 @@ class APILatencyOverTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ operationList: newData, selectedResource: newData[0].URL_PATTERN + '#'
-            + newData[0].HTTP_METHOD });
+            if (selectedResource === 'all') {
+                this.setState({
+                    operationList: newData,
+                    selectedResource: newData[0].URL_PATTERN + '#'
+                        + newData[0].HTTP_METHOD,
+                });
+            } else {
+                this.setState({ operationList: newData });
+            }
         } else {
             this.setState({ operationList: [] });
         }
@@ -691,7 +710,8 @@ class APILatencyOverTimeWidget extends Widget {
                         <Scrollbars style={{
                             height,
                             backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                        }}>
+                        }}
+                        >
                             <div style={styles.contentWrapper}>
                                 <div style={styles.headingWrapper}>
                                     <h3 style={styles.heading}>
