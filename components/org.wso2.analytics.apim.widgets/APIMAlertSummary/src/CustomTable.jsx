@@ -28,6 +28,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import cloneDeep from 'lodash/cloneDeep';
 import { withStyles } from '@material-ui/core/styles';
 import Moment from 'moment';
 import CustomTableHead from './CustomTableHead';
@@ -215,6 +216,10 @@ class CustomTable extends React.Component {
         if (tableData.length > 0) {
             sortedData = stableSort(tableData, getSorting(order, orderBy));
         }
+        const exportData = cloneDeep(sortedData).map((dataUnit) => {
+            if (dataUnit.severityColor) delete dataUnit.severityColor;
+            return dataUnit;
+        });
         const menuItems = [
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
@@ -243,7 +248,7 @@ class CustomTable extends React.Component {
                     handleQueryChange={this.handleQueryChange}
                     menuItems={menuItems}
                     title={title}
-                    data={sortedData}
+                    data={exportData}
                     strColumns={strColumns}
                     username={username}
                 />
