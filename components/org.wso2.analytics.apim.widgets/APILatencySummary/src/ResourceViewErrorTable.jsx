@@ -105,7 +105,7 @@ class APIViewErrorTable extends React.Component {
                     responsive={false}
                     domainPadding={{ x: [20, 20] }}
                     padding={{
-                        top: 50, bottom: 50, right: 50, left: 50,
+                        top: 50, bottom: 120, right: 50, left: 50,
                     }}
                     theme={VictoryTheme.material}
                     height={400}
@@ -113,13 +113,14 @@ class APIViewErrorTable extends React.Component {
                 >
                     <VictoryAxis
                         label={() => 'API Operation'.toUpperCase()}
-                        tickLabelComponent={<VictoryLabel angle={45} text='' />}
+                        tickCount={10}
+                        tickLabelComponent={<VictoryLabel angle={45} />}
                         style={{
                             axis: { stroke: '#756f6a' },
                             axisLabel: { fontSize: 15, padding: 30 },
                             grid: { stroke: () => 0 },
                             ticks: { stroke: 'grey', size: 5 },
-                            tickLabels: { fontSize: 9, padding: 5 },
+                            tickLabels: { fontSize: 9, textAnchor: 'start' },
                         }}
                     />
                     <VictoryAxis
