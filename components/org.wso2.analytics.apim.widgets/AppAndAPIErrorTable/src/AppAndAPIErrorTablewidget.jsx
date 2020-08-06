@@ -329,17 +329,18 @@ class AppAndAPIErrorTablewidget extends Widget {
         if (viewType && errorType && selected) {
             if (viewType === ViewTypeEnum.APP) {
                 const app = appList.find(d => d.NAME === selected.name && d.CREATED_BY === selected.owner);
+                const selectedApp = app ? app.APPLICATION_ID : -1;
                 this.setQueryParams({
                     drillDownType: DrillDownEnum.API,
                     viewType,
-                    selectedApp: app.APPLICATION_ID,
+                    selectedApp,
                     selectedAPI: -1,
                 });
                 this.setState(
                     {
                         drillDownType: DrillDownEnum.API,
                         viewType,
-                        selectedApp: app.APPLICATION_ID,
+                        selectedApp,
                         selectedAPI: -1,
                     }, this.loadingDrillDownData,
                 );
@@ -884,11 +885,10 @@ class AppAndAPIErrorTablewidget extends Widget {
             };
             if (viewType === ViewTypeEnum.APP) {
                 const app = appList.find(d => d.NAME === applicationName && d.CREATED_BY === applicationOwner);
-                status.appID = app.APPLICATION_ID;
+                status.appID = app ? app.APPLICATION_ID : -1;
             }
             this.publishSelectedData(status);
         }
-        return '';
     }
 
     publishSelectedData(message) {
