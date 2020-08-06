@@ -705,9 +705,9 @@ class ErrorByAppAndAPIwidget extends Widget {
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
                     <Scrollbars style={{
-                                    height,
-                                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                                }}
+                        height,
+                        backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                    }}
                     >
                         <div style={this.styles.mainDiv}>
                             <div style={this.styles.headingWrapper}>
