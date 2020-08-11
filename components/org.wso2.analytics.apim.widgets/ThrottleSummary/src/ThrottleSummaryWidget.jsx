@@ -290,6 +290,9 @@ class ThrottleSummaryWidget extends Widget {
             const { drillDown } = configs.options;
 
             if (drillDown) {
+                const {
+                    tr, sd, ed, g,
+                } = super.getGlobalState('dtrp');
                 const name = Object.keys(data).find(key => key.includes('::'));
                 const splitName = name.split(' :: ');
                 const api = splitName[0].trim();
@@ -299,7 +302,10 @@ class ThrottleSummaryWidget extends Widget {
                 const dashboard = locationParts[locationParts.length - 2];
                 const queryParams = {
                     dtrp: {
-                        tr: '1month',
+                        tr,
+                        sd,
+                        ed,
+                        g,
                     },
                     dmSelc: {
                         dm: 'api',
