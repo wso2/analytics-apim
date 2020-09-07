@@ -143,7 +143,7 @@ insert into RequestInterim;
 
 @info(name='Filter events to check latest timestamp')
 from RequestInterim as R left outer join ApiLastAccessSummary as S
-on R.apiName == S.apiName and R.apiCreatorTenantDomain == S.apiCreatorTenantDomain and R.apiCreator == S.apiCreator and (R.requestTimestamp >= S.lastAccessTime or S.lastAccessTime is null)
+on R.apiName == S.apiName and R.apiCreatorTenantDomain == S.apiCreatorTenantDomain and R.apiCreator == S.apiCreator and R.apiVersion == S.apiVersion and (R.requestTimestamp >= S.lastAccessTime or S.lastAccessTime is null)
 select R.apiContext, R.apiName, R.apiVersion, R.apiCreator, R.apiCreatorTenantDomain, R.applicationOwner, R.requestTimestamp as lastAccessTime
 insert into ApiLastAccessUpdateStream;
 
