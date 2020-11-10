@@ -631,8 +631,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             customUrlInfo) throws IdPClientException {
 
         String grantType =
-                IdPClientConstants.PASSWORD_GRANT_TYPE + SPACE + IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE +
-                        SPACE + IdPClientConstants.REFRESH_GRANT_TYPE;
+                IdPClientConstants.AUTHORIZATION_CODE_GRANT_TYPE + SPACE + IdPClientConstants.REFRESH_GRANT_TYPE;
         String callBackUrl;
         String postLogoutRedirectUrl = this.baseUrl + FORWARD_SLASH + appContext;
         boolean isCustomUrlApplicable = clientName.equals(ApimIdPClientConstants.PORTAL_APP_NAME) &&
