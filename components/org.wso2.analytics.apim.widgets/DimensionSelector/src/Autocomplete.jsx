@@ -321,11 +321,13 @@ class Autocomplete extends React.Component {
 
         const { selection, newOptions } = this.formatSelectionAndOptions(selectedOptions, options,
             selectMultiple, dimension);
+        const uniqueId = Date.now();
 
         return (
             <div className={classes.root}>
                 <NoSsr>
                     <Select
+                        key={uniqueId}
                         classes={classes}
                         styles={selectStyles}
                         options={newOptions}
