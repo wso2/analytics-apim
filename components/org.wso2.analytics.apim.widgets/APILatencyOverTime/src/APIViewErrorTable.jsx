@@ -90,6 +90,8 @@ class APIViewErrorTable extends React.Component {
         this.handleRequestMedSelectChange = this.handleRequestMedSelectChange.bind(this);
         this.handleResponseMedSelectChange = this.handleResponseMedSelectChange.bind(this);
         this.getPieChartForAPI = this.getPieChartForAPI.bind(this);
+        this.getMaxYAxisValue = this.getMaxYAxisValue.bind(this);
+        this.searchForMaxYValue = this.searchForMaxYValue.bind(this);
 
         const { themeName } = this.props;
         this.styles = {
@@ -145,9 +147,11 @@ class APIViewErrorTable extends React.Component {
             miscellaneousSelected, backendSelected, securitySelected, throttleSelected,
             requestMedSelected, responseMedSelected,
         } = this.state;
+        const maxY = this.getMaxYAxisValue(data);
         return (
             <div>
                 <VictoryChart
+                    domain={{ y: [0, maxY] }}
                     responsive={false}
                     domainPadding={{ x: [20, 20] }}
                     padding={{
@@ -202,6 +206,45 @@ class APIViewErrorTable extends React.Component {
 
             </div>
         );
+    }
+
+    getMaxYAxisValue(data) {
+        const {
+            miscellaneousSelected, backendSelected, securitySelected, throttleSelected,
+            requestMedSelected, responseMedSelected,
+        } = this.state;
+        let maxYValue = 0;
+        if (miscellaneousSelected) {
+            maxYValue = this.searchForMaxYValue(data, 'miscellaneous', maxYValue);
+        }
+        if (backendSelected) {
+            maxYValue = this.searchForMaxYValue(data, 'backendLatency', maxYValue);
+        }
+        if (securitySelected) {
+            maxYValue = this.searchForMaxYValue(data, 'securityLatency', maxYValue);
+        }
+        if (throttleSelected) {
+            maxYValue = this.searchForMaxYValue(data, 'throttlingLatency', maxYValue);
+        }
+        if (requestMedSelected) {
+            maxYValue = this.searchForMaxYValue(data, 'requestMedLat', maxYValue);
+        }
+        if (responseMedSelected) {
+            maxYValue = this.searchForMaxYValue(data, 'responseMedLat', maxYValue);
+        }
+        if (maxYValue === 0) {
+            maxYValue = 10;
+        }
+        return maxYValue;
+    }
+
+    searchForMaxYValue(data, columnName, maxYValue) {
+        data.forEach((item) => {
+            if (item[columnName] > maxYValue) {
+                maxYValue = item[columnName];
+            }
+        });
+        return maxYValue;
     }
 
     handleMiscellaneousSelectChange(event) {
