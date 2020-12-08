@@ -31,7 +31,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { withStyles } from '@material-ui/core/styles';
 import {
-    VictoryVoronoiContainer,
     VictoryLine,
     VictoryChart,
     VictoryTheme,
@@ -39,9 +38,7 @@ import {
     VictoryAxis,
     VictoryTooltip,
     VictoryLabel,
-    VictoryGroup,
     VictoryScatter,
-    VictoryContainer,
 } from 'victory';
 import Moment from 'moment';
 import { FormattedMessage } from 'react-intl';
