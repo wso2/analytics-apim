@@ -28,7 +28,9 @@ import DateRange from '@material-ui/icons/DateRange';
 import Button from '@material-ui/core/Button/Button';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 
-const GRANULARITY_MODE = 'custom';
+const CUSTOM_GRANULARITY_MODE = 'custom';
+const SAVED_VALUES_KEY = 'dashboard.dtrp.values';
+
 class DateTimePicker extends Widget {
   constructor(props) {
     super(props);
@@ -76,7 +78,7 @@ class DateTimePicker extends Widget {
   handleGranularityChangeForQuick = (mode) => {
     this.clearRefreshInterval();
     let granularity = '';
-    if (mode !== GRANULARITY_MODE) {
+    if (mode !== CUSTOM_GRANULARITY_MODE) {
       const startTimeAndGranularity = this.getStartTimeAndGranularity(mode);
       granularity = this.verifyDefaultGranularityOfTimeRange(
         startTimeAndGranularity.granularity
@@ -274,42 +276,25 @@ class DateTimePicker extends Widget {
    * If URL has a time range, load the time
    */
   loadDefaultTimeRange = () => {
+    let storedValueString = localStorage.getItem(SAVED_VALUES_KEY);
+    let storedValue = (storedValueString != null) ? JSON.parse(storedValueString) : { };
     const dateTimeRangeInfo = this.getDateTimeRangeInfo();
-    if (dateTimeRangeInfo.tr) {
-      if (dateTimeRangeInfo.tr.toLowerCase() === GRANULARITY_MODE) {
-        if (dateTimeRangeInfo.sd && dateTimeRangeInfo.ed) {
-          if (dateTimeRangeInfo.g) {
-            this.loadUserSpecifiedCustomTimeRange(
-              dateTimeRangeInfo.sd,
-              dateTimeRangeInfo.ed,
-              dateTimeRangeInfo.g
-            );
-          } else {
-            this.loadUserSpecifiedCustomTimeRange(
-              dateTimeRangeInfo.sd,
-              dateTimeRangeInfo.ed,
-              ''
-            );
-          }
+    if (dateTimeRangeInfo.tr || storedValue.tr) {
+      const { tr, sd, ed, g, sync } = dateTimeRangeInfo.tr ? dateTimeRangeInfo : storedValue;
+      if (tr.toLowerCase() === CUSTOM_GRANULARITY_MODE) {
+        if (sd && ed) {
+          this.loadUserSpecifiedCustomTimeRange(sd, ed, (g || ''));
         } else {
           this.handleGranularityChangeForQuick(this.getDefaultTimeRange());
         }
       } else {
-        if (dateTimeRangeInfo.sync) {
-          this.setState({
-            enableSync: true
-          });
+        if (sync) {
+          this.setState({ enableSync: true });
         }
-        if (dateTimeRangeInfo.g) {
-          this.loadUserSpecifiedTimeRange(
-            dateTimeRangeInfo.tr,
-            dateTimeRangeInfo.g
-          );
-        } else {
-          this.loadUserSpecifiedTimeRange(dateTimeRangeInfo.tr, '');
-        }
+        this.loadUserSpecifiedTimeRange(tr, (g || ''));
       }
     } else {
+      // Get the default values
       this.handleGranularityChangeForQuick(this.getDefaultTimeRange());
     }
   };
@@ -338,7 +323,7 @@ class DateTimePicker extends Widget {
         to: startAndEndTime.endTime
       });
       this.setState({
-        granularityMode: GRANULARITY_MODE,
+        granularityMode: CUSTOM_GRANULARITY_MODE,
         granularityValue: granularity,
         startTime: Moment(startAndEndTime.startTime).toDate(),
         endTime: Moment(startAndEndTime.endTime).toDate(),
@@ -669,12 +654,12 @@ class DateTimePicker extends Widget {
       startTime: null,
       endTime: null
     };
-    if (granularityMode !== GRANULARITY_MODE) {
+    if (granularityMode !== CUSTOM_GRANULARITY_MODE) {
       startAndEnd = this.getStartTimeAndEndTimeForTimeIntervalDescriptor(
         granularityMode
       );
     } else if (
-      granularityMode === GRANULARITY_MODE &&
+      granularityMode === CUSTOM_GRANULARITY_MODE &&
       this.state.startTime &&
       this.state.endTime
     ) {
@@ -698,6 +683,15 @@ class DateTimePicker extends Widget {
         this.state.granularityValue,
         this.state.enableSync
       );
+
+      localStorage.setItem(SAVED_VALUES_KEY, JSON.stringify({
+        tr: granularityMode.replace(' ', '').toLowerCase(),
+        sd: startTime.toLowerCase(),
+        ed: endTime.toLowerCase(),
+        g: this.state.granularityValue,
+        sync: this.state.enableSync
+      }));
+
       return (
         <div
           style={{
@@ -801,7 +795,7 @@ class DateTimePicker extends Widget {
    * Example:When user select 1hour it shows  granularity as 'per minute'
    */
   getDefaultSelectedOption() {
-    if (this.state.granularityMode === GRANULARITY_MODE) {
+    if (this.state.granularityMode === CUSTOM_GRANULARITY_MODE) {
       return this.verifySelectedGranularityForCustom(
         this.state.granularityValue
       );
