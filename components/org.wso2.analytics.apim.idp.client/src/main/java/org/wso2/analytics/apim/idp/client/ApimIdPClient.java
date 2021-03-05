@@ -733,9 +733,9 @@ public class ApimIdPClient extends ExternalIdPClient {
                     CustomUrlInfoDevPortalDTO customUrlInfoDevPortalDTO = customUrlInfo.getDevPortalUrlDTO();
                     String customUrl = "https://" + customUrlInfoDevPortalDTO.getUrl();
                     customUrlInfoDevPortalDTO.setUrl(customUrl);
-                }
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug(customUrlInfo.toString());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug(customUrlInfo.toString());
+                    }
                 }
             } catch (IOException e) {
                 throw new IdPClientException("Error occurred while parsing the Custom Url info response for tenant :"
