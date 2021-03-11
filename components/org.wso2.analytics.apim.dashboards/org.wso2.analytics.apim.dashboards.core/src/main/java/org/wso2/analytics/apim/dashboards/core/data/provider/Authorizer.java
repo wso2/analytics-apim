@@ -136,13 +136,13 @@ public class Authorizer implements DataProviderAuthorizer {
     }
 
     @Override
-    public boolean authorize(DataProviderConfigRoot dataProviderConfigRoot) throws DataProviderException {
+    public boolean authorize(DataProviderConfigRoot dataProviderConfigRoot, String username)
+            throws DataProviderException {
         // If the action is UNSUBSCRIBE, then allow it. In here, UI won't send username, dashboardId and widgetName.
         if (dataProviderConfigRoot.getAction().equalsIgnoreCase(DataProviderConfigRoot.Types.UNSUBSCRIBE.toString())) {
             return true;
         }
         String dashboardId = dataProviderConfigRoot.getDashboardId();
-        String username = dataProviderConfigRoot.getUsername();
         String widgetName = dataProviderConfigRoot.getWidgetName();
         if (dashboardId == null || dashboardId.isEmpty()) {
             throw new DataProviderException("Dashboard Id in the Data Provider Config cannot be empty.");
