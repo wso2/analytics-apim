@@ -208,17 +208,10 @@ class APIMRegisteredAppUsersWidget extends Widget {
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let { username } = super.getCurrentUser();
-
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
 
         dataProviderConfigs.configs.config.queryData.queryName = 'appCountQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{appOwner}}': username,
+            '{{appOwner}}': '{{formattedUsername}}',
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleAppCountDataReceived, dataProviderConfigs);
@@ -249,17 +242,10 @@ class APIMRegisteredAppUsersWidget extends Widget {
         const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
-        let { username } = super.getCurrentUser();
-
-        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
-        // are saved without tenant suffix
-        if (username.split('@').length === 2) {
-            username = username.replace('@carbon.super', '');
-        }
 
         dataProviderConfigs.configs.config.queryData.queryName = 'applicationQuery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
-            '{{appOwner}}': username,
+            '{{appOwner}}': '{{formattedUsername}}',
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleAppDataReceived, dataProviderConfigs);
