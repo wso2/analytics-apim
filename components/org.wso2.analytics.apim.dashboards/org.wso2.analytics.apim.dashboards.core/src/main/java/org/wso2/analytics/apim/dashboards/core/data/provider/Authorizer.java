@@ -85,6 +85,8 @@ public class Authorizer implements DataProviderAuthorizer {
     private static final String TENANT_DOMAIN_KEY = "{{tenantDomain}}";
     private static final String TENANT_ID_KEY = "{{tenantId}}";
     private static final String SUPER_TENANT_DOMAIN = "carbon.super";
+    private static final String SUPER_TENANT_DOMAIN_WITH_AT_PREFIX = "@carbon.super";
+    private static final String FORMATTED_USERNAME_KEY = "{{formattedUsername}}";
 
     private AnalyticsHttpClientBuilderService clientBuilderService;
     private DashboardMetadataProvider dashboardMetadataProvider;
@@ -294,6 +296,13 @@ public class Authorizer implements DataProviderAuthorizer {
                     .replace(TENANT_DOMAIN_KEY, tenantDomain)
                     .replace(TENANT_ID_KEY, tenantId);
         }
+        // If email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
+        // are saved without tenant suffix.
+        String usernameForQuery = username;
+        if (usernameForQuery.split("@").length == 2) {
+            usernameForQuery = usernameForQuery.replace(SUPER_TENANT_DOMAIN_WITH_AT_PREFIX, "");
+        }
+        query = query.replace(FORMATTED_USERNAME_KEY, usernameForQuery);
 
         Objects.requireNonNull(dataProviderConfigRoot.getDataProviderConfiguration()).getAsJsonObject()
                 .get(QUERY_DATA).getAsJsonObject().addProperty(QUERY_PROPERTY_NAME, query);
