@@ -213,7 +213,7 @@ export default function APIMApiLatency(props) {
                                                 // disabled={operationList && operationList.length === 0}
                                                 placeholder='Select Operation'
                                                 getLabel={item => item.URL_PATTERN + ' ( ' + item.HTTP_METHOD + ' )'}
-                                                getValue={item => item.URL_PATTERN + '_' + item.HTTP_METHOD}
+                                                getValue={item => item.URL_PATTERN + ' ' + item.HTTP_METHOD}
                                             />
                                         </div>
                                     </FormControl>

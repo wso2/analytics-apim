@@ -348,8 +348,8 @@ class APIMApiLatencyWidget extends Widget {
                 return obj;
             })
             .sort((a, b) => {
-                const tempa = (a.URL_PATTERN + '_' + a.HTTP_METHOD).toLowerCase();
-                const tempb = (b.URL_PATTERN + '_' + b.HTTP_METHOD).toLowerCase();
+                const tempa = (a.URL_PATTERN + ' ' + a.HTTP_METHOD).toLowerCase();
+                const tempb = (b.URL_PATTERN + ' ' + b.HTTP_METHOD).toLowerCase();
 
                 if (tempb > tempa) {
                     return -1;
@@ -366,10 +366,10 @@ class APIMApiLatencyWidget extends Widget {
             let filterSelectedOperations;
             if (Array.isArray(operationSelected)) {
                 filterSelectedOperations = operationSelected
-                    .filter(op => resourceList.find(item => item.URL_PATTERN + '_' + item.HTTP_METHOD === op));
+                    .filter(op => resourceList.find(item => item.URL_PATTERN + ' ' + item.HTTP_METHOD === op));
             } else {
                 const selectedItem = resourceList
-                    .find(item => item.URL_PATTERN + '_' + item.HTTP_METHOD === operationSelected);
+                    .find(item => item.URL_PATTERN + ' ' + item.HTTP_METHOD === operationSelected);
                 if (selectedItem) {
                     filterSelectedOperations = operationSelected;
                 } else {
@@ -383,7 +383,7 @@ class APIMApiLatencyWidget extends Widget {
                 if (isGraphQL) {
                     filterSelectedOperations = [];
                 } else if (resourceList.length > 0) {
-                    filterSelectedOperations = resourceList[0].URL_PATTERN + '_' + resourceList[0].HTTP_METHOD;
+                    filterSelectedOperations = resourceList[0].URL_PATTERN + ' ' + resourceList[0].HTTP_METHOD;
                 } else {
                     filterSelectedOperations = [];
                 }
@@ -415,10 +415,10 @@ class APIMApiLatencyWidget extends Widget {
                 if (Array.isArray(operationSelected)) {
                     if (operationSelected.length > 0) {
                         const opsString = operationSelected
-                            .map(item => item.split('_')[0])
+                            .map(item => item.split(' ')[0])
                             .sort()
                             .join(',');
-                        const firstOp = operationSelected[0].split('_')[1];
+                        const firstOp = operationSelected[0].split(' ')[1];
                         resources = 'apiResourceTemplate==\'' + opsString + '\' AND apiMethod==\''
                             + firstOp + '\'';
                     } else {
@@ -426,7 +426,7 @@ class APIMApiLatencyWidget extends Widget {
                         return;
                     }
                 } else if (operationSelected !== -1) {
-                    const operation = operationSelected.split('_');
+                    const operation = operationSelected.split(' ');
                     resources = 'apiResourceTemplate==\'' + operation[0] + '\' AND apiMethod==\'' + operation[1] + '\'';
                 } else {
                     this.setState({ inProgress: false, latencyData: [] });
