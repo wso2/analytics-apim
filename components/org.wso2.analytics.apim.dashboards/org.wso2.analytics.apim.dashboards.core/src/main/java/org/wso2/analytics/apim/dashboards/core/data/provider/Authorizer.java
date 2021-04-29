@@ -85,6 +85,8 @@ public class Authorizer implements DataProviderAuthorizer {
     private static final String TENANT_DOMAIN_KEY = "{{tenantDomain}}";
     private static final String TENANT_ID_KEY = "{{tenantId}}";
     private static final String SUPER_TENANT_DOMAIN = "carbon.super";
+    private static final String SUPER_TENANT_DOMAIN_WITH_AT_PREFIX = "@carbon.super";
+    private static final String FORMATTED_USERNAME_KEY = "{{formattedUsername}}";
 
     private AnalyticsHttpClientBuilderService clientBuilderService;
     private DashboardMetadataProvider dashboardMetadataProvider;
@@ -136,13 +138,13 @@ public class Authorizer implements DataProviderAuthorizer {
     }
 
     @Override
-    public boolean authorize(DataProviderConfigRoot dataProviderConfigRoot) throws DataProviderException {
+    public boolean authorize(DataProviderConfigRoot dataProviderConfigRoot, String username)
+            throws DataProviderException {
         // If the action is UNSUBSCRIBE, then allow it. In here, UI won't send username, dashboardId and widgetName.
         if (dataProviderConfigRoot.getAction().equalsIgnoreCase(DataProviderConfigRoot.Types.UNSUBSCRIBE.toString())) {
             return true;
         }
         String dashboardId = dataProviderConfigRoot.getDashboardId();
-        String username = dataProviderConfigRoot.getUsername();
         String widgetName = dataProviderConfigRoot.getWidgetName();
         if (dashboardId == null || dashboardId.isEmpty()) {
             throw new DataProviderException("Dashboard Id in the Data Provider Config cannot be empty.");
@@ -294,6 +296,13 @@ public class Authorizer implements DataProviderAuthorizer {
                     .replace(TENANT_DOMAIN_KEY, tenantDomain)
                     .replace(TENANT_ID_KEY, tenantId);
         }
+        // If email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
+        // are saved without tenant suffix.
+        String usernameForQuery = username;
+        if (usernameForQuery.split("@").length == 2) {
+            usernameForQuery = usernameForQuery.replace(SUPER_TENANT_DOMAIN_WITH_AT_PREFIX, "");
+        }
+        query = query.replace(FORMATTED_USERNAME_KEY, usernameForQuery);
 
         Objects.requireNonNull(dataProviderConfigRoot.getDataProviderConfiguration()).getAsJsonObject()
                 .get(QUERY_DATA).getAsJsonObject().addProperty(QUERY_PROPERTY_NAME, query);

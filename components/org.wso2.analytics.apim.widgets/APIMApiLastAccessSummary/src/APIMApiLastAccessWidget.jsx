@@ -208,14 +208,14 @@ class APIMApiLastAccessWidget extends Widget {
         this.resetState();
         const queryParam = super.getGlobalState(queryParamKey);
         const { limit, apiCreatedBy } = queryParam;
-        const { providerConfig, username } = this.state;
+        const { providerConfig } = this.state;
         const { id, widgetID: widgetName } = this.props;
 
         const dataProviderConfigs = cloneDeep(providerConfig);
         dataProviderConfigs.configs.config.queryData.queryName = 'lastaccessquery';
         dataProviderConfigs.configs.config.queryData.queryValues = {
             '{{limit}}': limit,
-            '{{apiCreator}}': apiCreatedBy !== 'All' ? 'AND apiCreator==\'' + username + '\'' : '',
+            '{{apiCreator}}': apiCreatedBy !== 'All' ? 'AND apiCreator==\'{{formattedUsername}}\'' : '',
         };
         super.getWidgetChannelManager()
             .subscribeWidget(id, widgetName, this.handleApiAccessReceived, dataProviderConfigs);
