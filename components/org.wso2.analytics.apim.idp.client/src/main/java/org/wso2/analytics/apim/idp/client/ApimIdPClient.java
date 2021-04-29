@@ -104,7 +104,8 @@ public class ApimIdPClient extends ExternalIdPClient {
                          boolean isSSOEnabled, String ssoLogoutURL, boolean isHostnameVerifierEnabled,
                          ApimAdminApiClient apimAdminApiClient, String portalAppContext, String brAppContext) {
         super(baseUrl, authorizeEndpoint, grantType, null, adminScopeName, oAuthAppInfoMap,
-                cacheTimeout, null, dcrmServiceStub, oAuth2ServiceStubs, null, null, isSSOEnabled, ssoLogoutURL);
+                cacheTimeout, null, dcrmServiceStub, oAuth2ServiceStubs, null, null, isSSOEnabled, ssoLogoutURL, null,
+                null);
         this.adminServiceUsername = adminServiceUsername;
         this.baseUrl = baseUrl;
         this.authorizeEndpoint = authorizeEndpoint;
@@ -329,7 +330,7 @@ public class ApimIdPClient extends ExternalIdPClient {
             return returnProperties;
         } else {
             response = oAuth2ServiceStubs.getTokenServiceStub().generateRefreshGrantAccessToken(
-                    properties.get(IdPClientConstants.REFRESH_TOKEN), null,
+                    properties.get(IdPClientConstants.REFRESH_TOKEN),
                     this.oAuthAppInfoMap.get(oAuthAppContext).getClientId(),
                     this.oAuthAppInfoMap.get(oAuthAppContext).getClientSecret());
         }
@@ -489,7 +490,7 @@ public class ApimIdPClient extends ExternalIdPClient {
         }
         Response response = oAuth2ServiceStubs.getTokenServiceStub().generateAuthCodeGrantAccessToken(code,
                 baseUrl + ApimIdPClientConstants.CALLBACK_URL + oAuthAppContext +
-                        ApimIdPClientConstants.CALLBACK_URL_SUFFIX, null,
+                        ApimIdPClientConstants.CALLBACK_URL_SUFFIX, OPEN_ID_SCOPE,
                 oAuthApplicationInfo.getClientId(), oAuthApplicationInfo.getClientSecret());
         if (response == null) {
             throw new IdPClientException("Error occurred while generating an access token from code '" + code + "'. " +
