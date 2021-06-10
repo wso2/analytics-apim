@@ -47,7 +47,7 @@ public class ReportGeneratorUtil {
     // Font configuration
     private static final PDFont TEXT_FONT = PDType1Font.HELVETICA;
     private static final float FONT_SIZE = 9;
-    private static final float RECORD_COUNT_PER_PAGE = 25;
+    private static final int RECORD_COUNT_PER_PAGE = 25;
 
     /**
      * Get List of integers with the number of records in each page.
@@ -56,7 +56,7 @@ public class ReportGeneratorUtil {
      */
     public static List<Integer> getRecordsPerPage(int numberOfRows) {
 
-        int numOfPages = (int) Math.ceil(numberOfRows / RECORD_COUNT_PER_PAGE);
+        int numOfPages = (int) Math.ceil(numberOfRows / (float) RECORD_COUNT_PER_PAGE);
         List<Integer> recordCountPerPage = new ArrayList<>();
 
         int remainingRows = numberOfRows;
@@ -274,31 +274,24 @@ public class ReportGeneratorUtil {
     public static void drawTableGrid(PDDocument document, Map<Integer,
             PDPage> pageMap, List<Integer> recordsPerPageList, float[] columnWidths, int numberOfRows)
             throws IOException {
-
-        float nextY = TABLE_TOP_Y;
-
+        float nextY;
+        PDPageContentStream contentStream;
         // draw horizontal lines
-        int currentPageNum = 1;
-        PDPageContentStream contentStream = new PDPageContentStream(document, pageMap.get(currentPageNum), true,
-                false);
-        int rowNum = 0;
-        for (int i = 0; i <= numberOfRows + 1; i++) {
-            contentStream.drawLine(CELL_MARGIN, nextY, CELL_MARGIN + TABLE_WIDTH, nextY);
-            nextY -= ROW_HEIGHT;
-            if (rowNum > RECORD_COUNT_PER_PAGE) {
-                contentStream.close();
-                currentPageNum++;
-                contentStream = new PDPageContentStream(document, pageMap.get(currentPageNum), true, false);
+        for (int currentPageNum = 1; currentPageNum <= pageMap.size(); currentPageNum++) {
+            contentStream = new PDPageContentStream(document, pageMap.get(currentPageNum), true, false);
+            int lineCount = currentPageNum == 1 ?
+                    recordsPerPageList.get(0) + 2 : recordsPerPageList.get(currentPageNum - 1) + 1;
+            nextY = TABLE_TOP_Y;
+            if (currentPageNum > 1) {
                 insertPageNumber(contentStream, currentPageNum);
                 insertLogo(document, contentStream);
-                nextY = TABLE_TOP_Y;
-                rowNum = 0;
-                numberOfRows++; // at each new page add one more horizontal line
             }
-            rowNum++;
+            for (int rowNum = 0; rowNum < lineCount; rowNum++) {
+                contentStream.drawLine(CELL_MARGIN, nextY, CELL_MARGIN + TABLE_WIDTH, nextY);
+                nextY -= ROW_HEIGHT;
+            }
+            contentStream.close();
         }
-
-        contentStream.close();
 
         // draw vertical lines
         for (int k = 1; k <= pageMap.size(); k++) {
@@ -326,7 +319,7 @@ public class ReportGeneratorUtil {
      */
     public static int getNumberOfPages(int numberOfRows) {
 
-        return (int) Math.ceil(numberOfRows / RECORD_COUNT_PER_PAGE);
+        return (int) Math.ceil(numberOfRows / (float) RECORD_COUNT_PER_PAGE);
     }
 
     /**
