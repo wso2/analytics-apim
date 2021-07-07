@@ -77,7 +77,7 @@ insert into TemporaryUserStream;
 
 --this query ensures that the same type of alert is not generated for same apiCreator again for a time defined in #window.time(),
 @info(name = 'Query contains Suppression logic')
-from TemporarySubscriberStream#window.length(1) as a left outer join SuppressedTemporarySubscriberStream#window.time(10  minutes) as b
+from TemporarySubscriberStream#window.length(1) as a left outer join SuppressedTemporarySubscriberStream#window.time(10 minutes) as b
  	on (a.apiCreator == b.apiCreator and a.apiVersion == b.apiVersion and a.applicationId == b.applicationId)
 select a.apiCreator, a.apiName, a.apiVersion, a.applicationId, a.applicationName, a.apiCreatorTenantDomain, a.userTenantDomain, a.subscriber, a.numHits
  	having b.apiCreator is null
@@ -85,7 +85,7 @@ insert into SuppressedTemporarySubscriberStream ;
 
 --this query ensures that the same type of alert is not generated for same user again for a time defined in #window.time()
 @info(name = 'Alert Suppression')
-from TemporaryUserStream#window.length(1) as a left outer join SuppressedTemporaryUserStream#window.time(10  minutes) as b
+from TemporaryUserStream#window.length(1) as a left outer join SuppressedTemporaryUserStream#window.time(10 minutes) as b
  	on (a.username == b.username and a.apiVersion == b.apiVersion and a.applicationId == b.applicationId)
 select a.username, a.apiCreator, a.apiName, a.apiVersion, a.applicationId, a.applicationName, a.apiCreatorTenantDomain, a.userTenantDomain, a.subscriber, a.numHits
  	having b.username is null
