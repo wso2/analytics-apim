@@ -208,7 +208,6 @@ module.exports = class extends Generator {
       },
       'scripts': {
         'build': 'node_modules/.bin/webpack -p',
-        'postbuild': `cpr ./dist/${this.answers.widgetName} ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/${this.answers.widgetName} -o`,
         'clean': 'rimraf dist',
         'dev': 'npm run build & npm run symlink && NODE_ENV=development node_modules/.bin/webpack -d --config webpack.config.js --watch --progress',
         'symlink': `symlink-dir ./dist/${this.answers.widgetName} ../../../../dashboard/deployment/web-ui-apps/analytics-dashboard/extensions/widgets/${this.answers.widgetName}`
