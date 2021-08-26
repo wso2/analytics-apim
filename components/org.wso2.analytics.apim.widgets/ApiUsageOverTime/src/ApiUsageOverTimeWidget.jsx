@@ -338,7 +338,9 @@ class ApiUsageOverTimeWidget extends Widget {
                 id + APPLICATION_CALLBACK, widgetName, this.handleAppDataReceived, dataProviderConfigs,
             );
         } else {
-            this.setState({ inProgress: false, usageData: [] });
+            const selectedApp = 'All';
+            this.setQueryParam(selectedApp);
+            this.setState({ selectedApp, appData:['All'] }, this.assembleApiUsageQuery);
         }
     }
 
