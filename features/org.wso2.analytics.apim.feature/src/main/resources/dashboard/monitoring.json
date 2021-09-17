@@ -565,7 +565,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": false,
-                            "defaultValue": "3 Months",
+                            "defaultValue": "7 Days",
                             "availableGranularities": "From Second",
                             "autoSyncInterval": "30",
                             "headerTitle": " "
