@@ -143,7 +143,7 @@ class DateTimePicker extends Widget {
         startTime = Moment()
           .subtract(1, 'minutes')
           .toDate();
-        granularity = 'minute';
+        granularity = 'second';
         break;
       case '15 Min':
         startTime = Moment()
