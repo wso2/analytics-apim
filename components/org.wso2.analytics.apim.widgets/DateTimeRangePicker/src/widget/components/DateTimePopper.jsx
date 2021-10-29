@@ -22,142 +22,202 @@ import CustomTimeRangeSelector from './CustomTimeRangeSelector';
 import Popover from '@material-ui/core/Popover/Popover';
 import Grid from '@material-ui/core/Grid/Grid';
 import Button from '@material-ui/core/Button/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography/Typography';
-const DateTimePopper = props => {
-  const quickRangeButtons = [
-    '1 Min',
-    '15 Min',
-    '1 Hour',
-    '1 Day',
-    '7 Days',
-    '1 Month',
-    '3 Months',
-    '6 Months',
-    '1 Year'
-  ];
-  const {
-    options,
-    onChangeCustom,
-    theme,
-    onClose,
-    startTime,
-    endTime,
-    customRangeGranularityValue,
-    anchorPopperButton,
-    open,
-    changeQuickRangeGranularities,
-    quickRangeGranularityValue,
-    disableSelectedQuickRangeValue
-  } = props;
 
-  const quickRanges = {
+const ranges = {
+  quick: [
+    'Last Hour',
+    'Last Day',
+    'Last 7 Days',
+    'Last Month',
+    'Last 3 Months',
+    'Last 6 Months',
+    'Last Year'
+  ],
+  back: [
+    '1 Min Back',
+    '15 Min Back',
+    '1 Hour Back',
+    '1 Day Back',
+    '7 Days Back',
+    '1 Month Back',
+  ]
+};
+
+const styles = {
+  quickRangeContainer: {
+    marginTop: 14,
+    padding: '0px 5px 5px 5px',
+  },
+  quickRanges: {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-evenly',
-    marginTop: 8,
-    marginRight: 17,
-    marginBottom: 1,
     borderRightStyle: 'solid',
     borderRightWidth: 1,
-    borderRightColor: theme.name === 'dark' ? '#111618' : '#d8d0d0',
-    backgroundColor: theme.name === 'dark' ? ' #333435' : '#ffffff',
-    height: 397
-  };
-  const customRanges = {
+  },
+  customRanges: {
     marginTop: 8,
     marginRight: 2,
     marginLeft: -17,
     height: 397,
-    backgroundColor: theme.name === 'dark' ? '#333435' : '#ffffff'
-  };
-  const RangeHeader = {
+  },
+  rangeHeader: {
     fontSize: 14,
     padding: 0.5,
     margin: 4,
-    color: theme.name === 'dark' ? '#ffffff' : '#000'
-  };
-  return (
-    <Popover
-      id={'popper'}
-      open={open}
-      anchorEl={anchorPopperButton}
-      onClose={onClose}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left'
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left'
-      }}
-      transitionDuration="auto"
-      style={{ height: 550 }}
-    >
-      <Grid container style={{ maxWidth: 520, height: 410 }}>
-        <Grid item xs={3}>
-          <div style={quickRanges}>
-            <Typography style={RangeHeader}>Quick Ranges</Typography>
-            {quickRangeButtons.map((quickRangeButton, index) => (
-              <Button
-                size="large"
-                key={index}
-                onClick={() => changeQuickRangeGranularities(quickRangeButton)}
+  },
+  calendarRanges: {
+    fontSize: 10,
+  }
+}
+
+export default class DateTimePopper extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    if (props.theme.name === 'dark') {
+      styles.quickRanges.borderRightColor = '#111618';
+      styles.quickRanges.backgroundColor = '#333435';
+      styles.customRanges.backgroundColor = '#333435';
+      styles.rangeHeader.color = '#ffffff';
+      styles.calendarRanges.color = '#ffffff';
+
+    } else {
+      styles.quickRanges.borderRightColor = '#d8d0d0';
+      styles.quickRanges.backgroundColor = '#ffffff';
+      styles.customRanges.backgroundColor = '#ffffff';
+      styles.rangeHeader.color = '#000000';
+      styles.calendarRanges.color = '#000000';
+    }
+
+    this.state = {
+      showBackRanges: this.props.showBackRanges
+    };
+  }
+
+  render() {
+    const {
+      options,
+      onChangeCustom,
+      theme,
+      onClose,
+      startTime,
+      endTime,
+      customRangeGranularityValue,
+      anchorPopperButton,
+      open,
+      changeQuickRangeGranularities,
+      quickRangeGranularityValue,
+      disableSelectedQuickRangeValue,
+      setShowBackRanges
+    } = this.props;
+
+    return (
+      <Popover
+        id={'popper'}
+        open={open}
+        anchorEl={anchorPopperButton}
+        onClose={onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left'
+        }}
+        transitionDuration="auto"
+        style={{ height: 550 }}
+      >
+        <Grid container style={{ maxWidth: 520 }}>
+          <Grid item xs={3}>
+            <div style={styles.quickRangeContainer}>
+              <Typography style={styles.rangeHeader}>Quick Ranges</Typography>
+              <div style={{ fontSize: 10, padding: '0 5px' }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={this.state.showBackRanges}
+                      color="primary"
+                      onChange={() => {
+                          let newShowBackRanges = !this.state.showBackRanges;
+                          setShowBackRanges(newShowBackRanges);
+                          this.setState({ showBackRanges: newShowBackRanges});
+                      }}
+                    />
+                  }
+                  label={<Typography style={styles.calendarRanges}>Past Ranges</Typography>}
+                />
+              </div>
+              <div style={styles.quickRanges}>
+              {(this.state.showBackRanges ? ranges.back : ranges.quick).map((quickRangeButton, index) => (
+                <Button
+                  size="large"
+                  key={index}
+                  onClick={() => changeQuickRangeGranularities(quickRangeButton)}
+                  style={{
+                    border: 0,
+                    padding: '5px 10px',
+                    lineHeight: 2.4,
+                    marginBottom: 5,
+                    fontSize: 10,
+                    backgroundColor:
+                      theme.name === 'dark'
+                        ? quickRangeGranularityValue === quickRangeButton
+                          ? '#505050'
+                          : '#323435'
+                        : quickRangeGranularityValue === quickRangeButton
+                          ? '#e9e8e8'
+                          : '#ffffff'
+                  }}
+                >
+                  {quickRangeButton}
+                </Button>
+              ))}
+              </div>
+            </div>
+          </Grid>
+          <Grid item xs={9}>
+            <div style={styles.customRanges}>
+              <Typography
                 style={{
-                  border: 0,
-                  padding: 0,
-                  fontSize: 10,
-                  backgroundColor:
-                    theme.name === 'dark'
-                      ? quickRangeGranularityValue === quickRangeButton
-                        ? '#505050'
-                        : '#323435'
-                      : quickRangeGranularityValue === quickRangeButton
-                        ? '#e9e8e8'
-                        : '#ffffff'
+                  ...styles.rangeHeader,
+                  alignContent: 'center',
+                  marginTop: 13,
+                  marginLeft: 18
                 }}
               >
-                {quickRangeButton}
-              </Button>
-            ))}
-          </div>
+                Custom Ranges
+              </Typography>
+              <Typography
+                style={{
+                  ...styles.rangeHeader,
+                  fontSize: 10,
+                  marginTop: 18,
+                  marginLeft: 18
+                }}
+              >
+                Granularity Modes
+              </Typography>
+              <CustomTimeRangeSelector
+                disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
+                quickRangeGranularityValue={quickRangeGranularityValue}
+                customRangeGranularityValue={customRangeGranularityValue}
+                options={options}
+                handleClose={onClose}
+                onChangeCustom={onChangeCustom}
+                theme={theme}
+                startTime={startTime}
+                endTime={endTime}
+              />
+            </div>
+          </Grid>
         </Grid>
-        <Grid item xs={9}>
-          <div style={customRanges}>
-            <Typography
-              style={{
-                ...RangeHeader,
-                alignContent: 'center',
-                marginTop: 13,
-                marginLeft: 18
-              }}
-            >
-              Custom Ranges
-            </Typography>
-            <Typography
-              style={{
-                ...RangeHeader,
-                fontSize: 10,
-                marginTop: 18,
-                marginLeft: 18
-              }}
-            >
-              Granularity Modes
-            </Typography>
-            <CustomTimeRangeSelector
-              disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
-              quickRangeGranularityValue={quickRangeGranularityValue}
-              customRangeGranularityValue={customRangeGranularityValue}
-              options={options}
-              handleClose={onClose}
-              onChangeCustom={onChangeCustom}
-              theme={theme}
-              startTime={startTime}
-              endTime={endTime}
-            />
-          </div>
-        </Grid>
-      </Grid>
-    </Popover>
-  );
-};
-export default DateTimePopper;
+      </Popover>
+    );
+  }
+}

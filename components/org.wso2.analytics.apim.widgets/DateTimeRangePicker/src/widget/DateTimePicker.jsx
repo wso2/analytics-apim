@@ -38,11 +38,12 @@ class DateTimePicker extends Widget {
       width: this.props.width,
       granularityMode: null,
       customRangeGranularityValue: 'day',
-      quickRangeGranularityValue: '3 Months',
+      quickRangeGranularityValue: 'Last 3 Months',
       granularityValue: '',
       options: this.props.configs ? this.props.configs.options : {},
       enableSync: false,
-      anchorPopperButton: null
+      anchorPopperButton: null,
+      showBackRanges: false
     };
 
     // This will re-size the widget when the glContainer's width is changed.
@@ -78,15 +79,18 @@ class DateTimePicker extends Widget {
   handleGranularityChangeForQuick = (mode) => {
     this.clearRefreshInterval();
     let granularity = '';
-    if (mode !== CUSTOM_GRANULARITY_MODE) {
-      const startTimeAndGranularity = this.getStartTimeAndGranularity(mode);
+    if (mode !== GRANULARITY_MODE) {
+      const startTimeAndGranularity = this.state.showBackRanges ?
+        this.getStartTimeAndGranularityForBackRanges(mode) : this.getStartTimeAndGranularity(mode);
       granularity = this.verifyDefaultGranularityOfTimeRange(
         startTimeAndGranularity.granularity
       );
+      const endTime = this.state.showBackRanges ?
+        this.getEndTimeForBackRanges() : this.getEndTime(mode);
       this.publishTimeRange({
         granularity,
         from: startTimeAndGranularity.startTime.getTime(),
-        to: new Date().getTime()
+        to: endTime.getTime()
       });
       this.setRefreshInterval();
       this.setState({
@@ -129,69 +133,152 @@ class DateTimePicker extends Widget {
     });
   };
 
+  getEndTime = (granularityValue) => {
+    let endTime = null;
+
+    switch (granularityValue) {
+      case 'Last Hour':
+        endTime = Moment()
+            .startOf('hour')
+            .toDate();
+        break;
+      case 'Last Day':
+        endTime = Moment()
+            .startOf('day')
+            .toDate();
+        break;
+      case 'Last 7 Days':
+        endTime = Moment()
+            .startOf('day')
+            .toDate();
+        break;
+      case 'Last Month':
+        endTime = Moment()
+            .startOf('month')
+            .toDate();
+        break;
+      case 'Last 3 Months':
+        endTime = Moment()
+            .startOf('month')
+            .toDate();
+        break;
+      case 'Last 6 Months':
+        endTime = Moment()
+            .startOf('month')
+            .toDate();
+        break;
+      case 'Last Year':
+        endTime = Moment()
+            .startOf('month')
+            .toDate();
+        break;
+      default:
+        // do nothing
+    }
+    return endTime;
+  };
+
+  getEndTimeForBackRanges = () => {
+    return Moment().toDate();
+  }
+
   /**
    * Returning the start time and the granularity according to the timeMode
    * @param{String} time mode:'1 minute,15 minute etc
    */
-
   getStartTimeAndGranularity = (granularityValue) => {
     let granularity = '';
     let startTime = null;
 
     switch (granularityValue) {
-      case '1 Min':
-        startTime = Moment()
-          .subtract(1, 'minutes')
-          .toDate();
-        granularity = 'second';
-        break;
-      case '15 Min':
-        startTime = Moment()
-          .subtract(15, 'minutes')
-          .toDate();
-        granularity = 'minute';
-        break;
-      case '1 Hour':
+      case 'Last Hour':
         startTime = Moment()
           .subtract(1, 'hours')
           .toDate();
         granularity = 'minute';
         break;
-      case '1 Day':
+      case 'Last Day':
         startTime = Moment()
           .subtract(1, 'days')
           .toDate();
         granularity = 'hour';
         break;
-      case '7 Days':
+      case 'Last 7 Days':
         startTime = Moment()
           .subtract(7, 'days')
           .toDate();
         granularity = 'day';
         break;
-      case '1 Month':
+      case 'Last Month':
         startTime = Moment()
           .subtract(1, 'months')
           .toDate();
         granularity = 'day';
         break;
-      case '3 Months':
+      case 'Last 3 Months':
         startTime = Moment()
           .subtract(3, 'months')
           .toDate();
         granularity = 'month';
         break;
-      case '6 Months':
+      case 'Last 6 Months':
         startTime = Moment()
           .subtract(6, 'months')
           .toDate();
         granularity = 'month';
         break;
-      case '1 Year':
+      case 'Last Year':
         startTime = Moment()
           .subtract(1, 'years')
           .toDate();
         granularity = 'month';
+        break;
+      default:
+      // do nothing
+    }
+    return { startTime, granularity };
+  };
+
+  getStartTimeAndGranularityForBackRanges = (granularityValue) => {
+    let granularity = '';
+    let startTime = null;
+
+    switch (granularityValue) {
+      case '1 Min Back':
+        startTime = Moment()
+            .subtract(1, 'minutes')
+            .toDate();
+        granularity = 'second';
+        break;
+      case '15 Min Back':
+        startTime = Moment()
+            .subtract(15, 'minutes')
+            .toDate();
+        granularity = 'minute';
+        break;
+      case '1 Hour Back':
+        startTime = Moment()
+            .subtract(1, 'hours')
+            .toDate();
+        granularity = 'minute';
+        break;
+      case '1 Day Back':
+        startTime = Moment()
+            .subtract(1, 'days')
+            .toDate();
+        granularity = 'hour';
+        break;
+      case '7 Days Back':
+        startTime = Moment()
+            .subtract(7, 'days')
+            .toDate();
+        granularity = 'day';
+        break;
+      case '1 Month Back':
+        startTime = Moment()
+            .subtract(1, 'months')
+            .toDate();
+        granularity = 'day';
         break;
       default:
       // do nothing
@@ -224,43 +311,41 @@ class DateTimePicker extends Widget {
       case 'From Second':
       case 'From Minute':
         availableViews = [
-          '1 Min',
-          '15 Min',
-          '1 Hour',
-          '1 Day',
-          '7 Days',
-          '1 Month',
-          '3 Months',
-          '6 Months',
-          '1 Year'
+          'Last Hour',
+          'Last Day',
+          'Last 7 Days',
+          'Last Month',
+          'Last 3 Months',
+          'Last 6 Months',
+          'Last Year'
         ];
         break;
       case 'From Hour':
         availableViews = [
-          '1 Hour',
-          '1 Day',
-          '7 Days',
-          '1 Month',
-          '3 Months',
-          '6 Months',
-          '1 Year'
+          'Last Hour',
+          'Last Day',
+          'Last 7 Days',
+          'Last Month',
+          'Last 3 Months',
+          'Last 6 Months',
+          'Last Year'
         ];
         break;
       case 'From Day':
         availableViews = [
-          '1 Day',
-          '7 Days',
-          '1 Month',
-          '3 Months',
-          '6 Months',
-          '1 Year'
+          'Last Day',
+          'Last 7 Days',
+          'Last Month',
+          'Last 3 Months',
+          'Last 6 Months',
+          'Last Year'
         ];
         break;
       case 'From Month':
-        availableViews = ['1 Month', '3 Months', '6 Months', '1 Year'];
+        availableViews = ['Last Month', 'Last 3 Months', 'Last 6 Months', 'Last Year'];
         break;
       case 'From Year':
-        availableViews = ['1 Year'];
+        availableViews = ['Last Year'];
         break;
       default:
       // do nothing
@@ -405,32 +490,26 @@ class DateTimePicker extends Widget {
       const rangeParts = timeRange.toLowerCase().match(/[0-9]+|[a-z]+/g) || [];
       if (rangeParts.length === 2) {
         switch (`${rangeParts[0]} ${rangeParts[1]}`) {
-          case '1 min':
-            name = '1 Min';
+          case 'last hour':
+            name = 'Last Hour';
             break;
-          case '15 min':
-            name = '15 Min';
+          case 'last day':
+            name = 'Last Day';
             break;
-          case '1 hour':
-            name = '1 Hour';
+          case 'last 7 days':
+            name = 'Last 7 Days';
             break;
-          case '1 day':
-            name = '1 Day';
+          case 'last month':
+            name = 'Last Month';
             break;
-          case '7 days':
-            name = '7 Days';
+          case 'last 3 months':
+            name = 'Last 3 Months';
             break;
-          case '1 month':
-            name = '1 Month';
+          case 'last 6 months':
+            name = 'Last 6 Months';
             break;
-          case '3 months':
-            name = '3 Months';
-            break;
-          case '6 months':
-            name = '6 Months';
-            break;
-          case '1 year':
-            name = '1 Year';
+          case 'last year':
+            name = 'Last Year';
             break;
           default:
           // do nothing
@@ -583,7 +662,7 @@ class DateTimePicker extends Widget {
           style={{
             float: 'right',
             marginTop: 2,
-            marginRight: 20
+            marginRight: 20,
           }}
         >
           {this.renderPopover()}
@@ -622,7 +701,8 @@ class DateTimePicker extends Widget {
       quickRangeGranularityValue,
       startTime,
       endTime,
-      options
+      options,
+      showBackRanges
     } = this.state;
     const { muiTheme } = this.props;
     if (anchorPopperButton) {
@@ -640,6 +720,8 @@ class DateTimePicker extends Widget {
           customRangeGranularityValue={customRangeGranularityValue}
           quickRangeGranularityValue={quickRangeGranularityValue}
           disableSelectedQuickRangeValue={this.disableSelectedQuickRangeValue}
+          showBackRanges={showBackRanges}
+          setShowBackRanges={(value) => { this.setState({ showBackRanges: value })}}
         />
       );
     }
@@ -654,10 +736,10 @@ class DateTimePicker extends Widget {
       startTime: null,
       endTime: null
     };
-    if (granularityMode !== CUSTOM_GRANULARITY_MODE) {
-      startAndEnd = this.getStartTimeAndEndTimeForTimeIntervalDescriptor(
-        granularityMode
-      );
+    if (granularityMode !== GRANULARITY_MODE) {
+      startAndEnd = this.state.showBackRanges ?
+        this.getStartTimeAndEndTimeForTimeIntervalDescriptorForBackRanges(granularityMode):
+        this.getStartTimeAndEndTimeForTimeIntervalDescriptor(granularityMode);
     } else if (
       granularityMode === CUSTOM_GRANULARITY_MODE &&
       this.state.startTime &&
@@ -730,59 +812,100 @@ class DateTimePicker extends Widget {
     let endTime = null;
 
     switch (granularityValue) {
-      case '1 Min':
-        startTime = Moment()
-          .subtract(1, 'minutes')
-          .format('YYYY-MMMM-DD hh:mm:ss A');
-        endTime = Moment().format('YYYY-MMMM-DD hh:mm:ss A');
-        break;
-      case '15 Min':
-        startTime = Moment()
-          .subtract(15, 'minutes')
-          .format('YYYY-MMMM-DD hh:mm:ss A');
-        endTime = Moment().format('YYYY-MMMM-DD hh:mm:ss A');
-        break;
-      case '1 Hour':
+      case 'Last Hour':
         startTime = Moment()
           .subtract(1, 'hours')
           .format('YYYY-MMMM-DD hh:mm A');
         endTime = Moment().format('YYYY-MMMM-DD hh:mm  A');
         break;
-      case '1 Day':
+      case 'Last Day':
         startTime = Moment()
           .subtract(1, 'days')
           .format('YYYY-MMMM-DD hh:00 A');
         endTime = Moment().format('YYYY-MMMM-DD hh:00 A');
         break;
-      case '7 Days':
+      case 'Last 7 Days':
         startTime = Moment()
           .subtract(7, 'days')
           .format('YYYY-MMMM-DD hh:00 A');
         endTime = Moment().format('YYYY-MMMM-DD hh:00 A');
         break;
-      case '1 Month':
+      case 'Last Month':
         startTime = Moment()
           .subtract(1, 'months')
           .format('YYYY-MMMM-DD');
         endTime = Moment().format('YYYY-MMMM-DD');
         break;
-      case '3 Months':
+      case 'Last 3 Months':
         startTime = Moment()
           .subtract(3, 'months')
           .format('YYYY-MMMM-DD');
         endTime = Moment().format('YYYY-MMMM-DD');
         break;
-      case '6 Months':
+      case 'Last 6 Months':
         startTime = Moment()
           .subtract(6, 'months')
           .format('YYYY-MMMM-DD');
         endTime = Moment().format('YYYY-MMMM-DD');
         break;
-      case '1 Year':
+      case 'Last Year':
         startTime = Moment()
           .subtract(1, 'years')
           .format('YYYY');
         endTime = Moment().format('YYYY');
+        break;
+      default:
+      // do nothing
+    }
+    return { startTime, endTime };
+  };
+
+  getStartTimeAndEndTimeForTimeIntervalDescriptorForBackRanges = (granularityValue) => {
+    let startTime = null;
+    let endTime = null;
+
+    switch (granularityValue) {
+      case '1 Min Back':
+        startTime = Moment()
+            .subtract(1, 'minutes')
+            .format('YYYY-MMMM-DD hh:mm:ss A');
+        endTime = Moment()
+            .format('YYYY-MMMM-DD hh:mm:ss A');
+        break;
+      case '15 Min Back':
+        startTime = Moment()
+            .subtract(15, 'minutes')
+            .format('YYYY-MMMM-DD hh:mm:ss A');
+        endTime = Moment()
+            .format('YYYY-MMMM-DD hh:mm:ss A');
+        break;
+      case '1 Hour Back':
+        startTime = Moment()
+            .subtract(1, 'hours')
+            .format('YYYY-MMMM-DD hh:mm:ss A');
+        endTime = Moment()
+            .format('YYYY-MMMM-DD hh:mm:ss  A');
+        break;
+      case '1 Day Back':
+        startTime = Moment()
+            .subtract(1, 'days')
+            .format('YYYY-MMMM-DD hh:mm:ss A');
+        endTime = Moment()
+            .format('YYYY-MMMM-DD hh:mm:ss A');
+        break;
+      case '7 Days Back':
+        startTime = Moment()
+            .subtract(7, 'days')
+            .format('YYYY-MMMM-DD hh:mm:ss A');
+        endTime = Moment()
+            .format('YYYY-MMMM-DD hh:mm:ss A');
+        break;
+      case '1 Month Back':
+        startTime = Moment()
+            .subtract(1, 'months')
+            .format('YYYY-MMMM-DD');
+        endTime = Moment()
+            .format('YYYY-MMMM-DD');
         break;
       default:
       // do nothing
@@ -827,25 +950,69 @@ class DateTimePicker extends Widget {
   changeQuickRangeGranularities = (granularityValue) => {
     this.handleGranularityChangeForQuick(granularityValue);
     let customRangeGranularityValue = '';
+    if (this.state.showBackRanges) {
+      switch (granularityValue) {
+        case '1 Min Back':
+        case '15 Min Back':
+          customRangeGranularityValue = 'second';
+          break;
+        case '1 Hour Back':
+          customRangeGranularityValue = 'minute';
+          break;
+        case '1 Day Back':
+        case '7 Days Back':
+          customRangeGranularityValue = 'hour';
+          break;
+        case '1 Month Back':
+          customRangeGranularityValue = 'day';
+          break;
+        default:
+      }
+    } else {
+      switch (granularityValue) {
+        case 'Last Hour':
+          customRangeGranularityValue = 'minute';
+          break;
+        case 'Last Day':
+        case 'Last 7 Days':
+          customRangeGranularityValue = 'hour';
+          break;
+        case 'Last Month':
+        case 'Last 3 Months':
+        case 'Last 6 Months':
+          customRangeGranularityValue = 'day';
+          break;
+        case 'Last Year':
+          customRangeGranularityValue = 'month';
+          break;
+        default:
+      }
+    }
+    this.setState({
+      granularityMode: granularityValue,
+      anchorPopperButton: null,
+      customRangeGranularityValue: customRangeGranularityValue,
+      quickRangeGranularityValue: granularityValue
+    });
+  };
+
+  changeBackRangeGranularities = (granularityValue) => {
+    this.handleGranularityChangeForBack(granularityValue);
+    let customRangeGranularityValue = '';
     switch (granularityValue) {
-      case '1 Min':
-      case '15 Min':
+      case '1 Min Back':
+      case '15 Min Back':
         customRangeGranularityValue = 'second';
         break;
-      case '1 Hour':
+      case '1 Hour Back':
         customRangeGranularityValue = 'minute';
         break;
-      case '1 Day':
-      case '7 Days':
+      case '1 Day Back':
+      case '7 Days Back':
         customRangeGranularityValue = 'hour';
         break;
-      case '1 Month':
-      case '3 Months':
-      case '6 Months':
+      case '1 Month Back':
         customRangeGranularityValue = 'day';
-        break;
-      case '1 Year':
-        customRangeGranularityValue = 'month';
         break;
       default:
     }
@@ -854,6 +1021,7 @@ class DateTimePicker extends Widget {
       anchorPopperButton: null,
       customRangeGranularityValue: customRangeGranularityValue,
       quickRangeGranularityValue: granularityValue
+      // TODO:
     });
   };
 
@@ -873,43 +1041,41 @@ class DateTimePicker extends Widget {
       case 'From Second':
       case 'From Minute':
         timeRanges = [
-          '1 Min',
-          '15 Min',
-          '1 Hour',
-          '1 Day',
-          '7 Days',
-          '1 Month',
-          '3 Months',
-          '6 Months',
-          '1 Year'
+          'Last Hour',
+          'Last Day',
+          'Last 7 Days',
+          'Last Month',
+          'Last 3 Months',
+          'Last 6 Months',
+          'Last Year'
         ];
         break;
       case 'From Hour':
         timeRanges = [
-          '1 Hour',
-          '1 Day',
-          '7 Days',
-          '1 Month',
-          '3 Months',
-          '6 Months',
-          '1 Year'
+          'Last Hour',
+          'Last Day',
+          'Last 7 Days',
+          'Last Month',
+          'Last 3 Months',
+          'Last 6 Months',
+          'Last Year'
         ];
         break;
       case 'From Day':
         timeRanges = [
-          '1 Day',
-          '7 Days',
-          '1 Month',
-          '3 Months',
-          '6 Months',
-          '1 Year'
+          'Last Day',
+          'Last 7 Days',
+          'Last Month',
+          'Last 3 Months',
+          'Last 6 Months',
+          'Last Year'
         ];
         break;
       case 'From Month':
-        timeRanges = ['1 Month', '3 Months', '6 Months', '1 Year'];
+        timeRanges = ['Last Month', 'Last 3 Months', 'Last 6 Months', 'Last Year'];
         break;
       case 'From Year':
-        timeRanges = ['1 Year'];
+        timeRanges = ['Last Year'];
         break;
       default:
       // do nothing
@@ -953,23 +1119,19 @@ class DateTimePicker extends Widget {
   getSupportedGranularitiesForFixed = (granularityValue) => {
     let supportedGranularities = [];
     switch (granularityValue) {
-      case '1 Min':
-      case '15 Min':
-        supportedGranularities = ['Second', 'Minute'];
-        break;
-      case '1 Hour':
+      case 'Last Hour':
         supportedGranularities = ['Second', 'Minute', 'Hour'];
         break;
-      case '1 Day':
-      case '7 Days':
+      case 'Last Day':
+      case 'Last 7 Days':
         supportedGranularities = ['Second', 'Minute', 'Hour', 'Day'];
         break;
-      case '1 Month':
-      case '3 Months':
-      case '6 Months':
+      case 'Last Month':
+      case 'Last 3 Months':
+      case 'Last 6 Months':
         supportedGranularities = ['Second', 'Minute', 'Hour', 'Day', 'Month'];
         break;
-      case '1 Year':
+      case 'Last Year':
         supportedGranularities = [
           'Second',
           'Minute',

@@ -23,18 +23,16 @@
         "type": {
           "name": "ENUM",
           "possibleValues": [
-            "1 Min",
-            "15 Min",
-            "1 Hour",
-            "1 Day",
-            "7 Days",
-            "1 Month",
-            "3 Months",
-            "6 Months",
-            "1 Year"
+            "Last Hour",
+            "Last Day",
+            "Last 7 Days",
+            "Last Month",
+            "Last 3 Months",
+            "Last 6 Months",
+            "Last Year"
           ]
         },
-        "defaultValue": "3 Months"
+        "defaultValue": "Last 3 Months"
       },
       {
         "id": "availableGranularities",
