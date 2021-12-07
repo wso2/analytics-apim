@@ -37,7 +37,7 @@ class DateTimePicker extends Widget {
     this.state = {
       width: this.props.width,
       granularityMode: null,
-      customRangeGranularityValue: 'day',
+      customRangeGranularityValue: 'month',
       quickRangeGranularityValue: 'Last 3 Months',
       granularityValue: '',
       options: this.props.configs ? this.props.configs.options : {},
@@ -953,16 +953,15 @@ class DateTimePicker extends Widget {
     if (this.state.showBackRanges) {
       switch (granularityValue) {
         case '1 Min Back':
-        case '15 Min Back':
           customRangeGranularityValue = 'second';
-          break;
+        case '15 Min Back':
         case '1 Hour Back':
           customRangeGranularityValue = 'minute';
           break;
         case '1 Day Back':
-        case '7 Days Back':
           customRangeGranularityValue = 'hour';
           break;
+        case '7 Days Back':
         case '1 Month Back':
           customRangeGranularityValue = 'day';
           break;
@@ -974,14 +973,14 @@ class DateTimePicker extends Widget {
           customRangeGranularityValue = 'minute';
           break;
         case 'Last Day':
-        case 'Last 7 Days':
           customRangeGranularityValue = 'hour';
           break;
+        case 'Last 7 Days':
         case 'Last Month':
-        case 'Last 3 Months':
-        case 'Last 6 Months':
           customRangeGranularityValue = 'day';
           break;
+        case 'Last 3 Months':
+        case 'Last 6 Months':
         case 'Last Year':
           customRangeGranularityValue = 'month';
           break;
@@ -993,35 +992,6 @@ class DateTimePicker extends Widget {
       anchorPopperButton: null,
       customRangeGranularityValue: customRangeGranularityValue,
       quickRangeGranularityValue: granularityValue
-    });
-  };
-
-  changeBackRangeGranularities = (granularityValue) => {
-    this.handleGranularityChangeForBack(granularityValue);
-    let customRangeGranularityValue = '';
-    switch (granularityValue) {
-      case '1 Min Back':
-      case '15 Min Back':
-        customRangeGranularityValue = 'second';
-        break;
-      case '1 Hour Back':
-        customRangeGranularityValue = 'minute';
-        break;
-      case '1 Day Back':
-      case '7 Days Back':
-        customRangeGranularityValue = 'hour';
-        break;
-      case '1 Month Back':
-        customRangeGranularityValue = 'day';
-        break;
-      default:
-    }
-    this.setState({
-      granularityMode: granularityValue,
-      anchorPopperButton: null,
-      customRangeGranularityValue: customRangeGranularityValue,
-      quickRangeGranularityValue: granularityValue
-      // TODO:
     });
   };
 
