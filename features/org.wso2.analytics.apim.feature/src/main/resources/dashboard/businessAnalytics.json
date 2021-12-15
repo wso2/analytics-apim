@@ -273,7 +273,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "defaultValue": "1 Month",
+                                "defaultValue": "Last Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": " "
@@ -593,7 +593,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "defaultValue": "1 Month",
+                                "defaultValue": "Last Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": " "
@@ -740,7 +740,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "defaultValue": "1 Month",
+                                "defaultValue": "Last Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": " "
@@ -888,7 +888,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "defaultValue": "1 Month",
+                                "defaultValue": "Last Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": " "
@@ -1037,7 +1037,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "defaultValue": "1 Month",
+                                "defaultValue": "Last Month",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": " "
@@ -1134,7 +1134,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": false,
-                            "defaultValue": "1 Month",
+                            "defaultValue": "Last Month",
                             "availableGranularities": "From Second",
                             "autoSyncInterval": "30",
                             "headerTitle": " "
@@ -1327,7 +1327,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "defaultValue": "7 Days",
+                                "defaultValue": "Last 7 Days",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": " "
@@ -1520,7 +1520,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "defaultValue": "3 Months",
+                                "defaultValue": "Last 3 Months",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": " "
@@ -1713,7 +1713,7 @@
                               "isGenerated": false,
                               "options": {
                                 "header": false,
-                                "defaultValue": "3 Months",
+                                "defaultValue": "Last 3 Months",
                                 "availableGranularities": "From Second",
                                 "autoSyncInterval": "30",
                                 "headerTitle": " "
@@ -1867,7 +1867,7 @@
                                   "isGenerated": false,
                                   "options": {
                                     "header": false,
-                                    "defaultValue": "1 Month",
+                                    "defaultValue": "Last Month",
                                     "availableGranularities": "From Second",
                                     "autoSyncInterval": "30",
                                     "headerTitle": " "
@@ -2107,7 +2107,7 @@
                                   "isGenerated": false,
                                   "options": {
                                     "header": false,
-                                    "defaultValue": "1 Month",
+                                    "defaultValue": "Last Month",
                                     "availableGranularities": "From Second",
                                     "autoSyncInterval": "30",
                                     "headerTitle": " "
