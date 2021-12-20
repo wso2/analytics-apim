@@ -10,6 +10,7 @@ responseMedLat long, backendLatency long, otherLatency long, gatewayType string,
 
 @store(type = 'rdbms', datasource ='APIM_ANALYTICS_DB')
 @purge(enable='false')
+@persistedAggregation(enable='true', is.read.only='true')
 define aggregation ApiUserPerAppAgg from Request select apiName,apiVersion, apiContext, apiCreator,
 apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain,
 count() as totalRequestCount, gatewayType, label,'default' as regionalID group by apiContext,apiHostname, applicationId,

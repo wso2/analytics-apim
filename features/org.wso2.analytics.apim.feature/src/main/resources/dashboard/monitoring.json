@@ -246,7 +246,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": false,
-                            "defaultValue": "7 Days",
+                            "defaultValue": "Last 7 Days",
                             "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
                             "headertitle": " "
@@ -426,7 +426,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": false,
-                            "defaultValue": "7 Days",
+                            "defaultValue": "Last 7 Days",
                             "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
                             "headerTitle": " "
@@ -565,7 +565,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": false,
-                            "defaultValue": "7 Days",
+                            "defaultValue": "Last 7 Days",
                             "availableGranularities": "From Second",
                             "autoSyncInterval": "30",
                             "headerTitle": " "
@@ -828,7 +828,7 @@
                           "isGenerated": false,
                           "options": {
                             "header": false,
-                            "defaultValue": "7 Days",
+                            "defaultValue": "Last 7 Days",
                             "availableGranularities": "From Hour",
                             "autoSyncInterval": "30",
                             "headerTitle": " "
