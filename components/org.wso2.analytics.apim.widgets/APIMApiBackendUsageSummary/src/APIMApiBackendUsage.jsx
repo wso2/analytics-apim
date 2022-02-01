@@ -37,7 +37,7 @@ import CustomTable from './CustomTable';
  */
 function APIMApiBackendUsage(props) {
     const {
-        themeName, height, limit, usageData, handleChange, inProgress, intl, username,
+        themeName, height, limit, usageData, handleChange, inProgress, intl, username, timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -151,13 +151,13 @@ function APIMApiBackendUsage(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
                 ) : (
                     <div>
-                        { !usageData || usageData.length === 0 ? (
+                        {!usageData || usageData.length === 0 ? (
                             <div style={styles.paperWrapper}>
                                 <Paper
                                     elevation={1}
@@ -184,6 +184,8 @@ function APIMApiBackendUsage(props) {
                                 strColumns={strColumns}
                                 title={title}
                                 username={username}
+                                timeTo={timeTo}
+                                timeFrom={timeFrom}
                             />
                         )}
                     </div>
