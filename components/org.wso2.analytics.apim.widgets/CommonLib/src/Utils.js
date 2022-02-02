@@ -84,8 +84,9 @@ export function downloadPDF(doc, title, headers, dataToExport, username, timeTo,
     doc.setFontSize(9);
     doc.text(15, 23, generationDate);
     if (timeTo && timeFrom) {
-        doc.setFontSize(8);
-        doc.text(15, 35, "From " + new Date(timeFrom).toString() + " to " + new Date(timeTo).toString());
+        doc.setFontStyle("normal")
+        doc.text(15, 30, "From : " + new Date(timeFrom).toString());
+        doc.text(15, 35, "To : " + new Date(timeTo).toString());
     }
 
     doc.autoTable({
