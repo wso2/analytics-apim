@@ -38,7 +38,7 @@ import IntegrationReactSelect from '../../AppAndAPIErrorsByTime/src/IntegrationR
 function APIMAlertSummary(props) {
     const {
         height, alertData, inProgress, themeName, selectedApi, apiList, handleApiChange, limit, handleLimitChange,
-        intl, username,
+        intl, username, timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -188,13 +188,13 @@ function APIMAlertSummary(props) {
                     </form>
                 </div>
                 <div>
-                    { inProgress ? (
+                    {inProgress ? (
                         <div style={styles.loading}>
                             <CircularProgress style={styles.loadingIcon} />
                         </div>
                     ) : (
                         <div>
-                            { alertData.length === 0
+                            {alertData.length === 0
                                 ? (
                                     <div style={styles.dataWrapper}>
                                         <Paper
@@ -211,7 +211,7 @@ function APIMAlertSummary(props) {
                                                 <FormattedMessage
                                                     id='nodata.error.body'
                                                     defaultMessage={'No matching data available for the '
-                                                    + 'selected options.'}
+                                                        + 'selected options.'}
                                                 />
                                             </Typography>
                                         </Paper>
@@ -224,6 +224,8 @@ function APIMAlertSummary(props) {
                                             strColumns={strColumns}
                                             title={title}
                                             username={username}
+                                            timeTo={timeTo}
+                                            timeFrom={timeFrom}
                                         />
                                     </div>
                                 )

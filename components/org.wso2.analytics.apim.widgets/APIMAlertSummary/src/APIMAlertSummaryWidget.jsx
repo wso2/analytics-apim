@@ -414,6 +414,7 @@ class APIMAlertSummaryWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, alertData, inProgress, selectedApi, apiList, limit,
+            timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -422,7 +423,7 @@ class APIMAlertSummaryWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const apiAlertProps = {
-            themeName, height, alertData, inProgress, selectedApi, apiList, limit, username,
+            themeName, height, alertData, inProgress, selectedApi, apiList, limit, username, timeTo, timeFrom,
         };
 
         return (
@@ -452,7 +453,7 @@ class APIMAlertSummaryWidget extends Widget {
                                             <FormattedMessage
                                                 id='config.error.body'
                                                 defaultMessage={'Cannot fetch provider configuration for APIM Alert '
-                                            + 'Summary Widget'}
+                                                    + 'Summary Widget'}
                                             />
                                         </Typography>
                                     </Paper>
