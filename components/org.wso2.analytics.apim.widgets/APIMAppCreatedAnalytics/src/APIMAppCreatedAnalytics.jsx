@@ -38,7 +38,7 @@ import APIMAppCreatedData from './APIMAppCreatedData';
 export default function APIMAppCreatedAnalytics(props) {
     const {
         themeName, height, appCreatedBy, sublist, chartData, tableData, width, appCreatedHandleChange, inProgress,
-        username, limit, handleLimitChange,
+        username, limit, handleLimitChange, timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -86,7 +86,7 @@ export default function APIMAppCreatedAnalytics(props) {
         },
     };
     const createdDataProps = {
-        themeName, chartData, tableData, width, username,
+        themeName, chartData, tableData, width, username, timeTo, timeFrom,
     };
     return (
         <Scrollbars style={{
@@ -160,7 +160,7 @@ export default function APIMAppCreatedAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress
+                {inProgress
                     ? (
                         <div style={styles.loading}>
                             <CircularProgress style={styles.loadingIcon} />

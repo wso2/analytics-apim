@@ -32,7 +32,7 @@ import CustomTable from './CustomTable';
  */
 function APIMAppCreatedData(props) {
     const {
-        themeName, chartData, tableData, width, intl, username,
+        themeName, chartData, tableData, width, intl, username, timeTo, timeFrom,
     } = props;
     const styles = {
         dataWrapper: {
@@ -117,6 +117,8 @@ function APIMAppCreatedData(props) {
                         strColumns={strColumns}
                         title={title}
                         username={username}
+                        timeTo={timeTo}
+                        timeFrom={timeFrom}
                     />
                 </div>
             </div>
