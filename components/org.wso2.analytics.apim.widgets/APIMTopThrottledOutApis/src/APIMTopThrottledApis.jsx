@@ -59,6 +59,7 @@ const lightTheme = createMuiTheme({
 function APIMTopThrottledApis(props) {
     const {
         themeName, height, limit, throttledData, handleChange, inProgress, width, handleOnClickAPI, intl, username,
+        timeTo, timeFrom,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -186,13 +187,13 @@ function APIMTopThrottledApis(props) {
                         </form>
                     </div>
                     <div>
-                        { inProgress ? (
+                        {inProgress ? (
                             <div style={styles.loading}>
                                 <CircularProgress style={styles.loadingIcon} />
                             </div>
                         ) : (
                             <div>
-                                { !throttledData || throttledData.length === 0 ? (
+                                {!throttledData || throttledData.length === 0 ? (
                                     <div style={styles.paperWrapper}>
                                         <Paper
                                             elevation={1}
@@ -277,6 +278,8 @@ function APIMTopThrottledApis(props) {
                                                 strColumns={strColumns}
                                                 title={title}
                                                 username={username}
+                                                timeTo={timeTo}
+                                                timeFrom={timeFrom}
                                             />
                                         </div>
                                     </div>
