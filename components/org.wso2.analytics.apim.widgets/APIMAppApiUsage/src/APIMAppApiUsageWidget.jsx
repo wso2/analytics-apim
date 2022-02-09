@@ -306,7 +306,7 @@ class APIMAppApiUsageWidget extends Widget {
             });
 
             if (!applicationSelected
-                    || !applicationList.some(application => application.appId === applicationSelected)) {
+                || !applicationList.some(application => application.appId === applicationSelected)) {
                 applicationSelected = 'All';
             }
             this.setQueryParam(applicationSelected, limit);
@@ -458,7 +458,7 @@ class APIMAppApiUsageWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, width, limit, applicationSelected, usageData, legendData,
-            applicationList, inProgress, proxyError,
+            applicationList, inProgress, proxyError, timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -477,12 +477,14 @@ class APIMAppApiUsageWidget extends Widget {
             legendData,
             inProgress,
             username,
+            timeTo,
+            timeFrom,
         };
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    { proxyError ? (
+                    {proxyError ? (
                         <div style={proxyPaperWrapper}>
                             <Paper
                                 elevation={1}
@@ -518,7 +520,7 @@ class APIMAppApiUsageWidget extends Widget {
                                                 <FormattedMessage
                                                     id='config.error.body'
                                                     defaultMessage={'Cannot fetch provider configuration for APIM'
-                                                    + ' Application Usage widget'}
+                                                        + ' Application Usage widget'}
                                                 />
                                             </Typography>
                                         </Paper>
