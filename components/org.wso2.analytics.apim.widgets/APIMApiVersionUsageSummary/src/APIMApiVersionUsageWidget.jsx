@@ -309,6 +309,7 @@ class APIMApiVersionUsageWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, limit, usageData, inProgress,
+            timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -317,7 +318,7 @@ class APIMApiVersionUsageWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const apiUsageProps = {
-            themeName, height, limit, usageData, inProgress, username,
+            themeName, height, limit, usageData, inProgress, username, timeTo, timeFrom,
         };
 
         return (
@@ -337,7 +338,7 @@ class APIMApiVersionUsageWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration forAPIM Api '
-                                            + 'Version Usage Summary widget'}
+                                                + 'Version Usage Summary widget'}
                                         />
                                     </Typography>
                                 </Paper>
