@@ -311,6 +311,7 @@ class APIMTopApiUsersWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, limit, userData, inProgress,
+            timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -325,6 +326,8 @@ class APIMTopApiUsersWidget extends Widget {
             userData,
             inProgress,
             username,
+            timeTo,
+            timeFrom,
         };
 
         return (
@@ -344,7 +347,7 @@ class APIMTopApiUsersWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM Top '
-                                            + 'Api Users widget'}
+                                                + 'Api Users widget'}
                                         />
                                     </Typography>
                                 </Paper>

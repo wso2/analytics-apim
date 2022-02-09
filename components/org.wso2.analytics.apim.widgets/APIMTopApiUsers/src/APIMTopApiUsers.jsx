@@ -35,6 +35,7 @@ import CustomTable from './CustomTable';
 function APIMTopApiUsers(props) {
     const {
         themeName, height, limit, userData, handleLimitChange, inProgress, intl, username,
+        timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -123,7 +124,7 @@ function APIMTopApiUsers(props) {
                         />
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
@@ -157,6 +158,8 @@ function APIMTopApiUsers(props) {
                                     strColumns={strColumns}
                                     title={title}
                                     username={username}
+                                    timeTo={timeTo}
+                                    timeFrom={timeFrom}
                                 />
                             )}
                     </div>
