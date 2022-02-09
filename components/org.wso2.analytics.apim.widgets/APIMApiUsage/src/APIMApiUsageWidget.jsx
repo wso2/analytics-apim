@@ -353,7 +353,7 @@ class APIMApiUsageWidget extends Widget {
      */
     render() {
         const {
-            localeMessages, faultyProviderConfig, height, limit, usageData, inProgress,
+            localeMessages, faultyProviderConfig, height, limit, usageData, inProgress, timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -368,6 +368,8 @@ class APIMApiUsageWidget extends Widget {
             usageData,
             inProgress,
             username,
+            timeTo,
+            timeFrom,
         };
 
         return (
@@ -387,7 +389,7 @@ class APIMApiUsageWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM API '
-                                            + 'Usage widget'}
+                                                + 'Usage widget'}
                                         />
                                     </Typography>
                                 </Paper>

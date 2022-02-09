@@ -35,6 +35,7 @@ import CustomTable from './CustomTable';
 function APIMApiUsage(props) {
     const {
         themeName, height, limit, usageData, handleLimitChange, inProgress, handleOnClickAPI, intl, username,
+        timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -129,7 +130,7 @@ function APIMApiUsage(props) {
                         />
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
@@ -164,6 +165,8 @@ function APIMApiUsage(props) {
                                     strColumns={strColumns}
                                     title={title}
                                     username={username}
+                                    timeTo={timeTo}
+                                    timeFrom={timeFrom}
                                 />
                             )}
                     </div>
