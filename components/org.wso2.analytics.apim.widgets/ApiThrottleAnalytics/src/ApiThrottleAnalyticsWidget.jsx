@@ -322,7 +322,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, width, inProgress, throttleData, limit,
-            tableData, timeTo, timeFrom
+            tableData, timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
