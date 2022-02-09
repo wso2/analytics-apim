@@ -221,7 +221,7 @@ class APIMTopFaultyApisWidget extends Widget {
                 super.getWidgetChannelManager()
                     .subscribeWidget(this.props.id, widgetName, this.handleDataReceived, dataProviderConfigs);
             } else {
-                this.setState({inProgress: false, faultData: []});
+                this.setState({ inProgress: false, faultData: [] });
             }
         }
     }
@@ -328,6 +328,7 @@ class APIMTopFaultyApisWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, limit, faultData, legendData, inProgress, width,
+            timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -336,7 +337,7 @@ class APIMTopFaultyApisWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const faultyApisProps = {
-            themeName, height, limit, faultData, legendData, inProgress, width, username,
+            themeName, height, limit, faultData, legendData, inProgress, width, username, timeTo, timeFrom,
         };
 
         return (
@@ -363,7 +364,7 @@ class APIMTopFaultyApisWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Top Faulty Apis widget'}
+                                                + 'Top Faulty Apis widget'}
                                         />
                                     </Typography>
                                 </Paper>
