@@ -40,6 +40,7 @@ function APIMFaultyPerApp(props) {
     const {
         themeName, height, width, limit, applicationSelected, usageData, applicationList,
         applicationSelectedHandleChange, handleLimitChange, inProgress, intl, username,
+        timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -197,13 +198,13 @@ function APIMFaultyPerApp(props) {
                     </form>
                 </div>
                 <div>
-                    { inProgress ? (
+                    {inProgress ? (
                         <div style={styles.inProgress}>
                             <CircularProgress />
                         </div>
                     ) : (
                         <div>
-                            { usageData.length > 0 ? (
+                            {usageData.length > 0 ? (
                                 <div style={styles.table}>
                                     <CustomTable
                                         data={usageData}
@@ -212,6 +213,8 @@ function APIMFaultyPerApp(props) {
                                         strColumns={strColumns}
                                         title={title}
                                         username={username}
+                                        timeTo={timeTo}
+                                        timeFrom={timeFrom}
                                     />
                                 </div>
                             ) : (
