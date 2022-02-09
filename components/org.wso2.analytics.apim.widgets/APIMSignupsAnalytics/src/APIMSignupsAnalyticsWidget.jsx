@@ -320,6 +320,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, chartData, tableData, width, inProgress, limit,
+            timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -328,7 +329,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const signupsProps = {
-            themeName, height, chartData, tableData, width, inProgress, username, limit,
+            themeName, height, chartData, tableData, width, inProgress, username, limit, timeTo, timeFrom,
         };
 
         return (
@@ -348,7 +349,7 @@ class APIMSignupsAnalyticsWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Signups Analytics widget'}
+                                                + 'Signups Analytics widget'}
                                         />
                                     </Typography>
                                 </Paper>
