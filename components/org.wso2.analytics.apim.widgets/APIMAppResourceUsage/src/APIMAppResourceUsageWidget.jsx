@@ -455,7 +455,7 @@ class APIMAppResourceUsageWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, width, limit, applicationSelected, usageData, applicationList,
-            inProgress, proxyError,
+            inProgress, proxyError, timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -473,6 +473,8 @@ class APIMAppResourceUsageWidget extends Widget {
             usageData,
             inProgress,
             username,
+            timeTo,
+            timeFrom,
         };
 
         return (
@@ -480,7 +482,7 @@ class APIMAppResourceUsageWidget extends Widget {
                 <MuiThemeProvider
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
-                    { proxyError ? (
+                    {proxyError ? (
                         <div style={proxyPaperWrapper}>
                             <Paper
                                 elevation={1}
@@ -516,7 +518,7 @@ class APIMAppResourceUsageWidget extends Widget {
                                                 <FormattedMessage
                                                     id='config.error.body'
                                                     defaultMessage={'Cannot fetch provider configuration for APIM'
-                                                    + ' Resource Usage of Application widget'}
+                                                        + ' Resource Usage of Application widget'}
                                                 />
                                             </Typography>
                                         </Paper>

@@ -201,7 +201,7 @@ class CustomTable extends React.Component {
      */
     render() {
         const {
-            data, classes, inProgress, columns, strColumns, title, username,
+            data, classes, inProgress, columns, strColumns, title, username, timeTo, timeFrom,
         } = this.props;
         const {
             filterQuery, expanded, filterColumn, order, orderBy, rowsPerPage, page, emptyRowHeight,
@@ -243,6 +243,8 @@ class CustomTable extends React.Component {
                     data={sortedData}
                     strColumns={strColumns}
                     username={username}
+                    timeTo={timeTo}
+                    timeFrom={timeFrom}
                 />
                 {
                     inProgress ? (
