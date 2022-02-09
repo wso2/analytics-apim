@@ -35,7 +35,7 @@ import APIMApiCreatedData from './APIMApiCreatedData';
 export default function APIMApiCreatedAnalytics(props) {
     const {
         themeName, height, chartData, tableData, inProgress, width, handleOnClickAPI, username, limit,
-        handleLimitChange,
+        handleLimitChange, timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -78,7 +78,7 @@ export default function APIMApiCreatedAnalytics(props) {
         },
     };
     const createdDataProps = {
-        themeName, chartData, tableData, width, username,
+        themeName, chartData, tableData, width, username, timeTo, timeFrom,
     };
     return (
         <Scrollbars style={{
@@ -118,7 +118,7 @@ export default function APIMApiCreatedAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress
+                {inProgress
                     ? (
                         <div style={styles.loading}>
                             <CircularProgress style={styles.loadingIcon} />
