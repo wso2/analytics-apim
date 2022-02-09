@@ -299,13 +299,14 @@ class APIMApiErrorPercentagesWidget extends Widget {
     render() {
         const {
             width, height, localeMessages, faultyProviderConf, sortedData, errorPercentage,
-            inProgress, legendData, tableData,
+            inProgress, legendData, tableData, timeTo, timeFrom,
         } = this.state;
         const { paper, paperWrapper } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
         const apiErrorPercentagesProps = {
             width, height, themeName, sortedData, errorPercentage, legendData, tableData, inProgress,
+            timeTo, timeFrom,
         };
 
         return (
@@ -334,7 +335,7 @@ class APIMApiErrorPercentagesWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                            + 'Error Percentages Widget'}
+                                                + 'Error Percentages Widget'}
                                         />
                                     </Typography>
                                 </Paper>
