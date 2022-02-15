@@ -192,7 +192,7 @@ class CustomTable extends React.Component {
      * @return {ReactElement} customTable
      */
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, timeTo, timeFrom, } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
@@ -224,6 +224,8 @@ class CustomTable extends React.Component {
                     handleColumnSelect={this.handleColumnSelect}
                     handleQueryChange={this.handleQueryChange}
                     menuItems={menuItems}
+                    timeTo={timeTo}
+                    timeFrom={timeFrom}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>

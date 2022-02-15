@@ -379,6 +379,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, inProgress, chartData, tableData, width, limit,
+            timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -395,6 +396,8 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
             inProgress,
             username,
             limit,
+            timeTo,
+            timeFrom,
         };
 
         return (
@@ -414,7 +417,7 @@ class APIMSubscriptionsAnalyticsWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Subscriptions Analytics widget'}
+                                                + 'Subscriptions Analytics widget'}
                                         />
                                     </Typography>
                                 </Paper>

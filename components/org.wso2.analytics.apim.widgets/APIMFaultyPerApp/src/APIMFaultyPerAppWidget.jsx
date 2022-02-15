@@ -451,7 +451,7 @@ class APIMFaultyPerAppWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, width, limit, applicationSelected, usageData, applicationList,
-            inProgress, proxyError,
+            inProgress, proxyError, timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -469,12 +469,14 @@ class APIMFaultyPerAppWidget extends Widget {
             usageData,
             inProgress,
             username,
+            timeTo,
+            timeFrom,
         };
 
         return (
             <IntlProvider locale={language} messages={localeMessages}>
                 <MuiThemeProvider theme={themeName === 'dark' ? darkTheme : lightTheme}>
-                    { proxyError ? (
+                    {proxyError ? (
                         <div style={proxyPaperWrapper}>
                             <Paper
                                 elevation={1}
@@ -511,7 +513,7 @@ class APIMFaultyPerAppWidget extends Widget {
                                                 <FormattedMessage
                                                     id='config.error.body'
                                                     defaultMessage={'Cannot fetch provider configuration for APIM'
-                                                    + ' Faulty Invocations per Application widget'}
+                                                        + ' Faulty Invocations per Application widget'}
                                                 />
                                             </Typography>
                                         </Paper>

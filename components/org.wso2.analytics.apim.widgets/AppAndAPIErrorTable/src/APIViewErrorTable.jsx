@@ -140,7 +140,7 @@ class APIViewErrorTable extends React.Component {
 
     getTableHeadRowsForAPI() {
         const {
-            viewType, classes, data, handleDrillDownClick, username, intl,
+            viewType, classes, data, handleDrillDownClick, username, intl, timeTo, timeFrom,
         } = this.props;
         const {
             query, expanded, filterColumn, rowsPerPage, page,
@@ -170,16 +170,18 @@ class APIViewErrorTable extends React.Component {
                     data={summarizedData}
                     strColumns={strColumns}
                     username={username}
+                    timeTo={timeTo}
+                    timeFrom={timeFrom}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-label='simple table'>
                         <TableHead>
                             <TableRow className={classes.header}>
-                                { viewType === ViewTypeEnum.APP ? (
+                                {viewType === ViewTypeEnum.APP ? (
                                     <TableCell rowSpan={2} className={classes.headerCell}>
                                         <FormattedMessage id='table.column.app' defaultMessage='Application' />
                                     </TableCell>
-                                ) : '' }
+                                ) : ''}
                                 <TableCell rowSpan={2} className={classes.headerCell}>
                                     <FormattedMessage id='table.column.apiName' defaultMessage='API Name' />
                                 </TableCell>
@@ -223,11 +225,11 @@ class APIViewErrorTable extends React.Component {
                                         onClick={() => handleDrillDownClick(row.apiName)}
                                         className={classes.hover}
                                     >
-                                        { viewType === ViewTypeEnum.APP ? (
+                                        {viewType === ViewTypeEnum.APP ? (
                                             <TableCell>
                                                 {row.appName}
                                             </TableCell>
-                                        ) : '' }
+                                        ) : ''}
                                         <TableCell>{row.apiName}</TableCell>
                                         <TableCell>{row._2xx}</TableCell>
                                         <TableCell>{row._4xx}</TableCell>
@@ -356,7 +358,7 @@ class APIViewErrorTable extends React.Component {
         return (
             <div component={Paper}>
                 <Divider m={10} />
-                { this.getTableHeadRowsForAPI() }
+                {this.getTableHeadRowsForAPI()}
             </div>
         );
     }

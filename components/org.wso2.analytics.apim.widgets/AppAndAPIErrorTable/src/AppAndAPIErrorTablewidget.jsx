@@ -904,7 +904,7 @@ class AppAndAPIErrorTablewidget extends Widget {
         const {
             localeMessages, viewType, drillDownType, valueFormatType, data, loading,
             selectedAPI, selectedApp, selectedVersion, selectedResource, selectedLimit, apiList, appList,
-            versionList, operationList, height,
+            versionList, operationList, height, timeTo, timeFrom,
         } = this.state;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
@@ -973,9 +973,9 @@ class AppAndAPIErrorTablewidget extends Widget {
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
                     <Scrollbars style={{
-                                    height,
-                                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                                }}
+                        height,
+                        backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                    }}
                     >
                         <div style={styles.root} id='AppAndAPIErrorTable'>
                             <div style={styles.contentWrapper}>
@@ -1111,6 +1111,8 @@ class AppAndAPIErrorTablewidget extends Widget {
                                             drillDownType={drillDownType}
                                             handleDrillDownClick={this.handleDrillDownClick}
                                             username={username}
+                                            timeTo={timeTo}
+                                            timeFrom={timeFrom}
                                         />
                                     )
                                         : (

@@ -334,6 +334,7 @@ class APIMTopThrottledApisWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, limit, throttledData, legendData, inProgress, width,
+            timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -342,7 +343,7 @@ class APIMTopThrottledApisWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const throttledApisProps = {
-            themeName, height, limit, throttledData, legendData, inProgress, width, username,
+            themeName, height, limit, throttledData, legendData, inProgress, width, username, timeTo, timeFrom,
         };
 
         return (
@@ -362,7 +363,7 @@ class APIMTopThrottledApisWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Top Throttled Out Apis widget'}
+                                                + 'Top Throttled Out Apis widget'}
                                         />
                                     </Typography>
                                 </Paper>

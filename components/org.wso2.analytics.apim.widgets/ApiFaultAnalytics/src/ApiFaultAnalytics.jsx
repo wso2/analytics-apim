@@ -38,6 +38,7 @@ import CustomTable from './CustomTable';
 function ApiFaultAnalytics(props) {
     const {
         themeName, height, width, inProgress, faultData, tableData, intl, username, limit, handleLimitChange,
+        timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -182,13 +183,13 @@ function ApiFaultAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
                 ) : (
                     <div>
-                        { !faultData || faultData.length === 0 ? (
+                        {!faultData || faultData.length === 0 ? (
                             <div style={styles.paperWrapper}>
                                 <Paper
                                     elevation={1}
@@ -225,6 +226,8 @@ function ApiFaultAnalytics(props) {
                                         strColumns={strColumns}
                                         title={title}
                                         username={username}
+                                        timeTo={timeTo}
+                                        timeFrom={timeFrom}
                                     />
                                 </div>
                             </div>

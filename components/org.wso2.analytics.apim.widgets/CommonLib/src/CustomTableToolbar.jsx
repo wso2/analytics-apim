@@ -108,7 +108,7 @@ class CustomTableToolbar extends React.Component {
     };
 
     handlePDFDownload() {
-        const { data, strColumns, title, username } = this.props;
+        const { data, strColumns, title, username, timeTo, timeFrom } = this.props;
         const headers = [['#']];
         const dataToExport = [];
 
@@ -121,7 +121,7 @@ class CustomTableToolbar extends React.Component {
         });
 
         const doc = new jsPDF({ putOnlyUsedFonts: true });
-        downloadPDF(doc, title, headers, dataToExport, username);
+        downloadPDF(doc, title, headers, dataToExport, username, timeTo, timeFrom);
         this.handleMenuCloseRequest();
     };
 
@@ -192,7 +192,7 @@ class CustomTableToolbar extends React.Component {
                             }}
                             margin='normal'
                         >
-                            { menuItems }
+                            {menuItems}
                         </TextField>
                         <TextField
                             id='query-search'

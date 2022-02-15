@@ -38,6 +38,7 @@ import CustomTable from './CustomTable';
 function ApiThrottleAnalytics(props) {
     const {
         themeName, height, width, inProgress, throttleData, tableData, intl, username, limit, handleLimitChange,
+        timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -182,13 +183,13 @@ function ApiThrottleAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>
                 ) : (
                     <div>
-                        { !throttleData || throttleData.length === 0 ? (
+                        {!throttleData || throttleData.length === 0 ? (
                             <div style={styles.paperWrapper}>
                                 <Paper
                                     elevation={1}
@@ -225,6 +226,8 @@ function ApiThrottleAnalytics(props) {
                                         strColumns={strColumns}
                                         title={title}
                                         username={username}
+                                        timeTo={timeTo}
+                                        timeFrom={timeFrom}
                                     />
                                 </div>
                             </div>

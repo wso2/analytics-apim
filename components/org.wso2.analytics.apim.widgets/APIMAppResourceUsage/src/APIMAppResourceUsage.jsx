@@ -40,6 +40,7 @@ function APIMAppResourceUsage(props) {
     const {
         themeName, height, width, limit, applicationSelected, usageData, applicationList,
         applicationSelectedHandleChange, handleLimitChange, inProgress, intl, username,
+        timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -198,13 +199,13 @@ function APIMAppResourceUsage(props) {
                     </form>
                 </div>
                 <div>
-                    { inProgress ? (
+                    {inProgress ? (
                         <div style={styles.inProgress}>
                             <CircularProgress />
                         </div>
                     ) : (
                         <div>
-                            { usageData && usageData.length > 0 ? (
+                            {usageData && usageData.length > 0 ? (
                                 <div style={styles.table}>
                                     <CustomTable
                                         data={usageData}
@@ -213,6 +214,8 @@ function APIMAppResourceUsage(props) {
                                         strColumns={strColumns}
                                         title={title}
                                         username={username}
+                                        timeTo={timeTo}
+                                        timeFrom={timeFrom}
                                     />
                                 </div>
                             ) : (

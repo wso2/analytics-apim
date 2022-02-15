@@ -453,7 +453,7 @@ class APIMTopAppUsersWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, width, limit, applicationSelected, usageData, legendData,
-            applicationList, inProgress, proxyError,
+            applicationList, inProgress, proxyError, timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper, proxyPaper, proxyPaperWrapper,
@@ -472,6 +472,8 @@ class APIMTopAppUsersWidget extends Widget {
             legendData,
             inProgress,
             username,
+            timeTo,
+            timeFrom,
         };
 
         return (
@@ -479,7 +481,7 @@ class APIMTopAppUsersWidget extends Widget {
                 <MuiThemeProvider
                     theme={themeName === 'dark' ? darkTheme : lightTheme}
                 >
-                    { proxyError ? (
+                    {proxyError ? (
                         <div style={proxyPaperWrapper}>
                             <Paper
                                 elevation={1}
@@ -518,7 +520,7 @@ class APIMTopAppUsersWidget extends Widget {
                                                 <FormattedMessage
                                                     id='config.error.body'
                                                     defaultMessage={'Cannot fetch provider configuration for APIM'
-                                                    + ' Top Application Users widget'}
+                                                        + ' Top Application Users widget'}
                                                 />
                                             </Typography>
                                         </Paper>

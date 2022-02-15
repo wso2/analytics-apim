@@ -193,7 +193,7 @@ class CustomTable extends React.Component {
      */
     render() {
         const {
-            data, classes, columns, strColumns, title, username,
+            data, classes, columns, strColumns, title, username, timeTo, timeFrom,
         } = this.props;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
@@ -230,6 +230,8 @@ class CustomTable extends React.Component {
                     data={sortedData}
                     strColumns={strColumns}
                     username={username}
+                    timeTo={timeTo}
+                    timeFrom={timeFrom}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={classes.table} aria-labelledby='tableTitle'>

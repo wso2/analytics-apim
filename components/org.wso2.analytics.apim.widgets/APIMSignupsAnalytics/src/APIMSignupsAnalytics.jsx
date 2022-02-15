@@ -35,6 +35,7 @@ import APIMSignupsData from './APIMSignupsData';
 export default function APIMSignupsAnalytics(props) {
     const {
         themeName, height, chartData, tableData, width, inProgress, username, limit, handleLimitChange,
+        timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -76,7 +77,7 @@ export default function APIMSignupsAnalytics(props) {
         },
     };
     const signedDataProps = {
-        themeName, chartData, tableData, width, username,
+        themeName, chartData, tableData, width, username, timeTo, timeFrom,
     };
     return (
         <Scrollbars style={{
@@ -116,7 +117,7 @@ export default function APIMSignupsAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.loading}>
                         <CircularProgress style={styles.loadingIcon} />
                     </div>

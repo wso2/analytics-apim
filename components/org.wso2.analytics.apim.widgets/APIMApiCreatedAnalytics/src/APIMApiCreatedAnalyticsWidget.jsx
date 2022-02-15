@@ -381,6 +381,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, chartData, tableData, width, inProgress, limit,
+            timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -389,7 +390,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const apiCreatedProps = {
-            themeName, height, chartData, tableData, inProgress, width, username, limit,
+            themeName, height, chartData, tableData, inProgress, width, username, limit, timeTo, timeFrom,
         };
 
         return (
@@ -409,7 +410,7 @@ class APIMApiCreatedAnalyticsWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM Api '
-                                            + 'Created Analytics widget'}
+                                                + 'Created Analytics widget'}
                                         />
                                     </Typography>
                                 </Paper>

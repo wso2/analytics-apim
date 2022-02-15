@@ -39,7 +39,7 @@ import CustomTable from './CustomTable';
 function APIMOverallApiUsage(props) {
     const {
         themeName, width, height, limit, usageData1, usageData2, limitHandleChange, inProgress, handleOnClickAPI,
-        selectedAPIChangeCallback, intl, username,
+        selectedAPIChangeCallback, intl, username, timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -238,6 +238,8 @@ function APIMOverallApiUsage(props) {
                                         strColumns={strColumns}
                                         title={title}
                                         username={username}
+                                        timeTo={timeTo}
+                                        timeFrom={timeFrom}
                                     />
                                 </div>
                             )

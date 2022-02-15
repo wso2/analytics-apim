@@ -322,7 +322,7 @@ class ApiFaultAnalyticsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, width, inProgress, faultData, limit,
-            tableData,
+            tableData, timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -339,6 +339,8 @@ class ApiFaultAnalyticsWidget extends Widget {
             inProgress,
             username,
             limit,
+            timeTo,
+            timeFrom,
         };
 
         return (
@@ -362,7 +364,7 @@ class ApiFaultAnalyticsWidget extends Widget {
                                             <FormattedMessage
                                                 id='config.error.body'
                                                 defaultMessage={'Cannot fetch provider configuration for '
-                                                + 'Api Fault Analytics widget'}
+                                                    + 'Api Fault Analytics widget'}
                                             />
                                         </Typography>
                                     </Paper>

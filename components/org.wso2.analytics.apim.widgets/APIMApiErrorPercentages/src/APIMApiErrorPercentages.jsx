@@ -57,6 +57,7 @@ const lightTheme = createMuiTheme({
 export default function APIMApiErrorPercentages(props) {
     const {
         width, height, themeName, sortedData, errorPercentage, legendData, tableData, inProgress,
+        timeTo, timeFrom,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -144,13 +145,13 @@ export default function APIMApiErrorPercentages(props) {
                         </h3>
                     </div>
                     <div>
-                        { inProgress ? (
+                        {inProgress ? (
                             <div style={styles.loading}>
                                 <CircularProgress style={styles.loadingIcon} />
                             </div>
                         ) : (
                             <div>
-                                { sortedData.length <= 0 ? (
+                                {sortedData.length <= 0 ? (
                                     <div style={styles.paperWrapper}>
                                         <Paper
                                             elevation={1}
@@ -208,7 +209,11 @@ export default function APIMApiErrorPercentages(props) {
                                             </svg>
                                         </div>
                                         <div style={styles.tableDiv}>
-                                            <CustomTable data={tableData} />
+                                            <CustomTable
+                                                data={tableData}
+                                                timeTo={timeTo}
+                                                timeFrom={timeFrom}
+                                            />
                                         </div>
                                     </div>
                                 )}

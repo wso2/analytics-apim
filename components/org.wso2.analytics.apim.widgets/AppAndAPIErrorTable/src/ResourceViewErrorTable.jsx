@@ -141,7 +141,7 @@ class ResourceViewErrorTable extends React.Component {
 
     getTableHeadRowsForAPI() {
         const {
-            viewType, classes, data, handleDrillDownClick, username, intl,
+            viewType, classes, data, handleDrillDownClick, username, intl, timeTo, timeFrom,
         } = this.props;
         const {
             query, expanded, filterColumn, rowsPerPage, page,
@@ -171,16 +171,18 @@ class ResourceViewErrorTable extends React.Component {
                     data={summarizedData}
                     strColumns={strColumns}
                     username={username}
+                    timeTo={timeTo}
+                    timeFrom={timeFrom}
                 />
                 <div className={classes.tableWrapper}>
                     <Table className={styles.table} aria-label='simple table'>
                         <TableHead>
                             <TableRow className={classes.header}>
-                                { viewType === ViewTypeEnum.APP ? (
+                                {viewType === ViewTypeEnum.APP ? (
                                     <TableCell rowSpan={2} className={classes.headerCell}>
                                         <FormattedMessage id='table.column.app' defaultMessage='Application' />
                                     </TableCell>
-                                ) : '' }
+                                ) : ''}
                                 <TableCell rowSpan={2} className={classes.headerCell}>
                                     <FormattedMessage id='table.column.operation' defaultMessage='Operation' />
                                 </TableCell>
@@ -231,11 +233,11 @@ class ResourceViewErrorTable extends React.Component {
                                             })}
                                             className={classes.hover}
                                         >
-                                            { viewType === ViewTypeEnum.APP ? (
+                                            {viewType === ViewTypeEnum.APP ? (
                                                 <TableCell>
                                                     {rowSummary.appName}
                                                 </TableCell>
-                                            ) : '' }
+                                            ) : ''}
                                             <TableCell>{rowSummary.operation}</TableCell>
                                             <TableCell>{rowSummary._2xx}</TableCell>
                                             <TableCell>{rowSummary._4xx}</TableCell>
@@ -371,7 +373,7 @@ class ResourceViewErrorTable extends React.Component {
         return (
             <div component={Paper}>
                 <Divider m={10} />
-                { this.getTableHeadRowsForAPI() }
+                {this.getTableHeadRowsForAPI()}
             </div>
         );
     }

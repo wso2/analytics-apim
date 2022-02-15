@@ -35,7 +35,7 @@ import APIMSubscriptionsData from './APIMSubscriptionsData';
 export default function APIMSubscriptionsAnalytics(props) {
     const {
         themeName, height, width, chartData, tableData, inProgress, handleOnClickAPI, username, limit,
-        handleLimitChange,
+        handleLimitChange, timeTo, timeFrom,
     } = props;
     const styles = {
         headingWrapper: {
@@ -77,7 +77,7 @@ export default function APIMSubscriptionsAnalytics(props) {
         },
     };
     const subDataProps = {
-        themeName, chartData, tableData, width, username,
+        themeName, chartData, tableData, width, username, timeTo, timeFrom,
     };
     return (
         <Scrollbars style={{
@@ -115,7 +115,7 @@ export default function APIMSubscriptionsAnalytics(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress
+                {inProgress
                     ? (
                         <div style={styles.loading}>
                             <CircularProgress style={styles.loadingIcon} />

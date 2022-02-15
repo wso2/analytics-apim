@@ -534,6 +534,7 @@ class APIMOverallApiUsageWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, width, height, limit, usageData1, usageData2, inProgress,
+            timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -542,7 +543,7 @@ class APIMOverallApiUsageWidget extends Widget {
         const themeName = muiTheme.name;
         const { username } = super.getCurrentUser();
         const ovearllUsageProps = {
-            themeName, width, height, limit, usageData1, usageData2, inProgress, username,
+            themeName, width, height, limit, usageData1, usageData2, inProgress, username, timeTo, timeFrom,
         };
 
         return (
@@ -562,7 +563,7 @@ class APIMOverallApiUsageWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM '
-                                            + 'Overall Api Usage widget'}
+                                                + 'Overall Api Usage widget'}
                                         />
                                     </Typography>
                                 </Paper>

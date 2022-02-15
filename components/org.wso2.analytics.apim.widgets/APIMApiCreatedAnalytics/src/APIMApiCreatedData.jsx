@@ -32,7 +32,7 @@ import CustomTable from './CustomTable';
  */
 function APIMApiCreatedData(props) {
     const {
-        themeName, chartData, tableData, width, onClickAPI, intl, username,
+        themeName, chartData, tableData, width, onClickAPI, intl, username, timeTo, timeFrom,
     } = props;
     const styles = {
         dataWrapper: {
@@ -136,6 +136,8 @@ function APIMApiCreatedData(props) {
                         strColumns={strColumns}
                         title={title}
                         username={username}
+                        timeTo={timeTo}
+                        timeFrom={timeFrom}
                     />
                 </div>
             </div>

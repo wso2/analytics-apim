@@ -45,6 +45,7 @@ function APIMTopAppUsers(props) {
     const {
         themeName, height, width, limit, applicationSelected, usageData, applicationList,
         applicationSelectedHandleChange, handleLimitChange, inProgress, intl, username,
+        timeTo, timeFrom,
     } = props;
     const fontSize = width < 1000 ? 25 : 18;
     const styles = {
@@ -224,13 +225,13 @@ function APIMTopAppUsers(props) {
                         </FormControl>
                     </form>
                 </div>
-                { inProgress ? (
+                {inProgress ? (
                     <div style={styles.inProgress}>
                         <CircularProgress />
                     </div>
                 ) : (
                     <div>
-                        { usageData.length > 0 ? (
+                        {usageData.length > 0 ? (
                             <div style={styles.statDiv}>
                                 <div style={styles.pieDiv}>
                                     <svg viewBox='-50 0 1000 500'>
@@ -279,6 +280,8 @@ function APIMTopAppUsers(props) {
                                         strColumns={strColumns}
                                         title={title}
                                         username={username}
+                                        timeTo={timeTo}
+                                        timeFrom={timeFrom}
                                     />
                                 </div>
                             </div>

@@ -322,7 +322,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, width, inProgress, throttleData, limit,
-            tableData,
+            tableData, timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -339,6 +339,8 @@ class ApiThrottleAnalyticsWidget extends Widget {
             inProgress,
             username,
             limit,
+            timeTo,
+            timeFrom,
         };
 
         return (
@@ -362,7 +364,7 @@ class ApiThrottleAnalyticsWidget extends Widget {
                                             <FormattedMessage
                                                 id='config.error.body'
                                                 defaultMessage={'Cannot fetch provider configuration for '
-                                                + 'Api Throttle Analytics widget'}
+                                                    + 'Api Throttle Analytics widget'}
                                             />
                                         </Typography>
                                     </Paper>

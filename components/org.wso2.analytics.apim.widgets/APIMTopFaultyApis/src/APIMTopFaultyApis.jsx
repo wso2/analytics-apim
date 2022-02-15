@@ -59,6 +59,7 @@ const lightTheme = createMuiTheme({
 function APIMTopFaultyApis(props) {
     const {
         themeName, height, limit, faultData, handleChange, inProgress, width, handleOnClickAPI, intl, username,
+        timeTo, timeFrom,
     } = props;
     const fontSize = width < 1000 ? 16 : 18;
     const styles = {
@@ -186,13 +187,13 @@ function APIMTopFaultyApis(props) {
                         </form>
                     </div>
                     <div>
-                        { inProgress ? (
+                        {inProgress ? (
                             <div style={styles.loading}>
                                 <CircularProgress style={styles.loadingIcon} />
                             </div>
                         ) : (
                             <div>
-                                { !faultData || faultData.length === 0 ? (
+                                {!faultData || faultData.length === 0 ? (
                                     <div style={styles.paperWrapper}>
                                         <Paper
                                             elevation={1}
@@ -254,7 +255,7 @@ function APIMTopFaultyApis(props) {
                                                     y={d => d.faultcount}
                                                     labels={
                                                         d => `${d.apiname} : ${((d.faultcount
-                                                        / (sumBy(pieChartData, o => o.faultcount))) * 100).toFixed(2)}%`
+                                                            / (sumBy(pieChartData, o => o.faultcount))) * 100).toFixed(2)}%`
                                                     }
                                                     events={[
                                                         {
@@ -281,6 +282,8 @@ function APIMTopFaultyApis(props) {
                                                 strColumns={strColumns}
                                                 title={title}
                                                 username={username}
+                                                timeTo={timeTo}
+                                                timeFrom={timeFrom}
                                             />
                                         </div>
                                     </div>

@@ -434,7 +434,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
     render() {
         const {
             localeMessages, faultyProviderConfig, height, appCreatedBy, sublist, chartData, tableData, limit,
-            width, inProgress,
+            width, inProgress, timeTo, timeFrom,
         } = this.state;
         const {
             paper, paperWrapper,
@@ -453,6 +453,8 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
             inProgress,
             username,
             limit,
+            timeTo,
+            timeFrom,
         };
 
         return (
@@ -472,7 +474,7 @@ class APIMAppCreatedAnalyticsWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM App '
-                                            + 'Created Analytics widget'}
+                                                + 'Created Analytics widget'}
                                         />
                                     </Typography>
                                 </Paper>

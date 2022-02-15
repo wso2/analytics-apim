@@ -32,7 +32,7 @@ import CustomTable from './CustomTable';
  */
 function APIMSubscriptionsData(props) {
     const {
-        themeName, chartData, tableData, width, onClickAPI, intl, username,
+        themeName, chartData, tableData, width, onClickAPI, intl, username, timeTo, timeFrom,
     } = props;
     const styles = {
         paperWrapper: {
@@ -124,6 +124,8 @@ function APIMSubscriptionsData(props) {
                         strColumns={strColumns}
                         title={title}
                         username={username}
+                        timeTo={timeTo}
+                        timeFrom={timeFrom}
                     />
                 </div>
             </div>
