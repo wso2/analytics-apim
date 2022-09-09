@@ -35,6 +35,7 @@ define table ApiSubAlertConf (applicationId string, subscriber string, apiName s
 -- This aggregation definition is only for retrieving data. No data is actually aggregated from this.
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @purge(enable = 'false')
+@persistedAggregation(enable='false', is.read.only='true')
 define aggregation ApiUserPerAppAgg
 from Request
 select apiName, apiVersion, apiContext, apiCreator, apiCreatorTenantDomain, apiHostname, applicationId, applicationName, applicationOwner, username, userTenantDomain, count() as totalRequestCount, gatewayType, label, 'default' as regionalID
