@@ -29,8 +29,13 @@ define stream SuppressedAbnormalRequestsCountStream(applicationName string, appl
 @sink(type = 'inMemory' , topic = 'AbnormalRequestsCountAlertStream')
 define stream AbnormalRequestsCountAlertStream(applicationName string, applicationOwner string, tenantDomain string, apiName string, apiVersion string, requestCountPerMin long, thresholdRequestCountPerMin int, message string, severity int, alertTimestamp long);
 
+define stream ApiSubAlertConfInMemoryStream(applicationId string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
+
+define stream ConfigDeleteStream(applicationId string, apiName string, apiVersion string);
+
 @store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')
 @PrimaryKey('applicationId', 'apiName', 'apiVersion')
+@Index('applicationId', 'apiName', 'apiVersion', 'thresholdRequestCountPerMin')
 define table ApiSubAlertConf (applicationId string, subscriber string, apiName string, apiVersion string, thresholdRequestCountPerMin int);
 
 @PrimaryKey('applicationId', 'apiName', 'apiVersion')
@@ -108,3 +113,22 @@ update or
 insert into ApiSubAlertConfInMemory
 set ApiSubAlertConfInMemory.thresholdRequestCountPerMin = thresholdRequestCountPerMin
 	on ApiSubAlertConfInMemory.applicationId == applicationId and ApiSubAlertConfInMemory.apiName == apiName and ApiSubAlertConfInMemory.apiVersion == apiVersion;
+
+-- Delete the removed configs from ApiSubAlertConfInMemory @ every 5 minutes
+@info(name = 'Load ApiSubAlertConfInMemory table')
+from PeriodicTrigger join ApiSubAlertConfInMemory
+select applicationId, apiName, apiVersion, thresholdRequestCountPerMin
+insert into ApiSubAlertConfInMemoryStream;
+
+@info(name = 'Update ConfigDeleteStream')
+from ApiSubAlertConf as a right outer join ApiSubAlertConfInMemoryStream as b
+    on (a.applicationId == b.applicationId and a.apiName == b.apiName and a.apiVersion == b.apiVersion)
+select b.applicationId as applicationId, b.apiName as apiName, b.apiVersion as apiVersion
+    having a.apiName is null
+insert into ConfigDeleteStream;
+
+@info(name = 'Delete from ApiSubAlertConfInMemory table')
+from ConfigDeleteStream
+select applicationId, apiName, apiVersion
+delete ApiSubAlertConfInMemory
+    on ApiSubAlertConfInMemory.applicationId == applicationId and ApiSubAlertConfInMemory.apiName == apiName and ApiSubAlertConfInMemory.apiVersion == apiVersion;
