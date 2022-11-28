@@ -1225,7 +1225,7 @@
         <forgetme.tool.version>1.1.21</forgetme.tool.version>
 
         <!-- CallHome version -->
-        <callhome.version>5.x.x_1.0.4</callhome.version>
+        <callhome.version>5.x.x_1.0.10</callhome.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
