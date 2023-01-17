@@ -5,5 +5,6 @@
   "nodata.error.body": "No data available for the selected options",
   "nodata.error.heading": "No Data Available !",
   "widget.heading": "APIM Monthly API Usage Report",
-  "download": "Download"
+  "download": "Download",
+  "tooltip.currentMonth.report":"Current month report includes only the data upto one day before from the report generation date."
 }
