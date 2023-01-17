@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -147,12 +148,28 @@ public class DefaultReportGeneratorImpl implements ReportGenerator {
 
         TableData table = new TableData();
         String date = year + "-" + month;
+        LocalDate currentDate = LocalDate.now();
+        String currentMonth = String.valueOf(currentDate.getMonthValue());
+        String currentYear = String.valueOf(currentDate.getYear());
         String requestCountQuery = "from ApiUserPerAppAgg on apiCreatorTenantDomain==" + "\'" +
                 apiCreatorTenantDomain +
                 "\'" + " within '" + date + "-** **:**:**' per \"months\" select apiName, apiVersion, " +
                 "applicationName, applicationOwner, sum(totalRequestCount) as " +
                 "RequestCount group by " +
                 "apiName, apiVersion, applicationName, applicationOwner order by RequestCount desc";
+
+                // Handle current month separately since usual query is not capable to provide data for current
+        // month with persisted aggregation
+        if (year.equals(currentYear) && Integer.parseInt(month) == Integer.parseInt(currentMonth)) {
+            date = currentDate + " 00:00:00";
+            String fromDate = year + "-" + month + "-01 00:00:00";
+            requestCountQuery = "from ApiUserPerAppAgg on apiCreatorTenantDomain==" + "\'" +
+                    apiCreatorTenantDomain +
+                    "\'" + " within '" + fromDate + "', '" + date + "' per \"days\" select apiName, apiVersion, " +
+                    "applicationName, applicationOwner, sum(totalRequestCount) as " +
+                    "RequestCount group by " +
+                    "apiName, apiVersion, applicationName, applicationOwner order by RequestCount desc";
+        }
 
         initializeSiddhiAPPRuntime();
         Event[] events = siddhiAppRuntime.query(requestCountQuery);
