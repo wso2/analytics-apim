@@ -23,6 +23,7 @@ import Axios from 'axios';
 import Widget from '@wso2-dashboards/widget';
 import { Scrollbars } from 'react-custom-scrollbars';
 import FormControl from '@material-ui/core/FormControl';
+import Tooltip from '@material-ui/core/Tooltip';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import {
     defineMessages, IntlProvider, addLocaleData, FormattedMessage,
@@ -221,6 +222,25 @@ class APIMApiMonthlyUsageReportWidget extends Widget {
                                             setMonth={year => this.setMonth(year)}
                                             setYear={year => this.setYear(year)}
                                         />
+                                        {(new Date().getFullYear()) === this.state.year
+                                            && (new Date().getMonth() === this.state.month) && (
+
+                                                <div style={{ ...styles.formControl, marginLeft: 20, marginTop: 'auto' }}>
+                                                    <Tooltip
+                                                        title={(
+                                                            <FormattedMessage
+                                                                id='tooltip.currentMonth.report'
+                                                                defaultMessage='Current month report includes
+                                                            only the data upto one day before from the report
+                                                            generation date.'
+                                                            />
+                                                        )}
+                                                        placement='right'
+                                                    >
+                                                        <InfoIcon />
+                                                    </Tooltip>
+                                                </div>
+                                            )}
                                     </div>
                                     <FormControl>
                                         <Button
