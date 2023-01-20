@@ -1102,7 +1102,7 @@
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 
         <!-- json dependencies -->
-        <gson.version>2.8.5</gson.version>
+        <gson.version>2.9.0</gson.version>
         <gson.import.version.range>[2.7, 3.0.0)</gson.import.version.range>
         <jayway.jsonpath.version>2.2.0</jayway.jsonpath.version>
         <jayway.jsonpath.import.version.range>[2.2.0,2.3.0)</jayway.jsonpath.import.version.range>
@@ -1134,7 +1134,6 @@
         <disruptor.version>3.4.2.wso2v1</disruptor.version>
         <guava.version>23.0</guava.version>
         <guava.bundle.version>23.0.0</guava.bundle.version>
-        <gson.version>2.8.5</gson.version>
         <quartz.version>2.1.1.wso2v1</quartz.version>
         <metrics.version>3.2.5</metrics.version>
         <commons-lang3.version>3.3.2</commons-lang3.version>
@@ -1150,7 +1149,7 @@
 
         <!--MSF4J related-->
         <msf4j.version>2.7.8</msf4j.version>
-        <com.fasterxml.jackson.core.version>2.8.9</com.fasterxml.jackson.core.version>
+        <com.fasterxml.jackson.core.version>2.13.3</com.fasterxml.jackson.core.version>
         <io.swagger.version>1.5.22</io.swagger.version>
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
         <pax.logging.api.version>1.8.5</pax.logging.api.version>
