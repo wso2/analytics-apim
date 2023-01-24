@@ -261,14 +261,24 @@
             "templates": [
                {
                   "type": "siddhiApp",
-                  "content": "@App:name(\"apim_analytics_data_purging_app_0\")\n@App:description(\"App purges data of Raw tables in APIM Analytics\")\n\ndefine trigger DataPurgingTrigger at every ${triggerTime};\n\n-- Table Used in Unusual IP Access Alert\n@PrimaryKey('applicationConsumerKey','ip')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimIPAccessSummary (username string, applicationConsumerKey string, ip string, lastAccessedDate long) ;\n\n-- Table Used in Unusual IP Access Alert\n@PrimaryKey('applicationConsumerKey','username')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimIPAccessAlertCount (username string, applicationConsumerKey string, requestCount long) ;\n\n-- Delete all Data from ApimIPAccessSummary when the trigger is triggered\nfrom DataPurgingTrigger\ndelete ApimIPAccessSummary on \"1\" == \"1\";\n\n-- Delete all Data from ApimIPAccessAlertCount when the trigger is triggered\nfrom DataPurgingTrigger\ndelete ApimIPAccessAlertCount on \"1\" == \"1\";"
+                  "content": "@App:name(\"apim_analytics_data_purging_app_0\") \n@App:description(\"App purges data of Raw tables in APIM Analytics\")\n\ndefine trigger IPAccessAlertCountPurgingTrigger at every ${accessRequestCountDeletionTriggerInterval};\n\n-- Runs at 12 AM every day\ndefine trigger IPAccessSummaryPurgingTrigger at '0 0 0 1/1 * ? *' ;\n\n-- Table Used in Unusual IP Access Alert\n@PrimaryKey('applicationConsumerKey','ip')\n@index('lastAccessedDate')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimIPAccessSummary (username string, applicationConsumerKey string, ip string, lastAccessedDate long) ;\n\n-- Table Used in Unusual IP Access Alert\n@PrimaryKey('applicationConsumerKey','username')\n@store(type = 'rdbms', datasource = 'APIM_ANALYTICS_DB')\ndefine table ApimIPAccessAlertCount (username string, applicationConsumerKey string, requestCount long) ;\n\n-- Derive the purging end timestamp based on the given retention period\nfrom IPAccessSummaryPurgingTrigger\nselect time:timestampInMilliseconds(time:dateSub(time:currentTimestamp(), ${accessSummaryPurgingRetentionPeriodAmount}, '${accessSummaryPurgingRetentionPeriodUnit}', 'yyyy-MM-dd HH:mm:ss'), 'yyyy-MM-dd HH:mm:ss') as purgingEndTimestamp\ninsert into IPAccessSummaryPurgingStream;\n\n-- Delete data that is older than the retention period, when the IPAccessAlertCountPurgingTrigger is triggered\nfrom IPAccessSummaryPurgingStream\ndelete ApimIPAccessSummary on ApimIPAccessSummary.lastAccessedDate < purgingEndTimestamp;\n\n-- Delete all Data from ApimIPAccessAlertCount, when the IPAccessAlertCountPurgingTrigger is triggered\nfrom IPAccessAlertCountPurgingTrigger\ndelete ApimIPAccessAlertCount on \"1\" == \"1\";"
                }
             ],
             "properties": {
-               "triggerTime": {
-                  "fieldName": "Time Interval For Trigger",
-                  "description": "Time Interval to trigger Data purging",
+               "accessRequestCountDeletionTriggerInterval": {
+                  "fieldName": "Time Interval for IP Access Request Count Data Deletion",
+                  "description": "All the existing APIM IP Access request count data, will be deleted per this interval",
                   "defaultValue": "1 years"
+               },
+               "accessSummaryPurgingRetentionPeriodAmount": {
+                  "fieldName": "Last IP Access Retention Period Amount",
+                  "description": "APIM IP Access Summary Data older than this much of the given unit, will be deleted everyday at 00:00",
+                  "defaultValue": "1"
+               },
+               "accessSummaryPurgingRetentionPeriodUnit": {
+                  "fieldName": "Last IP Access Retention Period Unit",
+                  "description": "APIM IP Access Summary Data older than the given amount - measured in this unit, will be deleted everyday at 00:00",
+                  "defaultValue": "years"
                }
             }
          }
