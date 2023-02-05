@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -84,6 +85,14 @@ public class UsageApiServiceImpl extends UsageApiService {
 
         } catch (MGWFileSourceException e) {
             String msg = "Error occurred while uploading API Usage file : " + uploadedFileName;
+            if (!e.getCause().getMessage().isEmpty()
+                    && (e.getCause().getMessage().toLowerCase(Locale.ENGLISH).contains("primary key violation")
+                    || e.getCause().getMessage().toLowerCase(Locale.ENGLISH).contains("duplicate entry")
+                    || e.getCause().getMessage().toLowerCase(Locale.ENGLISH)
+                    .contains("violation of primary key constraint"))) {
+                msg = "Error occurred while uploading API usage file, A duplicate entry found for the file : "
+                        + uploadedFileName;
+            }
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
