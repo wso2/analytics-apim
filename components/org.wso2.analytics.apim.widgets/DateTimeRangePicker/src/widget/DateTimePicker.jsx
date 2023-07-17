@@ -306,7 +306,11 @@ class DateTimePicker extends Widget {
   updateTimeRange = (startTime, endTime, granularity) => {
     granularity = granularity || this.state.granularity;
     this.setState({ startTime, endTime, granularity });
-    super.publish({ from: startTime, to: endTime, granularity})
+    super.publish({
+      from: Moment(startTime).unix() * 1000,
+      to: Moment(endTime).unix() * 1000,
+      granularity
+    });
   }
 
   /**
