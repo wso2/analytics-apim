@@ -29,7 +29,7 @@ export default class TimePicker extends React.Component {
     year: this.props.initTime.year(),
     month: this.props.initTime.month(),
     days: this.props.initTime.date(),
-    time: this.props.initTime.format('HH:mm:ss.000')
+    time: this.props.initTime.format('HH:mm:ss.000'),
   };
 
   /**
@@ -224,7 +224,7 @@ export default class TimePicker extends React.Component {
       //  do nothing
     }
     this.setState(state);
-    return onChange && onChange(date);
+    return onChange && onChange(moment(date));
   };
   /**
    * @returns{JSX}

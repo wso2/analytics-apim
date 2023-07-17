@@ -72,6 +72,10 @@ export default class CustomTimeRangeSelector extends React.Component {
     }
   };
 
+  getTimeInRequiredTZ = (time) => {
+    return this.props.isUTC ? Moment(time).utc(true) : Moment(time).local(true);
+  }
+
   /**
    * Publishing the custom time range
    * onChangeCustom()=>handleGranularityChangeForCustom(mode, startTime, endTime, granularity)
@@ -82,7 +86,7 @@ export default class CustomTimeRangeSelector extends React.Component {
     const { handleClose, onChangeCustom } = this.props;
     const { customRangeGranularityValue, startTime, endTime } = this.state;
     handleClose();
-    onChangeCustom('custom', startTime, endTime, customRangeGranularityValue);
+    onChangeCustom('custom', this.getTimeInRequiredTZ(startTime), this.getTimeInRequiredTZ(endTime), customRangeGranularityValue);
   };
 
   /**
@@ -233,9 +237,10 @@ export default class CustomTimeRangeSelector extends React.Component {
               disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
               onChange={this.handleStartTimeChange}
               inputType={customRangeGranularityValue}
-              initTime={Moment(startTime)}
+              initTime={startTime}
               inputName="startTime"
               theme={theme}
+              isUTC={this.props.isUTC}
             />
           </div>
           <div style={{ float: 'right', width: '50%' }}>
@@ -245,10 +250,11 @@ export default class CustomTimeRangeSelector extends React.Component {
               disableSelectedQuickRangeValue={disableSelectedQuickRangeValue}
               onChange={this.handleEndTimeChange}
               inputType={customRangeGranularityValue}
-              initTime={Moment(endTime)}
+              initTime={endTime}
               inputName="endTime"
               startTime={startTime}
               theme={theme}
+              isUTC={this.props.isUTC}
             />
           </div>
         </div>
