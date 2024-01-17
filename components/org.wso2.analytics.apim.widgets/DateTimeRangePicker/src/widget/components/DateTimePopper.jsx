@@ -113,7 +113,8 @@ export default class DateTimePopper extends React.Component {
       changeQuickRangeGranularities,
       quickRangeGranularityValue,
       disableSelectedQuickRangeValue,
-      setShowBackRanges
+      setShowBackRanges,
+      isUTC
     } = this.props;
 
     return (
@@ -213,6 +214,7 @@ export default class DateTimePopper extends React.Component {
                 theme={theme}
                 startTime={startTime}
                 endTime={endTime}
+                isUTC={isUTC}
               />
             </div>
           </Grid>
